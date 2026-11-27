@@ -1,0 +1,585 @@
+{
+  "schema": "codearbiter.current-finite-source-inspection/1",
+  "source_commit": "f3cb12f5095401d5b7e8c32c2861816c7109ce02",
+  "original_semantic_inspection_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+  "group": "source-group-036",
+  "positive_input_join": {
+    ".codearbiter/decisions/0040-independent-per-target-release-with-consumer-safety-gates.md": {
+      "sha256": "2dce2651ea067cc7bec25982ce23fdeb1528e9bfb003906c55be7e243a3a8964",
+      "previous_sha256": "2dce2651ea067cc7bec25982ce23fdeb1528e9bfb003906c55be7e243a3a8964",
+      "bytes": 5797,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "2dce2651ea067cc7bec25982ce23fdeb1528e9bfb003906c55be7e243a3a8964",
+        "bytes": 5797
+      }
+    },
+    ".codearbiter/decisions/0043-assistive-state-engine.md": {
+      "sha256": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+      "previous_sha256": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+      "bytes": 6365,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+        "bytes": 6365
+      }
+    },
+    ".codearbiter/decisions/0044-trusted-pi-npm-publication.md": {
+      "sha256": "fda3c0194f83d41bcb169fae7c14d1b24bdaf3bace8d41780a88825e10fe30d6",
+      "previous_sha256": "fda3c0194f83d41bcb169fae7c14d1b24bdaf3bace8d41780a88825e10fe30d6",
+      "bytes": 3015,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "fda3c0194f83d41bcb169fae7c14d1b24bdaf3bace8d41780a88825e10fe30d6",
+        "bytes": 3015
+      }
+    },
+    ".codearbiter/decisions/0049-require-https-outside-bounded-loopback.md": {
+      "sha256": "c757cef9d5e318b75ff164d270b29a49255449360f0b7cde51e53775e6916ab8",
+      "previous_sha256": "c757cef9d5e318b75ff164d270b29a49255449360f0b7cde51e53775e6916ab8",
+      "bytes": 2450,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "c757cef9d5e318b75ff164d270b29a49255449360f0b7cde51e53775e6916ab8",
+        "bytes": 2450
+      }
+    },
+    ".github/workflows/ci.yml": {
+      "sha256": "9b9bbb72e86631c1577135cb3ee13181d3b04ed8db2f5e7f4f957e6fb85f1fb3",
+      "previous_sha256": "c0e8e0f0480ffb0f660c894347f26df49da423a300158a1566da702e5a0d8102",
+      "bytes": 306751,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "9b9bbb72e86631c1577135cb3ee13181d3b04ed8db2f5e7f4f957e6fb85f1fb3",
+        "bytes": 306751
+      }
+    },
+    "docs/state-contracts-major/PROGRAM.md": {
+      "sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+      "previous_sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+      "bytes": 7910,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+        "bytes": 7910
+      }
+    },
+    "docs/state-contracts-major/contracts/machine-coverage.json": {
+      "sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+      "previous_sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+      "bytes": 385316,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+        "bytes": 385316
+      }
+    },
+    "docs/state-contracts-major/contracts/program.json": {
+      "sha256": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+      "previous_sha256": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+      "bytes": 6403,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+        "bytes": 6403
+      }
+    },
+    "docs/state-contracts-major/contracts/tasks.json": {
+      "sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+      "previous_sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+      "bytes": 331224,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+        "bytes": 331224
+      }
+    },
+    "docs/state-contracts-major/contracts/transition-coverage.json": {
+      "sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+      "previous_sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+      "bytes": 3185278,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+        "bytes": 3185278
+      }
+    }
+  },
+  "current_input_membership": [],
+  "closed_namespace_review": null,
+  "current_owner_delta_review": {
+    "scope": "Event/path/prerequisite scoping and supersession are unchanged; five concrete measurement owner paths enlarge only the existing Hooks predicate and use the same receipt/impact outputs.",
+    "workflow_callsite_join": {
+      "changes": {
+        "previous_sha256": "8e1c17f3d05db139bbf3069e90aff62225920a05cac04db31c3f3feed770a977",
+        "current_sha256": "eb75dd09749070f4f75af207dd59d8a09c017ba62137d650fd7a9d32d49e8459",
+        "current_scope": "Only five concrete measurement-owned files were added to the hooks path filter. Admission, cancellation, all original paths and output/receipt routing remain unchanged."
+      },
+      "ci-passed": {
+        "previous_sha256": "81001122248ea9a598041073e239f01f3f2f6d68e3c350db7a00f4fa88bc019b",
+        "current_sha256": "81001122248ea9a598041073e239f01f3f2f6d68e3c350db7a00f4fa88bc019b",
+        "current_scope": "Complete owning job or top-level event/concurrency block unchanged."
+      },
+      "event/concurrency": {
+        "previous_sha256": "3ee4b7d96d027d03e6e417f04259bbecfed743c239f9a83c8eafa6f42464a768",
+        "current_sha256": "3ee4b7d96d027d03e6e417f04259bbecfed743c239f9a83c8eafa6f42464a768",
+        "current_scope": "Complete owning job or top-level event/concurrency block unchanged."
+      }
+    }
+  },
+  "semantic_rows": [
+    {
+      "cell": "disposition:machines:C01",
+      "frozen_record": {
+        "machine_id": "C01",
+        "name": "CI admission, impact selection and cancellation",
+        "domain": "Hosted CI and release",
+        "kind": "implemented",
+        "owner": "release-and-tooling",
+        "closure_task": "Q-01",
+        "task_ids": [
+          "NT-12",
+          "R-03",
+          "R-04",
+          "Q-01"
+        ],
+        "explicit_machine_task_ids": [],
+        "source_intersection_task_ids": [
+          "NT-12",
+          "R-03",
+          "R-04"
+        ],
+        "mapping_basis": "Owner assignment uses the inspected audit domain and explicit owner ledger; source intersections flag review impact, not a claim every edge changes.",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "status": "NOT_RUN",
+        "transition_count": 5,
+        "source_refs": [
+          "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/workflows/ci.yml"
+        ],
+        "proposed_composed_scenario_ids": [
+          "SEQ-24"
+        ],
+        "required_disposition": "Read the pinned/current owner, preserve each existing guard/effect/retry boundary except a named authorized change, map meaningful executed tests or reasoned conformance review to the row IDs, and add new rows for introduced events.",
+        "evidence": []
+      },
+      "frozen_record_sha256": "5b7d24fc60bed33d24b2a04cc84ff3f3f18830d7ea6b28dc0dfa448bbbcfa12a",
+      "group": "source-group-036",
+      "literal_inspection": "13-exact-prior65-machine-records",
+      "assessment": "Conditional finite source composition of CI admission, impact selection and cancellation. Constituent guard/effect/retry source scopes and named accepted changes retained; neither task_ids nor model-guided instructions prove executed runtime/installed/model behavior.",
+      "changed_helper_interpretation_ids": [],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/release27-ci-callsite-revalidation/C01-preserved.json",
+          "sha256": "1cab101cc75b75065b0a2c818e411dd556bd3b9efe5028ef352a9d32e31276c7",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:C01:01",
+      "frozen_record": {
+        "transition_id": "C01:01",
+        "machine_id": "C01",
+        "owner": "release-and-tooling",
+        "baseline": {
+          "from_state": "not triggered",
+          "from": "not triggered",
+          "event": "pull_request or merge_group",
+          "guard": "declared branch/event admission; PR and merge queue do not rely on push path filtering",
+          "to": "admitted",
+          "effects": "Create CI run; changes job computes path impact and Pi supported-version outputs.",
+          "failure_retry": "Invalid changes evaluation fails and downstream selection cannot be treated as verified.",
+          "source": [
+            {
+              "path": ".github/workflows/ci.yml",
+              "symbol": "143",
+              "lines": [
+                143,
+                143
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/workflows/ci.yml"
+            }
+          ],
+          "transition_id": "C01:01"
+        },
+        "task_ids": [
+          "NT-12",
+          "R-03",
+          "R-04",
+          "Q-01"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-24"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "9c92e9de645a5e3f4a96db900ae69a311d9545bbaff951311952d8ba53811c9c",
+      "group": "source-group-036",
+      "assessment": "PR and merge-group admission still do not depend on push path filtering.",
+      "literal_inspection": "65-assessment",
+      "changed_helper_interpretation_ids": [],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/release27-ci-callsite-revalidation/C01-preserved.json",
+          "sha256": "1cab101cc75b75065b0a2c818e411dd556bd3b9efe5028ef352a9d32e31276c7",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18"
+        }
+      ],
+      "exact_earlier_clause_assessment": {
+        "cell": "disposition:transitions:C01:01",
+        "frozen_row_sha256": "9c92e9de645a5e3f4a96db900ae69a311d9545bbaff951311952d8ba53811c9c",
+        "literal": {
+          "event": "pull_request or merge_group",
+          "guard": "declared branch/event admission; PR and merge queue do not rely on push path filtering",
+          "effects": "Create CI run; changes job computes path impact and Pi supported-version outputs.",
+          "failure_retry": "Invalid changes evaluation fails and downstream selection cannot be treated as verified."
+        },
+        "actual_current_interpretation": "PR and merge-group admission still do not depend on push path filtering.",
+        "witness_ids": [
+          "w22",
+          "w23"
+        ],
+        "prior_proof": "docs/state-contracts-major/execution/evidence/release27-ci-callsite-revalidation/C01-preserved.json",
+        "selected_for_successor": true,
+        "action": "Append source successor only at actual commit, retaining old evidence."
+      }
+    },
+    {
+      "cell": "disposition:transitions:C01:02",
+      "frozen_record": {
+        "transition_id": "C01:02",
+        "machine_id": "C01",
+        "owner": "release-and-tooling",
+        "baseline": {
+          "from_state": "not triggered",
+          "from": "not triggered",
+          "event": "push to main",
+          "guard": "at least one declared push path matches",
+          "to": "admitted",
+          "effects": "Create distinct run keyed by run ID; artifact impact is forced true for admitted main pushes.",
+          "failure_retry": "A push entirely outside the trigger list has no run; no success evidence is produced.",
+          "source": [
+            {
+              "path": ".github/workflows/ci.yml",
+              "symbol": "143",
+              "lines": [
+                143,
+                143
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/workflows/ci.yml"
+            }
+          ],
+          "transition_id": "C01:02"
+        },
+        "task_ids": [
+          "NT-12",
+          "R-03",
+          "R-04",
+          "Q-01"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-24"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "a2dfea41998eb06e8eab0ab1f3ebf24c7c4515f41cec5ffefa3a0d09ec65612d",
+      "group": "source-group-036",
+      "assessment": "Admitted main pushes retain distinct run identity and forced artifact impact.",
+      "literal_inspection": "65-assessment",
+      "changed_helper_interpretation_ids": [],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/release27-ci-callsite-revalidation/C01-preserved.json",
+          "sha256": "1cab101cc75b75065b0a2c818e411dd556bd3b9efe5028ef352a9d32e31276c7",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18"
+        }
+      ],
+      "exact_earlier_clause_assessment": {
+        "cell": "disposition:transitions:C01:02",
+        "frozen_row_sha256": "a2dfea41998eb06e8eab0ab1f3ebf24c7c4515f41cec5ffefa3a0d09ec65612d",
+        "literal": {
+          "event": "push to main",
+          "guard": "at least one declared push path matches",
+          "effects": "Create distinct run keyed by run ID; artifact impact is forced true for admitted main pushes.",
+          "failure_retry": "A push entirely outside the trigger list has no run; no success evidence is produced."
+        },
+        "actual_current_interpretation": "Admitted main pushes retain distinct run identity and forced artifact impact.",
+        "witness_ids": [
+          "w24",
+          "w25"
+        ],
+        "prior_proof": "docs/state-contracts-major/execution/evidence/release27-ci-callsite-revalidation/C01-preserved.json",
+        "selected_for_successor": true,
+        "action": "Append source successor only at actual commit, retaining old evidence."
+      }
+    },
+    {
+      "cell": "disposition:transitions:C01:03",
+      "frozen_record": {
+        "transition_id": "C01:03",
+        "machine_id": "C01",
+        "owner": "release-and-tooling",
+        "baseline": {
+          "from_state": "running PR run",
+          "from": "running PR run",
+          "event": "new run for same pull request",
+          "guard": "concurrency key matches; event is pull_request",
+          "to": "superseded PR run",
+          "effects": "Cancel older run. Main push runs use distinct run IDs and are not canceled by this rule.",
+          "failure_retry": "Canceled jobs remain canceled, not successful checks.",
+          "source": [
+            {
+              "path": ".github/workflows/ci.yml",
+              "symbol": "135",
+              "lines": [
+                135,
+                135
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/workflows/ci.yml"
+            }
+          ],
+          "transition_id": "C01:03"
+        },
+        "task_ids": [
+          "NT-12",
+          "R-03",
+          "R-04",
+          "Q-01"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-24"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "8fa134f75260aeb887682b21f7cc323d3862645e9117744c22c3a1d08f947bd5",
+      "group": "source-group-036",
+      "assessment": "Only matching PR concurrency supersedes older runs, with canceled results remaining canceled.",
+      "literal_inspection": "65-assessment",
+      "changed_helper_interpretation_ids": [],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/release27-ci-callsite-revalidation/C01-preserved.json",
+          "sha256": "1cab101cc75b75065b0a2c818e411dd556bd3b9efe5028ef352a9d32e31276c7",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18"
+        }
+      ],
+      "exact_earlier_clause_assessment": {
+        "cell": "disposition:transitions:C01:03",
+        "frozen_row_sha256": "8fa134f75260aeb887682b21f7cc323d3862645e9117744c22c3a1d08f947bd5",
+        "literal": {
+          "event": "new run for same pull request",
+          "guard": "concurrency key matches; event is pull_request",
+          "effects": "Cancel older run. Main push runs use distinct run IDs and are not canceled by this rule.",
+          "failure_retry": "Canceled jobs remain canceled, not successful checks."
+        },
+        "actual_current_interpretation": "Only matching PR concurrency supersedes older runs, with canceled results remaining canceled.",
+        "witness_ids": [
+          "w26",
+          "w27"
+        ],
+        "prior_proof": "docs/state-contracts-major/execution/evidence/release27-ci-callsite-revalidation/C01-preserved.json",
+        "selected_for_successor": true,
+        "action": "Append source successor only at actual commit, retaining old evidence."
+      }
+    },
+    {
+      "cell": "disposition:transitions:C01:04",
+      "frozen_record": {
+        "transition_id": "C01:04",
+        "machine_id": "C01",
+        "owner": "release-and-tooling",
+        "baseline": {
+          "from_state": "admitted",
+          "from": "admitted",
+          "event": "paths-filter and derived impact evaluation",
+          "guard": "domain source/config/test paths match",
+          "to": "selected domain",
+          "effects": "Set string outputs consumed by job if conditions; upload the selection receipt.",
+          "failure_retry": "Failure is a failed changes prerequisite; downstream skips do not establish domain correctness.",
+          "source": [
+            {
+              "path": ".github/workflows/ci.yml",
+              "symbol": "143",
+              "lines": [
+                143,
+                143
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/workflows/ci.yml"
+            }
+          ],
+          "transition_id": "C01:04"
+        },
+        "task_ids": [
+          "NT-12",
+          "R-03",
+          "R-04",
+          "Q-01"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-24"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "31699d7458083fbb45f7d29860e66f8dc1cc578200c30cb73d6b6392580695e1",
+      "group": "source-group-036",
+      "assessment": "Added registry-owner paths select the existing fast impact guard while outputs/receipts retain their original ownership.",
+      "literal_inspection": "65-assessment",
+      "changed_helper_interpretation_ids": [],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/release27-ci-callsite-revalidation/C01-preserved.json",
+          "sha256": "1cab101cc75b75065b0a2c818e411dd556bd3b9efe5028ef352a9d32e31276c7",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18"
+        }
+      ],
+      "exact_earlier_clause_assessment": {
+        "cell": "disposition:transitions:C01:04",
+        "frozen_row_sha256": "31699d7458083fbb45f7d29860e66f8dc1cc578200c30cb73d6b6392580695e1",
+        "literal": {
+          "event": "paths-filter and derived impact evaluation",
+          "guard": "domain source/config/test paths match",
+          "effects": "Set string outputs consumed by job if conditions; upload the selection receipt.",
+          "failure_retry": "Failure is a failed changes prerequisite; downstream skips do not establish domain correctness."
+        },
+        "actual_current_interpretation": "Added registry-owner paths select the existing fast impact guard while outputs/receipts retain their original ownership.",
+        "witness_ids": [
+          "w23",
+          "w28"
+        ],
+        "prior_proof": "docs/state-contracts-major/execution/evidence/release27-ci-callsite-revalidation/C01-preserved.json",
+        "selected_for_successor": true,
+        "action": "Append source successor only at actual commit, retaining old evidence."
+      }
+    },
+    {
+      "cell": "disposition:transitions:C01:05",
+      "frozen_record": {
+        "transition_id": "C01:05",
+        "machine_id": "C01",
+        "owner": "release-and-tooling",
+        "baseline": {
+          "from_state": "admitted",
+          "from": "admitted",
+          "event": "paths-filter evaluation",
+          "guard": "domain has no matching changes and no unconditional override",
+          "to": "skipped domain",
+          "effects": "Omit expensive job execution; aggregate generally permits the explicit skipped result.",
+          "failure_retry": "An intentional skip is not runtime evidence and cannot satisfy selected artifact stage checks.",
+          "source": [
+            {
+              "path": ".github/workflows/ci.yml",
+              "symbol": "143",
+              "lines": [
+                143,
+                143
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/workflows/ci.yml"
+            }
+          ],
+          "transition_id": "C01:05"
+        },
+        "task_ids": [
+          "NT-12",
+          "R-03",
+          "R-04",
+          "Q-01"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-24"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "55e35b3fed530b425db88957c15e5632ad123ae26887a0c21c2141b1dbb7c722",
+      "group": "source-group-036",
+      "assessment": "Unselected domains remain explicit skips without runtime qualification.",
+      "literal_inspection": "65-assessment",
+      "changed_helper_interpretation_ids": [],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/release27-ci-callsite-revalidation/C01-preserved.json",
+          "sha256": "1cab101cc75b75065b0a2c818e411dd556bd3b9efe5028ef352a9d32e31276c7",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18"
+        }
+      ],
+      "exact_earlier_clause_assessment": {
+        "cell": "disposition:transitions:C01:05",
+        "frozen_row_sha256": "55e35b3fed530b425db88957c15e5632ad123ae26887a0c21c2141b1dbb7c722",
+        "literal": {
+          "event": "paths-filter evaluation",
+          "guard": "domain has no matching changes and no unconditional override",
+          "effects": "Omit expensive job execution; aggregate generally permits the explicit skipped result.",
+          "failure_retry": "An intentional skip is not runtime evidence and cannot satisfy selected artifact stage checks."
+        },
+        "actual_current_interpretation": "Unselected domains remain explicit skips without runtime qualification.",
+        "witness_ids": [
+          "w29",
+          "w30",
+          "w31"
+        ],
+        "prior_proof": "docs/state-contracts-major/execution/evidence/release27-ci-callsite-revalidation/C01-preserved.json",
+        "selected_for_successor": true,
+        "action": "Append source successor only at actual commit, retaining old evidence."
+      }
+    }
+  ],
+  "verified_literal_witnesses": [],
+  "changed_old_literals": [],
+  "reused_helper_assessments": [],
+  "negative_scope": "Static finite guarded claims only, with inherited scope/limits. No execution, qualification or unchecked new source claim."
+}

@@ -1,0 +1,262 @@
+{
+ "schema": "codearbiter.independent-private-code-review/1",
+ "verdict": "PASS",
+ "security_gate": "PASS",
+ "reviewer": "/root/acceptance_security_review",
+ "author": "/root/ci_repair_review",
+ "reviewed_at_utc": "2026-11-17T04:20:19.116672+00:00",
+ "scope_kind": "PRIVATE_CODE_CANDIDATES_NOT_STAGED",
+ "source_epoch": "ea9da763b33708c8533623568b7241eaaea0d153",
+ "observed_head": "ea9da763b33708c8533623568b7241eaaea0d153",
+ "delivery": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-immutable-positive-reuse-fix-tvdmghdo\\delivery.json",
+  "sha256": "f5ae95260a3b381bcfa0766a76c0e5c454a97e6753221b44a39d4a39eacbfda3",
+  "bytes": 15106
+ },
+ "typed_input": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-immutable-reader-independent-review-1faaqfqi\\reader-peer-current-input.txt",
+  "sha256": "7d93dfad81e51c14e3a4eea9f7da840842cf7977700598f37c3d9062d054f0b4",
+  "bytes": 5766
+ },
+ "typed_context": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-immutable-reader-independent-review-1faaqfqi\\reader-peer-current.json",
+  "sha256": "c12ba572d509d1a7d0e0a2cd6244d853bdafcbf4c81f8ac53662cc97a6dc0c84",
+  "bytes": 7883
+ },
+ "inventory_proof": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-immutable-reader-independent-review-1faaqfqi\\inventory-proof.json",
+  "sha256": "a8a8ff559d0da34bff28f0398dbd268bbd3d8c20d804a00135b81ada8ed00c42",
+  "bytes": 8338
+ },
+ "full_subjects": {
+  ".github/scripts/_immutable_git_blobs.py": {
+   "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-immutable-positive-reuse-fix-tvdmghdo\\repo\\.github\\scripts\\_immutable_git_blobs.py",
+   "sha256": "7cd642fe54f77d6c046403d1829cbc2484244dab3e656a2a21282fdce71655c6",
+   "bytes": 9589,
+   "preimage_sha256": "00f6a25401e514ae22cb6f18198913ab1eb1bb8816775c27b3cab25d9bf72ada",
+   "preimage_bytes": 8275
+  },
+  ".github/scripts/test_immutable_git_blobs.py": {
+   "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-immutable-positive-reuse-fix-tvdmghdo\\repo\\.github\\scripts\\test_immutable_git_blobs.py",
+   "sha256": "53dc16422c59b0811798c9b240e5b29e86c6bbe5f6ea45f40145115fe6a0a6d9",
+   "bytes": 20221,
+   "preimage_sha256": "461a322ee324bd94bb48694f627217227135f97bfeab844f888db32cf4128258",
+   "preimage_bytes": 13450
+  }
+ },
+ "patch": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-immutable-positive-reuse-fix-tvdmghdo\\changes.patch",
+  "sha256": "c12456c5b9de1983f5dab8148c66248f4d4c6c12885dcb3e4b6c819858760a8f",
+  "bytes": 16127
+ },
+ "patch_sha256": "c12456c5b9de1983f5dab8148c66248f4d4c6c12885dcb3e4b6c819858760a8f",
+ "findings": [],
+ "findings_summary": {
+  "CRITICAL": 0,
+  "HIGH": 0,
+  "MEDIUM": 0,
+  "LOW": 0
+ },
+ "assessment": [
+  "Every new immutable source/path alias still issues a Git info lookup. Metadata accepts only a bounded hex OID, blob type and canonical nonnegative size; missing is a noncacheable unavailable response. Contents are requested by the resolved opaque OID and its complete header must exactly match metadata before framed bytes are accepted.",
+  "Positive OID reuse requires matching blob size and uses the same immutable bytes object. A previously unseen OID is refused before requesting contents when its body would exceed MAX_TOTAL. Only a fully framed newly fetched body charges total; aliases do not fetch or charge it again.",
+  "Only the serialized caller publishes positive bytes and body accounting. The single worker never repopulates either cache; after timeout/abort/close both caches clear, including cleanup-error finally paths. A late result cannot make the closed transaction readable.",
+  "Literal source/path validation, repository binding, no-replace/no-lazy-fetch Git invocation and local credential-blind environment are preserved. OIDs are Git identity correlation, not a new SHA1 implementation or independent cryptographic authentication.",
+  "MAX_BLOB16MiB, MAX_TOTAL256MiB, MAX_QUERIES16384 logical uncached aliases, query10s and transaction120s declarations remain unchanged. New bodies require info plus contents, while aliases require info only. Existing cached-exact-key timing behavior and cleanup verification budgets are not represented as a new hard overall wall-clock guarantee.",
+  "Unknown protocol types/headers, truncated payload, wrong newline, changed OID/type/size, final trailing stdout and nonzero final exit refuse the transaction. The existing primary exception, explicit cause/context and active-context restoration survive cleanup failure.",
+  "No proof, authorization, absence, readiness result or global/repository-crossing cache is added. Original owner integration still respects the injected loader and reuses only positive bytes within its current validation transaction."
+ ],
+ "verification_review": {
+  "reviewer_execution": "None: no test, compile, validator, full-owner, network/API or target import replay.",
+  "author_target_RED": {
+   "observed_receipt": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-immutable-positive-reuse-fix-tvdmghdo\\red-result.json",
+    "sha256": "1bab609df31201fa5b5b43c20fb1035175bd41611a6c876460723666dc360e40",
+    "bytes": 294
+   },
+   "stderr": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-immutable-positive-reuse-fix-tvdmghdo\\red.stderr",
+    "sha256": "cfc4a0f3a1d98ed56cbc0cc4c90d358480251ebbfe49be46155362a19d22c020",
+    "bytes": 2204
+   },
+   "result": "One failure, zero errors/skips on the original reader; target fails when identical later-commit body exceeds the old duplicate-charged budget. Original containment=unconfirmed text retained, not called verified cleanup."
+  },
+  "author_target_GREEN": {
+   "observed_receipt": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-immutable-positive-reuse-fix-tvdmghdo\\green-target-result.json",
+    "sha256": "00b60e571ab63a9e3c87d91d6abd2842d0ff8eea980cf5151edc00b81a4966bb",
+    "bytes": 293
+   },
+   "stderr": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-immutable-positive-reuse-fix-tvdmghdo\\green-target.stderr",
+    "sha256": "c6cb0a6d250babeca4634c4ff535c757fcbc32451449b00f81724d75ee31ef53",
+    "bytes": 305
+   },
+   "result": "One PASS recorded against exact reader candidate; target regression AST is identical between retained RED and GREEN source."
+  },
+  "author_owning_GREEN": {
+   "observed_receipt": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-immutable-positive-reuse-fix-tvdmghdo\\owning-green-result.json",
+    "sha256": "b989bfc15c69ac7e78646e99bb2255364713a2d50fad033f818e30cbac2e54fe",
+    "bytes": 2543
+   },
+   "stderr": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-immutable-positive-reuse-fix-tvdmghdo\\owning-green.stderr",
+    "sha256": "3dcea3aa80acca4f39d0ec000ae1a0134f8cb1633cbc28761eacf39a0c006238",
+    "bytes": 2991
+   },
+   "result": "16 methods PASS, zero failures/errors/skips in retained author receipt. Exact source/test hashes bind the recorded run."
+  },
+  "original_tests": 12,
+  "new_tests": 4,
+  "original_test_ASTs_exact_unchanged": 9,
+  "original_test_fixture_adaptations": [
+   "test_corrupt_headers_types_payloads_framing_and_bounds_kill_transaction",
+   "test_trailing_stdout_and_failed_final_exit_refuse",
+   "test_primary_exception_cause_and_context_survive_cleanup_failure"
+  ],
+  "oracle_review": "Three old fake-process fixtures now implement info/contents exchanges while retaining their corrupt/framing/EOF/cause/containment oracles. Nine old test methods are AST-identical. Four added methods exercise real-Git alias budget reuse, unique-body refusal before contents, header/size correlation and an event-controlled abandoned worker/cache publication boundary.",
+  "mechanical_review": "Exact patch reconstructed from sealed original/candidate bytes; original preimages match canonical source and declared Git epoch. All supplied raw hashes and four unchanged import-owner joins independently checked. Module AST outside Reader remains exactly unchanged."
+ },
+ "raw_evidence": [
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-immutable-positive-reuse-fix-tvdmghdo\\changes.patch",
+   "sha256": "c12456c5b9de1983f5dab8148c66248f4d4c6c12885dcb3e4b6c819858760a8f",
+   "bytes": 16127
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-immutable-positive-reuse-fix-tvdmghdo\\drive.py",
+   "sha256": "96d927fad7fb537d95e480ffeff629ae66c9ee908dd58704101ac7e44f3f56f2",
+   "bytes": 2053
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-immutable-positive-reuse-fix-tvdmghdo\\green-target-command.json",
+   "sha256": "9284094f24a41e6c428504be1fa744ae9d2578e222787ce840967658d7cb9d39",
+   "bytes": 1210
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-immutable-positive-reuse-fix-tvdmghdo\\green-target-result.json",
+   "sha256": "00b60e571ab63a9e3c87d91d6abd2842d0ff8eea980cf5151edc00b81a4966bb",
+   "bytes": 293
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-immutable-positive-reuse-fix-tvdmghdo\\green-target.stderr",
+   "sha256": "c6cb0a6d250babeca4634c4ff535c757fcbc32451449b00f81724d75ee31ef53",
+   "bytes": 305
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-immutable-positive-reuse-fix-tvdmghdo\\green-target.stdout",
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "bytes": 0
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-immutable-positive-reuse-fix-tvdmghdo\\immutable-reader-fix-context.json",
+   "sha256": "e5daca35201963cd057f48af38e67d598a8ef01902436a101495051464bfa0fa",
+   "bytes": 21986
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-immutable-positive-reuse-fix-tvdmghdo\\immutable-reader-fix-input.txt",
+   "sha256": "9d2070d394bc16019b91af692bc3bfe0cebe01c8a32179a3a5083323602440fe",
+   "bytes": 13038
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-immutable-positive-reuse-fix-tvdmghdo\\owning-green-command.json",
+   "sha256": "e6f7064ac48bc3fd0f244ef7fa2ffb5f7a2d9f6965902283425edd64b5837a12",
+   "bytes": 1114
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-immutable-positive-reuse-fix-tvdmghdo\\owning-green-result.json",
+   "sha256": "b989bfc15c69ac7e78646e99bb2255364713a2d50fad033f818e30cbac2e54fe",
+   "bytes": 2543
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-immutable-positive-reuse-fix-tvdmghdo\\owning-green.stderr",
+   "sha256": "3dcea3aa80acca4f39d0ec000ae1a0134f8cb1633cbc28761eacf39a0c006238",
+   "bytes": 2991
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-immutable-positive-reuse-fix-tvdmghdo\\owning-green.stdout",
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "bytes": 0
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-immutable-positive-reuse-fix-tvdmghdo\\preservation.json",
+   "sha256": "f4b8606bcfde6535257c1252cd879e1e588f854fc987e9b084fbe5dd5a5d31a3",
+   "bytes": 2471
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-immutable-positive-reuse-fix-tvdmghdo\\red-command.json",
+   "sha256": "39c10d1cb729dba4e574bad17a58d2cca8474d053a4fe663b0444a7de3d91137",
+   "bytes": 1202
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-immutable-positive-reuse-fix-tvdmghdo\\red-result.json",
+   "sha256": "1bab609df31201fa5b5b43c20fb1035175bd41611a6c876460723666dc360e40",
+   "bytes": 294
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-immutable-positive-reuse-fix-tvdmghdo\\red.stderr",
+   "sha256": "cfc4a0f3a1d98ed56cbc0cc4c90d358480251ebbfe49be46155362a19d22c020",
+   "bytes": 2204
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-immutable-positive-reuse-fix-tvdmghdo\\red.stdout",
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "bytes": 0
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-immutable-positive-reuse-fix-tvdmghdo\\regression-red-test.py",
+   "sha256": "ad64a0b4771d7f964f6123f5ab77bd64398d81b5fd2734ca3de85b44c5e4ac7c",
+   "bytes": 14767
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-immutable-positive-reuse-fix-tvdmghdo\\run-selected.py",
+   "sha256": "36539d5e29880ebe4887a71b2b000560e73a12bea931dc61131ccf3930379c05",
+   "bytes": 1655
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-immutable-positive-reuse-fix-tvdmghdo\\seal.py",
+   "sha256": "80db1b56ba8f43985e0eb5717acbc3bcaf5ab60cf13dd6b7650fcfbc84a06f24",
+   "bytes": 7663
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-immutable-positive-reuse-fix-tvdmghdo\\source-after.json",
+   "sha256": "a9aa3fcf271d040b8540f8385c175432df92f0e56278ebda8f3de384c77db1d1",
+   "bytes": 1350
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-immutable-positive-reuse-fix-tvdmghdo\\source-before.json",
+   "sha256": "2f76d95ffff84fd1970a34265476d0f1d5df239e670f9001c2e19907c3f00916",
+   "bytes": 1395
+  }
+ ],
+ "dependency_joins": {
+  ".github/scripts/_boundedproc.py": {
+   "sha256": "671458a00f178ac690e4d1f4e0458da7b3833353384f9cb7546be711bab15f51",
+   "bytes": 12673
+  },
+  "core/pysrc/_gitexec.py": {
+   "sha256": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5",
+   "bytes": 24644
+  },
+  ".github/scripts/major_readiness.py": {
+   "sha256": "1a46084a6e9b834863fd064673d608ee48bac330535c59f73ac27ca037df1301",
+   "bytes": 82923
+  },
+  ".github/scripts/check_state_contracts_integration.py": {
+   "sha256": "cef9fa7d2c158c6de27b072c2db5b98f124ae4fd6af1bbc49ae02a1d39fb6309",
+   "bytes": 10615
+  }
+ },
+ "reuse": {
+  "policy_snapshot_sha256": "4c5437f0dc40eece20aab3c9965e18297a7e15e805efa599d3e04950dcfecdf4",
+  "scope": "Previously inspected complete security policy and unchanged contributor/source trust boundaries reused; this is a fresh independent two-file code review, not self-review or a fleet."
+ },
+ "limits": [
+  "PASS applies only to the exact two sealed candidate files and patch. No staged candidate/index OID or marker is claimed or written.",
+  "No canonical/index/ref/ledger/marker/progress changes, tests, runtime/provider/API/network/build/install execution or new reviewer fleet. Fresh Temp receipt only.",
+  "Author disposable Git/Python receipts establish their named local fixture outcomes; inert protocol doubles do not qualify arbitrary real Git/OS containment.",
+  "The reader itself trusts the selected Git object service and correlates opaque Git OIDs; it does not recompute object digests, authenticate external provenance, cache authority decisions or prove absence.",
+  "Current full corpus, original full-owner performance, hosted/cross-platform compatibility and final staged-candidate review remain separate Root obligations. No full-owner success or performance improvement measurement is asserted."
+ ]
+}

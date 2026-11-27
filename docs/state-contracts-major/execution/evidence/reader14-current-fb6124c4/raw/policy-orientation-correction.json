@@ -1,0 +1,10 @@
+{
+  "format": "policy-identity-orientation/1",
+  "policy_export_sha256": "02e5e721b039df9a54686cc9ec82b8b6baedacff8f78cbfac4da2caec7b382ec",
+  "source_html_sha256": "8630d1cad36de7b06a0a9360beea27a48b1642cc05a4547362a25ec8c9ec491e",
+  "complete_constraints": 16,
+  "complete_matching_notes": 16,
+  "full32policy_consumption": "Current unchanged policy fully consumed/reused; source HTML vs export identity distinguished. Corrected full actor input/context consumed. No code/scope/runtime change or rerun.",
+  "corrected_actor_input_sha256": "09c490fad4c19c62f44218ec37985c70bea391f7098ac91d1f6409447f1359c0",
+  "corrected_actor_context_sha256": "de56ab407eff42b30e015e304817b420b568130575ea5843f98624021a386f7e"
+}

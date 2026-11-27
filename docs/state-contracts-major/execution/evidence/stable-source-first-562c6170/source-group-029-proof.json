@@ -1,0 +1,57 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "562c6170c010eedbef93a4216b4baa971fd6b9a6",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "Exact prepared finite clauses with immutable current witness and namespace join"
+  },
+  "inputs": {
+    ".github/fixtures/tribunal/cases.json": "6fee4415573e3fe63fc29a26c4d5132c76e08186bcc0e73acaa7b4bf909527e4",
+    "tools/codex-parity-fixture.py": "2b5a0f0354dc475be6946949408498520033e795871a0fd4a3a76832f46f0dea",
+    "tools/tribunal-eval.py": "45d227c3382ee279e3d0649837068b6b306c2daff208c30497f16d4bd9d50576"
+  },
+  "disposition_ids": [
+    "disposition:transitions:T05:01",
+    "disposition:transitions:T12:01",
+    "disposition:transitions:T12:02",
+    "disposition:transitions:T12:03",
+    "disposition:transitions:T12:04",
+    "disposition:transitions:T12:05",
+    "disposition:transitions:T12:06",
+    "disposition:transitions:T12:07",
+    "disposition:transitions:T12:08",
+    "disposition:transitions:T12:09"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/stable-source-first-562c6170/source-group-029-inspection.json",
+      "sha256": "5618023ece8b0d31e8d35424313882113fd04962df1df944f8a8278fc6c4fd26"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/packaging-local-94b/preserved-source-contract.json",
+      "sha256": "faab11f513fafe89f98fd11160ceecc5de2e925514b2518cd5137614bb1f54c1"
+    }
+  ],
+  "retained_prior_proof": {
+    "path": "docs/state-contracts-major/execution/evidence/packaging-local-94b/preserved-source-contract.json",
+    "sha256": "faab11f513fafe89f98fd11160ceecc5de2e925514b2518cd5137614bb1f54c1",
+    "source_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a",
+    "retained_at": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca"
+  },
+  "semantic_mapping_ref": "docs/state-contracts-major/execution/evidence/stable-source-first-562c6170/source-group-029-inspection.json",
+  "scope": "Byte-identical fd7source and complete default corpus; stdlib-only repository dependency closure. File-construction source contract and offline Tribunal parser/scoring/output contract only. No Git/Python runtime equivalence, host enforcement, live provider or model judgement claim.",
+  "limits": [
+    "No run, platform, package, task, provider, user or installed evidence was renewed.",
+    "All prior original source epochs and raw evidence remain exact."
+  ],
+  "input_membership": [
+    {
+      "profile": "python-import-directory-v1",
+      "root": "tools",
+      "path_order": "windows",
+      "sha256": "10c81f10b65668b6620241a721151872bd51a7c350722bee46217e02801f7c2a"
+    }
+  ]
+}

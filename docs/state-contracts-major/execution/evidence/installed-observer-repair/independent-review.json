@@ -1,0 +1,284 @@
+{
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-installed-observer-source-review-d0vpl3pe\\review.json",
+  "sha256": "0fddf1b03fc934532dcbc76141bdb8c7b6e455e9f6ef2e046765826c34227685",
+  "bytes": 14855,
+  "record": {
+    "format": "affected-security-functional-coverage-review/1",
+    "date": "2026-11-15T21:49:14.013430+00:00",
+    "reviewer": "/root/crypto_evidence_review",
+    "security_gate": "PASS",
+    "functional_gate": "PASS",
+    "coverage_critical_paths": "PASS_SCOPED_LOCAL",
+    "overall_numeric_coverage": "PARTIAL_UNMEASURED_LOCALLY_HOSTED_UNION_PENDING",
+    "findings": [],
+    "head": "771604132801a0e67c971581fbbf76227af2f712",
+    "candidate": "candidate-v1:88a17721d107103a2d4372e4611e44b112fa65362d7f5924eab972ba1b054929",
+    "patch_sha256": "9336bc28144404bdff56bc07c0af236f863fba8b534e10c3958239257f82308f",
+    "subjects": [
+      {
+        "path": ".github/scripts/check_codex_host.py",
+        "sha256": "ced71d6b20fe30c25ec7b5cb8cde191cd8ef7e72008b904bfa8dcbd3c4adc6b4",
+        "bytes": 25197
+      },
+      {
+        "path": ".github/scripts/observe_pi_installed_rpc.py",
+        "sha256": "f6c607187eb4a7701c712613695637ba9ccfb8b4f1069b75a926ef6a8dc63352",
+        "bytes": 25934
+      },
+      {
+        "path": ".github/scripts/retained_archive_cli_observation.py",
+        "sha256": "60cbe03bf2ae22e1c62a47dc3b5023598f3f1d9d5e7e51ffd7e5a658bfd9cefd",
+        "bytes": 47480
+      },
+      {
+        "path": ".github/scripts/test_observe_codex_installed_cli.py",
+        "sha256": "e38d1954ec8050cf7b8300cf072d8630f9c6b91275040561f08eb31393284ab7",
+        "bytes": 27098
+      },
+      {
+        "path": ".github/scripts/test_observe_pi_installed_rpc.py",
+        "sha256": "f08563e915b4f94c9077816ca65670202570aac1911e3feb5a595ecdeb05c302",
+        "bytes": 27791
+      },
+      {
+        "path": ".github/scripts/test_retained_archive_cli_observation.py",
+        "sha256": "645600aafc0e52b1b0a1666aa3f443709cec1eaa8e8969b99c793aad0814ca6a",
+        "bytes": 39405
+      },
+      {
+        "path": ".github/scripts/test_retained_cold_observer_pipeline.py",
+        "sha256": "0169db5b7a75e58d86e0e7e70bf252402c02a0b1b6d89404c2fb1fe0b8735a05",
+        "bytes": 11496
+      },
+      {
+        "path": ".github/workflows/ci.yml",
+        "sha256": "44ea5cde79a82197d459f9ebd8a3ee670350bcce91c09acd086409e7a466cd7c",
+        "bytes": 250913
+      },
+      {
+        "path": "CHANGELOG.md",
+        "sha256": "5f34710377e82e676eb0592108c18875c4e2eb12fd4609fda3e16b6de5f68f2e",
+        "bytes": 216347
+      },
+      {
+        "path": "plugins/ca-pi/CHANGELOG.md",
+        "sha256": "e4482137329df698296e78a4b1e984c2beead060841161866b2c2bf1216a4831",
+        "bytes": 122375
+      },
+      {
+        "path": "plugins/ca-pi/extensions/codearbiter-child.js",
+        "sha256": "ff1e66e8c87329b2c533bd3a9292bde45c05bf7c627fac97aff709befdc7be93",
+        "bytes": 99673
+      },
+      {
+        "path": "plugins/ca-pi/extensions/codearbiter.js",
+        "sha256": "ec6c7bcde51b724c6ff6b1cdbeb9a64922d8a0504aba892f3dd9e08756fc617c",
+        "bytes": 552870
+      },
+      {
+        "path": "plugins/ca-pi/helpers/approval-dialog.js",
+        "sha256": "c0d2f3a55d6485a2db1a3e9a7ec205263253c1dd3877d1999c942e07386ad7c4",
+        "bytes": 36733
+      },
+      {
+        "path": "plugins/ca-pi/tools/src/bridge.ts",
+        "sha256": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+        "bytes": 45669
+      },
+      {
+        "path": "plugins/ca-pi/tools/test/bridge.test.ts",
+        "sha256": "704a4dfdd922d430019693d256009050568a05a54f53b6445e55ac17620339a2",
+        "bytes": 80470
+      }
+    ],
+    "authorship_disclosure": "Reviewer authored only the added cold-retention pipeline test helpers/methods. Root authored all production/workflow changes; other actors authored Codex/Pi regressions. This receipt independently assesses Root production and other-actor tests, but does not claim independent authorship/review of the reviewer-authored test design.",
+    "consumed_context": {
+      "installed-observer-source-review-input.txt": {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\installed-observer-source-review-input.txt",
+        "sha256": "8aabe63b89ba8ef7b13c74596e3539d90e22416787cdc96bf4e2f0f97bc5959a",
+        "bytes": 10652
+      },
+      "installed-observer-source-review-context.json": {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\installed-observer-source-review-context.json",
+        "sha256": "d520e075ae6baa9cd3d85cd3efc65bf1e1e4a8580dab635ddd5d5bc3a648a5ab",
+        "bytes": 16678
+      },
+      "installed-observer-source-review-config.json": {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\installed-observer-source-review-config.json",
+        "sha256": "a221daec6e822ecc95e2c66a8d4d3fb62564923039ee88a136aab094769f9736",
+        "bytes": 3984
+      }
+    },
+    "security_policy": {
+      "receipt": {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\current-complete-security-policy.json",
+        "sha256": "02e5e721b039df9a54686cc9ec82b8b6baedacff8f78cbfac4da2caec7b382ec",
+        "bytes": 54891
+      },
+      "record_count": 32,
+      "records": "CON-001..016 plus NOTE-001..016, all read; note text exactly matches paired control",
+      "source": ".codearbiter/context/security-controls.html",
+      "source_sha256": "8630d1cad36de7b06a0a9360beea27a48b1642cc05a4547362a25ec8c9ec491e",
+      "operative_scopes_read": ".codearbiter/security-controls.md",
+      "controls_assessed": [
+        "CON-002",
+        "CON-003",
+        "CON-004",
+        "CON-007",
+        "CON-008",
+        "CON-009",
+        "CON-011",
+        "CON-013",
+        "CON-016"
+      ]
+    },
+    "production_assessment": [
+      "Codex exchange_depth wraps only outer observed capability transaction, forwards exact args/kwargs to original nested Git boundary and restores depth in finally. Existing capability admission/failure/cleanup stays unchanged.",
+      "Pi BridgeClient adds explicit interpreter -B after existing prefix args, before actual script. No executable, environment, shell, process containment, request or authority widening. Default and -I private actual-import regressions cover no-bytecode.",
+      "Cold diagnostic upload now selects attempted success or failure with !cancelled; skipped/cancelled remain excluded. No-files ignore avoids a secondary upload error; qualification/report emission predicates remain success-only.",
+      "Cold source status diagnostic uses SHA256 of complete raw status; bounds inventory and emitted entries; emits plaintext path only for immutable tracked members, hashes unknown filenames, reads no file contents. Diagnostic collection errors are swallowed while original source refusal remains primary. Narrow _SourceCheckoutError limits cold sink projection to owner-produced source failures.",
+      "Pi pre-refusal installed-after snapshot is retained before equality/size refusal; failed membership still cannot create worker-result or qualified observation. Bootstrap sink validates closed source diagnostic fields/path digest and keeps original exception/cleanup behavior.",
+      "No new dependency, authentication flow, network, credential persistence, raw stderr/exception echo, banned crypto primitive, permissions or qualification bypass introduced."
+    ],
+    "generated_artifact_checks": {
+      "all_three_bundles_match_exact_expected_HEAD_delta": true,
+      "allowed_delta": "Only fixed -B insertion in each generated BridgeClient; main extension additionally updates childFingerprint.",
+      "child_sha256": "ff1e66e8c87329b2c533bd3a9292bde45c05bf7c627fac97aff709befdc7be93",
+      "main_fingerprint_equals_exact_staged_child_bytes": true,
+      "pinned_build_receipt": {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\pi-build.json",
+        "sha256": "5261ce9e10ef114b28262feeb5ea6e191ced11e4ee86749b2368db2dc787b0e8",
+        "bytes": 574
+      }
+    },
+    "test_preservation": {
+      "all_original_Python_method_ASTs_unchanged": true,
+      "counts_including_nested_fixture_classes": {
+        "test_observe_codex_installed_cli.py": 20,
+        "test_observe_pi_installed_rpc.py": 18,
+        "test_retained_archive_cli_observation.py": 35,
+        "test_retained_cold_observer_pipeline.py": 7
+      }
+    },
+    "verification_receipts": [
+      {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\codex-cold-owning-green.json",
+        "sha256": "57a644d23cc79b9f376e900b8fe46fe72f79a9e9574fb3e9e9a8a1da0f7b840f",
+        "bytes": 1824
+      },
+      {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\codex-cold-owning-green.stderr",
+        "sha256": "dcd49b85d7ef3517fe3f4f1a9b86e4545b4574440be52f0ff8ec60d6a240e15d",
+        "bytes": 146
+      },
+      {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\pi-diagnostic-owning-green.json",
+        "sha256": "97fed83b0c29b08f0724b7b77cd553d1d3a835c9a44334494d5db178aa69ce12",
+        "bytes": 3673
+      },
+      {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\pi-diagnostic-owning-green.stderr",
+        "sha256": "29915ebe20cff769cfbf9aea4b1ec7a6b32c1bca5e20419b77e1b5dbaae04e69",
+        "bytes": 147
+      },
+      {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\cold-source-class-green.json",
+        "sha256": "1646f05069b6b6ebdf01acb3160462783945a99dc88b275703098cca318f5e5d",
+        "bytes": 949
+      },
+      {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\cold-source-class-green.stderr",
+        "sha256": "514b0c8f74650fb940aaa61aed88ab1a61ccc8c07f3a8ef070c76edd2c28111c",
+        "bytes": 105
+      },
+      {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\pi-tests.json",
+        "sha256": "e2d5a8f92dbaf51b6285bf8f2d4b603c7dbc3fc1e2e2dd8a0eb5ef48aa12675c",
+        "bytes": 834
+      },
+      {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\pi-launcher-green-tests.json",
+        "sha256": "a48fe4ccf910c2dd4f856c537804c5bb00d2f60f9b61e030967927360983ca90",
+        "bytes": 18141
+      },
+      {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\pi-target.json",
+        "sha256": "43c9361bfecfe97681524a1541094665f0e2b307969e941b7b7c497236c9b4d5",
+        "bytes": 749
+      },
+      {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\pi-target.stdout",
+        "sha256": "41d6ca794384e2db4d3a183c7a098b7d0fc35213f0b2bab8e50d50ea2d072ceb",
+        "bytes": 341
+      },
+      {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\pi-typecheck.json",
+        "sha256": "f129c5a82ac6286784f1545c98d0bf6ee13f3b12faba2e296be3d5e9eff44198",
+        "bytes": 612
+      },
+      {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\pi-build.json",
+        "sha256": "5261ce9e10ef114b28262feeb5ea6e191ced11e4ee86749b2368db2dc787b0e8",
+        "bytes": 574
+      },
+      {
+        "path": "C:/Users/brenn/AppData/Local/Temp/ca-codex-nested-observer-tests-hp36yiv4/delivery.json",
+        "sha256": "5a7e9b3e935aaa3a3ce2cbf66f4aeca8eeb55947e35a51d80992940a48b4928a",
+        "bytes": 1817
+      },
+      {
+        "path": "C:/Users/brenn/AppData/Local/Temp/ca-codex-nested-observer-tests-hp36yiv4/actual-final-red.json",
+        "sha256": "c116760ff39218223ce45e77a63cd7cbe6ece133e61c03317bba32bd9cdf9414",
+        "bytes": 1308
+      },
+      {
+        "path": "C:/Users/brenn/AppData/Local/Temp/ca-pi-launcher-three-regressions-llcfep6h/delivery.json",
+        "sha256": "78127e92124ed5db2714a38a50a37f411bedbd62e3d10e5a327157c10e57cdcb",
+        "bytes": 8616
+      },
+      {
+        "path": "C:/Users/brenn/AppData/Local/Temp/ca-pi-launcher-three-regressions-llcfep6h/diagnostics-RED-tests.json",
+        "sha256": "d612d1128e194b88d11e6b21ddeef0ac2edaa40099332f6eeb63d21462484baa",
+        "bytes": 444
+      },
+      {
+        "path": "C:/Users/brenn/AppData/Local/Temp/ca-pi-launcher-three-regressions-llcfep6h/sink-RED-tests.json",
+        "sha256": "b1addfb3aa3218678190a76f6d045eecef4e280394e44699c057fa628a527847",
+        "bytes": 271
+      },
+      {
+        "path": "C:/Users/brenn/AppData/Local/Temp/ca-pi-launcher-three-regressions-llcfep6h/typing-only.patch",
+        "sha256": "8a7eba89a0c86965f61e4936010fd9cbe875219b808c8833b8b7ed1f297316a1",
+        "bytes": 584
+      },
+      {
+        "path": "C:/Users/brenn/AppData/Local/Temp/ca-cold-retention-tests-j41dbyzc/delivery.json",
+        "sha256": "5bd4384b3f13432c1724a8d20ed9d7b077a9b1e85b68945e27e88bc1c22218f5",
+        "bytes": 4792
+      }
+    ],
+    "verification_interpretation": [
+      "Existing genuine REDs supplied and read through actor deliveries; no reviewer test rerun. Root42 Codex/checker/cold tests PASS,43 Pi/cold tests PASS before narrow class guard.",
+      "Final narrow class guard receipt reports2PASS0skip in0.392s (owned process0.747s). The source/status refusal and durable failed execution cases stay GREEN.",
+      "Pi bridge53PASS prior typing-only test adjustment; final affected no-bytecode target1PASS with52 filtered/skipped in206ms, not a new53-test run. TypeScript noEmit and pinned build exit0.",
+      "All outcomes remain local scoped fixtures; no whole trusted-normal run, installed/native promotion, numeric coverage pass or main/publication claim."
+    ],
+    "coverage_policy": {
+      "exact_ref": "CTX-TECH-STACK#FACT-005 and core/surface/includes/maturity-coverage.md",
+      "Python_exemption_quote": "There is **no coverage tooling for the Python hooks or build tools** (`core/pysrc/*.py`, `plugins/*/hooks/*.py`, `.github/scripts/*.py`, `tools/*.py`). Those surfaces use direct unittest and behavioral checks, not TypeScript instrumentation.",
+      "Python_exemption_source": {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\python-lookup-coverage-records.json",
+        "sha256": "ca123eaf47abfe5d54aed7d11dce21a920482b9762ea186e2650d331757c8fb4",
+        "bytes": 10857
+      },
+      "Pi_profile": "lines-branches; src/**/*.ts; Ubuntu+Windows union; stage2 both metrics70%; not measured by these unit receipts",
+      "scope": "Critical-path outcomes reviewed and regression inversion REDs supplied. Numeric/hosted coverage remains pending its existing exact-source owner; do not cite this receipt as an overall complete coverage PASS."
+    },
+    "limits": [
+      "No Gov/source/test/index/ref/marker writes; only this private review report.",
+      "No suites, native/SDK/CLI/runtime/provider/model/API/network replay executed by reviewer.",
+      "No original hidden dirty path or changed Pi member inferred; originalbb4 failure cause remains unknown until actual next original diagnostic.",
+      "Prior HW05 review unchanged/reused outside this15-path subject; parent1098 remains held from main."
+    ]
+  }
+}

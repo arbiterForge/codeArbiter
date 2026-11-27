@@ -1,0 +1,1099 @@
+{
+  "source": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+  "tree": "d69fb1c0eb4b16672137e1185eb085339f13727d",
+  "docs_run": 43582198099,
+  "acquisition_sha256": "08b3aeb473c19219963ae1ef32e546f976a98ca3f07d17f76caf792fc3dfbeb9",
+  "state": "PASSED",
+  "tooling_Q": {
+    "base_commit": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+    "local_actual_HEAD": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+    "controller_source_commit": null,
+    "controller_epoch": "Temp reviewed content-addressed tooling, not productM",
+    "content_sha256": "0a6911eb4bdd7b9e636ea1d57667d9b428fce1547e59835796e9031928c232ec",
+    "sources": {
+      "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\.github\\scripts\\major_readiness.py": "a636eb4e73d1097735b810f1057cacb65f63e36e146ce36193687d3520ffe6fc",
+      "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\.github\\scripts\\_boundedproc.py": "671458a00f178ac690e4d1f4e0458da7b3833353384f9cb7546be711bab15f51",
+      "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\.github\\scripts\\_contextverificationlib.py": "361b29a202f8ff3fe4f35c58a42d53cf77c4f8fe05985b1e91b721fc8f2a0707",
+      "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\core\\pysrc\\_artifactmanifestlib.py": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054",
+      "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pages-admission-bf2f\\candidate\\.github\\scripts\\pages_readiness.py": "71e696171575831324103ef699981f9eca7cb05caa2d1417d00ea1885fc1c871",
+      "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pages-M-controller\\controller.py": "ab80681ff7b2d6a62d0121ea9aeeddff28f377b1c24b5b8ba7a5d581cf5b8512",
+      "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pages-M-controller\\browser.cjs": "ee9e1c525a72835b0dc09094dff5639e29df4c165e93d15a79e792bf7004fd03"
+    }
+  },
+  "tooling_after": {
+    "base_commit": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+    "local_actual_HEAD": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+    "controller_source_commit": null,
+    "controller_epoch": "Temp reviewed content-addressed tooling, not productM",
+    "content_sha256": "0a6911eb4bdd7b9e636ea1d57667d9b428fce1547e59835796e9031928c232ec",
+    "sources": {
+      "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\.github\\scripts\\major_readiness.py": "a636eb4e73d1097735b810f1057cacb65f63e36e146ce36193687d3520ffe6fc",
+      "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\.github\\scripts\\_boundedproc.py": "671458a00f178ac690e4d1f4e0458da7b3833353384f9cb7546be711bab15f51",
+      "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\.github\\scripts\\_contextverificationlib.py": "361b29a202f8ff3fe4f35c58a42d53cf77c4f8fe05985b1e91b721fc8f2a0707",
+      "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\core\\pysrc\\_artifactmanifestlib.py": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054",
+      "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pages-admission-bf2f\\candidate\\.github\\scripts\\pages_readiness.py": "71e696171575831324103ef699981f9eca7cb05caa2d1417d00ea1885fc1c871",
+      "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pages-M-controller\\controller.py": "ab80681ff7b2d6a62d0121ea9aeeddff28f377b1c24b5b8ba7a5d581cf5b8512",
+      "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pages-M-controller\\browser.cjs": "ee9e1c525a72835b0dc09094dff5639e29df4c165e93d15a79e792bf7004fd03"
+    }
+  },
+  "runtime_files_before": {
+    "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe": "c0b01496cf3da5cceca86eb6e1b2ef5d088cd46ad4e97cf502e2c937fa7f56b9",
+    "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe": "46461accbdc87dc88a5bdd6d611be095dd6147db009863d794f742ca90662efa",
+    "C:\\Users\\brenn\\AppData\\Local\\Microsoft\\WinGet\\Links\\gh.exe": "4cb5ff2afa351c890ae55b2f1fbf4f4a43f6a1e0ab20dfb0567a593bf9cee9ff",
+    "C:\\Python314\\python.exe": "03168c01b7b7491423350e82c26fee71f35b43694d1319d3c668bda6903a0c38",
+    "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\package-lock.json": "d81f1d4b54c0e2a0fc05815687fcb306e0a12f98c3e382032556e445c614787a",
+    "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\@playwright\\test\\package.json": "5587f932b8979b6889654b60e3c28aeb7ca0abbac00eec8c176c939a16149536",
+    "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\playwright\\package.json": "8bc2ddebe8d9b051b9ecb87d62c6c63877e59d08617f32c3215681ca8bb70998",
+    "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\playwright-core\\package.json": "f061c58427e47e843e26d201f0a57076c734e57c734ecbbd87d4a23b7a20db9b"
+  },
+  "runtime_files_after": {
+    "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe": "c0b01496cf3da5cceca86eb6e1b2ef5d088cd46ad4e97cf502e2c937fa7f56b9",
+    "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe": "46461accbdc87dc88a5bdd6d611be095dd6147db009863d794f742ca90662efa",
+    "C:\\Users\\brenn\\AppData\\Local\\Microsoft\\WinGet\\Links\\gh.exe": "4cb5ff2afa351c890ae55b2f1fbf4f4a43f6a1e0ab20dfb0567a593bf9cee9ff",
+    "C:\\Python314\\python.exe": "03168c01b7b7491423350e82c26fee71f35b43694d1319d3c668bda6903a0c38",
+    "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\package-lock.json": "d81f1d4b54c0e2a0fc05815687fcb306e0a12f98c3e382032556e445c614787a",
+    "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\@playwright\\test\\package.json": "5587f932b8979b6889654b60e3c28aeb7ca0abbac00eec8c176c939a16149536",
+    "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\playwright\\package.json": "8bc2ddebe8d9b051b9ecb87d62c6c63877e59d08617f32c3215681ca8bb70998",
+    "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\playwright-core\\package.json": "f061c58427e47e843e26d201f0a57076c734e57c734ecbbd87d4a23b7a20db9b"
+  },
+  "argv": [
+    "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pages-M-controller\\browser.cjs",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pages-M-l7falj9l\\observation-giqgm6q0\\browser-input.json"
+  ],
+  "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pages-M-controller",
+  "seconds": 3.561069800052792,
+  "returncode": 0,
+  "timed_out": false,
+  "containment": "exited",
+  "server_cleanup_confirmed": true,
+  "stdout_bytes": 0,
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_bytes": 0,
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stdio_scope": "UTF8 replacement text projection from owning boundedproc, not an original-byte claim.",
+  "browser_result_sha256": "ab6b14f9822028ed535aa280fef30a4ab6975613aa522d4265f37e7cbc30b632",
+  "served_member_manifest_before_after": {
+    "glossary/index.html": "baff8394f48ad454b116d05cd88a5e535ad8e88d8e9946a37c2a4f51000602fb",
+    "sitemap-index.xml": "6682917a82ca9bd9f9a4325da6429f055d0daae9169226078daff5d55e32f03e",
+    "index.html": "47cf89136f3e8a8c5a45c2613790bf45810ff2e0b809aacdb2927861718d23ed",
+    "robots.txt": "15e2972c847959412ad6048e6026b44da704011359c46558da3c19354f7254f2",
+    "favicon.svg": "85d9a872fbaa7cb5118331e8fbf5b50bec333ea1598157d571acfa3faf48a895",
+    "hooks/index.html": "52f5916e5092979efb351c3163119f571876b11004c3da6c760f1ef91d8188b5",
+    "hooks/scripts/index.html": "9c9b0a465d0e1862b1b8db1865c85e1af16da8d7f4e054b04a3d4acd7dd36af2",
+    "reference/hooks-gates/index.html": "1975ec5511d5a57709fe19acc16f0838e5013d124c286f2d1927478c7c77be6f",
+    "reference/index.html": "1a470ac5b95294d5c9f28e3286d258e6598d008d6ebbe88570b8ae19e3ef2788",
+    "reference/commands/checkpoint/index.html": "c3f0b2914a3a976a39812a0f98cb605318f1f8936a5c40ba76ca8f47fd56996b",
+    "reference/commands/watch/index.html": "f8ecd8180331fbfd5250c55c5a86e0fe98c88ef2a55eb576ce9907ef65a9fd1d",
+    "reference/commands/context-check/index.html": "bedd6999bf8a8602721242f0a369dee72220f92d70890f50569914959c8a86d6",
+    "reference/commands/override/index.html": "ae0f7781f5b506f5748ef4ed44a55f2f4260d70c6a31c0517addc6c549144a66",
+    "reference/commands/init/index.html": "d9491dfd351d47e29d60aef39727d234812f957dc1dcefb62fdb19514419d098",
+    "reference/commands/adr/index.html": "5d9a3d7c40a59178412a415cb18f4a4bfd78413d53f9b9a73b1ca404c539ce57",
+    "reference/commands/refactor/index.html": "b462330f38c683abd3a929db739936ff8b18a3cff3fd762b10aef0a86a4b6eab",
+    "reference/commands/create-context/index.html": "a900d8665e98fe38810570fa026e4a6a4c9b1e72cb080c123c7f6944fc7c18b4",
+    "reference/commands/status/index.html": "689a40355c65fd8dc5e42bb842a17d4097a43484cb7134347e7585ed42233fa1",
+    "reference/commands/spike/index.html": "34ff94b32a11e23f48dbd7a7478fb22cc929864f25562422a774d07077720283",
+    "reference/commands/doctor/index.html": "702ac982c145c950d98dbd23c8ed7fb10fd2ff1024e53df4d5e34904858991e0",
+    "reference/commands/debug/index.html": "1df2198a5583fc0cd37dcdfc89d0524fef2ccbc8a01712536c6b9061dacc1078",
+    "reference/commands/release/index.html": "3297b1815cb107b02ded55057f9681b99b634bb0e7f0092fe19066b1fef6156c",
+    "reference/commands/threat-model/index.html": "7b67bde01ba8479649435d0beebf477f508abb05adae304a01a7e9a71c496029",
+    "reference/commands/cleanup/index.html": "d300df02d248b62436b4b999271ce5479b579fcfb9389b692d88461d81619856",
+    "reference/commands/pr/index.html": "7e2d0ff6b1d8e903770842c037ea8878b3e0435187037d1c772539c7b2da4319",
+    "reference/commands/feature/index.html": "5b875a3755fd27862519e9bc4d0d5ef83802557562b501c8c1d03a152461db97",
+    "reference/commands/standup/index.html": "e485162d324c143831b952bdc8b53dc4a1e9d5caccc207315d3b705345d84347",
+    "reference/commands/task/index.html": "33236dff8b1e0c17bc39e35776267721e1bf42bfb1ff68b8cc99fde54e4d94b2",
+    "reference/commands/adr-status/index.html": "10238750bfa7b4d5de989d1f3fd6f76de66dd7c493a76b7f665f299761425b8b",
+    "reference/commands/reconcile/index.html": "42325ca06be7af47cb657abf900280a9283beac484e86ecaff29711b4d7c9c38",
+    "reference/commands/statusline/index.html": "cc9c230a01918789a00296d87a679afa748a2a16bfc56203f5b387b49bf9c5fd",
+    "reference/commands/tribunal/index.html": "95fa8256e6b7df5fc9d3591ff3a7ff7cd134a5a0e721a5844e12996624b5e012",
+    "reference/commands/fix/index.html": "323c49bc40e2ed917ce1b4aa27a7b46695068fb218627f5a7cf7d7dfe2c6ef5f",
+    "reference/commands/audit/index.html": "ebd15d2a929886badb4d448540911bbe258558d6bc709dd4b87b10e4e822829f",
+    "reference/commands/conflict/index.html": "d1a0c07bdfa233e03d88f6233ceb311c559104b939653e66c71e52cb9d4d1a5b",
+    "reference/commands/commit/index.html": "74a7b3f797745af8986614f9a9d12cf6601396d2617152ea1e75f1faab093df0",
+    "reference/commands/sprint/index.html": "7303833e07957df2bbaf7d5e0bae471f582557bf4802df5fdf1ae3581f7cbb32",
+    "reference/commands/add-dep/index.html": "3fbcdbef1894df7b7044fd6daeca9d472ca2915741c200acab1d28fafbc61413",
+    "reference/commands/review/index.html": "c4d2a9830ced163f07d44302a748718f0d6231979fbc71b1951577d4f2d7132d",
+    "reference/commands/chore/index.html": "f04812ca96f93298bb4d692484159646d2075c3742c64c99883bc282082b6ee8",
+    "reference/commands/prune/index.html": "3290ca9e042e2e0ea8791b1929694f80aa5275a219b644a709d65407796c95b5",
+    "reference/commands/decompose/index.html": "2ab24c060b3a90e892d32c22db02c5bc4383b1e31f6108652bc552e070b320ad",
+    "reference/skills/executing-plans/index.html": "223c9facc0bc52d52eee1f01562450d9d02a0b084a21692e6ec8e65f8b8d4c6b",
+    "reference/skills/crypto-compliance/index.html": "3a107905e31976ad5dc93c46411866f29394b15042d90ae302eedac5f4002906",
+    "reference/skills/secret-handling/index.html": "e63d9c8aec0033b3b06b135fff674e70bce139a4de9692afd294c3f5c51aba1c",
+    "reference/skills/context-check/index.html": "0189a5ea0bba6af5b89995f64e1b1297ec3b0b3ed26b35c15ccba3b9217ccdfd",
+    "reference/skills/context-creation/index.html": "d1b07b977a3117842bda74277c200793806c4b742f364486886580c540b98da2",
+    "reference/skills/decision-lifecycle/index.html": "229498043740be000bd47f126fc739492ef92636b78bfcc764f8b028deae412a",
+    "reference/skills/dispatching-parallel-agents/index.html": "03b6936fe6978da0d95a5c419f875642e7e70afd0bf1141634a8a4b38fa7938a",
+    "reference/skills/refactor/index.html": "76189eedc8698ebad2b59851117405498dfa9404b0dd2163e2ca8442953503d1",
+    "reference/skills/refactor-2/index.html": "a0778d5134bb6334c0fcd8ef62a39cff10ab12be1089b87daebef1ac07bf5bf1",
+    "reference/skills/post-merge-cleanup/index.html": "220404e95ff41f23dba409d40fc3c22ad4839a4ec2ece466167cd300b915b3c0",
+    "reference/skills/commit-gate/index.html": "af3efbea367630786d2b84abad6b642bfd33950352a853967dfda8af694162b1",
+    "reference/skills/using-git-worktrees/index.html": "a26d903cb8dc0eaa75193f1cde6a39b712ac37171cb1ef94d97f52ea28d769ed",
+    "reference/skills/tdd/index.html": "ee6e4fafe8d1b9ac7c5085f93a36ff5072cd6f5bb1b53a1596b304f3326d422e",
+    "reference/skills/subagent-driven-development/index.html": "c3250620538804c3aeac2916d09024a7f1c2b56815044b45ba6afdeb1cfc717b",
+    "reference/skills/debug/index.html": "dfa0c2ecef1c44eb89f70b116950a74987a3856df34a2ce4ac90f938a61b8997",
+    "reference/skills/release/index.html": "41e4132e6966ed3d490267ca5f3ac4dc0cf81d6d066a88802ae3f1925aba13ed",
+    "reference/skills/tribunal-2/index.html": "70e6ecb62fbad64ef5f5ec3eb90a0e93edde2512aac1821f0be5a613c4d10349",
+    "reference/skills/finishing-a-development-branch/index.html": "c4cce2575f5cf63523c96bda0abfd6aa842182f6aeae899052ca606535b07809",
+    "reference/skills/debug-2/index.html": "9c9d232d3310a137b7ac4fd356703addaa8b7acc29a5b00d003247d5309f71c9",
+    "reference/skills/tribunal/index.html": "7cd83eae4cae0720b12c3a8cfc13071e4336d09d9737005787bbcbeda55988ee",
+    "reference/skills/decompose-2/index.html": "158e86012aab36f56f2d75a4e5d2221eed92e7e0b95fc6bec3f3839cc909b6f9",
+    "reference/skills/writing-plans/index.html": "19a404e879586807c2f53f6e0e3490c4d09cd1b316aee1180ea54e1f63ec715a",
+    "reference/skills/release-2/index.html": "e9aac1cb0c9bd8bc92abe822eb94eeee8479eab66c62ef1752fbfb044e5af261",
+    "reference/skills/brainstorming/index.html": "0f2db5d9345909ae48420e9345ff04b62722dc2a7a20b3b6bed960637ad4cf0f",
+    "reference/skills/context-check-2/index.html": "9e193a4d5acaffabbe8572c016f1a07062c573b252cfcd592af224e07f88247c",
+    "reference/skills/decision-variance/index.html": "a68af5e5822f69c2405fde348906721e8c2727fc3d48632675989a20d35d173a",
+    "reference/skills/security-architecture/index.html": "331e4f6180a94b3c6d35d40b36a3f9102bbab61cca38c938fdcbd33b1effeb0d",
+    "reference/skills/decompose/index.html": "b806fad6e81304665a15557de40b054119a5e11bbc502eb331a273f5bef74d42",
+    "reference/agents/tribunal-lens-reviewer/index.html": "88d89b67a76575ff8eecb07f374a5fea31ebc42c553fff740770a823a0c67c5c",
+    "reference/agents/map-deps/index.html": "6e2beed9549d0a1df9b0d4f465e4cbbc41f42c3b380186fe9b6a6e6e8bce0790",
+    "reference/agents/tribunal-observability-reviewer/index.html": "fd94359e697b845bcceb6c048678e8eefb377e034dd77d51edf328356997cd32",
+    "reference/agents/tribunal-infra-reviewer/index.html": "6b837f1cd0eebc22e0f6533041b1bc617a1fab426a8ecbff79e7317fcefec756",
+    "reference/agents/tribunal-typesafety-reviewer/index.html": "ed58b63c26b775d80bc2a561fea494dc5deb6a46c2305fe6ecac18160538cb0e",
+    "reference/agents/authority-reviewer/index.html": "03834b9ea7af1d1c0888d6e0c37a96930079a321e319288d90b4f452acaf23c2",
+    "reference/agents/tribunal-migration-reviewer/index.html": "41fd67bec4d878c8e1e7cbba647f1f79da6cb7ded8fb98e41ef6a6199ed7af0c",
+    "reference/agents/coverage-auditor/index.html": "8d2c5f72c1176f9ddc3917a0a75f86c08fae0ce7343492ee73b258b645949f61",
+    "reference/agents/map-structure/index.html": "4baf5e8ada31d51ed3de51baa712562e50b7c546f2515f48f70ef6bbfd32dc17",
+    "reference/agents/tribunal-secrets-supply-reviewer/index.html": "bc396380a3ed9d84f4cfefe37bd495458cbc82c33f60584fa93adc08afe882b2",
+    "reference/agents/checkpoint-aggregator/index.html": "fc8ac9839c3937fd4e3dde1df8f6ef5b85e3f14f4b30458dd31dc3b5a03d4af0",
+    "reference/agents/scout/index.html": "6e7d95097c82f514e1eff5ac3e712b899bd7bf849408a059c907b9f9c91ab9e0",
+    "reference/agents/architecture-drift-reviewer/index.html": "e2bdc921c85a2339b62bb0e0bd55205953f8782ce12d4488917ae217b6da402c",
+    "reference/agents/infra-author/index.html": "e125370530493172d607d114368902404453d5853a9afa85924233ffe6a62154",
+    "reference/agents/tribunal-test-fidelity-reviewer/index.html": "b7871931472ca0d03a3e34a828e7b50dc15fafc09e89589727488a2c69d0dfcd",
+    "reference/agents/dependency-reviewer/index.html": "12de0b41c42201388cb0d65463dfa332b108aafe878a341f814358abfbe81373",
+    "reference/agents/tribunal-performance-reviewer/index.html": "8982beb890c42279cde937ba3f2bdce71897661303b817bdc37835df3b613bcb",
+    "reference/agents/tribunal-coverage-reviewer/index.html": "ea40dc2545407dfe9399f49c4ce9c019b802fdf05d1899f8334d3516c06f99b6",
+    "reference/agents/design-quality-reviewer/index.html": "4a8e9e532f1c5713d4f92cf3580309f26c5bc20f8abf7b1dc6cecd3146921476",
+    "reference/agents/auth-crypto-reviewer/index.html": "0329899e17e3e0b11333a6242579b0dd03340f53dfcfdd9264bba30293a10b4c",
+    "reference/agents/grader/index.html": "807d00565aa5181a4cbc7d76786da208cf0235da9e6d0c90dca266f1e3120696",
+    "reference/agents/migration-reviewer/index.html": "c25b2e656fda8a6e3ef95290ef6cfba7381d5e71c3d0cf72bf986b8be91e38f9",
+    "reference/agents/frontend-author/index.html": "9916ca8e735ca921a3e7e502bd5fd74fafd468cf5c06d5dd4f2a258350d67a73",
+    "reference/agents/tribunal-reliability-reviewer/index.html": "80501edbad9d5fde8c4799760561876820ca3457e6189283588d885a949b5f9b",
+    "reference/agents/tribunal-architecture-reviewer/index.html": "6c67c745f8ef4f672a1a760ba7598732754e992e879f4f8b1dc3fce6ddffa8a5",
+    "reference/agents/decision-challenger/index.html": "2aa986ca03a7f8ae38acf64d14c930d8b9a0cd43127c2e50d447d5b13fb84cb7",
+    "reference/agents/verdict-aggregator/index.html": "89f1baae5cb32eb5efaf1a163069e1fc9883a1aa6d93b9787671b16a9702878e",
+    "reference/agents/tribunal-appsec-reviewer/index.html": "7916633ce8cbd38cc80a718386789c80e8bf35eaf281d5d13d525c334715c95e",
+    "reference/agents/backend-author/index.html": "15fd1a016e56d09d3e51e0a8ae2f1519160c52f2b5bfacff4eac4710de4a553c",
+    "reference/agents/finding-triage/index.html": "b05e6bfeb3538b1dcea92842c5528f0119bdbd17e5d7c02c3dc9cf76beaf062c",
+    "reference/agents/security-reviewer/index.html": "2d14e4223b9d34da128af193cefba033341ba5336ebec96b9aa9a43cf63aaf00",
+    "reference/configuration/index.html": "cbeebdb7ca0f4ea7b5234ca2e354e4983f41ac536a7a3ea30006c83ec34145ea",
+    "reference/tribunal-lenses/typesafety/index.html": "bf27530f0c746989eeda1bce91deca9c56130d373cb396148a0cc4518d131886",
+    "reference/tribunal-lenses/test-fidelity/index.html": "bbb22c882f191c6596ffc5984fb2840eb1759b17592506c4babf09a86c6a335c",
+    "reference/tribunal-lenses/migration/index.html": "75c9be5e979700f4db6c4329804a69b332689426aaae3ec34c28c9c6477e8545",
+    "reference/tribunal-lenses/change-closure/index.html": "f43840541be4eedc6012a1a963fe43a1085da876b9f77117e26fa98a1a856c6f",
+    "reference/tribunal-lenses/performance/index.html": "639b283a9ee8e6161f1c86e95fea232e49ad00965655b35bc3193718546ff590",
+    "reference/tribunal-lenses/semantic-contract/index.html": "a289d4de4b476c0ff49145a4c9152a32c9e428bc71f13f0a3a77391188f973bf",
+    "reference/tribunal-lenses/coverage/index.html": "12bb6799ebd1d96987c53d0cebe54f93e9c48d41ad26118685b95e5a0441f55b",
+    "reference/tribunal-lenses/observability/index.html": "b18ecf71776a21e85063f3980b76775f56e506e47e05b7e885e4b83b428d2bf6",
+    "reference/tribunal-lenses/appsec/index.html": "ce7e0b3ccd8e807583dd2f82c7ed409b874e026111424f6b160d9d269a7ecc43",
+    "reference/tribunal-lenses/infra/index.html": "1ef65249c17b422f8592656ac5ca6ea08dfd420e062a55aa09c6323ddb996799",
+    "reference/tribunal-lenses/reliability/index.html": "2c69f0b7584fdcabad11a28b3b1d03fc5c15a8ae68059e83873c6cc11c0f76d0",
+    "reference/tribunal-lenses/architecture/index.html": "0210a5bd38bb8e674f75e5a986b7745e557b295faa06d98447670626d8f01fc5",
+    "reference/tribunal-lenses/secrets-supply/index.html": "fe29f87a16b7eba8cb173809023d1dbf66f6f3cb4c4b71dba1911198e41875cb",
+    "overview/index.html": "ba000ffdfa17b38480cee1b2808d26f17b01ee6fafb24388b3a8d99cfffa5ad0",
+    "guides/releasing-a-version/index.html": "335ca178468cefe11851bff26a4280e02ad939ab3f16f654fbe8b6f51113d2c7",
+    "guides/understand-an-existing-project/index.html": "749225de59bd507577dc6ac73701d873f0d5a05d0a7f796b368738daaf49071d",
+    "guides/the-statusline/index.html": "c13a660bf178dbf559d8376c4d5beaf453e8506a8124a2571c989ccf54075196",
+    "guides/index.html": "dd1c1b95d959e3672cbba5db9ba24065b51f6bb44de28d315bc8ea8e89dcb786",
+    "guides/opt-in-a-repo/index.html": "9d3a527fa75ae3571272846615329034d8e6ba21287b83b5b34fc3fd0fd5b1d0",
+    "guides/ca-sandbox/index.html": "aae6efb2af31f3bfe61b0fed0ca03034708a406365dc20cf2ce7089266783d06",
+    "guides/overriding-a-gate/index.html": "d1c60a9536c56ceacd6f7b6ef361603fbf09142124b927ad32f998cbb939ff41",
+    "guides/resume-and-recover/index.html": "88491ab130c5f171dee1f365d8055c4cafce698235ff6a25c1c70c2d4e36bd03",
+    "guides/feature-lane/index.html": "60f29d2de6fc126d5ac10ebdfdc432a669789c35b7b3dd34c2340ca7a42ec8b1",
+    "guides/return-to-a-project/index.html": "1097b97633b2b04171c2cd49f30e0f429b2ebb015b14912aed80dc5eef909d51",
+    "guides/investigate-and-fix/index.html": "a05bdb11cec7681ea3a73c959d719769cfad6e4133dfa24cf638fbc95c595b37",
+    "guides/plan-a-new-project/index.html": "9e2a0dcf36cb27db736be62a0dc40e546a39d8de0b0488c06021e507ce3a91ce",
+    "guides/first-feature/index.html": "7e18f4c5f0dc8a64e93f533856f2fdda7e45028081a037ef49006194259bc9c1",
+    "guides/adding-a-dependency/index.html": "d478e8acf38771c5848177b7ca7c32d633142bc9d69fa16f8c95a1289e91e095",
+    "guides/recording-adrs/index.html": "4175c709e77b4c2265ea4e4bc3d3435b28a65d4c9bf18c9d49a518559c3db165",
+    "guides/autonomous-sprints/index.html": "325d49951673fc48c10b75651f4cabc7e5f283f3e945fffdd48f3b955bc210df",
+    "guides/troubleshooting/index.html": "d43d5cb0d18393d5f3a65f6b484bc9962723d295f8748ef628b7b973a9216af8",
+    "guides/review-artifacts/index.html": "715eafa834430f562a8c09e15d95bdd1f2691a017e84cbc9769781afefba33e9",
+    "guides/review-and-ship/index.html": "1da8962f8af9a4be318b1c4f3cc8aa438829f310fb91c055396fe945b6f3312e",
+    "guides/uninstalling/index.html": "a54d28ce3b3dce584326f6dd7d7408c0a59de02748278354e5bef96934b88e25",
+    "guides/uninstalling/details/index.html": "3d0dce9181abd11930fa0dfe767b5c438411424d507925de666fc4b0568d939a",
+    "changelog/index.html": "c4558c3c45b7b7f12799d2d26e3a8d537fa87b8c558d06d47dd277978608f70e",
+    "art/feature-forge.webp": "5ca3097c0886afca367cbaa83828e9e98bd37599b95561d30a53895ad9cea177",
+    "academy/f03-work-the-board/index.html": "7e2a11bd7995ffb2ddbb6f5d9c346219f30b4a468220ee3f1832b4350d1e1d81",
+    "academy/p06-context-drift-recovery/index.html": "8d9f8ab645dce393d1841665ef2d003a53b83f34663624d634cacc595eae91b9",
+    "academy/u05-debug-spike-conflict/index.html": "be25a7304c40f76d86bb7ac48c773238963428b42b7dd53261340b2ea82dc887",
+    "academy/index.html": "3ce928d20c9b4f0fd5ca8061dd8703029cff7c89509659a7f01305ed63c9423f",
+    "academy/u03-refactor-chore-release/index.html": "fe9839bd316f333789c299846fc042bd0ab1f7fcf0027cf78038159c2d16ba9c",
+    "academy/f04-fix-with-evidence/index.html": "26be59d312bb3c99b1a517d39264b04bef34938199485fc30fc9cd95a6732aeb",
+    "academy/p02-commit-review-pr/index.html": "fe50ea8a089db400bdbd7c5ba2e85ef24f6f6df727e83030a65842f004b64fb4",
+    "academy/p03-record-an-adr/index.html": "487e2d65928a04144dcc841b3f5bed0b9a70999ba66415c309fecbcf501b1a8f",
+    "academy/u02-override-audit-metrics/index.html": "eacf1aa251e4400c191f441ee6e89f15db0c3bcb4d319b2a969b918e7f81d75b",
+    "academy/f02-orient-to-state/index.html": "efcff942b348c0ee96e0a3b4ec5f856f1126dc6dac31af66d86aef4feb656af9",
+    "academy/u07-capstone/index.html": "00fc121584bfbba450f8f85937a571585073e169d1a53e69eacfde2f4b2f7e6b",
+    "academy/p04-review-a-dependency/index.html": "cf96133ca562a8e2bd36516eaaf242a235b2968790155e79cedd4daa6fc54013",
+    "academy/p01-feature-through-plan/index.html": "765e16af98aabe72845af24626aaa575db78f284e593fd154e2b15a818c0911c",
+    "academy/p05-checkpoint-remediation/index.html": "f38fb683b0a02cd6cebd1487fcfe0a73726beb8e2021a7e5f1b1e43e9c89b709",
+    "academy/u01-autonomous-sprint/index.html": "15bab760b88b0a7e3d73e57255b12f3435bf2f88a21821e3509e2544db42a94c",
+    "academy/u04-initialize-projects/index.html": "bfc6f95b1538ff081d9a98716172f7632aed5478eee2e667b8a0cf1840b2069b",
+    "academy/u06-preview-and-advanced-surfaces/index.html": "d00fcca0024e7e2c4fbb1602e8143bee9be29c4b0855cf5cdd01379d29bf67ed",
+    "academy/f01-fork-clone-doctor/index.html": "2f41492aef05695187b99daf0d112693c1e035822368e5dc12a270f47d79dd0f",
+    "academy/p07-threat-model/index.html": "5b2506a1a11cd0644f53c0554e52001135ea07ad404613fe1349371b4679dcc5",
+    "academy/p08-repository-hygiene/index.html": "87229416c3d91ae9b44f0392087c7423121f024af332ee9c0bfee5565c6ec6b7",
+    "academy/tracks/power-user/index.html": "89c232b4a1124b1a9d3e77546f5d017ff3c8ba37a4c90b86230fb70a1e8599c4",
+    "academy/tracks/foundations/index.html": "8ebf26c0aa158bb28763c5098aef080008ab7a1d4d161814443d8db5e01814ba",
+    "academy/tracks/practitioner/index.html": "5af8cd3afe0b04e5aed0d0aa51d9729c02a8f3c4469bde0a833ea9fe1f584292",
+    "404.html": "03201b33ed431094691633079693ce34a224b1a966e6851c137bf7f0b590c561",
+    "concepts/gated-lanes/index.html": "335facf2c6ca10825dcedd43bb8048d662ca47d72fc22fceee534a0297731008",
+    "concepts/checkpoints/index.html": "682835eb36473941faf788d7ee976b2036f87fb30380fffa6c2c428b940f24f0",
+    "concepts/index.html": "28ba3cd1bb84760bde4160ad0cdef96d627152eb852e0a79fb700fabfa46e7ce",
+    "concepts/hardening-history/index.html": "2ac69fe4495a2a0ebff87bcf44912579152616c0dfc3aeda6ad65d55767f035c",
+    "concepts/persona-and-context/index.html": "6d0f125900f9af0ac8037f5d1c07f2cef0dcd50d523022b6797be93fa2b56997",
+    "concepts/artifacts/index.html": "554b360e728183ace263f38b7742199c7db5976c8c34dc9467d5fce55e5c74bc",
+    "concepts/test-first/index.html": "44015244e7f6f98d257f5e4e36bf129362fd00f862680635d97377f34fc52abc",
+    "concepts/adrs/index.html": "11cc076128ebf055ec8ab180e817d8ee5becc2dca3ebc27444ed5964d52518d2",
+    "concepts/auditability/index.html": "dac1e4fb5c98eac04f5f99d533b82e973ad7b20f69a798c07e9c4610f7b88551",
+    "concepts/jit-context-injection/index.html": "cbc4c1e43ae17766e33c67a5a79e6dcf98eda539b1d1811b75987368231ab2b3",
+    "concepts/workflow-routes/index.html": "d1f3eca1d7c28bc6c5dce4a39c7002132d367ecade9a0689124514e9ac407ea5",
+    "concepts/smarts/index.html": "a795743f6c374b7eeb8152ec68ecd0a25e16b0c19f93819090c21bf09f9df1a1",
+    "concepts/provenance-drift/index.html": "bc8a0430abf48fa4a9552a9b1aba5a393f545efe47235fb6a4b96aab9ed10707",
+    "concepts/persona-research-basis/index.html": "42a9ab87ca8e77faaf4e03ae0958eaaa148df829e2cb536c4cfee21ca6a90ab7",
+    "faq/index.html": "37be4d25149979f36d718f841ea9da4b3b0bfb677df5fa40e479f78e208052cc",
+    "_astro/logo.Dkr92sxm.svg": "4553873806ba21a9de652105d3330626b1301eefe50eb7d61a1f3f7efacb768a",
+    "_astro/smarts.B1jpgy1l.css": "ddb82570bb9bae96c98073790b638c218f7a245dd71e56ddd435e6f12aa9ac74",
+    "_astro/Sidebar.C5SBb_KT.css": "14c86c57434ff20badee1312c9625c28a1641ff28a1b6feef089f9468d19f6db",
+    "_astro/manrope-latin-wght-normal.DHIcAJRg.woff2": "a30ddcd349703aff7464c34bef3fffdff405ee50c113440d7c8693c02d210972",
+    "_astro/hook-proof.ChGH6IDY.webm": "ef04f5ef567fca74a9c97630c1c4400aa729004cd6b3f04df9412fa8a7e19975",
+    "_astro/hook-proof.DLF9IKx1.mp4": "3bb7522db8ab8e5cc7e8a5eeb3eefa7b57d4e39170588f7d69c3687914e5cb88",
+    "_astro/hook-proof-poster.CBPk3aOd.webp": "8bd7bf4ce243dd7a0377a672b2c78b01e7c5344fe5fafea2940d32c0a70b94f6",
+    "_astro/print.ehPL0gv-.css": "4d7d25c3d697e6d36e64afb9edef136e6d2e4c50f70a48000ca90f9b059e3622",
+    "_astro/ExecutionMap.BV_MUBCo.css": "d7d7d569326431b78cfea2a3570ea533f3d1489e3f80afb1f346bfef5071694d",
+    "_astro/ContextExplorer.psVYWKGZ.css": "eb415907eeb7bd716ecd54ceb75d3dd0b679e160d6a292e410dd5571787d8819",
+    "_astro/ec.2ev1h.css": "132741ff9dc3f3b076f33110ef154d63aeb43ceb99e37c1f351b993e1064112c",
+    "_astro/WorkflowAtlas.astro_astro_type_script_index_0_lang.Dmg0kNRO.js": "eb92cacb2a22be4ba3fe8254095d108d54e115da51cd01355ccad67c9d6deb70",
+    "_astro/ec.0vx5m.js": "182e98b9acfcfd358ea486967bd17dcaddd5930b8d092bc0653fd26ddbb11e37",
+    "_astro/DecisionEvidence.Cl7tU4du.css": "8645b76713895a801a9b7e1ecad6a72046513a362dcf528a7d3e8e46a46a166b",
+    "_astro/middleware.DJ1VBTPt.css": "d64f3dcd807f98e06d7f4bcacff3895219929a290142fbc76f63c9d93d963e35",
+    "_astro/ClientRouter.astro_astro_type_script_index_0_lang.CiWZqmkf.js": "37b83e2ff44a05b950a0d4df1798db29b620ed5e55e767d67a0220bd221dba7d",
+    "_astro/hero-gates.DNOjz25k.webp": "95893d3b7dac3a84cb9641145509b10b0290587d5b9da456b27f85dd649b43be",
+    "_astro/jetbrains-mono-latin-wght-normal.B9CIFXIH.woff2": "18be452724bfdc236c074ca94a249a7f41a86752c7d04ab258ce9ed5651f6a7e",
+    "_astro/guides.C4J6b98g.css": "ae6bebe0977b9d30ee088f69f80218fe3d6d6211c64b5d27f4efcdc899331654",
+    "_astro/Search.astro_astro_type_script_index_0_lang.beFR8lrL.js": "1322cff9b07e5468512890f8b6f635ff75efdf4ee24e4437ef246653f6aa6357",
+    "_astro/workflow-routes.CXj4p2nf.css": "1c9d0dc872fe1cdbe152d18dd8586c0fda2915061a07b1e47cf3b75455973907",
+    "_astro/page.DxxK05Nl.js": "015de120f3f3e03a5456a08b83541af64124809604d5975312f584cbaf82cbe4",
+    "_astro/prefetch.tHJg-91W.js": "756ead845a2f87c29c87ae2bf9009ec090389bb2c5aa5a1812e9815fcea2045f",
+    "workflow-atlas/9496cff6332fe0b97195b7ebe67b73f62f30e5b3/change-lanes.svg": "8583f5e0df78145f4d83706792338fc3615ff2c04eedeaf1c9a1de94e72f3cb4",
+    "workflow-atlas/9496cff6332fe0b97195b7ebe67b73f62f30e5b3/debug-handoff.svg": "0a7b860338268091d7a286e005d01d54dc2d6d9a4e64e797cbaf05c6739da1ba",
+    "workflow-atlas/9496cff6332fe0b97195b7ebe67b73f62f30e5b3/atlas.html": "3f9638bc0c06150daeb3b5de49a97f1ac049bcd558b558e1905a43a4dca49adf",
+    "workflow-atlas/9496cff6332fe0b97195b7ebe67b73f62f30e5b3/reading-guide.html": "39f45a825f072d0b51a7f754fecc6793d4d5d7f399a6edf84d9cf84b4072277b",
+    "workflow-atlas/9496cff6332fe0b97195b7ebe67b73f62f30e5b3/sources.json": "4d74c89c328dfbee6ebb1ff0bd9039409b73b02cc74832733369fdf4287b3fa5",
+    "workflow-atlas/9496cff6332fe0b97195b7ebe67b73f62f30e5b3/review-delivery.svg": "fa6d318f082209a01154ad6645806c51cdb7d94d0d6b681b9b3769c037006f9e",
+    "workflow-atlas/9496cff6332fe0b97195b7ebe67b73f62f30e5b3/brownfield-lifecycle.svg": "981bb33a49257b1ae2e64eef978964c6bab00007cdbd2d7e8bf42a3c09709df9",
+    "workflow-atlas/9496cff6332fe0b97195b7ebe67b73f62f30e5b3/tribunal-lifecycle.svg": "30597c6e5093d5cc91f00a1fd34efdb92b3210d2746f7072b8764afc52e7f3b1",
+    "workflow-atlas/9496cff6332fe0b97195b7ebe67b73f62f30e5b3/all-routes.svg": "1d99993cefbec8ec8a96df127749e44b3f5e11877dcae2f9544417b8819f8e92",
+    "workflow-atlas/9496cff6332fe0b97195b7ebe67b73f62f30e5b3/context-layers.svg": "ec5285d05ed3954e20dc059e892e02c43be494768621640f6d266d307a46ff42",
+    "workflow-atlas/9496cff6332fe0b97195b7ebe67b73f62f30e5b3/knowledge-operations.svg": "81f45c37e5aee5ab8fcbf7dcc1e3b97d29064641c10f720496bf3d023bd33d1b",
+    "workflow-atlas/9496cff6332fe0b97195b7ebe67b73f62f30e5b3/feature-sprint.svg": "52af505c2235a92d02861cc97a5aa0069dac7ac6d90edaeb559926007453b89a",
+    "getting-started/choose-your-host/index.html": "4620e85fea7546a1e59f87125fda518af7fb10f30737c55fe86c290a4f1897f7",
+    "getting-started/install/index.html": "ee5b1c6ed71c931dccfc8d98ce9afd30bb005de8111b01b845bcac630bbfb9a0",
+    "getting-started/compatibility/index.html": "81ae4bfb7af323d14bf3fd4e8403d543caf56486bcc2d9ef9e0021a90bdc2e87",
+    "getting-started/compatibility/runtime/index.html": "6776c4b3a87a7664d81ab3ac20828966066a54a0797419e45894faa06f2fa781",
+    "getting-started/pi/index.html": "6ddf7627030390e47677a4eb45e768305c2b0ceb48d67dc76f81fad492ae3bf3",
+    "getting-started/quickstart/index.html": "54a0fa3aacdb436cbb7b7da1171b1df8f9d5e497e1a3bab62eb9d481737945f5",
+    "getting-started/claude-code-and-codex/index.html": "0b5a6aad4a078548fcc1d48e45cf993b00a4c46ba894be1d0465394f1026e3d3",
+    "sitemap-0.xml": "760fb6763754786543bb52ad3518b1453a170638335f8096e5d10e814f0a4b17",
+    "codearbiter-directory/index.html": "1c66ad522a4c100757cf0a810716248c36791f9ddf24742632489b513e7b1e7c",
+    "codearbiter-directory/files/index.html": "691216c3d971bf6cfc4111599bce972a9001d9dce492f5404ee76d1bb11920ac",
+    "product-tour/index.html": "ab3f3f7d189be67d6160d95971a691b269eebea58e92d07696a1034bf4fdcd72",
+    "CNAME": "e8c80a80e2c2d04716517e428fbb7bea5a103696c648a7c119139a7f3f5640cc",
+    "learn/index.html": "be722b554670a65cdc11e916b0650551f0216636ed95c4f6a43fe52233ff6fbf",
+    "examples/context-observations.json": "54a898295cfa87f7cf0c6299f8ec9228d2685a1fae96bc42747b7e13b2942820",
+    "examples/saved-searches/baseline.py": "bd8e4c66590e3f19528b782ae36ada8af7b4cc482d143089060e46e2137fcb94",
+    "examples/saved-searches/test_export_csv.py": "dcfb6435eae44b482823ac989f9367bcae924299a57b039b1a00e29ac7c91048",
+    "examples/saved-searches/provenance.json": "ba64601bf878ccf223c4b614f94d9ede9d8130dc3334743debb5a87ced73fdb3",
+    "examples/saved-searches/plans/saved-searches.html": "49542b212826a80fc61ebe3adb277f02af696318dc36fa7ad3a6a6c18e6d940f",
+    "examples/saved-searches/plan.request.json": "fb53c9d1ea2adacee17e57dba69fcd2799ffe22b7abe2d2722798ac9983b62d9",
+    "examples/saved-searches/spec.request.json": "adf6607beef9deb8f8d34c79162b9f7fe61f6e37134825f11afbd82a01053e40",
+    "examples/saved-searches/native-validation.json": "0c4f4adaa4628dc1a0223c22662657b41ddc36e9c8c4194c2a0c17a9aefe0f6a",
+    "examples/saved-searches/specs/saved-searches.html": "8a7cf138cfe2d656e5e31a1b6644106ac1e0f4eaffa921129b62f2501423b4c0",
+    "examples/saved-searches/completed.py": "0780c6540b532fb86e62db5b959ce3b08272c2f759d72a31a45016186046d6bb",
+    "examples/saved-searches/test-runs.json": "1c930c774bcdf6915aed79ab4350bf3f00adde13a01d799a24221fdb1aac3d76",
+    "examples/statusline-themes.json": "7babdcdb11f11eba777a5df3aba9e976972b4ddbd1183316540510e74bf910bf",
+    "examples/greenfield/01-architecture-breakdown.md": "cf6d1224eec0f3bfbc6cd9d495c3c550e879255842f5fdd6567cbe1f6f73f28c",
+    "examples/greenfield/02-phased-build-plan.md": "9182a51cf7f4e167da4fc9eb40491cdea981fd65b4f46038886d8240fd45f5a4",
+    "examples/greenfield/03-task-backlog.md": "7f47bc6ff46fc2dd681020c24d37f85af015a6429fe276d537b172ef51b3bc66",
+    "pagefind/pagefind-ui.css": "e113b816110ed07b017613e901addfe635350f2a5b84990aa76c91a74b158084",
+    "pagefind/pagefind-highlight.js": "04741266a86911636cefc41c8b407e380dda99b7d208724f700f94cdf57e37b5",
+    "pagefind/wasm.unknown.pagefind": "3a74cefceacd066e8d3bc8c52e7bc1c869544ca3d9031b44a9b7136356d5d7f4",
+    "pagefind/wasm.en.pagefind": "bb16c9e6d3d214d4d05cccca51df7b487b86b3657318da767f6ca9e0a2e7259d",
+    "pagefind/pagefind-modular-ui.css": "653ab29e4de5629f6ddf5f6fcdf5d2b3eb539a8c07fff8a56b8ce2156a570788",
+    "pagefind/pagefind-component-ui.css": "de389c7e5d87d6e2b10d65fb1e36e8989a12a2ad8dd6239b7e070d81fb5d8b0d",
+    "pagefind/pagefind-component-ui.js": "958620129dd14bd851805daeb12ce708bd63b9287325d1d5ae6f73a04d1723f8",
+    "pagefind/pagefind-ui.js": "2efa93f2e80a199ca742a69bd4cfffabc5c591ebe7763f64f7c655fd00d2209f",
+    "pagefind/index/en_50285ce.pf_index": "22d50da31580a9173df2e5607181badfcb33597d2aefb919882c953fb89d4639",
+    "pagefind/index/en_be776ee.pf_index": "3d3598e2d1796618e51f86fc512b482994a193ee372b1d8d8b9587c07e12cf14",
+    "pagefind/index/en_7ea2fd1.pf_index": "5bf951a8c74b2b2ab2bc83b6049f5a84ce6c6842addeb32fc10316243a8dcaa3",
+    "pagefind/index/en_6c689de.pf_index": "8be4e65f4e6bcd39b832637d12382c7ef23706020dcd28d646a173ec7193bd76",
+    "pagefind/index/en_cfae354.pf_index": "e20b08ad68f01637594b2571c20f9da882822f763cf8fb4c18b52a21c0e9f9fa",
+    "pagefind/index/en_92eedfc.pf_index": "79ab08849c824489e6e56f9be90da154844913b83afff0a3a6c002f9a0f33b9a",
+    "pagefind/index/en_d5f268c.pf_index": "f6bcde9c7d4ba7447441d7bc09521a482412f98117ea6564610ad4a30a4a069b",
+    "pagefind/index/en_fdd3157.pf_index": "6c6fc48a084d521f9fc286d415527b909fb8dca823687f5c3a8d19d7edb11053",
+    "pagefind/index/en_bff16ca.pf_index": "6f4fa821ea30f4377d78ab495c10a56afef40b8ca8e08d6baa9bfe4912c5260f",
+    "pagefind/index/en_ac32f3a.pf_index": "6ad88da1702ed64b1db9ea78c37a081edf296998358f5c4ebce809d15ac4a7a8",
+    "pagefind/index/en_81b08a5.pf_index": "04147f0ffc1b51078c9d1c69b4f5cac4c11b61c94f968204e2b27d3733a42961",
+    "pagefind/index/en_12be897.pf_index": "fc9fe1456c3540e60f4229ae811690c8e5a2785fd6488e8870dbc57951e84c58",
+    "pagefind/index/en_f1ea388.pf_index": "bcec4d566acdade3726e18aa49b49d1a9a3feb6402fb14b8c7bd1e0ea6ae4bca",
+    "pagefind/index/en_e66ef0f.pf_index": "e5c0a452e3e3aa56e6df7d968eee135f671b6da6e97e0593e62c09a5b6add681",
+    "pagefind/index/en_279ca02.pf_index": "0db28fd53a07bd676df08d8528610dd89ab1c4308da88b76bd6e5237d92f4c2e",
+    "pagefind/index/en_e2b213f.pf_index": "a69274c96140f658460b4edc3c98dec85de9750198f0c286ef11af23e5746726",
+    "pagefind/index/en_cc3ba1d.pf_index": "58fd96965d900a911ae8e7a05b4855c599eb5e5d9c512209587346a096e13d39",
+    "pagefind/index/en_45aab3a.pf_index": "6a1686397a92cc32983b485a92fbb76cf05d870e474e5a59caad13955f73f804",
+    "pagefind/index/en_8936a81.pf_index": "6bf3f9c1ad463439836fcff934ca25e1212aa618f33eeb4ff4624905d4766651",
+    "pagefind/index/en_c7e2f52.pf_index": "dbc8d8dd718f11dd2ce589b01c402427ac1512ce6753e90483bf5cdfbd047d1b",
+    "pagefind/index/en_56a6838.pf_index": "7d46fe28c977e1071c4917b44cd5d6b0f66d2cfcdc8d272356dbb6de80aeb6b9",
+    "pagefind/index/en_f065d41.pf_index": "38bc0450837678410b9375408b15d9d25918ecf27687b4462e413019ed8178a4",
+    "pagefind/index/en_1b84aa5.pf_index": "f6c8b207768164f5f5def04c71f98700cefbb870952ab9e233ece7cc6c0b4aa3",
+    "pagefind/index/en_e5d9e99.pf_index": "1105ebad45828b3077cf6eca59bf4b4adb4e9f056bb51785b29fcd90eae0d8c8",
+    "pagefind/fragment/en_6e64d9e.pf_fragment": "37d7054de7eee160602b7a3d2b8c6af56557bd52ba2437507b7dcf74fdba6164",
+    "pagefind/fragment/en_12e14d9.pf_fragment": "33f7480aec3d92d3851ddd8d5bcf5f48afcbbc96988f4f08df05b19339e569e2",
+    "pagefind/fragment/en_3efd672.pf_fragment": "e178d7f9ccf91e52dc5d379c66275aaa3e56e188ce57fb6cb6c58330ded99710",
+    "pagefind/fragment/en_de2a548.pf_fragment": "6ec3327b64b6fdf9642acb8c107e8308df7f2bcfb49d941b9541e6fdf87f77c8",
+    "pagefind/fragment/en_c0c4454.pf_fragment": "f859a5b48d7ad56552701dac6676a947cd04ec7a231b270a03688a9ecdc2e1b0",
+    "pagefind/fragment/en_cf77da6.pf_fragment": "b5c1797bdd97a25f3458cbde9b6c9c3d83a268b81c6f53a353a08d3cea2f9a70",
+    "pagefind/fragment/en_25c9ae8.pf_fragment": "4dd15687f57375a38d82ecea9a4abaf4a40640382a369c9207649613b6a39095",
+    "pagefind/fragment/en_774cbcb.pf_fragment": "3e6377f35ebdd370ebc21a2c8f2734957e30374f212e6a4fab1a85a4117373c4",
+    "pagefind/fragment/en_aab0259.pf_fragment": "426dab20fad9504e5a6e905dd5b5442e3c12efe6c101d6647961ad9bb134484c",
+    "pagefind/fragment/en_c739a2d.pf_fragment": "3c7951fa54a5327e66e701c9ebb31c6d857fba5bf98976e34011097270ab93dd",
+    "pagefind/fragment/en_14defd4.pf_fragment": "d44e3ee7883c9ec43e27ba8c1e7a36cf12c74146ffc44b25036ec116337ee9ac",
+    "pagefind/fragment/en_a277b41.pf_fragment": "1eb23fc627b6c57c25bee52d534cecdd5e6f72caf4fd6a7799999a81066dc63c",
+    "pagefind/fragment/en_71a8876.pf_fragment": "d7e6d79385b8ebb33fb123e7ea844a3ea17f3797316dfbf3d5cd87d0b74ac066",
+    "pagefind/fragment/en_5fa2cc8.pf_fragment": "c300d3a8dfafdd87d15326456d098ccfc1a476a89f2a526c130ff862bf573567",
+    "pagefind/fragment/en_fe6916e.pf_fragment": "f59b1d56a9ab7a1c613fee13dcd143e621bf52122e6c4421edd925efd5954f80",
+    "pagefind/fragment/en_22f932f.pf_fragment": "c3d53126fda746bc63339b8dfbbf5940fd2f6429b18b2ffef321fb01cb9dc554",
+    "pagefind/fragment/en_25f579e.pf_fragment": "c5cfb54ff50f16a6e380f7206fd294a8b99314a382ba64a2d8547ebea44e037c",
+    "pagefind/fragment/en_9bf4cf4.pf_fragment": "e297ea4abcdea715bb83a9f3170ae57b536f31fb1f0ec5d5cb5fbd6059eedecf",
+    "pagefind/fragment/en_a28374b.pf_fragment": "822b6c2f3ad458cce7e0fc0e26be525533e243bc8a0af216b77768ab4a7185bd",
+    "pagefind/fragment/en_6bd2a93.pf_fragment": "30f856dff26758299f6b9d049c21366b1a3ecbf44e6aa645ab1701b75e189f4e",
+    "pagefind/fragment/en_1ab0248.pf_fragment": "2f9437b29c586f35fc461a8a1f69e829c7d139d397895b0a5cf2e62499ee12fa",
+    "pagefind/fragment/en_5e85ca7.pf_fragment": "6ab37c4da4e9d68316dbc7b827139f28525f458868f4f08f816fcb75725f4fc7",
+    "pagefind/fragment/en_807896b.pf_fragment": "635f0e57c38e2b78e366fef549ee514818945d279864062ebf7933220882517d",
+    "pagefind/fragment/en_1636d69.pf_fragment": "9e646e2cb3cc84f5bd86d889ae1a83871f4c052bfc12a3cf4338ecea5888abc5",
+    "pagefind/fragment/en_7129297.pf_fragment": "b278b92a272783706cb3f3d66388cd9d7bec297a1ebeba3ea39ff407f8ba4ed0",
+    "pagefind/fragment/en_33965fd.pf_fragment": "94e52a32c40699c9ce985f65c2333cffdd6db7bd520382b5b1a8215a4c1d7693",
+    "pagefind/fragment/en_dec539f.pf_fragment": "0860ba9ad7712d6268b3abccf6d8aab55e587e2bded81fca8340ba8fe5cbb9de",
+    "pagefind/fragment/en_5033814.pf_fragment": "5b06984d4611851884f756b465c833fa8f8a78ff3f1aebe0283023b4c13c0899",
+    "pagefind/fragment/en_172934e.pf_fragment": "e7b3f14ba212000130091e54cbf48d76c415bcc63e4ee2c20fe6e3bd53cefd1b",
+    "pagefind/fragment/en_b7b490c.pf_fragment": "4fc5eae935d1fbf038fbafdd4236b1a4e7ea9bb3bcaf9d76db7f39c6a86fb5ed",
+    "pagefind/fragment/en_d3a2e1e.pf_fragment": "bfceedb9fc0e0ae7c837dd4d58ec430373092fcd01329832e05073fc44f7cd8e",
+    "pagefind/fragment/en_a5b91d5.pf_fragment": "428de615cfb5ef4289c7cef946723cb15fcc9cba71ee22a56b3a00e43e0af316",
+    "pagefind/fragment/en_4cb1567.pf_fragment": "60f221657e2a0bf08db4ed8831d7a964a02d63a2a07f74b9c1ec3eeb2e8ca5c4",
+    "pagefind/fragment/en_7893ddc.pf_fragment": "40f422ac9b25eeab7702132d7506cd3294f3a0a9372d3948d75bc758a2a97103",
+    "pagefind/fragment/en_da5df4e.pf_fragment": "78b21918dec9beeb2448ca9a59e8cc6299c9cf77ae0fe5c9b09fc56b55147a81",
+    "pagefind/fragment/en_72158c2.pf_fragment": "0ee52d83f700b3ecafd7546e3d0e5a1ee62de9abf45e71cb5263c13177615aee",
+    "pagefind/fragment/en_be5e555.pf_fragment": "524d362fb3f798829d8faa0d6faa8321165a0ed4a87f672d065ae88ec3a14b31",
+    "pagefind/fragment/en_ac8d467.pf_fragment": "249049e72741a5ed15ccb0bc16a6e610530e488f99c93519b1e80f3d0888da02",
+    "pagefind/fragment/en_cc2c324.pf_fragment": "547ee58a0e3bc75f5916dea4611d7c1c9729ed80fd731245c2994ffeada33c47",
+    "pagefind/fragment/en_f212c41.pf_fragment": "8c8f80c87f98adc013f8734a749079dc19683bf5dbbf1579b82d7bbf095e00cb",
+    "pagefind/fragment/en_52b6bd6.pf_fragment": "d29fbd9c0a6ce806187719014148f0ff7009aa35d6e4b950be27e22c37ea86ad",
+    "pagefind/fragment/en_452bf63.pf_fragment": "e15456d389f03d5739bcf07b9f408ea1112a5140e9531e8484897e2171205f3a",
+    "pagefind/fragment/en_3a54a8b.pf_fragment": "23f59d2bccdadd288ac9fbaa1f24ea6b560e19f9ef8a64f39a02bbd666e2be03",
+    "pagefind/fragment/en_ead1455.pf_fragment": "9430e15c8df1bf33135a75857cad9289afc73ae0ad9f9049d19d417d077af64d",
+    "pagefind/fragment/en_d92654c.pf_fragment": "22945af869c4211bf677b1b0f4c6ea96b28aec043596f7bf296a089f278eddde",
+    "pagefind/fragment/en_df3ffa3.pf_fragment": "fd0bad8b3a319ec76863b1e298be9f9d785cb7d54d379ad4a4f051df0111c77e",
+    "pagefind/fragment/en_73c3ba9.pf_fragment": "4ec5c04e5e8ebdec124687265062bdb349d1dd608bda4665fe7c8361d9f07e35",
+    "pagefind/fragment/en_753ed84.pf_fragment": "9f89a3d4b0780dae8a1bd3d41f4d6e1f924571dbb6c1b0cd750a638ebc8fb274",
+    "pagefind/fragment/en_df3228f.pf_fragment": "6b9fa86567808965472058d71ca53781f1da5a40e823fcf7e97abbdd94738727",
+    "pagefind/fragment/en_263aea0.pf_fragment": "f7bfda25c08479268ac995f844772fd85668e1ea84908d0145d9f3ddbc5e0e1f",
+    "pagefind/fragment/en_5d46f4b.pf_fragment": "e7874bc348c2902bbe7f9ae1adadd95caa38547b6ed13d197f5cf68d6d559059",
+    "pagefind/fragment/en_fd974aa.pf_fragment": "76a3a5564443fc103f0f4ada042f2b5d98a6e54877e3b18dd98b70dc8f082dca",
+    "pagefind/fragment/en_37e78e4.pf_fragment": "30028da89026235806bc37c9a249150bbe7b5f5a624fb8b483cb02d4dd43aded",
+    "pagefind/fragment/en_ba7decf.pf_fragment": "4fb835094a1ee03599f8f1707f4251ce5dd804c7f6eae938e9882c25bd013e3d",
+    "pagefind/fragment/en_a15db3e.pf_fragment": "85302626c4214b6fc94efb0a02dc16a06c37864173608e4c14198e669bcc7f77",
+    "pagefind/fragment/en_3fa7c92.pf_fragment": "93cfb01697e9676b308d357ca35d55951b3b0a23fecb4546365d281ae1fcf0ec",
+    "pagefind/fragment/en_165e7e7.pf_fragment": "c0deceec9964a2d7025e498e098a84240edb245f9ea2d0e7b6cb841325a148ef",
+    "pagefind/fragment/en_3ec779b.pf_fragment": "983a03e85b896f2669d7dd7b5914444619c14b78d6d41c8f68514dc2d3dfe16a",
+    "pagefind/fragment/en_36bde05.pf_fragment": "c3466d3904094cfe2bcb502131bb3a5c18ef6e5dbaf42262438f1bf00aab2751",
+    "pagefind/fragment/en_7f82389.pf_fragment": "2a4c0b5c8f1b550da3fd67754057fd7040d749181e33cc9e99946c27301f4190",
+    "pagefind/fragment/en_2094a11.pf_fragment": "d24dd4e5f14652666e804e62e44aa1fb7cc26413dc1fa7364945b7ec2d44eafe",
+    "pagefind/fragment/en_c2d2456.pf_fragment": "08d309f8aff31283460980b19e53ca9a04d62fde23332bdd30f95b9b302334a1",
+    "pagefind/fragment/en_22b098c.pf_fragment": "58c8a15c525efb05b7476833a6b05238f3a2b1d47efd87f28edb3fd4953ab14e",
+    "pagefind/fragment/en_65f4988.pf_fragment": "2c415b38c17f9347762390360cb925b7c30a079e74299e52e063c48e562469a6",
+    "pagefind/fragment/en_4b50d8c.pf_fragment": "ee35f7b4544de3759d5dc406c9073d97cd47730f96d8969d34426ba0de532f20",
+    "pagefind/fragment/en_2e15738.pf_fragment": "c2abd76b663d6a3b33ad797a2cc063e670ede699851d9747a82c335f95854af5",
+    "pagefind/fragment/en_71b2fc8.pf_fragment": "2ea650e874ae003f0aee8bc5f91241b635591445116f19506b5631ba8e5ffd24",
+    "pagefind/fragment/en_f65f809.pf_fragment": "70567396858f4e6cd2504a3d93017f8aa728a90b545bc3434bfb18fd0c6f7275",
+    "pagefind/fragment/en_d39fb06.pf_fragment": "1e40c7a1c5d781877b5d830f671ffae94a39db816066384854a338e4fa6c458d",
+    "pagefind/fragment/en_7cc4ffd.pf_fragment": "f14a3a862d1baa7b45587b5990b60b3648c44ca816220784eccc8765165b503e",
+    "pagefind/fragment/en_5734e4a.pf_fragment": "06b9cdb3a4e92ab8c31c03c4ee59304bca42fc9616a75f19d38b4698fe862d7d",
+    "pagefind/fragment/en_756ab9e.pf_fragment": "9b200defad9f661ff01b05e2c1b451e355c3abbe36d320dbce48d271af7e6de3",
+    "pagefind/fragment/en_c49143d.pf_fragment": "da546e23eead2ee643a94661d08fbe8e88a0cf4e815dc7c58f77149d5b826f64",
+    "pagefind/fragment/en_2dff458.pf_fragment": "83408ec812298460b0140bf1115810d2981f3b5714519263b5a816c531e006ac",
+    "pagefind/fragment/en_3202656.pf_fragment": "b144bb353f4c598fe14fc524bd8ba01a7a70679104154fd1a099abf12dcad591",
+    "pagefind/fragment/en_7397c1a.pf_fragment": "1735e7a4162a8d365f4ef15faa9900e29e9ff23b4927d53e6818cbafa695399e",
+    "pagefind/fragment/en_3e4a6be.pf_fragment": "9727988d3e328364c5a1f329be8665c74d730d3022dd533056309bc2e768af4d",
+    "pagefind/fragment/en_43190d3.pf_fragment": "0d677871a6b9ecebf1f7e13ea87a40732050f1e55994c921f3ea03ef0c873024",
+    "pagefind/fragment/en_86a7bed.pf_fragment": "82982756fa0dcc75ff9df22ebdc92e9a2638bce105740dd19b63c9ca9387391e",
+    "pagefind/fragment/en_8a2c3b7.pf_fragment": "ce7197f987b79e43036553a4005aa2c941a4160f73bbe32917c689539ec92439",
+    "pagefind/fragment/en_7124e93.pf_fragment": "140644a34e2893efa1cd02cb3b0a4ad1aed4dde29a0498d5186a694b064422df",
+    "pagefind/fragment/en_2e39875.pf_fragment": "546c4648a43d21281429b4a7ac191feb5d65444fe342933c0c7bdba00503b210",
+    "pagefind/fragment/en_7a4128c.pf_fragment": "0c8a5d3f0ce17aeadcfc05a4051e1cf74dfc46d152d5ed64357f44b8aa5a662c",
+    "pagefind/fragment/en_28a91e1.pf_fragment": "71bdcd786de8907f6705770275ba2cbdfb92a94401f3ddcaa1ad8a95de1dcea7",
+    "pagefind/fragment/en_e54b465.pf_fragment": "4786e7bed0d5029ebfbf9ec3c4c3e16d12a0083037f03e78b2890ea2f7d28a72",
+    "pagefind/fragment/en_f52de1d.pf_fragment": "5723dad5e1e3bc4c50499a295e2e9b5d7e329630899d2a81252079887bb92f18",
+    "pagefind/fragment/en_8411f7a.pf_fragment": "9660d0ce6948739bc5aa031646ec5376b458701f251e1448d8a164d3a46d242d",
+    "pagefind/fragment/en_c5939ad.pf_fragment": "da51dbd305775cc5123d6ef6a21d220e84713158696f240fdbcef799a46454d0",
+    "pagefind/fragment/en_716a6ba.pf_fragment": "b335d356a6300fe07b60a4dc624ffbff59ab7d0e4adeb2e2bbc1eff22eb8375b",
+    "pagefind/fragment/en_bb438f7.pf_fragment": "2341bd40f5ca07b484ee08b9fa9478bc731e45a2027f7cb0f188f7da11a67c5c",
+    "pagefind/fragment/en_78851f7.pf_fragment": "7c19295ec0413d285ecca98c7c83d97079f93dd53ad8652c779600f9babd9c0c",
+    "pagefind/fragment/en_4efa334.pf_fragment": "e0e27e2d50c3c0d2d24993067121edb7d6535204077c941a680e34f04aab74e9",
+    "pagefind/fragment/en_3b3e445.pf_fragment": "76f82efb52ea9e35f0169b77c15f4444c8b8becb3af080e989770d9836ebf412",
+    "pagefind/fragment/en_93af115.pf_fragment": "407210a8617b1dce824b9eedca72ca942cc6fc8b03709a4b67536d138968808e",
+    "pagefind/fragment/en_57f3558.pf_fragment": "183f2ad271b5f51463c3fb61aa997ce4fe96d4679df164041f280b995a3561ad",
+    "pagefind/fragment/en_63de17d.pf_fragment": "a885ccb697df5795925f3b8f3379fc8d5ab205b3c35931ff6a74208952211c91",
+    "pagefind/fragment/en_7157dbb.pf_fragment": "b09f3d3a633e9489f77604c9c3f08450de9ecb7a2dd78c78dde64cee3a80b026",
+    "pagefind/fragment/en_c446d2d.pf_fragment": "bbdff718b3f2392f1ae7fd5a5c0ef0c06291b55399f896052581ffdadad0fa64",
+    "pagefind/fragment/en_81d72cf.pf_fragment": "7b173029d35383604f30bb62480e6f1f27fb16f362b1bc7e3a3c823bde15d587",
+    "pagefind/fragment/en_11a9b3a.pf_fragment": "36d1641b5bc4674399a9a3adfee5c6a7f098d9865a93717ffb25838ea5a35271",
+    "pagefind/fragment/en_18f1388.pf_fragment": "ea225a6e951fc39fcb08a9e88988f192b60b935c3df070b78c5fd3a597c6e143",
+    "pagefind/fragment/en_9e8d4c7.pf_fragment": "052c161d73f302cff95c77ab5b336813ce038a127a793f16cb281f74788c80d2",
+    "pagefind/fragment/en_f813159.pf_fragment": "2854b3834e2806e83b3d89ec638156dedab82cfbed5d51c46c9ea7fa9f5e4455",
+    "pagefind/fragment/en_c9122cd.pf_fragment": "f0c28286898ca49fe554d2d1cfabd38e5089c1dffea2f1f8de246fb4f56d5810",
+    "pagefind/fragment/en_82568c1.pf_fragment": "48847f87b00f46b311af9a72d059d82c0ddb19ca2c2c4e1fdb66878542c4aa00",
+    "pagefind/fragment/en_f5c8c95.pf_fragment": "0cfa75e30b63ba843e6528ba17d3ede7117e5202fdbb2b31df9415705b88f5f3",
+    "pagefind/fragment/en_64e8e6e.pf_fragment": "bd0e2f96f889bc9361ab086e45b2ab8dfb803a0f2da2f2c5f3f5a56b7d09bf78",
+    "pagefind/fragment/en_5a79f0f.pf_fragment": "7f76a4896b3c90a8b2dc011960c3262b72cf1b47a064c3db5a048aefdb0d109c",
+    "pagefind/fragment/en_33581c8.pf_fragment": "a85c51824abeeac42f74305c2aa55fd1a209eba09e2c243147823ab5f8e6045a",
+    "pagefind/fragment/en_19918da.pf_fragment": "2a8625cc8b073f9e256252096b2db19664fd4c5f856bd38106854a4085d64029",
+    "pagefind/fragment/en_a949a48.pf_fragment": "4513a3034374c96cc9d2aa195156c73c704f046fb43621e9c5648509ec8a6571",
+    "pagefind/fragment/en_d2c44da.pf_fragment": "53453c67f0e189eac221f50782115c83517936ede113c2e64031d37421f41385",
+    "pagefind/fragment/en_3c83852.pf_fragment": "ada2e3925dc676a7ab55693d7833e9b22cb3c8d4fdacd6c8464a621e6a35d638",
+    "pagefind/fragment/en_7b568bc.pf_fragment": "dcc13d4772434ef9d28ba6a996dc679d371d8fe23c643758d692ebd6a8fd9b44",
+    "pagefind/fragment/en_5bae496.pf_fragment": "02cace7f6b73f5c7121270bcdfee6b0336a005eab7208212ab3b11628f7ad10b",
+    "pagefind/fragment/en_e69575c.pf_fragment": "2195616f5d962ab968c1b76bf876735f3229ab87c1e034be531fcf551edabdc5",
+    "pagefind/fragment/en_9f73141.pf_fragment": "fd2a8adb433fc00bc522a16a91c9715787ad83daaca14b46f8ed975c56cfadfc",
+    "pagefind/fragment/en_c839c49.pf_fragment": "62543a4e262332019cc602eaad18bc343b30d0366160655677523bd67a7297c4",
+    "pagefind/fragment/en_d9e2ff4.pf_fragment": "b5e057bd95d5a9c07a763eaada5936c1b8dfcd10a0150ba3162b31270705217b",
+    "pagefind/fragment/en_7bc9142.pf_fragment": "c836d7d2cf00ba8009a668da3aba9ac76e448ec8a0bb8a5c0060939932e704ab",
+    "pagefind/fragment/en_c8dd191.pf_fragment": "abf636ac562a16de1002e98f05cd1665e204b7ed89c234aa3d437854a1dfa4bd",
+    "pagefind/fragment/en_d57830f.pf_fragment": "a8797cc7504e5c669b216d80df54158faf173a01f01e8121fae7437ecd586097",
+    "pagefind/fragment/en_534201f.pf_fragment": "fad5df559831cdf0fc6556e1a7899b758ad8d9d08eb540a759408a6b38d2da79",
+    "pagefind/fragment/en_1758fcf.pf_fragment": "f5ccd3280ff7f6048a3db38451075ed65832f0de4eeced8edca37c42f740f321",
+    "pagefind/fragment/en_bcd94cb.pf_fragment": "928059513d91fa1ce272c52e6ba880ade7e535ce950eaf4194e5c8e31bd39de6",
+    "pagefind/fragment/en_9a7c3dc.pf_fragment": "2f0ea129cc3ecd920cc972c29e58e2eccf89e2492a06b75ac579b51c14e59388",
+    "pagefind/fragment/en_a6a90b4.pf_fragment": "2834dfd6b66982047c99ddf0c812c96d1dc96bad580791bd95a85ebb0d0e2874",
+    "pagefind/fragment/en_43dce13.pf_fragment": "42dbe92dbdd2810b41bf3dc8a1ee48277089f2920dc65b2ccfb725bac68cc410",
+    "pagefind/fragment/en_733e06b.pf_fragment": "5f7da62ea6d786bfbe3fd66141041b27d525360cc0c639d837a9d4f2a2cb16e6",
+    "pagefind/fragment/en_9dce198.pf_fragment": "660c4a4dfdcc214c5a03af1aada0d949f33bde262aae4ec3d98bf48e71598171",
+    "pagefind/fragment/en_d364eeb.pf_fragment": "98f00a63ffbd345461cff0b06780c54d4334f78399bc76fd23c8fbfc1d17de49",
+    "pagefind/fragment/en_89f29b6.pf_fragment": "ffbb5d34d9a81d47c4bbfa3d641e65f5a52b54e6f58f82db5ae4130990440d19",
+    "pagefind/fragment/en_874e5ec.pf_fragment": "b7bfc4f35f4568e7ff67f0fcbf988771395def243e8ec546facd3368340f252f",
+    "pagefind/fragment/en_017e54c.pf_fragment": "985ef3b3fd219dbfd097642a31dc56101ca1311e721e8a9ce7783cb398ab9cca",
+    "pagefind/fragment/en_dcca58f.pf_fragment": "14cc4e002be943eb95d99ac6cf9443fc81f378b11907d31a244bcf6a3fcd480f",
+    "pagefind/fragment/en_68841bd.pf_fragment": "7b8efdee860b6a8557e67681b9c044d12776c232c42fe8cdb2af151d032fbb6e",
+    "pagefind/fragment/en_d117b0e.pf_fragment": "68d86ed4420a334173e124200eb5bed75b4307ea513ac26529ba88dcaa749a15",
+    "pagefind/fragment/en_c5bb5db.pf_fragment": "e1a3b2e397736ee706ad2155aa3d587ff209e5cc64c59b26b6c9e87b24f7399d",
+    "pagefind/fragment/en_82b9f49.pf_fragment": "64dbb7d3727039b9cf1c5ea60d79bad7f9fd7d47b99a4827ea884851d11d0ca0",
+    "pagefind/fragment/en_713d642.pf_fragment": "5bf7645ea2e8ef26870902a23e1315d3a7fa14a80e1704058b71f25cfca9dbe4",
+    "pagefind/fragment/en_9f913e7.pf_fragment": "5529321e8b4b2e33d25c62e9fac8e109cf5a8b05889d4a3ca9d274d6e6614815",
+    "pagefind/fragment/en_ab8d345.pf_fragment": "091ae0329de8cc90f1215b1dd99bdd24aa179af76918a04df224a5ccf1ecc545",
+    "pagefind/fragment/en_bb6b641.pf_fragment": "f5c0544bfbe3ef344e48127c20276bc450a6a35f474e88883df9cd412304b43e",
+    "pagefind/fragment/en_945338b.pf_fragment": "e03565d201954eb3770b1333e4c176d40976ec7d66e5a5e17ed77b58574716fd",
+    "pagefind/fragment/en_a1b687c.pf_fragment": "6e27b579039a41e0aacbea618b8a9c9451ad3044e77cdbbc5f58de503e6f7084",
+    "pagefind/fragment/en_2aed3a1.pf_fragment": "a6976c859c0f6bc32a4c7c10bce663ba8b918abcb15711ba9eda76d086fba584",
+    "pagefind/fragment/en_6f33786.pf_fragment": "f42428723b3d25a2419f33c3415183357ecf88bec0b9ed0885bb591c9671109a",
+    "pagefind/fragment/en_a8891d6.pf_fragment": "eadc0679fb2932027d340b6aeca7562ef9931ed250e28f293c3807da1cda697a",
+    "pagefind/fragment/en_f433b6d.pf_fragment": "9d7ebbb08cf6bcc74c46b49c1c6166d05a05c91fb23755c5f7a9681fdf7c9449",
+    "pagefind/fragment/en_ab8e341.pf_fragment": "272f64c7a56819cede899cc948f3f5cb13c1f0e4f10fb5569be35450c51a1d47",
+    "pagefind/fragment/en_12b1401.pf_fragment": "b3adc9988254308e5343ffae996c37be9ee36bcd2c05befe44768c408528dd0c",
+    "pagefind/fragment/en_e4d5907.pf_fragment": "e6d30cd205ebcea9ee6480a3493f08f5ecfa178efd3a6334c526d8e937bd414a",
+    "pagefind/fragment/en_52841de.pf_fragment": "e2667024df46acc8f5a785e7125216d306960ad893525885771977430174eb1f",
+    "pagefind/fragment/en_8e23d18.pf_fragment": "bc40d7f1db8edd06ed286c20ce8beafc687bfa52552e084662f3cdd6b08f3ca6",
+    "pagefind/fragment/en_687e408.pf_fragment": "ca24630d305c5aef2266a94bda1b2ed6aa52a587be568cf4c482a86c1084a37a",
+    "pagefind/fragment/en_24e4635.pf_fragment": "7cca9c4f5f86570fc8ab0429b90d6c6334005e79f31aaa89c64497a9f6a77b44",
+    "pagefind/fragment/en_f61c357.pf_fragment": "19f2fc41f6c820a5a0b3fec53cecf9065a96ece8a03eba38740b799dadfb2627",
+    "pagefind/fragment/en_b047518.pf_fragment": "fb0a5292675b4370d2c50e0d175b95dd66df3f1a3cf97a02b92e24d06d5b7632",
+    "pagefind/fragment/en_6177567.pf_fragment": "50b3647d6173ea4e744b5dd54a6c5e4c14b877749dc245aeaf60cb542b70c656",
+    "pagefind/fragment/en_dff6f90.pf_fragment": "c0c1605a42975f2e93af0f5ef2498763c3f95982aced345009834557f4269e14",
+    "pagefind/fragment/en_38b7b82.pf_fragment": "3709c88cca7003848b2944fd2fea550282a56f009d68d7dc3cebb1b159a65701",
+    "pagefind/fragment/en_caa4ca9.pf_fragment": "bcd03e5e984eacb9bb99f3dbb80e2d0562d7032c7695b266f520002eed3dc9fc",
+    "pagefind/fragment/en_7efb12b.pf_fragment": "b9072bbbfb8189be88fc0e1e777e5880d67c9e10aaed4631e85399391f2298b0",
+    "pagefind/pagefind.en_4f7846e6c2.pf_meta": "3c630529835ff7a402c4c39402437ad52071336080a0190b18d9fd882189fea3",
+    "pagefind/pagefind-worker.js": "4ca50d25bcab9e1c3afbc00ab5f7761114e83c8fc1b83d38655af1558b650c2a",
+    "pagefind/pagefind-modular-ui.js": "f3efa0f74b305ccab0bc9edc7c09ab69867180b4c43093d84bb9b508ac4ec32c",
+    "pagefind/pagefind-entry.json": "e605a6a64deded2c12605cc59697a38b8ce0f2d3d19d5ce60015af05ae556610",
+    "pagefind/pagefind.js": "252d272bd34d483d19a752060f6a065114d15ab12c42d8f905ca565e2768a009",
+    "feature-forge/overview/index.html": "695140ceb8bc36269df2c4242660fec188471f0c3eb409dce4ca322557961d35",
+    "feature-forge/whats-in-the-forge/index.html": "178b1e3baf1d096cbc9a77bb59d511f7ae82414649890dbb384193e8a14431a7",
+    "feature-forge/using-preview-features/index.html": "d054f777d516df7de726873556fa7ad0c7778d7e1c90f7315e1d0c8f10417b9e",
+    "release-applicability.json": "b25f5f0d787073db0d2f7b3ab3f6b727137abaec45e98d41016e7111dcfc01f6",
+    "diagrams/core-fanout.svg": "96b6016372849f3936eafd8bc95a37749efa999759ceafe88a1e747723005e0a",
+    "diagrams/commit-gate-phases.svg": "b30272af491fd485430341587c85b148444319473091e0e501151f58fca263e1",
+    "diagrams/lane-opt-in.svg": "d2d602103fd4d2d6bdc1eefdf24e5112022ef7200dec6d43452a3bd02b2ae0d8",
+    "diagrams/lane-flow.svg": "de5a59ccd25b8d02e2ae034cc770709a87cfc0ec56639131d7c4c8e52e2d63b3",
+    "diagrams/four-tier-map.svg": "7f35020b66e9e29ba78b305cbc7f6755b05314b7db0988c54acaa2fd2c20e2d9",
+    "diagrams/lane-sprint.svg": "d10fc8952959e4058a0a733127515a6825da6d6dbae772ab599526c340c1a73d",
+    "diagrams/provenance-drift-flow.svg": "b583f91894f3e36d288193c023c45377fdbec2dcc0f152fc3a475af253572922",
+    "diagrams/lane-adr.svg": "57849811047ecfdacb69ef2640b74d4b4e1c0e198739ab7e857c32d092d2927c",
+    "diagrams/sandbox-boundary.svg": "c8b51df0cd5da87d2ec6c0c9c79323015023a6ceb344a22240d10a8beb0f84b0",
+    "diagrams/lane-init-brownfield.svg": "40448de8fe3bf68f6c6c9a99509b0f733deb123203eab864520c36306a0c0848",
+    "diagrams/lane-feature.svg": "3ec4743b855221ac5f44a977407f2e4c49f264bff3ade2c245d1b3e103f7801f",
+    "diagrams/gate-model.svg": "f1cd304a0effe060cc41ed692132513edb4bd7a865b15adf2b323ae93a54c9de",
+    "diagrams/lane-release.svg": "c0c9ad50cf4b534430e6047be961fc123ae18f952510a4b043bc4de9af8a2015",
+    "diagrams/activation-states.svg": "fcf60df27712e0a18893ee1755609e07d278a00be64d5b65c998a4cea812bc6a",
+    "diagrams/lane-init-greenfield.svg": "efee0ca0a4947b003c9effddfe3be51ffe7347e6dc0d218af8ab1a753a105564",
+    "diagrams/two-axis-model.svg": "c3037b89b5c58148156b29d28200ab7a3df4dbdbebbcbb8760a578c49986e50e",
+    "diagrams/lane-add-dep.svg": "d5501e623ab949d05e0b6f479ff0de5b3eedaa00c6460f3731fc2f847bae4fd2",
+    "diagrams/statusline.png": "33cc43d6580f035803829a0e9bfb13ed644ac399a4cc19ef97d2c09daeb93326",
+    "trust/index.html": "8d3a38e048f242617df1eb9247400609253731c781a6cd33e52a2a095d003e6d",
+    "enforcement/index.html": "9d9b30e99eecb3e72154bc3f11cf68721f3a0f513f42176b8a6e76133850ec08"
+  },
+  "responses": [
+    {
+      "member": "index.html",
+      "sha256": "47cf89136f3e8a8c5a45c2613790bf45810ff2e0b809aacdb2927861718d23ed",
+      "bytes": 75537
+    },
+    {
+      "member": "_astro/ClientRouter.astro_astro_type_script_index_0_lang.CiWZqmkf.js",
+      "sha256": "37b83e2ff44a05b950a0d4df1798db29b620ed5e55e767d67a0220bd221dba7d",
+      "bytes": 13908
+    },
+    {
+      "member": "_astro/middleware.DJ1VBTPt.css",
+      "sha256": "d64f3dcd807f98e06d7f4bcacff3895219929a290142fbc76f63c9d93d963e35",
+      "bytes": 90684
+    },
+    {
+      "member": "_astro/Sidebar.C5SBb_KT.css",
+      "sha256": "14c86c57434ff20badee1312c9625c28a1641ff28a1b6feef089f9468d19f6db",
+      "bytes": 7278
+    },
+    {
+      "member": "_astro/page.DxxK05Nl.js",
+      "sha256": "015de120f3f3e03a5456a08b83541af64124809604d5975312f584cbaf82cbe4",
+      "bytes": 47
+    },
+    {
+      "member": "_astro/Search.astro_astro_type_script_index_0_lang.beFR8lrL.js",
+      "sha256": "1322cff9b07e5468512890f8b6f635ff75efdf4ee24e4437ef246653f6aa6357",
+      "bytes": 6108
+    },
+    {
+      "member": "_astro/hook-proof-poster.CBPk3aOd.webp",
+      "sha256": "8bd7bf4ce243dd7a0377a672b2c78b01e7c5344fe5fafea2940d32c0a70b94f6",
+      "bytes": 23862
+    },
+    {
+      "member": "_astro/logo.Dkr92sxm.svg",
+      "sha256": "4553873806ba21a9de652105d3330626b1301eefe50eb7d61a1f3f7efacb768a",
+      "bytes": 1855
+    },
+    {
+      "member": "_astro/print.ehPL0gv-.css",
+      "sha256": "4d7d25c3d697e6d36e64afb9edef136e6d2e4c50f70a48000ca90f9b059e3622",
+      "bytes": 3318
+    },
+    {
+      "member": "_astro/prefetch.tHJg-91W.js",
+      "sha256": "756ead845a2f87c29c87ae2bf9009ec090389bb2c5aa5a1812e9815fcea2045f",
+      "bytes": 2492
+    },
+    {
+      "member": "_astro/hero-gates.DNOjz25k.webp",
+      "sha256": "95893d3b7dac3a84cb9641145509b10b0290587d5b9da456b27f85dd649b43be",
+      "bytes": 69580
+    },
+    {
+      "member": "_astro/manrope-latin-wght-normal.DHIcAJRg.woff2",
+      "sha256": "a30ddcd349703aff7464c34bef3fffdff405ee50c113440d7c8693c02d210972",
+      "bytes": 24836
+    },
+    {
+      "member": "_astro/jetbrains-mono-latin-wght-normal.B9CIFXIH.woff2",
+      "sha256": "18be452724bfdc236c074ca94a249a7f41a86752c7d04ab258ce9ed5651f6a7e",
+      "bytes": 40404
+    },
+    {
+      "member": "_astro/hook-proof.ChGH6IDY.webm",
+      "sha256": "ef04f5ef567fca74a9c97630c1c4400aa729004cd6b3f04df9412fa8a7e19975",
+      "bytes": 116387
+    },
+    {
+      "member": "favicon.svg",
+      "sha256": "85d9a872fbaa7cb5118331e8fbf5b50bec333ea1598157d571acfa3faf48a895",
+      "bytes": 1533
+    },
+    {
+      "member": "index.html",
+      "sha256": "47cf89136f3e8a8c5a45c2613790bf45810ff2e0b809aacdb2927861718d23ed",
+      "bytes": 75537
+    },
+    {
+      "member": "_astro/middleware.DJ1VBTPt.css",
+      "sha256": "d64f3dcd807f98e06d7f4bcacff3895219929a290142fbc76f63c9d93d963e35",
+      "bytes": 90684
+    },
+    {
+      "member": "_astro/ClientRouter.astro_astro_type_script_index_0_lang.CiWZqmkf.js",
+      "sha256": "37b83e2ff44a05b950a0d4df1798db29b620ed5e55e767d67a0220bd221dba7d",
+      "bytes": 13908
+    },
+    {
+      "member": "_astro/Sidebar.C5SBb_KT.css",
+      "sha256": "14c86c57434ff20badee1312c9625c28a1641ff28a1b6feef089f9468d19f6db",
+      "bytes": 7278
+    },
+    {
+      "member": "_astro/page.DxxK05Nl.js",
+      "sha256": "015de120f3f3e03a5456a08b83541af64124809604d5975312f584cbaf82cbe4",
+      "bytes": 47
+    },
+    {
+      "member": "_astro/Search.astro_astro_type_script_index_0_lang.beFR8lrL.js",
+      "sha256": "1322cff9b07e5468512890f8b6f635ff75efdf4ee24e4437ef246653f6aa6357",
+      "bytes": 6108
+    },
+    {
+      "member": "_astro/hook-proof-poster.CBPk3aOd.webp",
+      "sha256": "8bd7bf4ce243dd7a0377a672b2c78b01e7c5344fe5fafea2940d32c0a70b94f6",
+      "bytes": 23862
+    },
+    {
+      "member": "_astro/logo.Dkr92sxm.svg",
+      "sha256": "4553873806ba21a9de652105d3330626b1301eefe50eb7d61a1f3f7efacb768a",
+      "bytes": 1855
+    },
+    {
+      "member": "_astro/print.ehPL0gv-.css",
+      "sha256": "4d7d25c3d697e6d36e64afb9edef136e6d2e4c50f70a48000ca90f9b059e3622",
+      "bytes": 3318
+    },
+    {
+      "member": "_astro/manrope-latin-wght-normal.DHIcAJRg.woff2",
+      "sha256": "a30ddcd349703aff7464c34bef3fffdff405ee50c113440d7c8693c02d210972",
+      "bytes": 24836
+    },
+    {
+      "member": "_astro/hero-gates.DNOjz25k.webp",
+      "sha256": "95893d3b7dac3a84cb9641145509b10b0290587d5b9da456b27f85dd649b43be",
+      "bytes": 69580
+    },
+    {
+      "member": "_astro/prefetch.tHJg-91W.js",
+      "sha256": "756ead845a2f87c29c87ae2bf9009ec090389bb2c5aa5a1812e9815fcea2045f",
+      "bytes": 2492
+    },
+    {
+      "member": "_astro/hook-proof.ChGH6IDY.webm",
+      "sha256": "ef04f5ef567fca74a9c97630c1c4400aa729004cd6b3f04df9412fa8a7e19975",
+      "bytes": 116387
+    },
+    {
+      "member": "_astro/jetbrains-mono-latin-wght-normal.B9CIFXIH.woff2",
+      "sha256": "18be452724bfdc236c074ca94a249a7f41a86752c7d04ab258ce9ed5651f6a7e",
+      "bytes": 40404
+    },
+    {
+      "member": "favicon.svg",
+      "sha256": "85d9a872fbaa7cb5118331e8fbf5b50bec333ea1598157d571acfa3faf48a895",
+      "bytes": 1533
+    },
+    {
+      "member": "index.html",
+      "sha256": "47cf89136f3e8a8c5a45c2613790bf45810ff2e0b809aacdb2927861718d23ed",
+      "bytes": 75537
+    },
+    {
+      "member": "_astro/ClientRouter.astro_astro_type_script_index_0_lang.CiWZqmkf.js",
+      "sha256": "37b83e2ff44a05b950a0d4df1798db29b620ed5e55e767d67a0220bd221dba7d",
+      "bytes": 13908
+    },
+    {
+      "member": "_astro/middleware.DJ1VBTPt.css",
+      "sha256": "d64f3dcd807f98e06d7f4bcacff3895219929a290142fbc76f63c9d93d963e35",
+      "bytes": 90684
+    },
+    {
+      "member": "_astro/Sidebar.C5SBb_KT.css",
+      "sha256": "14c86c57434ff20badee1312c9625c28a1641ff28a1b6feef089f9468d19f6db",
+      "bytes": 7278
+    },
+    {
+      "member": "_astro/page.DxxK05Nl.js",
+      "sha256": "015de120f3f3e03a5456a08b83541af64124809604d5975312f584cbaf82cbe4",
+      "bytes": 47
+    },
+    {
+      "member": "_astro/Search.astro_astro_type_script_index_0_lang.beFR8lrL.js",
+      "sha256": "1322cff9b07e5468512890f8b6f635ff75efdf4ee24e4437ef246653f6aa6357",
+      "bytes": 6108
+    },
+    {
+      "member": "_astro/hook-proof-poster.CBPk3aOd.webp",
+      "sha256": "8bd7bf4ce243dd7a0377a672b2c78b01e7c5344fe5fafea2940d32c0a70b94f6",
+      "bytes": 23862
+    },
+    {
+      "member": "_astro/logo.Dkr92sxm.svg",
+      "sha256": "4553873806ba21a9de652105d3330626b1301eefe50eb7d61a1f3f7efacb768a",
+      "bytes": 1855
+    },
+    {
+      "member": "_astro/print.ehPL0gv-.css",
+      "sha256": "4d7d25c3d697e6d36e64afb9edef136e6d2e4c50f70a48000ca90f9b059e3622",
+      "bytes": 3318
+    },
+    {
+      "member": "_astro/prefetch.tHJg-91W.js",
+      "sha256": "756ead845a2f87c29c87ae2bf9009ec090389bb2c5aa5a1812e9815fcea2045f",
+      "bytes": 2492
+    },
+    {
+      "member": "_astro/hook-proof.ChGH6IDY.webm",
+      "sha256": "ef04f5ef567fca74a9c97630c1c4400aa729004cd6b3f04df9412fa8a7e19975",
+      "bytes": 116387
+    },
+    {
+      "member": "_astro/hero-gates.DNOjz25k.webp",
+      "sha256": "95893d3b7dac3a84cb9641145509b10b0290587d5b9da456b27f85dd649b43be",
+      "bytes": 69580
+    },
+    {
+      "member": "_astro/manrope-latin-wght-normal.DHIcAJRg.woff2",
+      "sha256": "a30ddcd349703aff7464c34bef3fffdff405ee50c113440d7c8693c02d210972",
+      "bytes": 24836
+    },
+    {
+      "member": "_astro/jetbrains-mono-latin-wght-normal.B9CIFXIH.woff2",
+      "sha256": "18be452724bfdc236c074ca94a249a7f41a86752c7d04ab258ce9ed5651f6a7e",
+      "bytes": 40404
+    },
+    {
+      "member": "favicon.svg",
+      "sha256": "85d9a872fbaa7cb5118331e8fbf5b50bec333ea1598157d571acfa3faf48a895",
+      "bytes": 1533
+    },
+    {
+      "member": "index.html",
+      "sha256": "47cf89136f3e8a8c5a45c2613790bf45810ff2e0b809aacdb2927861718d23ed",
+      "bytes": 75537
+    },
+    {
+      "member": "_astro/ClientRouter.astro_astro_type_script_index_0_lang.CiWZqmkf.js",
+      "sha256": "37b83e2ff44a05b950a0d4df1798db29b620ed5e55e767d67a0220bd221dba7d",
+      "bytes": 13908
+    },
+    {
+      "member": "_astro/middleware.DJ1VBTPt.css",
+      "sha256": "d64f3dcd807f98e06d7f4bcacff3895219929a290142fbc76f63c9d93d963e35",
+      "bytes": 90684
+    },
+    {
+      "member": "_astro/Sidebar.C5SBb_KT.css",
+      "sha256": "14c86c57434ff20badee1312c9625c28a1641ff28a1b6feef089f9468d19f6db",
+      "bytes": 7278
+    },
+    {
+      "member": "_astro/page.DxxK05Nl.js",
+      "sha256": "015de120f3f3e03a5456a08b83541af64124809604d5975312f584cbaf82cbe4",
+      "bytes": 47
+    },
+    {
+      "member": "_astro/Search.astro_astro_type_script_index_0_lang.beFR8lrL.js",
+      "sha256": "1322cff9b07e5468512890f8b6f635ff75efdf4ee24e4437ef246653f6aa6357",
+      "bytes": 6108
+    },
+    {
+      "member": "_astro/hook-proof-poster.CBPk3aOd.webp",
+      "sha256": "8bd7bf4ce243dd7a0377a672b2c78b01e7c5344fe5fafea2940d32c0a70b94f6",
+      "bytes": 23862
+    },
+    {
+      "member": "_astro/logo.Dkr92sxm.svg",
+      "sha256": "4553873806ba21a9de652105d3330626b1301eefe50eb7d61a1f3f7efacb768a",
+      "bytes": 1855
+    },
+    {
+      "member": "_astro/print.ehPL0gv-.css",
+      "sha256": "4d7d25c3d697e6d36e64afb9edef136e6d2e4c50f70a48000ca90f9b059e3622",
+      "bytes": 3318
+    },
+    {
+      "member": "_astro/hero-gates.DNOjz25k.webp",
+      "sha256": "95893d3b7dac3a84cb9641145509b10b0290587d5b9da456b27f85dd649b43be",
+      "bytes": 69580
+    },
+    {
+      "member": "_astro/manrope-latin-wght-normal.DHIcAJRg.woff2",
+      "sha256": "a30ddcd349703aff7464c34bef3fffdff405ee50c113440d7c8693c02d210972",
+      "bytes": 24836
+    },
+    {
+      "member": "_astro/prefetch.tHJg-91W.js",
+      "sha256": "756ead845a2f87c29c87ae2bf9009ec090389bb2c5aa5a1812e9815fcea2045f",
+      "bytes": 2492
+    },
+    {
+      "member": "_astro/jetbrains-mono-latin-wght-normal.B9CIFXIH.woff2",
+      "sha256": "18be452724bfdc236c074ca94a249a7f41a86752c7d04ab258ce9ed5651f6a7e",
+      "bytes": 40404
+    },
+    {
+      "member": "_astro/hook-proof.ChGH6IDY.webm",
+      "sha256": "ef04f5ef567fca74a9c97630c1c4400aa729004cd6b3f04df9412fa8a7e19975",
+      "bytes": 116387
+    },
+    {
+      "member": "favicon.svg",
+      "sha256": "85d9a872fbaa7cb5118331e8fbf5b50bec333ea1598157d571acfa3faf48a895",
+      "bytes": 1533
+    },
+    {
+      "member": "concepts/workflow-routes/index.html",
+      "sha256": "d1f3eca1d7c28bc6c5dce4a39c7002132d367ecade9a0689124514e9ac407ea5",
+      "bytes": 2509529
+    },
+    {
+      "member": "_astro/ClientRouter.astro_astro_type_script_index_0_lang.CiWZqmkf.js",
+      "sha256": "37b83e2ff44a05b950a0d4df1798db29b620ed5e55e767d67a0220bd221dba7d",
+      "bytes": 13908
+    },
+    {
+      "member": "_astro/middleware.DJ1VBTPt.css",
+      "sha256": "d64f3dcd807f98e06d7f4bcacff3895219929a290142fbc76f63c9d93d963e35",
+      "bytes": 90684
+    },
+    {
+      "member": "_astro/Sidebar.C5SBb_KT.css",
+      "sha256": "14c86c57434ff20badee1312c9625c28a1641ff28a1b6feef089f9468d19f6db",
+      "bytes": 7278
+    },
+    {
+      "member": "_astro/workflow-routes.CXj4p2nf.css",
+      "sha256": "1c9d0dc872fe1cdbe152d18dd8586c0fda2915061a07b1e47cf3b75455973907",
+      "bytes": 12896
+    },
+    {
+      "member": "_astro/page.DxxK05Nl.js",
+      "sha256": "015de120f3f3e03a5456a08b83541af64124809604d5975312f584cbaf82cbe4",
+      "bytes": 47
+    },
+    {
+      "member": "_astro/Search.astro_astro_type_script_index_0_lang.beFR8lrL.js",
+      "sha256": "1322cff9b07e5468512890f8b6f635ff75efdf4ee24e4437ef246653f6aa6357",
+      "bytes": 6108
+    },
+    {
+      "member": "_astro/logo.Dkr92sxm.svg",
+      "sha256": "4553873806ba21a9de652105d3330626b1301eefe50eb7d61a1f3f7efacb768a",
+      "bytes": 1855
+    },
+    {
+      "member": "_astro/print.ehPL0gv-.css",
+      "sha256": "4d7d25c3d697e6d36e64afb9edef136e6d2e4c50f70a48000ca90f9b059e3622",
+      "bytes": 3318
+    },
+    {
+      "member": "_astro/WorkflowAtlas.astro_astro_type_script_index_0_lang.Dmg0kNRO.js",
+      "sha256": "eb92cacb2a22be4ba3fe8254095d108d54e115da51cd01355ccad67c9d6deb70",
+      "bytes": 13325
+    },
+    {
+      "member": "_astro/prefetch.tHJg-91W.js",
+      "sha256": "756ead845a2f87c29c87ae2bf9009ec090389bb2c5aa5a1812e9815fcea2045f",
+      "bytes": 2492
+    },
+    {
+      "member": "_astro/manrope-latin-wght-normal.DHIcAJRg.woff2",
+      "sha256": "a30ddcd349703aff7464c34bef3fffdff405ee50c113440d7c8693c02d210972",
+      "bytes": 24836
+    },
+    {
+      "member": "_astro/jetbrains-mono-latin-wght-normal.B9CIFXIH.woff2",
+      "sha256": "18be452724bfdc236c074ca94a249a7f41a86752c7d04ab258ce9ed5651f6a7e",
+      "bytes": 40404
+    },
+    {
+      "member": "pagefind/pagefind.js",
+      "sha256": "252d272bd34d483d19a752060f6a065114d15ab12c42d8f905ca565e2768a009",
+      "bytes": 45555
+    },
+    {
+      "member": "favicon.svg",
+      "sha256": "85d9a872fbaa7cb5118331e8fbf5b50bec333ea1598157d571acfa3faf48a895",
+      "bytes": 1533
+    },
+    {
+      "member": "pagefind/pagefind.js",
+      "sha256": "252d272bd34d483d19a752060f6a065114d15ab12c42d8f905ca565e2768a009",
+      "bytes": 45555
+    },
+    {
+      "member": "pagefind/pagefind-worker.js",
+      "sha256": "4ca50d25bcab9e1c3afbc00ab5f7761114e83c8fc1b83d38655af1558b650c2a",
+      "bytes": 41255
+    },
+    {
+      "member": "pagefind/pagefind-entry.json",
+      "sha256": "e605a6a64deded2c12605cc59697a38b8ce0f2d3d19d5ce60015af05ae556610",
+      "bytes": 173
+    },
+    {
+      "member": "pagefind/pagefind.en_4f7846e6c2.pf_meta",
+      "sha256": "3c630529835ff7a402c4c39402437ad52071336080a0190b18d9fd882189fea3",
+      "bytes": 1776
+    },
+    {
+      "member": "pagefind/wasm.en.pagefind",
+      "sha256": "bb16c9e6d3d214d4d05cccca51df7b487b86b3657318da767f6ca9e0a2e7259d",
+      "bytes": 72209
+    },
+    {
+      "member": "pagefind/index/en_6c689de.pf_index",
+      "sha256": "8be4e65f4e6bcd39b832637d12382c7ef23706020dcd28d646a173ec7193bd76",
+      "bytes": 13393
+    },
+    {
+      "member": "pagefind/index/en_81b08a5.pf_index",
+      "sha256": "04147f0ffc1b51078c9d1c69b4f5cac4c11b61c94f968204e2b27d3733a42961",
+      "bytes": 32864
+    },
+    {
+      "member": "pagefind/index/en_8936a81.pf_index",
+      "sha256": "6bf3f9c1ad463439836fcff934ca25e1212aa618f33eeb4ff4624905d4766651",
+      "bytes": 31116
+    },
+    {
+      "member": "pagefind/index/en_e2b213f.pf_index",
+      "sha256": "a69274c96140f658460b4edc3c98dec85de9750198f0c286ef11af23e5746726",
+      "bytes": 32622
+    },
+    {
+      "member": "pagefind/fragment/en_5734e4a.pf_fragment",
+      "sha256": "06b9cdb3a4e92ab8c31c03c4ee59304bca42fc9616a75f19d38b4698fe862d7d",
+      "bytes": 2295
+    },
+    {
+      "member": "pagefind/fragment/en_a15db3e.pf_fragment",
+      "sha256": "85302626c4214b6fc94efb0a02dc16a06c37864173608e4c14198e669bcc7f77",
+      "bytes": 4041
+    },
+    {
+      "member": "pagefind/fragment/en_a1b687c.pf_fragment",
+      "sha256": "6e27b579039a41e0aacbea618b8a9c9451ad3044e77cdbbc5f58de503e6f7084",
+      "bytes": 4748
+    },
+    {
+      "member": "pagefind/fragment/en_9f73141.pf_fragment",
+      "sha256": "fd2a8adb433fc00bc522a16a91c9715787ad83daaca14b46f8ed975c56cfadfc",
+      "bytes": 2515
+    },
+    {
+      "member": "pagefind/fragment/en_8411f7a.pf_fragment",
+      "sha256": "9660d0ce6948739bc5aa031646ec5376b458701f251e1448d8a164d3a46d242d",
+      "bytes": 3403
+    },
+    {
+      "member": "pagefind/fragment/en_1636d69.pf_fragment",
+      "sha256": "9e646e2cb3cc84f5bd86d889ae1a83871f4c052bfc12a3cf4338ecea5888abc5",
+      "bytes": 4653
+    },
+    {
+      "member": "pagefind/fragment/en_7cc4ffd.pf_fragment",
+      "sha256": "f14a3a862d1baa7b45587b5990b60b3648c44ca816220784eccc8765165b503e",
+      "bytes": 2712
+    },
+    {
+      "member": "pagefind/fragment/en_caa4ca9.pf_fragment",
+      "sha256": "bcd03e5e984eacb9bb99f3dbb80e2d0562d7032c7695b266f520002eed3dc9fc",
+      "bytes": 3715
+    },
+    {
+      "member": "pagefind/fragment/en_86a7bed.pf_fragment",
+      "sha256": "82982756fa0dcc75ff9df22ebdc92e9a2638bce105740dd19b63c9ca9387391e",
+      "bytes": 2636
+    },
+    {
+      "member": "pagefind/fragment/en_bcd94cb.pf_fragment",
+      "sha256": "928059513d91fa1ce272c52e6ba880ade7e535ce950eaf4194e5c8e31bd39de6",
+      "bytes": 7492
+    },
+    {
+      "member": "pagefind/fragment/en_165e7e7.pf_fragment",
+      "sha256": "c0deceec9964a2d7025e498e098a84240edb245f9ea2d0e7b6cb841325a148ef",
+      "bytes": 4433
+    },
+    {
+      "member": "pagefind/fragment/en_3a54a8b.pf_fragment",
+      "sha256": "23f59d2bccdadd288ac9fbaa1f24ea6b560e19f9ef8a64f39a02bbd666e2be03",
+      "bytes": 6988
+    },
+    {
+      "member": "pagefind/fragment/en_d57830f.pf_fragment",
+      "sha256": "a8797cc7504e5c669b216d80df54158faf173a01f01e8121fae7437ecd586097",
+      "bytes": 80988
+    },
+    {
+      "member": "pagefind/fragment/en_9f913e7.pf_fragment",
+      "sha256": "5529321e8b4b2e33d25c62e9fac8e109cf5a8b05889d4a3ca9d274d6e6614815",
+      "bytes": 6251
+    },
+    {
+      "member": "pagefind/fragment/en_d364eeb.pf_fragment",
+      "sha256": "98f00a63ffbd345461cff0b06780c54d4334f78399bc76fd23c8fbfc1d17de49",
+      "bytes": 4009
+    },
+    {
+      "member": "pagefind/fragment/en_452bf63.pf_fragment",
+      "sha256": "e15456d389f03d5739bcf07b9f408ea1112a5140e9531e8484897e2171205f3a",
+      "bytes": 7523
+    },
+    {
+      "member": "pagefind/fragment/en_a949a48.pf_fragment",
+      "sha256": "4513a3034374c96cc9d2aa195156c73c704f046fb43621e9c5648509ec8a6571",
+      "bytes": 4743
+    },
+    {
+      "member": "pagefind/fragment/en_f5c8c95.pf_fragment",
+      "sha256": "0cfa75e30b63ba843e6528ba17d3ede7117e5202fdbb2b31df9415705b88f5f3",
+      "bytes": 7914
+    },
+    {
+      "member": "pagefind/fragment/en_4efa334.pf_fragment",
+      "sha256": "e0e27e2d50c3c0d2d24993067121edb7d6535204077c941a680e34f04aab74e9",
+      "bytes": 5074
+    },
+    {
+      "member": "pagefind/fragment/en_c49143d.pf_fragment",
+      "sha256": "da546e23eead2ee643a94661d08fbe8e88a0cf4e815dc7c58f77149d5b826f64",
+      "bytes": 5380
+    },
+    {
+      "member": "pagefind/fragment/en_ead1455.pf_fragment",
+      "sha256": "9430e15c8df1bf33135a75857cad9289afc73ae0ad9f9049d19d417d077af64d",
+      "bytes": 4072
+    },
+    {
+      "member": "pagefind/fragment/en_ab8e341.pf_fragment",
+      "sha256": "272f64c7a56819cede899cc948f3f5cb13c1f0e4f10fb5569be35450c51a1d47",
+      "bytes": 90698
+    },
+    {
+      "member": "getting-started/quickstart/index.html",
+      "sha256": "54a0fa3aacdb436cbb7b7da1171b1df8f9d5e497e1a3bab62eb9d481737945f5",
+      "bytes": 87857
+    },
+    {
+      "member": "_astro/ec.2ev1h.css",
+      "sha256": "132741ff9dc3f3b076f33110ef154d63aeb43ceb99e37c1f351b993e1064112c",
+      "bytes": 18254
+    },
+    {
+      "member": "_astro/ec.0vx5m.js",
+      "sha256": "182e98b9acfcfd358ea486967bd17dcaddd5930b8d092bc0653fd26ddbb11e37",
+      "bytes": 2523
+    },
+    {
+      "member": "favicon.svg",
+      "sha256": "85d9a872fbaa7cb5118331e8fbf5b50bec333ea1598157d571acfa3faf48a895",
+      "bytes": 1533
+    }
+  ],
+  "local_node_sha256": "c0b01496cf3da5cceca86eb6e1b2ef5d088cd46ad4e97cf502e2c937fa7f56b9",
+  "local_chrome_sha256": "46461accbdc87dc88a5bdd6d611be095dd6147db009863d794f742ca90662efa",
+  "original_CI_browser": "157.0.8103.50",
+  "result_scope": "Local Windows Chrome original-built Pages acceptance, not hosted/production deployment or native qualification."
+}

@@ -134,7 +134,7 @@ class PlatformSelectionTests(unittest.TestCase):
     def test_windows_selects_native_not_emulated_architecture(self):
         for native, emulated, expected in ((0x8664, 0x014C, "amd64"), (0xAA64, 0x8664, "arm64")):
             with self.subTest(native=native), \
-                    mock.patch("_artifactlib.platform.system", return_value="Windows"), \
+                    mock.patch("_artifactlib.sys.platform", "win32"), \
                     mock.patch("_artifactlib.platform.machine", side_effect=AssertionError("Windows must query the kernel")), \
                     mock.patch("ctypes.WinDLL", return_value=self.kernel(native, emulated), create=True):
                 self.assertEqual(ArtifactClient._binary_name(), f"ca-artifact-windows-{expected}.exe")
@@ -142,7 +142,7 @@ class PlatformSelectionTests(unittest.TestCase):
     def test_windows_native_query_failure_or_unsupported_cpu_refuses(self):
         for native, success in ((0x8664, False), (0, True), (0x014C, True), (0xFFFF, True)):
             with self.subTest(native=native, success=success), \
-                    mock.patch("_artifactlib.platform.system", return_value="Windows"), \
+                    mock.patch("_artifactlib.sys.platform", "win32"), \
                     mock.patch("_artifactlib.platform.machine", return_value="AMD64"), \
                     mock.patch.dict(os.environ, {"PROCESSOR_ARCHITECTURE": "AMD64"}), \
                     mock.patch("ctypes.WinDLL", return_value=self.kernel(native, success=success), create=True):
@@ -153,7 +153,7 @@ class PlatformSelectionTests(unittest.TestCase):
     def test_windows_native_api_unavailable_refuses(self):
         for failure in (ImportError("ctypes unavailable"), OSError("loader unavailable"), AttributeError("API unavailable")):
             with self.subTest(failure=type(failure).__name__), \
-                    mock.patch("_artifactlib.platform.system", return_value="Windows"), \
+                    mock.patch("_artifactlib.sys.platform", "win32"), \
                     mock.patch("_artifactlib.platform.machine", return_value=""), \
                     mock.patch("ctypes.WinDLL", side_effect=failure, create=True):
                 with self.assertRaises(ArtifactError) as raised:
@@ -164,7 +164,7 @@ class PlatformSelectionTests(unittest.TestCase):
         for system, prefix in (("Linux", "linux"), ("Darwin", "darwin")):
             for machine, arch in (("x86_64", "amd64"), ("AMD64", "amd64"), ("aarch64", "arm64"), ("ARM64", "arm64")):
                 with self.subTest(system=system, machine=machine), \
-                        mock.patch("_artifactlib.platform.system", return_value=system), \
+                        mock.patch("_artifactlib.sys.platform", {"Linux": "linux", "Darwin": "darwin"}.get(system, "unsupported")), \
                         mock.patch("_artifactlib.platform.machine", return_value=machine), \
                         mock.patch("ctypes.WinDLL", create=True) as loader:
                     self.assertEqual(ArtifactClient._binary_name(), f"ca-artifact-{prefix}-{arch}")
@@ -173,7 +173,7 @@ class PlatformSelectionTests(unittest.TestCase):
     def test_unknown_platform_or_unix_architecture_never_probes_windows(self):
         for system, machine in (("Linux", ""), ("Darwin", ""), ("Linux", "mips"), ("Darwin", "mips"), ("Other", "AMD64")):
             with self.subTest(system=system, machine=machine), \
-                    mock.patch("_artifactlib.platform.system", return_value=system), \
+                    mock.patch("_artifactlib.sys.platform", {"Linux": "linux", "Darwin": "darwin"}.get(system, "unsupported")), \
                     mock.patch("_artifactlib.platform.machine", return_value=machine), \
                     mock.patch("ctypes.WinDLL", create=True) as loader:
                 with self.assertRaises(ArtifactError) as raised:
@@ -364,6 +364,11 @@ class PageValidationTests(unittest.TestCase):
 
 
 class BridgeTests(unittest.TestCase):
+    def test_malformed_optional_context_qualification_is_not_ignored(self):
+        destination = self.damaged_installation('bad-context', lambda _root, release: release.update(context_qualification={'windows/amd64':42}))
+        with self.assertRaises(ArtifactError):
+            ArtifactClient(self.root,destination).call('capabilities')
+
     def setUp(self):
         self.tmp=tempfile.TemporaryDirectory();self.addCleanup(self.tmp.cleanup)
         self.test_directory=physical_test_directory(self.tmp.name)
@@ -666,7 +671,7 @@ class HostArchitectureTests(unittest.TestCase):
         self.assertEqual(caps["public_registrations_added"],0)
 
     def test_unanswered_windows_architecture_fails_closed(self):
-        with mock.patch("platform.system",return_value="Windows"),                 mock.patch("_artifactlib._windows_native_architecture",return_value=None),                 mock.patch("platform.machine",return_value="AMD64"):
+        with mock.patch("_artifactlib.sys.platform", "win32"),                 mock.patch("_artifactlib._windows_native_architecture",return_value=None),                 mock.patch("platform.machine",return_value="AMD64"):
             with self.assertRaises(ArtifactError) as got:
                 ArtifactClient(self.root,INSTALLATION).call("capabilities")
         self.assertEqual(got.exception.code,"UNSUPPORTED_PLATFORM")

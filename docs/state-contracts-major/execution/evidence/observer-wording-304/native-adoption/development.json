@@ -1,0 +1,33 @@
+{
+ "schema": "codearbiter.native-evidence-adoption/1",
+ "controller_anchor": "304ceff554bf1dc70afd7936898983e0d4fe076f",
+ "staged_original_owner": "PENDING_GENUINE_FULL_OWNER",
+ "source_reviews": {
+  "native-eight": {
+   "delivery_sha256": "f3a0ba63e9f373c9a0771395d5e2684c3b7419f5b1bca5ef05c5f45b1dac413e",
+   "peer_sha256": "9fa985b7b00c634c24953cf183149ee7ea1f2d03fc3b8fa2b7df0a9c510689fb",
+   "rows": 8,
+   "actual_runtime_source": "d4822a5689cd9c3b157242303236cb26227e0ea5"
+  },
+  "native-retention": {
+   "delivery_sha256": "a9a9da1425af34f824328809dcf1d1769819d76e534048f04d7e549374438583",
+   "peer_sha256": "a462a7fbcadf81cbb8e0979f8c238cd002dcd415d593fbc39f50e1e89b348b4e",
+   "rows": 133,
+   "actual_runtime_source": "d4822a5689cd9c3b157242303236cb26227e0ea5"
+  }
+ },
+ "status_promotions": 8,
+ "same_status_history_replacements": 133,
+ "planned_remaining": {
+  "findings": 49,
+  "machines": 0,
+  "transitions": 0,
+  "total": 49
+ },
+ "remaining_original_evidence_gap": "Seven expired bookmark/directory Pages cells await genuine original trusted-push Docs report reconstruction; Root triggered failed-only retry which passed, original failed attempt retained.",
+ "execution": "No new native execution; exact original named outcomes and every descendant reused from six authenticated D482 components. Original runtime epoch remains D482.",
+ "history": "Old original proof files unchanged; only selected active component replaced, exact previous record appended to history. Mixed CE3/local components remain active and untouched.",
+ "publication": "NOT_AUTHORIZED",
+ "main_merge": "HELD_FOR_USER_TESTING",
+ "task_promotion": false
+}

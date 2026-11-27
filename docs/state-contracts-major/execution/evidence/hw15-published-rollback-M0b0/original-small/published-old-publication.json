@@ -1,0 +1,13 @@
+{
+  "channel": "ca-codex-marketplace",
+  "channel_ref": "6e004889134da4a282dc64561d54aaeff9de1b5d",
+  "format": "codearbiter.target-publication/0.1.0",
+  "host": "codex",
+  "package_file": "codearbiter-ca-codex-0.26.9.tar.gz",
+  "package_sha256": "df348d8926a6590346ab333abfefbeba88347dfdc665760d874e37c5f24c09ee",
+  "release_state": "published",
+  "source_commit": "3f1bd13762ed9f25320e58907f9bf98a81128504",
+  "tag": "ca-codex-v0.26.9",
+  "target": "ca-codex",
+  "version": "0.26.9"
+}

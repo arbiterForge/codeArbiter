@@ -2,7 +2,7 @@ import {describe,expect,it} from 'vitest';
 import {readFileSync} from 'node:fs';
 import {originalAtlas} from './atlas';
 import {REVIEWED_AT,validateAtlas,sourceHref,invocation,commandDescription,layoutLines,edgeRelevant,type HostDescriptor} from './atlas-model';
-import {renderAtlasHtml,renderAtlasSvg} from './atlas-render';
+import {renderAtlasHtml,renderAtlasSvg,renderReadingGuide} from './atlas-render';
 import {atlasTheme} from './atlas-theme';
 const theme=()=>atlasTheme(readFileSync(new URL('../../src/styles/design-system.css',import.meta.url),'utf8'));
 
@@ -76,5 +76,33 @@ describe('original spatial atlas model and exports',()=>{
     expect(atlasTheme(css.replace('--ca-bg: #090d12;','--ca-bg: #010203;')).bg).toBe('#010203');
     expect(()=>atlasTheme(css.replace('--ca-bg: #090d12;','--ca-bg: var(--ca-bg);'))).toThrow(/cyclic/);
     expect(()=>atlasTheme(css.replace('--ca-bg: #090d12;','--ca-bg: url(https://invalid.example);'))).toThrow(/Unsafe/);
+  });
+
+  it('links each current-source owner to its reviewed revision with legacy fallback',()=>{
+    const a=originalAtlas();
+    const base='f65f1e7543f2934a274909cb0d157b94ee909e61';
+    const revision='9bc844c61d4ef05ec16796a9671628913f10a5a6';
+    const path='core/pysrc/prompt-submit.py';
+    a.sourceUpdate={revision:base,title:'Inspected owner changes',summary:`Source base ${base} remains historical.`,changes:[
+      {path,blob:'5fcb6c3e41b051b530887c702a3fe33d078e7448',revision,summary:'Reviewed persona recovery.',nodes:['o-runtime']},
+      {path:'core/hosts.json',blob:'2fc53a8b7ca7b0e5a656f5640d9662d798af8856',summary:'Legacy global-base link.',nodes:['o-runtime']},
+    ]};
+    expect(validateAtlas(a)).toEqual([]);
+    const html=renderReadingGuide(a,''),links=[...html.matchAll(/href="([^"]*)"/g)].map(match=>match[1]);
+    expect(links.includes(sourceHref({path,revision}))).toBe(true);
+    expect(links.includes(sourceHref({path,revision:base}))).toBe(false);
+    expect(links.includes(sourceHref({path:'core/hosts.json',revision:base}))).toBe(true);
+    expect(a.sourceUpdate.revision).toBe(base);
+    expect(html.includes(`Source base ${base} remains historical.`)).toBe(true);
+  });
+  it('rejects invalid optional current-source revisions instead of falling back',()=>{
+    for(const revision of ['', 'main', 'A'.repeat(40), 'javascript:alert(1)', null, 123, ['a'.repeat(40)]]){
+      const a=originalAtlas();
+      a.sourceUpdate={revision:REVIEWED_AT,title:'Inspected changes',summary:'Bounded owner evidence.',changes:[
+        {path:'core/pysrc/prompt-submit.py',blob:'5fcb6c3e41b051b530887c702a3fe33d078e7448',revision:revision as unknown as string,summary:'Owner.',nodes:['o-runtime']},
+      ]};
+      expect(validateAtlas(a).some(error=>error.includes('Invalid atlas update source'))).toBe(true);
+      expect(()=>renderReadingGuide(a,'')).toThrow('Invalid atlas source');
+    }
   });
 });

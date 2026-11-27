@@ -1,0 +1,3019 @@
+{
+  "argv": [
+    "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+    "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\typescript\\bin\\tsc",
+    "--noEmit"
+  ],
+  "declared_package_command": "typecheck: tsc --noEmit",
+  "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site",
+  "actual_source": "2cf5fafac374791e6fc7c0c98d0a6f43c275c82c",
+  "exit_code": 0,
+  "seconds": 10.24100136756897,
+  "input_scope": "All tracked site script/test TypeScript/JSON selected below, config/manifests; physical/Git hashes include EOL-only checkout differences explicitly. Candidate changes only script text, workflow, Python contract; no TS semantic delta.",
+  "inputs_before": {
+    "site/package-lock.json": {
+      "physical": "d81f1d4b54c0e2a0fc05815687fcb306e0a12f98c3e382032556e445c614787a",
+      "immutable_Git": "d81f1d4b54c0e2a0fc05815687fcb306e0a12f98c3e382032556e445c614787a",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/package.json": {
+      "physical": "3c00bebcf4d5796050692262ec2791f4ae367d8b450a650419e552a6162aac7c",
+      "immutable_Git": "3c00bebcf4d5796050692262ec2791f4ae367d8b450a650419e552a6162aac7c",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/playwright.config.ts": {
+      "physical": "1f8d2f99203986f48b92209918479f45bfb054043296745e0d987e415e199615",
+      "immutable_Git": "1f8d2f99203986f48b92209918479f45bfb054043296745e0d987e415e199615",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/academy-command-preferences.test.ts": {
+      "physical": "78347d411c40f13cbcb0fc55c1a276f05accf442c9c432890dbfb333db63238a",
+      "immutable_Git": "78347d411c40f13cbcb0fc55c1a276f05accf442c9c432890dbfb333db63238a",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/academy-source.test.ts": {
+      "physical": "a81ecb140cd4aa7dccd48887d906e35cb575b741091619bb472d5c7f5fe67766",
+      "immutable_Git": "a81ecb140cd4aa7dccd48887d906e35cb575b741091619bb472d5c7f5fe67766",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/academy-source.ts": {
+      "physical": "6f5e2447e3e065f09d12f6d62e9af3292e4131430bb4761a6feec641a122aa9c",
+      "immutable_Git": "6f5e2447e3e065f09d12f6d62e9af3292e4131430bb4761a6feec641a122aa9c",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/academy-wayfinding.test.ts": {
+      "physical": "5d601e59b5c27766edcd389fc025ef4cf92d0eb2c841a11e99cc7e4a94845d6b",
+      "immutable_Git": "5d601e59b5c27766edcd389fc025ef4cf92d0eb2c841a11e99cc7e4a94845d6b",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/academy-wayfinding.ts": {
+      "physical": "834239f0853c91950f60bc7061c5459d1de4abf148de6857be051d706a34ff31",
+      "immutable_Git": "834239f0853c91950f60bc7061c5459d1de4abf148de6857be051d706a34ff31",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/capture-hook-proof.ts": {
+      "physical": "d7dcde34689667eef70602be01aa8548a38564e168504a9a26bf62a63e60b287",
+      "immutable_Git": "d7dcde34689667eef70602be01aa8548a38564e168504a9a26bf62a63e60b287",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/capture/fixture.ts": {
+      "physical": "330eb3b4b057fee88d237d32933fa9cdac2128cf8bc8866eb010ad57e105b275",
+      "immutable_Git": "330eb3b4b057fee88d237d32933fa9cdac2128cf8bc8866eb010ad57e105b275",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/capture/guide-examples.json": {
+      "physical": "2725018b0c8adabef7728833f476b912a58a5ceaf255d64792d1d0f652258366",
+      "immutable_Git": "2725018b0c8adabef7728833f476b912a58a5ceaf255d64792d1d0f652258366",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/capture/harness.ts": {
+      "physical": "c24461ad291ce1567ccf2348655fd231ca86625a2b223615d54031d3a8a12f1d",
+      "immutable_Git": "c24461ad291ce1567ccf2348655fd231ca86625a2b223615d54031d3a8a12f1d",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/capture/label.ts": {
+      "physical": "27ee69624f1ba616984d660985c18546bd09e1f8d709a7a181fb872f9ae2ff60",
+      "immutable_Git": "27ee69624f1ba616984d660985c18546bd09e1f8d709a7a181fb872f9ae2ff60",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/capture/normalize.ts": {
+      "physical": "41fe12095320d57c409bf95f50a0c98408d23fd56f83d3a2c570fb3dec11bd73",
+      "immutable_Git": "41fe12095320d57c409bf95f50a0c98408d23fd56f83d3a2c570fb3dec11bd73",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/capture/render.ts": {
+      "physical": "8770d8a855efe0f9526bde1861f67faaa51c60163ad52edccf29e176e9d41763",
+      "immutable_Git": "8770d8a855efe0f9526bde1861f67faaa51c60163ad52edccf29e176e9d41763",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/capture/run.ts": {
+      "physical": "5b795d00f67bce0e1b8e3e5727642cef05499c250c7e6afa5f8617bfab928e32",
+      "immutable_Git": "5b795d00f67bce0e1b8e3e5727642cef05499c250c7e6afa5f8617bfab928e32",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/capture/targets.ts": {
+      "physical": "44c63c3ebd909eeffa46a172faaf47a4cc6992dcd11f6fb32576044310dfd9e1",
+      "immutable_Git": "44c63c3ebd909eeffa46a172faaf47a4cc6992dcd11f6fb32576044310dfd9e1",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/capture/verify.ts": {
+      "physical": "ce088dd96d3d056ed1234d5bb27932b748aeb300c2a863f7c7590a1d022e32f8",
+      "immutable_Git": "ce088dd96d3d056ed1234d5bb27932b748aeb300c2a863f7c7590a1d022e32f8",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/concept-directory.test.ts": {
+      "physical": "9a557aea9e497e9b7db857c642ffdbdf8e481712365ea95dc4f190a4fa215fdd",
+      "immutable_Git": "9a557aea9e497e9b7db857c642ffdbdf8e481712365ea95dc4f190a4fa215fdd",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/concept-directory.ts": {
+      "physical": "74a907f138f9b85dbce1ff1c74551c8b829945b01ce0ec37f8e3f075e346d157",
+      "immutable_Git": "74a907f138f9b85dbce1ff1c74551c8b829945b01ce0ec37f8e3f075e346d157",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/decision-evidence.ts": {
+      "physical": "2e294b0e78d8cf799864a05582264dbfb98a570a64e918134e5eba716ca26550",
+      "immutable_Git": "2e294b0e78d8cf799864a05582264dbfb98a570a64e918134e5eba716ca26550",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/diagram-audit.ts": {
+      "physical": "b5d2616167eae7670da836f08cf2bd6acbe91cece92a8cab6605aedd669d7d63",
+      "immutable_Git": "b5d2616167eae7670da836f08cf2bd6acbe91cece92a8cab6605aedd669d7d63",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/execution-maps/atlas-assistive.test.ts": {
+      "physical": "9bd629ed85546ffcd11f8e1b6b5e124fe2b7bdbdb253560810a21a20f4f7fe67",
+      "immutable_Git": "18e0b7d52656053d60e39e93786bdd271710f4e80a0c8e78b0379e059767df91",
+      "literal_equal": false,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/execution-maps/atlas-changelog.test.ts": {
+      "physical": "753a561415c3c5e26603238c49efb125d312ab61a079ad40015442c9e9135ece",
+      "immutable_Git": "753a561415c3c5e26603238c49efb125d312ab61a079ad40015442c9e9135ece",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/execution-maps/atlas-command.test.ts": {
+      "physical": "5a784743991d4d974af00f3654595cf4245a00853ffa3bc35428dcd85c092c58",
+      "immutable_Git": "5a784743991d4d974af00f3654595cf4245a00853ffa3bc35428dcd85c092c58",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/execution-maps/atlas-command.ts": {
+      "physical": "3d1cd6e531497e69397bc44e6facb4dc6a68981cac98429e01708fbc9d94993e",
+      "immutable_Git": "3d1cd6e531497e69397bc44e6facb4dc6a68981cac98429e01708fbc9d94993e",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/execution-maps/atlas-data/all-routes.json": {
+      "physical": "3052931640dad653d53c4080ba20726a2dea0899f4ebc2247aaafc8ea6a079eb",
+      "immutable_Git": "3052931640dad653d53c4080ba20726a2dea0899f4ebc2247aaafc8ea6a079eb",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/execution-maps/atlas-data/assistive-update.json": {
+      "physical": "13a52e112644d5698cd09afb74d7919ebb6f1d04e98a41d8f58304a4f744fb50",
+      "immutable_Git": "13a52e112644d5698cd09afb74d7919ebb6f1d04e98a41d8f58304a4f744fb50",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/execution-maps/atlas-data/brownfield-lifecycle.json": {
+      "physical": "c7b7a9a0e05efd7f752f9a299e45bc24f08867ae0f07bcce209427f80a582aad",
+      "immutable_Git": "c7b7a9a0e05efd7f752f9a299e45bc24f08867ae0f07bcce209427f80a582aad",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/execution-maps/atlas-data/catalog.json": {
+      "physical": "6fbfcba700cc69467b0d4445b0e52cb42fb7a3139a7f30985261470416ed3f3d",
+      "immutable_Git": "6fbfcba700cc69467b0d4445b0e52cb42fb7a3139a7f30985261470416ed3f3d",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/execution-maps/atlas-data/change-lanes.json": {
+      "physical": "f15ce1e25a5c5898580ff13ba71a5454dcc950a1b11cecb5779d77eaf567c57f",
+      "immutable_Git": "f15ce1e25a5c5898580ff13ba71a5454dcc950a1b11cecb5779d77eaf567c57f",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/execution-maps/atlas-data/commands.json": {
+      "physical": "19a1a61f4c21d192033e6ab02097413a8ed7ff883974afd69a0c6ff55261f871",
+      "immutable_Git": "19a1a61f4c21d192033e6ab02097413a8ed7ff883974afd69a0c6ff55261f871",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/execution-maps/atlas-data/context-layers.json": {
+      "physical": "8a8f1d557fbde280633efd19fef07c700c69f2ac5b8e964e917c5a6979f3936b",
+      "immutable_Git": "8a8f1d557fbde280633efd19fef07c700c69f2ac5b8e964e917c5a6979f3936b",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/execution-maps/atlas-data/debug-handoff.json": {
+      "physical": "5dd0eda33bac13adbfa3b847b4328f59729ee08e4d5fd37920ec3e9bc4e87eba",
+      "immutable_Git": "5dd0eda33bac13adbfa3b847b4328f59729ee08e4d5fd37920ec3e9bc4e87eba",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/execution-maps/atlas-data/feature-sprint.json": {
+      "physical": "1bd9e3e41da775e404e19a64155b8cb008252415e81561467a42efb86bda8cf6",
+      "immutable_Git": "1bd9e3e41da775e404e19a64155b8cb008252415e81561467a42efb86bda8cf6",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/execution-maps/atlas-data/knowledge-operations.json": {
+      "physical": "114f235223d266b13e0338b894adb2aa5e9c43d2fc2504efbeddfcbda394844e",
+      "immutable_Git": "114f235223d266b13e0338b894adb2aa5e9c43d2fc2504efbeddfcbda394844e",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/execution-maps/atlas-data/major-state-contracts-update.json": {
+      "physical": "a4aba8815c175ee98eb955de70f9f48f979efe71d595f97e8ab655690946f02c",
+      "immutable_Git": "e7b9fca723dee28df3514a90673d50d32a1c48414b6216b7088d4e00508082db",
+      "literal_equal": false,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/execution-maps/atlas-data/packet-preparation-changelog.json": {
+      "physical": "8b76eefcb04bfc62454eb6cc433844851498749815d275d631fde8ff19876d81",
+      "immutable_Git": "8b76eefcb04bfc62454eb6cc433844851498749815d275d631fde8ff19876d81",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/execution-maps/atlas-data/packet-preparation-review.json": {
+      "physical": "eafa7b0ecf29e2cdbfe5c0dc752aa3614f767504bff3d56ee6905d924bffb737",
+      "immutable_Git": "eafa7b0ecf29e2cdbfe5c0dc752aa3614f767504bff3d56ee6905d924bffb737",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/execution-maps/atlas-data/provenance.json": {
+      "physical": "0dc0d054885c9eb7ed94742a05c2c53f68c7524959b33620f4db8574d46f9a0d",
+      "immutable_Git": "0dc0d054885c9eb7ed94742a05c2c53f68c7524959b33620f4db8574d46f9a0d",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/execution-maps/atlas-data/review-delivery.json": {
+      "physical": "a0cd5f4265451804e6475806240ca7b8394aa5b18086f4ff51450934a3d13dcc",
+      "immutable_Git": "a0cd5f4265451804e6475806240ca7b8394aa5b18086f4ff51450934a3d13dcc",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/execution-maps/atlas-data/sources.json": {
+      "physical": "a6bbf420799fe363349d700bf6695d4e62fe4904cb360735cb36017d6da0e445",
+      "immutable_Git": "a6bbf420799fe363349d700bf6695d4e62fe4904cb360735cb36017d6da0e445",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/execution-maps/atlas-data/tribunal-lifecycle.json": {
+      "physical": "4bd0351ed32afb061736ee016ef950afe4405de87a6d0b6badddeae9e9b7950c",
+      "immutable_Git": "4bd0351ed32afb061736ee016ef950afe4405de87a6d0b6badddeae9e9b7950c",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/execution-maps/atlas-model.test.ts": {
+      "physical": "14515f51917d04cb9d13556bfe8d10569ba1d243a575eefdbc5c3e586b55da17",
+      "immutable_Git": "14515f51917d04cb9d13556bfe8d10569ba1d243a575eefdbc5c3e586b55da17",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/execution-maps/atlas-model.ts": {
+      "physical": "d115a011e2fcf583cc84635a1f7ade1e10c9d55c388a6e6b9b743bf5250e8909",
+      "immutable_Git": "d115a011e2fcf583cc84635a1f7ade1e10c9d55c388a6e6b9b743bf5250e8909",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/execution-maps/atlas-render.ts": {
+      "physical": "fd35a1c59c8ae5b5e6e25523c946b315dc30dc212be4542ce516bee66b3e7438",
+      "immutable_Git": "fd35a1c59c8ae5b5e6e25523c946b315dc30dc212be4542ce516bee66b3e7438",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/execution-maps/atlas-revalidation.test.ts": {
+      "physical": "4cdbc24af0fbc5726555984cc1fe43ce05c6a0b1e07c1666589e50ba5d22b9ec",
+      "immutable_Git": "ca614655adcf29116f1dac3953ce6d65fa06134a5e848fb6ef6c1084624ba7ba",
+      "literal_equal": false,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/execution-maps/atlas-theme.ts": {
+      "physical": "dc6d4a624d0872a5466460598a5209daaa9a15b181a5110bb217af9f37d697b0",
+      "immutable_Git": "dc6d4a624d0872a5466460598a5209daaa9a15b181a5110bb217af9f37d697b0",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/execution-maps/atlas.test.ts": {
+      "physical": "b30ca19de5aadf9beb2aa0446d6032b1a54a734fb33cd6f5409ca3eba8c6c1cc",
+      "immutable_Git": "3099f9f34dc0eb3de9460df9259245b742b0268464bed852d90380f230b8cf05",
+      "literal_equal": false,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/execution-maps/atlas.ts": {
+      "physical": "cd7c6fd358e734a61ce4b23ff2d4de8d3625cecadd802d030f3b1f0595ab2c62",
+      "immutable_Git": "f97f98230aac423bc2c6c7a381c31d2ef330d8a4a640951860d7c08dd676d573",
+      "literal_equal": false,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/execution-maps/checkpoint.ts": {
+      "physical": "3bc4c9a94e07343a4cdb4b41fa7a849ab94402788f1cfef001559a2ec2079067",
+      "immutable_Git": "3bc4c9a94e07343a4cdb4b41fa7a849ab94402788f1cfef001559a2ec2079067",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/execution-maps/locations.ts": {
+      "physical": "be6f3ee913be4ba3934b45126bdf12e15f93df7fbdb4050dc3346e9548e53c84",
+      "immutable_Git": "be6f3ee913be4ba3934b45126bdf12e15f93df7fbdb4050dc3346e9548e53c84",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/execution-maps/model.test.ts": {
+      "physical": "c442f959a7b348e457d96604e3fb397324df93ebad8974c3a937d9387214fe5d",
+      "immutable_Git": "c442f959a7b348e457d96604e3fb397324df93ebad8974c3a937d9387214fe5d",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/execution-maps/model.ts": {
+      "physical": "04b4f5cdb726e0ec2674702a8abcf61fb028bc4ef585f7f6313de3d8e42b7c0b",
+      "immutable_Git": "04b4f5cdb726e0ec2674702a8abcf61fb028bc4ef585f7f6313de3d8e42b7c0b",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/execution-maps/render.ts": {
+      "physical": "3d56cdebe1826f57be49faa04e8db97c02933cb3102bbafe41d4c506d48bb328",
+      "immutable_Git": "3d56cdebe1826f57be49faa04e8db97c02933cb3102bbafe41d4c506d48bb328",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/execution-maps/workflows.test.ts": {
+      "physical": "9e91623d9a9d308de3ad24f9c80f2367efa5a6a4dbbfcdeaa14b246ed1e76047",
+      "immutable_Git": "9e91623d9a9d308de3ad24f9c80f2367efa5a6a4dbbfcdeaa14b246ed1e76047",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/execution-maps/workflows.ts": {
+      "physical": "195ed9f83e548da723804b2b26f3531af0918687900facd79310f48793ca0ded",
+      "immutable_Git": "195ed9f83e548da723804b2b26f3531af0918687900facd79310f48793ca0ded",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/gen.ts": {
+      "physical": "ab090b29ff4d165dbabfd87043c8038596fa1afb810c53b40c062db0d7896fb0",
+      "immutable_Git": "ab090b29ff4d165dbabfd87043c8038596fa1afb810c53b40c062db0d7896fb0",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/generate-academy.test.ts": {
+      "physical": "77445dc8d83bc2d4b64118462d5977934f624e9a295ec6424d81762715b89bc9",
+      "immutable_Git": "77445dc8d83bc2d4b64118462d5977934f624e9a295ec6424d81762715b89bc9",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/generate-academy.ts": {
+      "physical": "bd59c53b0654d213929b60cfe43614806d906d33687d55d0d27227f95892516e",
+      "immutable_Git": "bd59c53b0654d213929b60cfe43614806d906d33687d55d0d27227f95892516e",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/generate-atlas.ts": {
+      "physical": "d4f474a61e0071dd261a6833595d219c459deb68d4fb03ed27ce93c57d235a68",
+      "immutable_Git": "d4f474a61e0071dd261a6833595d219c459deb68d4fb03ed27ce93c57d235a68",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/generate-diagrams.ts": {
+      "physical": "c3a436e49b0e7ae45cb59ef1b3120f9dc66b26b6a1a5cfacb41b49526b2528e8",
+      "immutable_Git": "c3a436e49b0e7ae45cb59ef1b3120f9dc66b26b6a1a5cfacb41b49526b2528e8",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/generate-readme-hero.ts": {
+      "physical": "01c62cb184a14dabf275edff55e7db9ee87f86bd59e0c65e084a18cb94681c60",
+      "immutable_Git": "01c62cb184a14dabf275edff55e7db9ee87f86bd59e0c65e084a18cb94681c60",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/generator/assign-slugs.ts": {
+      "physical": "4b1999c27e388c3c8747777945f468e3047a7aff8f58991cc2b783b227a9260d",
+      "immutable_Git": "4b1999c27e388c3c8747777945f468e3047a7aff8f58991cc2b783b227a9260d",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/generator/build-index.ts": {
+      "physical": "4d99e79d62cce8666dd76f5d699a3f498ca7f5f14ae910b9fe10e289236562d0",
+      "immutable_Git": "4d99e79d62cce8666dd76f5d699a3f498ca7f5f14ae910b9fe10e289236562d0",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/generator/classify-source.ts": {
+      "physical": "08e41c224b3d0faf700df404d0bf1cbdaa29f4e863ac4bb6226142fff42853d2",
+      "immutable_Git": "08e41c224b3d0faf700df404d0bf1cbdaa29f4e863ac4bb6226142fff42853d2",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/generator/collect-lenses.ts": {
+      "physical": "18eed1236677e6217ee5028f113a36704ccc8fea96ce87cc4e612e3e91e8a13c",
+      "immutable_Git": "18eed1236677e6217ee5028f113a36704ccc8fea96ce87cc4e612e3e91e8a13c",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/generator/collect-sources.ts": {
+      "physical": "31973d8a555b97ff21449882f40cdf8aa6f670ee40f8e6721b6fc35ef3186711",
+      "immutable_Git": "31973d8a555b97ff21449882f40cdf8aa6f670ee40f8e6721b6fc35ef3186711",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/generator/configuration-reference.ts": {
+      "physical": "727e8a6d430afb2bcb3604856692cba42f5bbf95ed970e04e441a7a145d0c120",
+      "immutable_Git": "727e8a6d430afb2bcb3604856692cba42f5bbf95ed970e04e441a7a145d0c120",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/generator/curated-drift.ts": {
+      "physical": "89fa0dfdd1d8d380cadeacaf06eb9cd42885f7a808f6b7b2ef821e1414b666a7",
+      "immutable_Git": "89fa0dfdd1d8d380cadeacaf06eb9cd42885f7a808f6b7b2ef821e1414b666a7",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/generator/derive-name.ts": {
+      "physical": "b3e8321eaa1ba7e4f953b5e937c94da38d041e58220eac0114d88e7dacd6a5e2",
+      "immutable_Git": "b3e8321eaa1ba7e4f953b5e937c94da38d041e58220eac0114d88e7dacd6a5e2",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/generator/extract-hook-gates.ts": {
+      "physical": "bc23c0e8afdd73d3d808e0bbcee7d677ac80072b7a8399cece888ffcd0be2bb6",
+      "immutable_Git": "bc23c0e8afdd73d3d808e0bbcee7d677ac80072b7a8399cece888ffcd0be2bb6",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/generator/forge-status.ts": {
+      "physical": "2318709085d04a81ba7daa82e2e906fb0e44e80c279bd1dab41e3b01977cc7a0",
+      "immutable_Git": "2318709085d04a81ba7daa82e2e906fb0e44e80c279bd1dab41e3b01977cc7a0",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/generator/format-tools-list.ts": {
+      "physical": "28f967f03d267f62f4b54eddee3896f74fd575fa94cead6eda281d5bb5fe1603",
+      "immutable_Git": "28f967f03d267f62f4b54eddee3896f74fd575fa94cead6eda281d5bb5fe1603",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/generator/generate.ts": {
+      "physical": "782922efc0b6bb050bc8e91ddeec0bb4b7339776df1c868d527ac28f243681ed",
+      "immutable_Git": "782922efc0b6bb050bc8e91ddeec0bb4b7339776df1c868d527ac28f243681ed",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/generator/host-command-catalog.ts": {
+      "physical": "880715cd374a995647e93b700f5f7e67402233e793aa0406196946a06eef0abd",
+      "immutable_Git": "880715cd374a995647e93b700f5f7e67402233e793aa0406196946a06eef0abd",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/generator/landing-stats.ts": {
+      "physical": "58b6b23c596a429d2fe395d1010e7c333883f237f536d5b7da3a29e60a5eec5f",
+      "immutable_Git": "58b6b23c596a429d2fe395d1010e7c333883f237f536d5b7da3a29e60a5eec5f",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/generator/load-curated.ts": {
+      "physical": "4fe86d54f190ea3085ed61f79a84481dc6bdbcf1a399a5fcb8fd731df36a054b",
+      "immutable_Git": "4fe86d54f190ea3085ed61f79a84481dc6bdbcf1a399a5fcb8fd731df36a054b",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/generator/markdown-fences.ts": {
+      "physical": "218622a1a701cdd0e7a19dfcd1152334618cff0ea8b3207de5127e9530aa98d7",
+      "immutable_Git": "218622a1a701cdd0e7a19dfcd1152334618cff0ea8b3207de5127e9530aa98d7",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/generator/model-tier.ts": {
+      "physical": "c984182eeb6f47706be6659b0364b3e2aa5cec8ff30f9f7c389a9679b59c3b1e",
+      "immutable_Git": "c984182eeb6f47706be6659b0364b3e2aa5cec8ff30f9f7c389a9679b59c3b1e",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/generator/normalize-source.ts": {
+      "physical": "f65bea1b186d39bea076af195471f07cb7be0444103270853f6e2a03c96e6034",
+      "immutable_Git": "f65bea1b186d39bea076af195471f07cb7be0444103270853f6e2a03c96e6034",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/generator/parse-doc.ts": {
+      "physical": "eb94710fe8f6c28d48fe0c9c1d0bd3727a73211c07f6f7935112a025bcae0261",
+      "immutable_Git": "eb94710fe8f6c28d48fe0c9c1d0bd3727a73211c07f6f7935112a025bcae0261",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/generator/parse-fields.ts": {
+      "physical": "6026f2779d2b59098c60ea860edba026b2d4ddf108b29be50b26284fc3f0ab56",
+      "immutable_Git": "6026f2779d2b59098c60ea860edba026b2d4ddf108b29be50b26284fc3f0ab56",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/generator/plugin-workflow-pairs.ts": {
+      "physical": "d0e9d560816f9b9d7614fd05c66aa8857d6baac239a2a46f512fbeb191738d81",
+      "immutable_Git": "d0e9d560816f9b9d7614fd05c66aa8857d6baac239a2a46f512fbeb191738d81",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/generator/render-agent-page.ts": {
+      "physical": "e7137ba65cc49e476d4718358d59d1b883666aeafb5da89fa013d59e01395f50",
+      "immutable_Git": "e7137ba65cc49e476d4718358d59d1b883666aeafb5da89fa013d59e01395f50",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/generator/render-changelog.ts": {
+      "physical": "a690e4bb0b3993c3204bb56439c0fa3adef79d7ee9ffcde07666402c8aca2238",
+      "immutable_Git": "a690e4bb0b3993c3204bb56439c0fa3adef79d7ee9ffcde07666402c8aca2238",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/generator/render-command-page.ts": {
+      "physical": "5c3927d6140f28439d1aeefb2e937050348e8d58bcf74ff1e0afe63a8cf3d957",
+      "immutable_Git": "5c3927d6140f28439d1aeefb2e937050348e8d58bcf74ff1e0afe63a8cf3d957",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/generator/render-gates-table.ts": {
+      "physical": "9826ccb4d3c5620b6b07501e4b2d593de7f556dd24ba585f7ac244fc8c8fcb99",
+      "immutable_Git": "9826ccb4d3c5620b6b07501e4b2d593de7f556dd24ba585f7ac244fc8c8fcb99",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/generator/render-hooks-reference.ts": {
+      "physical": "5b0c6eb0b468b2fc60289b6003eda425544e59533ef837dff40492af68e3ceee",
+      "immutable_Git": "5b0c6eb0b468b2fc60289b6003eda425544e59533ef837dff40492af68e3ceee",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/generator/render-lens-page.ts": {
+      "physical": "c381a9331365edcc77ddb2390e9f6f919d558fc08de2bea715459cc1afe6ee02",
+      "immutable_Git": "c381a9331365edcc77ddb2390e9f6f919d558fc08de2bea715459cc1afe6ee02",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/generator/render-reader-fields.ts": {
+      "physical": "d5eae57314dac17f2c5fef49d79b98c97e256fbee9d477aa5531ea1543d05cef",
+      "immutable_Git": "d5eae57314dac17f2c5fef49d79b98c97e256fbee9d477aa5531ea1543d05cef",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/generator/render-reference-lead.ts": {
+      "physical": "076007c9d1ba5c8b5bf24b67ca9d1acda6c50203428d4d058b34ae02535f7508",
+      "immutable_Git": "076007c9d1ba5c8b5bf24b67ca9d1acda6c50203428d4d058b34ae02535f7508",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/generator/render-related-links.ts": {
+      "physical": "f52494a2c12d06b57d9808ab64947dfae10d7b1b253e7be1c2054d666f7d22d1",
+      "immutable_Git": "f52494a2c12d06b57d9808ab64947dfae10d7b1b253e7be1c2054d666f7d22d1",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/generator/render-skill-page.ts": {
+      "physical": "fad4ff655b694b05f191bcdce0784a25e4f7123b4340a6f2a1e5677f3474c5b0",
+      "immutable_Git": "fad4ff655b694b05f191bcdce0784a25e4f7123b4340a6f2a1e5677f3474c5b0",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/generator/render-source-embed.ts": {
+      "physical": "5d4557effc5d93559c838990e08e3a63ea3c39d77a6fb3ac1c7a91a6f77ed299",
+      "immutable_Git": "5d4557effc5d93559c838990e08e3a63ea3c39d77a6fb3ac1c7a91a6f77ed299",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/generator/slugify.ts": {
+      "physical": "8c22752b4ed11c1037d6c8b9d294834e06f8c185d144d05d62fd69666eaeba82",
+      "immutable_Git": "8c22752b4ed11c1037d6c8b9d294834e06f8c185d144d05d62fd69666eaeba82",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/generator/source-ref.ts": {
+      "physical": "ea2b479f00df225aa33d7d6188009e07056fd24f7645f94de6c8170b55134da1",
+      "immutable_Git": "ea2b479f00df225aa33d7d6188009e07056fd24f7645f94de6c8170b55134da1",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/generator/split-frontmatter.ts": {
+      "physical": "7090f1e296c0723037e14c830de3fb1107bf76c2c40b894613d4a48ed6241e2b",
+      "immutable_Git": "7090f1e296c0723037e14c830de3fb1107bf76c2c40b894613d4a48ed6241e2b",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/generator/truncate-description.ts": {
+      "physical": "ba08432bf12bc696ff772fa765ea21702dc28f69ae92d1cb658fb16bdc25ff3e",
+      "immutable_Git": "ba08432bf12bc696ff772fa765ea21702dc28f69ae92d1cb658fb16bdc25ff3e",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/generator/types.ts": {
+      "physical": "9460d3143192ece9bb33314fafb5659c896a799536d099105cc8c9ea66cbd25b",
+      "immutable_Git": "9460d3143192ece9bb33314fafb5659c896a799536d099105cc8c9ea66cbd25b",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/generator/workflow-pairs.ts": {
+      "physical": "05c47ed6d7e0a22c64205d2438f3fc3869020b3d1d6ed525394a24df2f1df84a",
+      "immutable_Git": "05c47ed6d7e0a22c64205d2438f3fc3869020b3d1d6ed525394a24df2f1df84a",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/generator/yaml-quote.ts": {
+      "physical": "2cd1545f09c28e85f86e50a8e87ea945658d6dab7967a1e86c885efe1ce2f9cc",
+      "immutable_Git": "2cd1545f09c28e85f86e50a8e87ea945658d6dab7967a1e86c885efe1ce2f9cc",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/guide-directory.test.ts": {
+      "physical": "fd747acad661ec498264e2ebf21d0620126b1eb0b47af2bccc73d510ddb2df16",
+      "immutable_Git": "fd747acad661ec498264e2ebf21d0620126b1eb0b47af2bccc73d510ddb2df16",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/guide-directory.ts": {
+      "physical": "f3a0fc545056b843265baa854a376226ae71e0f820f0d2e78f5c0e748a968717",
+      "immutable_Git": "f3a0fc545056b843265baa854a376226ae71e0f820f0d2e78f5c0e748a968717",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/journey-navigation.ts": {
+      "physical": "b5c9278f378c0f70d3c29c90497af6442df3f587986185ed0e300a81435a161a",
+      "immutable_Git": "b5c9278f378c0f70d3c29c90497af6442df3f587986185ed0e300a81435a161a",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/link-audit.ts": {
+      "physical": "ae26407ea0f8adb88302a0965635659384d340a588831ccbe73ad96b03bfc46f",
+      "immutable_Git": "ae26407ea0f8adb88302a0965635659384d340a588831ccbe73ad96b03bfc46f",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/link-audit/lib.ts": {
+      "physical": "5dc9948b5dba59154368db94e6a75206401d25265e1e153092f34977320c57a9",
+      "immutable_Git": "5dc9948b5dba59154368db94e6a75206401d25265e1e153092f34977320c57a9",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/owned-output.test.ts": {
+      "physical": "8d23c62e8900a5d7acdd4de4121ee39670ffa3886ea2c1296c2d7b799ede5775",
+      "immutable_Git": "8d23c62e8900a5d7acdd4de4121ee39670ffa3886ea2c1296c2d7b799ede5775",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/owned-output.ts": {
+      "physical": "13ec4068eea8d6af7afaa8ca7e96b288a2aa8ca9991b7fb42a6901804f70fb3f",
+      "immutable_Git": "13ec4068eea8d6af7afaa8ca7e96b288a2aa8ca9991b7fb42a6901804f70fb3f",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/pagefind-build.test.ts": {
+      "physical": "9106dff87e4b00c138eab7570b458f8f05c90ba654c1e57f0a20cf913abecc03",
+      "immutable_Git": "9106dff87e4b00c138eab7570b458f8f05c90ba654c1e57f0a20cf913abecc03",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/pagefind-build.ts": {
+      "physical": "ad1fbe88782aa8927024d7a405f4dd8244b79219ea4947415f4e66f512995b97",
+      "immutable_Git": "ad1fbe88782aa8927024d7a405f4dd8244b79219ea4947415f4e66f512995b97",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/product-example.ts": {
+      "physical": "e99c1ff0284581ece5ed867bdd5b1dca709d02f1e4c76c7d09da13dd6628dc22",
+      "immutable_Git": "e99c1ff0284581ece5ed867bdd5b1dca709d02f1e4c76c7d09da13dd6628dc22",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/reference-sidebar.ts": {
+      "physical": "b6b3875ed71cac42e42ed073026476e66d79ce131829f5f7a9be929d3f8a5fe9",
+      "immutable_Git": "b6b3875ed71cac42e42ed073026476e66d79ce131829f5f7a9be929d3f8a5fe9",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/rehype-base-links.ts": {
+      "physical": "9f6972f620120165a28bf26704e47660385b4c938c7a7c108a9c7eff6233a16b",
+      "immutable_Git": "9f6972f620120165a28bf26704e47660385b4c938c7a7c108a9c7eff6233a16b",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/rehype-table-shell.ts": {
+      "physical": "54517f178289204710da8c84d97176dbb5961bc5fd85c14bde9b2ecabe64bdf7",
+      "immutable_Git": "54517f178289204710da8c84d97176dbb5961bc5fd85c14bde9b2ecabe64bdf7",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/release-applicability.ts": {
+      "physical": "272fbf607aa1376f999545d3b7f287438a22dc5f85fed4d9ccaf433d6ad555d9",
+      "immutable_Git": "272fbf607aa1376f999545d3b7f287438a22dc5f85fed4d9ccaf433d6ad555d9",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/statusline-capture.ts": {
+      "physical": "dfdae29f2cb79e7dd3621f96494505823a464702cc3885b7377e88013e222a33",
+      "immutable_Git": "dfdae29f2cb79e7dd3621f96494505823a464702cc3885b7377e88013e222a33",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/topic-map.ts": {
+      "physical": "1da65d67cea4a240d18212b185f89095ebfa799e541e4bbc226b73f14de113c1",
+      "immutable_Git": "1da65d67cea4a240d18212b185f89095ebfa799e541e4bbc226b73f14de113c1",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/version-facts.ts": {
+      "physical": "b1888c427fed1f9da78f759839dc50dd65ad3dae0d59f9ca3e1577eada56bc89",
+      "immutable_Git": "b1888c427fed1f9da78f759839dc50dd65ad3dae0d59f9ca3e1577eada56bc89",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/src/scripts/academy-bookmark.ts": {
+      "physical": "8015708d6686b7efef1186d7a0ebc3fd1b737462308acfd2d25511428636029e",
+      "immutable_Git": "8015708d6686b7efef1186d7a0ebc3fd1b737462308acfd2d25511428636029e",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/src/scripts/academy-command-preferences.ts": {
+      "physical": "35677f032947676efdc8df94efaace8f78f4f1544cd28ee37a1410e1457abcc2",
+      "immutable_Git": "35677f032947676efdc8df94efaace8f78f4f1544cd28ee37a1410e1457abcc2",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/src/scripts/execution-map-navigation.ts": {
+      "physical": "7f0a27f56602618dd58781d6ca3c08cfca456c8483c0407e67a94cb4fb4a3dc5",
+      "immutable_Git": "7f0a27f56602618dd58781d6ca3c08cfca456c8483c0407e67a94cb4fb4a3dc5",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/src/scripts/guide-filter.ts": {
+      "physical": "62dca60757ab9b275280238eb93dcc16ea04dda0c0c5cb9bbd076d538143c91f",
+      "immutable_Git": "62dca60757ab9b275280238eb93dcc16ea04dda0c0c5cb9bbd076d538143c91f",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/src/scripts/workflow-atlas.ts": {
+      "physical": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e",
+      "immutable_Git": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/academy-command-preferences-presentation.test.ts": {
+      "physical": "bc88704ca7e6465e694b7306a4b09c98c06e03742fd8f1dd275f18f2c5a85a5d",
+      "immutable_Git": "bc88704ca7e6465e694b7306a4b09c98c06e03742fd8f1dd275f18f2c5a85a5d",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/astro-config.test.ts": {
+      "physical": "00d27498eb198b1fb7f924fcfc0cf04d44b62a2fa2efca960d167c0556b64758",
+      "immutable_Git": "00d27498eb198b1fb7f924fcfc0cf04d44b62a2fa2efca960d167c0556b64758",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/base.test.ts": {
+      "physical": "b95633201bbe99f5f312b6763229750196a9c53e0b19308146c99fe38ce2a9f2",
+      "immutable_Git": "b95633201bbe99f5f312b6763229750196a9c53e0b19308146c99fe38ce2a9f2",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/browser/academy-wayfinding.spec.ts": {
+      "physical": "7f0420bd5403410aa24fc8470702f38718f1aefa4109ff5025cb32aa4dc33563",
+      "immutable_Git": "7f0420bd5403410aa24fc8470702f38718f1aefa4109ff5025cb32aa4dc33563",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/browser/artifact-review.spec.ts": {
+      "physical": "cb0594d55e8bc4c470d67be75acc8aec9c7d099dd34233e94c7d28f154d9bae1",
+      "immutable_Git": "cb0594d55e8bc4c470d67be75acc8aec9c7d099dd34233e94c7d28f154d9bae1",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/browser/concepts-context.spec.ts": {
+      "physical": "19b2e957b35f7107802e0a815001d6b6068373c0c4d047622f8e108c642d44da",
+      "immutable_Git": "19b2e957b35f7107802e0a815001d6b6068373c0c4d047622f8e108c642d44da",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/browser/concepts-decisions.spec.ts": {
+      "physical": "09a4ded9dc8104cfa755eb918701a4edd41829feb1f699f00b8a0894740e5c19",
+      "immutable_Git": "09a4ded9dc8104cfa755eb918701a4edd41829feb1f699f00b8a0894740e5c19",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/browser/concepts-execution.spec.ts": {
+      "physical": "a3774fd8e6979908f0685ec477ffd95d5e000c6b55c56d5f0010066b28757f91",
+      "immutable_Git": "a3774fd8e6979908f0685ec477ffd95d5e000c6b55c56d5f0010066b28757f91",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/browser/dependency-guide.spec.ts": {
+      "physical": "b73bedd42763efd3083f92a0d10eabc930fa89fc9383e980a275e6eb7006e33e",
+      "immutable_Git": "b73bedd42763efd3083f92a0d10eabc930fa89fc9383e980a275e6eb7006e33e",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/browser/execution-arrows.spec.ts": {
+      "physical": "a3778eb0bc6c2dd21ebdc380188b98c15c17917abc1b640e4832a9bbc613dd7d",
+      "immutable_Git": "a3778eb0bc6c2dd21ebdc380188b98c15c17917abc1b640e4832a9bbc613dd7d",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/browser/guide-discovery.spec.ts": {
+      "physical": "cef4f4c061b20f7e48d858cfaed5a9bc01ca999be8420a130be8d9cd6a1aa0d9",
+      "immutable_Git": "cef4f4c061b20f7e48d858cfaed5a9bc01ca999be8420a130be8d9cd6a1aa0d9",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/browser/guide-reflow.spec.ts": {
+      "physical": "1d2a294fa486669c5ab6d933851192d9916d1c52f73454c91c43b7127bc4ae77",
+      "immutable_Git": "1d2a294fa486669c5ab6d933851192d9916d1c52f73454c91c43b7127bc4ae77",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/browser/homepage-responsive.spec.ts": {
+      "physical": "23075e132f0702612c60309730efe1d0676c8143c6af517ffa0a1664a6837959",
+      "immutable_Git": "23075e132f0702612c60309730efe1d0676c8143c6af517ffa0a1664a6837959",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/browser/human-experience.spec.ts": {
+      "physical": "a17e1015bc48b89b9c3758b0d400276c57d63efd1b2b59016f98a237258fe85e",
+      "immutable_Git": "a17e1015bc48b89b9c3758b0d400276c57d63efd1b2b59016f98a237258fe85e",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/browser/peer-layout.spec.ts": {
+      "physical": "c0c2a14103ceee4283b2707892c8beaffb0b12e420e6e5376e7d2ca2eb68b418",
+      "immutable_Git": "c0c2a14103ceee4283b2707892c8beaffb0b12e420e6e5376e7d2ca2eb68b418",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/browser/publication.spec.ts": {
+      "physical": "80f8b16c6d6f52a018783ed3906ae9e64a82e62dad01cd13cff0c10e915939b6",
+      "immutable_Git": "80f8b16c6d6f52a018783ed3906ae9e64a82e62dad01cd13cff0c10e915939b6",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/browser/reader-number.spec.ts": {
+      "physical": "576289382e5b3e4b1995993f8bf4f6737e7dabc47cf9101a2f0ddb250ab1b1bf",
+      "immutable_Git": "576289382e5b3e4b1995993f8bf4f6737e7dabc47cf9101a2f0ddb250ab1b1bf",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/browser/search-bundle.spec.ts": {
+      "physical": "e875cfc163071d5f51c14469163da538563d1f8a636e05c8a2da0066db9512a4",
+      "immutable_Git": "e875cfc163071d5f51c14469163da538563d1f8a636e05c8a2da0066db9512a4",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/browser/workflow-atlas-navigation.spec.ts": {
+      "physical": "94c86e9991f1bfa68c3d8f2aaa25ff6a211efa6432a8dfd584cabdde48f2f896",
+      "immutable_Git": "94c86e9991f1bfa68c3d8f2aaa25ff6a211efa6432a8dfd584cabdde48f2f896",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/browser/workflow-atlas-quality.spec.ts": {
+      "physical": "82151247919b8ac325811c673ff97652a1b43a426b6773d84eabefaca03f8719",
+      "immutable_Git": "82151247919b8ac325811c673ff97652a1b43a426b6773d84eabefaca03f8719",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/browser/workflow-atlas.spec.ts": {
+      "physical": "d7caf032b04a3255b93cde27f275e8f0ee38b02a839f87b57814af2fb32c2d8f",
+      "immutable_Git": "d7caf032b04a3255b93cde27f275e8f0ee38b02a839f87b57814af2fb32c2d8f",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/browser/workflow-navigation.spec.ts": {
+      "physical": "2aba23d8e6155a5562bda7de9557ce568d57fef01b03a962ef8c34d9444dda0e",
+      "immutable_Git": "2aba23d8e6155a5562bda7de9557ce568d57fef01b03a962ef8c34d9444dda0e",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/browser/workflow-propagation.spec.ts": {
+      "physical": "2b7a864d4620703f765abcbe8a0a6d0ef914b35512d481adf35fffc6201f41ca",
+      "immutable_Git": "2b7a864d4620703f765abcbe8a0a6d0ef914b35512d481adf35fffc6201f41ca",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/capture/capture-harness.test.ts": {
+      "physical": "ebd67ae8f6fbe98e51086f0ae81ade4875c2d3c8b7ab937a025b1cf3d7e21b2a",
+      "immutable_Git": "ebd67ae8f6fbe98e51086f0ae81ade4875c2d3c8b7ab937a025b1cf3d7e21b2a",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/capture/captured-run.test.ts": {
+      "physical": "a65c5c2e227aa373e61b919dcde0f8432ffd050dab9f5e1cf648e3e4b41fc3a2",
+      "immutable_Git": "a65c5c2e227aa373e61b919dcde0f8432ffd050dab9f5e1cf648e3e4b41fc3a2",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/capture/hook-proof-capture.test.ts": {
+      "physical": "e736827bb9ec01a55df126ea32295c46240de1c5597ce41ba8688745b4bdb282",
+      "immutable_Git": "e736827bb9ec01a55df126ea32295c46240de1c5597ce41ba8688745b4bdb282",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/capture/path-filters.ts": {
+      "physical": "fd5160bf42f6086d0082bc457e776bda8a1172a051afbac68d4654dece5c404b",
+      "immutable_Git": "fd5160bf42f6086d0082bc457e776bda8a1172a051afbac68d4654dece5c404b",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/capture/python-run.test.ts": {
+      "physical": "baeaa668dd2b033ca2d1b92cb1162502cf7217e4e2f1d8e460f3a4677a7a7a36",
+      "immutable_Git": "baeaa668dd2b033ca2d1b92cb1162502cf7217e4e2f1d8e460f3a4677a7a7a36",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/capture/stale-capture.test.ts": {
+      "physical": "c324bd24f9fc0c833576169f56dcdbbf3e46f6d73c9cc6031741252695269ad4",
+      "immutable_Git": "c324bd24f9fc0c833576169f56dcdbbf3e46f6d73c9cc6031741252695269ad4",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/chapter-request-contract.test.ts": {
+      "physical": "60fd6e3d84c9b3da365eb7e5f95df579d9410ef9f3b3e095797903594abb1aba",
+      "immutable_Git": "60fd6e3d84c9b3da365eb7e5f95df579d9410ef9f3b3e095797903594abb1aba",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/chapter-request-contract.ts": {
+      "physical": "36f09233b6b11fbae4ff93a88a17c0f5db2b2445e98a94d469df23303ad68fbe",
+      "immutable_Git": "36f09233b6b11fbae4ff93a88a17c0f5db2b2445e98a94d469df23303ad68fbe",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/components/lifecycle.spec.ts": {
+      "physical": "70466c0be7d9fc0ea94dac7b882b7eb5d3c04cd65cd30621f27a4192189c3317",
+      "immutable_Git": "70466c0be7d9fc0ea94dac7b882b7eb5d3c04cd65cd30621f27a4192189c3317",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/components/search-boundaries.spec.ts": {
+      "physical": "f5a1b2777d28ddde8823d0ca634179daa990691dba20ca0045a163243ba92afd",
+      "immutable_Git": "f5a1b2777d28ddde8823d0ca634179daa990691dba20ca0045a163243ba92afd",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/content/assistive-workflow.test.ts": {
+      "physical": "cdfa3d24350dbb6647c21050604974fe683862f4d7eba502b794d64266dc72d8",
+      "immutable_Git": "cdfa3d24350dbb6647c21050604974fe683862f4d7eba502b794d64266dc72d8",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/content/codex-support.test.ts": {
+      "physical": "3c1043a4e01039914baa4a4bd99d12fd64c0bb74035f288bf1616241259cc44a",
+      "immutable_Git": "3c1043a4e01039914baa4a4bd99d12fd64c0bb74035f288bf1616241259cc44a",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/content/concepts-context.test.ts": {
+      "physical": "ce3fb76b951156ba9e5d286cd78471f4a1b03f09ad5b04ed006d7edd2508bc01",
+      "immutable_Git": "ce3fb76b951156ba9e5d286cd78471f4a1b03f09ad5b04ed006d7edd2508bc01",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/content/concepts-decisions.test.ts": {
+      "physical": "e0e8ad1dec916f917f930aab441dcf84e4f4811db8aa878801eb5f8eb8f4cf41",
+      "immutable_Git": "e0e8ad1dec916f917f930aab441dcf84e4f4811db8aa878801eb5f8eb8f4cf41",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/content/concepts-foundation.test.ts": {
+      "physical": "42c363015f1a0d56ca5e2ec04bcf25db55846ac26cad0687047d4aa357a35d0d",
+      "immutable_Git": "42c363015f1a0d56ca5e2ec04bcf25db55846ac26cad0687047d4aa357a35d0d",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/content/context-review-regressions.test.ts": {
+      "physical": "c46f16090678ef7d7787da12c258bcbd8aeb3e9874e6c786b3a3698791198127",
+      "immutable_Git": "c46f16090678ef7d7787da12c258bcbd8aeb3e9874e6c786b3a3698791198127",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/content/dependency-guide.test.ts": {
+      "physical": "7bc22ede3bf8445aa8d1e1debbe4ab545d16b91cf36013efdd2457c5727c5d4e",
+      "immutable_Git": "7bc22ede3bf8445aa8d1e1debbe4ab545d16b91cf36013efdd2457c5727c5d4e",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/content/docs-overhaul.test.ts": {
+      "physical": "bcb9f0d07eb62874a61578f2e54a6cb4577f71dc86de9238921692ba38b04d92",
+      "immutable_Git": "bcb9f0d07eb62874a61578f2e54a6cb4577f71dc86de9238921692ba38b04d92",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/content/documentation-presentation.test.ts": {
+      "physical": "13b7f9d691fdab57120a1992c782eaa18bb413ddc901049e78344b96647f9594",
+      "immutable_Git": "13b7f9d691fdab57120a1992c782eaa18bb413ddc901049e78344b96647f9594",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/content/execution-arrow-geometry.test.ts": {
+      "physical": "5274357c17fd716edfce2e580a5f899f193b2517014612da5dbcd1c2b6f2e14e",
+      "immutable_Git": "5274357c17fd716edfce2e580a5f899f193b2517014612da5dbcd1c2b6f2e14e",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/content/execution-navigation.test.ts": {
+      "physical": "7775d6cf8c645b1e6eddb212f9d5bc48b05788dfe5d428590ca73ae1b3004fa6",
+      "immutable_Git": "7775d6cf8c645b1e6eddb212f9d5bc48b05788dfe5d428590ca73ae1b3004fa6",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/content/guide-examples.test.ts": {
+      "physical": "2d509b039b4462d6f3ab1f888cc21f416775462d2f97615c3b94eab69d68b516",
+      "immutable_Git": "2d509b039b4462d6f3ab1f888cc21f416775462d2f97615c3b94eab69d68b516",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/content/human-experience.test.ts": {
+      "physical": "7858ed5f6b455c74604667e134c22f79644727802d3b2dfca668fa561e18e80a",
+      "immutable_Git": "7858ed5f6b455c74604667e134c22f79644727802d3b2dfca668fa561e18e80a",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/content/investigation-guide.test.ts": {
+      "physical": "35e719c471c7278e7713d4e4c096e3f57311ede495241e98c25c8f028d8780e9",
+      "immutable_Git": "35e719c471c7278e7713d4e4c096e3f57311ede495241e98c25c8f028d8780e9",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/content/learning-contract.test.ts": {
+      "physical": "1c4fa236877030af419989c5b7153bd582c6a354af3807122e828e916172f714",
+      "immutable_Git": "1c4fa236877030af419989c5b7153bd582c6a354af3807122e828e916172f714",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/content/naming-policy.test.ts": {
+      "physical": "4f1307444d335b81f1cf5aa44ae751f7f9e8666eba1d02a3050f3c8c086e2d7a",
+      "immutable_Git": "4f1307444d335b81f1cf5aa44ae751f7f9e8666eba1d02a3050f3c8c086e2d7a",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/content/product-example.test.ts": {
+      "physical": "6e1dbe13793bc34dcee72af312b9e1d5165573c2a1bde4b973ac4de4efd5c402",
+      "immutable_Git": "6e1dbe13793bc34dcee72af312b9e1d5165573c2a1bde4b973ac4de4efd5c402",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/content/reader-journey.test.ts": {
+      "physical": "b85ea1a803db208ce97df3e61fad6d63c2247dd03f94d63083bfd73dcc15e013",
+      "immutable_Git": "b85ea1a803db208ce97df3e61fad6d63c2247dd03f94d63083bfd73dcc15e013",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/content/readme-professional.test.ts": {
+      "physical": "d178e1e0256fe3050c479b9b1cac48875db6d5ffe638a1719fe480ac27abae2c",
+      "immutable_Git": "d178e1e0256fe3050c479b9b1cac48875db6d5ffe638a1719fe480ac27abae2c",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/content/review-delivery.test.ts": {
+      "physical": "08de44904556bf37a58a2d8aaa8e61268506ffeb362b7931c9ad37c016510b4d",
+      "immutable_Git": "08de44904556bf37a58a2d8aaa8e61268506ffeb362b7931c9ad37c016510b4d",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/content/trust-lifecycle-hub.test.ts": {
+      "physical": "685bd421a2f58318dbdf5fc923cd756382c7c57f01b0f5c86117cc3f044e34a2",
+      "immutable_Git": "685bd421a2f58318dbdf5fc923cd756382c7c57f01b0f5c86117cc3f044e34a2",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/content/trust-policy-claims.test.ts": {
+      "physical": "14b3590c60875bc908c254971589f383b99b5e938735527a50e9bd9ef801c7c8",
+      "immutable_Git": "14b3590c60875bc908c254971589f383b99b5e938735527a50e9bd9ef801c7c8",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/content/version-literal-allowlist.json": {
+      "physical": "60c4bdf533f22f9beb6230ad23bf125620ffa6fac2d3d532003e4d41c2e09347",
+      "immutable_Git": "60c4bdf533f22f9beb6230ad23bf125620ffa6fac2d3d532003e4d41c2e09347",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/content/version-literal-drift.test.ts": {
+      "physical": "9df00e5af922b9dcc2cdf5b9fa49a20853e33d2fdd5b0c69fa534d7078f2d7a4",
+      "immutable_Git": "9df00e5af922b9dcc2cdf5b9fa49a20853e33d2fdd5b0c69fa534d7078f2d7a4",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/content/workflow-propagation.test.ts": {
+      "physical": "06137bfe56be45f043d8b498f1e1c836451117a8e79c64cd7131379211d9b692",
+      "immutable_Git": "06137bfe56be45f043d8b498f1e1c836451117a8e79c64cd7131379211d9b692",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/fixtures/plugin-collisions/generated/command-catalog.json": {
+      "physical": "cfa26fb8e1a06d0c773cfcc55d2f06dcb6917150ccf5681dc83870be5e21180b",
+      "immutable_Git": "cfa26fb8e1a06d0c773cfcc55d2f06dcb6917150ccf5681dc83870be5e21180b",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/fixtures/plugin/generated/command-catalog.json": {
+      "physical": "59ecb07d05f25eca72b8e47d1a1c539be6ebe242c49a6f0d4611762315fe558f",
+      "immutable_Git": "59ecb07d05f25eca72b8e47d1a1c539be6ebe242c49a6f0d4611762315fe558f",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/generator/assign-slugs.test.ts": {
+      "physical": "ab719b1ab58f2fce295f34e713d493869ade2092e60c58ac5081741660a5da3c",
+      "immutable_Git": "ab719b1ab58f2fce295f34e713d493869ade2092e60c58ac5081741660a5da3c",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/generator/build-index.test.ts": {
+      "physical": "e5189b14094f914449c228667ac8666602dfa5f686fb8452e7fc174a723e4a6c",
+      "immutable_Git": "e5189b14094f914449c228667ac8666602dfa5f686fb8452e7fc174a723e4a6c",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/generator/classify-source.test.ts": {
+      "physical": "b5dbac1c5c46b59627ef3426d13d657b9c1cf97dd979745bac9681742d8334db",
+      "immutable_Git": "b5dbac1c5c46b59627ef3426d13d657b9c1cf97dd979745bac9681742d8334db",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/generator/collect-sources.test.ts": {
+      "physical": "a81690c9495c095ca56e97ef497ea4004d1fd57a74ac3e065920a8f81ccfd121",
+      "immutable_Git": "a81690c9495c095ca56e97ef497ea4004d1fd57a74ac3e065920a8f81ccfd121",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/generator/command-catalog-discovery.test.ts": {
+      "physical": "f70f7c24b1f0382d9382ae395d7c5e6f19d3f1c1e33b0b4e3f58522355c28072",
+      "immutable_Git": "f70f7c24b1f0382d9382ae395d7c5e6f19d3f1c1e33b0b4e3f58522355c28072",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/generator/command-sidebar-inventory.test.ts": {
+      "physical": "cbc20e703030766c8775072c11f175536eeca38ae6e107d67ff558180f87e98b",
+      "immutable_Git": "cbc20e703030766c8775072c11f175536eeca38ae6e107d67ff558180f87e98b",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/generator/command-url-stability.test.ts": {
+      "physical": "30cf98e98553ac4c376e5b9632c4e42abebf505d014542f85a997d9ed491f60c",
+      "immutable_Git": "30cf98e98553ac4c376e5b9632c4e42abebf505d014542f85a997d9ed491f60c",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/generator/configuration-reference.test.ts": {
+      "physical": "2080780fc8be391f9e4a2137f4bd09faf62c8f3bf0411ac6d038603383f03114",
+      "immutable_Git": "2080780fc8be391f9e4a2137f4bd09faf62c8f3bf0411ac6d038603383f03114",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/generator/curated-coverage.test.ts": {
+      "physical": "6e7590b73c275add30ccdc9a63f1308bcc747f1d1264a15f54abe38807d9a844",
+      "immutable_Git": "6e7590b73c275add30ccdc9a63f1308bcc747f1d1264a15f54abe38807d9a844",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/generator/curated-drift.test.ts": {
+      "physical": "83423f142f4c67e40808352526d4839e93dbbe0e75c7cc16b20597ae642db591",
+      "immutable_Git": "83423f142f4c67e40808352526d4839e93dbbe0e75c7cc16b20597ae642db591",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/generator/derive-name.test.ts": {
+      "physical": "b71cdc4cd160ef84722c17321f432369bfb3a09cd8c43701334632d009239844",
+      "immutable_Git": "b71cdc4cd160ef84722c17321f432369bfb3a09cd8c43701334632d009239844",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/generator/diagram-href-convention.test.ts": {
+      "physical": "2ae2f2568568741510fb9ec556ca1380ded2cf7e270f75da2e96a851e10174b1",
+      "immutable_Git": "2ae2f2568568741510fb9ec556ca1380ded2cf7e270f75da2e96a851e10174b1",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/generator/diagrams.test.ts": {
+      "physical": "720396bdb9fad318c0278d140c04ec4b63bdf9e20a9cdb40cb337fa548855b50",
+      "immutable_Git": "720396bdb9fad318c0278d140c04ec4b63bdf9e20a9cdb40cb337fa548855b50",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/generator/execution-path-regression.test.ts": {
+      "physical": "ebc51f11ec0f30a257d3ab5752ac3238e2ed019724870fe72286e066659c8356",
+      "immutable_Git": "ebc51f11ec0f30a257d3ab5752ac3238e2ed019724870fe72286e066659c8356",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/generator/extract-hook-gates.test.ts": {
+      "physical": "4393350149ca78c0c8aa1ff30c401ac69d5c656b877135f338bb9cfd8be20e53",
+      "immutable_Git": "4393350149ca78c0c8aa1ff30c401ac69d5c656b877135f338bb9cfd8be20e53",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/generator/feature-forge-content.test.ts": {
+      "physical": "c2d92363fa33c9b1bf65c31d1c7a6b2c992babe19a207f2aeb98206bdb4392a7",
+      "immutable_Git": "c2d92363fa33c9b1bf65c31d1c7a6b2c992babe19a207f2aeb98206bdb4392a7",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/generator/forge-allowlist-consistency.test.ts": {
+      "physical": "b2410f1c63a10ce8654347b00ea3d9df50548910dce91bf8e9773fba555d5ac5",
+      "immutable_Git": "b2410f1c63a10ce8654347b00ea3d9df50548910dce91bf8e9773fba555d5ac5",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/generator/forge-status.test.ts": {
+      "physical": "bdc1e264b7b1619557abbd44afd1b8c96dfc85e441697e9bd9d5dea85c47dc15",
+      "immutable_Git": "bdc1e264b7b1619557abbd44afd1b8c96dfc85e441697e9bd9d5dea85c47dc15",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/generator/format-tools-list.test.ts": {
+      "physical": "deaf312284e29fd527c8411cc93e22616615c3c3a71ebd67c880497d848fb61c",
+      "immutable_Git": "deaf312284e29fd527c8411cc93e22616615c3c3a71ebd67c880497d848fb61c",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/generator/generate-forge.test.ts": {
+      "physical": "f76b29d4396a423a3704797e1d78f978286908277e569b2d464d2c49af990860",
+      "immutable_Git": "f76b29d4396a423a3704797e1d78f978286908277e569b2d464d2c49af990860",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/generator/generate.test.ts": {
+      "physical": "4627878f11a08d43776759ad6a70a34bd892b05524e5be9af50c69efd8b1cac8",
+      "immutable_Git": "4627878f11a08d43776759ad6a70a34bd892b05524e5be9af50c69efd8b1cac8",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/generator/host-command-catalog.test.ts": {
+      "physical": "929b2a6c3034fdf07f796d651a8f219f42a1811a95d4c73334d65eaba9b240c0",
+      "immutable_Git": "929b2a6c3034fdf07f796d651a8f219f42a1811a95d4c73334d65eaba9b240c0",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/generator/lens-pages.test.ts": {
+      "physical": "426af5320bfda077f5b3f2cd2615c232421a9022cf43576cabb05f28d7cca93c",
+      "immutable_Git": "426af5320bfda077f5b3f2cd2615c232421a9022cf43576cabb05f28d7cca93c",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/generator/load-curated.test.ts": {
+      "physical": "08a57a2bd5e5a83a84f7d4ddb9f4c570d6d45149a5b62dd89e55d45bfde24a73",
+      "immutable_Git": "08a57a2bd5e5a83a84f7d4ddb9f4c570d6d45149a5b62dd89e55d45bfde24a73",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/generator/merged-workflow-pages.test.ts": {
+      "physical": "09c872837e0af677d6ddedcb28ed2b558ded88187078f0f1f98742297c547fcb",
+      "immutable_Git": "09c872837e0af677d6ddedcb28ed2b558ded88187078f0f1f98742297c547fcb",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/generator/merged-workflow-redirects.test.ts": {
+      "physical": "18febb62b720d5a2dcc3737a6763ed6ff89a559b0b188260f8cb277da5c90e6c",
+      "immutable_Git": "18febb62b720d5a2dcc3737a6763ed6ff89a559b0b188260f8cb277da5c90e6c",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/generator/model-tier.test.ts": {
+      "physical": "4c896c187498efbefc843088b542c2c8eb80d689e176ef01f9444a65b69a2432",
+      "immutable_Git": "4c896c187498efbefc843088b542c2c8eb80d689e176ef01f9444a65b69a2432",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/generator/paraphrase-lint.test.ts": {
+      "physical": "48929b73eba96b9b981fb6bc556e3afa7f248401d7f5575f8be95c2a259a38f1",
+      "immutable_Git": "48929b73eba96b9b981fb6bc556e3afa7f248401d7f5575f8be95c2a259a38f1",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/generator/parse-doc.test.ts": {
+      "physical": "ab1c76583d998dd599808d6519070f6ef58d2e83112106023881103590750545",
+      "immutable_Git": "ab1c76583d998dd599808d6519070f6ef58d2e83112106023881103590750545",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/generator/parse-fields.test.ts": {
+      "physical": "b7b182f5852e7375a0a30fde27d534a0ed4598d8171e9a1b801ea924ebd94c41",
+      "immutable_Git": "b7b182f5852e7375a0a30fde27d534a0ed4598d8171e9a1b801ea924ebd94c41",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/generator/plugin-fixture.ts": {
+      "physical": "ae9907c6a4ad797ed34912487e64835a3d50c7ff37665173b9865ac96d3257a4",
+      "immutable_Git": "ae9907c6a4ad797ed34912487e64835a3d50c7ff37665173b9865ac96d3257a4",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/generator/reader-fields.test.ts": {
+      "physical": "131bbba4f903934c25f487803ff2c9fcef28a944dbf5bf909c29417df1793070",
+      "immutable_Git": "131bbba4f903934c25f487803ff2c9fcef28a944dbf5bf909c29417df1793070",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/generator/render-agent-page.test.ts": {
+      "physical": "6f0a049674677e0314ffb0ea897bcd0f0ebad8c569a5304470b860e2c8bc3e05",
+      "immutable_Git": "6f0a049674677e0314ffb0ea897bcd0f0ebad8c569a5304470b860e2c8bc3e05",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/generator/render-changelog.test.ts": {
+      "physical": "95db3bf332573ca117b871e669bedef19e298c6042d732c07919fbb22f5e6dc1",
+      "immutable_Git": "95db3bf332573ca117b871e669bedef19e298c6042d732c07919fbb22f5e6dc1",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/generator/render-command-page-forge.test.ts": {
+      "physical": "dc278e4316db3cb1da620c2c69cbab344bb10a912e9928ea0aa4883c7b9bea9a",
+      "immutable_Git": "dc278e4316db3cb1da620c2c69cbab344bb10a912e9928ea0aa4883c7b9bea9a",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/generator/render-command-page.test.ts": {
+      "physical": "ee46b82266aa51d404b7ece7686c93e66f128843c2be8e4b98e4218a1278d6b4",
+      "immutable_Git": "ee46b82266aa51d404b7ece7686c93e66f128843c2be8e4b98e4218a1278d6b4",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/generator/render-gates-table.test.ts": {
+      "physical": "111cf1b8d658388e294da32be467c83a6dfa4586befbfa2bd1c72017bfd4ae1a",
+      "immutable_Git": "111cf1b8d658388e294da32be467c83a6dfa4586befbfa2bd1c72017bfd4ae1a",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/generator/render-hooks-reference.test.ts": {
+      "physical": "9b50fd2b67853105c9aee88086e20712940bd6cf94c5e6f7c6ad5b7a3c2cad5a",
+      "immutable_Git": "9b50fd2b67853105c9aee88086e20712940bd6cf94c5e6f7c6ad5b7a3c2cad5a",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/generator/render-skill-page.test.ts": {
+      "physical": "c4b40302871680f910158007bc13c7a13bbcf8985b90d5d39f39d13eee9b4a6c",
+      "immutable_Git": "c4b40302871680f910158007bc13c7a13bbcf8985b90d5d39f39d13eee9b4a6c",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/generator/render-source-embed.test.ts": {
+      "physical": "4d7d94028850e80b5bb52070b6c8cd7a5b8d630272d7d3614bcf5da078cefa81",
+      "immutable_Git": "4d7d94028850e80b5bb52070b6c8cd7a5b8d630272d7d3614bcf5da078cefa81",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/generator/slugify.test.ts": {
+      "physical": "e9e0967ccdb60b92a9a2e544cb37d9934eb3656d15624c918c3ed94d1af91b2b",
+      "immutable_Git": "e9e0967ccdb60b92a9a2e544cb37d9934eb3656d15624c918c3ed94d1af91b2b",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/generator/source-ref.test.ts": {
+      "physical": "c31dfec3e1a6af421e642dcd8a641054e5671201638ec0b607a94426eb41fe59",
+      "immutable_Git": "c31dfec3e1a6af421e642dcd8a641054e5671201638ec0b607a94426eb41fe59",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/generator/split-frontmatter.test.ts": {
+      "physical": "455da7c2b20ddcba8969592409abc68c8ed44530e69cfbdf4bb8b7cabec235d6",
+      "immutable_Git": "455da7c2b20ddcba8969592409abc68c8ed44530e69cfbdf4bb8b7cabec235d6",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/generator/topic-map.test.ts": {
+      "physical": "83228199bf940086832bd1f5d05f897e4c72ade2351385511af0b95554a12ceb",
+      "immutable_Git": "83228199bf940086832bd1f5d05f897e4c72ade2351385511af0b95554a12ceb",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/generator/truncate-description.test.ts": {
+      "physical": "1eb47f702d4aba10cb05ed5bca5b0262fa905fde7c07363924cbd3ca5d48803a",
+      "immutable_Git": "1eb47f702d4aba10cb05ed5bca5b0262fa905fde7c07363924cbd3ca5d48803a",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/generator/version-facts.test.ts": {
+      "physical": "06b031a3a0d91cd4a1deedb80c785b8bc78422833e3222b2fdcceb8698c5c9dd",
+      "immutable_Git": "06b031a3a0d91cd4a1deedb80c785b8bc78422833e3222b2fdcceb8698c5c9dd",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/generator/yaml-quote.test.ts": {
+      "physical": "6960bbfaed62182f06c8082210298afbf184bc63552a881caa23d2b05124d937",
+      "immutable_Git": "6960bbfaed62182f06c8082210298afbf184bc63552a881caa23d2b05124d937",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/guide-table-reflow.test.ts": {
+      "physical": "499c4edc2ddc3c94074dd9992cb8d51a4eb0262498eb220397e5112810dd72a4",
+      "immutable_Git": "499c4edc2ddc3c94074dd9992cb8d51a4eb0262498eb220397e5112810dd72a4",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/landing/landing-page.test.ts": {
+      "physical": "ca4680cecc0c61e77ff68d2e1b05825415c7239b6fa96cbe03325794e23de3ee",
+      "immutable_Git": "ca4680cecc0c61e77ff68d2e1b05825415c7239b6fa96cbe03325794e23de3ee",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/landing/trust-row.test.ts": {
+      "physical": "b1aec0fcb1d51568a207d05a89e5118f409e0576c01e3da989780fae3c29eb6c",
+      "immutable_Git": "b1aec0fcb1d51568a207d05a89e5118f409e0576c01e3da989780fae3c29eb6c",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/link-audit/cli.test.ts": {
+      "physical": "5cc9d6c0fb29da6ed780608edd888f89ff58409ee1a06ba2b350e921bcfd1569",
+      "immutable_Git": "5cc9d6c0fb29da6ed780608edd888f89ff58409ee1a06ba2b350e921bcfd1569",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/link-audit/lib.test.ts": {
+      "physical": "ab4b91b00d9db79c7a476c84bf3ea19c751b05bd3c58beda895c50994711e8b5",
+      "immutable_Git": "ab4b91b00d9db79c7a476c84bf3ea19c751b05bd3c58beda895c50994711e8b5",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/reference-sidebar.test.ts": {
+      "physical": "500b0618a744eb1098c4e08855334df81ca7d47c6cc67e77adb8afe100761414",
+      "immutable_Git": "500b0618a744eb1098c4e08855334df81ca7d47c6cc67e77adb8afe100761414",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/rehype-base-links.test.ts": {
+      "physical": "d62f1174dd1cc54e4de3c66ca239c5612e7135718f60c89823c04df4cef405ae",
+      "immutable_Git": "d62f1174dd1cc54e4de3c66ca239c5612e7135718f60c89823c04df4cef405ae",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/rehype-table-shell.test.ts": {
+      "physical": "28bc765392ccba872b90e27c351e651827698e0fddb402d4fbe10031f5aad8c2",
+      "immutable_Git": "28bc765392ccba872b90e27c351e651827698e0fddb402d4fbe10031f5aad8c2",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/release-applicability/endpoint.test.ts": {
+      "physical": "dc5aa2abfb535b836b5ab50f5eae6476583f19b8569e038f494424ebaa2e1234",
+      "immutable_Git": "dc5aa2abfb535b836b5ab50f5eae6476583f19b8569e038f494424ebaa2e1234",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/release-applicability/generation.test.ts": {
+      "physical": "7dc8c9e51d6e5764fd153d55444fc68c6e9c7d57267efa67a8c7a2927c5b6b49",
+      "immutable_Git": "7dc8c9e51d6e5764fd153d55444fc68c6e9c7d57267efa67a8c7a2927c5b6b49",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/release-applicability/presentation.test.ts": {
+      "physical": "b12e5cabdb69f1bada9d5b9a35fea9577c2bc7c5f9514f995326fe39fd7926c1",
+      "immutable_Git": "b12e5cabdb69f1bada9d5b9a35fea9577c2bc7c5f9514f995326fe39fd7926c1",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/release-applicability/publication.test.ts": {
+      "physical": "15477eab3d6f5305e493b6388d12d3bd7db99d6e94e7445e22f0d6d98f383cdb",
+      "immutable_Git": "15477eab3d6f5305e493b6388d12d3bd7db99d6e94e7445e22f0d6d98f383cdb",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/release-applicability/release-applicability.test.ts": {
+      "physical": "98ef3086438d07f8de16eaae3799e6247fc03f2e286928252b3befd2cc98905b",
+      "immutable_Git": "98ef3086438d07f8de16eaae3799e6247fc03f2e286928252b3befd2cc98905b",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/release-applicability/rendered.ts": {
+      "physical": "e85b19d9c7269d4311f69334f0fe65f3d13ba135556b23bc4da9832dcca6f7b7",
+      "immutable_Git": "e85b19d9c7269d4311f69334f0fe65f3d13ba135556b23bc4da9832dcca6f7b7",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/release-applicability/workflow.test.ts": {
+      "physical": "9fb50919d1b6e04f83de5f4c06b81e8eb115fc7e2b9439094a5e798d4ef2186d",
+      "immutable_Git": "9fb50919d1b6e04f83de5f4c06b81e8eb115fc7e2b9439094a5e798d4ef2186d",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/search/search-contract.test.ts": {
+      "physical": "2a39f5904d27fbf2b1d00ec242f0fec62acc2bbeba2464b898078c3cbda2e35d",
+      "immutable_Git": "2a39f5904d27fbf2b1d00ec242f0fec62acc2bbeba2464b898078c3cbda2e35d",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/seo/search-discovery.test.ts": {
+      "physical": "39cd5626064b753c137b8ab1f30c166a17b5c46aa6f85d557e0973be858936c0",
+      "immutable_Git": "39cd5626064b753c137b8ab1f30c166a17b5c46aa6f85d557e0973be858936c0",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/sidebar-navigation-presentation.test.ts": {
+      "physical": "5ead231504f2058918eb0b3a49f6eb1ad81108b351e2338ee087ff4f0bd4dfc1",
+      "immutable_Git": "5ead231504f2058918eb0b3a49f6eb1ad81108b351e2338ee087ff4f0bd4dfc1",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/tsconfig.json": {
+      "physical": "2313012ec43d254daf80ac76385fc550e3a472aa6a96affe8b9e1d4e2dd225f4",
+      "immutable_Git": "2313012ec43d254daf80ac76385fc550e3a472aa6a96affe8b9e1d4e2dd225f4",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    }
+  },
+  "inputs_after": {
+    "site/package-lock.json": {
+      "physical": "d81f1d4b54c0e2a0fc05815687fcb306e0a12f98c3e382032556e445c614787a",
+      "immutable_Git": "d81f1d4b54c0e2a0fc05815687fcb306e0a12f98c3e382032556e445c614787a",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/package.json": {
+      "physical": "3c00bebcf4d5796050692262ec2791f4ae367d8b450a650419e552a6162aac7c",
+      "immutable_Git": "3c00bebcf4d5796050692262ec2791f4ae367d8b450a650419e552a6162aac7c",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/playwright.config.ts": {
+      "physical": "1f8d2f99203986f48b92209918479f45bfb054043296745e0d987e415e199615",
+      "immutable_Git": "1f8d2f99203986f48b92209918479f45bfb054043296745e0d987e415e199615",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/academy-command-preferences.test.ts": {
+      "physical": "78347d411c40f13cbcb0fc55c1a276f05accf442c9c432890dbfb333db63238a",
+      "immutable_Git": "78347d411c40f13cbcb0fc55c1a276f05accf442c9c432890dbfb333db63238a",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/academy-source.test.ts": {
+      "physical": "a81ecb140cd4aa7dccd48887d906e35cb575b741091619bb472d5c7f5fe67766",
+      "immutable_Git": "a81ecb140cd4aa7dccd48887d906e35cb575b741091619bb472d5c7f5fe67766",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/academy-source.ts": {
+      "physical": "6f5e2447e3e065f09d12f6d62e9af3292e4131430bb4761a6feec641a122aa9c",
+      "immutable_Git": "6f5e2447e3e065f09d12f6d62e9af3292e4131430bb4761a6feec641a122aa9c",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/academy-wayfinding.test.ts": {
+      "physical": "5d601e59b5c27766edcd389fc025ef4cf92d0eb2c841a11e99cc7e4a94845d6b",
+      "immutable_Git": "5d601e59b5c27766edcd389fc025ef4cf92d0eb2c841a11e99cc7e4a94845d6b",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/academy-wayfinding.ts": {
+      "physical": "834239f0853c91950f60bc7061c5459d1de4abf148de6857be051d706a34ff31",
+      "immutable_Git": "834239f0853c91950f60bc7061c5459d1de4abf148de6857be051d706a34ff31",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/capture-hook-proof.ts": {
+      "physical": "d7dcde34689667eef70602be01aa8548a38564e168504a9a26bf62a63e60b287",
+      "immutable_Git": "d7dcde34689667eef70602be01aa8548a38564e168504a9a26bf62a63e60b287",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/capture/fixture.ts": {
+      "physical": "330eb3b4b057fee88d237d32933fa9cdac2128cf8bc8866eb010ad57e105b275",
+      "immutable_Git": "330eb3b4b057fee88d237d32933fa9cdac2128cf8bc8866eb010ad57e105b275",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/capture/guide-examples.json": {
+      "physical": "2725018b0c8adabef7728833f476b912a58a5ceaf255d64792d1d0f652258366",
+      "immutable_Git": "2725018b0c8adabef7728833f476b912a58a5ceaf255d64792d1d0f652258366",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/capture/harness.ts": {
+      "physical": "c24461ad291ce1567ccf2348655fd231ca86625a2b223615d54031d3a8a12f1d",
+      "immutable_Git": "c24461ad291ce1567ccf2348655fd231ca86625a2b223615d54031d3a8a12f1d",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/capture/label.ts": {
+      "physical": "27ee69624f1ba616984d660985c18546bd09e1f8d709a7a181fb872f9ae2ff60",
+      "immutable_Git": "27ee69624f1ba616984d660985c18546bd09e1f8d709a7a181fb872f9ae2ff60",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/capture/normalize.ts": {
+      "physical": "41fe12095320d57c409bf95f50a0c98408d23fd56f83d3a2c570fb3dec11bd73",
+      "immutable_Git": "41fe12095320d57c409bf95f50a0c98408d23fd56f83d3a2c570fb3dec11bd73",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/capture/render.ts": {
+      "physical": "8770d8a855efe0f9526bde1861f67faaa51c60163ad52edccf29e176e9d41763",
+      "immutable_Git": "8770d8a855efe0f9526bde1861f67faaa51c60163ad52edccf29e176e9d41763",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/capture/run.ts": {
+      "physical": "5b795d00f67bce0e1b8e3e5727642cef05499c250c7e6afa5f8617bfab928e32",
+      "immutable_Git": "5b795d00f67bce0e1b8e3e5727642cef05499c250c7e6afa5f8617bfab928e32",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/capture/targets.ts": {
+      "physical": "44c63c3ebd909eeffa46a172faaf47a4cc6992dcd11f6fb32576044310dfd9e1",
+      "immutable_Git": "44c63c3ebd909eeffa46a172faaf47a4cc6992dcd11f6fb32576044310dfd9e1",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/capture/verify.ts": {
+      "physical": "ce088dd96d3d056ed1234d5bb27932b748aeb300c2a863f7c7590a1d022e32f8",
+      "immutable_Git": "ce088dd96d3d056ed1234d5bb27932b748aeb300c2a863f7c7590a1d022e32f8",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/concept-directory.test.ts": {
+      "physical": "9a557aea9e497e9b7db857c642ffdbdf8e481712365ea95dc4f190a4fa215fdd",
+      "immutable_Git": "9a557aea9e497e9b7db857c642ffdbdf8e481712365ea95dc4f190a4fa215fdd",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/concept-directory.ts": {
+      "physical": "74a907f138f9b85dbce1ff1c74551c8b829945b01ce0ec37f8e3f075e346d157",
+      "immutable_Git": "74a907f138f9b85dbce1ff1c74551c8b829945b01ce0ec37f8e3f075e346d157",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/decision-evidence.ts": {
+      "physical": "2e294b0e78d8cf799864a05582264dbfb98a570a64e918134e5eba716ca26550",
+      "immutable_Git": "2e294b0e78d8cf799864a05582264dbfb98a570a64e918134e5eba716ca26550",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/diagram-audit.ts": {
+      "physical": "b5d2616167eae7670da836f08cf2bd6acbe91cece92a8cab6605aedd669d7d63",
+      "immutable_Git": "b5d2616167eae7670da836f08cf2bd6acbe91cece92a8cab6605aedd669d7d63",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/execution-maps/atlas-assistive.test.ts": {
+      "physical": "9bd629ed85546ffcd11f8e1b6b5e124fe2b7bdbdb253560810a21a20f4f7fe67",
+      "immutable_Git": "18e0b7d52656053d60e39e93786bdd271710f4e80a0c8e78b0379e059767df91",
+      "literal_equal": false,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/execution-maps/atlas-changelog.test.ts": {
+      "physical": "753a561415c3c5e26603238c49efb125d312ab61a079ad40015442c9e9135ece",
+      "immutable_Git": "753a561415c3c5e26603238c49efb125d312ab61a079ad40015442c9e9135ece",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/execution-maps/atlas-command.test.ts": {
+      "physical": "5a784743991d4d974af00f3654595cf4245a00853ffa3bc35428dcd85c092c58",
+      "immutable_Git": "5a784743991d4d974af00f3654595cf4245a00853ffa3bc35428dcd85c092c58",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/execution-maps/atlas-command.ts": {
+      "physical": "3d1cd6e531497e69397bc44e6facb4dc6a68981cac98429e01708fbc9d94993e",
+      "immutable_Git": "3d1cd6e531497e69397bc44e6facb4dc6a68981cac98429e01708fbc9d94993e",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/execution-maps/atlas-data/all-routes.json": {
+      "physical": "3052931640dad653d53c4080ba20726a2dea0899f4ebc2247aaafc8ea6a079eb",
+      "immutable_Git": "3052931640dad653d53c4080ba20726a2dea0899f4ebc2247aaafc8ea6a079eb",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/execution-maps/atlas-data/assistive-update.json": {
+      "physical": "13a52e112644d5698cd09afb74d7919ebb6f1d04e98a41d8f58304a4f744fb50",
+      "immutable_Git": "13a52e112644d5698cd09afb74d7919ebb6f1d04e98a41d8f58304a4f744fb50",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/execution-maps/atlas-data/brownfield-lifecycle.json": {
+      "physical": "c7b7a9a0e05efd7f752f9a299e45bc24f08867ae0f07bcce209427f80a582aad",
+      "immutable_Git": "c7b7a9a0e05efd7f752f9a299e45bc24f08867ae0f07bcce209427f80a582aad",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/execution-maps/atlas-data/catalog.json": {
+      "physical": "6fbfcba700cc69467b0d4445b0e52cb42fb7a3139a7f30985261470416ed3f3d",
+      "immutable_Git": "6fbfcba700cc69467b0d4445b0e52cb42fb7a3139a7f30985261470416ed3f3d",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/execution-maps/atlas-data/change-lanes.json": {
+      "physical": "f15ce1e25a5c5898580ff13ba71a5454dcc950a1b11cecb5779d77eaf567c57f",
+      "immutable_Git": "f15ce1e25a5c5898580ff13ba71a5454dcc950a1b11cecb5779d77eaf567c57f",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/execution-maps/atlas-data/commands.json": {
+      "physical": "19a1a61f4c21d192033e6ab02097413a8ed7ff883974afd69a0c6ff55261f871",
+      "immutable_Git": "19a1a61f4c21d192033e6ab02097413a8ed7ff883974afd69a0c6ff55261f871",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/execution-maps/atlas-data/context-layers.json": {
+      "physical": "8a8f1d557fbde280633efd19fef07c700c69f2ac5b8e964e917c5a6979f3936b",
+      "immutable_Git": "8a8f1d557fbde280633efd19fef07c700c69f2ac5b8e964e917c5a6979f3936b",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/execution-maps/atlas-data/debug-handoff.json": {
+      "physical": "5dd0eda33bac13adbfa3b847b4328f59729ee08e4d5fd37920ec3e9bc4e87eba",
+      "immutable_Git": "5dd0eda33bac13adbfa3b847b4328f59729ee08e4d5fd37920ec3e9bc4e87eba",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/execution-maps/atlas-data/feature-sprint.json": {
+      "physical": "1bd9e3e41da775e404e19a64155b8cb008252415e81561467a42efb86bda8cf6",
+      "immutable_Git": "1bd9e3e41da775e404e19a64155b8cb008252415e81561467a42efb86bda8cf6",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/execution-maps/atlas-data/knowledge-operations.json": {
+      "physical": "114f235223d266b13e0338b894adb2aa5e9c43d2fc2504efbeddfcbda394844e",
+      "immutable_Git": "114f235223d266b13e0338b894adb2aa5e9c43d2fc2504efbeddfcbda394844e",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/execution-maps/atlas-data/major-state-contracts-update.json": {
+      "physical": "a4aba8815c175ee98eb955de70f9f48f979efe71d595f97e8ab655690946f02c",
+      "immutable_Git": "e7b9fca723dee28df3514a90673d50d32a1c48414b6216b7088d4e00508082db",
+      "literal_equal": false,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/execution-maps/atlas-data/packet-preparation-changelog.json": {
+      "physical": "8b76eefcb04bfc62454eb6cc433844851498749815d275d631fde8ff19876d81",
+      "immutable_Git": "8b76eefcb04bfc62454eb6cc433844851498749815d275d631fde8ff19876d81",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/execution-maps/atlas-data/packet-preparation-review.json": {
+      "physical": "eafa7b0ecf29e2cdbfe5c0dc752aa3614f767504bff3d56ee6905d924bffb737",
+      "immutable_Git": "eafa7b0ecf29e2cdbfe5c0dc752aa3614f767504bff3d56ee6905d924bffb737",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/execution-maps/atlas-data/provenance.json": {
+      "physical": "0dc0d054885c9eb7ed94742a05c2c53f68c7524959b33620f4db8574d46f9a0d",
+      "immutable_Git": "0dc0d054885c9eb7ed94742a05c2c53f68c7524959b33620f4db8574d46f9a0d",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/execution-maps/atlas-data/review-delivery.json": {
+      "physical": "a0cd5f4265451804e6475806240ca7b8394aa5b18086f4ff51450934a3d13dcc",
+      "immutable_Git": "a0cd5f4265451804e6475806240ca7b8394aa5b18086f4ff51450934a3d13dcc",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/execution-maps/atlas-data/sources.json": {
+      "physical": "a6bbf420799fe363349d700bf6695d4e62fe4904cb360735cb36017d6da0e445",
+      "immutable_Git": "a6bbf420799fe363349d700bf6695d4e62fe4904cb360735cb36017d6da0e445",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/execution-maps/atlas-data/tribunal-lifecycle.json": {
+      "physical": "4bd0351ed32afb061736ee016ef950afe4405de87a6d0b6badddeae9e9b7950c",
+      "immutable_Git": "4bd0351ed32afb061736ee016ef950afe4405de87a6d0b6badddeae9e9b7950c",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/execution-maps/atlas-model.test.ts": {
+      "physical": "14515f51917d04cb9d13556bfe8d10569ba1d243a575eefdbc5c3e586b55da17",
+      "immutable_Git": "14515f51917d04cb9d13556bfe8d10569ba1d243a575eefdbc5c3e586b55da17",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/execution-maps/atlas-model.ts": {
+      "physical": "d115a011e2fcf583cc84635a1f7ade1e10c9d55c388a6e6b9b743bf5250e8909",
+      "immutable_Git": "d115a011e2fcf583cc84635a1f7ade1e10c9d55c388a6e6b9b743bf5250e8909",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/execution-maps/atlas-render.ts": {
+      "physical": "fd35a1c59c8ae5b5e6e25523c946b315dc30dc212be4542ce516bee66b3e7438",
+      "immutable_Git": "fd35a1c59c8ae5b5e6e25523c946b315dc30dc212be4542ce516bee66b3e7438",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/execution-maps/atlas-revalidation.test.ts": {
+      "physical": "4cdbc24af0fbc5726555984cc1fe43ce05c6a0b1e07c1666589e50ba5d22b9ec",
+      "immutable_Git": "ca614655adcf29116f1dac3953ce6d65fa06134a5e848fb6ef6c1084624ba7ba",
+      "literal_equal": false,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/execution-maps/atlas-theme.ts": {
+      "physical": "dc6d4a624d0872a5466460598a5209daaa9a15b181a5110bb217af9f37d697b0",
+      "immutable_Git": "dc6d4a624d0872a5466460598a5209daaa9a15b181a5110bb217af9f37d697b0",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/execution-maps/atlas.test.ts": {
+      "physical": "b30ca19de5aadf9beb2aa0446d6032b1a54a734fb33cd6f5409ca3eba8c6c1cc",
+      "immutable_Git": "3099f9f34dc0eb3de9460df9259245b742b0268464bed852d90380f230b8cf05",
+      "literal_equal": false,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/execution-maps/atlas.ts": {
+      "physical": "cd7c6fd358e734a61ce4b23ff2d4de8d3625cecadd802d030f3b1f0595ab2c62",
+      "immutable_Git": "f97f98230aac423bc2c6c7a381c31d2ef330d8a4a640951860d7c08dd676d573",
+      "literal_equal": false,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/execution-maps/checkpoint.ts": {
+      "physical": "3bc4c9a94e07343a4cdb4b41fa7a849ab94402788f1cfef001559a2ec2079067",
+      "immutable_Git": "3bc4c9a94e07343a4cdb4b41fa7a849ab94402788f1cfef001559a2ec2079067",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/execution-maps/locations.ts": {
+      "physical": "be6f3ee913be4ba3934b45126bdf12e15f93df7fbdb4050dc3346e9548e53c84",
+      "immutable_Git": "be6f3ee913be4ba3934b45126bdf12e15f93df7fbdb4050dc3346e9548e53c84",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/execution-maps/model.test.ts": {
+      "physical": "c442f959a7b348e457d96604e3fb397324df93ebad8974c3a937d9387214fe5d",
+      "immutable_Git": "c442f959a7b348e457d96604e3fb397324df93ebad8974c3a937d9387214fe5d",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/execution-maps/model.ts": {
+      "physical": "04b4f5cdb726e0ec2674702a8abcf61fb028bc4ef585f7f6313de3d8e42b7c0b",
+      "immutable_Git": "04b4f5cdb726e0ec2674702a8abcf61fb028bc4ef585f7f6313de3d8e42b7c0b",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/execution-maps/render.ts": {
+      "physical": "3d56cdebe1826f57be49faa04e8db97c02933cb3102bbafe41d4c506d48bb328",
+      "immutable_Git": "3d56cdebe1826f57be49faa04e8db97c02933cb3102bbafe41d4c506d48bb328",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/execution-maps/workflows.test.ts": {
+      "physical": "9e91623d9a9d308de3ad24f9c80f2367efa5a6a4dbbfcdeaa14b246ed1e76047",
+      "immutable_Git": "9e91623d9a9d308de3ad24f9c80f2367efa5a6a4dbbfcdeaa14b246ed1e76047",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/execution-maps/workflows.ts": {
+      "physical": "195ed9f83e548da723804b2b26f3531af0918687900facd79310f48793ca0ded",
+      "immutable_Git": "195ed9f83e548da723804b2b26f3531af0918687900facd79310f48793ca0ded",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/gen.ts": {
+      "physical": "ab090b29ff4d165dbabfd87043c8038596fa1afb810c53b40c062db0d7896fb0",
+      "immutable_Git": "ab090b29ff4d165dbabfd87043c8038596fa1afb810c53b40c062db0d7896fb0",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/generate-academy.test.ts": {
+      "physical": "77445dc8d83bc2d4b64118462d5977934f624e9a295ec6424d81762715b89bc9",
+      "immutable_Git": "77445dc8d83bc2d4b64118462d5977934f624e9a295ec6424d81762715b89bc9",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/generate-academy.ts": {
+      "physical": "bd59c53b0654d213929b60cfe43614806d906d33687d55d0d27227f95892516e",
+      "immutable_Git": "bd59c53b0654d213929b60cfe43614806d906d33687d55d0d27227f95892516e",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/generate-atlas.ts": {
+      "physical": "d4f474a61e0071dd261a6833595d219c459deb68d4fb03ed27ce93c57d235a68",
+      "immutable_Git": "d4f474a61e0071dd261a6833595d219c459deb68d4fb03ed27ce93c57d235a68",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/generate-diagrams.ts": {
+      "physical": "c3a436e49b0e7ae45cb59ef1b3120f9dc66b26b6a1a5cfacb41b49526b2528e8",
+      "immutable_Git": "c3a436e49b0e7ae45cb59ef1b3120f9dc66b26b6a1a5cfacb41b49526b2528e8",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/generate-readme-hero.ts": {
+      "physical": "01c62cb184a14dabf275edff55e7db9ee87f86bd59e0c65e084a18cb94681c60",
+      "immutable_Git": "01c62cb184a14dabf275edff55e7db9ee87f86bd59e0c65e084a18cb94681c60",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/generator/assign-slugs.ts": {
+      "physical": "4b1999c27e388c3c8747777945f468e3047a7aff8f58991cc2b783b227a9260d",
+      "immutable_Git": "4b1999c27e388c3c8747777945f468e3047a7aff8f58991cc2b783b227a9260d",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/generator/build-index.ts": {
+      "physical": "4d99e79d62cce8666dd76f5d699a3f498ca7f5f14ae910b9fe10e289236562d0",
+      "immutable_Git": "4d99e79d62cce8666dd76f5d699a3f498ca7f5f14ae910b9fe10e289236562d0",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/generator/classify-source.ts": {
+      "physical": "08e41c224b3d0faf700df404d0bf1cbdaa29f4e863ac4bb6226142fff42853d2",
+      "immutable_Git": "08e41c224b3d0faf700df404d0bf1cbdaa29f4e863ac4bb6226142fff42853d2",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/generator/collect-lenses.ts": {
+      "physical": "18eed1236677e6217ee5028f113a36704ccc8fea96ce87cc4e612e3e91e8a13c",
+      "immutable_Git": "18eed1236677e6217ee5028f113a36704ccc8fea96ce87cc4e612e3e91e8a13c",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/generator/collect-sources.ts": {
+      "physical": "31973d8a555b97ff21449882f40cdf8aa6f670ee40f8e6721b6fc35ef3186711",
+      "immutable_Git": "31973d8a555b97ff21449882f40cdf8aa6f670ee40f8e6721b6fc35ef3186711",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/generator/configuration-reference.ts": {
+      "physical": "727e8a6d430afb2bcb3604856692cba42f5bbf95ed970e04e441a7a145d0c120",
+      "immutable_Git": "727e8a6d430afb2bcb3604856692cba42f5bbf95ed970e04e441a7a145d0c120",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/generator/curated-drift.ts": {
+      "physical": "89fa0dfdd1d8d380cadeacaf06eb9cd42885f7a808f6b7b2ef821e1414b666a7",
+      "immutable_Git": "89fa0dfdd1d8d380cadeacaf06eb9cd42885f7a808f6b7b2ef821e1414b666a7",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/generator/derive-name.ts": {
+      "physical": "b3e8321eaa1ba7e4f953b5e937c94da38d041e58220eac0114d88e7dacd6a5e2",
+      "immutable_Git": "b3e8321eaa1ba7e4f953b5e937c94da38d041e58220eac0114d88e7dacd6a5e2",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/generator/extract-hook-gates.ts": {
+      "physical": "bc23c0e8afdd73d3d808e0bbcee7d677ac80072b7a8399cece888ffcd0be2bb6",
+      "immutable_Git": "bc23c0e8afdd73d3d808e0bbcee7d677ac80072b7a8399cece888ffcd0be2bb6",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/generator/forge-status.ts": {
+      "physical": "2318709085d04a81ba7daa82e2e906fb0e44e80c279bd1dab41e3b01977cc7a0",
+      "immutable_Git": "2318709085d04a81ba7daa82e2e906fb0e44e80c279bd1dab41e3b01977cc7a0",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/generator/format-tools-list.ts": {
+      "physical": "28f967f03d267f62f4b54eddee3896f74fd575fa94cead6eda281d5bb5fe1603",
+      "immutable_Git": "28f967f03d267f62f4b54eddee3896f74fd575fa94cead6eda281d5bb5fe1603",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/generator/generate.ts": {
+      "physical": "782922efc0b6bb050bc8e91ddeec0bb4b7339776df1c868d527ac28f243681ed",
+      "immutable_Git": "782922efc0b6bb050bc8e91ddeec0bb4b7339776df1c868d527ac28f243681ed",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/generator/host-command-catalog.ts": {
+      "physical": "880715cd374a995647e93b700f5f7e67402233e793aa0406196946a06eef0abd",
+      "immutable_Git": "880715cd374a995647e93b700f5f7e67402233e793aa0406196946a06eef0abd",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/generator/landing-stats.ts": {
+      "physical": "58b6b23c596a429d2fe395d1010e7c333883f237f536d5b7da3a29e60a5eec5f",
+      "immutable_Git": "58b6b23c596a429d2fe395d1010e7c333883f237f536d5b7da3a29e60a5eec5f",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/generator/load-curated.ts": {
+      "physical": "4fe86d54f190ea3085ed61f79a84481dc6bdbcf1a399a5fcb8fd731df36a054b",
+      "immutable_Git": "4fe86d54f190ea3085ed61f79a84481dc6bdbcf1a399a5fcb8fd731df36a054b",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/generator/markdown-fences.ts": {
+      "physical": "218622a1a701cdd0e7a19dfcd1152334618cff0ea8b3207de5127e9530aa98d7",
+      "immutable_Git": "218622a1a701cdd0e7a19dfcd1152334618cff0ea8b3207de5127e9530aa98d7",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/generator/model-tier.ts": {
+      "physical": "c984182eeb6f47706be6659b0364b3e2aa5cec8ff30f9f7c389a9679b59c3b1e",
+      "immutable_Git": "c984182eeb6f47706be6659b0364b3e2aa5cec8ff30f9f7c389a9679b59c3b1e",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/generator/normalize-source.ts": {
+      "physical": "f65bea1b186d39bea076af195471f07cb7be0444103270853f6e2a03c96e6034",
+      "immutable_Git": "f65bea1b186d39bea076af195471f07cb7be0444103270853f6e2a03c96e6034",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/generator/parse-doc.ts": {
+      "physical": "eb94710fe8f6c28d48fe0c9c1d0bd3727a73211c07f6f7935112a025bcae0261",
+      "immutable_Git": "eb94710fe8f6c28d48fe0c9c1d0bd3727a73211c07f6f7935112a025bcae0261",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/generator/parse-fields.ts": {
+      "physical": "6026f2779d2b59098c60ea860edba026b2d4ddf108b29be50b26284fc3f0ab56",
+      "immutable_Git": "6026f2779d2b59098c60ea860edba026b2d4ddf108b29be50b26284fc3f0ab56",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/generator/plugin-workflow-pairs.ts": {
+      "physical": "d0e9d560816f9b9d7614fd05c66aa8857d6baac239a2a46f512fbeb191738d81",
+      "immutable_Git": "d0e9d560816f9b9d7614fd05c66aa8857d6baac239a2a46f512fbeb191738d81",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/generator/render-agent-page.ts": {
+      "physical": "e7137ba65cc49e476d4718358d59d1b883666aeafb5da89fa013d59e01395f50",
+      "immutable_Git": "e7137ba65cc49e476d4718358d59d1b883666aeafb5da89fa013d59e01395f50",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/generator/render-changelog.ts": {
+      "physical": "a690e4bb0b3993c3204bb56439c0fa3adef79d7ee9ffcde07666402c8aca2238",
+      "immutable_Git": "a690e4bb0b3993c3204bb56439c0fa3adef79d7ee9ffcde07666402c8aca2238",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/generator/render-command-page.ts": {
+      "physical": "5c3927d6140f28439d1aeefb2e937050348e8d58bcf74ff1e0afe63a8cf3d957",
+      "immutable_Git": "5c3927d6140f28439d1aeefb2e937050348e8d58bcf74ff1e0afe63a8cf3d957",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/generator/render-gates-table.ts": {
+      "physical": "9826ccb4d3c5620b6b07501e4b2d593de7f556dd24ba585f7ac244fc8c8fcb99",
+      "immutable_Git": "9826ccb4d3c5620b6b07501e4b2d593de7f556dd24ba585f7ac244fc8c8fcb99",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/generator/render-hooks-reference.ts": {
+      "physical": "5b0c6eb0b468b2fc60289b6003eda425544e59533ef837dff40492af68e3ceee",
+      "immutable_Git": "5b0c6eb0b468b2fc60289b6003eda425544e59533ef837dff40492af68e3ceee",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/generator/render-lens-page.ts": {
+      "physical": "c381a9331365edcc77ddb2390e9f6f919d558fc08de2bea715459cc1afe6ee02",
+      "immutable_Git": "c381a9331365edcc77ddb2390e9f6f919d558fc08de2bea715459cc1afe6ee02",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/generator/render-reader-fields.ts": {
+      "physical": "d5eae57314dac17f2c5fef49d79b98c97e256fbee9d477aa5531ea1543d05cef",
+      "immutable_Git": "d5eae57314dac17f2c5fef49d79b98c97e256fbee9d477aa5531ea1543d05cef",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/generator/render-reference-lead.ts": {
+      "physical": "076007c9d1ba5c8b5bf24b67ca9d1acda6c50203428d4d058b34ae02535f7508",
+      "immutable_Git": "076007c9d1ba5c8b5bf24b67ca9d1acda6c50203428d4d058b34ae02535f7508",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/generator/render-related-links.ts": {
+      "physical": "f52494a2c12d06b57d9808ab64947dfae10d7b1b253e7be1c2054d666f7d22d1",
+      "immutable_Git": "f52494a2c12d06b57d9808ab64947dfae10d7b1b253e7be1c2054d666f7d22d1",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/generator/render-skill-page.ts": {
+      "physical": "fad4ff655b694b05f191bcdce0784a25e4f7123b4340a6f2a1e5677f3474c5b0",
+      "immutable_Git": "fad4ff655b694b05f191bcdce0784a25e4f7123b4340a6f2a1e5677f3474c5b0",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/generator/render-source-embed.ts": {
+      "physical": "5d4557effc5d93559c838990e08e3a63ea3c39d77a6fb3ac1c7a91a6f77ed299",
+      "immutable_Git": "5d4557effc5d93559c838990e08e3a63ea3c39d77a6fb3ac1c7a91a6f77ed299",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/generator/slugify.ts": {
+      "physical": "8c22752b4ed11c1037d6c8b9d294834e06f8c185d144d05d62fd69666eaeba82",
+      "immutable_Git": "8c22752b4ed11c1037d6c8b9d294834e06f8c185d144d05d62fd69666eaeba82",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/generator/source-ref.ts": {
+      "physical": "ea2b479f00df225aa33d7d6188009e07056fd24f7645f94de6c8170b55134da1",
+      "immutable_Git": "ea2b479f00df225aa33d7d6188009e07056fd24f7645f94de6c8170b55134da1",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/generator/split-frontmatter.ts": {
+      "physical": "7090f1e296c0723037e14c830de3fb1107bf76c2c40b894613d4a48ed6241e2b",
+      "immutable_Git": "7090f1e296c0723037e14c830de3fb1107bf76c2c40b894613d4a48ed6241e2b",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/generator/truncate-description.ts": {
+      "physical": "ba08432bf12bc696ff772fa765ea21702dc28f69ae92d1cb658fb16bdc25ff3e",
+      "immutable_Git": "ba08432bf12bc696ff772fa765ea21702dc28f69ae92d1cb658fb16bdc25ff3e",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/generator/types.ts": {
+      "physical": "9460d3143192ece9bb33314fafb5659c896a799536d099105cc8c9ea66cbd25b",
+      "immutable_Git": "9460d3143192ece9bb33314fafb5659c896a799536d099105cc8c9ea66cbd25b",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/generator/workflow-pairs.ts": {
+      "physical": "05c47ed6d7e0a22c64205d2438f3fc3869020b3d1d6ed525394a24df2f1df84a",
+      "immutable_Git": "05c47ed6d7e0a22c64205d2438f3fc3869020b3d1d6ed525394a24df2f1df84a",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/generator/yaml-quote.ts": {
+      "physical": "2cd1545f09c28e85f86e50a8e87ea945658d6dab7967a1e86c885efe1ce2f9cc",
+      "immutable_Git": "2cd1545f09c28e85f86e50a8e87ea945658d6dab7967a1e86c885efe1ce2f9cc",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/guide-directory.test.ts": {
+      "physical": "fd747acad661ec498264e2ebf21d0620126b1eb0b47af2bccc73d510ddb2df16",
+      "immutable_Git": "fd747acad661ec498264e2ebf21d0620126b1eb0b47af2bccc73d510ddb2df16",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/guide-directory.ts": {
+      "physical": "f3a0fc545056b843265baa854a376226ae71e0f820f0d2e78f5c0e748a968717",
+      "immutable_Git": "f3a0fc545056b843265baa854a376226ae71e0f820f0d2e78f5c0e748a968717",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/journey-navigation.ts": {
+      "physical": "b5c9278f378c0f70d3c29c90497af6442df3f587986185ed0e300a81435a161a",
+      "immutable_Git": "b5c9278f378c0f70d3c29c90497af6442df3f587986185ed0e300a81435a161a",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/link-audit.ts": {
+      "physical": "ae26407ea0f8adb88302a0965635659384d340a588831ccbe73ad96b03bfc46f",
+      "immutable_Git": "ae26407ea0f8adb88302a0965635659384d340a588831ccbe73ad96b03bfc46f",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/link-audit/lib.ts": {
+      "physical": "5dc9948b5dba59154368db94e6a75206401d25265e1e153092f34977320c57a9",
+      "immutable_Git": "5dc9948b5dba59154368db94e6a75206401d25265e1e153092f34977320c57a9",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/owned-output.test.ts": {
+      "physical": "8d23c62e8900a5d7acdd4de4121ee39670ffa3886ea2c1296c2d7b799ede5775",
+      "immutable_Git": "8d23c62e8900a5d7acdd4de4121ee39670ffa3886ea2c1296c2d7b799ede5775",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/owned-output.ts": {
+      "physical": "13ec4068eea8d6af7afaa8ca7e96b288a2aa8ca9991b7fb42a6901804f70fb3f",
+      "immutable_Git": "13ec4068eea8d6af7afaa8ca7e96b288a2aa8ca9991b7fb42a6901804f70fb3f",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/pagefind-build.test.ts": {
+      "physical": "9106dff87e4b00c138eab7570b458f8f05c90ba654c1e57f0a20cf913abecc03",
+      "immutable_Git": "9106dff87e4b00c138eab7570b458f8f05c90ba654c1e57f0a20cf913abecc03",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/pagefind-build.ts": {
+      "physical": "ad1fbe88782aa8927024d7a405f4dd8244b79219ea4947415f4e66f512995b97",
+      "immutable_Git": "ad1fbe88782aa8927024d7a405f4dd8244b79219ea4947415f4e66f512995b97",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/product-example.ts": {
+      "physical": "e99c1ff0284581ece5ed867bdd5b1dca709d02f1e4c76c7d09da13dd6628dc22",
+      "immutable_Git": "e99c1ff0284581ece5ed867bdd5b1dca709d02f1e4c76c7d09da13dd6628dc22",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/reference-sidebar.ts": {
+      "physical": "b6b3875ed71cac42e42ed073026476e66d79ce131829f5f7a9be929d3f8a5fe9",
+      "immutable_Git": "b6b3875ed71cac42e42ed073026476e66d79ce131829f5f7a9be929d3f8a5fe9",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/rehype-base-links.ts": {
+      "physical": "9f6972f620120165a28bf26704e47660385b4c938c7a7c108a9c7eff6233a16b",
+      "immutable_Git": "9f6972f620120165a28bf26704e47660385b4c938c7a7c108a9c7eff6233a16b",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/rehype-table-shell.ts": {
+      "physical": "54517f178289204710da8c84d97176dbb5961bc5fd85c14bde9b2ecabe64bdf7",
+      "immutable_Git": "54517f178289204710da8c84d97176dbb5961bc5fd85c14bde9b2ecabe64bdf7",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/release-applicability.ts": {
+      "physical": "272fbf607aa1376f999545d3b7f287438a22dc5f85fed4d9ccaf433d6ad555d9",
+      "immutable_Git": "272fbf607aa1376f999545d3b7f287438a22dc5f85fed4d9ccaf433d6ad555d9",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/statusline-capture.ts": {
+      "physical": "dfdae29f2cb79e7dd3621f96494505823a464702cc3885b7377e88013e222a33",
+      "immutable_Git": "dfdae29f2cb79e7dd3621f96494505823a464702cc3885b7377e88013e222a33",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/topic-map.ts": {
+      "physical": "1da65d67cea4a240d18212b185f89095ebfa799e541e4bbc226b73f14de113c1",
+      "immutable_Git": "1da65d67cea4a240d18212b185f89095ebfa799e541e4bbc226b73f14de113c1",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/scripts/version-facts.ts": {
+      "physical": "b1888c427fed1f9da78f759839dc50dd65ad3dae0d59f9ca3e1577eada56bc89",
+      "immutable_Git": "b1888c427fed1f9da78f759839dc50dd65ad3dae0d59f9ca3e1577eada56bc89",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/src/scripts/academy-bookmark.ts": {
+      "physical": "8015708d6686b7efef1186d7a0ebc3fd1b737462308acfd2d25511428636029e",
+      "immutable_Git": "8015708d6686b7efef1186d7a0ebc3fd1b737462308acfd2d25511428636029e",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/src/scripts/academy-command-preferences.ts": {
+      "physical": "35677f032947676efdc8df94efaace8f78f4f1544cd28ee37a1410e1457abcc2",
+      "immutable_Git": "35677f032947676efdc8df94efaace8f78f4f1544cd28ee37a1410e1457abcc2",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/src/scripts/execution-map-navigation.ts": {
+      "physical": "7f0a27f56602618dd58781d6ca3c08cfca456c8483c0407e67a94cb4fb4a3dc5",
+      "immutable_Git": "7f0a27f56602618dd58781d6ca3c08cfca456c8483c0407e67a94cb4fb4a3dc5",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/src/scripts/guide-filter.ts": {
+      "physical": "62dca60757ab9b275280238eb93dcc16ea04dda0c0c5cb9bbd076d538143c91f",
+      "immutable_Git": "62dca60757ab9b275280238eb93dcc16ea04dda0c0c5cb9bbd076d538143c91f",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/src/scripts/workflow-atlas.ts": {
+      "physical": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e",
+      "immutable_Git": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/academy-command-preferences-presentation.test.ts": {
+      "physical": "bc88704ca7e6465e694b7306a4b09c98c06e03742fd8f1dd275f18f2c5a85a5d",
+      "immutable_Git": "bc88704ca7e6465e694b7306a4b09c98c06e03742fd8f1dd275f18f2c5a85a5d",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/astro-config.test.ts": {
+      "physical": "00d27498eb198b1fb7f924fcfc0cf04d44b62a2fa2efca960d167c0556b64758",
+      "immutable_Git": "00d27498eb198b1fb7f924fcfc0cf04d44b62a2fa2efca960d167c0556b64758",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/base.test.ts": {
+      "physical": "b95633201bbe99f5f312b6763229750196a9c53e0b19308146c99fe38ce2a9f2",
+      "immutable_Git": "b95633201bbe99f5f312b6763229750196a9c53e0b19308146c99fe38ce2a9f2",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/browser/academy-wayfinding.spec.ts": {
+      "physical": "7f0420bd5403410aa24fc8470702f38718f1aefa4109ff5025cb32aa4dc33563",
+      "immutable_Git": "7f0420bd5403410aa24fc8470702f38718f1aefa4109ff5025cb32aa4dc33563",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/browser/artifact-review.spec.ts": {
+      "physical": "cb0594d55e8bc4c470d67be75acc8aec9c7d099dd34233e94c7d28f154d9bae1",
+      "immutable_Git": "cb0594d55e8bc4c470d67be75acc8aec9c7d099dd34233e94c7d28f154d9bae1",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/browser/concepts-context.spec.ts": {
+      "physical": "19b2e957b35f7107802e0a815001d6b6068373c0c4d047622f8e108c642d44da",
+      "immutable_Git": "19b2e957b35f7107802e0a815001d6b6068373c0c4d047622f8e108c642d44da",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/browser/concepts-decisions.spec.ts": {
+      "physical": "09a4ded9dc8104cfa755eb918701a4edd41829feb1f699f00b8a0894740e5c19",
+      "immutable_Git": "09a4ded9dc8104cfa755eb918701a4edd41829feb1f699f00b8a0894740e5c19",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/browser/concepts-execution.spec.ts": {
+      "physical": "a3774fd8e6979908f0685ec477ffd95d5e000c6b55c56d5f0010066b28757f91",
+      "immutable_Git": "a3774fd8e6979908f0685ec477ffd95d5e000c6b55c56d5f0010066b28757f91",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/browser/dependency-guide.spec.ts": {
+      "physical": "b73bedd42763efd3083f92a0d10eabc930fa89fc9383e980a275e6eb7006e33e",
+      "immutable_Git": "b73bedd42763efd3083f92a0d10eabc930fa89fc9383e980a275e6eb7006e33e",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/browser/execution-arrows.spec.ts": {
+      "physical": "a3778eb0bc6c2dd21ebdc380188b98c15c17917abc1b640e4832a9bbc613dd7d",
+      "immutable_Git": "a3778eb0bc6c2dd21ebdc380188b98c15c17917abc1b640e4832a9bbc613dd7d",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/browser/guide-discovery.spec.ts": {
+      "physical": "cef4f4c061b20f7e48d858cfaed5a9bc01ca999be8420a130be8d9cd6a1aa0d9",
+      "immutable_Git": "cef4f4c061b20f7e48d858cfaed5a9bc01ca999be8420a130be8d9cd6a1aa0d9",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/browser/guide-reflow.spec.ts": {
+      "physical": "1d2a294fa486669c5ab6d933851192d9916d1c52f73454c91c43b7127bc4ae77",
+      "immutable_Git": "1d2a294fa486669c5ab6d933851192d9916d1c52f73454c91c43b7127bc4ae77",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/browser/homepage-responsive.spec.ts": {
+      "physical": "23075e132f0702612c60309730efe1d0676c8143c6af517ffa0a1664a6837959",
+      "immutable_Git": "23075e132f0702612c60309730efe1d0676c8143c6af517ffa0a1664a6837959",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/browser/human-experience.spec.ts": {
+      "physical": "a17e1015bc48b89b9c3758b0d400276c57d63efd1b2b59016f98a237258fe85e",
+      "immutable_Git": "a17e1015bc48b89b9c3758b0d400276c57d63efd1b2b59016f98a237258fe85e",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/browser/peer-layout.spec.ts": {
+      "physical": "c0c2a14103ceee4283b2707892c8beaffb0b12e420e6e5376e7d2ca2eb68b418",
+      "immutable_Git": "c0c2a14103ceee4283b2707892c8beaffb0b12e420e6e5376e7d2ca2eb68b418",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/browser/publication.spec.ts": {
+      "physical": "80f8b16c6d6f52a018783ed3906ae9e64a82e62dad01cd13cff0c10e915939b6",
+      "immutable_Git": "80f8b16c6d6f52a018783ed3906ae9e64a82e62dad01cd13cff0c10e915939b6",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/browser/reader-number.spec.ts": {
+      "physical": "576289382e5b3e4b1995993f8bf4f6737e7dabc47cf9101a2f0ddb250ab1b1bf",
+      "immutable_Git": "576289382e5b3e4b1995993f8bf4f6737e7dabc47cf9101a2f0ddb250ab1b1bf",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/browser/search-bundle.spec.ts": {
+      "physical": "e875cfc163071d5f51c14469163da538563d1f8a636e05c8a2da0066db9512a4",
+      "immutable_Git": "e875cfc163071d5f51c14469163da538563d1f8a636e05c8a2da0066db9512a4",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/browser/workflow-atlas-navigation.spec.ts": {
+      "physical": "94c86e9991f1bfa68c3d8f2aaa25ff6a211efa6432a8dfd584cabdde48f2f896",
+      "immutable_Git": "94c86e9991f1bfa68c3d8f2aaa25ff6a211efa6432a8dfd584cabdde48f2f896",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/browser/workflow-atlas-quality.spec.ts": {
+      "physical": "82151247919b8ac325811c673ff97652a1b43a426b6773d84eabefaca03f8719",
+      "immutable_Git": "82151247919b8ac325811c673ff97652a1b43a426b6773d84eabefaca03f8719",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/browser/workflow-atlas.spec.ts": {
+      "physical": "d7caf032b04a3255b93cde27f275e8f0ee38b02a839f87b57814af2fb32c2d8f",
+      "immutable_Git": "d7caf032b04a3255b93cde27f275e8f0ee38b02a839f87b57814af2fb32c2d8f",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/browser/workflow-navigation.spec.ts": {
+      "physical": "2aba23d8e6155a5562bda7de9557ce568d57fef01b03a962ef8c34d9444dda0e",
+      "immutable_Git": "2aba23d8e6155a5562bda7de9557ce568d57fef01b03a962ef8c34d9444dda0e",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/browser/workflow-propagation.spec.ts": {
+      "physical": "2b7a864d4620703f765abcbe8a0a6d0ef914b35512d481adf35fffc6201f41ca",
+      "immutable_Git": "2b7a864d4620703f765abcbe8a0a6d0ef914b35512d481adf35fffc6201f41ca",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/capture/capture-harness.test.ts": {
+      "physical": "ebd67ae8f6fbe98e51086f0ae81ade4875c2d3c8b7ab937a025b1cf3d7e21b2a",
+      "immutable_Git": "ebd67ae8f6fbe98e51086f0ae81ade4875c2d3c8b7ab937a025b1cf3d7e21b2a",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/capture/captured-run.test.ts": {
+      "physical": "a65c5c2e227aa373e61b919dcde0f8432ffd050dab9f5e1cf648e3e4b41fc3a2",
+      "immutable_Git": "a65c5c2e227aa373e61b919dcde0f8432ffd050dab9f5e1cf648e3e4b41fc3a2",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/capture/hook-proof-capture.test.ts": {
+      "physical": "e736827bb9ec01a55df126ea32295c46240de1c5597ce41ba8688745b4bdb282",
+      "immutable_Git": "e736827bb9ec01a55df126ea32295c46240de1c5597ce41ba8688745b4bdb282",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/capture/path-filters.ts": {
+      "physical": "fd5160bf42f6086d0082bc457e776bda8a1172a051afbac68d4654dece5c404b",
+      "immutable_Git": "fd5160bf42f6086d0082bc457e776bda8a1172a051afbac68d4654dece5c404b",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/capture/python-run.test.ts": {
+      "physical": "baeaa668dd2b033ca2d1b92cb1162502cf7217e4e2f1d8e460f3a4677a7a7a36",
+      "immutable_Git": "baeaa668dd2b033ca2d1b92cb1162502cf7217e4e2f1d8e460f3a4677a7a7a36",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/capture/stale-capture.test.ts": {
+      "physical": "c324bd24f9fc0c833576169f56dcdbbf3e46f6d73c9cc6031741252695269ad4",
+      "immutable_Git": "c324bd24f9fc0c833576169f56dcdbbf3e46f6d73c9cc6031741252695269ad4",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/chapter-request-contract.test.ts": {
+      "physical": "60fd6e3d84c9b3da365eb7e5f95df579d9410ef9f3b3e095797903594abb1aba",
+      "immutable_Git": "60fd6e3d84c9b3da365eb7e5f95df579d9410ef9f3b3e095797903594abb1aba",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/chapter-request-contract.ts": {
+      "physical": "36f09233b6b11fbae4ff93a88a17c0f5db2b2445e98a94d469df23303ad68fbe",
+      "immutable_Git": "36f09233b6b11fbae4ff93a88a17c0f5db2b2445e98a94d469df23303ad68fbe",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/components/lifecycle.spec.ts": {
+      "physical": "70466c0be7d9fc0ea94dac7b882b7eb5d3c04cd65cd30621f27a4192189c3317",
+      "immutable_Git": "70466c0be7d9fc0ea94dac7b882b7eb5d3c04cd65cd30621f27a4192189c3317",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/components/search-boundaries.spec.ts": {
+      "physical": "f5a1b2777d28ddde8823d0ca634179daa990691dba20ca0045a163243ba92afd",
+      "immutable_Git": "f5a1b2777d28ddde8823d0ca634179daa990691dba20ca0045a163243ba92afd",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/content/assistive-workflow.test.ts": {
+      "physical": "cdfa3d24350dbb6647c21050604974fe683862f4d7eba502b794d64266dc72d8",
+      "immutable_Git": "cdfa3d24350dbb6647c21050604974fe683862f4d7eba502b794d64266dc72d8",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/content/codex-support.test.ts": {
+      "physical": "3c1043a4e01039914baa4a4bd99d12fd64c0bb74035f288bf1616241259cc44a",
+      "immutable_Git": "3c1043a4e01039914baa4a4bd99d12fd64c0bb74035f288bf1616241259cc44a",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/content/concepts-context.test.ts": {
+      "physical": "ce3fb76b951156ba9e5d286cd78471f4a1b03f09ad5b04ed006d7edd2508bc01",
+      "immutable_Git": "ce3fb76b951156ba9e5d286cd78471f4a1b03f09ad5b04ed006d7edd2508bc01",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/content/concepts-decisions.test.ts": {
+      "physical": "e0e8ad1dec916f917f930aab441dcf84e4f4811db8aa878801eb5f8eb8f4cf41",
+      "immutable_Git": "e0e8ad1dec916f917f930aab441dcf84e4f4811db8aa878801eb5f8eb8f4cf41",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/content/concepts-foundation.test.ts": {
+      "physical": "42c363015f1a0d56ca5e2ec04bcf25db55846ac26cad0687047d4aa357a35d0d",
+      "immutable_Git": "42c363015f1a0d56ca5e2ec04bcf25db55846ac26cad0687047d4aa357a35d0d",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/content/context-review-regressions.test.ts": {
+      "physical": "c46f16090678ef7d7787da12c258bcbd8aeb3e9874e6c786b3a3698791198127",
+      "immutable_Git": "c46f16090678ef7d7787da12c258bcbd8aeb3e9874e6c786b3a3698791198127",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/content/dependency-guide.test.ts": {
+      "physical": "7bc22ede3bf8445aa8d1e1debbe4ab545d16b91cf36013efdd2457c5727c5d4e",
+      "immutable_Git": "7bc22ede3bf8445aa8d1e1debbe4ab545d16b91cf36013efdd2457c5727c5d4e",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/content/docs-overhaul.test.ts": {
+      "physical": "bcb9f0d07eb62874a61578f2e54a6cb4577f71dc86de9238921692ba38b04d92",
+      "immutable_Git": "bcb9f0d07eb62874a61578f2e54a6cb4577f71dc86de9238921692ba38b04d92",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/content/documentation-presentation.test.ts": {
+      "physical": "13b7f9d691fdab57120a1992c782eaa18bb413ddc901049e78344b96647f9594",
+      "immutable_Git": "13b7f9d691fdab57120a1992c782eaa18bb413ddc901049e78344b96647f9594",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/content/execution-arrow-geometry.test.ts": {
+      "physical": "5274357c17fd716edfce2e580a5f899f193b2517014612da5dbcd1c2b6f2e14e",
+      "immutable_Git": "5274357c17fd716edfce2e580a5f899f193b2517014612da5dbcd1c2b6f2e14e",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/content/execution-navigation.test.ts": {
+      "physical": "7775d6cf8c645b1e6eddb212f9d5bc48b05788dfe5d428590ca73ae1b3004fa6",
+      "immutable_Git": "7775d6cf8c645b1e6eddb212f9d5bc48b05788dfe5d428590ca73ae1b3004fa6",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/content/guide-examples.test.ts": {
+      "physical": "2d509b039b4462d6f3ab1f888cc21f416775462d2f97615c3b94eab69d68b516",
+      "immutable_Git": "2d509b039b4462d6f3ab1f888cc21f416775462d2f97615c3b94eab69d68b516",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/content/human-experience.test.ts": {
+      "physical": "7858ed5f6b455c74604667e134c22f79644727802d3b2dfca668fa561e18e80a",
+      "immutable_Git": "7858ed5f6b455c74604667e134c22f79644727802d3b2dfca668fa561e18e80a",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/content/investigation-guide.test.ts": {
+      "physical": "35e719c471c7278e7713d4e4c096e3f57311ede495241e98c25c8f028d8780e9",
+      "immutable_Git": "35e719c471c7278e7713d4e4c096e3f57311ede495241e98c25c8f028d8780e9",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/content/learning-contract.test.ts": {
+      "physical": "1c4fa236877030af419989c5b7153bd582c6a354af3807122e828e916172f714",
+      "immutable_Git": "1c4fa236877030af419989c5b7153bd582c6a354af3807122e828e916172f714",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/content/naming-policy.test.ts": {
+      "physical": "4f1307444d335b81f1cf5aa44ae751f7f9e8666eba1d02a3050f3c8c086e2d7a",
+      "immutable_Git": "4f1307444d335b81f1cf5aa44ae751f7f9e8666eba1d02a3050f3c8c086e2d7a",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/content/product-example.test.ts": {
+      "physical": "6e1dbe13793bc34dcee72af312b9e1d5165573c2a1bde4b973ac4de4efd5c402",
+      "immutable_Git": "6e1dbe13793bc34dcee72af312b9e1d5165573c2a1bde4b973ac4de4efd5c402",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/content/reader-journey.test.ts": {
+      "physical": "b85ea1a803db208ce97df3e61fad6d63c2247dd03f94d63083bfd73dcc15e013",
+      "immutable_Git": "b85ea1a803db208ce97df3e61fad6d63c2247dd03f94d63083bfd73dcc15e013",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/content/readme-professional.test.ts": {
+      "physical": "d178e1e0256fe3050c479b9b1cac48875db6d5ffe638a1719fe480ac27abae2c",
+      "immutable_Git": "d178e1e0256fe3050c479b9b1cac48875db6d5ffe638a1719fe480ac27abae2c",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/content/review-delivery.test.ts": {
+      "physical": "08de44904556bf37a58a2d8aaa8e61268506ffeb362b7931c9ad37c016510b4d",
+      "immutable_Git": "08de44904556bf37a58a2d8aaa8e61268506ffeb362b7931c9ad37c016510b4d",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/content/trust-lifecycle-hub.test.ts": {
+      "physical": "685bd421a2f58318dbdf5fc923cd756382c7c57f01b0f5c86117cc3f044e34a2",
+      "immutable_Git": "685bd421a2f58318dbdf5fc923cd756382c7c57f01b0f5c86117cc3f044e34a2",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/content/trust-policy-claims.test.ts": {
+      "physical": "14b3590c60875bc908c254971589f383b99b5e938735527a50e9bd9ef801c7c8",
+      "immutable_Git": "14b3590c60875bc908c254971589f383b99b5e938735527a50e9bd9ef801c7c8",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/content/version-literal-allowlist.json": {
+      "physical": "60c4bdf533f22f9beb6230ad23bf125620ffa6fac2d3d532003e4d41c2e09347",
+      "immutable_Git": "60c4bdf533f22f9beb6230ad23bf125620ffa6fac2d3d532003e4d41c2e09347",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/content/version-literal-drift.test.ts": {
+      "physical": "9df00e5af922b9dcc2cdf5b9fa49a20853e33d2fdd5b0c69fa534d7078f2d7a4",
+      "immutable_Git": "9df00e5af922b9dcc2cdf5b9fa49a20853e33d2fdd5b0c69fa534d7078f2d7a4",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/content/workflow-propagation.test.ts": {
+      "physical": "06137bfe56be45f043d8b498f1e1c836451117a8e79c64cd7131379211d9b692",
+      "immutable_Git": "06137bfe56be45f043d8b498f1e1c836451117a8e79c64cd7131379211d9b692",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/fixtures/plugin-collisions/generated/command-catalog.json": {
+      "physical": "cfa26fb8e1a06d0c773cfcc55d2f06dcb6917150ccf5681dc83870be5e21180b",
+      "immutable_Git": "cfa26fb8e1a06d0c773cfcc55d2f06dcb6917150ccf5681dc83870be5e21180b",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/fixtures/plugin/generated/command-catalog.json": {
+      "physical": "59ecb07d05f25eca72b8e47d1a1c539be6ebe242c49a6f0d4611762315fe558f",
+      "immutable_Git": "59ecb07d05f25eca72b8e47d1a1c539be6ebe242c49a6f0d4611762315fe558f",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/generator/assign-slugs.test.ts": {
+      "physical": "ab719b1ab58f2fce295f34e713d493869ade2092e60c58ac5081741660a5da3c",
+      "immutable_Git": "ab719b1ab58f2fce295f34e713d493869ade2092e60c58ac5081741660a5da3c",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/generator/build-index.test.ts": {
+      "physical": "e5189b14094f914449c228667ac8666602dfa5f686fb8452e7fc174a723e4a6c",
+      "immutable_Git": "e5189b14094f914449c228667ac8666602dfa5f686fb8452e7fc174a723e4a6c",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/generator/classify-source.test.ts": {
+      "physical": "b5dbac1c5c46b59627ef3426d13d657b9c1cf97dd979745bac9681742d8334db",
+      "immutable_Git": "b5dbac1c5c46b59627ef3426d13d657b9c1cf97dd979745bac9681742d8334db",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/generator/collect-sources.test.ts": {
+      "physical": "a81690c9495c095ca56e97ef497ea4004d1fd57a74ac3e065920a8f81ccfd121",
+      "immutable_Git": "a81690c9495c095ca56e97ef497ea4004d1fd57a74ac3e065920a8f81ccfd121",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/generator/command-catalog-discovery.test.ts": {
+      "physical": "f70f7c24b1f0382d9382ae395d7c5e6f19d3f1c1e33b0b4e3f58522355c28072",
+      "immutable_Git": "f70f7c24b1f0382d9382ae395d7c5e6f19d3f1c1e33b0b4e3f58522355c28072",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/generator/command-sidebar-inventory.test.ts": {
+      "physical": "cbc20e703030766c8775072c11f175536eeca38ae6e107d67ff558180f87e98b",
+      "immutable_Git": "cbc20e703030766c8775072c11f175536eeca38ae6e107d67ff558180f87e98b",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/generator/command-url-stability.test.ts": {
+      "physical": "30cf98e98553ac4c376e5b9632c4e42abebf505d014542f85a997d9ed491f60c",
+      "immutable_Git": "30cf98e98553ac4c376e5b9632c4e42abebf505d014542f85a997d9ed491f60c",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/generator/configuration-reference.test.ts": {
+      "physical": "2080780fc8be391f9e4a2137f4bd09faf62c8f3bf0411ac6d038603383f03114",
+      "immutable_Git": "2080780fc8be391f9e4a2137f4bd09faf62c8f3bf0411ac6d038603383f03114",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/generator/curated-coverage.test.ts": {
+      "physical": "6e7590b73c275add30ccdc9a63f1308bcc747f1d1264a15f54abe38807d9a844",
+      "immutable_Git": "6e7590b73c275add30ccdc9a63f1308bcc747f1d1264a15f54abe38807d9a844",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/generator/curated-drift.test.ts": {
+      "physical": "83423f142f4c67e40808352526d4839e93dbbe0e75c7cc16b20597ae642db591",
+      "immutable_Git": "83423f142f4c67e40808352526d4839e93dbbe0e75c7cc16b20597ae642db591",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/generator/derive-name.test.ts": {
+      "physical": "b71cdc4cd160ef84722c17321f432369bfb3a09cd8c43701334632d009239844",
+      "immutable_Git": "b71cdc4cd160ef84722c17321f432369bfb3a09cd8c43701334632d009239844",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/generator/diagram-href-convention.test.ts": {
+      "physical": "2ae2f2568568741510fb9ec556ca1380ded2cf7e270f75da2e96a851e10174b1",
+      "immutable_Git": "2ae2f2568568741510fb9ec556ca1380ded2cf7e270f75da2e96a851e10174b1",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/generator/diagrams.test.ts": {
+      "physical": "720396bdb9fad318c0278d140c04ec4b63bdf9e20a9cdb40cb337fa548855b50",
+      "immutable_Git": "720396bdb9fad318c0278d140c04ec4b63bdf9e20a9cdb40cb337fa548855b50",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/generator/execution-path-regression.test.ts": {
+      "physical": "ebc51f11ec0f30a257d3ab5752ac3238e2ed019724870fe72286e066659c8356",
+      "immutable_Git": "ebc51f11ec0f30a257d3ab5752ac3238e2ed019724870fe72286e066659c8356",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/generator/extract-hook-gates.test.ts": {
+      "physical": "4393350149ca78c0c8aa1ff30c401ac69d5c656b877135f338bb9cfd8be20e53",
+      "immutable_Git": "4393350149ca78c0c8aa1ff30c401ac69d5c656b877135f338bb9cfd8be20e53",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/generator/feature-forge-content.test.ts": {
+      "physical": "c2d92363fa33c9b1bf65c31d1c7a6b2c992babe19a207f2aeb98206bdb4392a7",
+      "immutable_Git": "c2d92363fa33c9b1bf65c31d1c7a6b2c992babe19a207f2aeb98206bdb4392a7",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/generator/forge-allowlist-consistency.test.ts": {
+      "physical": "b2410f1c63a10ce8654347b00ea3d9df50548910dce91bf8e9773fba555d5ac5",
+      "immutable_Git": "b2410f1c63a10ce8654347b00ea3d9df50548910dce91bf8e9773fba555d5ac5",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/generator/forge-status.test.ts": {
+      "physical": "bdc1e264b7b1619557abbd44afd1b8c96dfc85e441697e9bd9d5dea85c47dc15",
+      "immutable_Git": "bdc1e264b7b1619557abbd44afd1b8c96dfc85e441697e9bd9d5dea85c47dc15",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/generator/format-tools-list.test.ts": {
+      "physical": "deaf312284e29fd527c8411cc93e22616615c3c3a71ebd67c880497d848fb61c",
+      "immutable_Git": "deaf312284e29fd527c8411cc93e22616615c3c3a71ebd67c880497d848fb61c",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/generator/generate-forge.test.ts": {
+      "physical": "f76b29d4396a423a3704797e1d78f978286908277e569b2d464d2c49af990860",
+      "immutable_Git": "f76b29d4396a423a3704797e1d78f978286908277e569b2d464d2c49af990860",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/generator/generate.test.ts": {
+      "physical": "4627878f11a08d43776759ad6a70a34bd892b05524e5be9af50c69efd8b1cac8",
+      "immutable_Git": "4627878f11a08d43776759ad6a70a34bd892b05524e5be9af50c69efd8b1cac8",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/generator/host-command-catalog.test.ts": {
+      "physical": "929b2a6c3034fdf07f796d651a8f219f42a1811a95d4c73334d65eaba9b240c0",
+      "immutable_Git": "929b2a6c3034fdf07f796d651a8f219f42a1811a95d4c73334d65eaba9b240c0",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/generator/lens-pages.test.ts": {
+      "physical": "426af5320bfda077f5b3f2cd2615c232421a9022cf43576cabb05f28d7cca93c",
+      "immutable_Git": "426af5320bfda077f5b3f2cd2615c232421a9022cf43576cabb05f28d7cca93c",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/generator/load-curated.test.ts": {
+      "physical": "08a57a2bd5e5a83a84f7d4ddb9f4c570d6d45149a5b62dd89e55d45bfde24a73",
+      "immutable_Git": "08a57a2bd5e5a83a84f7d4ddb9f4c570d6d45149a5b62dd89e55d45bfde24a73",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/generator/merged-workflow-pages.test.ts": {
+      "physical": "09c872837e0af677d6ddedcb28ed2b558ded88187078f0f1f98742297c547fcb",
+      "immutable_Git": "09c872837e0af677d6ddedcb28ed2b558ded88187078f0f1f98742297c547fcb",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/generator/merged-workflow-redirects.test.ts": {
+      "physical": "18febb62b720d5a2dcc3737a6763ed6ff89a559b0b188260f8cb277da5c90e6c",
+      "immutable_Git": "18febb62b720d5a2dcc3737a6763ed6ff89a559b0b188260f8cb277da5c90e6c",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/generator/model-tier.test.ts": {
+      "physical": "4c896c187498efbefc843088b542c2c8eb80d689e176ef01f9444a65b69a2432",
+      "immutable_Git": "4c896c187498efbefc843088b542c2c8eb80d689e176ef01f9444a65b69a2432",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/generator/paraphrase-lint.test.ts": {
+      "physical": "48929b73eba96b9b981fb6bc556e3afa7f248401d7f5575f8be95c2a259a38f1",
+      "immutable_Git": "48929b73eba96b9b981fb6bc556e3afa7f248401d7f5575f8be95c2a259a38f1",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/generator/parse-doc.test.ts": {
+      "physical": "ab1c76583d998dd599808d6519070f6ef58d2e83112106023881103590750545",
+      "immutable_Git": "ab1c76583d998dd599808d6519070f6ef58d2e83112106023881103590750545",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/generator/parse-fields.test.ts": {
+      "physical": "b7b182f5852e7375a0a30fde27d534a0ed4598d8171e9a1b801ea924ebd94c41",
+      "immutable_Git": "b7b182f5852e7375a0a30fde27d534a0ed4598d8171e9a1b801ea924ebd94c41",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/generator/plugin-fixture.ts": {
+      "physical": "ae9907c6a4ad797ed34912487e64835a3d50c7ff37665173b9865ac96d3257a4",
+      "immutable_Git": "ae9907c6a4ad797ed34912487e64835a3d50c7ff37665173b9865ac96d3257a4",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/generator/reader-fields.test.ts": {
+      "physical": "131bbba4f903934c25f487803ff2c9fcef28a944dbf5bf909c29417df1793070",
+      "immutable_Git": "131bbba4f903934c25f487803ff2c9fcef28a944dbf5bf909c29417df1793070",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/generator/render-agent-page.test.ts": {
+      "physical": "6f0a049674677e0314ffb0ea897bcd0f0ebad8c569a5304470b860e2c8bc3e05",
+      "immutable_Git": "6f0a049674677e0314ffb0ea897bcd0f0ebad8c569a5304470b860e2c8bc3e05",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/generator/render-changelog.test.ts": {
+      "physical": "95db3bf332573ca117b871e669bedef19e298c6042d732c07919fbb22f5e6dc1",
+      "immutable_Git": "95db3bf332573ca117b871e669bedef19e298c6042d732c07919fbb22f5e6dc1",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/generator/render-command-page-forge.test.ts": {
+      "physical": "dc278e4316db3cb1da620c2c69cbab344bb10a912e9928ea0aa4883c7b9bea9a",
+      "immutable_Git": "dc278e4316db3cb1da620c2c69cbab344bb10a912e9928ea0aa4883c7b9bea9a",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/generator/render-command-page.test.ts": {
+      "physical": "ee46b82266aa51d404b7ece7686c93e66f128843c2be8e4b98e4218a1278d6b4",
+      "immutable_Git": "ee46b82266aa51d404b7ece7686c93e66f128843c2be8e4b98e4218a1278d6b4",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/generator/render-gates-table.test.ts": {
+      "physical": "111cf1b8d658388e294da32be467c83a6dfa4586befbfa2bd1c72017bfd4ae1a",
+      "immutable_Git": "111cf1b8d658388e294da32be467c83a6dfa4586befbfa2bd1c72017bfd4ae1a",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/generator/render-hooks-reference.test.ts": {
+      "physical": "9b50fd2b67853105c9aee88086e20712940bd6cf94c5e6f7c6ad5b7a3c2cad5a",
+      "immutable_Git": "9b50fd2b67853105c9aee88086e20712940bd6cf94c5e6f7c6ad5b7a3c2cad5a",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/generator/render-skill-page.test.ts": {
+      "physical": "c4b40302871680f910158007bc13c7a13bbcf8985b90d5d39f39d13eee9b4a6c",
+      "immutable_Git": "c4b40302871680f910158007bc13c7a13bbcf8985b90d5d39f39d13eee9b4a6c",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/generator/render-source-embed.test.ts": {
+      "physical": "4d7d94028850e80b5bb52070b6c8cd7a5b8d630272d7d3614bcf5da078cefa81",
+      "immutable_Git": "4d7d94028850e80b5bb52070b6c8cd7a5b8d630272d7d3614bcf5da078cefa81",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/generator/slugify.test.ts": {
+      "physical": "e9e0967ccdb60b92a9a2e544cb37d9934eb3656d15624c918c3ed94d1af91b2b",
+      "immutable_Git": "e9e0967ccdb60b92a9a2e544cb37d9934eb3656d15624c918c3ed94d1af91b2b",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/generator/source-ref.test.ts": {
+      "physical": "c31dfec3e1a6af421e642dcd8a641054e5671201638ec0b607a94426eb41fe59",
+      "immutable_Git": "c31dfec3e1a6af421e642dcd8a641054e5671201638ec0b607a94426eb41fe59",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/generator/split-frontmatter.test.ts": {
+      "physical": "455da7c2b20ddcba8969592409abc68c8ed44530e69cfbdf4bb8b7cabec235d6",
+      "immutable_Git": "455da7c2b20ddcba8969592409abc68c8ed44530e69cfbdf4bb8b7cabec235d6",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/generator/topic-map.test.ts": {
+      "physical": "83228199bf940086832bd1f5d05f897e4c72ade2351385511af0b95554a12ceb",
+      "immutable_Git": "83228199bf940086832bd1f5d05f897e4c72ade2351385511af0b95554a12ceb",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/generator/truncate-description.test.ts": {
+      "physical": "1eb47f702d4aba10cb05ed5bca5b0262fa905fde7c07363924cbd3ca5d48803a",
+      "immutable_Git": "1eb47f702d4aba10cb05ed5bca5b0262fa905fde7c07363924cbd3ca5d48803a",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/generator/version-facts.test.ts": {
+      "physical": "06b031a3a0d91cd4a1deedb80c785b8bc78422833e3222b2fdcceb8698c5c9dd",
+      "immutable_Git": "06b031a3a0d91cd4a1deedb80c785b8bc78422833e3222b2fdcceb8698c5c9dd",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/generator/yaml-quote.test.ts": {
+      "physical": "6960bbfaed62182f06c8082210298afbf184bc63552a881caa23d2b05124d937",
+      "immutable_Git": "6960bbfaed62182f06c8082210298afbf184bc63552a881caa23d2b05124d937",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/guide-table-reflow.test.ts": {
+      "physical": "499c4edc2ddc3c94074dd9992cb8d51a4eb0262498eb220397e5112810dd72a4",
+      "immutable_Git": "499c4edc2ddc3c94074dd9992cb8d51a4eb0262498eb220397e5112810dd72a4",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/landing/landing-page.test.ts": {
+      "physical": "ca4680cecc0c61e77ff68d2e1b05825415c7239b6fa96cbe03325794e23de3ee",
+      "immutable_Git": "ca4680cecc0c61e77ff68d2e1b05825415c7239b6fa96cbe03325794e23de3ee",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/landing/trust-row.test.ts": {
+      "physical": "b1aec0fcb1d51568a207d05a89e5118f409e0576c01e3da989780fae3c29eb6c",
+      "immutable_Git": "b1aec0fcb1d51568a207d05a89e5118f409e0576c01e3da989780fae3c29eb6c",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/link-audit/cli.test.ts": {
+      "physical": "5cc9d6c0fb29da6ed780608edd888f89ff58409ee1a06ba2b350e921bcfd1569",
+      "immutable_Git": "5cc9d6c0fb29da6ed780608edd888f89ff58409ee1a06ba2b350e921bcfd1569",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/link-audit/lib.test.ts": {
+      "physical": "ab4b91b00d9db79c7a476c84bf3ea19c751b05bd3c58beda895c50994711e8b5",
+      "immutable_Git": "ab4b91b00d9db79c7a476c84bf3ea19c751b05bd3c58beda895c50994711e8b5",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/reference-sidebar.test.ts": {
+      "physical": "500b0618a744eb1098c4e08855334df81ca7d47c6cc67e77adb8afe100761414",
+      "immutable_Git": "500b0618a744eb1098c4e08855334df81ca7d47c6cc67e77adb8afe100761414",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/rehype-base-links.test.ts": {
+      "physical": "d62f1174dd1cc54e4de3c66ca239c5612e7135718f60c89823c04df4cef405ae",
+      "immutable_Git": "d62f1174dd1cc54e4de3c66ca239c5612e7135718f60c89823c04df4cef405ae",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/rehype-table-shell.test.ts": {
+      "physical": "28bc765392ccba872b90e27c351e651827698e0fddb402d4fbe10031f5aad8c2",
+      "immutable_Git": "28bc765392ccba872b90e27c351e651827698e0fddb402d4fbe10031f5aad8c2",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/release-applicability/endpoint.test.ts": {
+      "physical": "dc5aa2abfb535b836b5ab50f5eae6476583f19b8569e038f494424ebaa2e1234",
+      "immutable_Git": "dc5aa2abfb535b836b5ab50f5eae6476583f19b8569e038f494424ebaa2e1234",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/release-applicability/generation.test.ts": {
+      "physical": "7dc8c9e51d6e5764fd153d55444fc68c6e9c7d57267efa67a8c7a2927c5b6b49",
+      "immutable_Git": "7dc8c9e51d6e5764fd153d55444fc68c6e9c7d57267efa67a8c7a2927c5b6b49",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/release-applicability/presentation.test.ts": {
+      "physical": "b12e5cabdb69f1bada9d5b9a35fea9577c2bc7c5f9514f995326fe39fd7926c1",
+      "immutable_Git": "b12e5cabdb69f1bada9d5b9a35fea9577c2bc7c5f9514f995326fe39fd7926c1",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/release-applicability/publication.test.ts": {
+      "physical": "15477eab3d6f5305e493b6388d12d3bd7db99d6e94e7445e22f0d6d98f383cdb",
+      "immutable_Git": "15477eab3d6f5305e493b6388d12d3bd7db99d6e94e7445e22f0d6d98f383cdb",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/release-applicability/release-applicability.test.ts": {
+      "physical": "98ef3086438d07f8de16eaae3799e6247fc03f2e286928252b3befd2cc98905b",
+      "immutable_Git": "98ef3086438d07f8de16eaae3799e6247fc03f2e286928252b3befd2cc98905b",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/release-applicability/rendered.ts": {
+      "physical": "e85b19d9c7269d4311f69334f0fe65f3d13ba135556b23bc4da9832dcca6f7b7",
+      "immutable_Git": "e85b19d9c7269d4311f69334f0fe65f3d13ba135556b23bc4da9832dcca6f7b7",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/release-applicability/workflow.test.ts": {
+      "physical": "9fb50919d1b6e04f83de5f4c06b81e8eb115fc7e2b9439094a5e798d4ef2186d",
+      "immutable_Git": "9fb50919d1b6e04f83de5f4c06b81e8eb115fc7e2b9439094a5e798d4ef2186d",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/search/search-contract.test.ts": {
+      "physical": "2a39f5904d27fbf2b1d00ec242f0fec62acc2bbeba2464b898078c3cbda2e35d",
+      "immutable_Git": "2a39f5904d27fbf2b1d00ec242f0fec62acc2bbeba2464b898078c3cbda2e35d",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/seo/search-discovery.test.ts": {
+      "physical": "39cd5626064b753c137b8ab1f30c166a17b5c46aa6f85d557e0973be858936c0",
+      "immutable_Git": "39cd5626064b753c137b8ab1f30c166a17b5c46aa6f85d557e0973be858936c0",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/test/sidebar-navigation-presentation.test.ts": {
+      "physical": "5ead231504f2058918eb0b3a49f6eb1ad81108b351e2338ee087ff4f0bd4dfc1",
+      "immutable_Git": "5ead231504f2058918eb0b3a49f6eb1ad81108b351e2338ee087ff4f0bd4dfc1",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    },
+    "site/tsconfig.json": {
+      "physical": "2313012ec43d254daf80ac76385fc550e3a472aa6a96affe8b9e1d4e2dd225f4",
+      "immutable_Git": "2313012ec43d254daf80ac76385fc550e3a472aa6a96affe8b9e1d4e2dd225f4",
+      "literal_equal": true,
+      "EOL_normalized_equal": true
+    }
+  },
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

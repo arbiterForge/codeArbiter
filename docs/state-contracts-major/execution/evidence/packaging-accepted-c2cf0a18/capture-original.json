@@ -1,0 +1,80 @@
+{
+  "schema": "codearbiter.original-local-unittest-selection/1",
+  "source_commit": "c2cf0a18b020ef426d7df94f70fe9770fa102c32",
+  "head_after": "c2cf0a18b020ef426d7df94f70fe9770fa102c32",
+  "argv": [
+    "C:/Python314/python.exe",
+    "-B",
+    "-m",
+    "unittest",
+    "-v",
+    "test_build_surface.CommandCatalogTest.test_retirement_policy_is_closed_and_rendered_from_its_owner",
+    "test_generated_output.GeneratedOutputTests.test_second_host_render_failure_has_no_first_host_effect",
+    "test_build_surface.WriteAndCheckTest.test_write_then_check_green_then_idempotent",
+    "test_build_surface.WriteAndCheckTest.test_check_flags_modified_missing_and_orphan",
+    "test_build_surface.WriteAndCheckTest.test_write_removes_orphans",
+    "test_build_surface.WriteAndCheckTest.test_main_check_exit_codes"
+  ],
+  "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\.github\\scripts",
+  "environment": {
+    "SYSTEMROOT": "C:\\WINDOWS",
+    "WINDIR": "C:\\WINDOWS",
+    "COMSPEC": "C:\\WINDOWS\\system32\\cmd.exe",
+    "PATHEXT": ".COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH;.MSC;.PY;.PYW;.CPL",
+    "HOME": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-packaging-accepted-c2cf0a18\\home",
+    "USERPROFILE": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-packaging-accepted-c2cf0a18\\home",
+    "APPDATA": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-packaging-accepted-c2cf0a18\\home\\AppData\\Roaming",
+    "LOCALAPPDATA": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-packaging-accepted-c2cf0a18\\home\\AppData\\Local",
+    "XDG_CONFIG_HOME": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-packaging-accepted-c2cf0a18\\home\\.config",
+    "XDG_CACHE_HOME": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-packaging-accepted-c2cf0a18\\home\\.cache",
+    "TEMP": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-packaging-accepted-c2cf0a18\\tmp",
+    "TMP": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-packaging-accepted-c2cf0a18\\tmp",
+    "PATH": "C:/Program Files/Git/cmd;C:/Windows/System32",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONIOENCODING": "utf-8"
+  },
+  "exit_code": 0,
+  "seconds": 0.6799670999998852,
+  "results": [
+    {
+      "id": "test_build_surface.CommandCatalogTest.test_retirement_policy_is_closed_and_rendered_from_its_owner",
+      "observed_outcome": "UNPARSED",
+      "occurrences": 0
+    },
+    {
+      "id": "test_generated_output.GeneratedOutputTests.test_second_host_render_failure_has_no_first_host_effect",
+      "observed_outcome": "UNPARSED",
+      "occurrences": 0
+    },
+    {
+      "id": "test_build_surface.WriteAndCheckTest.test_write_then_check_green_then_idempotent",
+      "observed_outcome": "UNPARSED",
+      "occurrences": 0
+    },
+    {
+      "id": "test_build_surface.WriteAndCheckTest.test_check_flags_modified_missing_and_orphan",
+      "observed_outcome": "UNPARSED",
+      "occurrences": 0
+    },
+    {
+      "id": "test_build_surface.WriteAndCheckTest.test_write_removes_orphans",
+      "observed_outcome": "UNPARSED",
+      "occurrences": 0
+    },
+    {
+      "id": "test_build_surface.WriteAndCheckTest.test_main_check_exit_codes",
+      "observed_outcome": "UNPARSED",
+      "occurrences": 0
+    }
+  ],
+  "stdout_sha256": "794224521465c7abf0be304cc932ecc6252c9f3c0303676a5090fd2b049f0760",
+  "stderr_sha256": "53b5910488c14e4dfc7fbe47110a8550e26a0e5bf4a66d7c95ee7558def9ceea",
+  "runtime": {
+    "python": "C:/Python314/python.exe",
+    "sha256": "03168c01b7b7491423350e82c26fee71f35b43694d1319d3c668bda6903a0c38",
+    "version": "Python 3.14.6"
+  },
+  "inputs_before_after_equal": true,
+  "source_inputs": 163,
+  "scope": "Six original named pure synthetic-tree methods, once. No production surface build, native/Go, install, package, publication or network."
+}

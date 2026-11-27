@@ -1,0 +1,239 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "0830b95752a05343563be027e513a2845a6c57df",
+  "kind": "test",
+  "result": "PASSED",
+  "producer": {
+    "class": "local-host",
+    "identity": "/root/packaging_site_tools original bounded local Windows observation; original epochs retained"
+  },
+  "platform": "windows/amd64",
+  "inputs": {
+    ".github/scripts/test_marketplace_git_channels.py": "a309e384656c31f507a1708441092eaeceb0d4571de73302f76962c98bf59525",
+    "tools/promote-claude-marketplace.py": "e7116b3e55aac1f20cedfc164a66563b10f7773b1499700483a91f8df1636bda",
+    "tools/promote-codex-marketplace.py": "491e8ab597c869827aae0444a58bd4b8a390f28ba6589dfa25d1bb932c2f56a9",
+    "tools/build-host-packages.py": "abd40c23530e34e08d56f6afb62fdaf4f5002aa430dd8288e70d767921844419",
+    "tools/owned_output.py": "52ee664a00b4f66df8f585047cf38a839428c489762890208a9db1961060b22c",
+    "tools/host_descriptors.py": "2c98ea82723f60879616469ec399cd81db0fb9cb98f4c943eea1dce852123601",
+    "core/pysrc/_artifactmanifestlib.py": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054",
+    "core/pysrc/_releaselib.py": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea",
+    "core/pysrc/_gitexec.py": "a5935246028f506ef5ab13ba379b399cb7a754a077866fd39528545f30f4bef3",
+    "core/hosts.json": "3ea50fd2af1ed359e602210de3f0a9b661a567c45d08a5f947f0f4c2e24a8cd8",
+    ".claude-plugin/marketplace.json": "a3a6b24af000bc458fadce167057d906d675e4b889a3b59bfbdf5baed02e78ea",
+    ".github/scripts/_releaselib.py": "59ffb55276bf3a0b873861be71c6d286ddf25b035db35715e34c8929bccc6c21"
+  },
+  "commands": [
+    {
+      "argv": [
+        "C:\\Python314\\python.exe",
+        "-B",
+        "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-packaging-baseline-closure-ly4hjqpk\\observe-marketplace.py",
+        "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
+        "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-packaging-baseline-closure-ly4hjqpk"
+      ],
+      "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
+      "environment": {
+        "SystemRoot": "C:\\WINDOWS",
+        "WINDIR": "C:\\WINDOWS",
+        "TEMP": "C:\\Users\\brenn\\AppData\\Local\\Temp",
+        "TMP": "C:\\Users\\brenn\\AppData\\Local\\Temp",
+        "COMSPEC": "C:\\WINDOWS\\system32\\cmd.exe",
+        "PATHEXT": ".COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH;.MSC;.PY;.PYW;.CPL",
+        "PATH": "C:\\Program Files\\Git\\cmd;C:\\Windows\\System32",
+        "HOME": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-packaging-baseline-closure-ly4hjqpk\\home",
+        "USERPROFILE": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-packaging-baseline-closure-ly4hjqpk\\home",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONIOENCODING": "utf-8"
+      },
+      "exit_code": 0
+    }
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/packaging-baseline-local-fca-0830/raw/start.json",
+      "sha256": "27b83295a2f09ed818136c2e78f5145352fc12923705a7b5d91c7ecf9c47dd7d"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/packaging-baseline-local-fca-0830/raw/marketplace-results.json",
+      "sha256": "de1b57a51bbe89b5ac565122839e368a83433a6d5aba581d389b1bf4a4826c24"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/packaging-baseline-local-fca-0830/raw/marketplace.stderr.log",
+      "sha256": "27dd328a7f1c41c19bfe208c22f9e21ccc5b25c6acf8fa46b84835fb617ce585"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/packaging-baseline-local-fca-0830/raw/observe-marketplace.py",
+      "sha256": "e2b92ec007e9e91aafef9cc8bcee2eb69996876fa6971e425e78b554d826200e"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/packaging-baseline-local-fca-0830/raw/channel-source-join.json",
+      "sha256": "3adc51a13db25fe7feb772518d8a9a98eb58a04ad6b6a1314edcb1c01052e9ca"
+    }
+  ],
+  "disposition_ids": [
+    "disposition:transitions:S73:01",
+    "disposition:transitions:S73:02",
+    "disposition:transitions:S73:03",
+    "disposition:transitions:S73:04",
+    "disposition:transitions:S73:05",
+    "disposition:transitions:S73:06",
+    "disposition:transitions:S73:07",
+    "disposition:transitions:S73:08",
+    "disposition:transitions:S73:09",
+    "disposition:transitions:S73:10",
+    "disposition:transitions:S74:03",
+    "disposition:transitions:S74:04",
+    "disposition:transitions:S74:08",
+    "disposition:transitions:S74:09",
+    "disposition:findings:SF15"
+  ],
+  "per_cell_assertion_mapping": [
+    {
+      "cell": "disposition:transitions:S73:01",
+      "observed_named_cases": [
+        "test_marketplace_git_channels.ClaudeChannelTests.test_channel_carries_the_native_payload_under_the_git_subdir_path",
+        "test_marketplace_git_channels.ClaudeChannelTests.test_version_must_match_the_qualified_manifest",
+        "test_marketplace_git_channels.ClaudeChannelTests.test_package_without_native_payload_is_refused"
+      ],
+      "assertion_scope": "Fixture archive/version/payload admission produces actual deterministic local Git distribution/channel refs; qualified binary contents are synthetic fixture bytes, not real engine qualification."
+    },
+    {
+      "cell": "disposition:transitions:S73:02",
+      "observed_named_cases": [
+        "test_marketplace_git_channels.ClaudeChannelTests.test_channel_carries_the_native_payload_under_the_git_subdir_path"
+      ],
+      "assertion_scope": "Absent immutable ref is created and exact remote tag equals returned distribution commit."
+    },
+    {
+      "cell": "disposition:transitions:S73:03",
+      "observed_named_cases": [
+        "test_marketplace_git_channels.ClaudeChannelTests.test_rerun_with_identical_inputs_is_a_no_op"
+      ],
+      "assertion_scope": "Repeated same input observes existing distribution and reuses channel commit without duplicate promotion."
+    },
+    {
+      "cell": "disposition:transitions:S73:04",
+      "observed_named_cases": [
+        "test_marketplace_git_channels.ClaudeChannelTests.test_same_version_with_different_bytes_is_refused"
+      ],
+      "assertion_scope": "Existing same-version identity refuses changed archive bytes."
+    },
+    {
+      "cell": "disposition:transitions:S73:05",
+      "observed_named_cases": [
+        "test_marketplace_git_channels.ClaudeChannelTests.test_channel_refuses_to_roll_back"
+      ],
+      "assertion_scope": "Older version refuses before moving local remote channel."
+    },
+    {
+      "cell": "disposition:transitions:S73:06",
+      "observed_named_cases": [
+        "test_marketplace_git_channels.ClaudeChannelTests.test_rerun_with_identical_inputs_is_a_no_op"
+      ],
+      "assertion_scope": "Same tree reuses current marketplace commit and previous commit identity."
+    },
+    {
+      "cell": "disposition:transitions:S73:07",
+      "observed_named_cases": [
+        "test_marketplace_git_channels.ClaudeChannelTests.test_newer_version_advances_as_a_descendant",
+        "test_marketplace_git_channels.ClaudeChannelTests.test_unknown_current_channel_version_cannot_advance"
+      ],
+      "assertion_scope": "Changed tree advances descendant; unreadable current version now refuses with channel unchanged."
+    },
+    {
+      "cell": "disposition:transitions:S73:08",
+      "observed_named_cases": [
+        "test_marketplace_git_channels.ClaudeChannelTests.test_channel_carries_the_native_payload_under_the_git_subdir_path",
+        "test_marketplace_git_channels.ClaudeChannelTests.test_push_response_loss_recovers_only_by_readback_without_repush"
+      ],
+      "assertion_scope": "Tag publication/readback uses expected deterministic commit; response-loss path attempts immutable push once."
+    },
+    {
+      "cell": "disposition:transitions:S73:09",
+      "observed_named_cases": [
+        "test_marketplace_git_channels.ClaudeChannelTests.test_newer_version_advances_as_a_descendant",
+        "test_marketplace_git_channels.ClaudeChannelTests.test_push_response_loss_recovers_only_by_readback_without_repush"
+      ],
+      "assertion_scope": "Channel update goes through current lease/readback helper, advances descendant, and response-loss observation does not repush."
+    },
+    {
+      "cell": "disposition:transitions:S73:10",
+      "observed_named_cases": [
+        "test_marketplace_git_channels.ClaudeChannelTests.test_push_response_loss_recovers_only_by_readback_without_repush",
+        "test_marketplace_git_channels.UncertainPushTests.test_conflicting_or_unobservable_readback_never_retries",
+        "test_marketplace_git_channels.ClaudeChannelTests.test_readback_finds_the_promotion_after_the_channel_moved_on",
+        "test_marketplace_git_channels.ClaudeChannelTests.test_readback_never_pushes"
+      ],
+      "assertion_scope": "Uncertain push may succeed only by exact observed remote identity; unknown/conflict refuses after one attempt; explicit recovery reads history without pushing."
+    },
+    {
+      "cell": "disposition:transitions:S74:03",
+      "observed_named_cases": [
+        "test_marketplace_git_channels.CodexGitChannelTests.test_default_git_mode_pins_the_channel_to_the_immutable_dist_tag",
+        "test_marketplace_git_channels.CodexGitChannelTests.test_git_mode_needs_no_npm_package"
+      ],
+      "assertion_scope": "Codex first call creates immutable tag, second channel promotion names that exact tag/commit without acquiring npm."
+    },
+    {
+      "cell": "disposition:transitions:S74:04",
+      "observed_named_cases": [
+        "test_marketplace_git_channels.CodexGitChannelTests.test_default_git_mode_pins_the_channel_to_the_immutable_dist_tag"
+      ],
+      "assertion_scope": "Actual successful channel advance uses independently precreated immutable distribution tag; missing-tag/expected-head adversarial branches not independently claimed."
+    },
+    {
+      "cell": "disposition:transitions:S74:08",
+      "observed_named_cases": [
+        "test_marketplace_git_channels.CodexGitChannelTests.test_default_git_mode_pins_the_channel_to_the_immutable_dist_tag",
+        "test_marketplace_git_channels.CodexGitChannelTests.test_readback_finds_the_channel_promotion_after_a_newer_release"
+      ],
+      "assertion_scope": "Actual local leased channel updates name immutable source and preserve recoverable prior distribution ancestry."
+    },
+    {
+      "cell": "disposition:transitions:S74:09",
+      "observed_named_cases": [
+        "test_marketplace_git_channels.UncertainPushTests.test_conflicting_or_unobservable_readback_never_retries",
+        "test_marketplace_git_channels.CodexGitChannelTests.test_readback_finds_the_channel_promotion_after_a_newer_release",
+        "test_marketplace_git_channels.CodexGitChannelTests.test_readback_refuses_a_distribution_tag_the_channel_never_promoted"
+      ],
+      "assertion_scope": "Shared exact push/readback helper refuses conflicting/unobservable remote without retry; Codex recovery reads old completed promotion and rejects an unpromoted tag."
+    },
+    {
+      "cell": "disposition:findings:SF15",
+      "observed_named_cases": [
+        "test_marketplace_git_channels.ClaudeChannelTests.test_push_response_loss_recovers_only_by_readback_without_repush",
+        "test_marketplace_git_channels.UncertainPushTests.test_conflicting_or_unobservable_readback_never_retries",
+        "test_marketplace_git_channels.ClaudeChannelTests.test_unknown_current_channel_version_cannot_advance",
+        "test_marketplace_git_channels.CodexGitChannelTests.test_default_git_mode_pins_the_channel_to_the_immutable_dist_tag",
+        "test_marketplace_git_channels.ClaudeChannelTests.test_readback_never_pushes"
+      ],
+      "assertion_scope": "Preserve intentional Claude tag+channel vs Codex preexisting-tag channel protocol; uncertain responses cannot authorize blind mutation retries; unknown current Claude version refuses."
+    }
+  ],
+  "execution_context": {
+    "actual_source_before": "0830b95752a05343563be027e513a2845a6c57df",
+    "actual_source_after": "0830b95752a05343563be027e513a2845a6c57df",
+    "pre_post_captured_inputs": 11,
+    "additional_owning_import": {
+      "path": ".github/scripts/_releaselib.py",
+      "sha256": "59ffb55276bf3a0b873861be71c6d286ddf25b035db35715e34c8929bccc6c21",
+      "capture": "Imported repository-module inventory disclosed this forwarding shim after execution; literal working bytes and immutable fca/0830 Git bytes joined retrospectively. No fabricated pre-run capture."
+    },
+    "loaded_repository_modules": [
+      ".github/scripts/_releaselib.py",
+      ".github/scripts/test_marketplace_git_channels.py",
+      "core/pysrc/_artifactmanifestlib.py",
+      "core/pysrc/_gitexec.py",
+      "core/pysrc/_releaselib.py",
+      "tools/host_descriptors.py",
+      "tools/owned_output.py"
+    ],
+    "source_change_during_run": "Only separate Root metadata/transcript projection commit advanced HEAD; every captured product/test input is identical.",
+    "finite_closure": "Spec-loaded three tools plus registered imported-module inventory, declared hosts registry and main catalog actual fixture read. Shim lazily declares RELEASE_TARGETS; selected semver imports do not access/read release-targets file."
+  },
+  "scope": "Actual19 named local disposable bare-Git/package-fixture tests; no external remote, native binary build, npm installation or real release. Synthetic receipt/package bytes are test inputs, not production qualification.",
+  "limits": [
+    "Component boundary only; no production external ref/release/publication, installed qualified cohort, provider or parent UI acceptance.",
+    "No machine/task/whole-program promotion; unexecuted platform and unrelated branches remain pending."
+  ]
+}

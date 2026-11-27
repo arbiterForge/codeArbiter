@@ -225,6 +225,34 @@ class TestTheGateRefusesTheOtherDirections(_Repo):
         self.assertIn("not valid SemVer", message)
         self.assertNotIn("still", message)
 
+    def test_an_invalid_BASE_manifest_is_not_first_introduction(self):
+        """C-F07: absent and corrupt base evidence take distinct paths.
+
+        A base manifest that exists but cannot be read as a version used to
+        fold into "first introduction" and pass. Only a genuinely absent
+        manifest is a first introduction; present-but-invalid fails closed."""
+        for broken in ('{"name": "ca", "version": ', '{"name": "ca"}\n',
+                       '{"name": "ca", "version": 3}\n', '[]\n'):
+            with self.subTest(base=broken):
+                git(["checkout", "-q", "main"], self.root)
+                self.write(self.MANIFEST, broken)
+                self.commit("corrupt base manifest")
+                base = git(["rev-parse", "HEAD"], self.root).stdout.strip()
+                git(["checkout", "-q", "-B", "work"], self.root)
+                self.write(self.PAYLOAD, f"changed {len(broken)}\n")
+                self.set_version("3.0.0")
+                self.commit()
+                code, message = gate.gate(base, self.PLUGIN, root=self.root)
+                self.assertEqual(code, gate.FAIL, message)
+                self.assertIn("invalid", message)
+                self.assertNotIn("first introduction", message)
+                self.assertEqual(gate.base_manifest(base, self.PLUGIN, self.root)[0], "invalid")
+
+    def test_absent_valid_and_invalid_base_reads_are_three_states(self):
+        self.assertEqual(gate.base_manifest(self.base, self.PLUGIN, self.root), ("valid", "2.9.1"))
+        self.assertEqual(gate.base_manifest(self.base, "plugins/ca-sandbox", self.root),
+                         ("absent", None))
+
     def test_a_manifest_without_a_version_key_fails(self):
         self.write(self.PAYLOAD, "changed\n")
         self.write(self.MANIFEST, '{"name": "ca"}\n')

@@ -1,0 +1,495 @@
+{
+  "schema": "codearbiter.current-finite-source-inspection/1",
+  "source_commit": "f3cb12f5095401d5b7e8c32c2861816c7109ce02",
+  "original_semantic_inspection_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+  "group": "source-group-035",
+  "positive_input_join": {
+    ".github/workflows/ci.yml": {
+      "sha256": "9b9bbb72e86631c1577135cb3ee13181d3b04ed8db2f5e7f4f957e6fb85f1fb3",
+      "previous_sha256": "c0e8e0f0480ffb0f660c894347f26df49da423a300158a1566da702e5a0d8102",
+      "bytes": 306751,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "9b9bbb72e86631c1577135cb3ee13181d3b04ed8db2f5e7f4f957e6fb85f1fb3",
+        "bytes": 306751
+      }
+    },
+    "docs/state-contracts-major/PROGRAM.md": {
+      "sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+      "previous_sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+      "bytes": 7910,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+        "bytes": 7910
+      }
+    },
+    "docs/state-contracts-major/contracts/machine-coverage.json": {
+      "sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+      "previous_sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+      "bytes": 385316,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+        "bytes": 385316
+      }
+    },
+    "docs/state-contracts-major/contracts/program.json": {
+      "sha256": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+      "previous_sha256": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+      "bytes": 6403,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+        "bytes": 6403
+      }
+    },
+    "docs/state-contracts-major/contracts/tasks.json": {
+      "sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+      "previous_sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+      "bytes": 331224,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+        "bytes": 331224
+      }
+    },
+    "docs/state-contracts-major/contracts/transition-coverage.json": {
+      "sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+      "previous_sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+      "bytes": 3185278,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+        "bytes": 3185278
+      }
+    },
+    "tools/artifact-coverage.py": {
+      "sha256": "d3a4168bee2f23c60721304d787ea73425b31ae9e819cdfb1d01993a8e799287",
+      "previous_sha256": "d3a4168bee2f23c60721304d787ea73425b31ae9e819cdfb1d01993a8e799287",
+      "bytes": 17723,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "d3a4168bee2f23c60721304d787ea73425b31ae9e819cdfb1d01993a8e799287",
+        "bytes": 17723
+      }
+    }
+  },
+  "current_input_membership": [
+    {
+      "profile": "python-import-directory-v1",
+      "root": "tools",
+      "path_order": "windows",
+      "sha256": "10c81f10b65668b6620241a721151872bd51a7c350722bee46217e02801f7c2a"
+    }
+  ],
+  "closed_namespace_review": null,
+  "current_owner_delta_review": {
+    "scope": "Native statement collection, partial-failure handling, output verification, population join and required route are unchanged. The native coverage consumer sees its ordinary inputs.",
+    "workflow_callsite_join": {
+      "artifact-coverage": {
+        "previous_sha256": "7523f648e2e70d4e03edb8273e619b209b2689831734d0d7109bfe20676eb996",
+        "current_sha256": "7523f648e2e70d4e03edb8273e619b209b2689831734d0d7109bfe20676eb996",
+        "current_scope": "Complete owning job or top-level event/concurrency block unchanged."
+      },
+      "artifact-native-build": {
+        "previous_sha256": "df4c384ac098ca863785975b1f9c8d36fd0997fda139ba21127e6d33c91a5cd9",
+        "current_sha256": "df4c384ac098ca863785975b1f9c8d36fd0997fda139ba21127e6d33c91a5cd9",
+        "current_scope": "Complete owning job or top-level event/concurrency block unchanged."
+      },
+      "artifact-native-coverage": {
+        "previous_sha256": "8e773538fbb8ea481cc84f2283d64b423d29705d1b3a8ba27669a787a47fab57",
+        "current_sha256": "8e773538fbb8ea481cc84f2283d64b423d29705d1b3a8ba27669a787a47fab57",
+        "current_scope": "Complete owning job or top-level event/concurrency block unchanged."
+      },
+      "ci-passed": {
+        "previous_sha256": "81001122248ea9a598041073e239f01f3f2f6d68e3c350db7a00f4fa88bc019b",
+        "current_sha256": "81001122248ea9a598041073e239f01f3f2f6d68e3c350db7a00f4fa88bc019b",
+        "current_scope": "Complete owning job or top-level event/concurrency block unchanged."
+      }
+    }
+  },
+  "semantic_rows": [
+    {
+      "cell": "disposition:machines:T02",
+      "frozen_record": {
+        "machine_id": "T02",
+        "name": "Native statement coverage collection, publication and union verdict",
+        "domain": "Maintainer measurement tools",
+        "kind": "implemented",
+        "owner": "release-and-tooling",
+        "closure_task": "Q-01",
+        "task_ids": [
+          "Q-01"
+        ],
+        "explicit_machine_task_ids": [],
+        "source_intersection_task_ids": [],
+        "mapping_basis": "Owner assignment uses the inspected audit domain and explicit owner ledger; source intersections flag review impact, not a claim every edge changes.",
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "status": "NOT_RUN",
+        "transition_count": 9,
+        "source_refs": [
+          "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/artifact-coverage.py"
+        ],
+        "proposed_composed_scenario_ids": [],
+        "required_disposition": "Read the pinned/current owner, preserve each existing guard/effect/retry boundary except a named authorized change, map meaningful executed tests or reasoned conformance review to the row IDs, and add new rows for introduced events.",
+        "evidence": []
+      },
+      "frozen_record_sha256": "eb5591505f9dbb7b9cc71c88ed4c44072dea2a8c8c99bfea3361507d013daf53",
+      "group": "source-group-035",
+      "literal_inspection": "13-exact-prior65-machine-records",
+      "assessment": "Conditional finite source composition of Native statement coverage collection, publication and union verdict. Constituent guard/effect/retry source scopes and named accepted changes retained; neither task_ids nor model-guided instructions prove executed runtime/installed/model behavior.",
+      "changed_helper_interpretation_ids": [],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/release-tooling-seventeen-source-cb/proofs/T02-preserved.json",
+          "sha256": "57979037453eb0d12da4cf4f48bf1cb03fde04d05850a1c24ced8d4ab852ab03",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:T02:02",
+      "frozen_record": {
+        "transition_id": "T02:02",
+        "machine_id": "T02",
+        "owner": "release-and-tooling",
+        "baseline": {
+          "from_state": "collecting",
+          "from": "collecting",
+          "event": "unit command fails or timeout",
+          "guard": "nonzero/timeout before complete profile validation",
+          "to": "partial output / INVALID",
+          "effects": "Keep available unit log and partial owned output for diagnosis.",
+          "failure_retry": "No metadata.json is published; retry requires a fresh output directory.",
+          "source": [
+            {
+              "path": "tools/artifact-coverage.py",
+              "symbol": "collect",
+              "lines": [
+                197,
+                240
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/artifact-coverage.py"
+            }
+          ],
+          "transition_id": "T02:02"
+        },
+        "task_ids": [
+          "Q-01"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "28597376acdbabb854fcac866540c67564514726ff149f2a37ccb41e52c95f3c",
+      "group": "source-group-035",
+      "assessment": "Failed/timed-out unit command retains scratch diagnostics without metadata publication.",
+      "literal_inspection": "65-assessment",
+      "changed_helper_interpretation_ids": [],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/release-tooling-seventeen-source-cb/proofs/T02-preserved.json",
+          "sha256": "57979037453eb0d12da4cf4f48bf1cb03fde04d05850a1c24ced8d4ab852ab03",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18"
+        }
+      ],
+      "exact_earlier_clause_assessment": {
+        "cell": "disposition:transitions:T02:02",
+        "frozen_row_sha256": "28597376acdbabb854fcac866540c67564514726ff149f2a37ccb41e52c95f3c",
+        "literal": {
+          "event": "unit command fails or timeout",
+          "guard": "nonzero/timeout before complete profile validation",
+          "effects": "Keep available unit log and partial owned output for diagnosis.",
+          "failure_retry": "No metadata.json is published; retry requires a fresh output directory."
+        },
+        "actual_current_interpretation": "Failed/timed-out unit command retains scratch diagnostics without metadata publication.",
+        "witness_ids": [
+          "w16"
+        ],
+        "prior_proof": "docs/state-contracts-major/execution/evidence/release-tooling-seventeen-source-cb/proofs/T02-preserved.json",
+        "selected_for_successor": true,
+        "action": "Append source successor only at actual commit, retaining old evidence."
+      }
+    }
+  ],
+  "verified_literal_witnesses": [
+    {
+      "witness_id": "w14",
+      "path": "tools/artifact-coverage.py",
+      "actual0ef_spans": [
+        [
+          111,
+          116
+        ]
+      ],
+      "current_file_sha256": "d3a4168bee2f23c60721304d787ea73425b31ae9e819cdfb1d01993a8e799287",
+      "prior": {
+        "id": "w14",
+        "path": "tools/artifact-coverage.py",
+        "old_source": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+        "old_span": [
+          111,
+          116
+        ],
+        "current_spans": [
+          [
+            111,
+            116
+          ]
+        ],
+        "sha256_of_LF_span": "a850f2d54680d9fe077f6d77701283c5659759d72832198d45cf80b6263153b8",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "d3a4168bee2f23c60721304d787ea73425b31ae9e819cdfb1d01993a8e799287"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift.",
+      "current_f3_spans": [
+        [
+          111,
+          116
+        ]
+      ],
+      "current_f3_sha256": "d3a4168bee2f23c60721304d787ea73425b31ae9e819cdfb1d01993a8e799287"
+    },
+    {
+      "witness_id": "w15",
+      "path": "tools/artifact-coverage.py",
+      "actual0ef_spans": [
+        [
+          119,
+          139
+        ]
+      ],
+      "current_file_sha256": "d3a4168bee2f23c60721304d787ea73425b31ae9e819cdfb1d01993a8e799287",
+      "prior": {
+        "id": "w15",
+        "path": "tools/artifact-coverage.py",
+        "old_source": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+        "old_span": [
+          119,
+          139
+        ],
+        "current_spans": [
+          [
+            119,
+            139
+          ]
+        ],
+        "sha256_of_LF_span": "0ce331dc9c414f870ccee6c574e3f343db0abcb1d17bdeaafa8e1baf5722c064",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "d3a4168bee2f23c60721304d787ea73425b31ae9e819cdfb1d01993a8e799287"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift.",
+      "current_f3_spans": [
+        [
+          119,
+          139
+        ]
+      ],
+      "current_f3_sha256": "d3a4168bee2f23c60721304d787ea73425b31ae9e819cdfb1d01993a8e799287"
+    },
+    {
+      "witness_id": "w16",
+      "path": "tools/artifact-coverage.py",
+      "actual0ef_spans": [
+        [
+          197,
+          240
+        ]
+      ],
+      "current_file_sha256": "d3a4168bee2f23c60721304d787ea73425b31ae9e819cdfb1d01993a8e799287",
+      "prior": {
+        "id": "w16",
+        "path": "tools/artifact-coverage.py",
+        "old_source": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+        "old_span": [
+          197,
+          240
+        ],
+        "current_spans": [
+          [
+            197,
+            240
+          ]
+        ],
+        "sha256_of_LF_span": "e3157a6fd183b9d5d0dbdd77607ce941235eda470c3c1ae865947bf6e489d7c7",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "d3a4168bee2f23c60721304d787ea73425b31ae9e819cdfb1d01993a8e799287"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift.",
+      "current_f3_spans": [
+        [
+          197,
+          240
+        ]
+      ],
+      "current_f3_sha256": "d3a4168bee2f23c60721304d787ea73425b31ae9e819cdfb1d01993a8e799287"
+    },
+    {
+      "witness_id": "w17",
+      "path": "tools/artifact-coverage.py",
+      "actual0ef_spans": [
+        [
+          146,
+          177
+        ]
+      ],
+      "current_file_sha256": "d3a4168bee2f23c60721304d787ea73425b31ae9e819cdfb1d01993a8e799287",
+      "prior": {
+        "id": "w17",
+        "path": "tools/artifact-coverage.py",
+        "old_source": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+        "old_span": [
+          146,
+          177
+        ],
+        "current_spans": [
+          [
+            146,
+            177
+          ]
+        ],
+        "sha256_of_LF_span": "fd61012d94251fd4c5a6761116aeb7c79d2e4ea610e1081e735f127f26eb45c3",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "d3a4168bee2f23c60721304d787ea73425b31ae9e819cdfb1d01993a8e799287"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift.",
+      "current_f3_spans": [
+        [
+          146,
+          177
+        ]
+      ],
+      "current_f3_sha256": "d3a4168bee2f23c60721304d787ea73425b31ae9e819cdfb1d01993a8e799287"
+    },
+    {
+      "witness_id": "w18",
+      "path": "tools/artifact-coverage.py",
+      "actual0ef_spans": [
+        [
+          184,
+          194
+        ]
+      ],
+      "current_file_sha256": "d3a4168bee2f23c60721304d787ea73425b31ae9e819cdfb1d01993a8e799287",
+      "prior": {
+        "id": "w18",
+        "path": "tools/artifact-coverage.py",
+        "old_source": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+        "old_span": [
+          184,
+          194
+        ],
+        "current_spans": [
+          [
+            184,
+            194
+          ]
+        ],
+        "sha256_of_LF_span": "1456c7cb3dea2f9d3b28e9f96fc3fbbbc17ea33e46758a1716aa8cc0f4ec25fd",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "d3a4168bee2f23c60721304d787ea73425b31ae9e819cdfb1d01993a8e799287"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift.",
+      "current_f3_spans": [
+        [
+          184,
+          194
+        ]
+      ],
+      "current_f3_sha256": "d3a4168bee2f23c60721304d787ea73425b31ae9e819cdfb1d01993a8e799287"
+    },
+    {
+      "witness_id": "w19",
+      "path": "tools/artifact-coverage.py",
+      "actual0ef_spans": [
+        [
+          250,
+          326
+        ]
+      ],
+      "current_file_sha256": "d3a4168bee2f23c60721304d787ea73425b31ae9e819cdfb1d01993a8e799287",
+      "prior": {
+        "id": "w19",
+        "path": "tools/artifact-coverage.py",
+        "old_source": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+        "old_span": [
+          250,
+          326
+        ],
+        "current_spans": [
+          [
+            250,
+            326
+          ]
+        ],
+        "sha256_of_LF_span": "be2fd8e843dfc5cce667c527f75d0149aa4d4a0a089a05d79d8e384d16da4b32",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "d3a4168bee2f23c60721304d787ea73425b31ae9e819cdfb1d01993a8e799287"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift.",
+      "current_f3_spans": [
+        [
+          250,
+          326
+        ]
+      ],
+      "current_f3_sha256": "d3a4168bee2f23c60721304d787ea73425b31ae9e819cdfb1d01993a8e799287"
+    },
+    {
+      "witness_id": "w20",
+      "path": "tools/artifact-coverage.py",
+      "actual0ef_spans": [
+        [
+          329,
+          354
+        ]
+      ],
+      "current_file_sha256": "d3a4168bee2f23c60721304d787ea73425b31ae9e819cdfb1d01993a8e799287",
+      "prior": {
+        "id": "w20",
+        "path": "tools/artifact-coverage.py",
+        "old_source": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+        "old_span": [
+          329,
+          354
+        ],
+        "current_spans": [
+          [
+            329,
+            354
+          ]
+        ],
+        "sha256_of_LF_span": "9415bd2b2659ec18c80f2b624f11139536accd1d0f2b07780522a4e9acc97cd8",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "d3a4168bee2f23c60721304d787ea73425b31ae9e819cdfb1d01993a8e799287"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift.",
+      "current_f3_spans": [
+        [
+          329,
+          354
+        ]
+      ],
+      "current_f3_sha256": "d3a4168bee2f23c60721304d787ea73425b31ae9e819cdfb1d01993a8e799287"
+    }
+  ],
+  "changed_old_literals": [],
+  "reused_helper_assessments": [],
+  "negative_scope": "Static finite guarded claims only, with inherited scope/limits. No execution, qualification or unchecked new source claim."
+}

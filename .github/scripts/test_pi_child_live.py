@@ -176,7 +176,13 @@ class PiChildFixtureContract(unittest.TestCase):
         self.assertIn("startInferenceBroker", runner)
         self.assertIn("isolation-broker", runner)
         # ...and hands it the parent's scrub predicate, or the response filter is inert.
-        self.assertIn("containsSensitiveValue: preparedEnvironment.containsSensitiveValue", runner)
+        self.assertIn("const sensitiveEnvironment = preparedEnvironment;", runner)
+        self.assertRegex(
+            runner,
+            r"containsSensitiveValue:\s*\(text\)\s*=>\s*"
+            r"sensitiveEnvironment\.containsSensitiveValue\(text\)\s*\|\|\s*"
+            r"\(delegation\s*!==\s*undefined\s*&&\s*text\.includes\(delegation\.token\)\)",
+        )
         self.assertIn("broker.revoke()", runner)
         # Two INDEPENDENT teardown call sites: the refused-launch catch (which returns
         # before the try/finally is ever entered) and the finally that backstops every

@@ -1,0 +1,182 @@
+{
+ "result": "LOCAL_PASS_PENDING_INDEPENDENT_REVIEW",
+ "task": "WORK-2A68C3051D5A477EAC131493FF8A85AF",
+ "source_epoch": "d5f41252f4610d614eb51d709357ec511730313d",
+ "unchanged_canonical_source_preimage_epoch": "91a22bf4ea29a156dd601c9385667d7f1feadedc",
+ "predecessor": {
+  "proposal": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-h18-stdin-ownership-fix-5xnsbhy_\\proposal.json",
+  "sha256": "e9ad67dd9729542d4df9f450a0e088f972dbf91f615810483bac029c0e0a257f",
+  "bytes": 17254,
+  "status": "Retained local green19 predecessor, not independently accepted; Root source review found real tail-ownership gap."
+ },
+ "fix": "Before Python mode getopt, restrict this consumer argument substring to its first quote-aware top-level statement/pipeline boundary. Uncertain expansion/escapes/comments/nesting/redirection remains conservative; the intact original command/body is never hidden.",
+ "actual_RED": {
+  "tests": 2,
+  "assertion_failures": 10,
+  "errors": 0,
+  "skips": 0,
+  "elapsed_seconds": 0.04020580000360496,
+  "cause": "Full run_guards allows visible registered-state write when later statement/pipeline is misclassified as positional script argv.",
+  "scope": "Twelve named boundary vectors:10 failed; Python -I -B semicolon vectors already blocked through unknown-option fallback. Six script/data-owner controls passed."
+ },
+ "actual_GREEN": {
+  "tests": 21,
+  "failures": 0,
+  "errors": 0,
+  "skips": 0,
+  "elapsed_seconds": 0.19226389998220839,
+  "scope": "All19 original selected checks plus2 owning successor methods, including semicolon/no-space, LF/CRLF and pipe/pipe-newline boundaries."
+ },
+ "apply_files": [
+  {
+   "path": "core/pysrc/_bashguardlib.py",
+   "preimage_sha256": "d063d505398a0aec40f05bb0657b221bd80e0fb6f006a5c909768b2c9ee002a4",
+   "preimage_bytes": 156954,
+   "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-h22-stdin-tail-successor-aekzij8t\\candidate\\core\\pysrc\\_bashguardlib.py",
+   "sha256": "972d23f99eb3603b871ac81261e8bb8a11ca4e5e7edc43942e58c077ad69bf52",
+   "bytes": 159652
+  },
+  {
+   "path": ".github/scripts/test_literal_python_reads.py",
+   "preimage_sha256": "a95105f4c4ed155c756d519e5428dd8dd77c867a52ca517b92693aba22013a53",
+   "preimage_bytes": 12965,
+   "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-h22-stdin-tail-successor-aekzij8t\\candidate\\.github\\scripts\\test_literal_python_reads.py",
+   "sha256": "b1345cde7b7ee68658fca334aa84d90b92e1d392997a73a83194100d4f48bbb7",
+   "bytes": 21725
+  },
+  {
+   "path": "plugins/ca/hooks/_bashguardlib.py",
+   "preimage_sha256": "d063d505398a0aec40f05bb0657b221bd80e0fb6f006a5c909768b2c9ee002a4",
+   "preimage_bytes": 156954,
+   "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-h22-stdin-tail-successor-aekzij8t\\candidate\\plugins\\ca\\hooks\\_bashguardlib.py",
+   "sha256": "972d23f99eb3603b871ac81261e8bb8a11ca4e5e7edc43942e58c077ad69bf52",
+   "bytes": 159652
+  },
+  {
+   "path": "plugins/ca-codex/hooks/_bashguardlib.py",
+   "preimage_sha256": "d063d505398a0aec40f05bb0657b221bd80e0fb6f006a5c909768b2c9ee002a4",
+   "preimage_bytes": 156954,
+   "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-h22-stdin-tail-successor-aekzij8t\\candidate\\plugins\\ca-codex\\hooks\\_bashguardlib.py",
+   "sha256": "972d23f99eb3603b871ac81261e8bb8a11ca4e5e7edc43942e58c077ad69bf52",
+   "bytes": 159652
+  },
+  {
+   "path": "plugins/ca-pi/hooks/_bashguardlib.py",
+   "preimage_sha256": "d063d505398a0aec40f05bb0657b221bd80e0fb6f006a5c909768b2c9ee002a4",
+   "preimage_bytes": 156954,
+   "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-h22-stdin-tail-successor-aekzij8t\\candidate\\plugins\\ca-pi\\hooks\\_bashguardlib.py",
+   "sha256": "972d23f99eb3603b871ac81261e8bb8a11ca4e5e7edc43942e58c077ad69bf52",
+   "bytes": 159652
+  }
+ ],
+ "patch": {
+  "sha256": "ac7dae9e936a234da61e84273f1a292562c7b9ec595e8694d6dd128a9d98551f",
+  "bytes": 26232
+ },
+ "incremental_patch": {
+  "sha256": "f7ec2078ae7bc5b790d21da52f6960522f5f679d4addedf385d0ed09136aa233",
+  "bytes": 6582
+ },
+ "checks": {
+  "result": "PASS",
+  "all_prior19_selected_checks_source_methods_unchanged": true,
+  "all_prior_class_method_ASTs_preserved": 26,
+  "new_RED_and_GREEN_entire_test_bytes_equal": true,
+  "only_existing_production_function_changed_vs_predecessor": "_powershell_stdin_interpreter_view",
+  "other_functions_including_B03_and_closed_read_grammar_ASTs_unchanged": true,
+  "all_current_Root_preimages_equal": true,
+  "three_plugin_mirrors_exact_canonical": true,
+  "syntax_compile_without_execution": [
+   "core/pysrc/_bashguardlib.py",
+   ".github/scripts/test_literal_python_reads.py",
+   "plugins/ca/hooks/_bashguardlib.py",
+   "plugins/ca-codex/hooks/_bashguardlib.py",
+   "plugins/ca-pi/hooks/_bashguardlib.py"
+  ]
+ },
+ "runtime": {
+  "path": "C:/Python314/python.exe",
+  "sha256": "03168c01b7b7491423350e82c26fee71f35b43694d1319d3c668bda6903a0c38",
+  "bytes": 106208,
+  "environment": "Private minimal HOME/TMP before -I -S -B -X utf8 startup; test audit denies process/network execution."
+ },
+ "coverage": {
+  "profile": "CTX-TECH-STACK#FACT-005",
+  "state": "Direct Python critical-path behavioral checks; no Python numeric coverage tooling or fabricated host coverage.",
+  "effectful_old_methods_not_replayed": true
+ },
+ "limits": [
+  "Private source/test proposal only; no Root source/index/ref/marker/registry/API/dependency writes.",
+  "No denied command or subject Python/shell body executed; every full-guard call asserts owned context bytes unchanged.",
+  "No dynamic stdin or nested-shell completeness claim. Actual unsafe body is represented as code conservatively, not executed.",
+  "Original unsupported compound read remains conservative; sanctioned nonstdin script/file-title data and closed read grammar retained.",
+  "Root owns independent security review, actual staged/scanner/hosted verification and folding generated sources; main1098/publication held."
+ ],
+ "artifacts": {
+  "predecessor.json": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-h22-stdin-tail-successor-aekzij8t\\predecessor.json",
+   "sha256": "4fba75ff91bf600dff11b3894fb65689ee67d4b92662e738878b42439f561dce",
+   "bytes": 397
+  },
+  "tail-red.json": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-h22-stdin-tail-successor-aekzij8t\\tail-red.json",
+   "sha256": "3f6b037e5c5c1f9a39d5c1900167b5fb616da2e77e1f3c8b0296e182bcaaac69",
+   "bytes": 978
+  },
+  "tail-red.stdout": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-h22-stdin-tail-successor-aekzij8t\\tail-red.stdout",
+   "sha256": "2638fb58b26fc76822f5a41c4d3406afa73a641330d8f175f2111e7dd1d97c00",
+   "bytes": 95
+  },
+  "tail-red.stderr": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-h22-stdin-tail-successor-aekzij8t\\tail-red.stderr",
+   "sha256": "e42e797f06979efd345af76b6e0b7d16c1efd6fc06267cdffb8b11c274fca9b3",
+   "bytes": 10477
+  },
+  "tail-green.json": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-h22-stdin-tail-successor-aekzij8t\\tail-green.json",
+   "sha256": "ba3fda5da03d0734f739837a525c639c84f2a705704ed73886c59f392a37339c",
+   "bytes": 1612
+  },
+  "tail-green.stdout": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-h22-stdin-tail-successor-aekzij8t\\tail-green.stdout",
+   "sha256": "89febfd926139c67cec4db2d7c00d0c5d2d3034516425bee4c88394afe8abef0",
+   "bytes": 95
+  },
+  "tail-green.stderr": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-h22-stdin-tail-successor-aekzij8t\\tail-green.stderr",
+   "sha256": "687c738b9d0364cc3ff48811b6868451ee987a4308f05901b2e739a3856f84d3",
+   "bytes": 3545
+  },
+  "source-preimages.json": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-h22-stdin-tail-successor-aekzij8t\\source-preimages.json",
+   "sha256": "2d47a047d802ba8c8fa96287253235b0f3cea2ce3e3987461fc9203304f78f25",
+   "bytes": 15314
+  },
+  "source-checks.json": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-h22-stdin-tail-successor-aekzij8t\\source-checks.json",
+   "sha256": "d8d92a48a409b7ff538f80d260576c196ef8ce3ba4ea6116545f3999e5cb3416",
+   "bytes": 719
+  },
+  "tail-predecessor-bashguard.py": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-h22-stdin-tail-successor-aekzij8t\\tail-predecessor-bashguard.py",
+   "sha256": "11803e48446495fa36093742520c3346c6fd73615920f261697db0ef80e80ccb",
+   "bytes": 159118
+  },
+  "tail-regression-red.py": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-h22-stdin-tail-successor-aekzij8t\\tail-regression-red.py",
+   "sha256": "b1345cde7b7ee68658fca334aa84d90b92e1d392997a73a83194100d4f48bbb7",
+   "bytes": 21725
+  },
+  "run_tests.py": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-h22-stdin-tail-successor-aekzij8t\\run_tests.py",
+   "sha256": "22aa600659e6398809a585c43a0006d0ecb510ae811f0373dedd859c4305c905",
+   "bytes": 1084
+  },
+  "control.py": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-h22-stdin-tail-successor-aekzij8t\\control.py",
+   "sha256": "898d90c3826b78256e90eb76c2e943d7d67ce92891642795dc7085eb9f6a8023",
+   "bytes": 1440
+  }
+ }
+}

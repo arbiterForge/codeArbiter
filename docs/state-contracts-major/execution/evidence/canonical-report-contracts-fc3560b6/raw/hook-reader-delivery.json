@@ -1,0 +1,58 @@
+{
+  "source_anchor": "fc3560b6972197fb1cd0cab04dc3af34dcaff534",
+  "subjects": [
+    {
+      "path": ".github/scripts/test_hook_ci_partition.py",
+      "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-q02-hw04-hook-reader-alignment-ony3wu80\\candidate\\.github\\scripts\\test_hook_ci_partition.py",
+      "preimage_sha256": "4d45dc269bc529dbf7c2c52f84e93b31ecb2cddb96a7997968ec2b45ece2e063",
+      "sha256": "983e848b9234ffbaf2b7c797b2f734514583d3f34768dbc014eab5d561363daf",
+      "bytes": 43511
+    }
+  ],
+  "patch": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-q02-hw04-hook-reader-alignment-ony3wu80\\proposal.patch",
+    "sha256": "17975bea09614cd1f618707cf09f0c87bcadce7ac3387c7bcb24db4ca9cdb3a2"
+  },
+  "inventory_proof": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-q02-hw04-hook-reader-alignment-ony3wu80\\inventory-proof.json",
+    "sha256": "23d8c3abbcc35e9fc9fe92e2f1530d23f7268b3e9c7f3d9bb33a3d949beca5da"
+  },
+  "static_guards": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-q02-hw04-hook-reader-alignment-ony3wu80\\static-guards.json",
+    "sha256": "7035e9d774161492c02fe4396fded33618acd95c9ca8bd74bbebc724960f9b17"
+  },
+  "scope": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-q02-hw04-hook-reader-alignment-ony3wu80\\scope.md",
+    "sha256": "96c8b38716f66f6597e754c8880ac9a69f5f6bdc5ca9c26492f2ee32b9bcc5b4"
+  },
+  "actual_GREEN": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-q02-hw04-hook-reader-alignment-ony3wu80\\affected-green.json",
+    "sha256": "24a6af3dc471bbc89f142953eafa581bd4e164369ef8648049c409e03fadb229"
+  },
+  "actual_GREEN_stderr": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-q02-hw04-hook-reader-alignment-ony3wu80\\affected-green.stderr",
+    "sha256": "dcd8b4a2007be4d8c540799cba58967fb3cb7bfcd53e682486f02aed23115287"
+  },
+  "actual_retained_RED": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-canonical-qualification-filename-fix-l8hj69go\\proper-focused-green.json",
+    "sha256": "46ba961331ad666fa0d70295d5553831b796544658509d13123fe3732da842a0"
+  },
+  "actual_retained_RED_stderr": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-canonical-qualification-filename-fix-l8hj69go\\proper-focused-green.stderr",
+    "sha256": "191fa8b0d27073443694349d1885182cf8f50dc0f32533bff767832e78221832"
+  },
+  "read_only_filename_overlay": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-canonical-qualification-filename-fix-l8hj69go\\delivery.json",
+    "sha256": "a6b11380fce0b261fa39aa3b80a2dc49310c8c0c7c0bd638e3aad162d6455b3b"
+  },
+  "actual_result": {
+    "PASS": 44,
+    "SKIP": 0,
+    "ERROR": 0,
+    "unittest_seconds": 0.162,
+    "outer_seconds": 0.35742339998250827,
+    "previously_blocked_delegate_PASS": true
+  },
+  "canonical_writes": false,
+  "qualification": false
+}

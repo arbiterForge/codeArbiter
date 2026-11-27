@@ -1,0 +1,61 @@
+{
+ "schema": "codearbiter.major.work-adopt-snapshot-registry-repair/1",
+ "recorded_at": "2026-11-17T09:28:32.123719+00:00",
+ "source_anchor": "e4080b3b8ec5acf9b663f1eb1875777d784cc4ea",
+ "local_branch": "codex/state-contracts-prune-boundary",
+ "remote_child_branch": "codex/state-contracts-mode-and-adoption",
+ "delivery_PR": 1119,
+ "fix": "Register exactly8 newly added work-adoption methods alongside7existing names. No test implementation, guard, result/skip predicate, reader or public behavior weakened.",
+ "original_failure": "f262 Linux and Windows native children pass reader tests, then exact membership set fails; original failures remain at their true epoch.",
+ "actual_local": "Existing8suite AST/wiring membership guard observed RED(exit1,0.237s) and GREEN(exit0,0.235s); no native child execution. All other suite sets remain exact.",
+ "evidence": {
+  "review": {
+   "path": "docs/state-contracts-major/execution/evidence/work-adopt-registry-e408/independent-review.json",
+   "sha256": "b3845e71220357f1c806d409aa462e458af32cc0abd0a238d0f2b375b16f5e8f",
+   "bytes": 6989
+  },
+  "original_CI": {
+   "path": "docs/state-contracts-major/execution/evidence/work-adopt-registry-e408/original-child-failure.json",
+   "sha256": "d6cb435c979468f76bd8d9e4165023903dc3b366846ffef785b1cc2619e208c0",
+   "bytes": 2695
+  },
+  "red": {
+   "path": "docs/state-contracts-major/execution/evidence/work-adopt-registry-e408/red.json",
+   "sha256": "39ff0e41c99ec2d9d05d2dd80382bab62ee70a75387069714dcaf6cb86f344e8",
+   "bytes": 577
+  },
+  "green": {
+   "path": "docs/state-contracts-major/execution/evidence/work-adopt-registry-e408/green.json",
+   "sha256": "bb29099f980b4874b45b539b41d5ee820eaa0f3550ff6fdf7ee5f1d5cda90891",
+   "bytes": 579
+  }
+ },
+ "impact": "No777 current source-only positive proof inputs include test_artifact_conformance.py. Old runtime proofs preserve actual applicability and are not renewed.",
+ "normal_integration": {
+  "head": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+  "CI": 44046125471,
+  "CI_result": "SUCCESS",
+  "Docs": 44046125414,
+  "Docs_result": "FAILURE",
+  "checks": {
+   "success": 91,
+   "failure": 1,
+   "skipped": 10
+  },
+  "sole_Docs_failure": "Existing checksum-drift test exceeded5000ms; code/config unchanged acrossd482/f262/prune, no checksum mismatch assertion. Underlying stall cause unknown; do not change budget/oracle on this evidence.",
+  "terminal_receipt_sha256": "7b6f06353eeee7e3bd8aa2514a2253d402c3b0d7255ff19d5f0f05eabbcb4214",
+  "LinuxPi": "Original RPC1PASS and scripted public-parent verificationPASS;273before/after inventory unchanged. This is one scoped Linux package, not human/fullPI-D07 or whole-normalPASS."
+ },
+ "next": "Push composed reviewed1119 successor once, await exact-headCI+Docs requiredchecks, then authorized childmerge into major/state-contracts. No merge to main or publication.",
+ "source_only_records": 777,
+ "PLANNED": {
+  "findings": 49,
+  "machines": 0,
+  "transitions": 8,
+  "total": 57
+ },
+ "task_status_promotion": false,
+ "runtime_epoch_renewal": false,
+ "main_merge": "HELD_FOR_USER_TESTING",
+ "publication": "NOT_AUTHORIZED"
+}

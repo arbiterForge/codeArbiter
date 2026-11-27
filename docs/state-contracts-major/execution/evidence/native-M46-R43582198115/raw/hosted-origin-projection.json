@@ -1,0 +1,240 @@
+{
+  "scope": "Allowlisted metadata projection; original full job/API logs remain private",
+  "original_private_intake": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-M46e29-R43582198115-v3",
+    "file_sha256": {
+      "immutable-module-entries.json": "fc89026463995036940e0227d1ee7ef7a7a51939e5ced5e2a50b4b7171837a99",
+      "immutable-source-inputs.json": "0d51cad02368183f88e97545d1d91ab24e64fc777c7c99bfdb875398f78aa8dd",
+      "intake-observation.json": "a99887557716a460b3876bd51f091a492402cd098fe68ef6baae9708913a8298",
+      "original-artifact-pages.json": "2aa0b991545e8d0953c18c3b6aaeb42d73dbade33dc98c810f0f79b3d2a199c6",
+      "original-authority-job.json": "33fffaa6e655d5a04c5b081a4c58fa18d63a7f392ec394419e2d7fed39ac1774",
+      "original-authority-job.log": "12842682a52b17eabee702e151db9e6771109444b21007022f5cc4c46ad0d8ee",
+      "original-builder-artifact.zip": "521cbdef721f2f0e3491b88e3660cd6fa35487268541e35641ffa87a6c95aac8",
+      "original-builder-job.log": "a99ff5d50811e83d063fc2427a1f5bf50c50b63c8130834e9d9c5368d4d397c9",
+      "original-ce3-producer-events.jsonl": "842191bf59c36f88dd0aef84b0e62aae473fd55ffaeead7c7f5ba86fb4234287",
+      "original-ce3-supplement.json": "49f542696f31aaa4f3605da445e3a9966513b8626624943f72f7fc6a222ee51b",
+      "original-ci20-native-tested.json": "ef4825ce7924458a2875168d1c7619de52c7dbdecc43bfb0056fba848b7383d2",
+      "original-job-pages.json": "b934be360a2cb983cb22ec093af2c94cf99acbbdc0ed172a0a0a51568cd8d01b",
+      "original-native-observation.json": "e8849d5581ae320c122e9677915661fddad9e6904ad5bdb417d73fa3cd4dd3f3",
+      "original-native-tests.json": "311934013ee91f96a829723c8b96ef848d88b809771177d3b3cab173bfcda9da",
+      "original-run.json": "d8e88add04beb3740177d14cf61346adea27cd370ba780b38778b2313c3496ea",
+      "original-uploader-aliases.json": "69f9cda5736e717b4daf8150b394db57900caef0a87c8420747c4db1274d9fc4"
+    }
+  },
+  "run": {
+    "id": 43582198115,
+    "head_sha": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+    "head_branch": "major/state-contracts",
+    "path": ".github/workflows/ci.yml",
+    "event": "push",
+    "status": "completed",
+    "conclusion": "success",
+    "run_attempt": 2
+  },
+  "repository": {
+    "id": 1233366728,
+    "full_name": "arbiterForge/codeArbiter"
+  },
+  "artifact": {
+    "id": 14108863344,
+    "name": "ci20-native-tested-windows-2025",
+    "digest": "sha256:521cbdef721f2f0e3491b88e3660cd6fa35487268541e35641ffa87a6c95aac8",
+    "created_at": "2026-11-14T09:59:33Z",
+    "updated_at": "2026-11-14T09:59:33Z",
+    "expired": false,
+    "size_in_bytes": 2838443,
+    "workflow_run": {
+      "id": 43582198115,
+      "repository_id": 1233366728,
+      "head_repository_id": 1233366728,
+      "head_branch": "major/state-contracts",
+      "head_sha": "46e29a796e89e0eaa3250cf171e4c9bea97ac437"
+    }
+  },
+  "uploader": {
+    "id": 132409162374,
+    "run_id": 43582198115,
+    "head_sha": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+    "name": "[CHECK] | [CORE] | Tested native candidate build <windows/amd64>",
+    "status": "completed",
+    "conclusion": "success",
+    "run_attempt": 1,
+    "started_at": "2026-11-14T09:53:38Z",
+    "completed_at": "2026-11-14T09:59:39Z"
+  },
+  "uploader_steps": [
+    {
+      "name": "Set up job",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 1,
+      "started_at": "2026-11-14T09:53:39Z",
+      "completed_at": "2026-11-14T09:53:43Z"
+    },
+    {
+      "name": "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 2,
+      "started_at": "2026-11-14T09:53:44Z",
+      "completed_at": "2026-11-14T09:54:03Z"
+    },
+    {
+      "name": "Run actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 3,
+      "started_at": "2026-11-14T09:54:03Z",
+      "completed_at": "2026-11-14T09:54:03Z"
+    },
+    {
+      "name": "Run actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 4,
+      "started_at": "2026-11-14T09:54:03Z",
+      "completed_at": "2026-11-14T09:54:17Z"
+    },
+    {
+      "name": "Run actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 5,
+      "started_at": "2026-11-14T09:54:17Z",
+      "completed_at": "2026-11-14T09:54:40Z"
+    },
+    {
+      "name": "Verify exact Go toolchain",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 6,
+      "started_at": "2026-11-14T09:54:40Z",
+      "completed_at": "2026-11-14T09:54:41Z"
+    },
+    {
+      "name": "Build native qualified candidate",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 7,
+      "started_at": "2026-11-14T09:54:41Z",
+      "completed_at": "2026-11-14T09:59:29Z"
+    },
+    {
+      "name": "Bind the module-tested binary, source, host and toolchain",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 8,
+      "started_at": "2026-11-14T09:59:29Z",
+      "completed_at": "2026-11-14T09:59:30Z"
+    },
+    {
+      "name": "Join original named tests to the tested payload",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 9,
+      "started_at": "2026-11-14T09:59:30Z",
+      "completed_at": "2026-11-14T09:59:31Z"
+    },
+    {
+      "name": "Share the real tested candidate with this workflow run",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 10,
+      "started_at": "2026-11-14T09:59:31Z",
+      "completed_at": "2026-11-14T09:59:33Z"
+    },
+    {
+      "name": "Emit named major qualification report",
+      "status": "completed",
+      "conclusion": "skipped",
+      "number": 11,
+      "started_at": "2026-11-14T09:59:33Z",
+      "completed_at": "2026-11-14T09:59:33Z"
+    },
+    {
+      "name": "Upload major qualification report",
+      "status": "completed",
+      "conclusion": "skipped",
+      "number": 12,
+      "started_at": "2026-11-14T09:59:33Z",
+      "completed_at": "2026-11-14T09:59:33Z"
+    },
+    {
+      "name": "Post Run actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 21,
+      "started_at": "2026-11-14T09:59:33Z",
+      "completed_at": "2026-11-14T09:59:34Z"
+    },
+    {
+      "name": "Post Run actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 22,
+      "started_at": "2026-11-14T09:59:34Z",
+      "completed_at": "2026-11-14T09:59:34Z"
+    },
+    {
+      "name": "Post Run actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 23,
+      "started_at": "2026-11-14T09:59:34Z",
+      "completed_at": "2026-11-14T09:59:34Z"
+    },
+    {
+      "name": "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 24,
+      "started_at": "2026-11-14T09:59:34Z",
+      "completed_at": "2026-11-14T09:59:36Z"
+    },
+    {
+      "name": "Complete job",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 25,
+      "started_at": "2026-11-14T09:59:36Z",
+      "completed_at": "2026-11-14T09:59:36Z"
+    }
+  ],
+  "alias_ids": [
+    {
+      "id": 132409162374,
+      "run_attempt": 1
+    },
+    {
+      "id": 132417995465,
+      "run_attempt": 2
+    }
+  ],
+  "alias_meaning": "Same actual execution/steps; original stamp attempt1 retained, whole successful run attempt2",
+  "module": {
+    "members_observed": 244,
+    "sha256": "ea1f9f0c6f15ec8a6971c8dbcd63a51d4257f9d11c9e0d78fceb0f74d8a3f7a8",
+    "profile": {
+      "profile": "go-module-v1",
+      "root": "core/artifacts",
+      "path_order": "windows",
+      "sha256": "ea1f9f0c6f15ec8a6971c8dbcd63a51d4257f9d11c9e0d78fceb0f74d8a3f7a8"
+    }
+  },
+  "candidate_identity": {
+    "manifest_sha256": "b3dbea9eedb2917c07272ab20ec24116f424ee610bbfa3cd2b3eaf75f941417c",
+    "binary_sha256": "c36b4ca918f5f7e9568665ba894bc1e564a29183a0c5be7d7ea051f2e5e6f070"
+  },
+  "original_full_named_population": {
+    "selected": 479,
+    "observed": 479,
+    "skipped": [
+      "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestAnchorsRecheckReusedDirectory",
+      "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestSnapshotMarkerExclusionIsExactCase",
+      "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/repository:TestCatalogScanRejectsNonportableName"
+    ]
+  },
+  "binary_executed_during_intake": false,
+  "archive_private_sha256": "521cbdef721f2f0e3491b88e3660cd6fa35487268541e35641ffa87a6c95aac8",
+  "original_job_log_private_sha256": "a99ff5d50811e83d063fc2427a1f5bf50c50b63c8130834e9d9c5368d4d397c9"
+}

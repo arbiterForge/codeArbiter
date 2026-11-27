@@ -1,0 +1,294 @@
+{
+  "format": "codearbiter.original-regression-deliveries/1",
+  "deliveries": [
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-codex-nested-observer-tests-hp36yiv4\\delivery.json",
+      "sha256": "5a7e9b3e935aaa3a3ce2cbf66f4aeca8eeb55947e35a51d80992940a48b4928a",
+      "bytes": 1817,
+      "record": {
+        "actual_red": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-codex-nested-observer-tests-hp36yiv4\\actual-final-red.json",
+        "actual_red_sha256": "c116760ff39218223ce45e77a63cd7cbe6ece133e61c03317bba32bd9cdf9414",
+        "candidate_hashes": {
+          ".github/scripts/test_observe_codex_installed_cli.py": "e38d1954ec8050cf7b8300cf072d8630f9c6b91275040561f08eb31393284ab7"
+        },
+        "candidate_root": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-codex-nested-observer-tests-hp36yiv4\\candidate",
+        "filemap": {
+          ".github/scripts/test_observe_codex_installed_cli.py": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-codex-nested-observer-tests-hp36yiv4\\candidate\\.github\\scripts\\test_observe_codex_installed_cli.py"
+        },
+        "limits": [
+          "Root has not implemented the observer repair in this packet.",
+          "No actual installed host/native/Git behavior is qualified.",
+          "Original first-draft RED remains in actual-red.log; final RED binds frozen final test bytes.",
+          "No Gov/index/ref/marker or production-source writes."
+        ],
+        "next": "Root implement transparent reentrant observer, then run these exact focused controls to GREEN; kwargs acceptance alone must still fail nested capability-count guard.",
+        "preimages": {
+          ".github/scripts/test_observe_codex_installed_cli.py": "25233e54d2028296620dd15b16394852c9424ba87593c1966301665599e39aeb"
+        },
+        "proposal_patch": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-codex-nested-observer-tests-hp36yiv4\\proposal.patch",
+        "proposal_patch_sha256": "dd1f5696d4dc45ef7452a616f432cc5479f2a030bf3d9d719b4675468c4cbd43",
+        "source_freeze": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-codex-nested-observer-tests-hp36yiv4\\source-freeze.json",
+        "source_freeze_sha256": "2c43c8a906d28c7d685ef3d9080bb6d812bfca630e717d248ed8615afee903fd",
+        "status": "TEST_ONLY_TARGET_RED"
+      }
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-cold-retention-tests-j41dbyzc\\delivery.json",
+      "sha256": "5bd4384b3f13432c1724a8d20ed9d7b077a9b1e85b68945e27e88bc1c22218f5",
+      "bytes": 4792,
+      "record": {
+        "format": "bounded-test-only-red-delivery/1",
+        "source_commit": "771604132801a0e67c971581fbbf76227af2f712",
+        "state": "GENUINE_TARGET_RED_READY_FOR_ROOT_MINIMAL_FIX",
+        "work_id": "WORK-2A68C3051D5A477EAC131493FF8A85AF",
+        "context_input": "C:/Users/brenn/AppData/Local/Temp/ca-host-observer-integration-root/cold-retention-test-actor-input.txt",
+        "validated_bug_origin": {
+          "path": "C:/Users/brenn/AppData/Local/Temp/ca-Recovery-77160413-qr17uou5/cold-debug-handoff-successor1.json",
+          "sha256": "90cea5a138748d931ef1fb00d5a0951a94d2bf8e4c7ff21bb45278ff00987ef9",
+          "scope": "Confirmed failure-record retention defect only; hidden original cold cause UNKNOWN. Rejected predecessor unchanged."
+        },
+        "candidate": {
+          "repo_path": ".github/scripts/test_retained_cold_observer_pipeline.py",
+          "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-cold-retention-tests-j41dbyzc\\candidate\\.github\\scripts\\test_retained_cold_observer_pipeline.py",
+          "sha256": "0169db5b7a75e58d86e0e7e70bf252402c02a0b1b6d89404c2fb1fe0b8735a05",
+          "bytes": 11496
+        },
+        "preimage": {
+          "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-cold-retention-tests-j41dbyzc\\preimage\\.github\\scripts\\test_retained_cold_observer_pipeline.py",
+          "sha256": "62f35f6e372e51cc51e108cfc748d860230aaa5ac842e621419bae9fe758bbd4",
+          "bytes": 7678
+        },
+        "patch": {
+          "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-cold-retention-tests-j41dbyzc\\candidate.patch",
+          "sha256": "15517a8506134ab7998de7fcca79f66f66f4f27312fff066da445727724e5e96",
+          "bytes": 4185
+        },
+        "preparation": {
+          "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-cold-retention-tests-j41dbyzc\\preparation.json",
+          "sha256": "99cf98ec19201376bd2d158c3de838d5d91195d958f1dfeb2a104ac8876f89ad",
+          "bytes": 807
+        },
+        "actual_red": {
+          "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-cold-retention-tests-j41dbyzc\\red-result.json",
+          "sha256": "c382528516a2c95d7c6f3e16d9493241df61c48991ad045559b9bd4716224995",
+          "bytes": 2080
+        },
+        "start": {
+          "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-cold-retention-tests-j41dbyzc\\run-start.json",
+          "sha256": "5ca6fb10f0dbc06510c46baf10b9660b6fa2bad49f53bfa27d7c86506c94acc3",
+          "bytes": 2412
+        },
+        "stdout": {
+          "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-cold-retention-tests-j41dbyzc\\original.stdout.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        },
+        "stderr": {
+          "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-cold-retention-tests-j41dbyzc\\original.stderr.log",
+          "sha256": "b8fe3f14bec58a0a652e13b7f0e808c869f025de3725a98460841ccfd1c0e51f",
+          "bytes": 3329
+        },
+        "harness": {
+          "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-cold-retention-tests-j41dbyzc\\run-target.py",
+          "sha256": "c261f2828b3cc114b865ca345d51f2561d62dae7fdca560cfc922ef1908a79a7",
+          "bytes": 868
+        },
+        "actual_outcome": {
+          "named_methods": 3,
+          "passed_methods": 1,
+          "failed_methods": 2,
+          "errors": 0,
+          "skips": 0,
+          "actual_exit": 1,
+          "owned_process_seconds": 0.9721451999939745,
+          "unittest_reported_seconds": 0.006,
+          "wrong_reason_errors": false,
+          "before_after_HEAD_index_selected_sources_equal": true
+        },
+        "preservation": {
+          "all_old_pipeline_methods": 7,
+          "all_old_pipeline_method_ASTs_unchanged": true,
+          "all_other_production_CI_and_test_files_untouched": true,
+          "existing_failed_execution_durability_test": "Retained unchanged and reused as established intent; not re-executed."
+        },
+        "actual_controls": [
+          "Actual workflow parsed by existing workflow_jobs owner; exact named steps only.",
+          "Diagnostic success eligible; skipped/cancelled ineligible. Failed attempted outcome precisely RED.",
+          "Qualification emit and upload remain success-only across success/failure/skipped (all controls PASS).",
+          "Actual missing-file declaration error is precisely RED against ignore; no real upload action run."
+        ],
+        "minimal_fix_suggestion": "Allow attempted success OR failure for only original observation diagnostic upload with !cancelled(); ignore absent diagnostic files so an earlier admission failure remains primary. Keep qualification emit/report upload success-only. Do not infer or repair the hidden inner cold cause from this result.",
+        "limits": [
+          "Only three additive pure pipeline declarations tests executed once in owned credential-blind process.",
+          "No hosted/API/GitHub action/SDK/native/runtime/provider/model/install execution; no source/Gov/index/ref/marker writes.",
+          "No Recovery/P02/fullsuite repetitions; Root owns all canonical application, GREEN, independent review and delivery."
+        ]
+      }
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-launcher-three-regressions-llcfep6h\\delivery.json",
+      "sha256": "78127e92124ed5db2714a38a50a37f411bedbd62e3d10e5a327157c10e57cdcb",
+      "bytes": 8616,
+      "record": {
+        "schema": "codearbiter.test-author-delivery/1",
+        "state": "FOUR_GENUINE_TARGET_REDS_ROOT_FIXES_SEPARATE",
+        "source_commit": "771604132801a0e67c971581fbbf76227af2f712",
+        "apply_files": [
+          {
+            "path": "plugins/ca-pi/tools/test/bridge.test.ts",
+            "source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-launcher-three-regressions-llcfep6h\\candidate\\plugins\\ca-pi\\tools\\test\\bridge.test.ts",
+            "preimage_sha256": "4ffd191ced446c2b76066d15e24277e92ff1cb107d28ca8d72484c2d269e3420",
+            "sha256": "704a4dfdd922d430019693d256009050568a05a54f53b6445e55ac17620339a2",
+            "bytes": 80470
+          },
+          {
+            "path": ".github/scripts/test_observe_pi_installed_rpc.py",
+            "source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-launcher-three-regressions-llcfep6h\\candidate\\.github\\scripts\\test_observe_pi_installed_rpc.py",
+            "preimage_sha256": "c7786fe34f2b6acafbb5b9af8f0eba29152187179d8291ecade34dc16a9052cd",
+            "sha256": "f08563e915b4f94c9077816ca65670202570aac1911e3feb5a595ecdeb05c302",
+            "bytes": 27791
+          },
+          {
+            "path": ".github/scripts/test_retained_archive_cli_observation.py",
+            "source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-launcher-three-regressions-llcfep6h\\candidate\\.github\\scripts\\test_retained_archive_cli_observation.py",
+            "preimage_sha256": "978194020be10a48ce7b85b2a73ff67ce78d36195d2b869e51e2ca55ec6f3cb3",
+            "sha256": "645600aafc0e52b1b0a1666aa3f443709cec1eaa8e8969b99c793aad0814ca6a",
+            "bytes": 39405
+          }
+        ],
+        "receipts": {
+          "source-preimages.json": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-launcher-three-regressions-llcfep6h\\source-preimages.json",
+            "sha256": "7ca5a56a5bb9f30c057a604916f44114bba750019b7ec7ff7bab399baf937315",
+            "bytes": 725
+          },
+          "runtime-node.json": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-launcher-three-regressions-llcfep6h\\runtime-node.json",
+            "sha256": "b9b982269f78710e54e42b935198cba5fd62254c88cb9e34980b6f861b0b3d4e",
+            "bytes": 225
+          },
+          "launcher-RED.json": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-launcher-three-regressions-llcfep6h\\launcher-RED.json",
+            "sha256": "da3a4e7740e8554afd859b7c7dbb39f91af7a9adf5c343bf59d536b82f2d6604",
+            "bytes": 957
+          },
+          "launcher-RED-tests.json": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-launcher-three-regressions-llcfep6h\\launcher-RED-tests.json",
+            "sha256": "019eb3fadfef0216e0fc5536daa1cb9e8231142f1880e214139adce2a2bdca50",
+            "bytes": 17142
+          },
+          "launcher-RED.stderr.log": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-launcher-three-regressions-llcfep6h\\launcher-RED.stderr.log",
+            "sha256": "65eada1f0510a7bcb322a9b39fa39b4de35b3b2984d5c985f11dfb3580a6d497",
+            "bytes": 1186
+          },
+          "diagnostics-RED.json": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-launcher-three-regressions-llcfep6h\\diagnostics-RED.json",
+            "sha256": "4eac888328c11b16e1846bd765d488eff12212316b5b2071eda51aadd77a9f36",
+            "bytes": 527
+          },
+          "diagnostics-RED-tests.json": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-launcher-three-regressions-llcfep6h\\diagnostics-RED-tests.json",
+            "sha256": "d612d1128e194b88d11e6b21ddeef0ac2edaa40099332f6eeb63d21462484baa",
+            "bytes": 444
+          },
+          "diagnostics-RED.stderr.log": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-launcher-three-regressions-llcfep6h\\diagnostics-RED.stderr.log",
+            "sha256": "3b0fe8f1fa77f0cf81f26536883e51af1524db4d2edb3714cea6eab3b303a2ff",
+            "bytes": 2334
+          },
+          "sink-RED.json": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-launcher-three-regressions-llcfep6h\\sink-RED.json",
+            "sha256": "3f3966a35971d88f89bed85332425e383e83980d4117924ab951bd0c61d9e55f",
+            "bytes": 541
+          },
+          "sink-RED-tests.json": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-launcher-three-regressions-llcfep6h\\sink-RED-tests.json",
+            "sha256": "b1addfb3aa3218678190a76f6d045eecef4e280394e44699c057fa628a527847",
+            "bytes": 271
+          },
+          "sink-RED.stderr.log": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-launcher-three-regressions-llcfep6h\\sink-RED.stderr.log",
+            "sha256": "a393dfd2900bda5d0d53e664ebf22faf4b0722b5f68694d9879a513f446772c7",
+            "bytes": 1410
+          },
+          "launcher-original-RED-test.ts": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-launcher-three-regressions-llcfep6h\\launcher-original-RED-test.ts",
+            "sha256": "4c20889313931c092f7d7ee44d5ddb0792206eeba01452d34416840b38b17961",
+            "bytes": 80487
+          },
+          "typing-only.patch": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-launcher-three-regressions-llcfep6h\\typing-only.patch",
+            "sha256": "8a7eba89a0c86965f61e4936010fd9cbe875219b808c8833b8b7ed1f297316a1",
+            "bytes": 584
+          },
+          "source-guards.json": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-launcher-three-regressions-llcfep6h\\source-guards.json",
+            "sha256": "aaa86f32758710734b8e25fb9a9d15b36e70e059211daf2f4cfd7da2db83d3c4",
+            "bytes": 522
+          },
+          "final.patch": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-launcher-three-regressions-llcfep6h\\final.patch",
+            "sha256": "51b4d7c92bd21abd44cc3fc480d4ebf41e8a3ef2c39a3c1a35df70db26375035",
+            "bytes": 12628
+          }
+        },
+        "actual_targets": {
+          "launcher": {
+            "selected_methods": 1,
+            "failed": 1,
+            "filtered_unselected": 52,
+            "vitest_ms": 249,
+            "prefix_controls": [
+              "default",
+              "-I"
+            ],
+            "actual_tiny_owned_python_imports": 2,
+            "observed_no_bytecode": false,
+            "observed_owned_cache_additions": true,
+            "no_historic_cause_claim": true
+          },
+          "membership_and_status": {
+            "selected_methods": 2,
+            "failures": 2,
+            "errors": 0,
+            "skips": 0,
+            "seconds": 0.318
+          },
+          "Pi_bootstrap_sink": {
+            "selected_methods": 1,
+            "failures": 1,
+            "errors": 0,
+            "skips": 0,
+            "seconds": 0.035
+          }
+        },
+        "test_ids": [
+          "test/bridge.test.ts > enforces no-bytecode before local package imports with default and isolated Python",
+          "test_observe_pi_installed_rpc.FailedInstalledSnapshotTests.test_failed_installed_membership_is_saved_before_refusal",
+          "test_observe_pi_installed_rpc.FailedInstalledSnapshotTests.test_bootstrap_failure_retains_attached_source_checkout_diagnostic",
+          "test_retained_archive_cli_observation.SourceCheckoutDiagnosticTests.test_dirty_source_refusal_retains_closed_status_provenance"
+        ],
+        "typing_join": {
+          "actual_RED_source_sha256": "4c20889313931c092f7d7ee44d5ddb0792206eeba01452d34416840b38b17961",
+          "final_source_sha256": "704a4dfdd922d430019693d256009050568a05a54f53b6445e55ac17620339a2",
+          "only_delta": "Remove explicit detached:false from spawnSync options; Root typecheck found excess-property issue. Assertions unchanged; original RED test bytes retained. Root reports final53 owning methods PASS/tscPASS; author did not rerun or relabel.",
+          "no_runtime_rerun_for_typing_only_change": true
+        },
+        "execution_epoch": "Ordinary private Temp overlay unit evidence against771 source copies/shared owners. Root concurrently edited unrelated Codex/cold source and applied launcher fix after launcher RED. No complete imported-module/runtime or clean-checkout attestation claimed.",
+        "isolation": "Credentialblind private HOME/AppData/TEMP/pycache before test imports; pinned cached SafeNode24.22.1/Python3.14 and copied locked deps. SDK process boundary intercepted; only owned tiny Python import fixture runs. Status fixture uses private disposable Git.",
+        "preserved_setup_diagnostics": [
+          "Initial suite import missed exact copied redactor; retained separately, not targetRED.",
+          "Initial new assertion expected error rather than existing READ warn; precondition corrected and receipt retained, not targetRED."
+        ],
+        "limits": [
+          "Three additive test-only path delta; no product/Gov/index/ref/marker writes by author.",
+          "No actual Pi/SDK host/native/provider/model/network/install/globalhome effects.",
+          "Historic Linux added member/Windows dirty entry remain UNKNOWN; new owned fixture does not relabel them.",
+          "Root alone implements/scans/reviews/commits. Source changes after RED do not relabel original failing observations."
+        ]
+      }
+    }
+  ],
+  "root_failure_history": "Original43-method owner run included new sink RED42PASS1FAIL before its fix; receipt pi-diagnostic-before-sink-fix. Original typecheck excess detached property failure retained; removal only corrected test option typing. These failures are not reclassified as successful executions."
+}

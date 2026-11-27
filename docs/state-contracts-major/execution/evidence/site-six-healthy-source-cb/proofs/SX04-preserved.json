@@ -1,0 +1,217 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "/root/acceptance_security_review as source author; not independent self-review or execution"
+ },
+ "inputs": {
+  ".github/workflows/ci.yml": "a5b6e922ae90e6b47095f9a1f8986b781e1a12866315d7513fda5daeb6672dcb",
+  "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+  "plugins/ca-pi/tools/src/compatibility.ts": "f96831dae362754c9579a8303650888aa0a72f00341d6659b478ef8d8625cb83",
+  "site/scripts/version-facts.ts": "41d852e30a8af7aeaf4d45dfc5186866eabcfb0c54b276243bcaeb496ff64042",
+  "site/src/content.config.ts": "ce7c7ef825d04d234ec40f24ced4f8a52b70585988d418a81f9b71d053294215"
+ },
+ "disposition_ids": [
+  "disposition:machines:SX04",
+  "disposition:transitions:SX04:01",
+  "disposition:transitions:SX04:02",
+  "disposition:transitions:SX04:03",
+  "disposition:transitions:SX04:04"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/source-bindings.json",
+   "sha256": "06ab894db016456bb0dbae1916fcc066328ae1164fffa20f105c53ccc7c50f2a"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/clause-inspection.json",
+   "sha256": "0e49d5db9985342758fbc957bb58a2f9aaad8be6e89641ffe75f40e567db0991"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/findings.json",
+   "sha256": "d7e25c98a0a30dde72c5e618db389e3efe151d7eb6c207cda3f42c2ed8ef9e88"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/owner-baseline-current.diff",
+   "sha256": "57107c73ff95e00f1dc5505204624dd7a6bec92a17531fc880cfb1ff6ed34742"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:SX04",
+   "frozen_row_sha256": "2a90ecb98fabfde7d06527b333d0bc867663cc02d33359af07dc6bfc504b70e5",
+   "clause_ids": [
+    "disposition:transitions:SX04:01",
+    "disposition:transitions:SX04:02",
+    "disposition:transitions:SX04:03",
+    "disposition:transitions:SX04:04"
+   ],
+   "witnesses": [
+    {
+     "path": "site/scripts/version-facts.ts",
+     "start": 37,
+     "end": 195,
+     "file_sha256": "41d852e30a8af7aeaf4d45dfc5186866eabcfb0c54b276243bcaeb496ff64042",
+     "span_sha256": "2ea8ae7d86de4550a2efca1b0d9f39fb7f60ab74f84770c8d86dc9a1380d2586"
+    },
+    {
+     "path": "site/scripts/version-facts.ts",
+     "start": 238,
+     "end": 263,
+     "file_sha256": "41d852e30a8af7aeaf4d45dfc5186866eabcfb0c54b276243bcaeb496ff64042",
+     "span_sha256": "28c4f3611c6495b12c7c52acd358f79b73b115de489354e1f411e5cad1ae320d"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/compatibility.ts",
+     "start": 9,
+     "end": 19,
+     "file_sha256": "f96831dae362754c9579a8303650888aa0a72f00341d6659b478ef8d8625cb83",
+     "span_sha256": "8501635458710a72bcfd984c30fb669a2a81ae2cf7236acd559a0dbf3c695998"
+    },
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 4224,
+     "end": 4263,
+     "file_sha256": "a5b6e922ae90e6b47095f9a1f8986b781e1a12866315d7513fda5daeb6672dcb",
+     "span_sha256": "34d95a69d3824ca7a1884bdd248f1cdeaaf8f7d5935df11acaf714ee3163df1c"
+    },
+    {
+     "path": "site/scripts/version-facts.ts",
+     "start": 196,
+     "end": 237,
+     "file_sha256": "41d852e30a8af7aeaf4d45dfc5186866eabcfb0c54b276243bcaeb496ff64042",
+     "span_sha256": "af14510177b6449232a7ec5c293d7ba3804448d207d900c3793ffd811edb2aba"
+    },
+    {
+     "path": "site/scripts/version-facts.ts",
+     "start": 255,
+     "end": 264,
+     "file_sha256": "41d852e30a8af7aeaf4d45dfc5186866eabcfb0c54b276243bcaeb496ff64042",
+     "span_sha256": "b6ca4db22c27f8eaec1d0c15d198da8c1174904b3929bd25ac5b3f903f41ba4e"
+    },
+    {
+     "path": "site/scripts/version-facts.ts",
+     "start": 265,
+     "end": 298,
+     "file_sha256": "41d852e30a8af7aeaf4d45dfc5186866eabcfb0c54b276243bcaeb496ff64042",
+     "span_sha256": "c533469ecf4606c3c6e56644be011610e3d30e79f8e80f1c2a995f8bebfde757"
+    },
+    {
+     "path": "site/src/content.config.ts",
+     "start": 1,
+     "end": 29,
+     "file_sha256": "ce7c7ef825d04d234ec40f24ced4f8a52b70585988d418a81f9b71d053294215",
+     "span_sha256": "ce7c7ef825d04d234ec40f24ced4f8a52b70585988d418a81f9b71d053294215"
+    }
+   ],
+   "semantic_assessment": "All literal source clauses inspected, including retained advanced edges. Named accepted changes and narrow controller/fixture/runtime limits remain explicit in the clause matrix; this machine proposal is source-only.",
+   "limits": "Reasoned source-only inspection; no tests, capture, screenshot, browser, site build, owner validator, network/API, provider, install or native execution. No runtime epoch renewed."
+  },
+  {
+   "cell": "disposition:transitions:SX04:01",
+   "frozen_row_sha256": "7ad257e3b81b701bb514f496b7e2abe9163debf544d8eca0253c7a2995403b8d",
+   "witnesses": [
+    {
+     "path": "site/scripts/version-facts.ts",
+     "start": 37,
+     "end": 195,
+     "file_sha256": "41d852e30a8af7aeaf4d45dfc5186866eabcfb0c54b276243bcaeb496ff64042",
+     "span_sha256": "2ea8ae7d86de4550a2efca1b0d9f39fb7f60ab74f84770c8d86dc9a1380d2586"
+    },
+    {
+     "path": "site/scripts/version-facts.ts",
+     "start": 238,
+     "end": 263,
+     "file_sha256": "41d852e30a8af7aeaf4d45dfc5186866eabcfb0c54b276243bcaeb496ff64042",
+     "span_sha256": "28c4f3611c6495b12c7c52acd358f79b73b115de489354e1f411e5cad1ae320d"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/compatibility.ts",
+     "start": 9,
+     "end": 19,
+     "file_sha256": "f96831dae362754c9579a8303650888aa0a72f00341d6659b478ef8d8625cb83",
+     "span_sha256": "8501635458710a72bcfd984c30fb669a2a81ae2cf7236acd559a0dbf3c695998"
+    },
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 4224,
+     "end": 4263,
+     "file_sha256": "a5b6e922ae90e6b47095f9a1f8986b781e1a12866315d7513fda5daeb6672dcb",
+     "span_sha256": "34d95a69d3824ca7a1884bdd248f1cdeaaf8f7d5935df11acaf714ee3163df1c"
+    }
+   ],
+   "semantic_assessment": "Root requires release/site sentinels; exactlyOne rejects ambiguity. Package engine floor equals runtime MINIMUM_NODE; Codex minimum equals lowest codex-host matrix version, now scoped to its owning job so independent observer matrices do not conflict. Owned receipt/schema facts throw on malformed declarations.",
+   "intake_variances": [
+    "Node equality is manifest versus enforced MINIMUM_NODE, not every CI job's Node. Codex equality applies only to its owning compatibility job."
+   ],
+   "limits": "Reasoned source-only inspection; no tests, capture, screenshot, browser, site build, owner validator, network/API, provider, install or native execution. No runtime epoch renewed."
+  },
+  {
+   "cell": "disposition:transitions:SX04:02",
+   "frozen_row_sha256": "d1202eaaa076cddb3afa7f490c7331297bbe77b71e2679a81f0a343292b16c47",
+   "witnesses": [
+    {
+     "path": "site/scripts/version-facts.ts",
+     "start": 196,
+     "end": 237,
+     "file_sha256": "41d852e30a8af7aeaf4d45dfc5186866eabcfb0c54b276243bcaeb496ff64042",
+     "span_sha256": "af14510177b6449232a7ec5c293d7ba3804448d207d900c3793ffd811edb2aba"
+    }
+   ],
+   "semantic_assessment": "Only ENOENT suppresses generated release-record load. Present unreadable/malformed JSON/hosts/Pi versions/bad SemVer throws; absent facts fail when requested. No guessed release/publication fallback.",
+   "limits": "Reasoned source-only inspection; no tests, capture, screenshot, browser, site build, owner validator, network/API, provider, install or native execution. No runtime epoch renewed."
+  },
+  {
+   "cell": "disposition:transitions:SX04:03",
+   "frozen_row_sha256": "143ebb32897bf3b57117bf7f0ad0f53faa136af6d982b03a18a28683a4eae92c",
+   "witnesses": [
+    {
+     "path": "site/scripts/version-facts.ts",
+     "start": 255,
+     "end": 264,
+     "file_sha256": "41d852e30a8af7aeaf4d45dfc5186866eabcfb0c54b276243bcaeb496ff64042",
+     "span_sha256": "b6ca4db22c27f8eaec1d0c15d198da8c1174904b3929bd25ac5b3f903f41ba4e"
+    }
+   ],
+   "semantic_assessment": "Module cache is filled only after complete successful load, then reused. New process or direct uncached load can observe changed sources; later disk changes are not automatically seen by cached callers.",
+   "limits": "Reasoned source-only inspection; no tests, capture, screenshot, browser, site build, owner validator, network/API, provider, install or native execution. No runtime epoch renewed."
+  },
+  {
+   "cell": "disposition:transitions:SX04:04",
+   "frozen_row_sha256": "07868e89c2af3f28c507ea7a27c91abd80fd07b74eccc14bab324ffc55b488e9",
+   "witnesses": [
+    {
+     "path": "site/scripts/version-facts.ts",
+     "start": 265,
+     "end": 298,
+     "file_sha256": "41d852e30a8af7aeaf4d45dfc5186866eabcfb0c54b276243bcaeb496ff64042",
+     "span_sha256": "c533469ecf4606c3c6e56644be011610e3d30e79f8e80f1c2a995f8bebfde757"
+    },
+    {
+     "path": "site/src/content.config.ts",
+     "start": 1,
+     "end": 29,
+     "file_sha256": "ce7c7ef825d04d234ec40f24ced4f8a52b70585988d418a81f9b71d053294215",
+     "span_sha256": "ce7c7ef825d04d234ec40f24ced4f8a52b70585988d418a81f9b71d053294215"
+    }
+   ],
+   "semantic_assessment": "Complete fact-token grammar resolves own properties only; unknown names and malformed residue throw. Remark covers text/code/inlineCode/html; journey frontmatter invokes same resolver. No arbitrary metadata coverage or successful current resolution assumed.",
+   "limits": "Reasoned source-only inspection; no tests, capture, screenshot, browser, site build, owner validator, network/API, provider, install or native execution. No runtime epoch renewed."
+  }
+ ],
+ "scope": "Only named PLANNED source-conformance cells; all advanced evidence retained. SX06 machine/edge excluded for containment finding.",
+ "limits": [
+  "Reasoned source-only inspection; no tests, capture, screenshot, browser, site build, owner validator, network/API, provider, install or native execution. No runtime epoch renewed.",
+  "Only18 PLANNED cells in six healthy families are proposed. SX06 machine and SX06:06 remain PLANNED for reported containment gap; all28 already advanced edge objects/evidence remain exact.",
+  "Conditional source procedures do not prove current generated data/pin satisfaction, renderer or helper output, distribution/publication, installed host discovery, browser behavior, task acceptance or whole-program completion.",
+  "Current/pinned owners and named accepted R-08, selected-work and dependency-scoped guidance are distinguished from frozen historical claims. No source hash confers user authority or authenticates an executing principal.",
+  "Root owns independent review, strict original-owner admission and canonical adoption; packet data joins are not executed behavior or owner validation. Changed source epochs need scoped semantic reinspection, not mechanical restamping."
+ ]
+}

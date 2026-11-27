@@ -1,0 +1,484 @@
+{
+  "schema": "codearbiter.current-finite-source-inspection/1",
+  "source_commit": "2d594847888619a98aa964ad1757a31a788aa5c4",
+  "original_semantic_inspection_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+  "group": "source-group-056",
+  "positive_input_join": {
+    ".github/scripts/test_artifact_authoring.py": {
+      "sha256": "c9b291ab9f5d027d554004e0020a471f26df422f40cd50d42b114a118ce94d40",
+      "bytes": 84591,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "c9b291ab9f5d027d554004e0020a471f26df422f40cd50d42b114a118ce94d40",
+        "bytes": 84591
+      }
+    },
+    "docs/state-contracts-major/contracts/machine-coverage.json": {
+      "sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+      "bytes": 385316,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+        "bytes": 385316
+      }
+    },
+    "docs/state-contracts-major/contracts/tasks.json": {
+      "sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+      "bytes": 331224,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+        "bytes": 331224
+      }
+    },
+    "docs/state-contracts-major/contracts/transition-coverage.json": {
+      "sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+      "bytes": 3185278,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+        "bytes": 3185278
+      }
+    },
+    "tools/measure-knowledge-retrieval.py": {
+      "sha256": "d263c11dd70e00a76f81a35eeba44c738162115dd1d480c402deea499aee68ac",
+      "bytes": 7170,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "d263c11dd70e00a76f81a35eeba44c738162115dd1d480c402deea499aee68ac",
+        "bytes": 7170
+      }
+    }
+  },
+  "current_input_membership": [
+    {
+      "profile": "python-import-directory-v1",
+      "root": "tools",
+      "path_order": "windows",
+      "sha256": "10c81f10b65668b6620241a721151872bd51a7c350722bee46217e02801f7c2a"
+    },
+    {
+      "profile": "python-import-directory-v1",
+      "root": ".github/scripts",
+      "path_order": "windows",
+      "sha256": "434ab55d7381a628a19f46607073b7a4df23e2dfc2ba9a4b88d4433fac07b334"
+    }
+  ],
+  "closed_namespace_review": {
+    "scope": "Conditional authoring benchmark driver source clauses. Attached authoring test enumerates only its owned scratch/installation/state paths.",
+    "namespace": {
+      "profile": {
+        "profile": "python-import-directory-v1",
+        "root": ".github/scripts",
+        "path_order": "windows"
+      },
+      "inspection_source": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+      "current_source": "2d594847888619a98aa964ad1757a31a788aa5c4",
+      "inspection_namespace_sha256": "30dfb70857dada7f2af20b58b264573d7e513e9fa5cf520f2de33b9922046943",
+      "current_namespace_sha256": "434ab55d7381a628a19f46607073b7a4df23e2dfc2ba9a4b88d4433fac07b334",
+      "entries_before": 281,
+      "entries_now": 284,
+      "added": [
+        {
+          "path": ".github/scripts/site_vitest_observation.py",
+          "sha256_at_review": "98b5620ce215a73d72c6af137e3a63547b0254886dd2d6c8502861affc530608",
+          "role": "Docs site source and coverage/report owner. Explicitly invoked by the named Docs workflow steps and imported by its own new tests."
+        },
+        {
+          "path": ".github/scripts/test_pi_payload_identity.py",
+          "sha256_at_review": "4adbb9a6d233807f230129d7c5c3e0293ced3fefb74625b12a1c408ec4afe27e",
+          "role": "Fixture selector for the Pi source payload identity predicate. Individually declared by the original Hook evidence route."
+        },
+        {
+          "path": ".github/scripts/test_site_vitest_observation.py",
+          "sha256_at_review": "d72a94774f9efa10ae6e1b73cb87900567b6acfc248ddb03f9dc9817b08c0293",
+          "role": "Fixture for the named Docs Vitest source/report owner. Explicitly invoked by Docs, with its own main entry point."
+        }
+      ],
+      "negative_scope": "No old namespace member, mode or object class changed. Physical and lexical resolution inside reviewed paths names existing sources, tools, plugins or scratch/candidate scopes, and never uses the new names. Their bytes are identified at review, while the strict namespace digest binds names, object classes and modes."
+    },
+    "referenced_script_roles": {
+      ".github/scripts/test_artifact_authoring.py": {
+        "role": "Globs existing owned installed fixtures, fixture roots and .codearbiter state/receipts. Tests source no dynamic .github/scripts namespace selection.",
+        "sha256": "c9b291ab9f5d027d554004e0020a471f26df422f40cd50d42b114a118ce94d40",
+        "reviewed_discovery_calls": [
+          {
+            "line": 314,
+            "call": "installed.iterdir()"
+          },
+          {
+            "line": 379,
+            "call": "self.root.rglob(\"*\")"
+          },
+          {
+            "line": 384,
+            "call": "self.root.rglob(\"*\")"
+          },
+          {
+            "line": 395,
+            "call": "self.root.iterdir()"
+          },
+          {
+            "line": 410,
+            "call": "self.root.iterdir()"
+          },
+          {
+            "line": 628,
+            "call": "self.root.iterdir()"
+          },
+          {
+            "line": 654,
+            "call": "self.root.rglob(\"*\")"
+          },
+          {
+            "line": 1362,
+            "call": "(self.root / \".codearbiter\").rglob(\"*\")"
+          },
+          {
+            "line": 1391,
+            "call": "(self.root / \".codearbiter\").rglob(\"*\")"
+          },
+          {
+            "line": 1511,
+            "call": "(self.root / \".codearbiter\").rglob(\"*.md\")"
+          },
+          {
+            "line": 1580,
+            "call": "(self.root / \".codearbiter/.artifacts/receipts\").glob(\"*.json\")"
+          },
+          {
+            "line": 1581,
+            "call": "(self.root / \".codearbiter\").rglob(\"*.md\")"
+          },
+          {
+            "line": 1593,
+            "call": "(self.root / \".codearbiter\").rglob(\"*.md\")"
+          },
+          {
+            "line": 1625,
+            "call": "(self.root / \".codearbiter\").rglob(\"*.md\")"
+          },
+          {
+            "line": 1638,
+            "call": "(self.root / \".codearbiter\").rglob(\"*.md\")"
+          },
+          {
+            "line": 1659,
+            "call": "(self.root / \".codearbiter\").rglob(\"*.md\")"
+          },
+          {
+            "line": 1743,
+            "call": "(self.root / \".codearbiter\").rglob(\"*.md\")"
+          }
+        ],
+        "new_name_references": []
+      }
+    }
+  },
+  "semantic_rows": [
+    {
+      "cell": "disposition:transitions:T09:01",
+      "frozen_record": {
+        "transition_id": "T09:01",
+        "machine_id": "T09",
+        "owner": "release-and-tooling",
+        "baseline": {
+          "from_state": "candidate unavailable",
+          "from": "candidate unavailable",
+          "event": "measurement admission",
+          "guard": "ARTIFACT_TEST_INSTALLATION present and test installation builder succeeds",
+          "to": "installation ready",
+          "effects": "Load installed knowledge helper; reuse declared native candidate.",
+          "failure_retry": "No candidate is a hard stop; no runtime download fallback.",
+          "source": [
+            {
+              "path": "tools/measure-knowledge-retrieval.py",
+              "symbol": "main",
+              "lines": [
+                129,
+                144
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/measure-knowledge-retrieval.py"
+            }
+          ],
+          "transition_id": "T09:01"
+        },
+        "task_ids": [
+          "Q-01"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "3ae2937d00ea47c48b04710fce30e6ab976d72f192efce8b6aec4e3a3ab37056",
+      "group": "source-group-056",
+      "assessment": "Manual knowledge measurement requires declared installed native candidate and owned synthetic corpus. Cold/warm timings, byte/character token estimates and output equality are reports, not thresholds, tokenizer accuracy or new performance/native qualification.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/tool-controllers-source-d594/knowledge-measurement-preserved.json",
+          "sha256": "48177a98d7acbfce2b3985f37121dc2a0a8d14057f52e6a84b4977b16cda7fbd",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:T09:02",
+      "frozen_record": {
+        "transition_id": "T09:02",
+        "machine_id": "T09",
+        "owner": "release-and-tooling",
+        "baseline": {
+          "from_state": "installation ready",
+          "from": "installation ready",
+          "event": "construct selected size fixture",
+          "guard": "temporary root; Git init, arbiter init and create-missing succeed",
+          "to": "corpus populated",
+          "effects": "Add synthetic scoped/global knowledge records in batches; create equivalent five legacy Markdown files.",
+          "failure_retry": "Any command nonzero fails; temporary directory is cleaned.",
+          "source": [
+            {
+              "path": "tools/measure-knowledge-retrieval.py",
+              "symbol": "measure",
+              "lines": [
+                79,
+                126
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/measure-knowledge-retrieval.py"
+            }
+          ],
+          "transition_id": "T09:02"
+        },
+        "task_ids": [
+          "Q-01"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "9e76915e4bd203197a32f6ef0c82d07709f6c7d4daee3e1bef823d4bd9807d46",
+      "group": "source-group-056",
+      "assessment": "Manual knowledge measurement requires declared installed native candidate and owned synthetic corpus. Cold/warm timings, byte/character token estimates and output equality are reports, not thresholds, tokenizer accuracy or new performance/native qualification.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/tool-controllers-source-d594/knowledge-measurement-preserved.json",
+          "sha256": "48177a98d7acbfce2b3985f37121dc2a0a8d14057f52e6a84b4977b16cda7fbd",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:T09:03",
+      "frozen_record": {
+        "transition_id": "T09:03",
+        "machine_id": "T09",
+        "owner": "release-and-tooling",
+        "baseline": {
+          "from_state": "corpus populated",
+          "from": "corpus populated",
+          "event": "read old documents then relevant helper twice",
+          "guard": "helper succeeds within 300 seconds",
+          "to": "measured cold then measured warm",
+          "effects": "Measure whole-document bytes/file reads and cold/warm scoped calls; inspect records returned, unmatched, budget-omitted and unreadable counts.",
+          "failure_retry": "Parsing/command failure aborts; identical output is reported as boolean, not forced.",
+          "source": [
+            {
+              "path": "tools/measure-knowledge-retrieval.py",
+              "symbol": "measure",
+              "lines": [
+                79,
+                126
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/measure-knowledge-retrieval.py"
+            }
+          ],
+          "transition_id": "T09:03"
+        },
+        "task_ids": [
+          "Q-01"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "7955e8218f89a6c2d330df5b3644110e4e65a42675d75a2d773b6e5ae0e4784e",
+      "group": "source-group-056",
+      "assessment": "Manual knowledge measurement requires declared installed native candidate and owned synthetic corpus. Cold/warm timings, byte/character token estimates and output equality are reports, not thresholds, tokenizer accuracy or new performance/native qualification.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/tool-controllers-source-d594/knowledge-measurement-preserved.json",
+          "sha256": "48177a98d7acbfce2b3985f37121dc2a0a8d14057f52e6a84b4977b16cda7fbd",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:T09:04",
+      "frozen_record": {
+        "transition_id": "T09:04",
+        "machine_id": "T09",
+        "owner": "release-and-tooling",
+        "baseline": {
+          "from_state": "measured warm",
+          "from": "measured warm",
+          "event": "render measurement",
+          "guard": "all requested sizes complete",
+          "to": "report complete",
+          "effects": "Print bytes, estimated tokens and latency with no percentage threshold; clean builder owner when owned.",
+          "failure_retry": "Legacy token estimate uses UTF-8 bytes/4 while scoped estimate uses characters/4; these are estimates, not tokenizer counts.",
+          "source": [
+            {
+              "path": "tools/measure-knowledge-retrieval.py",
+              "symbol": "main",
+              "lines": [
+                129,
+                144
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/measure-knowledge-retrieval.py"
+            }
+          ],
+          "transition_id": "T09:04"
+        },
+        "task_ids": [
+          "Q-01"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "7847a1e964fb9a01f41a0611fc2dbf86c75fad9f50b1546a3fb3c86380e00c1a",
+      "group": "source-group-056",
+      "assessment": "Manual knowledge measurement requires declared installed native candidate and owned synthetic corpus. Cold/warm timings, byte/character token estimates and output equality are reports, not thresholds, tokenizer accuracy or new performance/native qualification.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/tool-controllers-source-d594/knowledge-measurement-preserved.json",
+          "sha256": "48177a98d7acbfce2b3985f37121dc2a0a8d14057f52e6a84b4977b16cda7fbd",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    }
+  ],
+  "verified_literal_witnesses": [
+    {
+      "path": "tools/measure-knowledge-retrieval.py",
+      "old_span": [
+        129,
+        144
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/tool-controllers-source-d594/knowledge-measurement-preserved.json",
+      "block_sha256_LF": "e20111d0f803b8ce84c04ed2b8dc520a7c66c8fb1a042e4e04491f42522b37a2",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          129,
+          144
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/tool-controllers-source-d594/knowledge-measurement-preserved.json",
+      "actual0ef_spans": [
+        [
+          129,
+          144
+        ]
+      ],
+      "actual0ef_file_sha256": "d263c11dd70e00a76f81a35eeba44c738162115dd1d480c402deea499aee68ac",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "tools/measure-knowledge-retrieval.py",
+      "old_span": [
+        38,
+        99
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/tool-controllers-source-d594/knowledge-measurement-preserved.json",
+      "block_sha256_LF": "b5c3e57ff0ab847fef3f156ca67b66af53da0832a857b8411d210de04ffd0d51",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          38,
+          99
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/tool-controllers-source-d594/knowledge-measurement-preserved.json",
+      "actual0ef_spans": [
+        [
+          38,
+          99
+        ]
+      ],
+      "actual0ef_file_sha256": "d263c11dd70e00a76f81a35eeba44c738162115dd1d480c402deea499aee68ac",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "tools/measure-knowledge-retrieval.py",
+      "old_span": [
+        68,
+        126
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/tool-controllers-source-d594/knowledge-measurement-preserved.json",
+      "block_sha256_LF": "a5b4d52ab922a73b1ed21aa41f31aeb166e6d01dda582a973546ad182281a707",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          68,
+          126
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/tool-controllers-source-d594/knowledge-measurement-preserved.json",
+      "actual0ef_spans": [
+        [
+          68,
+          126
+        ]
+      ],
+      "actual0ef_file_sha256": "d263c11dd70e00a76f81a35eeba44c738162115dd1d480c402deea499aee68ac",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    }
+  ],
+  "changed_old_literals": [],
+  "reused_helper_assessments": [],
+  "negative_scope": "Static finite guarded claims only, with inherited scope/limits. No execution, qualification or unchecked new source claim."
+}

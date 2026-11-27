@@ -1,0 +1,16 @@
+{
+  "argv": [
+    "C:/Python314/python.exe",
+    "-B",
+    "-X",
+    "utf8",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline67-77160413-8qy44xmp\\run-selected.py",
+    "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline67-77160413-8qy44xmp"
+  ],
+  "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline67-77160413-8qy44xmp",
+  "exit_code": 0,
+  "seconds": 1.2419933000055607,
+  "stdout_sha256": "2a64795c1fde27704a47da3d266f62ca7f02c57def670509d87e18b9f2f6c9a1",
+  "stderr_sha256": "c0b8e9e1d5c07a7fcd7359bf6877302a012a848c49274092e7564da2e488097c"
+}

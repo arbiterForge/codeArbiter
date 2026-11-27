@@ -1,0 +1,93 @@
+{
+  "schema": "codearbiter.independent-auth-crypto-review/1",
+  "reviewer": "/root/packaging_site_tools",
+  "author_independence": "Reviewer authored no Pi source in the subject.",
+  "verdict": "PASS",
+  "gate": "PASS",
+  "candidate": "candidate-v1:fb6c87acdb0d400589a2a3711b18bff1e0b384d51d524e042356106d790e5034",
+  "canonical_snapshot": {
+    "observation": "Actual installed security-pass.py candidate_scan READONLY observed before root committed25a1; initial tool result retained in chat. Packet finalization occurred after index release, so no empty-index rescan is substituted.",
+    "crypto_flag": false,
+    "findings": 0,
+    "staged_paths": [
+      ".github/scripts/test_pi_package.py"
+    ],
+    "staged_sha256": "f02ceadd8b1bfd4a08b7c3585e3a37ba6c0a23eabfe3127e56db11a30eabd9d9",
+    "working_literal_equals_index_when_observed": true,
+    "staged_diff_sha256": "53976e12e9bd2ef14a514931cf57349dbcf19da76f2727e6604a2baf15ec169c"
+  },
+  "postreview_commit_join": {
+    "commit": "25a1ca66f222a556df05d3b757c18489821d64f6",
+    "exact_same_sole_file_and_diff_verified": true,
+    "subject_sha256": "f02ceadd8b1bfd4a08b7c3585e3a37ba6c0a23eabfe3127e56db11a30eabd9d9",
+    "diff_sha256": "53976e12e9bd2ef14a514931cf57349dbcf19da76f2727e6604a2baf15ec169c"
+  },
+  "complete_policy": {
+    "format": "HTML security-controls",
+    "complete_read_export": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-metadata43-security-policy.json",
+    "export_sha256": "02e5e721b039df9a54686cc9ec82b8b6baedacff8f78cbfac4da2caec7b382ec",
+    "current_canonical_sha256": "8630d1cad36de7b06a0a9360beea27a48b1642cc05a4547362a25ec8c9ec491e",
+    "all16_CON_and16duplicate_NOTE_fully_read_prior": true,
+    "whole_canonical_policy_literal_Git_unchanged_since_complete69b_read": true,
+    "operative_scope_stub_reread": ".codearbiter/security-controls.md",
+    "charters_reread": {
+      "reviewer_contract_sha256": "e986abea38c0ea1495c53653142e3467eec744c71746019d7142df4439fa89b8",
+      "public_reviewer_file_checksum_sha256": "60c31b49f7e009d59af3d3a1f07cbd677291d1bfe52050490ed42d10fd23b920"
+    }
+  },
+  "findings": {
+    "critical": [],
+    "high": [],
+    "medium": [],
+    "low": []
+  },
+  "flows_reviewed": [
+    {
+      "function": "rpc_diagnostic_runtime_identity",
+      "controls": [
+        "CON-002",
+        "CON-008",
+        "CON-011"
+      ],
+      "assessment": "Vetted hashlib SHA256 only.16KiB direct entry bound and restricted literal ./chunks/[A-Za-z0-9_-]+.js grammar.65,536-byte streamed hash blocks,128MiB per file limit, context-managed handles. Four public direct-runtime content digests, not a full transitive install attestation or authority grant."
+    },
+    {
+      "function": "retain_rpc_observed_raw_diagnostics",
+      "controls": [
+        "CON-003",
+        "CON-009",
+        "CON-011",
+        "CON-016"
+      ],
+      "assessment": "Existing caller-selected diagnostic destination, unique named temp record, fixed route/outcome and exact four64lowerhex identity fields. Invalid/extraneous identity becomesNone. No paths/source bytes/credential values retained; trace passes existing8KiB bounded whitelist projection. No new secret origin/transport/child/lifetime, TLS/network or shell behavior."
+    },
+    {
+      "function": "safe_rpc_shutdown_report",
+      "controls": [
+        "CON-003",
+        "CON-004"
+      ],
+      "assessment": "Bounded PID/version/platform/phases/time/exit projection and known resource enum; unknown labels mapOther. Private fixture strings cannot survive either trace or identity projection."
+    },
+    {
+      "function": "observed companion test",
+      "controls": [
+        "CON-009",
+        "CON-011",
+        "CON-016"
+      ],
+      "assessment": "Additional observed --require/--extension argv explicit; unchanged original raw argv/natural-exit qualification stays separate. Companion pass cannot erase original failure or mint runtime capability."
+    }
+  ],
+  "verification_limits": [
+    "Independent source/control review only; no reviewer test/provider/host execution.",
+    "Root reported full-staged-file gitleaks/diffcheckPASS; reviewer independently observed original canonical staged identity and exact sole-file diff, then rejoined committed bytes.",
+    "Reviewer wrote no source/index/marker; root owned producer and commit."
+  ],
+  "mutations": "This Temp verdict JSON only.",
+  "retained_projection": {
+    "original_review_sha256": "26ec2d790de7ae6193bdefa3f8806f11b7024665e537adb128301fc2181b5163",
+    "original_review_retained_in_Temp": true,
+    "change": "One public installed reviewer-source checksum field relabeled to describe file integrity; its exact value, verdict and candidate are unchanged. This is a derived review projection, not byte-identical original raw."
+  }
+}

@@ -1,0 +1,717 @@
+{
+  "schema": "codearbiter.current-finite-source-inspection/1",
+  "source_commit": "f3cb12f5095401d5b7e8c32c2861816c7109ce02",
+  "original_semantic_inspection_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+  "group": "source-group-044",
+  "positive_input_join": {
+    ".github/workflows/ci.yml": {
+      "sha256": "9b9bbb72e86631c1577135cb3ee13181d3b04ed8db2f5e7f4f957e6fb85f1fb3",
+      "previous_sha256": "c0e8e0f0480ffb0f660c894347f26df49da423a300158a1566da702e5a0d8102",
+      "bytes": 306751,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "9b9bbb72e86631c1577135cb3ee13181d3b04ed8db2f5e7f4f957e6fb85f1fb3",
+        "bytes": 306751
+      }
+    },
+    "docs/state-contracts-major/PROGRAM.md": {
+      "sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+      "previous_sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+      "bytes": 7910,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+        "bytes": 7910
+      }
+    },
+    "docs/state-contracts-major/contracts/machine-coverage.json": {
+      "sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+      "previous_sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+      "bytes": 385316,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+        "bytes": 385316
+      }
+    },
+    "docs/state-contracts-major/contracts/program.json": {
+      "sha256": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+      "previous_sha256": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+      "bytes": 6403,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+        "bytes": 6403
+      }
+    },
+    "docs/state-contracts-major/contracts/tasks.json": {
+      "sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+      "previous_sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+      "bytes": 331224,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+        "bytes": 331224
+      }
+    },
+    "docs/state-contracts-major/contracts/transition-coverage.json": {
+      "sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+      "previous_sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+      "bytes": 3185278,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+        "bytes": 3185278
+      }
+    },
+    "plugins/ca-pi/tools/src/compatibility.ts": {
+      "sha256": "f96831dae362754c9579a8303650888aa0a72f00341d6659b478ef8d8625cb83",
+      "previous_sha256": "f96831dae362754c9579a8303650888aa0a72f00341d6659b478ef8d8625cb83",
+      "bytes": 2400,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "f96831dae362754c9579a8303650888aa0a72f00341d6659b478ef8d8625cb83",
+        "bytes": 2400
+      }
+    },
+    "site/scripts/version-facts.ts": {
+      "sha256": "41d852e30a8af7aeaf4d45dfc5186866eabcfb0c54b276243bcaeb496ff64042",
+      "previous_sha256": "41d852e30a8af7aeaf4d45dfc5186866eabcfb0c54b276243bcaeb496ff64042",
+      "bytes": 12866,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "41d852e30a8af7aeaf4d45dfc5186866eabcfb0c54b276243bcaeb496ff64042",
+        "bytes": 12866
+      }
+    },
+    "site/src/content.config.ts": {
+      "sha256": "ce7c7ef825d04d234ec40f24ced4f8a52b70585988d418a81f9b71d053294215",
+      "previous_sha256": "ce7c7ef825d04d234ec40f24ced4f8a52b70585988d418a81f9b71d053294215",
+      "bytes": 1087,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "ce7c7ef825d04d234ec40f24ced4f8a52b70585988d418a81f9b71d053294215",
+        "bytes": 1087
+      }
+    }
+  },
+  "current_input_membership": [],
+  "closed_namespace_review": null,
+  "current_owner_delta_review": {
+    "scope": "The exact real-host Codex-version matrix that version-facts.ts extracts is byte-identical; the edited workflow sections do not enter the extraction. Other fact sources and missing applicability rules retain their source-only scope.",
+    "workflow_callsite_join": {
+      "codex-host": {
+        "previous_sha256": "80f03ebe26a8f20666435b80ec40ef35dfa88a015edd2c1c14b9b16eb8cec8d0",
+        "current_sha256": "80f03ebe26a8f20666435b80ec40ef35dfa88a015edd2c1c14b9b16eb8cec8d0",
+        "current_scope": "Complete owning job or top-level event/concurrency block unchanged."
+      }
+    }
+  },
+  "semantic_rows": [
+    {
+      "cell": "disposition:machines:SX04",
+      "frozen_record": {
+        "machine_id": "SX04",
+        "name": "Version-fact extraction, process cache and token resolution",
+        "domain": "Site evidence and build projections",
+        "kind": "implemented",
+        "owner": "site-and-release",
+        "closure_task": "Q-01",
+        "task_ids": [
+          "Q-01"
+        ],
+        "explicit_machine_task_ids": [],
+        "source_intersection_task_ids": [],
+        "mapping_basis": "Owner assignment uses the inspected audit domain and explicit owner ledger; source intersections flag review impact, not a claim every edge changes.",
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "status": "NOT_RUN",
+        "transition_count": 4,
+        "source_refs": [
+          "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/version-facts.ts",
+          "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/content.config.ts"
+        ],
+        "proposed_composed_scenario_ids": [],
+        "required_disposition": "Read the pinned/current owner, preserve each existing guard/effect/retry boundary except a named authorized change, map meaningful executed tests or reasoned conformance review to the row IDs, and add new rows for introduced events.",
+        "evidence": []
+      },
+      "frozen_record_sha256": "2a90ecb98fabfde7d06527b333d0bc867663cc02d33359af07dc6bfc504b70e5",
+      "group": "source-group-044",
+      "literal_inspection": "13-exact-prior65-machine-records",
+      "assessment": "Conditional finite source composition of Version-fact extraction, process cache and token resolution. Constituent guard/effect/retry source scopes and named accepted changes retained; neither task_ids nor model-guided instructions prove executed runtime/installed/model behavior.",
+      "changed_helper_interpretation_ids": [],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/proofs/SX04-preserved.json",
+          "sha256": "39729ba3a5f09b5da86bca2b78bd879f2fb94245567106a09fb81d3891b4c4ef",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:SX04:01",
+      "frozen_record": {
+        "transition_id": "SX04:01",
+        "machine_id": "SX04",
+        "owner": "site-and-release",
+        "baseline": {
+          "from": "Facts uncached",
+          "event": "First request",
+          "guard": "Repository root found by required sentinels",
+          "to": "Facts loading",
+          "effects": "Read owner sources/manifests and require exactly one matching declaration; compare Node declared/enforced floor and Codex minimum/CI floor.",
+          "failure_retry": "Ambiguous, malformed or disagreeing declarations throw; no remembered version fallback.",
+          "source": [
+            {
+              "path": "site/scripts/version-facts.ts",
+              "symbol": "Complete module",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/version-facts.ts"
+            },
+            {
+              "path": "site/src/content.config.ts",
+              "symbol": "Complete module",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/content.config.ts"
+            }
+          ],
+          "transition_id": "SX04:01"
+        },
+        "task_ids": [
+          "Q-01"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "7ad257e3b81b701bb514f496b7e2abe9163debf544d8eca0253c7a2995403b8d",
+      "group": "source-group-044",
+      "assessment": "Sentinels and unique owner/manifest declarations still determine version facts.",
+      "literal_inspection": "65-assessment",
+      "changed_helper_interpretation_ids": [],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/proofs/SX04-preserved.json",
+          "sha256": "39729ba3a5f09b5da86bca2b78bd879f2fb94245567106a09fb81d3891b4c4ef",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18"
+        }
+      ],
+      "exact_earlier_clause_assessment": {
+        "cell": "disposition:transitions:SX04:01",
+        "frozen_row_sha256": "7ad257e3b81b701bb514f496b7e2abe9163debf544d8eca0253c7a2995403b8d",
+        "literal": {
+          "event": "First request",
+          "guard": "Repository root found by required sentinels",
+          "effects": "Read owner sources/manifests and require exactly one matching declaration; compare Node declared/enforced floor and Codex minimum/CI floor.",
+          "failure_retry": "Ambiguous, malformed or disagreeing declarations throw; no remembered version fallback."
+        },
+        "actual_current_interpretation": "Sentinels and unique owner/manifest declarations still determine version facts.",
+        "witness_ids": [
+          "w63",
+          "w64",
+          "w65",
+          "w66"
+        ],
+        "prior_proof": "docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/proofs/SX04-preserved.json",
+        "selected_for_successor": true,
+        "action": "Append source successor only at actual commit, retaining old evidence."
+      }
+    },
+    {
+      "cell": "disposition:transitions:SX04:02",
+      "frozen_record": {
+        "transition_id": "SX04:02",
+        "machine_id": "SX04",
+        "owner": "site-and-release",
+        "baseline": {
+          "from": "Facts loading",
+          "event": "Read release-applicability record",
+          "guard": "Missing file ENOENT versus another failure",
+          "to": "Partial fact map / failure",
+          "effects": "If absent, leave release/pi-supported facts unknown; if present parse required host rows and supported versions.",
+          "failure_retry": "Unreadable or malformed present record is not treated as absent.",
+          "source": [
+            {
+              "path": "site/scripts/version-facts.ts",
+              "symbol": "Complete module",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/version-facts.ts"
+            },
+            {
+              "path": "site/src/content.config.ts",
+              "symbol": "Complete module",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/content.config.ts"
+            }
+          ],
+          "transition_id": "SX04:02"
+        },
+        "task_ids": [
+          "Q-01"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "d1202eaaa076cddb3afa7f490c7331297bbe77b71e2679a81f0a343292b16c47",
+      "group": "source-group-044",
+      "assessment": "Only ENOENT is absence, not malformed/unreadable present applicability.",
+      "literal_inspection": "65-assessment",
+      "changed_helper_interpretation_ids": [],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/proofs/SX04-preserved.json",
+          "sha256": "39729ba3a5f09b5da86bca2b78bd879f2fb94245567106a09fb81d3891b4c4ef",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18"
+        }
+      ],
+      "exact_earlier_clause_assessment": {
+        "cell": "disposition:transitions:SX04:02",
+        "frozen_row_sha256": "d1202eaaa076cddb3afa7f490c7331297bbe77b71e2679a81f0a343292b16c47",
+        "literal": {
+          "event": "Read release-applicability record",
+          "guard": "Missing file ENOENT versus another failure",
+          "effects": "If absent, leave release/pi-supported facts unknown; if present parse required host rows and supported versions.",
+          "failure_retry": "Unreadable or malformed present record is not treated as absent."
+        },
+        "actual_current_interpretation": "Only ENOENT is absence, not malformed/unreadable present applicability.",
+        "witness_ids": [
+          "w67"
+        ],
+        "prior_proof": "docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/proofs/SX04-preserved.json",
+        "selected_for_successor": true,
+        "action": "Append source successor only at actual commit, retaining old evidence."
+      }
+    },
+    {
+      "cell": "disposition:transitions:SX04:03",
+      "frozen_record": {
+        "transition_id": "SX04:03",
+        "machine_id": "SX04",
+        "owner": "site-and-release",
+        "baseline": {
+          "from": "Facts loaded",
+          "event": "Cache process result",
+          "guard": "Successful complete load",
+          "to": "Cached",
+          "effects": "Reuse one fact map for subsequent calls in the process.",
+          "failure_retry": "A later file change is not observed until a new process or uncached owner path; cache lifetime is part of the build contract.",
+          "source": [
+            {
+              "path": "site/scripts/version-facts.ts",
+              "symbol": "Complete module",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/version-facts.ts"
+            },
+            {
+              "path": "site/src/content.config.ts",
+              "symbol": "Complete module",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/content.config.ts"
+            }
+          ],
+          "transition_id": "SX04:03"
+        },
+        "task_ids": [
+          "Q-01"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "143ebb32897bf3b57117bf7f0ad0f53faa136af6d982b03a18a28683a4eae92c",
+      "group": "source-group-044",
+      "assessment": "Successful result remains process cached and later source changes require a new process.",
+      "literal_inspection": "65-assessment",
+      "changed_helper_interpretation_ids": [],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/proofs/SX04-preserved.json",
+          "sha256": "39729ba3a5f09b5da86bca2b78bd879f2fb94245567106a09fb81d3891b4c4ef",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18"
+        }
+      ],
+      "exact_earlier_clause_assessment": {
+        "cell": "disposition:transitions:SX04:03",
+        "frozen_row_sha256": "143ebb32897bf3b57117bf7f0ad0f53faa136af6d982b03a18a28683a4eae92c",
+        "literal": {
+          "event": "Cache process result",
+          "guard": "Successful complete load",
+          "effects": "Reuse one fact map for subsequent calls in the process.",
+          "failure_retry": "A later file change is not observed until a new process or uncached owner path; cache lifetime is part of the build contract."
+        },
+        "actual_current_interpretation": "Successful result remains process cached and later source changes require a new process.",
+        "witness_ids": [
+          "w68"
+        ],
+        "prior_proof": "docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/proofs/SX04-preserved.json",
+        "selected_for_successor": true,
+        "action": "Append source successor only at actual commit, retaining old evidence."
+      }
+    },
+    {
+      "cell": "disposition:transitions:SX04:04",
+      "frozen_record": {
+        "transition_id": "SX04:04",
+        "machine_id": "SX04",
+        "owner": "site-and-release",
+        "baseline": {
+          "from": "Content contains fact token",
+          "event": "Resolve",
+          "guard": "Own property exists and token grammar complete",
+          "to": "Substituted content / build error",
+          "effects": "Replace tokens in prose, code, HTML and selected frontmatter fields.",
+          "failure_retry": "Unknown token or malformed residue fails instead of publishing a literal or guessed version.",
+          "source": [
+            {
+              "path": "site/scripts/version-facts.ts",
+              "symbol": "Complete module",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/version-facts.ts"
+            },
+            {
+              "path": "site/src/content.config.ts",
+              "symbol": "Complete module",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/content.config.ts"
+            }
+          ],
+          "transition_id": "SX04:04"
+        },
+        "task_ids": [
+          "Q-01"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "07868e89c2af3f28c507ea7a27c91abd80fd07b74eccc14bab324ffc55b488e9",
+      "group": "source-group-044",
+      "assessment": "Own-property complete tokens substitute while unknown/malformed residue fails.",
+      "literal_inspection": "65-assessment",
+      "changed_helper_interpretation_ids": [],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/proofs/SX04-preserved.json",
+          "sha256": "39729ba3a5f09b5da86bca2b78bd879f2fb94245567106a09fb81d3891b4c4ef",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18"
+        }
+      ],
+      "exact_earlier_clause_assessment": {
+        "cell": "disposition:transitions:SX04:04",
+        "frozen_row_sha256": "07868e89c2af3f28c507ea7a27c91abd80fd07b74eccc14bab324ffc55b488e9",
+        "literal": {
+          "event": "Resolve",
+          "guard": "Own property exists and token grammar complete",
+          "effects": "Replace tokens in prose, code, HTML and selected frontmatter fields.",
+          "failure_retry": "Unknown token or malformed residue fails instead of publishing a literal or guessed version."
+        },
+        "actual_current_interpretation": "Own-property complete tokens substitute while unknown/malformed residue fails.",
+        "witness_ids": [
+          "w69",
+          "w70"
+        ],
+        "prior_proof": "docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/proofs/SX04-preserved.json",
+        "selected_for_successor": true,
+        "action": "Append source successor only at actual commit, retaining old evidence."
+      }
+    }
+  ],
+  "verified_literal_witnesses": [
+    {
+      "witness_id": "w63",
+      "path": "site/scripts/version-facts.ts",
+      "actual0ef_spans": [
+        [
+          37,
+          195
+        ]
+      ],
+      "current_file_sha256": "41d852e30a8af7aeaf4d45dfc5186866eabcfb0c54b276243bcaeb496ff64042",
+      "prior": {
+        "id": "w63",
+        "path": "site/scripts/version-facts.ts",
+        "old_source": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+        "old_span": [
+          37,
+          195
+        ],
+        "current_spans": [
+          [
+            37,
+            195
+          ]
+        ],
+        "sha256_of_LF_span": "2ea8ae7d86de4550a2efca1b0d9f39fb7f60ab74f84770c8d86dc9a1380d2586",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "41d852e30a8af7aeaf4d45dfc5186866eabcfb0c54b276243bcaeb496ff64042"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift.",
+      "current_f3_spans": [
+        [
+          37,
+          195
+        ]
+      ],
+      "current_f3_sha256": "41d852e30a8af7aeaf4d45dfc5186866eabcfb0c54b276243bcaeb496ff64042"
+    },
+    {
+      "witness_id": "w64",
+      "path": "site/scripts/version-facts.ts",
+      "actual0ef_spans": [
+        [
+          238,
+          263
+        ]
+      ],
+      "current_file_sha256": "41d852e30a8af7aeaf4d45dfc5186866eabcfb0c54b276243bcaeb496ff64042",
+      "prior": {
+        "id": "w64",
+        "path": "site/scripts/version-facts.ts",
+        "old_source": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+        "old_span": [
+          238,
+          263
+        ],
+        "current_spans": [
+          [
+            238,
+            263
+          ]
+        ],
+        "sha256_of_LF_span": "28c4f3611c6495b12c7c52acd358f79b73b115de489354e1f411e5cad1ae320d",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "41d852e30a8af7aeaf4d45dfc5186866eabcfb0c54b276243bcaeb496ff64042"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift.",
+      "current_f3_spans": [
+        [
+          238,
+          263
+        ]
+      ],
+      "current_f3_sha256": "41d852e30a8af7aeaf4d45dfc5186866eabcfb0c54b276243bcaeb496ff64042"
+    },
+    {
+      "witness_id": "w65",
+      "path": "plugins/ca-pi/tools/src/compatibility.ts",
+      "actual0ef_spans": [
+        [
+          9,
+          19
+        ]
+      ],
+      "current_file_sha256": "f96831dae362754c9579a8303650888aa0a72f00341d6659b478ef8d8625cb83",
+      "prior": {
+        "id": "w65",
+        "path": "plugins/ca-pi/tools/src/compatibility.ts",
+        "old_source": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+        "old_span": [
+          9,
+          19
+        ],
+        "current_spans": [
+          [
+            9,
+            19
+          ]
+        ],
+        "sha256_of_LF_span": "8501635458710a72bcfd984c30fb669a2a81ae2cf7236acd559a0dbf3c695998",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "f96831dae362754c9579a8303650888aa0a72f00341d6659b478ef8d8625cb83"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift.",
+      "current_f3_spans": [
+        [
+          9,
+          19
+        ]
+      ],
+      "current_f3_sha256": "f96831dae362754c9579a8303650888aa0a72f00341d6659b478ef8d8625cb83"
+    },
+    {
+      "witness_id": "w67",
+      "path": "site/scripts/version-facts.ts",
+      "actual0ef_spans": [
+        [
+          196,
+          237
+        ]
+      ],
+      "current_file_sha256": "41d852e30a8af7aeaf4d45dfc5186866eabcfb0c54b276243bcaeb496ff64042",
+      "prior": {
+        "id": "w67",
+        "path": "site/scripts/version-facts.ts",
+        "old_source": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+        "old_span": [
+          196,
+          237
+        ],
+        "current_spans": [
+          [
+            196,
+            237
+          ]
+        ],
+        "sha256_of_LF_span": "af14510177b6449232a7ec5c293d7ba3804448d207d900c3793ffd811edb2aba",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "41d852e30a8af7aeaf4d45dfc5186866eabcfb0c54b276243bcaeb496ff64042"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift.",
+      "current_f3_spans": [
+        [
+          196,
+          237
+        ]
+      ],
+      "current_f3_sha256": "41d852e30a8af7aeaf4d45dfc5186866eabcfb0c54b276243bcaeb496ff64042"
+    },
+    {
+      "witness_id": "w68",
+      "path": "site/scripts/version-facts.ts",
+      "actual0ef_spans": [
+        [
+          255,
+          264
+        ]
+      ],
+      "current_file_sha256": "41d852e30a8af7aeaf4d45dfc5186866eabcfb0c54b276243bcaeb496ff64042",
+      "prior": {
+        "id": "w68",
+        "path": "site/scripts/version-facts.ts",
+        "old_source": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+        "old_span": [
+          255,
+          264
+        ],
+        "current_spans": [
+          [
+            255,
+            264
+          ]
+        ],
+        "sha256_of_LF_span": "b6ca4db22c27f8eaec1d0c15d198da8c1174904b3929bd25ac5b3f903f41ba4e",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "41d852e30a8af7aeaf4d45dfc5186866eabcfb0c54b276243bcaeb496ff64042"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift.",
+      "current_f3_spans": [
+        [
+          255,
+          264
+        ]
+      ],
+      "current_f3_sha256": "41d852e30a8af7aeaf4d45dfc5186866eabcfb0c54b276243bcaeb496ff64042"
+    },
+    {
+      "witness_id": "w69",
+      "path": "site/scripts/version-facts.ts",
+      "actual0ef_spans": [
+        [
+          265,
+          298
+        ]
+      ],
+      "current_file_sha256": "41d852e30a8af7aeaf4d45dfc5186866eabcfb0c54b276243bcaeb496ff64042",
+      "prior": {
+        "id": "w69",
+        "path": "site/scripts/version-facts.ts",
+        "old_source": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+        "old_span": [
+          265,
+          298
+        ],
+        "current_spans": [
+          [
+            265,
+            298
+          ]
+        ],
+        "sha256_of_LF_span": "c533469ecf4606c3c6e56644be011610e3d30e79f8e80f1c2a995f8bebfde757",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "41d852e30a8af7aeaf4d45dfc5186866eabcfb0c54b276243bcaeb496ff64042"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift.",
+      "current_f3_spans": [
+        [
+          265,
+          298
+        ]
+      ],
+      "current_f3_sha256": "41d852e30a8af7aeaf4d45dfc5186866eabcfb0c54b276243bcaeb496ff64042"
+    },
+    {
+      "witness_id": "w70",
+      "path": "site/src/content.config.ts",
+      "actual0ef_spans": [
+        [
+          1,
+          29
+        ]
+      ],
+      "current_file_sha256": "ce7c7ef825d04d234ec40f24ced4f8a52b70585988d418a81f9b71d053294215",
+      "prior": {
+        "id": "w70",
+        "path": "site/src/content.config.ts",
+        "old_source": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+        "old_span": [
+          1,
+          29
+        ],
+        "current_spans": [
+          [
+            1,
+            29
+          ]
+        ],
+        "sha256_of_LF_span": "ce7c7ef825d04d234ec40f24ced4f8a52b70585988d418a81f9b71d053294215",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "ce7c7ef825d04d234ec40f24ced4f8a52b70585988d418a81f9b71d053294215"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift.",
+      "current_f3_spans": [
+        [
+          1,
+          29
+        ]
+      ],
+      "current_f3_sha256": "ce7c7ef825d04d234ec40f24ced4f8a52b70585988d418a81f9b71d053294215"
+    }
+  ],
+  "changed_old_literals": [],
+  "reused_helper_assessments": [],
+  "negative_scope": "Static finite guarded claims only, with inherited scope/limits. No execution, qualification or unchecked new source claim."
+}

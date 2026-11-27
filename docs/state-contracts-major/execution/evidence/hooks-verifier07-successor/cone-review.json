@@ -1,0 +1,129 @@
+{
+  "schema": "codearbiter-hooks-native-producer-cone-review/1",
+  "source_commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+  "current_checked_commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
+  "scope": "One existing hooks:verifier:07 TESTED row; two original same-a203 executions, no new execution or status promotion.",
+  "path_trace": [
+    "launch_binding_limits_test.go: producerNPMBindings constructs controlled0/30/31/32-workspace package.json fixtures, runs Python -c, imports _artifactauthoritylib and calls _bind_commands. Only bounded npm qualification probes run; no project vitest command executes.",
+    "TestCompletionLaunchFileBoundMatchesContract calls completionPython in completion_workspace_test.go, importing the same _artifactauthoritylib and exercising _git_text/_launch_file/_path_identity/_workspace_snapshots. completionFixture uses isolated real Git fixture/store.",
+    "The three observation runner-contract tests are Go-only typed schema/role/closure negatives; no extra Python or external-provider path.",
+    "The same18 local Python-module import cone in retained native dependency navigation covers both helpers. Dynamic _host.py lookup is relevant only through hostapi; original/current Git absence is explicit.",
+    "Evidence package imports render and embeds assets/*, so focused334 capture alone cannot be claimed a complete243-file module capture. The original qualified477 run has the same five parent tests PASS and its independent349 source capture includes those embed bytes."
+  ],
+  "input_count": 264,
+  "native_members": 243,
+  "python_producer_modules": 18,
+  "qualification_envelope_owners": 3,
+  "differences_from_blind_cone_borrowing": {
+    "focused_original_inputs": 334,
+    "focused_missing_from264": [
+      "core/artifacts/testdata/compat/plan-0.3.0.html",
+      "core/artifacts/testdata/compat/spec-0.3.0.html",
+      "core/artifacts/testdata/reference/plan.html",
+      "core/artifacts/testdata/reference/spec.html",
+      "core/artifacts/testdata/spec-plan-golden/README.md",
+      "core/artifacts/internal/render/assets/artifact.css",
+      "core/artifacts/internal/render/assets/logo.svg",
+      "tools/build-artifacts.py",
+      "tools/go_test_parallel.py",
+      ".github/scripts/_contextverificationlib.py"
+    ],
+    "focused_qualification_helpers_executed": false,
+    "why264_is_used": "Primary original qualified native477 run executes runner/build owners and captures all243 module members; focused42 is a separate exact subcase supplement. Both original command/raw/source envelopes are retained without merging their capture facts."
+  },
+  "full_run_actual_selected_parents": [
+    {
+      "package": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence",
+      "test": "TestCompletionAdmitsActualProducerLaunchBindingCounts",
+      "result": "pass"
+    },
+    {
+      "package": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence",
+      "test": "TestCompletionLaunchFileBoundMatchesContract",
+      "result": "pass"
+    },
+    {
+      "package": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation",
+      "test": "TestQualifiedRunnerContractRejectsBindingMutations",
+      "result": "pass"
+    },
+    {
+      "package": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation",
+      "test": "TestQualifiedRunnerContractRejectsInvalidWorkspaceManifestClosure",
+      "result": "pass"
+    },
+    {
+      "package": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation",
+      "test": "TestQualifiedRunnerContractSharesLaunchFileBound",
+      "result": "pass"
+    }
+  ],
+  "focused_all42_passed": [
+    "TestCompletionAdmitsActualProducerLaunchBindingCounts",
+    "TestCompletionAdmitsActualProducerLaunchBindingCounts/workspaces-0",
+    "TestCompletionAdmitsActualProducerLaunchBindingCounts/workspaces-30",
+    "TestCompletionAdmitsActualProducerLaunchBindingCounts/workspaces-31",
+    "TestCompletionAdmitsActualProducerLaunchBindingCounts/workspaces-32",
+    "TestCompletionLaunchFileBoundMatchesContract",
+    "TestCompletionLaunchFileBoundMatchesContract/33",
+    "TestCompletionLaunchFileBoundMatchesContract/34",
+    "TestCompletionLaunchFileBoundMatchesContract/37",
+    "TestCompletionLaunchFileBoundMatchesContract/38",
+    "TestQualifiedRunnerContractRejectsBindingMutations",
+    "TestQualifiedRunnerContractRejectsBindingMutations/cli_path",
+    "TestQualifiedRunnerContractRejectsBindingMutations/duplicate_role",
+    "TestQualifiedRunnerContractRejectsBindingMutations/exit-only_named_results",
+    "TestQualifiedRunnerContractRejectsBindingMutations/extra_argument",
+    "TestQualifiedRunnerContractRejectsBindingMutations/invented_collector",
+    "TestQualifiedRunnerContractRejectsBindingMutations/missing_collector",
+    "TestQualifiedRunnerContractRejectsBindingMutations/missing_manifest",
+    "TestQualifiedRunnerContractRejectsBindingMutations/missing_provenance",
+    "TestQualifiedRunnerContractRejectsBindingMutations/missing_wrapper",
+    "TestQualifiedRunnerContractRejectsBindingMutations/mutated_argument",
+    "TestQualifiedRunnerContractRejectsBindingMutations/relative_path",
+    "TestQualifiedRunnerContractRejectsBindingMutations/runtime_hash",
+    "TestQualifiedRunnerContractRejectsBindingMutations/runtime_path",
+    "TestQualifiedRunnerContractRejectsBindingMutations/unexpected_npm_prefix",
+    "TestQualifiedRunnerContractRejectsBindingMutations/unknown_field",
+    "TestQualifiedRunnerContractRejectsBindingMutations/unknown_provenance_field",
+    "TestQualifiedRunnerContractRejectsBindingMutations/unknown_role",
+    "TestQualifiedRunnerContractRejectsBindingMutations/wrapper_path",
+    "TestQualifiedRunnerContractRejectsBindingMutations/wrong_manifest",
+    "TestQualifiedRunnerContractRejectsInvalidWorkspaceManifestClosure",
+    "TestQualifiedRunnerContractRejectsInvalidWorkspaceManifestClosure/duplicate_executable_role",
+    "TestQualifiedRunnerContractRejectsInvalidWorkspaceManifestClosure/duplicate_workspace",
+    "TestQualifiedRunnerContractRejectsInvalidWorkspaceManifestClosure/missing_npm_prefix",
+    "TestQualifiedRunnerContractRejectsInvalidWorkspaceManifestClosure/missing_root",
+    "TestQualifiedRunnerContractRejectsInvalidWorkspaceManifestClosure/not_a_package_manifest",
+    "TestQualifiedRunnerContractRejectsInvalidWorkspaceManifestClosure/outside_root",
+    "TestQualifiedRunnerContractRejectsInvalidWorkspaceManifestClosure/relative_workspace",
+    "TestQualifiedRunnerContractRejectsInvalidWorkspaceManifestClosure/root_as_workspace",
+    "TestQualifiedRunnerContractRejectsInvalidWorkspaceManifestClosure/unclean_workspace",
+    "TestQualifiedRunnerContractRejectsInvalidWorkspaceManifestClosure/wrong_npm_prefix",
+    "TestQualifiedRunnerContractSharesLaunchFileBound"
+  ],
+  "negative_source_conditions": [
+    {
+      "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+      "path": "core/pysrc/_host.py",
+      "status": "ABSENT Git object",
+      "exit_code": 128
+    },
+    {
+      "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
+      "path": "core/pysrc/_host.py",
+      "status": "ABSENT Git object",
+      "exit_code": 128
+    }
+  ],
+  "unrelated_exclusions": [
+    "core/pysrc/_workflowrecoverylib.py",
+    "core/pysrc/_releaselib.py"
+  ],
+  "limits": [
+    "No new Go/build/provider/installed/cross-platform result; original Windows only.",
+    "All243 membership and _host.py absence checks are current observations, not future-proof closure. The separate MEDIUM P-02 reader membership audit remains OPEN; positive inputs do not automatically invalidate on future additions.",
+    "The c36 installed binary identity is retained from the original qualification envelope; the focused go test produced its own test executable and is not relabelled an execution of c36.",
+    "Seven native resource files and three qualification helpers missing from focused334 were genuinely captured in the separate original349 native envelope, not fabricated as focused before/after facts."
+  ]
+}

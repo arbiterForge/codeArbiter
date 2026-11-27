@@ -1,0 +1,59 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "74057c377ae7934fe7074443b7ab71f378798ef2",
+  "kind": "conformance-check",
+  "result": "NOT_APPLICABLE",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "/root/packaging_site_tools: exact inherited analytical-contract correction; no runtime test"
+  },
+  "inputs": {
+    "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+    "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+    "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+    "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+    "site/scripts/academy-source.ts": "6f5e2447e3e065f09d12f6d62e9af3292e4131430bb4761a6feec641a122aa9c",
+    "site/scripts/generate-academy.ts": "bd59c53b0654d213929b60cfe43614806d906d33687d55d0d27227f95892516e",
+    "site/scripts/owned-output.ts": "13ec4068eea8d6af7afaa8ca7e96b288a2aa8ca9991b7fb42a6901804f70fb3f"
+  },
+  "disposition_ids": [
+    "disposition:transitions:S67:01"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/site-six-baseline-corrections-74057/correction-inspection.json",
+      "sha256": "d0d23a770d1f7f8f493d925b1ad413b0161fc3bf62c23ad1aecb7a5d72e74295"
+    }
+  ],
+  "contract": "analytical-baseline:S67:01",
+  "rationale": "The literal composite was never implemented or declared by the baseline owner. No accepted SITE-U01/U02/BUILD-G01 task advertises this additional feature. The analytical summary overstates the actual owner contract; correcting it does not retire supported concrete behavior. PROGRAM5/9/13/46 supplies the governing analytical-versus-advertised-feature distinction. Academy loader resolves canonical academy-source, requires contained existing paths, validates required inventory fields/order/duplicates/release/tracks and Home setup, and records nested Git HEAD. It neither rejects extra top-level keys nor independently inspects parent Git mode160000/.gitmodules. Separate installer checksum/commit verification remains strict.",
+  "semantic_mapping": [
+    {
+      "cell": "disposition:transitions:S67:01",
+      "unsupported_contract": "One loader transition attesting a closed exact top-level manifest key set and independent parent Git-submodule identity.",
+      "actual_owner_contract": "Academy loader resolves canonical academy-source, requires contained existing paths, validates required inventory fields/order/duplicates/release/tracks and Home setup, and records nested Git HEAD. It neither rejects extra top-level keys nor independently inspects parent Git mode160000/.gitmodules. Separate installer checksum/commit verification remains strict.",
+      "whole_clause_nonapplicability": "The literal composite was never implemented or declared by the baseline owner. No accepted SITE-U01/U02/BUILD-G01 task advertises this additional feature. The analytical summary overstates the actual owner contract; correcting it does not retire supported concrete behavior.",
+      "frozen_row_sha256": "53dc18ee2a32580f7c8896c97d07bde1f7d0ca24c65abd21d28e2433d99b97e0",
+      "witnesses": [
+        {
+          "path": "site/scripts/academy-source.ts",
+          "start": 139,
+          "end": 158,
+          "file_sha256": "6f5e2447e3e065f09d12f6d62e9af3292e4131430bb4761a6feec641a122aa9c"
+        },
+        {
+          "path": "site/scripts/academy-source.ts",
+          "start": 309,
+          "end": 357,
+          "file_sha256": "6f5e2447e3e065f09d12f6d62e9af3292e4131430bb4761a6feec641a122aa9c"
+        }
+      ]
+    }
+  ],
+  "limits": [
+    "Source inspection only; no new tests/browser/visual/physical-user/installed observations.",
+    "Original frozen105 intake remains unchanged. Append analytical-audit correction to live accounting; no new user policy choice or advertised-feature deferral.",
+    "N/A covers unsupported whole analytical composites, not valid initialization/native-button keyboard/static print/TOC/source-validation behavior. No broad capability waiver.",
+    "Parent1098 remains held for full user testing; no publication."
+  ]
+}

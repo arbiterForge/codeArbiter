@@ -455,6 +455,26 @@ To run the audit by hand:
 
 
 def main(argv=None, *, token=None, rest=None, recorded=None, legacy=None) -> int:
+    arguments = _parser().parse_args(argv)
+
+    def done(code: int, outcome: str, reason: str) -> int:
+        # R-06: the exit code stays compatible; the observation says what a
+        # green exit actually established (skip/unavailable are not verified).
+        output = getattr(arguments, "verdict_output", None)
+        if output:
+            import _verdictlib
+            _verdictlib.write(_verdictlib.observation(
+                "published-tag-immutability", outcome, reason,
+                scope=("recorded published tags (strict)" if arguments.require_recorded
+                       else "recorded published tags"),
+                source=_verdictlib.source_identity(arguments.repo), exit_code=code),
+                output)
+        return code
+
+    return _main(arguments, done, token=token, rest=rest, recorded=recorded, legacy=legacy)
+
+
+def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--repo", default=os.environ.get("GITHUB_REPOSITORY", ""))
     parser.add_argument("--manifest", default=str(MANIFEST_PATH))
@@ -463,16 +483,21 @@ def main(argv=None, *, token=None, rest=None, recorded=None, legacy=None) -> int
         "--require-recorded", action="store_true",
         help="Refuse release when prior tag records are incomplete or cannot be verified.",
     )
-    arguments = parser.parse_args(argv)
+    parser.add_argument("--verdict-output",
+                        help="append one typed qualification observation (JSON line) here")
+    return parser
+
+
+def _main(arguments, done, *, token, rest, recorded, legacy) -> int:
 
     if token is None:
         token = os.environ.get("GH_TOKEN") or os.environ.get("GITHUB_TOKEN") or ""
     if not arguments.repo:
         if arguments.require_recorded:
             print("::error title=Tag provenance::release requires a repository to verify")
-            return 1
+            return done(1, "rejected", "no repository to verify in strict mode")
         print("SKIP: no --repo and no GITHUB_REPOSITORY; nothing to audit.")
-        return 0
+        return done(0, "skipped", "no repository named")
 
     # Ledger integrity is locally knowable and must never be hidden by missing
     # network credentials. Only the remote observation itself may skip.
@@ -488,15 +513,15 @@ def main(argv=None, *, token=None, rest=None, recorded=None, legacy=None) -> int
         validate_disjoint(provenance, legacy_provenance)
     except (OSError, UnicodeError, json.JSONDecodeError, ValueError, TypeError, KeyError):
         print("::error title=Tag provenance::invalid publication or legacy provenance ledger")
-        return 1
+        return done(1, "rejected", "invalid publication or legacy provenance ledger")
 
     if not token and rest is None:
         if arguments.require_recorded:
             print("::error title=Tag provenance::release requires authenticated tag evidence")
-            return 1
+            return done(1, "unavailable", "no token for authenticated tag evidence")
         print(_SKIP_NOTE)
         print(f"::notice title=Tag immutability::skipped for {arguments.repo} - no GH_TOKEN")
-        return 0
+        return done(0, "skipped", "no token; live tags were not audited")
 
     try:
         live = read_live_tags(
@@ -504,7 +529,7 @@ def main(argv=None, *, token=None, rest=None, recorded=None, legacy=None) -> int
         )
     except InvalidInventory:
         print("::error title=Tag provenance::invalid live tag inventory; release requires a complete live tag inventory")
-        return 1
+        return done(1, "unavailable", "invalid live tag inventory")
     findings = audit(provenance, live)
     legacy_findings = audit_legacy(legacy_provenance, live)
 
@@ -513,12 +538,13 @@ def main(argv=None, *, token=None, rest=None, recorded=None, legacy=None) -> int
     for blind in unreadable(live):
         print(f"SKIP (partial): could not read {blind} - see the note in this script.")
     if findings or legacy_findings:
-        return 1
+        return done(1, "rejected", f"{len(findings) + len(legacy_findings)} recorded tag(s) moved or vanished")
     if live is None:
         if arguments.require_recorded:
             print("::error title=Tag provenance::release requires a complete live tag inventory")
-            return 1
-        return 0
+            return done(1, "unavailable", "live tag inventory unavailable")
+        return done(0, "unavailable", "live tag inventory unavailable; nothing was compared")
+    blind = list(unreadable(live))
 
     coverage = {**provenance, **legacy_provenance}
     missing = unrecorded(coverage, live)
@@ -531,13 +557,16 @@ def main(argv=None, *, token=None, rest=None, recorded=None, legacy=None) -> int
             "publication reconciliation path (issue #386)."
         )
     if missing and arguments.require_recorded:
-        return 1
+        return done(1, "rejected", f"{len(missing)} published tag(s) have no recorded identity")
     print(
         f"OK: {len(provenance)} original-publication receipts and "
         f"{len(legacy_provenance)} legacy baselines in {arguments.repo} still resolve "
         "to their separately recorded identities."
     )
-    return 0
+    if blind:
+        return done(0, "unavailable", f"partial live inventory; unreadable: {', '.join(blind)}")
+    return done(0, "verified", f"{len(coverage)} recorded tag identities match live refs"
+                + (f"; {len(missing)} unrecorded tag(s) warned" if missing else ""))
 
 
 if __name__ == "__main__":

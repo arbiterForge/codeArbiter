@@ -7,8 +7,8 @@ import (
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/model"
 )
 
-const contextPreviewFormat = "codearbiter.context-preview/0.1.0"
-const contextPreviewRoot = ".codearbiter/.artifacts/context-previews/"
+const contextPreviewFormat = contextdocument.PreviewFormat
+const contextPreviewRoot = ".codearbiter/.artifacts/" + contextdocument.PreviewDirectory + "/"
 
 func contextMutationFromPreview(preview object, beforeDoc, beforeProvenance []byte) (contextdocument.Mutation, error) {
 	typed, err := canonical.Marshal(preview["typed"])
@@ -95,8 +95,13 @@ func (e *Engine) contextOrdinaryPreview(r object, finalize bool) (any, error) {
 	if err != nil {
 		return nil, err
 	}
+	// Producer admission uses the same stored-format contract every strict
+	// output consumer applies, so a written preview is always recognizable.
+	if err := contextdocument.ValidateStoredPreview(raw); err != nil {
+		return nil, err
+	}
 	hash := canonical.BytesHash(raw)
-	if err := e.FS.PutDerived("context-previews", hash, raw); err != nil {
+	if err := e.FS.PutDerived(contextdocument.PreviewDirectory, hash, raw); err != nil {
 		return nil, err
 	}
 	out := object{"preview_ref": contextPreviewRoot + hash + ".json", "preview_sha256": hash, "preview_binding_sha256": binding, "document_id": preview["document_id"], "target_path": preview["target_path"], "preview_document": string(body), "after_document_sha256": canonical.BytesHash(body), "evidence_assessed": false, "changes_omitted": int64(0), "preview_content_omitted": false}
@@ -135,8 +140,11 @@ func (e *Engine) contextOrdinaryApply(r object) (any, error) {
 	if canonical.BytesHash(raw) != hash {
 		return nil, fault.New("INVALID_CONTEXT_PREVIEW", "preview bytes changed")
 	}
+	if err := contextdocument.ValidateStoredPreview(raw); err != nil {
+		return nil, err
+	}
 	record, err := canonical.Object(raw)
-	if err != nil || len(record) != 5 || record["format"] != contextPreviewFormat {
+	if err != nil {
 		return nil, fault.New("INVALID_CONTEXT_PREVIEW", "unsupported context preview")
 	}
 	preview := model.M(record["request"])

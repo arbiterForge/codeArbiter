@@ -9,6 +9,7 @@ from pathlib import Path
 import subprocess
 import sys
 import yaml
+from ci20_baseline import bound_workflow_bytes
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -54,7 +55,10 @@ def main() -> None:
     if head != baseline["source_commit"]:
         raise SystemExit(
             f"Checkout {head} differs from baseline {baseline['source_commit']}")
-    workflow = yaml.safe_load((ROOT / ".github/workflows/ci.yml").read_text(encoding="utf-8"))
+    workflow_bytes = bound_workflow_bytes(ROOT, '.github/workflows/ci.yml', head)
+    if hashlib.sha256(workflow_bytes).hexdigest() != baseline['workflow_sha256']:
+        raise SystemExit('Workflow bytes differ from baseline binding')
+    workflow = yaml.safe_load(workflow_bytes)
     branch = json.loads(subprocess.check_output(
         ["gh", "api", "repos/arbiterForge/codeArbiter/branches/main/protection"],
         text=True))
@@ -82,7 +86,7 @@ def main() -> None:
         }
     other = {}
     for path in sorted((ROOT / ".github/workflows").glob("*.yml")):
-        data = path.read_bytes()
+        data = bound_workflow_bytes(ROOT, path.relative_to(ROOT).as_posix(), head)
         other[path.name] = {"sha256": hashlib.sha256(data).hexdigest(),
                             "jobs": sorted(yaml.safe_load(data).get("jobs", {}))}
     report = {

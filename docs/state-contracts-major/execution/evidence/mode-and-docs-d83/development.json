@@ -1,0 +1,20 @@
+{
+  "base_commit": "d83a0cdacd82b0abc11b7ea257c901c607e58723",
+  "mode_composition": {
+    "author_delivery_sha256": "54447fffd4c4c116271205fa172e9ef2f5187702102a5a47688225c66c6403e6",
+    "finding": "HOOK-F02",
+    "named_assertions": 37,
+    "behavior": "Require both the original mode transition and audit recovery results and the existing prompt outcome results. Run the original mode suite once and reuse the existing prompt observation."
+  },
+  "docs_source_observation": {
+    "author_delivery_sha256": "11af3dc00ecf9ff71379adb8e54171e3834161991232cbb1a95c97c298b83ee0",
+    "findings": ["GEN-B01", "GEN-F01", "GEN-F02", "SX-F01"],
+    "behavior": "Observe the existing npm coverage lifecycle once, retain primary Vitest names, and require successful original Docs and Core runs for final admission. The checkout uses no persisted credential.",
+    "verification": "The original author retained 17 Python controls, a composition check covering 21 cases, 83 focused Vitest cases and scoped type checking. The original hosted coverage and report remain pending."
+  },
+  "academy_rollback": {
+    "independent_review_sha256": "05d43197a7cf5cdb6b6dd27fa1a651f16ca6af19a88340e20547685de494088b",
+    "verification": "The direct Academy generator fixture restored all prior files after a late publication failure and converged on rerun. Omitting rollback failed the exact snapshot comparison."
+  },
+  "program": "This increment changes observation and fixture coverage. Finding dispositions, task qualification, and the #1098 main-merge hold remain in effect."
+}

@@ -89,6 +89,22 @@ describe("configuration reference", () => {
     expect(missing).toEqual([]);
   });
 
+  it("describes the prune nudge threshold with the runtime predicate and default (HW-22)", () => {
+    const runtime = readFileSync(join(repoRoot, "core", "pysrc", "_prunelib.py"), "utf8");
+    const start = runtime.indexOf("def nudge_decision");
+    const fn = runtime.slice(start, runtime.indexOf("\ndef ", start + 1));
+    const defaultMatch = fn.match(/_num\("CODEARBITER_PRUNE_NUDGE_MIN_TOKENS", (\d+)\)/);
+    expect(defaultMatch).not.toBeNull();
+    expect(fn).toMatch(/freed = rec\.get\("context_bytes_freed"\)/);
+    expect(fn).toMatch(/est_tokens\(freed\) < min_tokens/);
+    const entry = CONFIGURATION_ENTRIES.find((item) => item.name === "CODEARBITER_PRUNE_NUDGE_MIN_TOKENS");
+    expect(entry?.defaultValue).toBe(`\`${defaultMatch![1]}\``);
+    expect(entry?.purpose).toContain("context_bytes_freed");
+    expect(entry?.purpose).toContain("would free");
+    expect(entry?.purpose).toContain("total context size does not count");
+    expect(entry?.purpose).not.toMatch(/minimum model-context size/);
+  });
+
   it("is deterministic", () => {
     expect(renderConfigurationReference()).toBe(renderConfigurationReference());
   });

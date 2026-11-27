@@ -1,0 +1,1636 @@
+{
+  "schema": "codearbiter.current-finite-source-inspection/1",
+  "source_commit": "f3cb12f5095401d5b7e8c32c2861816c7109ce02",
+  "original_semantic_inspection_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+  "group": "source-group-041",
+  "positive_input_join": {
+    "docs/state-contracts-major/contracts/machine-coverage.json": {
+      "sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+      "previous_sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+      "bytes": 385316,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+        "bytes": 385316
+      }
+    },
+    "docs/state-contracts-major/contracts/tasks.json": {
+      "sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+      "previous_sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+      "bytes": 331224,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+        "bytes": 331224
+      }
+    },
+    "docs/state-contracts-major/contracts/transition-coverage.json": {
+      "sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+      "previous_sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+      "bytes": 3185278,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+        "bytes": 3185278
+      }
+    },
+    "site/scripts/execution-maps/atlas-model.ts": {
+      "sha256": "79d5c4e0ef690a7bb1b1ccaf11a79d412a0b91106c78c2d0db4fcdf8e2ada05a",
+      "previous_sha256": "79d5c4e0ef690a7bb1b1ccaf11a79d412a0b91106c78c2d0db4fcdf8e2ada05a",
+      "bytes": 10780,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "79d5c4e0ef690a7bb1b1ccaf11a79d412a0b91106c78c2d0db4fcdf8e2ada05a",
+        "bytes": 10780
+      }
+    },
+    "site/scripts/execution-maps/atlas-render.ts": {
+      "sha256": "363afecc6eb88d96cd5101789ae593b5887c516ea8bde230e718102714c82e00",
+      "previous_sha256": "363afecc6eb88d96cd5101789ae593b5887c516ea8bde230e718102714c82e00",
+      "bytes": 14581,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "363afecc6eb88d96cd5101789ae593b5887c516ea8bde230e718102714c82e00",
+        "bytes": 14581
+      }
+    },
+    "site/scripts/execution-maps/atlas-theme.ts": {
+      "sha256": "dc6d4a624d0872a5466460598a5209daaa9a15b181a5110bb217af9f37d697b0",
+      "previous_sha256": "dc6d4a624d0872a5466460598a5209daaa9a15b181a5110bb217af9f37d697b0",
+      "bytes": 1559,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "dc6d4a624d0872a5466460598a5209daaa9a15b181a5110bb217af9f37d697b0",
+        "bytes": 1559
+      }
+    },
+    "site/src/components/WorkflowAtlas.astro": {
+      "sha256": "40120780283cc6fddec19b657ef49e069612514aa77d093cb840500ea846174e",
+      "previous_sha256": "40120780283cc6fddec19b657ef49e069612514aa77d093cb840500ea846174e",
+      "bytes": 386,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "40120780283cc6fddec19b657ef49e069612514aa77d093cb840500ea846174e",
+        "bytes": 386
+      }
+    },
+    "site/src/scripts/workflow-atlas.ts": {
+      "sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e",
+      "previous_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e",
+      "bytes": 23374,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e",
+        "bytes": 23374
+      }
+    }
+  },
+  "current_input_membership": [],
+  "closed_namespace_review": null,
+  "current_owner_delta_review": {
+    "scope": "Atlas client/component/theme bounds are the same finite route, selection, markup, keyboard, responsive, zoom and print/export predicates. Historical product source labels changed at two already-declared nodes; client/type-only integration and these navigation/geometry predicates are unchanged.",
+    "atlas_leaf_review": {
+      "core/surface/commands/init.md": {
+        "path": "core/surface/commands/init.md",
+        "revision": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "blob": "74749ae037e276cda66cc6f90addf2d0ad88e914",
+        "historical_nodes_unchanged": [
+          "o-init",
+          "o-runtime",
+          "c-live"
+        ],
+        "reviewed_summary": "Repository activation gates governance and per-turn persona delivery; startup can settle mode or repair an owned global statusline earlier. The task-board writer retains its lock sidecar; initialization adds its exact Git-common info/exclude rule under an exclusive lock. Existing permissions, foreign hooks and user configuration remain preserved."
+      },
+      "core/pysrc/_bashguardlib.py": {
+        "path": "core/pysrc/_bashguardlib.py",
+        "revision": "ddd98dc1ab7a5ceb9a13ffdb4a84c7d2131d094c",
+        "blob": "383ad7d3ead2cb2cd924b2ce815cdcfd79b8317f",
+        "historical_nodes_unchanged": [
+          "f-recovery",
+          "c-read",
+          "c-proof"
+        ],
+        "reviewed_summary": "Simple quote-balanced top-level statements keep interpreter write scanning within each invocation. Binary overrides bind the actual staged candidate. Visible literal PowerShell here-string interpreter bodies reach protected-write guards; dynamic or nested stdin remains outside that finite projection. Conservative checks and existing authority gates remain in place."
+      }
+    },
+    "exact_atlas_payload_deltas": {
+      "site/scripts/execution-maps/atlas-data/major-state-contracts-update.json": {
+        "previous_sha256": "62b14434c430453951747519def5a7c3a0efe11d137ce3b809b280654f28fbeb",
+        "current_sha256": "67a57e321d2101d1f283309dd96b2efedadac20e577b1a7d197f363cb1f22baf"
+      },
+      "site/scripts/execution-maps/atlas-assistive.test.ts": {
+        "previous_sha256": "d6f067000f04a07c63a517b6842be41eadd1e73af73f860baf3b097d13788273",
+        "current_sha256": "9ecce3fb4a8a48510acfd8cc8f5ce99dfd7496414510fd1e70ed56926a786318"
+      }
+    },
+    "docs_scope": "Original Docs coverage is still selected once. The reporting mode surrounds that same source owner with a bounded static observer, with the exact original coverage command on the fallback path. No publish or generated-site execution is claimed."
+  },
+  "semantic_rows": [
+    {
+      "cell": "disposition:transitions:S61:01",
+      "frozen_record": {
+        "transition_id": "S61:01",
+        "machine_id": "S61",
+        "owner": "site",
+        "baseline": {
+          "event": "setup",
+          "guard": "valid rendered atlas structure",
+          "to": "connected/view loaded",
+          "effects": "Abort prior listeners, register current lifecycle; clone selected pristine SVG and initialize controls.",
+          "failure_retry": "",
+          "source": [
+            {
+              "path": "site/src/scripts/workflow-atlas.ts",
+              "symbol": "custom atlas runtime",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/scripts/workflow-atlas.ts",
+              "lines": "1-565"
+            },
+            {
+              "path": "site/src/components/WorkflowAtlas.astro",
+              "symbol": "atlas DOM contract",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/components/WorkflowAtlas.astro",
+              "lines": "1-10"
+            }
+          ],
+          "from": "connect/reconnect",
+          "transition_id": "S61:01"
+        },
+        "task_ids": [
+          "Q-01"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "2b4034b6b56fdc4c627e3a816c6e33a13ee3290c00172d5f992ae3b6012d213a",
+      "group": "source-group-041",
+      "assessment": "Client lifecycle/view/node/route/viewport/nav-revision/export/cleanup bodies retain their existing semantics. Generated source metadata now may select a per-owner revision, but no new browser/focus/print/download result follows from source inspection.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "atlas-per-leaf-revisions"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/atlas-client-preserved.json",
+          "sha256": "f750ba2e310cafb217ca48032d7621d632d176cc201feed1cf7084a7d9808dad",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S61:02",
+      "frozen_record": {
+        "transition_id": "S61:02",
+        "machine_id": "S61",
+        "owner": "site",
+        "baseline": {
+          "event": "switch view",
+          "guard": "known view",
+          "to": "new view loaded",
+          "effects": "Clone pristine SVG, clear selected node, reset fit; preserve eligible route selection.",
+          "failure_retry": "",
+          "source": [
+            {
+              "path": "site/src/scripts/workflow-atlas.ts",
+              "symbol": "custom atlas runtime",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/scripts/workflow-atlas.ts",
+              "lines": "1-565"
+            },
+            {
+              "path": "site/src/components/WorkflowAtlas.astro",
+              "symbol": "atlas DOM contract",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/components/WorkflowAtlas.astro",
+              "lines": "1-10"
+            }
+          ],
+          "from": "view loaded",
+          "transition_id": "S61:02"
+        },
+        "task_ids": [
+          "Q-01"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "22e360e09399b60025277496031eade88921aeeb88fb048066574b1fe025ace9",
+      "group": "source-group-041",
+      "assessment": "Client lifecycle/view/node/route/viewport/nav-revision/export/cleanup bodies retain their existing semantics. Generated source metadata now may select a per-owner revision, but no new browser/focus/print/download result follows from source inspection.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "atlas-per-leaf-revisions"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/atlas-client-preserved.json",
+          "sha256": "f750ba2e310cafb217ca48032d7621d632d176cc201feed1cf7084a7d9808dad",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S61:03",
+      "frozen_record": {
+        "transition_id": "S61:03",
+        "machine_id": "S61",
+        "owner": "site",
+        "baseline": {
+          "event": "choose route",
+          "guard": "known route",
+          "to": "route selected",
+          "effects": "Highlight route; clear node inspection; update accessible route description.",
+          "failure_retry": "",
+          "source": [
+            {
+              "path": "site/src/scripts/workflow-atlas.ts",
+              "symbol": "custom atlas runtime",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/scripts/workflow-atlas.ts",
+              "lines": "1-565"
+            },
+            {
+              "path": "site/src/components/WorkflowAtlas.astro",
+              "symbol": "atlas DOM contract",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/components/WorkflowAtlas.astro",
+              "lines": "1-10"
+            }
+          ],
+          "from": "view loaded",
+          "transition_id": "S61:03"
+        },
+        "task_ids": [
+          "Q-01"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "ba2ae4a53da095ad9e9adcef976fc9de58b147422b9067edddb2f44edc2718b9",
+      "group": "source-group-041",
+      "assessment": "Client lifecycle/view/node/route/viewport/nav-revision/export/cleanup bodies retain their existing semantics. Generated source metadata now may select a per-owner revision, but no new browser/focus/print/download result follows from source inspection.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "atlas-per-leaf-revisions"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/atlas-client-preserved.json",
+          "sha256": "f750ba2e310cafb217ca48032d7621d632d176cc201feed1cf7084a7d9808dad",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S61:04",
+      "frozen_record": {
+        "transition_id": "S61:04",
+        "machine_id": "S61",
+        "owner": "site",
+        "baseline": {
+          "event": "select node",
+          "guard": "node metadata available",
+          "to": "node inspected",
+          "effects": "Show source/evidence/description panel and aria selection.",
+          "failure_retry": "",
+          "source": [
+            {
+              "path": "site/src/scripts/workflow-atlas.ts",
+              "symbol": "custom atlas runtime",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/scripts/workflow-atlas.ts",
+              "lines": "1-565"
+            },
+            {
+              "path": "site/src/components/WorkflowAtlas.astro",
+              "symbol": "atlas DOM contract",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/components/WorkflowAtlas.astro",
+              "lines": "1-10"
+            }
+          ],
+          "from": "view loaded/route selected",
+          "transition_id": "S61:04"
+        },
+        "task_ids": [
+          "Q-01"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "3560146e9743225ab5d3cb897786f8c99ab80c7d5e2f3336fd05b2b747d7be09",
+      "group": "source-group-041",
+      "assessment": "Client lifecycle/view/node/route/viewport/nav-revision/export/cleanup bodies retain their existing semantics. Generated source metadata now may select a per-owner revision, but no new browser/focus/print/download result follows from source inspection.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "atlas-per-leaf-revisions"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/atlas-client-preserved.json",
+          "sha256": "f750ba2e310cafb217ca48032d7621d632d176cc201feed1cf7084a7d9808dad",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S61:05",
+      "frozen_record": {
+        "transition_id": "S61:05",
+        "machine_id": "S61",
+        "owner": "site",
+        "baseline": {
+          "event": "zoom/drag",
+          "guard": "scale clamp 0.1..2; admitted pointer",
+          "to": "manual viewport",
+          "effects": "Update transform; capture/release pointer; manual mode suppresses automatic fit.",
+          "failure_retry": "",
+          "source": [
+            {
+              "path": "site/src/scripts/workflow-atlas.ts",
+              "symbol": "custom atlas runtime",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/scripts/workflow-atlas.ts",
+              "lines": "1-565"
+            },
+            {
+              "path": "site/src/components/WorkflowAtlas.astro",
+              "symbol": "atlas DOM contract",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/components/WorkflowAtlas.astro",
+              "lines": "1-10"
+            }
+          ],
+          "from": "any viewport",
+          "transition_id": "S61:05"
+        },
+        "task_ids": [
+          "Q-01"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "b88f724a86720166139b17191116582ae1bc04e9b7dab9b1748942c0abd3b417",
+      "group": "source-group-041",
+      "assessment": "Client lifecycle/view/node/route/viewport/nav-revision/export/cleanup bodies retain their existing semantics. Generated source metadata now may select a per-owner revision, but no new browser/focus/print/download result follows from source inspection.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "atlas-per-leaf-revisions"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/atlas-client-preserved.json",
+          "sha256": "f750ba2e310cafb217ca48032d7621d632d176cc201feed1cf7084a7d9808dad",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S61:06",
+      "frozen_record": {
+        "transition_id": "S61:06",
+        "machine_id": "S61",
+        "owner": "site",
+        "baseline": {
+          "event": "fit width/all",
+          "guard": "container geometry available",
+          "to": "fit viewport",
+          "effects": "Calculate viewport scale/translation; resize schedules coalesced recompute only outside manual/printing modes.",
+          "failure_retry": "",
+          "source": [
+            {
+              "path": "site/src/scripts/workflow-atlas.ts",
+              "symbol": "custom atlas runtime",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/scripts/workflow-atlas.ts",
+              "lines": "1-565"
+            },
+            {
+              "path": "site/src/components/WorkflowAtlas.astro",
+              "symbol": "atlas DOM contract",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/components/WorkflowAtlas.astro",
+              "lines": "1-10"
+            }
+          ],
+          "from": "any viewport",
+          "transition_id": "S61:06"
+        },
+        "task_ids": [
+          "Q-01"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "cfa834ec173072919028c4902317d3710d13f08e60235dd25aca011e48410bb7",
+      "group": "source-group-041",
+      "assessment": "Client lifecycle/view/node/route/viewport/nav-revision/export/cleanup bodies retain their existing semantics. Generated source metadata now may select a per-owner revision, but no new browser/focus/print/download result follows from source inspection.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "atlas-per-leaf-revisions"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/atlas-client-preserved.json",
+          "sha256": "f750ba2e310cafb217ca48032d7621d632d176cc201feed1cf7084a7d9808dad",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S61:07",
+      "frozen_record": {
+        "transition_id": "S61:07",
+        "machine_id": "S61",
+        "owner": "site",
+        "baseline": {
+          "event": "fragment route/node link",
+          "guard": "safe known alias/fragment",
+          "to": "navigation pending",
+          "effects": "Advance navigation revision, switch relevant view and defer focus/scroll.",
+          "failure_retry": "",
+          "source": [
+            {
+              "path": "site/src/scripts/workflow-atlas.ts",
+              "symbol": "custom atlas runtime",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/scripts/workflow-atlas.ts",
+              "lines": "1-565"
+            },
+            {
+              "path": "site/src/components/WorkflowAtlas.astro",
+              "symbol": "atlas DOM contract",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/components/WorkflowAtlas.astro",
+              "lines": "1-10"
+            }
+          ],
+          "from": "any view",
+          "transition_id": "S61:07"
+        },
+        "task_ids": [
+          "Q-01"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "e458227ce3a505f0ee31656758c3656943a0ed3d41ad2178496874d05c08b5e6",
+      "group": "source-group-041",
+      "assessment": "Client lifecycle/view/node/route/viewport/nav-revision/export/cleanup bodies retain their existing semantics. Generated source metadata now may select a per-owner revision, but no new browser/focus/print/download result follows from source inspection.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "atlas-per-leaf-revisions"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/atlas-client-preserved.json",
+          "sha256": "f750ba2e310cafb217ca48032d7621d632d176cc201feed1cf7084a7d9808dad",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S61:08",
+      "frozen_record": {
+        "transition_id": "S61:08",
+        "machine_id": "S61",
+        "owner": "site",
+        "baseline": {
+          "event": "animation frame",
+          "guard": "same revision; not repeated already-followed link",
+          "to": "view selected/focused",
+          "effects": "Apply final selection/focus; older revisions are dropped.",
+          "failure_retry": "",
+          "source": [
+            {
+              "path": "site/src/scripts/workflow-atlas.ts",
+              "symbol": "custom atlas runtime",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/scripts/workflow-atlas.ts",
+              "lines": "1-565"
+            },
+            {
+              "path": "site/src/components/WorkflowAtlas.astro",
+              "symbol": "atlas DOM contract",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/components/WorkflowAtlas.astro",
+              "lines": "1-10"
+            }
+          ],
+          "from": "navigation pending",
+          "transition_id": "S61:08"
+        },
+        "task_ids": [
+          "Q-01"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "bcdb1f7b29b4e7cf59e3e8c973d9c8cadfaa1ca00857fefae63d92389fd2509b",
+      "group": "source-group-041",
+      "assessment": "Client lifecycle/view/node/route/viewport/nav-revision/export/cleanup bodies retain their existing semantics. Generated source metadata now may select a per-owner revision, but no new browser/focus/print/download result follows from source inspection.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "atlas-per-leaf-revisions"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/atlas-client-preserved.json",
+          "sha256": "f750ba2e310cafb217ca48032d7621d632d176cc201feed1cf7084a7d9808dad",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S61:09",
+      "frozen_record": {
+        "transition_id": "S61:09",
+        "machine_id": "S61",
+        "owner": "site",
+        "baseline": {
+          "event": "open source dialog",
+          "guard": "source metadata present",
+          "to": "source dialog",
+          "effects": "Open dialog; maintain focus and close controls.",
+          "failure_retry": "",
+          "source": [
+            {
+              "path": "site/src/scripts/workflow-atlas.ts",
+              "symbol": "custom atlas runtime",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/scripts/workflow-atlas.ts",
+              "lines": "1-565"
+            },
+            {
+              "path": "site/src/components/WorkflowAtlas.astro",
+              "symbol": "atlas DOM contract",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/components/WorkflowAtlas.astro",
+              "lines": "1-10"
+            }
+          ],
+          "from": "node inspected",
+          "transition_id": "S61:09"
+        },
+        "task_ids": [
+          "Q-01"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "ee7cb89e9e1e9b3cd524b8c011dee23caa8e6b4931397abfdff5356ab5476326",
+      "group": "source-group-041",
+      "assessment": "Client lifecycle/view/node/route/viewport/nav-revision/export/cleanup bodies retain their existing semantics. Generated source metadata now may select a per-owner revision, but no new browser/focus/print/download result follows from source inspection.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "atlas-per-leaf-revisions"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/atlas-client-preserved.json",
+          "sha256": "f750ba2e310cafb217ca48032d7621d632d176cc201feed1cf7084a7d9808dad",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S61:12",
+      "frozen_record": {
+        "transition_id": "S61:12",
+        "machine_id": "S61",
+        "owner": "site",
+        "baseline": {
+          "event": "export SVG",
+          "guard": "pristine selected SVG available",
+          "to": "export pending",
+          "effects": "Create downloadable Blob URL from pristine SVG, trigger download, revoke URL after 1s.",
+          "failure_retry": "",
+          "source": [
+            {
+              "path": "site/src/scripts/workflow-atlas.ts",
+              "symbol": "custom atlas runtime",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/scripts/workflow-atlas.ts",
+              "lines": "1-565"
+            },
+            {
+              "path": "site/src/components/WorkflowAtlas.astro",
+              "symbol": "atlas DOM contract",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/components/WorkflowAtlas.astro",
+              "lines": "1-10"
+            }
+          ],
+          "from": "view loaded",
+          "transition_id": "S61:12"
+        },
+        "task_ids": [
+          "Q-01"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "b90a352ceb33a8ed875613dfe0be25c3957898d99503e093724ebd36ba62de9d",
+      "group": "source-group-041",
+      "assessment": "Client lifecycle/view/node/route/viewport/nav-revision/export/cleanup bodies retain their existing semantics. Generated source metadata now may select a per-owner revision, but no new browser/focus/print/download result follows from source inspection.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "atlas-per-leaf-revisions"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/atlas-client-preserved.json",
+          "sha256": "f750ba2e310cafb217ca48032d7621d632d176cc201feed1cf7084a7d9808dad",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S61:13",
+      "frozen_record": {
+        "transition_id": "S61:13",
+        "machine_id": "S61",
+        "owner": "site",
+        "baseline": {
+          "event": "disconnect",
+          "guard": "component removed",
+          "to": "disconnected",
+          "effects": "Abort listeners, restore print state, release pointer, close dialog, revoke owned URLs and invalidate navigation work.",
+          "failure_retry": "",
+          "source": [
+            {
+              "path": "site/src/scripts/workflow-atlas.ts",
+              "symbol": "custom atlas runtime",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/scripts/workflow-atlas.ts",
+              "lines": "1-565"
+            },
+            {
+              "path": "site/src/components/WorkflowAtlas.astro",
+              "symbol": "atlas DOM contract",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/components/WorkflowAtlas.astro",
+              "lines": "1-10"
+            }
+          ],
+          "from": "connected",
+          "transition_id": "S61:13"
+        },
+        "task_ids": [
+          "Q-01"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "33ff2779abfb50ffcf77781d24a712c43d221cc83e3af3f831f7d71f4e8db692",
+      "group": "source-group-041",
+      "assessment": "Client lifecycle/view/node/route/viewport/nav-revision/export/cleanup bodies retain their existing semantics. Generated source metadata now may select a per-owner revision, but no new browser/focus/print/download result follows from source inspection.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "atlas-per-leaf-revisions"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/atlas-client-preserved.json",
+          "sha256": "f750ba2e310cafb217ca48032d7621d632d176cc201feed1cf7084a7d9808dad",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    }
+  ],
+  "verified_literal_witnesses": [
+    {
+      "path": "site/src/scripts/workflow-atlas.ts",
+      "old_span": [
+        36,
+        73
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/atlas-client-preserved.json",
+      "block_sha256_LF": "bdea6d73f6622f6944fe3ceb637560866f7f05288a3e91ef2d53dbe2aca42842",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          36,
+          73
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/atlas-client-preserved.json",
+      "actual0ef_spans": [
+        [
+          36,
+          73
+        ]
+      ],
+      "actual0ef_file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION",
+      "current_f3_spans": [
+        [
+          36,
+          73
+        ]
+      ],
+      "current_f3_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+    },
+    {
+      "path": "site/src/scripts/workflow-atlas.ts",
+      "old_span": [
+        261,
+        296
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/atlas-client-preserved.json",
+      "block_sha256_LF": "d528ff692afd9cb939846c0472b5198a1184dd4bae0f1832a87fcaff10f6254a",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          261,
+          296
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/atlas-client-preserved.json",
+      "actual0ef_spans": [
+        [
+          261,
+          296
+        ]
+      ],
+      "actual0ef_file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION",
+      "current_f3_spans": [
+        [
+          261,
+          296
+        ]
+      ],
+      "current_f3_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+    },
+    {
+      "path": "site/src/scripts/workflow-atlas.ts",
+      "old_span": [
+        337,
+        350
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/atlas-client-preserved.json",
+      "block_sha256_LF": "de1d23025fb4221828f90626a14cc1caf465ba07ed3aa44bb95832edba4e6195",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          337,
+          350
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/atlas-client-preserved.json",
+      "actual0ef_spans": [
+        [
+          337,
+          350
+        ]
+      ],
+      "actual0ef_file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION",
+      "current_f3_spans": [
+        [
+          337,
+          350
+        ]
+      ],
+      "current_f3_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+    },
+    {
+      "path": "site/src/components/WorkflowAtlas.astro",
+      "old_span": [
+        7,
+        10
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/atlas-client-preserved.json",
+      "block_sha256_LF": "28f2e210a83428c4bf8553f0f98946affff39146da9d5548bc3026168cc9191c",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          7,
+          10
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/atlas-client-preserved.json",
+      "actual0ef_spans": [
+        [
+          7,
+          10
+        ]
+      ],
+      "actual0ef_file_sha256": "40120780283cc6fddec19b657ef49e069612514aa77d093cb840500ea846174e",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION",
+      "current_f3_spans": [
+        [
+          7,
+          10
+        ]
+      ],
+      "current_f3_sha256": "40120780283cc6fddec19b657ef49e069612514aa77d093cb840500ea846174e"
+    },
+    {
+      "path": "site/scripts/execution-maps/atlas-render.ts",
+      "old_span": [
+        47,
+        49
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/atlas-client-preserved.json",
+      "block_sha256_LF": "2a8fa5ea7a952f2632d3ed6d345bbbd077d1e217f6fc8d592ebf682a36e8f768",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          47,
+          49
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/atlas-client-preserved.json",
+      "actual0ef_spans": [
+        [
+          47,
+          49
+        ]
+      ],
+      "actual0ef_file_sha256": "363afecc6eb88d96cd5101789ae593b5887c516ea8bde230e718102714c82e00",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION",
+      "current_f3_spans": [
+        [
+          47,
+          49
+        ]
+      ],
+      "current_f3_sha256": "363afecc6eb88d96cd5101789ae593b5887c516ea8bde230e718102714c82e00"
+    },
+    {
+      "path": "site/src/scripts/workflow-atlas.ts",
+      "old_span": [
+        353,
+        420
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/atlas-client-preserved.json",
+      "block_sha256_LF": "c926a553106d525741a4394e717f4f2f4f7705924c4a77765e2e03b67800e7da",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          353,
+          420
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/atlas-client-preserved.json",
+      "actual0ef_spans": [
+        [
+          353,
+          420
+        ]
+      ],
+      "actual0ef_file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION",
+      "current_f3_spans": [
+        [
+          353,
+          420
+        ]
+      ],
+      "current_f3_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+    },
+    {
+      "path": "site/src/scripts/workflow-atlas.ts",
+      "old_span": [
+        160,
+        178
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/atlas-client-preserved.json",
+      "block_sha256_LF": "da4c1f64a6b5fe563a00407f1eb3b2292a4eea17db77d2278cd0a02e6ae1f0d8",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          160,
+          178
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/atlas-client-preserved.json",
+      "actual0ef_spans": [
+        [
+          160,
+          178
+        ]
+      ],
+      "actual0ef_file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION",
+      "current_f3_spans": [
+        [
+          160,
+          178
+        ]
+      ],
+      "current_f3_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+    },
+    {
+      "path": "site/src/scripts/workflow-atlas.ts",
+      "old_span": [
+        365,
+        386
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/atlas-client-preserved.json",
+      "block_sha256_LF": "e1ad94132feb1267586a448751aa4d514d1fd0a6d09fb07f7bc694d96989fc9c",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          365,
+          386
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/atlas-client-preserved.json",
+      "actual0ef_spans": [
+        [
+          365,
+          386
+        ]
+      ],
+      "actual0ef_file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION",
+      "current_f3_spans": [
+        [
+          365,
+          386
+        ]
+      ],
+      "current_f3_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+    },
+    {
+      "path": "site/src/scripts/workflow-atlas.ts",
+      "old_span": [
+        422,
+        430
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/atlas-client-preserved.json",
+      "block_sha256_LF": "960f52ca6045019ec9df5cf7a9f27271d2997f2f33348d42b7ce9d9be7b0408e",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          422,
+          430
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/atlas-client-preserved.json",
+      "actual0ef_spans": [
+        [
+          422,
+          430
+        ]
+      ],
+      "actual0ef_file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION",
+      "current_f3_spans": [
+        [
+          422,
+          430
+        ]
+      ],
+      "current_f3_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+    },
+    {
+      "path": "site/src/scripts/workflow-atlas.ts",
+      "old_span": [
+        111,
+        114
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/atlas-client-preserved.json",
+      "block_sha256_LF": "94480efa23e74022342521e37e031982dd634bb0867409bf3b57c3d35f5ec3a2",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          111,
+          114
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/atlas-client-preserved.json",
+      "actual0ef_spans": [
+        [
+          111,
+          114
+        ]
+      ],
+      "actual0ef_file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION",
+      "current_f3_spans": [
+        [
+          111,
+          114
+        ]
+      ],
+      "current_f3_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+    },
+    {
+      "path": "site/src/scripts/workflow-atlas.ts",
+      "old_span": [
+        180,
+        223
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/atlas-client-preserved.json",
+      "block_sha256_LF": "b3f1cd156251b067060f9361c326edec0c3cc17bfe766f26272dabd547ad4543",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          180,
+          223
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/atlas-client-preserved.json",
+      "actual0ef_spans": [
+        [
+          180,
+          223
+        ]
+      ],
+      "actual0ef_file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION",
+      "current_f3_spans": [
+        [
+          180,
+          223
+        ]
+      ],
+      "current_f3_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+    },
+    {
+      "path": "site/src/scripts/workflow-atlas.ts",
+      "old_span": [
+        261,
+        273
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/atlas-client-preserved.json",
+      "block_sha256_LF": "c625266e6ca1d40a6502815834653aa2acc826c37f1186d86608fea95a7a3abe",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          261,
+          273
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/atlas-client-preserved.json",
+      "actual0ef_spans": [
+        [
+          261,
+          273
+        ]
+      ],
+      "actual0ef_file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION",
+      "current_f3_spans": [
+        [
+          261,
+          273
+        ]
+      ],
+      "current_f3_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+    },
+    {
+      "path": "site/src/scripts/workflow-atlas.ts",
+      "old_span": [
+        307,
+        324
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/atlas-client-preserved.json",
+      "block_sha256_LF": "b53f223edb4acc75220855e9670fb41d668455a7add0c2ae3e33c6fbb192837b",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          307,
+          324
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/atlas-client-preserved.json",
+      "actual0ef_spans": [
+        [
+          307,
+          324
+        ]
+      ],
+      "actual0ef_file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION",
+      "current_f3_spans": [
+        [
+          307,
+          324
+        ]
+      ],
+      "current_f3_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+    },
+    {
+      "path": "site/src/scripts/workflow-atlas.ts",
+      "old_span": [
+        261,
+        275
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/atlas-client-preserved.json",
+      "block_sha256_LF": "0e854c069cc9b3ecb8a11c5328052e2262fb6a01369671bb966e4c26e1c9f7a6",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          261,
+          275
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/atlas-client-preserved.json",
+      "actual0ef_spans": [
+        [
+          261,
+          275
+        ]
+      ],
+      "actual0ef_file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION",
+      "current_f3_spans": [
+        [
+          261,
+          275
+        ]
+      ],
+      "current_f3_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+    },
+    {
+      "path": "site/src/scripts/workflow-atlas.ts",
+      "old_span": [
+        327,
+        335
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/atlas-client-preserved.json",
+      "block_sha256_LF": "0693bff4c6675a51d85b7c7dff9ab61b1b34fd219e77d58eaecee9864a8b56da",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          327,
+          335
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/atlas-client-preserved.json",
+      "actual0ef_spans": [
+        [
+          327,
+          335
+        ]
+      ],
+      "actual0ef_file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION",
+      "current_f3_spans": [
+        [
+          327,
+          335
+        ]
+      ],
+      "current_f3_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+    },
+    {
+      "path": "site/src/scripts/workflow-atlas.ts",
+      "old_span": [
+        129,
+        158
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/atlas-client-preserved.json",
+      "block_sha256_LF": "c21fdc0c570ace8a2d6b98aa54ff9bd06f9e03309bbc16146826d1bbcd428b17",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          129,
+          158
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/atlas-client-preserved.json",
+      "actual0ef_spans": [
+        [
+          129,
+          158
+        ]
+      ],
+      "actual0ef_file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION",
+      "current_f3_spans": [
+        [
+          129,
+          158
+        ]
+      ],
+      "current_f3_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+    },
+    {
+      "path": "site/src/scripts/workflow-atlas.ts",
+      "old_span": [
+        445,
+        538
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/atlas-client-preserved.json",
+      "block_sha256_LF": "f2d4bcfefb3f81e7368e3928c4dc281c8a1f8fafdecb14f78a2b4fcbd142168a",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          445,
+          538
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/atlas-client-preserved.json",
+      "actual0ef_spans": [
+        [
+          445,
+          538
+        ]
+      ],
+      "actual0ef_file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION",
+      "current_f3_spans": [
+        [
+          445,
+          538
+        ]
+      ],
+      "current_f3_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+    },
+    {
+      "path": "site/src/scripts/workflow-atlas.ts",
+      "old_span": [
+        44,
+        53
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/atlas-client-preserved.json",
+      "block_sha256_LF": "5e3002ef7eec32bf15efc1de2897c35334f25c0af4fec327887e8c668dd3b2f0",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          44,
+          53
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/atlas-client-preserved.json",
+      "actual0ef_spans": [
+        [
+          44,
+          53
+        ]
+      ],
+      "actual0ef_file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION",
+      "current_f3_spans": [
+        [
+          44,
+          53
+        ]
+      ],
+      "current_f3_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+    },
+    {
+      "path": "site/src/scripts/workflow-atlas.ts",
+      "old_span": [
+        224,
+        241
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/atlas-client-preserved.json",
+      "block_sha256_LF": "a672dfbfa1fd98d35bb4fc4e7a6431f18a7c5e75b4a74d8f9060d7b31ccdf235",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          224,
+          241
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/atlas-client-preserved.json",
+      "actual0ef_spans": [
+        [
+          224,
+          241
+        ]
+      ],
+      "actual0ef_file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION",
+      "current_f3_spans": [
+        [
+          224,
+          241
+        ]
+      ],
+      "current_f3_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+    },
+    {
+      "path": "site/src/scripts/workflow-atlas.ts",
+      "old_span": [
+        465,
+        475
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/atlas-client-preserved.json",
+      "block_sha256_LF": "1c504a6e9c0f0b4711678164bf95aed1e31ce969bdeb3174fef962a834bee23b",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          465,
+          475
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/atlas-client-preserved.json",
+      "actual0ef_spans": [
+        [
+          465,
+          475
+        ]
+      ],
+      "actual0ef_file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION",
+      "current_f3_spans": [
+        [
+          465,
+          475
+        ]
+      ],
+      "current_f3_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+    },
+    {
+      "path": "site/src/scripts/workflow-atlas.ts",
+      "old_span": [
+        522,
+        537
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/atlas-client-preserved.json",
+      "block_sha256_LF": "9b2e74478dfbd305dab9138454f5ee9f2524551f632c43d0865ac35ee7d757ba",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          522,
+          537
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/atlas-client-preserved.json",
+      "actual0ef_spans": [
+        [
+          522,
+          537
+        ]
+      ],
+      "actual0ef_file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION",
+      "current_f3_spans": [
+        [
+          522,
+          537
+        ]
+      ],
+      "current_f3_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+    },
+    {
+      "path": "site/src/scripts/workflow-atlas.ts",
+      "old_span": [
+        118,
+        123
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/atlas-client-preserved.json",
+      "block_sha256_LF": "3b135f5f7a9762452f8f664fdfc02ff32f5ce7025969af6258b289e8ced5b768",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          118,
+          123
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/atlas-client-preserved.json",
+      "actual0ef_spans": [
+        [
+          118,
+          123
+        ]
+      ],
+      "actual0ef_file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION",
+      "current_f3_spans": [
+        [
+          118,
+          123
+        ]
+      ],
+      "current_f3_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+    },
+    {
+      "path": "site/src/scripts/workflow-atlas.ts",
+      "old_span": [
+        256,
+        260
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/atlas-client-preserved.json",
+      "block_sha256_LF": "71ba1bb379c59d635861c897d219ed8c13d718d9475abbffeaafea4fa54cd6c4",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          256,
+          260
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/atlas-client-preserved.json",
+      "actual0ef_spans": [
+        [
+          256,
+          260
+        ]
+      ],
+      "actual0ef_file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION",
+      "current_f3_spans": [
+        [
+          256,
+          260
+        ]
+      ],
+      "current_f3_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+    },
+    {
+      "path": "site/scripts/execution-maps/atlas-render.ts",
+      "old_span": [
+        49,
+        49
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/atlas-client-preserved.json",
+      "block_sha256_LF": "0cc584450d1af95227800cf80e3abde4bd61be2ddf92a34a2f12273b9280688d",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          49,
+          49
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/atlas-client-preserved.json",
+      "actual0ef_spans": [
+        [
+          49,
+          49
+        ]
+      ],
+      "actual0ef_file_sha256": "363afecc6eb88d96cd5101789ae593b5887c516ea8bde230e718102714c82e00",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION",
+      "current_f3_spans": [
+        [
+          49,
+          49
+        ]
+      ],
+      "current_f3_sha256": "363afecc6eb88d96cd5101789ae593b5887c516ea8bde230e718102714c82e00"
+    },
+    {
+      "path": "site/src/scripts/workflow-atlas.ts",
+      "old_span": [
+        541,
+        560
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/atlas-client-preserved.json",
+      "block_sha256_LF": "0e8f9cb0b233ae10d1d762b403fa1f4e61ea90721b95cb823f8952ec7a4395ae",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          541,
+          560
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/atlas-client-preserved.json",
+      "actual0ef_spans": [
+        [
+          541,
+          560
+        ]
+      ],
+      "actual0ef_file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION",
+      "current_f3_spans": [
+        [
+          541,
+          560
+        ]
+      ],
+      "current_f3_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+    },
+    {
+      "path": "site/src/scripts/workflow-atlas.ts",
+      "old_span": [
+        280,
+        305
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/atlas-client-preserved.json",
+      "block_sha256_LF": "190a636e4208a27ebd1edf6ccdcd657e24da9e41d6eeb33d9d3013ff78af6442",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          280,
+          305
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/atlas-client-preserved.json",
+      "actual0ef_spans": [
+        [
+          280,
+          305
+        ]
+      ],
+      "actual0ef_file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION",
+      "current_f3_spans": [
+        [
+          280,
+          305
+        ]
+      ],
+      "current_f3_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+    }
+  ],
+  "changed_old_literals": [],
+  "reused_helper_assessments": [
+    {
+      "id": "atlas-per-leaf-revisions",
+      "paths": [
+        "site/scripts/execution-maps/atlas-model.ts",
+        "site/scripts/execution-maps/atlas-render.ts"
+      ],
+      "assessment": "Optional per-change revision is validated as an exact string revision and used for that leaf, with update-level fallback only when absent. sourceHref gains an explicit string check. Escaping, source-path bounds and fixed GitHub URL remain; no hosted navigation or screenshot truth is inferred."
+    }
+  ],
+  "negative_scope": "Static finite guarded claims only, with inherited scope/limits. No execution, qualification or unchecked new source claim."
+}

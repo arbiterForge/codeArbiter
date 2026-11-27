@@ -1,0 +1,231 @@
+{
+  "schema": "bbc6-original-pi-native-diagnostic/1",
+  "source_api_head": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+  "run_id": 43992411061,
+  "job_id": 133736258848,
+  "artifact_id": 14289490696,
+  "zip_sha256": "a3ab0fe225d92a8c4f758d163d2796ef4eae526b973c44db6f65f1d61c4e8708",
+  "failed_observed_RPC_pid": 7040,
+  "failed_pid_sidecar": {
+    "member": "rpc-native-exit-2dfnar7n.json",
+    "pid": 7040,
+    "identity": "matched",
+    "outcome": "original-failure",
+    "before": {
+      "state": "running",
+      "exitCode": null
+    },
+    "after": {
+      "state": "signaled",
+      "exitCode": 0
+    },
+    "node_sha256": "995a3fb3cefad590cd3f4b321532a4b9582fb9c6575320ed2e3e894caac3e362",
+    "debugger": {
+      "status": "unavailable",
+      "truncated": false,
+      "temporarilySuspends": false,
+      "publisherSignature": "not-verified",
+      "toolVersion": "not-observed",
+      "profile": null
+    },
+    "diagnostic": {
+      "phase": "provider-hash-dbgeng",
+      "failure": "deadline",
+      "elapsedMs": 4942,
+      "remainingMs": 4925
+    },
+    "worker": {},
+    "thread_count": 0,
+    "known_module_rva_frame_count": 0,
+    "threads": [],
+    "elapsedMs": 5017
+  },
+  "other_native_sidecars": [
+    {
+      "member": "rpc-native-exit-nzyzbebs.json",
+      "pid": 9948,
+      "identity": "matched",
+      "outcome": "original-failure",
+      "before": {
+        "state": "running",
+        "exitCode": null
+      },
+      "after": {
+        "state": "running",
+        "exitCode": null
+      },
+      "node_sha256": "995a3fb3cefad590cd3f4b321532a4b9582fb9c6575320ed2e3e894caac3e362",
+      "debugger": {
+        "status": "captured",
+        "truncated": true,
+        "temporarilySuspends": true,
+        "publisherSignature": "not-verified",
+        "toolVersion": "not-observed",
+        "profile": "sdk-v1"
+      },
+      "diagnostic": {
+        "phase": "worker-result",
+        "failure": null,
+        "elapsedMs": 370,
+        "remainingMs": 4929
+      },
+      "worker": {
+        "bound": true,
+        "attached": true,
+        "detached": true,
+        "hresult": 0,
+        "policy": 561160,
+        "phase": "detach",
+        "elapsedMs": 243
+      },
+      "thread_count": 11,
+      "known_module_rva_frame_count": 94,
+      "elapsedMs": 441
+    }
+  ],
+  "shutdown_member_pid_join": [
+    {
+      "member": "rpc-shutdown-11uxxi66.json",
+      "trace_pid": null,
+      "protocol_fields": [
+        "agentSettledSeen",
+        "captureSeen",
+        "collection",
+        "commandsSeen",
+        "eofClosed",
+        "events",
+        "exitCode",
+        "processExited",
+        "recordCount",
+        "recordCountSaturated",
+        "schemaVersion",
+        "stateSeen"
+      ],
+      "phase_names": [],
+      "really_exit_call_entered": null
+    },
+    {
+      "member": "rpc-shutdown-7lqtr3aj.json",
+      "trace_pid": 9948,
+      "protocol_fields": [
+        "agentSettledSeen",
+        "captureSeen",
+        "collection",
+        "commandsSeen",
+        "eofClosed",
+        "events",
+        "exitCode",
+        "processExited",
+        "recordCount",
+        "recordCountSaturated",
+        "schemaVersion",
+        "stateSeen"
+      ],
+      "phase_names": [
+        "started",
+        "stdin_end",
+        "session_shutdown_observer",
+        "process_exit"
+      ],
+      "really_exit_call_entered": false
+    },
+    {
+      "member": "rpc-shutdown-9nu_6zce.json",
+      "trace_pid": null,
+      "protocol_fields": [
+        "agentSettledSeen",
+        "captureSeen",
+        "collection",
+        "commandsSeen",
+        "eofClosed",
+        "events",
+        "exitCode",
+        "processExited",
+        "recordCount",
+        "recordCountSaturated",
+        "schemaVersion",
+        "stateSeen"
+      ],
+      "phase_names": [],
+      "really_exit_call_entered": null
+    },
+    {
+      "member": "rpc-shutdown-observed-45p65yaj.json",
+      "trace_pid": 8892,
+      "protocol_fields": [],
+      "phase_names": [
+        "started",
+        "stdin_end",
+        "session_shutdown_observer",
+        "process_exit"
+      ],
+      "really_exit_call_entered": true
+    },
+    {
+      "member": "rpc-shutdown-observed-6ky1bz43.json",
+      "trace_pid": 9800,
+      "protocol_fields": [],
+      "phase_names": [
+        "started",
+        "stdin_end",
+        "session_shutdown_observer",
+        "process_exit"
+      ],
+      "really_exit_call_entered": true
+    },
+    {
+      "member": "rpc-shutdown-observed-wuusjsg1.json",
+      "trace_pid": 5924,
+      "protocol_fields": [],
+      "phase_names": [
+        "started",
+        "stdin_end",
+        "session_shutdown_observer",
+        "process_exit"
+      ],
+      "really_exit_call_entered": true
+    },
+    {
+      "member": "rpc-shutdown-observed-x46df_6p.json",
+      "trace_pid": 6688,
+      "protocol_fields": [],
+      "phase_names": [
+        "started",
+        "stdin_end",
+        "session_shutdown_observer",
+        "process_exit"
+      ],
+      "really_exit_call_entered": true
+    },
+    {
+      "member": "rpc-shutdown-ui0jya0k.json",
+      "trace_pid": 7040,
+      "protocol_fields": [
+        "agentSettledSeen",
+        "captureSeen",
+        "collection",
+        "commandsSeen",
+        "eofClosed",
+        "events",
+        "exitCode",
+        "processExited",
+        "recordCount",
+        "recordCountSaturated",
+        "schemaVersion",
+        "stateSeen"
+      ],
+      "phase_names": [
+        "started",
+        "stdin_end",
+        "session_shutdown_observer",
+        "process_exit"
+      ],
+      "really_exit_call_entered": true
+    }
+  ],
+  "limits": [
+    "Only PID7040 matches the actual failing additional RPC fixture. Another PID stack is never evidence of this process blockage.",
+    "JS reallyExit-entered is distinct from kernel process death. Original natural discovery passed.",
+    "No real process/debugger/runtime executed here; all archive inspection is data-only; no raw addresses/argv/env emitted."
+  ]
+}

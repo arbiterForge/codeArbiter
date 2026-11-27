@@ -1,0 +1,694 @@
+{
+  "schema": "codearbiter-source-clause-inspection/1",
+  "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+  "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "control_cone": "prune",
+  "method": "Read actual baseline guard/effect/retry and frozen owning source control paths; verify exact owner byte/mode identity separately; inspect scoped dependency boundaries. No test execution.",
+  "limits": "Finite source guard/effect/retry conformance at the frozen source commit only. No runtime, host/package qualification, model compliance, task/scenario, provider/authentication, physical consent, endpoint policy, publication or whole-program readiness claim. HOLD rows receive no ledger mutation.",
+  "source_inputs": {
+    "core/pysrc/_hooklib.py": {
+      "source_sha256": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+      "baseline_sha256": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "scoped-witness-or-direct-dependency"
+    },
+    "core/pysrc/_modelib.py": {
+      "source_sha256": "d97433737654bbcad2051e62495e70ec006dc31d458514fa74e338e49d04a1db",
+      "baseline_sha256": "18160bf037e41b9b0f0e720fb3a9c997c08f9a59bfb7ac409716004c30b7a9de",
+      "byte_equal": false,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "scoped-witness-or-direct-dependency"
+    },
+    "core/pysrc/_prunelib.py": {
+      "source_sha256": "f34aceae4140a7ff25dff91888cd3b9d7d2e5ddc2e1f084558218b22d1c1bdc4",
+      "baseline_sha256": "f34aceae4140a7ff25dff91888cd3b9d7d2e5ddc2e1f084558218b22d1c1bdc4",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "cited-owning-source"
+    },
+    "core/pysrc/_prunepolicy.py": {
+      "source_sha256": "13bc82c138975121c3dbd28379a0bc8dda183f09fa6e47fbe2bab2e9cc0faf35",
+      "baseline_sha256": "13bc82c138975121c3dbd28379a0bc8dda183f09fa6e47fbe2bab2e9cc0faf35",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "cited-owning-source"
+    },
+    "core/pysrc/hostapi.py": {
+      "source_sha256": "2aea81ad167a458c6053cb52880952521159a367eaa5baa7df6e2e35fea574e4",
+      "baseline_sha256": "3dbeeb6bfdfde3f082a773090ca47133f55fab1c1e30e17a59547e781c5eca18",
+      "byte_equal": false,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "scoped-witness-or-direct-dependency"
+    },
+    "core/pysrc/prune-transcript.py": {
+      "source_sha256": "697c844472240ac0440e4043d17eb7de832d70eadf6e21de0ab0684a07008977",
+      "baseline_sha256": "697c844472240ac0440e4043d17eb7de832d70eadf6e21de0ab0684a07008977",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "cited-owning-source"
+    }
+  },
+  "rows": [
+    {
+      "id": "hooks:prune-plan:01",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_prunelib.py",
+          "start": 1214,
+          "end": 1225,
+          "sha256": "f34aceae4140a7ff25dff91888cd3b9d7d2e5ddc2e1f084558218b22d1c1bdc4"
+        }
+      ],
+      "conformance": "Absent/off/unknown prune mode exits0 without transcript rewrite; only explicit dry/on proceed.",
+      "machine_id": "hooks:prune-plan",
+      "baseline_clause_sha256": "1aca41bb211c4d2c47896382601f77c141db8758a39dd0687d456138052cebea",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_prunepolicy.py",
+          "symbol": "module",
+          "lines": "1-261"
+        },
+        {
+          "path": "core/pysrc/_prunelib.py",
+          "symbol": "module",
+          "lines": "1-1437"
+        },
+        {
+          "path": "core/pysrc/prune-transcript.py",
+          "symbol": "module",
+          "lines": "1-252"
+        }
+      ]
+    },
+    {
+      "id": "hooks:prune-plan:02",
+      "decision": "HOLD",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_prunepolicy.py",
+          "start": 175,
+          "end": 230,
+          "sha256": "13bc82c138975121c3dbd28379a0bc8dda183f09fa6e47fbe2bab2e9cc0faf35"
+        },
+        {
+          "path": "core/pysrc/_prunelib.py",
+          "start": 139,
+          "end": 234,
+          "sha256": "f34aceae4140a7ff25dff91888cd3b9d7d2e5ddc2e1f084558218b22d1c1bdc4"
+        }
+      ],
+      "conformance": "HOLD: recent anchor/persona-pinned and per-strategy marked protections implemented, but whole baseline promises user/system role protection absent from _protected predicate and planner. Old user tool-result/reminder/image content may be condensed intentionally; clarify exact protected semantics.",
+      "machine_id": "hooks:prune-plan",
+      "baseline_clause_sha256": "165ba4ae08180caf60be17deb3b7be946fca0747496fc35e0e6346b4f59ffe99",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_prunepolicy.py",
+          "symbol": "module",
+          "lines": "1-261"
+        },
+        {
+          "path": "core/pysrc/_prunelib.py",
+          "symbol": "module",
+          "lines": "1-1437"
+        },
+        {
+          "path": "core/pysrc/prune-transcript.py",
+          "symbol": "module",
+          "lines": "1-252"
+        }
+      ]
+    },
+    {
+      "id": "hooks:prune-plan:03",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_prunelib.py",
+          "start": 252,
+          "end": 626,
+          "sha256": "f34aceae4140a7ff25dff91888cd3b9d7d2e5ddc2e1f084558218b22d1c1bdc4"
+        },
+        {
+          "path": "core/pysrc/_prunelib.py",
+          "start": 700,
+          "end": 793,
+          "sha256": "f34aceae4140a7ff25dff91888cd3b9d7d2e5ddc2e1f084558218b22d1c1bdc4"
+        }
+      ],
+      "conformance": "Selected fixed strategy functions edit in memory; final validation rejects growth, line-count change, malformed JSON, structural identities, tool-ID set changes and new orphan parents.",
+      "machine_id": "hooks:prune-plan",
+      "baseline_clause_sha256": "94792a119dbbed78449eccbd6bdb0a09ef42b45fa6cda298972a6d56bd7f532e",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_prunepolicy.py",
+          "symbol": "module",
+          "lines": "1-261"
+        },
+        {
+          "path": "core/pysrc/_prunelib.py",
+          "symbol": "module",
+          "lines": "1-1437"
+        },
+        {
+          "path": "core/pysrc/prune-transcript.py",
+          "symbol": "module",
+          "lines": "1-252"
+        }
+      ]
+    },
+    {
+      "id": "hooks:prune-plan:04",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_prunelib.py",
+          "start": 1305,
+          "end": 1356,
+          "sha256": "f34aceae4140a7ff25dff91888cd3b9d7d2e5ddc2e1f084558218b22d1c1bdc4"
+        },
+        {
+          "path": "core/pysrc/_prunelib.py",
+          "start": 1373,
+          "end": 1437,
+          "sha256": "f34aceae4140a7ff25dff91888cd3b9d7d2e5ddc2e1f084558218b22d1c1bdc4"
+        }
+      ],
+      "conformance": "Dry candidate reports estimated byte/token savings and dry metrics/state; executed remainsFalse; no transcript publication without execute.",
+      "machine_id": "hooks:prune-plan",
+      "baseline_clause_sha256": "d7c8d5fb9583994d5f6e00192b17b355860cbc1f3139c297a2a58900a25ed5dc",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_prunepolicy.py",
+          "symbol": "module",
+          "lines": "1-261"
+        },
+        {
+          "path": "core/pysrc/_prunelib.py",
+          "symbol": "module",
+          "lines": "1-1437"
+        },
+        {
+          "path": "core/pysrc/prune-transcript.py",
+          "symbol": "module",
+          "lines": "1-252"
+        }
+      ]
+    },
+    {
+      "id": "hooks:prune-plan:05",
+      "decision": "HOLD",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_prunepolicy.py",
+          "start": 204,
+          "end": 261,
+          "sha256": "13bc82c138975121c3dbd28379a0bc8dda183f09fa6e47fbe2bab2e9cc0faf35"
+        },
+        {
+          "path": "core/pysrc/prune-transcript.py",
+          "start": 156,
+          "end": 231,
+          "sha256": "697c844472240ac0440e4043d17eb7de832d70eadf6e21de0ab0684a07008977"
+        }
+      ],
+      "conformance": "HOLD: pure planner requires SemanticEntry instances and contiguous ordinals, but no unique ID or closed policy schema validation; caller shown is transcript CLI, not a closed semantic request adapter. Unknown first-kept-ID refusal not owned here.",
+      "machine_id": "hooks:prune-plan",
+      "baseline_clause_sha256": "9383ca66968e528384e24c6e0856b44aa292fc51812a3b27722b6fecfc8ff821",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_prunepolicy.py",
+          "symbol": "module",
+          "lines": "1-261"
+        },
+        {
+          "path": "core/pysrc/_prunelib.py",
+          "symbol": "module",
+          "lines": "1-1437"
+        },
+        {
+          "path": "core/pysrc/prune-transcript.py",
+          "symbol": "module",
+          "lines": "1-252"
+        }
+      ]
+    },
+    {
+      "id": "hooks:prune-plan:06",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_prunelib.py",
+          "start": 252,
+          "end": 626,
+          "sha256": "f34aceae4140a7ff25dff91888cd3b9d7d2e5ddc2e1f084558218b22d1c1bdc4"
+        },
+        {
+          "path": "core/pysrc/_prunelib.py",
+          "start": 1373,
+          "end": 1423,
+          "sha256": "f34aceae4140a7ff25dff91888cd3b9d7d2e5ddc2e1f084558218b22d1c1bdc4"
+        }
+      ],
+      "conformance": "Protected/marked/small/ineligible content is skipped by each strategy; serialize unchanged when no transformation; no forced modification target.",
+      "machine_id": "hooks:prune-plan",
+      "baseline_clause_sha256": "4a3b3260217f726d6e809c15f7a812b9f25bd5b211102edf9c642320adb04b52",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_prunepolicy.py",
+          "symbol": "module",
+          "lines": "1-261"
+        },
+        {
+          "path": "core/pysrc/_prunelib.py",
+          "symbol": "module",
+          "lines": "1-1437"
+        },
+        {
+          "path": "core/pysrc/prune-transcript.py",
+          "symbol": "module",
+          "lines": "1-252"
+        }
+      ]
+    },
+    {
+      "id": "hooks:prune-execute:01",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/prune-transcript.py",
+          "start": 163,
+          "end": 190,
+          "sha256": "697c844472240ac0440e4043d17eb7de832d70eadf6e21de0ab0684a07008977"
+        },
+        {
+          "path": "core/pysrc/_prunelib.py",
+          "start": 1214,
+          "end": 1307,
+          "sha256": "f34aceae4140a7ff25dff91888cd3b9d7d2e5ddc2e1f084558218b22d1c1bdc4"
+        }
+      ],
+      "conformance": "Entrypoint requires prunable host; opted-in active Claude-path hook gates default1–50MiB,256KiB growth and settled tail/no latest unpaired tool loop or queue operation; unsupported/inactive returns without planned pruning.",
+      "machine_id": "hooks:prune-execute",
+      "baseline_clause_sha256": "298d93013700894c4ee85d3f01fbf4c937cdb94030ae65c6c6bdcc036772b449",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_prunelib.py",
+          "symbol": "hook_run",
+          "lines": "1214-1356"
+        },
+        {
+          "path": "core/pysrc/_prunelib.py",
+          "symbol": "write_in_place",
+          "lines": "932-1022"
+        },
+        {
+          "path": "core/pysrc/_prunelib.py",
+          "symbol": "_post_write_check",
+          "lines": "1025-1049"
+        },
+        {
+          "path": "core/pysrc/_prunelib.py",
+          "symbol": "self_heal",
+          "lines": "861-929"
+        },
+        {
+          "path": "core/pysrc/_prunelib.py",
+          "symbol": "nudge_decision",
+          "lines": "1173-1211"
+        },
+        {
+          "path": "core/pysrc/prune-transcript.py",
+          "symbol": "module",
+          "lines": "1-252"
+        }
+      ]
+    },
+    {
+      "id": "hooks:prune-execute:02",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/prune-transcript.py",
+          "start": 99,
+          "end": 103,
+          "sha256": "697c844472240ac0440e4043d17eb7de832d70eadf6e21de0ab0684a07008977"
+        },
+        {
+          "path": "core/pysrc/prune-transcript.py",
+          "start": 212,
+          "end": 229,
+          "sha256": "697c844472240ac0440e4043d17eb7de832d70eadf6e21de0ab0684a07008977"
+        }
+      ],
+      "conformance": "Explicit CLI execute refuses transcript mtime newer than configured90s default; hook live behavior is separately owned.",
+      "machine_id": "hooks:prune-execute",
+      "baseline_clause_sha256": "50d143e71f354dedc75b064c7916d6f15fbd96e965b58dde3eae80ab75ef97be",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_prunelib.py",
+          "symbol": "hook_run",
+          "lines": "1214-1356"
+        },
+        {
+          "path": "core/pysrc/_prunelib.py",
+          "symbol": "write_in_place",
+          "lines": "932-1022"
+        },
+        {
+          "path": "core/pysrc/_prunelib.py",
+          "symbol": "_post_write_check",
+          "lines": "1025-1049"
+        },
+        {
+          "path": "core/pysrc/_prunelib.py",
+          "symbol": "self_heal",
+          "lines": "861-929"
+        },
+        {
+          "path": "core/pysrc/_prunelib.py",
+          "symbol": "nudge_decision",
+          "lines": "1173-1211"
+        },
+        {
+          "path": "core/pysrc/prune-transcript.py",
+          "symbol": "module",
+          "lines": "1-252"
+        }
+      ]
+    },
+    {
+      "id": "hooks:prune-execute:03",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_prunelib.py",
+          "start": 932,
+          "end": 985,
+          "sha256": "f34aceae4140a7ff25dff91888cd3b9d7d2e5ddc2e1f084558218b22d1c1bdc4"
+        }
+      ],
+      "conformance": "Before truncation copy retained backup; default Config backups3; safety/backup exceptions abort sequence; old backups pruned after execution/rollback.",
+      "machine_id": "hooks:prune-execute",
+      "baseline_clause_sha256": "d80ee0d16018dfce799ede0c3ffb0da27fe85186bddc3557cedcef15f82db122",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_prunelib.py",
+          "symbol": "hook_run",
+          "lines": "1214-1356"
+        },
+        {
+          "path": "core/pysrc/_prunelib.py",
+          "symbol": "write_in_place",
+          "lines": "932-1022"
+        },
+        {
+          "path": "core/pysrc/_prunelib.py",
+          "symbol": "_post_write_check",
+          "lines": "1025-1049"
+        },
+        {
+          "path": "core/pysrc/_prunelib.py",
+          "symbol": "self_heal",
+          "lines": "861-929"
+        },
+        {
+          "path": "core/pysrc/_prunelib.py",
+          "symbol": "nudge_decision",
+          "lines": "1173-1211"
+        },
+        {
+          "path": "core/pysrc/prune-transcript.py",
+          "symbol": "module",
+          "lines": "1-252"
+        }
+      ]
+    },
+    {
+      "id": "hooks:prune-execute:04",
+      "decision": "HOLD",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_prunelib.py",
+          "start": 932,
+          "end": 988,
+          "sha256": "f34aceae4140a7ff25dff91888cd3b9d7d2e5ddc2e1f084558218b22d1c1bdc4"
+        }
+      ],
+      "conformance": "HOLD: in-place writer rechecks size+mtime and rejects symlink but never compares device/inode against pre_stat, so full baseline file-identity guard unsupported. Growth rollback handling and ordinary in-place rewrite exist.",
+      "machine_id": "hooks:prune-execute",
+      "baseline_clause_sha256": "439ec05a4e109b4df7fc914951a52ae02d86efdf4976e44cb8b0afca0791cd2f",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_prunelib.py",
+          "symbol": "hook_run",
+          "lines": "1214-1356"
+        },
+        {
+          "path": "core/pysrc/_prunelib.py",
+          "symbol": "write_in_place",
+          "lines": "932-1022"
+        },
+        {
+          "path": "core/pysrc/_prunelib.py",
+          "symbol": "_post_write_check",
+          "lines": "1025-1049"
+        },
+        {
+          "path": "core/pysrc/_prunelib.py",
+          "symbol": "self_heal",
+          "lines": "861-929"
+        },
+        {
+          "path": "core/pysrc/_prunelib.py",
+          "symbol": "nudge_decision",
+          "lines": "1173-1211"
+        },
+        {
+          "path": "core/pysrc/prune-transcript.py",
+          "symbol": "module",
+          "lines": "1-252"
+        }
+      ]
+    },
+    {
+      "id": "hooks:prune-execute:05",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_prunelib.py",
+          "start": 993,
+          "end": 1049,
+          "sha256": "f34aceae4140a7ff25dff91888cd3b9d7d2e5ddc2e1f084558218b22d1c1bdc4"
+        },
+        {
+          "path": "core/pysrc/_prunelib.py",
+          "start": 1312,
+          "end": 1356,
+          "sha256": "f34aceae4140a7ff25dff91888cd3b9d7d2e5ddc2e1f084558218b22d1c1bdc4"
+        }
+      ],
+      "conformance": "Postwrite bytes/JSON/line/tool graph checks; failure restores original prefix and any provable suffix without truncating observed later growth; actual executed flag feeds metrics/state.",
+      "machine_id": "hooks:prune-execute",
+      "baseline_clause_sha256": "f0e7f5efe46b652cbcabfe12ed95e1a53fd38649e6ba94d4129feaa4cf53343d",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_prunelib.py",
+          "symbol": "hook_run",
+          "lines": "1214-1356"
+        },
+        {
+          "path": "core/pysrc/_prunelib.py",
+          "symbol": "write_in_place",
+          "lines": "932-1022"
+        },
+        {
+          "path": "core/pysrc/_prunelib.py",
+          "symbol": "_post_write_check",
+          "lines": "1025-1049"
+        },
+        {
+          "path": "core/pysrc/_prunelib.py",
+          "symbol": "self_heal",
+          "lines": "861-929"
+        },
+        {
+          "path": "core/pysrc/_prunelib.py",
+          "symbol": "nudge_decision",
+          "lines": "1173-1211"
+        },
+        {
+          "path": "core/pysrc/prune-transcript.py",
+          "symbol": "module",
+          "lines": "1-252"
+        }
+      ]
+    },
+    {
+      "id": "hooks:prune-execute:06",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_prunelib.py",
+          "start": 861,
+          "end": 929,
+          "sha256": "f34aceae4140a7ff25dff91888cd3b9d7d2e5ddc2e1f084558218b22d1c1bdc4"
+        }
+      ],
+      "conformance": "Latest valid backup plus exactly one bad-line splice and matching suffix bound permits backup+newtail repair; multiple/ambiguous corruption refuses.",
+      "machine_id": "hooks:prune-execute",
+      "baseline_clause_sha256": "64a131f4f3ded082895c6c10b20a2c715d44212db563a8436bfefb3e59411425",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_prunelib.py",
+          "symbol": "hook_run",
+          "lines": "1214-1356"
+        },
+        {
+          "path": "core/pysrc/_prunelib.py",
+          "symbol": "write_in_place",
+          "lines": "932-1022"
+        },
+        {
+          "path": "core/pysrc/_prunelib.py",
+          "symbol": "_post_write_check",
+          "lines": "1025-1049"
+        },
+        {
+          "path": "core/pysrc/_prunelib.py",
+          "symbol": "self_heal",
+          "lines": "861-929"
+        },
+        {
+          "path": "core/pysrc/_prunelib.py",
+          "symbol": "nudge_decision",
+          "lines": "1173-1211"
+        },
+        {
+          "path": "core/pysrc/prune-transcript.py",
+          "symbol": "module",
+          "lines": "1-252"
+        }
+      ]
+    },
+    {
+      "id": "hooks:prune-execute:07",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_prunelib.py",
+          "start": 1173,
+          "end": 1211,
+          "sha256": "f34aceae4140a7ff25dff91888cd3b9d7d2e5ddc2e1f084558218b22d1c1bdc4"
+        },
+        {
+          "path": "core/pysrc/_prunelib.py",
+          "start": 1270,
+          "end": 1283,
+          "sha256": "f34aceae4140a7ff25dff91888cd3b9d7d2e5ddc2e1f084558218b22d1c1bdc4"
+        }
+      ],
+      "conformance": "Explicit nudge on, idle240s default,>=80000 context-estimated tokens and once per cold window arm exit2 advisory; warm resets; no unrelated authorization.",
+      "machine_id": "hooks:prune-execute",
+      "baseline_clause_sha256": "8b18ca4e62494a6b8cc3801d46bfb4396571eb3e7cbf073f451bbf5fdd2eca35",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_prunelib.py",
+          "symbol": "hook_run",
+          "lines": "1214-1356"
+        },
+        {
+          "path": "core/pysrc/_prunelib.py",
+          "symbol": "write_in_place",
+          "lines": "932-1022"
+        },
+        {
+          "path": "core/pysrc/_prunelib.py",
+          "symbol": "_post_write_check",
+          "lines": "1025-1049"
+        },
+        {
+          "path": "core/pysrc/_prunelib.py",
+          "symbol": "self_heal",
+          "lines": "861-929"
+        },
+        {
+          "path": "core/pysrc/_prunelib.py",
+          "symbol": "nudge_decision",
+          "lines": "1173-1211"
+        },
+        {
+          "path": "core/pysrc/prune-transcript.py",
+          "symbol": "module",
+          "lines": "1-252"
+        }
+      ]
+    },
+    {
+      "id": "hooks:prune-execute:08",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_prunelib.py",
+          "start": 1081,
+          "end": 1102,
+          "sha256": "f34aceae4140a7ff25dff91888cd3b9d7d2e5ddc2e1f084558218b22d1c1bdc4"
+        },
+        {
+          "path": "core/pysrc/_prunelib.py",
+          "start": 1337,
+          "end": 1356,
+          "sha256": "f34aceae4140a7ff25dff91888cd3b9d7d2e5ddc2e1f084558218b22d1c1bdc4"
+        }
+      ],
+      "conformance": "Global state read-modify-atomic-write has no cross-process state lock; faults swallowed, transcript validation remains separate; no durable accounting guarantee on failed write.",
+      "machine_id": "hooks:prune-execute",
+      "baseline_clause_sha256": "20c088231c2e91597d65412bb883800f2c525740f1204a45c8875c0d45504265",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_prunelib.py",
+          "symbol": "hook_run",
+          "lines": "1214-1356"
+        },
+        {
+          "path": "core/pysrc/_prunelib.py",
+          "symbol": "write_in_place",
+          "lines": "932-1022"
+        },
+        {
+          "path": "core/pysrc/_prunelib.py",
+          "symbol": "_post_write_check",
+          "lines": "1025-1049"
+        },
+        {
+          "path": "core/pysrc/_prunelib.py",
+          "symbol": "self_heal",
+          "lines": "861-929"
+        },
+        {
+          "path": "core/pysrc/_prunelib.py",
+          "symbol": "nudge_decision",
+          "lines": "1173-1211"
+        },
+        {
+          "path": "core/pysrc/prune-transcript.py",
+          "symbol": "module",
+          "lines": "1-252"
+        }
+      ]
+    }
+  ],
+  "aggregate_machines": [],
+  "context_reuse": {
+    "actor_context_sha256": "adf6ff38e30365d88f7033c87bc91d4266ddcde117765c285d68c9e9fc5ded5e",
+    "actor_delivery_plan_sha256": "809ba5b9648ddd4e86235232380598c993c5a973b136d7f3abaa8001fc8549cf",
+    "claim": "Actual installed composer output reused; delivery file is advisory preparation plan, not invented host receipt."
+  }
+}

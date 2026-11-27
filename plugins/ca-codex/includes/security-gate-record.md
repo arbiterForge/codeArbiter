@@ -24,7 +24,12 @@ for secrets) blocks any commit whose staged diff touches a guarded pattern until
 AND matches the exact staged candidate being committed. There is no time window: a pass stays
 valid only while that complete staged diff remains byte-for-byte the independently reviewed
 candidate. Any added, removed, moved, or changed row blocks, so a pass recorded for one diff cannot
-launder a later, different change.
+launder a later, different change. That includes an unrelated staged edit to a non-sensitive file:
+the binding is the whole staged candidate, not only its sensitive lines. A commit form that can
+absorb unstaged content (for example `git commit -a`) is blocked only when the candidate touches a
+guarded pattern; stage the reviewed candidate explicitly and commit that. The producer's success
+records the outcome of the review you performed; it does not itself prove a semantic reviewer PASS,
+and a binary override, an attributed `/override`, and a reviewer PASS stay distinct records.
 
 On any BLOCK, self-review, unreadable candidate, stale result, or wrong-worktree result, do **not**
 record the pass — the commit stays blocked until the finding is resolved and the independent gate

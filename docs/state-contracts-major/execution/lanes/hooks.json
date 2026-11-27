@@ -1,0 +1,22 @@
+{
+  "owner": "hooks-workflows",
+  "branch": "program/hooks-hw01",
+  "observed_head": "870dc9ec46c0a8b76bb31860dd0dff740c659cc8",
+  "candidate": "observed_head plus preserved uncommitted HW-07/HW-17 payload; exact commit pending",
+  "recorded_at": "2026-11-13",
+  "tasks": [
+    {
+      "id": "HW-07",
+      "progress": "IMPLEMENTED",
+      "verification": "LOCAL_TESTED",
+      "change": "Corrected debug packets may be resubmitted through the same validator with remedies specific to shape, semantic evidence, binding, operational failure and actual denial. No correction grants authority.",
+      "checks": [
+        {"command": "python -B .github/scripts/test_debug_workflow.py", "exit_code": 0, "population": "46 tests"},
+        {"command": "<locked Python 3.14 conformance environment>/Scripts/python.exe -B .github/scripts/test_debug_handoff.py", "exit_code": 0, "population": "27 tests", "environment": "Existing artifact-conformance-py314.lock installed using CI wheel-only, require-hashes, no-deps controls. Default interpreter initially failed two tests because jsonschema was absent; both passed with the declared prerequisite installed."},
+        {"command": "python -B tools/build-surface.py --check", "exit_code": 0, "population": "Claude, Codex and Pi generated surfaces synchronized"}
+      ],
+      "limits": ["No fresh installed-host run", "Commit and hosted CI pending", "HW-08 reviewer attempt identity remains separate native/hook work"]
+    }
+  ],
+  "remaining": ["Complete other HW/HOST tasks against their exact specifications", "Reconcile existing committed slices and all baseline coverage evidence", "Repair DEF-TESTLEAK-01 without rewriting accumulated audit history"]
+}

@@ -1,0 +1,6 @@
+test_launch_refusal_diagnostic_distinguishes_closed_targets_without_payload (owned_pure_launch_control.RuntimeAuditPlatformTests.test_launch_refusal_diagnostic_distinguishes_closed_targets_without_payload) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.057s
+
+OK

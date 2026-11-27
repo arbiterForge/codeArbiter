@@ -411,6 +411,41 @@ function buildClaudeRunArgs(opts) {
 function claudeFirewallScript(opts) {
   return resolveClaudeNetworkPlan(opts.netPolicy ?? "offline").firewallScript;
 }
+async function removeClaudeContainer(id, dockerRun, call) {
+  const { signal: _cancelled, ...cleanupCall } = call;
+  const removed = await dockerRun(["rm", "-f", id], cleanupCall);
+  const observed = await dockerRun(["ps", "-a", "-q", "--no-trunc", "--filter", `id=${id}`], cleanupCall);
+  return {
+    containment: observed.code === 0 && observed.stdout.trim() === "" ? "verified-absent" : "unknown",
+    removeCode: removed.code,
+    observationCode: observed.code
+  };
+}
+var ClaudeStartCancelledError = class extends Error {
+  constructor(containerId, phase, cleanup) {
+    super(`ca-sandbox: --with-claude cancelled after successful ${phase} for ${containerId}; cleanup ${cleanup.containment === "verified-absent" ? "verified absent" : "unknown; container may still be running"} (remove exit ${cleanup.removeCode}); retain target ${containerId} for inspection.`);
+    this.containerId = containerId;
+    this.phase = phase;
+    this.cleanup = cleanup;
+    this.name = "ClaudeStartCancelledError";
+  }
+  containerId;
+  phase;
+  cleanup;
+  commandCode = 0;
+};
+var FirewallSetupFailure = class extends Error {
+  constructor(message, containerId, commandCode, cleanup) {
+    super(message);
+    this.containerId = containerId;
+    this.commandCode = commandCode;
+    this.cleanup = cleanup;
+    this.name = "FirewallSetupFailure";
+  }
+  containerId;
+  commandCode;
+  cleanup;
+};
 async function runClaudeInside(opts, dockerRun = defaultDockerRun, call = {}) {
   const args = buildClaudeRunArgs(opts);
   const dockerEnv = { ...call.env ?? DOCKER_ENV };
@@ -427,15 +462,25 @@ ${(r.stderr || r.stdout).slice(-2e3).split(opts.token).join("[REDACTED]")}`
     );
   }
   const id = r.stdout.trim();
+  if (call.signal?.aborted) {
+    throw new ClaudeStartCancelledError(id, "run", await removeClaudeContainer(id, dockerRun, normalCall));
+  }
   const firewallScript = claudeFirewallScript(opts);
   if (firewallScript === void 0) return id;
   const applied = await dockerRun(["exec", "--user", "root", id, "sh", "-c", firewallScript], normalCall);
   if (applied.code !== 0) {
-    await dockerRun(["rm", "-f", id], normalCall);
-    throw new Error(
-      `ca-sandbox: --with-claude could not apply the egress firewall to ${id} (exit ${applied.code}); the container has been destroyed rather than left running with NET_ADMIN and no rules around a live token.
-${(applied.stderr || applied.stdout).slice(-2e3).split(opts.token).join("[REDACTED]")}`
+    const cleanup = await removeClaudeContainer(id, dockerRun, normalCall);
+    const absent = cleanup.containment === "verified-absent";
+    throw new FirewallSetupFailure(
+      `ca-sandbox: --with-claude could not apply the egress firewall to ${id} (exit ${applied.code}); cleanup ${absent ? "verified absent" : "unknown; container may still be running"} (remove exit ${cleanup.removeCode}); retain target ${id} for inspection.
+${(applied.stderr || applied.stdout).slice(-2e3).split(opts.token).join("[REDACTED]")}`,
+      id,
+      applied.code,
+      cleanup
     );
+  }
+  if (call.signal?.aborted) {
+    throw new ClaudeStartCancelledError(id, "firewall", await removeClaudeContainer(id, dockerRun, normalCall));
   }
   return id;
 }
@@ -503,9 +548,11 @@ function usage() {
     `The OAuth token is read from ${TOKEN_ENV_VAR} in the environment. It is never`,
     "accepted on the command line: an argument list is world-readable.",
     "",
-    "Sanctioned caller: the `sandbox-claude-inside` skill, whose five BLOCK gates",
-    "(posture, image, token, run, teardown) are the reason this is not a",
-    "`sandbox` subcommand."
+    "Use the `sandbox-claude-inside` skill for five agent-guided phases:",
+    "posture, image, token, run and teardown. Separate executable placement",
+    "does not enforce those phases.",
+    "Machine guards validate arguments and environment-token presence, refuse",
+    "token/source co-mounts, and apply the selected network policy and hardening."
   ].join("\n");
 }
 async function runClaudeInsideCli(argv, env = process.env, deps = {}) {

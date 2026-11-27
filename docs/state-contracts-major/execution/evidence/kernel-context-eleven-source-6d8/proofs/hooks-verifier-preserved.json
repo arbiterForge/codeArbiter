@@ -1,0 +1,486 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "/root/ci_repair_review: source-only author, no independent self-review or execution"
+ },
+ "inputs": {
+  ".codearbiter/decisions/0043-assistive-state-engine.md": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+  "core/artifacts/internal/evidence/completion_workspace.go": "e9c84c68692521f2d316c26e47158345ffd35fd9cf23f4df307a14679f145e05",
+  "core/artifacts/internal/observation/runner_contract.go": "2d217493e171b5db5e2d064b39211c96f1fc8618f488ffaa1cb910e1e61510ab",
+  "core/pysrc/_artifactauthoritylib.py": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+  "core/pysrc/_gitexec.py": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5",
+  "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e"
+ },
+ "disposition_ids": [
+  "disposition:machines:hooks:verifier",
+  "disposition:transitions:hooks:verifier:01",
+  "disposition:transitions:hooks:verifier:02",
+  "disposition:transitions:hooks:verifier:03",
+  "disposition:transitions:hooks:verifier:04",
+  "disposition:transitions:hooks:verifier:05",
+  "disposition:transitions:hooks:verifier:06"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/source-bindings.json",
+   "sha256": "1fb0bc0a5b9b6bbb0a5778aa3c7473b7aa4436f12b7302691482981d4e13503a"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/clause-inspection.json",
+   "sha256": "fb0f419efc542d8d24115010ad418287ac0caada0681005b8a0f2c01c511d115"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/inherited-evidence-inventory.json",
+   "sha256": "0bd4a253ed17166d5e44ef669c14437b7b43e8382d96d7130cf828f7101440bc"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/baseline-current-joins.json",
+   "sha256": "8f9a26c8b80983c73fd27867ebf7510633af5565ebe4d4811b1c64a0cca02b5f"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:hooks:verifier",
+   "frozen_row_sha256": "63b9be907ced7cf394eee3be64125022539ab76e85b84fb002c9715bca2ba51c",
+   "clause_ids": [
+    "disposition:transitions:hooks:verifier:01",
+    "disposition:transitions:hooks:verifier:02",
+    "disposition:transitions:hooks:verifier:03",
+    "disposition:transitions:hooks:verifier:04",
+    "disposition:transitions:hooks:verifier:05",
+    "disposition:transitions:hooks:verifier:06",
+    "disposition:transitions:hooks:verifier:07"
+   ],
+   "witnesses": [
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "symbol": "observe_verifier_hook",
+     "start": 3347,
+     "end": 3439,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "29774e517cb68d6e294fe1c640e6d72745c7f2d6bb46bbe90b8a01ce84da825c",
+     "git_oid": "fb3089e12ddb95242a511cb7754f1e744f7bf53d"
+    },
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "symbol": "_verification_selector",
+     "start": 3304,
+     "end": 3344,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "c1e2dbbc3cedfb29a9a69cb49e7289e296e79e01e68d2c1028ce31045eb5ab90",
+     "git_oid": "fb3089e12ddb95242a511cb7754f1e744f7bf53d"
+    },
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "symbol": "_bind_commands",
+     "start": 1364,
+     "end": 1406,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "3a4aa2b8fb96c80904521daa36b955dd9e30baa3c8decfc1961643ca0d649d3b",
+     "git_oid": "fb3089e12ddb95242a511cb7754f1e744f7bf53d"
+    },
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "symbol": "run_verification",
+     "start": 3150,
+     "end": 3269,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "c58d26e2549a17d7a422dd6b1bbe86979ed18d770b458140b3d4c02ea0392e08",
+     "git_oid": "fb3089e12ddb95242a511cb7754f1e744f7bf53d"
+    },
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "symbol": "_save",
+     "start": 545,
+     "end": 584,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "a6a8aa88515fafeb82aae06c3557d7c39eb862eace7627cf86f163af38c030f8",
+     "git_oid": "fb3089e12ddb95242a511cb7754f1e744f7bf53d"
+    },
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "symbol": "_run_contained",
+     "start": 2734,
+     "end": 2908,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "3aed1b7866aeb90487e08db3ac768c91ebd9ad91b2dbfb1866d1a70b4e16b3d3",
+     "git_oid": "fb3089e12ddb95242a511cb7754f1e744f7bf53d"
+    },
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "symbol": "_drain_windows_job",
+     "start": 2712,
+     "end": 2731,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "cd5484fc277e7e2db53f94569cb7dfd344d0db518b3dd1723842d49325572039",
+     "git_oid": "fb3089e12ddb95242a511cb7754f1e744f7bf53d"
+    },
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "symbol": "recover_request",
+     "start": 4690,
+     "end": 4721,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "2d17fd597c66c72464da8a257addf9d804ca9d3cf31e3e7d087ca58b81866d0c",
+     "git_oid": "fb3089e12ddb95242a511cb7754f1e744f7bf53d"
+    },
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "symbol": "_unittest_collector",
+     "start": 2049,
+     "end": 2069,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "d89283782a814f788657d4742522b1cef2284e1683a1dc9f0b2f400a8c2d5c57",
+     "git_oid": "fb3089e12ddb95242a511cb7754f1e744f7bf53d"
+    },
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "symbol": "_named_line_collector",
+     "start": 2072,
+     "end": 2091,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "ea57b9f3a9cb6b01382a29737188d1c0b4bc6ec0db6469e0bd2c5a71a28fbc70",
+     "git_oid": "fb3089e12ddb95242a511cb7754f1e744f7bf53d"
+    },
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "symbol": "_vitest_verbose_collector",
+     "start": 2094,
+     "end": 2117,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "2153df9772f5a188e28d0469140c314a217b4987650ad27c0b7599a9e7dc37ff",
+     "git_oid": "fb3089e12ddb95242a511cb7754f1e744f7bf53d"
+    },
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "symbol": "_playwright_json_collector",
+     "start": 2133,
+     "end": 2179,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "eb1deca0016593324b21ca5d297779e5e5fff5612a0b2f1bf970ae46026604c7",
+     "git_oid": "fb3089e12ddb95242a511cb7754f1e744f7bf53d"
+    },
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "symbol": "_exit_only_collector",
+     "start": 2182,
+     "end": 2185,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "0d12791244b10d6a4f6704e03381276db2081b82edb21ea59f1bc261002f3475",
+     "git_oid": "fb3089e12ddb95242a511cb7754f1e744f7bf53d"
+    },
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "symbol": "_claude_verifier_result",
+     "start": 3442,
+     "end": 3474,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "0fa5c76baba00593925f4af9227193ca44be3eab900fca769deb8dbe4d84a793",
+     "git_oid": "fb3089e12ddb95242a511cb7754f1e744f7bf53d"
+    },
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "symbol": "publish_request",
+     "start": 4632,
+     "end": 4687,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "dfc0cebada45feda07b609743c2b67fec3ea9f9b852fe98210c5a0efdccf5a7f",
+     "git_oid": "fb3089e12ddb95242a511cb7754f1e744f7bf53d"
+    },
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "symbol": "_publish_immutable",
+     "start": 271,
+     "end": 319,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "fdc9e27453581eeca988ee87a04334a551850dd039a044f51526cea2a3bd03d6",
+     "git_oid": "fb3089e12ddb95242a511cb7754f1e744f7bf53d"
+    },
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "symbol": "_native_launch",
+     "start": 1414,
+     "end": 1454,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "660cc4f4b35f43a3b29be8bea514edb3de0ceb2fe5f992ef54b02642a0af4f2a",
+     "git_oid": "fb3089e12ddb95242a511cb7754f1e744f7bf53d"
+    },
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "symbol": "_npm_runner",
+     "start": 2357,
+     "end": 2407,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "d20ce9ed509b1c423242aba5f81134202ccebe3985f58cbfb0154c3b34db2296",
+     "git_oid": "fb3089e12ddb95242a511cb7754f1e744f7bf53d"
+    },
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "symbol": "_npm_workspace_runner",
+     "start": 2241,
+     "end": 2296,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "91ed5afdb3c7c469c9bd2b8bf6eb89df732a5f2126f8cc98edc0953f9e6b97da",
+     "git_oid": "fb3089e12ddb95242a511cb7754f1e744f7bf53d"
+    },
+    {
+     "path": "core/artifacts/internal/observation/runner_contract.go",
+     "symbol": "18-24",
+     "start": 18,
+     "end": 24,
+     "file_sha256": "2d217493e171b5db5e2d064b39211c96f1fc8618f488ffaa1cb910e1e61510ab",
+     "span_sha256": "2e43a74aeb7b6cd5b522bd39a9b3a70516cc4c59e4366ddbb2b4de82fd2d1c38",
+     "git_oid": "bbffc65021bdad13cd82b903193282bc30b2f6e3"
+    },
+    {
+     "path": "core/artifacts/internal/evidence/completion_workspace.go",
+     "symbol": "396-421",
+     "start": 396,
+     "end": 421,
+     "file_sha256": "e9c84c68692521f2d316c26e47158345ffd35fd9cf23f4df307a14679f145e05",
+     "span_sha256": "bdaa47c311b03a880df470fd70e4879eb8d416a34c9b33592d9856924db12912",
+     "git_oid": "b45360699fcf0a0bae3e49d82f18e5ed0ddc8ddf"
+    }
+   ],
+   "semantic_assessment": "All 7 frozen clauses inspected as a finite source contract with the per-clause current/pinned witnesses and explicit analytical limits in clause-inspection. Existing advanced observations remain historical, not renewed.",
+   "intake_variances": [
+    "Containment is the implemented process-group/Job contract, not a universal sandbox or proof all detached/escaped descendants terminate. Windows rundown may refuse as unconfirmed; source inspection does not execute this boundary.",
+    "The frozen max32 mismatch describes the repaired finding, not current failure behavior. No actual Go/Python/npm/platform execution is claimed by this inspection."
+   ],
+   "limits": "Source conformance only. No product/test/native/host/model/command execution, no action authority, semantic truth or task/scenario completion claim."
+  },
+  {
+   "cell": "disposition:transitions:hooks:verifier:01",
+   "frozen_row_sha256": "ee4a1a725f3bdbccbd1095bc3b2b93309904d5adcc8a306d5deeb7e24bac0568",
+   "witnesses": [
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "symbol": "observe_verifier_hook",
+     "start": 3347,
+     "end": 3439,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "29774e517cb68d6e294fe1c640e6d72745c7f2d6bb46bbe90b8a01ce84da825c",
+     "git_oid": "fb3089e12ddb95242a511cb7754f1e744f7bf53d"
+    },
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "symbol": "_verification_selector",
+     "start": 3304,
+     "end": 3344,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "c1e2dbbc3cedfb29a9a69cb49e7289e296e79e01e68d2c1028ce31045eb5ab90",
+     "git_oid": "fb3089e12ddb95242a511cb7754f1e744f7bf53d"
+    },
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "symbol": "_bind_commands",
+     "start": 1364,
+     "end": 1406,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "3a4aa2b8fb96c80904521daa36b955dd9e30baa3c8decfc1961643ca0d649d3b",
+     "git_oid": "fb3089e12ddb95242a511cb7754f1e744f7bf53d"
+    }
+   ],
+   "semantic_assessment": "Only the closed foreground wrapper selector names a registered request. PreToolUse joins host/session/turn/tool-use identity, ARMED state, exact bound launch files and workspace snapshot before saving wrapper AUTHORIZED; unmatched ordinary commands select no authority.",
+   "intake_variances": [],
+   "limits": "Source conformance only. No product/test/native/host/model/command execution, no action authority, semantic truth or task/scenario completion claim."
+  },
+  {
+   "cell": "disposition:transitions:hooks:verifier:02",
+   "frozen_row_sha256": "4316416452eb980df1badfe586b20360a22a5f31cfc6546f5d7c7751718beae4",
+   "witnesses": [
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "symbol": "run_verification",
+     "start": 3150,
+     "end": 3269,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "c58d26e2549a17d7a422dd6b1bbe86979ed18d770b458140b3d4c02ea0392e08",
+     "git_oid": "fb3089e12ddb95242a511cb7754f1e744f7bf53d"
+    },
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "symbol": "_save",
+     "start": 545,
+     "end": 584,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "a6a8aa88515fafeb82aae06c3557d7c39eb862eace7627cf86f163af38c030f8",
+     "git_oid": "fb3089e12ddb95242a511cb7754f1e744f7bf53d"
+    }
+   ],
+   "semantic_assessment": "run_verification requires ARMED plus AUTHORIZED wrapper and rechecks effective bindings, frozen context and raw/normalized workspace before persisting a fresh RUNNING attempt. COMPLETED returns an explicitly replayed summary; other states cannot rerun.",
+   "intake_variances": [],
+   "limits": "Source conformance only. No product/test/native/host/model/command execution, no action authority, semantic truth or task/scenario completion claim."
+  },
+  {
+   "cell": "disposition:transitions:hooks:verifier:03",
+   "frozen_row_sha256": "bb0b71ea20706d43bc2442dffcfb07e8aa363ded007e1e487bb17f24f25fb32c",
+   "witnesses": [
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "symbol": "_run_contained",
+     "start": 2734,
+     "end": 2908,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "3aed1b7866aeb90487e08db3ac768c91ebd9ad91b2dbfb1866d1a70b4e16b3d3",
+     "git_oid": "fb3089e12ddb95242a511cb7754f1e744f7bf53d"
+    },
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "symbol": "_drain_windows_job",
+     "start": 2712,
+     "end": 2731,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "cd5484fc277e7e2db53f94569cb7dfd344d0db518b3dd1723842d49325572039",
+     "git_oid": "fb3089e12ddb95242a511cb7754f1e744f7bf53d"
+    },
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "symbol": "recover_request",
+     "start": 4690,
+     "end": 4721,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "2d17fd597c66c72464da8a257addf9d804ca9d3cf31e3e7d087ca58b81866d0c",
+     "git_oid": "fb3089e12ddb95242a511cb7754f1e744f7bf53d"
+    }
+   ],
+   "semantic_assessment": "The contained runner starts a POSIX session or suspended Windows child assigned to a kill-on-close Job Object. The default execution deadline is 1800 seconds and each output buffer is capped at 8 MiB. Failures do not reset the durable RUNNING request; recovery explicitly marks the prior attempt failed/abandoned with rerun_permitted false.",
+   "intake_variances": [
+    "Containment is the implemented process-group/Job contract, not a universal sandbox or proof all detached/escaped descendants terminate. Windows rundown may refuse as unconfirmed; source inspection does not execute this boundary."
+   ],
+   "limits": "Source conformance only. No product/test/native/host/model/command execution, no action authority, semantic truth or task/scenario completion claim."
+  },
+  {
+   "cell": "disposition:transitions:hooks:verifier:04",
+   "frozen_row_sha256": "b1732786e853c02e9a2ebf2b87877c6f0bb061b36ab76a76e99561f2afb76627",
+   "witnesses": [
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "symbol": "run_verification",
+     "start": 3150,
+     "end": 3269,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "c58d26e2549a17d7a422dd6b1bbe86979ed18d770b458140b3d4c02ea0392e08",
+     "git_oid": "fb3089e12ddb95242a511cb7754f1e744f7bf53d"
+    },
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "symbol": "_unittest_collector",
+     "start": 2049,
+     "end": 2069,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "d89283782a814f788657d4742522b1cef2284e1683a1dc9f0b2f400a8c2d5c57",
+     "git_oid": "fb3089e12ddb95242a511cb7754f1e744f7bf53d"
+    },
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "symbol": "_named_line_collector",
+     "start": 2072,
+     "end": 2091,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "ea57b9f3a9cb6b01382a29737188d1c0b4bc6ec0db6469e0bd2c5a71a28fbc70",
+     "git_oid": "fb3089e12ddb95242a511cb7754f1e744f7bf53d"
+    },
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "symbol": "_vitest_verbose_collector",
+     "start": 2094,
+     "end": 2117,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "2153df9772f5a188e28d0469140c314a217b4987650ad27c0b7599a9e7dc37ff",
+     "git_oid": "fb3089e12ddb95242a511cb7754f1e744f7bf53d"
+    },
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "symbol": "_playwright_json_collector",
+     "start": 2133,
+     "end": 2179,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "eb1deca0016593324b21ca5d297779e5e5fff5612a0b2f1bf970ae46026604c7",
+     "git_oid": "fb3089e12ddb95242a511cb7754f1e744f7bf53d"
+    },
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "symbol": "_exit_only_collector",
+     "start": 2182,
+     "end": 2185,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "0d12791244b10d6a4f6704e03381276db2081b82edb21ea59f1bc261002f3475",
+     "git_oid": "fb3089e12ddb95242a511cb7754f1e744f7bf53d"
+    }
+   ],
+   "semantic_assessment": "The selected collector and expected exit must pass. Exact named outcomes are validated per collector; raw and normalized workspace/context must match before/after. The closed immutable observation is stored before COMPLETED state. Missing, duplicate, failed or incompatible named results refuse.",
+   "intake_variances": [],
+   "limits": "Source conformance only. No product/test/native/host/model/command execution, no action authority, semantic truth or task/scenario completion claim."
+  },
+  {
+   "cell": "disposition:transitions:hooks:verifier:05",
+   "frozen_row_sha256": "0db78a19f2674f3d835200e8f6b6aa76e145a0ebb3f0afc13f6a67f90f157cbc",
+   "witnesses": [
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "symbol": "observe_verifier_hook",
+     "start": 3347,
+     "end": 3439,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "29774e517cb68d6e294fe1c640e6d72745c7f2d6bb46bbe90b8a01ce84da825c",
+     "git_oid": "fb3089e12ddb95242a511cb7754f1e744f7bf53d"
+    },
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "symbol": "_claude_verifier_result",
+     "start": 3442,
+     "end": 3474,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "0fa5c76baba00593925f4af9227193ca44be3eab900fca769deb8dbe4d84a793",
+     "git_oid": "fb3089e12ddb95242a511cb7754f1e744f7bf53d"
+    }
+   ],
+   "semantic_assessment": "PostToolUse must correlate the authorized wrapper identity and completed request. Codex requires successful structured exit or matching completion JSON; Claude validates the successful foreground response, while PostToolUseFailure persists wrapper FAILED. A replay cannot masquerade as a newly authorized Claude completion.",
+   "intake_variances": [],
+   "limits": "Source conformance only. No product/test/native/host/model/command execution, no action authority, semantic truth or task/scenario completion claim."
+  },
+  {
+   "cell": "disposition:transitions:hooks:verifier:06",
+   "frozen_row_sha256": "cf2d1c00fafaecc7e7feffc5a4825562f890779da8b8f8699e72225a78c4e288",
+   "witnesses": [
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "symbol": "publish_request",
+     "start": 4632,
+     "end": 4687,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "dfc0cebada45feda07b609743c2b67fec3ea9f9b852fe98210c5a0efdccf5a7f",
+     "git_oid": "fb3089e12ddb95242a511cb7754f1e744f7bf53d"
+    },
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "symbol": "_publish_immutable",
+     "start": 271,
+     "end": 319,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "fdc9e27453581eeca988ee87a04334a551850dd039a044f51526cea2a3bd03d6",
+     "git_oid": "fb3089e12ddb95242a511cb7754f1e744f7bf53d"
+    }
+   ],
+   "semantic_assessment": "Publication requires COMPLETED and verification wrapper CORROBORATED, then recomputes exact engine context, verifies retained observation bytes, publishes immutable source and calls native capture-observation. CAPTURED returns the retained receipt rather than recapturing.",
+   "intake_variances": [],
+   "limits": "Source conformance only. No product/test/native/host/model/command execution, no action authority, semantic truth or task/scenario completion claim."
+  }
+ ],
+ "scope": "hooks:verifier finite current source guard/effect/retry clauses, with named analytical distinctions; not runtime acceptance.",
+ "limits": [
+  "No tests, full owner, API, runtime, provider/model, native/Go/SDK/Docker, installs, network or canonical/index/ref/marker/ledger/status writes.",
+  "PROGRAM and current accepted requirements govern named changes. No actual failing test is relabeled N/A, no task/scenario or whole-platform completion.",
+  "Root alone owns independent review, unchanged strict prospective admission, canonical integration and later hosted qualification.",
+  "18 advanced rows retain exact original objects, proof bytes, history and epochs; no cache/negative absence/semantic freshness invented."
+ ]
+}

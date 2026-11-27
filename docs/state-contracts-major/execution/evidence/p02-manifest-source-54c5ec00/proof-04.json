@@ -1,0 +1,68 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "54c5ec002ddc7af216a04d8bc1bc83184c368bbc",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "Same finite source claims after P02 and manifest owner qualification routing"
+  },
+  "inputs": {
+    ".codearbiter/decisions/0040-independent-per-target-release-with-consumer-safety-gates.md": "2dce2651ea067cc7bec25982ce23fdeb1528e9bfb003906c55be7e243a3a8964",
+    ".codearbiter/decisions/0043-assistive-state-engine.md": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+    ".codearbiter/decisions/0044-trusted-pi-npm-publication.md": "fda3c0194f83d41bcb169fae7c14d1b24bdaf3bace8d41780a88825e10fe30d6",
+    ".codearbiter/decisions/0049-require-https-outside-bounded-loopback.md": "c757cef9d5e318b75ff164d270b29a49255449360f0b7cde51e53775e6916ab8",
+    ".github/workflows/ci.yml": "d6ce20ed5f84dd1c841aca08e0c294f08cb993c7e9c054615dcfaabdf45cab82",
+    "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+    "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+    "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+    "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+    "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e"
+  },
+  "disposition_ids": [
+    "disposition:machines:C01",
+    "disposition:transitions:C01:01",
+    "disposition:transitions:C01:02",
+    "disposition:transitions:C01:03",
+    "disposition:transitions:C01:04",
+    "disposition:transitions:C01:05"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/p02-manifest-source-54c5ec00/source-delta-review.json",
+      "sha256": "3112a0711b9669882af827e05890eaeb0f27630aa793c731b4c7c9ab94ed2781"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/named-routes-source-f5206e73/proof-05.json",
+      "sha256": "1c93458a3e62d2eaecaed79e03ea66385041d8a57db48c92d35315e524837a5f"
+    }
+  ],
+  "prior_source_fingerprint": {
+    "path": "docs/state-contracts-major/execution/evidence/named-routes-source-f5206e73/proof-05.json",
+    "sha256": "1c93458a3e62d2eaecaed79e03ea66385041d8a57db48c92d35315e524837a5f",
+    "original_code": "f5206e7371e0d74ce6730f701e418ac3b3bfa7a5",
+    "stored_at": "e2bad8bcf4f8203c016842742c865a50ac9c77fa"
+  },
+  "scope": "Current source-only Release/CI preservation and explicit accepted repair deltas; no hosted/publication/account/installed qualification.",
+  "changed_paths": [
+    ".github/workflows/ci.yml"
+  ],
+  "limits": [
+    "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification.",
+    "PROGRAM current source and accepted task direction govern. All frozen clauses remain literal; named accepted repairs/intake variances are explicit, not failed tests relabeled N/A.",
+    "No automatic task, runtime epoch, installed capability, actual hosted/platform, release/account or public-readback qualification follows from source PRESERVED.",
+    "Only14 selected machines and their48 still-PLANNED transitions are proposed; all32 advanced transitions and every other row/history remain untouched. C05-C10 are excluded.",
+    "No canonical/index/ref/marker/ledger/status/progress writes, runtime tests, provider/API/network calls, builds, installs or review fleet. Root owns independent review and strict prospective admission.",
+    "No run, platform, package, task, provider, user or installed evidence was renewed.",
+    "All prior original source epochs and raw evidence remain exact.",
+    "New file names are bound in the exact full Python namespace; the disjoint entry points are not a claim of newly executed tests.",
+    "Only evidence binding was renewed for unchanged finite predicates. C35 has explicit maintainer-authorized policy changes.",
+    "Source-only assessment. All execution and prior evidence retain their original epochs.",
+    "Static renewal preserves finite owner, effect and authorization predicates. The fixed Windows upload handoff uses the same two existing native candidate members.",
+    "Source-only assessment. All execution and prior evidence retain their original epochs.",
+    "This source renewal preserves each prior finite clause. The new original-result routes were not promoted.",
+    "Source-only assessment. All execution and prior evidence retain their original epochs.",
+    "Current source refinement preserves all prior finite owner and guard clauses; the newly routed claims are outside this proof.",
+    "Source-only assessment. All execution and prior evidence retain their original epochs."
+  ]
+}

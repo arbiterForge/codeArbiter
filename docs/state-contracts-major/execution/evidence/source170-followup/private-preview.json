@@ -1,0 +1,63 @@
+{
+ "result": "PASS_PRIVATE_SOURCE_PREVIEW",
+ "proposals": [
+  {
+   "delivery": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-nextfive-source-f5-hk6yehhm\\delivery.json",
+   "sha256": "e094eed9a604d9634e63243b129763e5fa908d828e15164f554d3a20eef270a4",
+   "cells": 40,
+   "skipped_old_epoch_cells": [],
+   "skip_reason": null
+  },
+  {
+   "delivery": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-workflow-entry-source-trybezyn\\delivery.json",
+   "sha256": "0758b446e6e3ecef887e23380eef2107bbcb088da0d71b0fb684e2fe350ba49b",
+   "cells": 10,
+   "skipped_old_epoch_cells": [],
+   "skip_reason": null
+  },
+  {
+   "delivery": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-ci-six-source-384269dc-rsa39x4g\\delivery.json",
+   "sha256": "a7c3def46fc1235daa6d875b9f405a2b1768da5357904259adb9904fc345e340",
+   "cells": 14,
+   "skipped_old_epoch_cells": [
+    "disposition:transitions:C06:01",
+    "disposition:transitions:C06:03",
+    "disposition:transitions:C06:04"
+   ],
+   "skip_reason": "Three historical C06 source proposals are replaced by the five-cell current source proof after the confirmed repair; original packet is preserved."
+  },
+  {
+   "delivery": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-nine-prose-successor-2c123_jm\\delivery.json",
+   "sha256": "24586a06f7626d9762314891cfc732ab1b98fea0aa39581fdd276ee4d8f4444f",
+   "cells": 47,
+   "skipped_old_epoch_cells": [],
+   "skip_reason": null
+  },
+  {
+   "delivery": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-workflow-ten-source-384-_2dcwcv6\\delivery.json",
+   "sha256": "7d2415826096cac693dc1af06121791ab98601cdb87d39d4ad369976a11d019b",
+   "cells": 54,
+   "skipped_old_epoch_cells": [],
+   "skip_reason": null
+  },
+  {
+   "delivery": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-c06-current-source-l1s8y27u\\delivery.json",
+   "sha256": "1c6621caaa7f8f51d85396804afb0740555ba22c2defa616d9dbe5c5ab37604a",
+   "cells": 5,
+   "skipped_old_epoch_cells": [],
+   "skip_reason": null
+  }
+ ],
+ "adoption_sha256": "18c72a9e9a43dde4b47eb596743e8d00f7d59717fe632cb4e399bc2c12d290dc",
+ "strict_projection_sha256": "960fa1c801d32802518ca73e768dc76d946fc472ff30078e55feaa1c85588a45",
+ "cells": 170,
+ "records": 259,
+ "planned": {
+  "findings": 49,
+  "machines": 116,
+  "transitions": 418,
+  "total": 583
+ },
+ "root_state_unchanged": true,
+ "full_owner_called": false
+}

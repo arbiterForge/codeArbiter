@@ -1,0 +1,67 @@
+[
+  {
+    "name": "python-original-unit-and-pure",
+    "argv": [
+      "C:/Python314/python.exe",
+      "-I",
+      "-S",
+      "-B",
+      "-X",
+      "utf8",
+      "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-verification-phase-budgets-ciyjo5ju\\repo\\run-owners.py"
+    ],
+    "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-verification-phase-budgets-ciyjo5ju\\repo",
+    "outer_timeout_seconds": 180,
+    "exit_code": 0,
+    "timed_out": false,
+    "elapsed_seconds": 16.46727419999661,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_sha256": "e22f640fa5ee0a3b9819ee54fc09870ebd5de7287a0ffc91bf1175c5e0ad7290",
+    "stdout_bytes": 0,
+    "stderr_bytes": 3618
+  },
+  {
+    "name": "python-wiring-controls",
+    "argv": [
+      "C:/Python314/python.exe",
+      "-I",
+      "-S",
+      "-B",
+      "-X",
+      "utf8",
+      "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-verification-phase-budgets-ciyjo5ju\\repo\\run-wiring.py"
+    ],
+    "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-verification-phase-budgets-ciyjo5ju\\repo",
+    "outer_timeout_seconds": 120,
+    "exit_code": 0,
+    "timed_out": false,
+    "elapsed_seconds": 0.11897680000402033,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_sha256": "74603c34f28bec706e13769cf3f34f653895e6feff280778e5395ddb0ff6a88a",
+    "stdout_bytes": 0,
+    "stderr_bytes": 707
+  },
+  {
+    "name": "journal-vitest",
+    "argv": [
+      "D:/dev/Users/brenn/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node.exe",
+      "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-verification-phase-budgets-ciyjo5ju\\repo\\plugins\\ca-pi\\tools\\node_modules\\vitest\\vitest.mjs",
+      "run",
+      "test/delegation-journal.test.ts",
+      "--coverage",
+      "--coverage.reportsDirectory",
+      "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-verification-phase-budgets-ciyjo5ju\\coverage",
+      "--reporter=json",
+      "--outputFile=C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-verification-phase-budgets-ciyjo5ju\\journal-results.json"
+    ],
+    "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-verification-phase-budgets-ciyjo5ju\\repo\\plugins\\ca-pi\\tools",
+    "outer_timeout_seconds": 180,
+    "exit_code": 0,
+    "timed_out": false,
+    "elapsed_seconds": 6.6714335000142455,
+    "stdout_sha256": "24f499516ba34273a30428b64ef20fca39a84c20f16f53da94c72cb9340dbb6f",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_bytes": 471,
+    "stderr_bytes": 0
+  }
+]

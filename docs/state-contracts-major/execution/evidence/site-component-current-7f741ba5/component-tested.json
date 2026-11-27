@@ -1,0 +1,311 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "7f741ba5bf56cb785bc9c54e0d1fd8faa97a8cbb",
+  "kind": "test",
+  "result": "PASSED",
+  "producer": {
+    "class": "local-host",
+    "identity": "/root/packaging_site_tools original committed-source Windows Chrome component16 observation"
+  },
+  "platform": "windows/amd64",
+  "inputs": {
+    "site/src/components/Search.astro": "d273babc0f168c60fb6748c922cf5b6be29dacdad6c46f018cc0c473a227c36e",
+    "site/src/components/SplashDocsRail.astro": "9f76985828efd12dd6856a8d2b5bf69538c3c10c19fbe7edca02ed614042dd1e",
+    "site/test/components/lifecycle.spec.ts": "70466c0be7d9fc0ea94dac7b882b7eb5d3c04cd65cd30621f27a4192189c3317",
+    "site/test/components/search-boundaries.spec.ts": "f5a1b2777d28ddde8823d0ca634179daa990691dba20ca0045a163243ba92afd",
+    "site/playwright.components.config.ts": "7020bb513095c3a3bbb5c9e1029ab84ce0420b1ed9dff075dd3b0948c37f09ff",
+    "site/package.json": "f5fc189cffe4dd4f4ba2de7ee1a31f36cacc017d0f4b598d69a3ffc4e1bdffd3",
+    "site/package-lock.json": "d81f1d4b54c0e2a0fc05815687fcb306e0a12f98c3e382032556e445c614787a",
+    "site/test/components/search-interactions.spec.ts": "ccc156514e995da6398ca2806febc9017845124075a7425ff4b964874cf4a1bb"
+  },
+  "commands": [
+    {
+      "argv": [
+        "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+        "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js",
+        "--silent",
+        "run",
+        "test:components",
+        "--",
+        "--reporter=json",
+        "--output=C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-component16-committed-7f741ba5-31a2hynd\\playwright-output"
+      ],
+      "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-component16-committed-7f741ba5-31a2hynd\\site",
+      "exit_code": 0
+    }
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/site-component-current-7f741ba5/raw/start.json",
+      "sha256": "544f9ee19eeeb1f23c82da951b939ec94ae5774993b69b1b6ff5de4294a14209"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/site-component-current-7f741ba5/raw/result.json",
+      "sha256": "06ec4456f6a942c58140fb3349c25f246710e48855aaf5cc82a17c60f705e430"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/site-component-current-7f741ba5/raw/original-report.json",
+      "sha256": "9c3587195b2da4e5b64f83ff97f4779fe3739b2834c7967f41ceeeb8414a2def"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/site-component-current-7f741ba5/raw/observe_committed.py",
+      "sha256": "1b050b25be66803a8712602c16406818bae1e416b6352ba44b1634bb684f3db2"
+    }
+  ],
+  "disposition_ids": [
+    "disposition:transitions:S55:07",
+    "disposition:transitions:S55:09",
+    "disposition:transitions:S62:05",
+    "disposition:findings:SF11",
+    "disposition:findings:SF16",
+    "disposition:transitions:S55:03",
+    "disposition:transitions:S55:04",
+    "disposition:transitions:S55:11",
+    "disposition:transitions:S55:01",
+    "disposition:transitions:S55:02",
+    "disposition:transitions:S55:05",
+    "disposition:transitions:S55:06",
+    "disposition:transitions:S55:08",
+    "disposition:transitions:S55:10",
+    "disposition:machines:S55"
+  ],
+  "per_cell_assertion_mapping": [
+    {
+      "cell": "disposition:transitions:S55:07",
+      "observed_named_cases": [
+        "search recovers query",
+        "search recovers data"
+      ],
+      "assertion_scope": "Actual component query rejection and lazy result-data rejection show explicit error/retry, preserve the typed query, recover one result, then permit ArrowDown option selection.",
+      "limits": [
+        "Accepted SITE-U01 replaces historical unhandled/stale rejection with current error/retry state."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S55:09",
+      "observed_named_cases": [
+        "search recovers expansion"
+      ],
+      "assertion_scope": "Actual failed expansion keeps the first8 results and exposes enabled retry; retry resolves all10 results.",
+      "limits": [
+        "Accepted SITE-U01 catches expansion rejection and restores retry eligibility; controlled Pagefind provider only."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S62:05",
+      "observed_named_cases": [
+        "drawer reconnect owns exactly one set of opener, close and keyboard listeners"
+      ],
+      "assertion_scope": "The same actual custom element disconnects/reconnects3 times. Each single opener click opens rather than double-toggling; Escape closes, background aria-hidden returns to its prior value and opener focus returns.",
+      "limits": [
+        "Opener/Escape observable lifetime only; no claim every close-control handler count or production layout was independently measured."
+      ]
+    },
+    {
+      "cell": "disposition:findings:SF11",
+      "observed_named_cases": [
+        "search recovers query",
+        "search recovers data",
+        "search recovers expansion",
+        "search recovers stale"
+      ],
+      "assertion_scope": "Browser execution of actual Search markup/script observes query/data rejection recovery, expansion retry with old results retained, and an older rejected query never replacing newer successful results.",
+      "limits": [
+        "Component-only fixture and controlled Pagefind responses; no real search-index or production-page claim."
+      ]
+    },
+    {
+      "cell": "disposition:findings:SF16",
+      "observed_named_cases": [
+        "drawer reconnect owns exactly one set of opener, close and keyboard listeners"
+      ],
+      "assertion_scope": "Real browser connection callbacks on the same actual drawer component retain usable single-click opener and Escape behavior across3 reconnections, with background aria and focus restoration.",
+      "limits": [
+        "Known duplicated-toggle risk is exercised; full production DOM/CSS, all close/focus-trap branches and installed host behavior remain separate."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S55:03",
+      "observed_named_cases": [
+        "module failure retains query and retries a cache-busted import"
+      ],
+      "assertion_scope": "Actual HTTP503 import rejection shows error and retained query with no options; focus then render does not re-request the failed module before explicit retry.",
+      "limits": [
+        "Browser network fixture, not production Pagefind index."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S55:04",
+      "observed_named_cases": [
+        "module failure retains query and retries a cache-busted import"
+      ],
+      "assertion_scope": "User Retry requests exact cache-busted module URL ?retry=1; same query resolves visible result and ArrowDown selection.",
+      "limits": [
+        "Only one failed import followed by one successful explicit retry."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S55:11",
+      "observed_named_cases": [
+        "pending query cannot reopen search after clear",
+        "pending query cannot reopen search after Escape",
+        "pending query cannot reopen search after outside",
+        "disconnect cancels pending render and releases shortcut until reconnect"
+      ],
+      "assertion_scope": "Empty/Escape/outside/disconnect close the actual component, clear active option/expanded state, and late pending success cannot reopen or replace retained ready results. Connected closes permit fresh search. Disconnected Ctrl+K is not canceled; reconnect restores shortcut focus and fresh search.",
+      "source_clause_conformance": "Each corresponding close/disconnect branch clears debounce and increments latest before closing; disconnectedCallback removes document click/window shortcut handlers. Finite source inspected directly; no equality-only preservation claim.",
+      "limits": [
+        "No direct timer-cancellation instrumentation or listener-count assertion; pending-response/shortcut ownership effects observed.",
+        "No production layout/CSS or actual Pagefind index."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S55:01",
+      "observed_named_cases": [
+        "concurrent focus and submitted queries await one module initialization"
+      ],
+      "assertion_scope": "Focus starts one actual dynamic module import/options initialization. Concurrent actual form submissions cannot call search while options is held. One options call and one module request are retained; after release only newest results paint.",
+      "source_clause_conformance": "One pendingPagefind promise is assigned before the dynamic import yield and shared by loader callers; it includes import and options.",
+      "limits": [
+        "Controlled module/API; no actual index startup or network latency claim."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S55:02",
+      "observed_named_cases": [
+        "concurrent focus and submitted queries await one module initialization",
+        "options rejection remains handled and explicit retry initializes a fresh module"
+      ],
+      "assertion_scope": "After held options resolves, newest query succeeds; later cached query succeeds with optionsCalls still1 and one module request. Rejected options permits no search, retains input/error/retry and fresh ?retry=1 initialization; subsequent cached query retains optionsCalls2.",
+      "limits": [
+        "Finite asynchronous module-readiness/cache contract only; no actual Pagefind worker readiness claim."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S55:05",
+      "observed_named_cases": [
+        "normalized queries debounce for140ms and fetch only the first8 results",
+        "late successful queries cannot replace newer results or empty state"
+      ],
+      "assertion_scope": "Paused real browser clock observes no query at139ms; replacement input restarts debounce and still has none at139ms, then exactly normalized many at140ms. Only data indices0..7 fetch for10 results. Separate controlled query generations reject late successes.",
+      "limits": [
+        "Virtual browser clock, not wall-clock performance benchmarking."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S55:06",
+      "observed_named_cases": [
+        "late successful queries cannot replace newer results or empty state",
+        "empty results, arrow wrapping, submit and activation preserve combobox navigation",
+        "normalized queries debounce for140ms and fetch only the first8 results"
+      ],
+      "assertion_scope": "Newest results/count/active selection persist after older successful queries resolve. Newer empty state/count/cleared selection also persists after a second old success. Positive results and empty results paint, and default first8 show provider count10.",
+      "limits": [
+        "Controlled result set and component DOM only; ranking/real-index correctness separate."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S55:08",
+      "observed_named_cases": [
+        "pending expansion disables repeat activation until all data settles"
+      ],
+      "assertion_scope": "With8of10 results visible, expansion starts two held data reads, disables its actual button, retains8 and ignores repeat native button.click while disabled. Release paints10 and clears hidden control disabled state.",
+      "limits": [
+        "Ordinary DOM activation, not arbitrary hostile dispatchEvent."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S55:10",
+      "observed_named_cases": [
+        "empty results, arrow wrapping, submit and activation preserve combobox navigation",
+        "disconnect cancels pending render and releases shortcut until reconnect"
+      ],
+      "assertion_scope": "Actual form submission normalizes and paints empty/results. ArrowDown selects0; ArrowUp wraps to2; ArrowDown wraps to0 then1. Enter navigates to selected target1; actual result click navigates target2. Connected Ctrl+K cancels default and focuses; detached shortcut is removed.",
+      "source_clause_conformance": "Ctrl and Meta keys share the same closed shortcut branch in the inspected source; no separate OS-level Cmd event claim.",
+      "limits": [
+        "Intercepted component.test navigation and DOM keyboard event; no visible OS keystroke, platform union or real-index URL claim."
+      ]
+    },
+    {
+      "cell": "disposition:machines:S55",
+      "observed_named_cases": [
+        "search recovers query",
+        "search recovers data",
+        "search recovers expansion",
+        "search recovers stale",
+        "module failure retains query and retries a cache-busted import",
+        "pending query cannot reopen search after clear",
+        "pending query cannot reopen search after Escape",
+        "pending query cannot reopen search after outside",
+        "disconnect cancels pending render and releases shortcut until reconnect",
+        "concurrent focus and submitted queries await one module initialization",
+        "normalized queries debounce for140ms and fetch only the first8 results",
+        "pending expansion disables repeat activation until all data settles",
+        "empty results, arrow wrapping, submit and activation preserve combobox navigation",
+        "late successful queries cannot replace newer results or empty state",
+        "options rejection remains handled and explicit retry initializes a fresh module"
+      ],
+      "assertion_scope": "Finite declared11-transition component contract only. Per-edge mappings below jointly cover loading/shared pending initialization, cache ready, import failure/retry, normalized debounce, first8/newest or empty paint, query/data rejection, disabled expansion/success/retry, navigation/shortcut and close/disconnect.",
+      "transition_mapping": [
+        "disposition:transitions:S55:07",
+        "disposition:transitions:S55:09",
+        "disposition:transitions:S55:03",
+        "disposition:transitions:S55:04",
+        "disposition:transitions:S55:11",
+        "disposition:transitions:S55:01",
+        "disposition:transitions:S55:02",
+        "disposition:transitions:S55:05",
+        "disposition:transitions:S55:06",
+        "disposition:transitions:S55:08",
+        "disposition:transitions:S55:10"
+      ],
+      "source_clause_conformance": "Inspected current Search owner: clearTimeout/latest invalidation in each close branch, shared Ctrl/Meta shortcut body, and base-prefix helper remain finite unchanged source clauses. Named SITE-U01 error/retry changes intentionally replace historical uncaught/disabled failure states; initialization fix fulfills existing loading contract.",
+      "limits": [
+        "TESTED here means this finite Windows Chrome component fixture, not full SITE-U01/Q-01, actual production Pagefind/index/layout, accessibility certification, browser/platform union or installed host.",
+        "Timer cancellation and Meta shortcut alternate predicate are source-clause conformance, not separately instrumented runtime events."
+      ]
+    }
+  ],
+  "execution_context": {
+    "actual_HEAD_before": "7f741ba5bf56cb785bc9c54e0d1fd8faa97a8cbb",
+    "actual_HEAD_after": "7f741ba5bf56cb785bc9c54e0d1fd8faa97a8cbb",
+    "actual_index_before": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "actual_index_after": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "source_input_count": 8,
+    "runtime_file_count": 8,
+    "runtime_before": {
+      "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe": "c0b01496cf3da5cceca86eb6e1b2ef5d088cd46ad4e97cf502e2c937fa7f56b9",
+      "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe": "46461accbdc87dc88a5bdd6d611be095dd6147db009863d794f742ca90662efa",
+      "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js": "3ce7cba6f5128dd5f54c98b6a5036b0f850496878cc2e21044b675fe3c594e3e",
+      "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\@playwright\\test\\package.json": "5587f932b8979b6889654b60e3c28aeb7ca0abbac00eec8c176c939a16149536",
+      "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\playwright\\package.json": "8bc2ddebe8d9b051b9ecb87d62c6c63877e59d08617f32c3215681ca8bb70998",
+      "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\playwright-core\\package.json": "f061c58427e47e843e26d201f0a57076c734e57c734ecbbd87d4a23b7a20db9b",
+      "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\typescript\\package.json": "822ef7ca6452205657b6288b066481ecf508bfbf43455d715cf7d3ec457561e6",
+      "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\typescript\\lib\\typescript.js": "3ae902c92cc44dace175c0e69e13a4b0899f6983c6121d76b9ab8dd5795e7675"
+    },
+    "runtime_after": {
+      "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe": "c0b01496cf3da5cceca86eb6e1b2ef5d088cd46ad4e97cf502e2c937fa7f56b9",
+      "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe": "46461accbdc87dc88a5bdd6d611be095dd6147db009863d794f742ca90662efa",
+      "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js": "3ce7cba6f5128dd5f54c98b6a5036b0f850496878cc2e21044b675fe3c594e3e",
+      "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\@playwright\\test\\package.json": "5587f932b8979b6889654b60e3c28aeb7ca0abbac00eec8c176c939a16149536",
+      "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\playwright\\package.json": "8bc2ddebe8d9b051b9ecb87d62c6c63877e59d08617f32c3215681ca8bb70998",
+      "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\playwright-core\\package.json": "f061c58427e47e843e26d201f0a57076c734e57c734ecbbd87d4a23b7a20db9b",
+      "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\typescript\\package.json": "822ef7ca6452205657b6288b066481ecf508bfbf43455d715cf7d3ec457561e6",
+      "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\typescript\\lib\\typescript.js": "3ae902c92cc44dace175c0e69e13a4b0899f6983c6121d76b9ab8dd5795e7675"
+    },
+    "exact_Git_Temp_sources_before_after_equal": true,
+    "Gov_physical_hashes": "Separately retained; executing sources are exact immutable Git copies in Temp.",
+    "private_HOME_initialized_before_browser": true,
+    "node_version": "v24.22.1",
+    "npm_version": "11.16.0",
+    "actual_named_pass": 16,
+    "seconds_wall": 9.153711795806885,
+    "seconds_Playwright": 8.317755
+  },
+  "scope": "Finite Search component state contract plus retained drawer reconnect assertion; actual scripts/markup and explicit committed package command/config, installed Chrome and controlled Pagefind.",
+  "limits": [
+    "No production Astro build/page/CSS, actual Pagefind index/ranking, WCAG certification or browser-DLL/OS-wide identity claim.",
+    "No installed host/TUI/native/cohort/provider, external network, publication, platform-union or full task/Q-01 qualification.",
+    "Original6d4/38bf observations and genuine3bd initialization RED remain immutable history; no relabeling."
+  ]
+}

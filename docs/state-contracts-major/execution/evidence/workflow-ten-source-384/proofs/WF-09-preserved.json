@@ -1,0 +1,174 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "/root/ci_repair_review: literal53clause/currentguidance/callee/baselineinspection; noexecution"
+ },
+ "inputs": {
+  ".codearbiter/decisions/0043-assistive-state-engine.md": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+  "core/surface/agents/dependency-reviewer.md": "e04d000271bd9755bf23f7b952d40008362e227de751bb259f2550952095ea5d",
+  "core/surface/agents/finding-triage.md": "9643560a3d03b4faf2fb5148ab5b7986cf7d95ff15e407539a68145b70bf35d4",
+  "core/surface/agents/verdict-aggregator.md": "1f92df6a7fb86ad60245bccda53368a83a5457a2ef4d724c0ff86cab6e624d0f",
+  "core/surface/commands/review.md": "7c3abe9db1d904193ff4a0ef2f1acdebb24861a7123a5d1aac56d8557c8bea2c",
+  "core/surface/includes/review-matrix.md": "10ef5ccb76e3c5bc132fb3085dec8850615339217105e3892c8d9ed054f8b98a",
+  "core/surface/includes/reviewer-contract.md": "f46a62e021ae1beff049f2122d20b2886cfa5f51261f801f709c5b1d88040032",
+  "core/surface/skills/dispatching-parallel-agents/SKILL.md": "cde4170076319b5131effa803bfa707662ae9b067ed1a2dbab1f9e88736e8f44",
+  "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e"
+ },
+ "disposition_ids": [
+  "disposition:machines:WF-09",
+  "disposition:transitions:WF-09:06"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/workflow-ten-source-384/source-bindings.json",
+   "sha256": "3103212963370e3d7c1ff6e84a8e3852e55a1401987e528dcd60b3e13d282cfc"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/workflow-ten-source-384/clause-inspection.json",
+   "sha256": "4f0a656b05f94b18669093b3387d1319b591ea56d809dba57a8211f2b2bade8f"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:WF-09",
+   "frozen_row_sha256": "bfc8c2dfa04b9c04366ce8b245aeb30bd6f957fc79375ca208dd7bb744a31a6d",
+   "clause_ids": [
+    "disposition:transitions:WF-09:01",
+    "disposition:transitions:WF-09:02",
+    "disposition:transitions:WF-09:03",
+    "disposition:transitions:WF-09:04",
+    "disposition:transitions:WF-09:05",
+    "disposition:transitions:WF-09:06"
+   ],
+   "witnesses": [
+    {
+     "path": "core/surface/skills/dispatching-parallel-agents/SKILL.md",
+     "start": 11,
+     "end": 38,
+     "file_sha256": "cde4170076319b5131effa803bfa707662ae9b067ed1a2dbab1f9e88736e8f44",
+     "span_sha256": "eaa0e98293f793760ecd093375decee285e85f4d98b0b31cfef6718eaa379060"
+    },
+    {
+     "path": "core/surface/skills/dispatching-parallel-agents/SKILL.md",
+     "start": 40,
+     "end": 56,
+     "file_sha256": "cde4170076319b5131effa803bfa707662ae9b067ed1a2dbab1f9e88736e8f44",
+     "span_sha256": "c188f8ef2dd9f0b5794ae485a27ead4037265ec9646694ac071d2977cf6ab30f"
+    },
+    {
+     "path": "core/surface/skills/dispatching-parallel-agents/SKILL.md",
+     "start": 58,
+     "end": 77,
+     "file_sha256": "cde4170076319b5131effa803bfa707662ae9b067ed1a2dbab1f9e88736e8f44",
+     "span_sha256": "b0c875a5786d3f9471fb00381f818eb9a08dcb0bb35bd7670b5205fefe989f85"
+    },
+    {
+     "path": "core/surface/agents/finding-triage.md",
+     "start": 10,
+     "end": 60,
+     "file_sha256": "9643560a3d03b4faf2fb5148ab5b7986cf7d95ff15e407539a68145b70bf35d4",
+     "span_sha256": "c6712c672eea4163213c38a092b4651d4bdfa059991df667a90ed9901d1dc575"
+    },
+    {
+     "path": "core/surface/includes/reviewer-contract.md",
+     "start": 31,
+     "end": 39,
+     "file_sha256": "f46a62e021ae1beff049f2122d20b2886cfa5f51261f801f709c5b1d88040032",
+     "span_sha256": "d96d07a32c5e91d3f1f9b2fbfc292353ac47205868a65dae16bfd780353b7d36"
+    },
+    {
+     "path": "core/surface/agents/verdict-aggregator.md",
+     "start": 10,
+     "end": 33,
+     "file_sha256": "1f92df6a7fb86ad60245bccda53368a83a5457a2ef4d724c0ff86cab6e624d0f",
+     "span_sha256": "0c20dbb19c04050bba04a1d92cd92d88486960615f661fec80af3681d607738c"
+    },
+    {
+     "path": "core/surface/agents/verdict-aggregator.md",
+     "start": 56,
+     "end": 64,
+     "file_sha256": "1f92df6a7fb86ad60245bccda53368a83a5457a2ef4d724c0ff86cab6e624d0f",
+     "span_sha256": "1b39e69f66fbf9dcf945fa876d3fbabdc87b1d25db8bd65c21c3f53a629731fa"
+    },
+    {
+     "path": "core/surface/commands/review.md",
+     "start": 21,
+     "end": 59,
+     "file_sha256": "7c3abe9db1d904193ff4a0ef2f1acdebb24861a7123a5d1aac56d8557c8bea2c",
+     "span_sha256": "ff4021014db02952e523988b0adcb72f67151e350543658f9387406ad1c9a597"
+    },
+    {
+     "path": "core/surface/commands/review.md",
+     "start": 71,
+     "end": 87,
+     "file_sha256": "7c3abe9db1d904193ff4a0ef2f1acdebb24861a7123a5d1aac56d8557c8bea2c",
+     "span_sha256": "bce523ca7b835b10ca68148f6428651e1b5ed255af827c2a6b307ab7b285af84"
+    },
+    {
+     "path": "core/surface/agents/dependency-reviewer.md",
+     "start": 52,
+     "end": 76,
+     "file_sha256": "e04d000271bd9755bf23f7b952d40008362e227de751bb259f2550952095ea5d",
+     "span_sha256": "39ce92a8f2f5b18caff16f562cb9b253933a059568b1825b7f1e9cd41fa4f8ad"
+    },
+    {
+     "path": "core/surface/agents/finding-triage.md",
+     "start": 34,
+     "end": 56,
+     "file_sha256": "9643560a3d03b4faf2fb5148ab5b7986cf7d95ff15e407539a68145b70bf35d4",
+     "span_sha256": "26ce5b4c2947f93d20e28e3b92723855f42a7b96273967022c40ee6773e504d1"
+    }
+   ],
+   "semantic_assessment": "Everyliteralguard/effect/retryclause separatelymappedtoactualguidance/callee, includingnamedacceptedreplacementsandintakecorrections. No actualagentexecution, commandresult, taskcompletionoruniversalruntimeguard asserted.",
+   "limits": "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:WF-09:06",
+   "frozen_row_sha256": "f78de1b1e550c64f4080eeebaed32d2a3c698340a9ce7aae1a4f09a2fd2fbbd8",
+   "witnesses": [
+    {
+     "path": "core/surface/includes/reviewer-contract.md",
+     "start": 31,
+     "end": 39,
+     "file_sha256": "f46a62e021ae1beff049f2122d20b2886cfa5f51261f801f709c5b1d88040032",
+     "span_sha256": "d96d07a32c5e91d3f1f9b2fbfc292353ac47205868a65dae16bfd780353b7d36"
+    },
+    {
+     "path": "core/surface/agents/dependency-reviewer.md",
+     "start": 52,
+     "end": 76,
+     "file_sha256": "e04d000271bd9755bf23f7b952d40008362e227de751bb259f2550952095ea5d",
+     "span_sha256": "39ce92a8f2f5b18caff16f562cb9b253933a059568b1825b7f1e9cd41fa4f8ad"
+    },
+    {
+     "path": "core/surface/agents/finding-triage.md",
+     "start": 34,
+     "end": 56,
+     "file_sha256": "9643560a3d03b4faf2fb5148ab5b7986cf7d95ff15e407539a68145b70bf35d4",
+     "span_sha256": "26ce5b4c2947f93d20e28e3b92723855f42a7b96273967022c40ee6773e504d1"
+    }
+   ],
+   "semantic_assessment": "AcceptedD-HIGH choice resolvescontradiction: maintenance-onlyunmaintained/abandoned withoutsecurityfinding isMEDIUM/FLAG; mixedsecuritykeepsownseverity. SharedHIGH/CRITICALalwaysBLOCK; resubmissioncannotchangeseverityofunchangedfindings.",
+   "intake_variances": [
+    "Frozen conflictingprescriptions are historicalbug, replaced byuserselecteddowngrade-maintenance-to-MEDIUM underHW09/HW20. No arbitrarynonblockingHIGHexception or source-onlyactualreviewclaim."
+   ],
+   "limits": "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification."
+  }
+ ],
+ "scope": "Source-only actualguidanceconformance withnamedacceptedchanges; notagent/tool/runtime/taskqualification.",
+ "limits": [
+  "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification.",
+  "CurrentPROGRAM/ADR43 acceptedassistive direction and scopedHW07/HW09/HW11-14/HW18 changes are explicit; no artifactcode/reviewerfleet/secondpermissionbarrier invented.",
+  "Real userstops/hostpermissions/security/source-store integrity/CAS/journal failures remain binding; source guidance or a validproof never grantsauthority.",
+  "Exactly54 currentPLANNED rowproposals;9advancededges untouched withfullhistory, allunrelated/WF02/WF03 records preserved.",
+  "Sourceepoch384269 isliteralinspectionbasis. Per-rowCAS bindsactualselectedrows, wholeledgerhashadvisoryonly. Rootalone owns strictprospectiveauthentication/adoption."
+ ]
+}

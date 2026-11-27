@@ -1,0 +1,25 @@
+{
+  "case": "red",
+  "argv": [
+    "C:\\Python314\\python.exe",
+    "-B",
+    "-X",
+    "utf8",
+    "-c",
+    "import pathlib,unittest,_windows_rpc_timeout as native\nnative.CDB=pathlib.Path('C:/Users/brenn/AppData/Local/Temp/ca-cdb-vendor-review-mk_s822c/portable-cdb-10.0.26100.9457/Windows Kits/10/Debuggers/x64/cdb.exe')\nsuite=unittest.defaultTestLoader.loadTestsFromName('test_pi_package.PiPackageTests.test_rpc_native_shutdown_real_owned_node_handles_and_late_exit')\nresult=unittest.TextTestRunner(verbosity=2).run(suite)\nraise SystemExit(0 if result.wasSuccessful() else 1)\n"
+  ],
+  "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\.github\\scripts",
+  "exit_code": 1,
+  "seconds": 0.486,
+  "source_before": {
+    ".github/scripts/_windows_rpc_timeout.py": "b7ea39d3bb448d7458080d9d94d9bf8f63ae4b6711dda065b327c3d02a073268",
+    ".github/scripts/test_pi_package.py": "69ff3bfe31a4f9f63dac0bed2fb8a5e6920efae997b9a59ed10b6549da7f8fa8"
+  },
+  "source_after": {
+    ".github/scripts/_windows_rpc_timeout.py": "b7ea39d3bb448d7458080d9d94d9bf8f63ae4b6711dda065b327c3d02a073268",
+    ".github/scripts/test_pi_package.py": "69ff3bfe31a4f9f63dac0bed2fb8a5e6920efae997b9a59ed10b6549da7f8fa8"
+  },
+  "private_HOME": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-cdb-regression-red-ebcwau_w",
+  "CDB_path_override_only": true,
+  "Node": "22.19.0"
+}

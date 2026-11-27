@@ -1,0 +1,21 @@
+{
+  "case": "test_pi_package.PiPackageTests.test_real_rpc_shutdown_probe_uses_the_same_discovery_and_doctor_fixture",
+  "tests_run": 1,
+  "failures": 0,
+  "errors": 0,
+  "skips": 0,
+  "seconds": 17.97951630000898,
+  "original_failure_text_sha256": [],
+  "closed_failure_records": [],
+  "runtime_identity": {
+    "nodeSha256": "995a3fb3cefad590cd3f4b321532a4b9582fb9c6575320ed2e3e894caac3e362",
+    "cliSha256": "e79626f2dd6f94aa45d30f3fa63cd84319a6eefcd150b353cfaf274366926774",
+    "entrySha256": "74a9d5d094ebe3209a1db904f84ec05b59ed0fa202346ec3762ee3162170baa9",
+    "rpcModuleSha256": "e52d27d064df05fe8ec15f05db07d7c895051597551a0d62b2fe77208d88e942"
+  },
+  "diagnostic_sidecars": [],
+  "qualification": false,
+  "actual_execution_head": "fdbae3e8d0b296f402bd918596188fb748ccab7b",
+  "bound_source_epoch": "eaf108d0bbd3296631c029c89f6cb9321f8d5713",
+  "limits": "No module offsets interpreted as source cause; pass means no reproduction, not historic fix."
+}

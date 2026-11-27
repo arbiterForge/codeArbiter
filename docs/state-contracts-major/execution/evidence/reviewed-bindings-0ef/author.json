@@ -1,0 +1,337 @@
+{
+ "schema": "bounded-private-ca-fix-delivery-v1",
+ "work_id": "WORK-2A68C3051D5A477EAC131493FF8A85AF",
+ "source_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+ "canonical_root": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
+ "filemap": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-init-binding-fix-186obdpf\\filemap.json",
+  "sha256": "fdd61fadb9ceb54f05f5f607b411d3c75093e3a482a7daebc0ba5bb7649d7808",
+  "bytes": 3308
+ },
+ "patch": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-init-binding-fix-186obdpf\\candidate.patch",
+  "sha256": "136f84b209097eaf84f7eb71172f0bea79d347b692e7d328a62292d3861f4c04",
+  "bytes": 11635
+ },
+ "assessment": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-init-binding-fix-186obdpf\\assessment-final.json",
+  "sha256": "0b3aff783e7f09140d6e3dc9cdced8105423ef9fe453381b3cfaa21b4fef30c6",
+  "bytes": 3690
+ },
+ "source_bindings": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-init-binding-fix-186obdpf\\source-bindings.json",
+  "sha256": "35f87682ad7bef84abae9672cd9270c4ad240c9aa84fa44621eda030b4ec17c1",
+  "bytes": 4014
+ },
+ "security_scope": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-init-binding-fix-186obdpf\\security-scope.json",
+  "sha256": "f2191d9c6f1cf2ca8cd5951fd3d6507c21b17f961cdaa24b8023e558bcd11271",
+  "bytes": 552
+ },
+ "subjects": [
+  {
+   "path": ".github/scripts/test_command_route_compatibility.py",
+   "preimage": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-init-binding-fix-186obdpf\\original\\.github\\scripts\\test_command_route_compatibility.py",
+    "sha256": "679f60b5c2f6f11bb8fc00a02e3e9924c4c60b3a1b0d9e7532c3f3a581b8687d",
+    "bytes": 20903
+   },
+   "candidate": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-init-binding-fix-186obdpf\\candidate\\.github\\scripts\\test_command_route_compatibility.py",
+    "sha256": "f07ea4398074517321e69da61fbec703ea10eb209ca162c6e2b2f22d6855e936",
+    "bytes": 24755
+   },
+   "git_preimage_oid": "a30984102ebdacae89db0cbbb9ab425a4d259f3b",
+   "physical_current_sha256": "679f60b5c2f6f11bb8fc00a02e3e9924c4c60b3a1b0d9e7532c3f3a581b8687d",
+   "git_index_oid": null
+  },
+  {
+   "path": ".github/scripts/test_state_contracts_integration.py",
+   "preimage": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-init-binding-fix-186obdpf\\original\\.github\\scripts\\test_state_contracts_integration.py",
+    "sha256": "fb6130709350e42f97bc66a135bc96b0dc3ce33571f0a1d17b7d85214184f268",
+    "bytes": 53090
+   },
+   "candidate": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-init-binding-fix-186obdpf\\candidate\\.github\\scripts\\test_state_contracts_integration.py",
+    "sha256": "95ca140b3c18bc296e39982ad0dc271c1f88db6033a0a715e47af8a2c7fd95a4",
+    "bytes": 53445
+   },
+   "git_preimage_oid": "648db5e0180651b0987cf5f63ddd82ccd6d785c0",
+   "physical_current_sha256": "fb6130709350e42f97bc66a135bc96b0dc3ce33571f0a1d17b7d85214184f268",
+   "git_index_oid": null
+  },
+  {
+   "path": "site/scripts/execution-maps/atlas-data/major-state-contracts-update.json",
+   "preimage": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-init-binding-fix-186obdpf\\original\\site\\scripts\\execution-maps\\atlas-data\\major-state-contracts-update.json",
+    "sha256": "62b14434c430453951747519def5a7c3a0efe11d137ce3b809b280654f28fbeb",
+    "bytes": 21915
+   },
+   "candidate": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-init-binding-fix-186obdpf\\candidate\\site\\scripts\\execution-maps\\atlas-data\\major-state-contracts-update.json",
+    "sha256": "67a57e321d2101d1f283309dd96b2efedadac20e577b1a7d197f363cb1f22baf",
+    "bytes": 22280
+   },
+   "git_preimage_oid": "53e713e38d7d3d5842a066a1869350d2555d2b02",
+   "physical_current_sha256": "62b14434c430453951747519def5a7c3a0efe11d137ce3b809b280654f28fbeb",
+   "git_index_oid": null
+  },
+  {
+   "path": "site/scripts/execution-maps/atlas-assistive.test.ts",
+   "preimage": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-init-binding-fix-186obdpf\\original\\site\\scripts\\execution-maps\\atlas-assistive.test.ts",
+    "sha256": "d6f067000f04a07c63a517b6842be41eadd1e73af73f860baf3b097d13788273",
+    "bytes": 13510
+   },
+   "candidate": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-init-binding-fix-186obdpf\\candidate\\site\\scripts\\execution-maps\\atlas-assistive.test.ts",
+    "sha256": "9ecce3fb4a8a48510acfd8cc8f5ce99dfd7496414510fd1e70ed56926a786318",
+    "bytes": 14986
+   },
+   "git_preimage_oid": "af9ff2ddcd31b4c333e6e99df865295c22cf8c4e",
+   "physical_current_sha256": "d6f067000f04a07c63a517b6842be41eadd1e73af73f860baf3b097d13788273",
+   "git_index_oid": null
+  }
+ ],
+ "contexts": [
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\atlas-init-binding-fix-input.txt",
+   "sha256": "cbbfeee0b9aa91ead15c821283d53851770ace9da95e39c8ec1482f69f5180d4",
+   "bytes": 9767
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\atlas-init-binding-fix-context.json",
+   "sha256": "5275a2d1859b0e31363f18fd51b6baa923660e00156df29b6b50835c8166de95",
+   "bytes": 16232
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\reviewed-bindings-wiring-fix-input.txt",
+   "sha256": "9736171682238a6a71323779f96aa9d7b2ee61ad8ecea6866cdf4d1f1b2ebe2d",
+   "bytes": 10345
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\reviewed-bindings-wiring-fix-context.json",
+   "sha256": "3afb6822678ab6b4e54eadce5cb94204f65ed304d2db7bad6a7c3416f6aa23f7",
+   "bytes": 17080
+  }
+ ],
+ "actual_original_CI_RED_logs": [
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1119-0ef32266-watch-4notj7qj\\original-job-134036260738.log",
+   "sha256": "9a522f2140bf741555523bebd1d50b29b865a3915faeee1345fd7a2855ebd402",
+   "bytes": 89723
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1119-0ef32266-watch-4notj7qj\\original-job-134036261140.log",
+   "sha256": "b0242beb06804dac1413aead46c640ba944c992357b2bdf33333fbe92fab0801",
+   "bytes": 88392
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1119-0ef32266-watch-4notj7qj\\original-job-134036262538.log",
+   "sha256": "85836da0bea6136ae73c55785c7436c3ff2fbb2c48e63831231c40e344e4902d",
+   "bytes": 85379
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1119-0ef32266-watch-4notj7qj\\original-job-134036424917.log",
+   "sha256": "61fbd79b19dda89da20052a9c378e9c8d66a4025e9be51a56a51bfdf225e5c0b",
+   "bytes": 1121567
+  }
+ ],
+ "retained_private_checks": [
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-init-binding-fix-186obdpf\\atlas-affected-one-green.json",
+   "sha256": "c56f338e4bf0a483c726ef5391b6432d73c8de94a0d80aac06a6f000fa18595b",
+   "bytes": 954
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-init-binding-fix-186obdpf\\atlas-affected-one-green.stderr",
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "bytes": 0
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-init-binding-fix-186obdpf\\atlas-affected-one-green.stdout",
+   "sha256": "a914f3d65af5b24f2757c0ed4598cf789b90a8a6a089cce9bb90ee4b8c1d4d9d",
+   "bytes": 682
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-init-binding-fix-186obdpf\\atlas-affected-three-green.json",
+   "sha256": "d9e833ae127b70841dad97e4d11b6a2a7596ee6c036a882997552c80c24547f2",
+   "bytes": 1082
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-init-binding-fix-186obdpf\\atlas-affected-three-green.stderr",
+   "sha256": "40d54c3ffa568594f01a47c44b4803387639f8b74e0fe6372e6327ab934c7f21",
+   "bytes": 962
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-init-binding-fix-186obdpf\\atlas-affected-three-green.stdout",
+   "sha256": "53e4c5cdb262bebbb6cfe18cfd2b7f118fd3370584ed706ed906abee3df0836a",
+   "bytes": 1490
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-init-binding-fix-186obdpf\\atlas-focused-green.json",
+   "sha256": "5605079fc9d645df1110942f129955ea82d64be3ec9c4542f748e458d7ecf3a8",
+   "bytes": 1055
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-init-binding-fix-186obdpf\\atlas-focused-green.stderr",
+   "sha256": "7cd708deb5f8ebf36e039adea7824842294963d0a47d1b14a853aa2d8c27ab38",
+   "bytes": 2578
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-init-binding-fix-186obdpf\\atlas-focused-green.stdout",
+   "sha256": "a2be5e1a38257db0ab990929f7f779f9db2063218d71070b2b39437b0ceaea27",
+   "bytes": 3118
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-init-binding-fix-186obdpf\\atlas-strict-three-green.json",
+   "sha256": "d8c8223fd3b7e00dc0243f8820bc8cd47d9471f01d497c1003ac728f3908904b",
+   "bytes": 1118
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-init-binding-fix-186obdpf\\atlas-strict-three-green.stderr",
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "bytes": 0
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-init-binding-fix-186obdpf\\atlas-strict-three-green.stdout",
+   "sha256": "13146c94ec341154ee45c5814691d6bf315be53456910313198dc205c42bb7e5",
+   "bytes": 655
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-init-binding-fix-186obdpf\\atlas-strict-three-results.json",
+   "sha256": "8ff29e578cc970fa1a383bee0e4ccdce49ff54aa231f2ea1ed88284bbfb9318e",
+   "bytes": 71053
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-init-binding-fix-186obdpf\\candidate-117-inventory.json",
+   "sha256": "7d8064947571643d5414f34cca034048d33e1814461a73c557cbdeb5496b3fa1",
+   "bytes": 856
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-init-binding-fix-186obdpf\\candidate-117-inventory.stderr",
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "bytes": 0
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-init-binding-fix-186obdpf\\candidate-117-inventory.stdout",
+   "sha256": "c929dd9e6e21e2b527f87d452e6625d2da35055a5af87288d65ba04ad439c500",
+   "bytes": 19726
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-init-binding-fix-186obdpf\\compat-owner-green.json",
+   "sha256": "6bd3fec3a8109b2828be465113eec90425e3085725b043e215f5a062054d4d72",
+   "bytes": 714
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-init-binding-fix-186obdpf\\compat-owner-green.stderr",
+   "sha256": "8e1066800263043c749b40bccf6185d0abbe4cdc5be1fcb428a674cd5d1b2268",
+   "bytes": 2975
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-init-binding-fix-186obdpf\\compat-owner-green.stdout",
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "bytes": 0
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-init-binding-fix-186obdpf\\corrected-test-red.py",
+   "sha256": "06c30ee5342189c9e898c539352c79ca9cac2ac14ad2c311f33c0c0e7b1f5c87",
+   "bytes": 23573
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-init-binding-fix-186obdpf\\first-test-draft.py",
+   "sha256": "dab99c1fa03f181e32fcc7202f1e59660b268069e501a1de04712a492ebe5f27",
+   "bytes": 23040
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-init-binding-fix-186obdpf\\init-corrected-target-red.json",
+   "sha256": "80af281ab1b60115836f8b9323c50b6fd26f633f863df44edc30ffde4e087409",
+   "bytes": 877
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-init-binding-fix-186obdpf\\init-corrected-target-red.stderr",
+   "sha256": "7566632a18b4008bdcefad4929e12bcad43056ec852f994590b8d79cbe32acad",
+   "bytes": 1786
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-init-binding-fix-186obdpf\\init-corrected-target-red.stdout",
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "bytes": 0
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-init-binding-fix-186obdpf\\init-new-target-red.json",
+   "sha256": "1a9a984d2a427f9cd5f671e0c3f25da448f0c33f1975b831403d57c750a9544f",
+   "bytes": 877
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-init-binding-fix-186obdpf\\init-new-target-red.stderr",
+   "sha256": "32db03d80e2910dbd9bdc63b390944f4c5a0268fe8f2ca9ca8a2c2622874cd73",
+   "bytes": 17781
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-init-binding-fix-186obdpf\\init-new-target-red.stdout",
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "bytes": 0
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-init-binding-fix-186obdpf\\integration-wiring-green.json",
+   "sha256": "9399652caab1ad503e39f56e197adaecc2368ff96a4419c6f784d9eeac5486a6",
+   "bytes": 719
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-init-binding-fix-186obdpf\\integration-wiring-green.stderr",
+   "sha256": "8a123e0c0fd081a8370ffc49e61b0a6d28f82f7b5089a4df77db2fd41e24fa7e",
+   "bytes": 308
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-init-binding-fix-186obdpf\\integration-wiring-green.stdout",
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "bytes": 0
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-init-binding-fix-186obdpf\\inventory.stderr",
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "bytes": 0
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-init-binding-fix-186obdpf\\inventory.stdout",
+   "sha256": "d067e99608bd05b87d9e64494c326a6aca756fc75d8dacb5ee31ad971ca3693e",
+   "bytes": 20057
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-init-binding-fix-186obdpf\\node-before-strict.json",
+   "sha256": "1fcd0b3fa6e911622d3737aefc90080babbac1023abd858aaa18d9709cd67d26",
+   "bytes": 258
+  }
+ ],
+ "tools": {
+  "node": {
+   "path": "D:\\dev\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+   "bytes": 93713712,
+   "sha256": "c0b01496cf3da5cceca86eb6e1b2ef5d088cd46ad4e97cf502e2c937fa7f56b9",
+   "mtime_ns": 1794510463000000000
+  },
+  "python": {
+   "path": "C:\\Python314\\python.exe",
+   "sha256": "03168c01b7b7491423350e82c26fee71f35b43694d1319d3c668bda6903a0c38",
+   "bytes": 106208
+  }
+ },
+ "canonical_index_ref_marker_writes": false,
+ "runtime_qualification_claim": false,
+ "summary": "Four finite metadata/reader/test subjects; exact two Atlas pins/revisions/summaries, historical init paragraph acknowledgement, exact hook guard companion. Ready for Root independent inspection/adoption, not hosted PASS.",
+ "metadata_history": {
+  "prior_delivery": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-init-binding-fix-186obdpf\\delivery.json",
+   "sha256": "180d2fec183dde26e2ceaa8bffe5e9249e56710e3d4e26775e897526491a2c5a",
+   "bytes": 14877
+  },
+  "prior_assessment": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-init-binding-fix-186obdpf\\assessment.json",
+   "sha256": "eeb54460db9ba3eb72e129a159a7a55135987a1fd8632a5474dba0bfb3e46bf7",
+   "bytes": 3633
+  },
+  "correction": "Only strict-source internal duration corrected from unsupported0.057s to retained raw Vitest260ms; raw command/results and all4candidate bytes unchanged."
+ }
+}

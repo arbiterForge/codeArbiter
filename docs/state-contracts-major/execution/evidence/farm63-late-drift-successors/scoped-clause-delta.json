@@ -1,0 +1,177 @@
+{
+  "schema": "codearbiter-farm-late-drift-clause-review/1",
+  "previous_source": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
+  "source_subject": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+  "candidate": "6a636870bc23f5079700faf58a234d19f6823eca",
+  "literal_production_delta": "diff --git a/plugins/ca/tools/farm.ts b/plugins/ca/tools/farm.ts\nindex 739b7ea2..cdf87591 100644\n--- a/plugins/ca/tools/farm.ts\n+++ b/plugins/ca/tools/farm.ts\n@@ -2704,7 +2704,9 @@ export async function runTask(\n     });\n     let diffstat: string;\n     try {\n-      await deps.checkDrift(wt,allowed); // fresh observation before dependent index/commit effects\n+      const freshDrift = await deps.checkDrift(wt, allowed);\n+      if (freshDrift.length)\n+        return integrationFailure(`drift before staging: ${freshDrift.join(\", \")}`);\n       let staged = await deps.git([\"add\", \"--\", ...worker.filesWritten], wt);\n       let stageAttempts = 1;\n       // Repeating the identical explicit-path stage is idempotent. Let brief\n",
+  "production_outside_exact_clause_literal_unchanged": true,
+  "reused_owner_review_refs": [
+    {
+      "ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/farm24-preserved.json",
+      "sha256": "1de345fcf8237ee20a196faecdb33e83fb473de7f3b0e94ee581628849474904",
+      "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
+    },
+    {
+      "ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/remapped3-tested.json",
+      "sha256": "b87b760ef209cd37b1005b3ea753babe618bc76d45b9943c1dc10954331e193c",
+      "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
+    },
+    {
+      "ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/cleanup14-tested.json",
+      "sha256": "7148e54ed058d22f22948af878572dc5a89ea2bf784474ad8db1a00e6dda5efc",
+      "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
+    },
+    {
+      "ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/farm25-preserved-successor.json",
+      "sha256": "1f501ecb6aacf9adc6d6ae34585f6b03dab8237c35f2029067b00a492c3a4556",
+      "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
+    },
+    {
+      "ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/farm8-tested-successor.json",
+      "sha256": "829a67bd161361ae6b8d2ea0a2fda8ff89191cd6fc732b92214f7dba5c2b534d",
+      "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
+    }
+  ],
+  "current_clause_assessment": [
+    "S26:01 preservation is explicitly limited to freshly observed CLEAN admission with validated paths. Existing stage/retry effect remains unchanged only under that guard; no claim that old broader ready->stage guard stayed unchanged.",
+    "Known late drift now escalates before first git add and does not reset, remove or author again. Unknown second probe still uses the existing caught integrationFailure. These are distinct from initial S24:07 retry behavior and rollback-only S26:06.",
+    "All other source clauses/groups in prior49 preserved cells are upstream checks or independent HTTP/mutation/publication/materialization/cleanup controller bodies; the exact four-line guard delta does not alter their reviewed event/guard/effect. Their original source reviews remain immutable, reused with this bounded delta assessment.",
+    "S25:07/S30:02/S30:04 remain their explicitly remapped containment/physical-observation behaviors. samePath/stillRegistered/removeWorktreeVerified/sample cleanup have no code change in this delta; actual current named outcomes are used for their TESTED successors.",
+    "S33 composition retains only its original five materialization clauses; no task-wide or stage-wide closure. Existing provider/platform/unknown observation and same-user race limits remain."
+  ],
+  "baseline_related": {
+    "S24:07": {
+      "event": "drift outside scope",
+      "guard": "first occurrence and retry budget remains",
+      "to": "retry pending",
+      "effects": "Explain actual drift; reset task worktree to current base and retry worker.",
+      "failure_retry": "",
+      "source": [
+        {
+          "path": "plugins/ca/tools/farm.ts",
+          "symbol": "prepareWorktree, runTask, checkDrift, runGate",
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca/tools/farm.ts",
+          "lines": "650-3050"
+        },
+        {
+          "path": "plugins/ca/tools/worktree-fs.ts",
+          "symbol": "safe materialization",
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca/tools/worktree-fs.ts",
+          "lines": "1-194"
+        }
+      ],
+      "from": "checking",
+      "transition_id": "S24:07"
+    },
+    "S24:08": {
+      "event": "drift repeats or no budget",
+      "guard": "second drift or exhausted budget",
+      "to": "escalated",
+      "effects": "Retain worktree/evidence for inspection.",
+      "failure_retry": "",
+      "source": [
+        {
+          "path": "plugins/ca/tools/farm.ts",
+          "symbol": "prepareWorktree, runTask, checkDrift, runGate",
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca/tools/farm.ts",
+          "lines": "650-3050"
+        },
+        {
+          "path": "plugins/ca/tools/worktree-fs.ts",
+          "symbol": "safe materialization",
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca/tools/worktree-fs.ts",
+          "lines": "1-194"
+        }
+      ],
+      "from": "checking",
+      "transition_id": "S24:08"
+    },
+    "S24:09": {
+      "event": "Git drift commands fail",
+      "guard": "diff/ls-files nonzero",
+      "to": "checking with empty drift result",
+      "effects": "Current checkDrift collapses read failures to empty lists.",
+      "failure_retry": "Unknown worktree observation can be treated as clean; preserve an explicit read failure instead.",
+      "source": [
+        {
+          "path": "plugins/ca/tools/farm.ts",
+          "symbol": "prepareWorktree, runTask, checkDrift, runGate",
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca/tools/farm.ts",
+          "lines": "650-3050"
+        },
+        {
+          "path": "plugins/ca/tools/worktree-fs.ts",
+          "symbol": "safe materialization",
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca/tools/worktree-fs.ts",
+          "lines": "1-194"
+        }
+      ],
+      "from": "checking",
+      "transition_id": "S24:09"
+    },
+    "S24:13": {
+      "event": "all checks pass",
+      "guard": "no fatal mutation/heuristic issue",
+      "to": "ready to commit",
+      "effects": "Continue to commit/integration lifecycle.",
+      "failure_retry": "",
+      "source": [
+        {
+          "path": "plugins/ca/tools/farm.ts",
+          "symbol": "prepareWorktree, runTask, checkDrift, runGate",
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca/tools/farm.ts",
+          "lines": "650-3050"
+        },
+        {
+          "path": "plugins/ca/tools/worktree-fs.ts",
+          "symbol": "safe materialization",
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca/tools/worktree-fs.ts",
+          "lines": "1-194"
+        }
+      ],
+      "from": "checking",
+      "transition_id": "S24:13"
+    },
+    "S26:01": {
+      "event": "stage task paths",
+      "guard": "validated explicit paths",
+      "to": "staging",
+      "effects": "git add explicit paths, with up to three idempotent retries.",
+      "failure_retry": "",
+      "source": [
+        {
+          "path": "plugins/ca/tools/farm.ts",
+          "symbol": "commit and integrate task",
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca/tools/farm.ts",
+          "lines": "1800-3050"
+        }
+      ],
+      "from": "ready",
+      "transition_id": "S26:01"
+    },
+    "S26:06": {
+      "event": "clean state cannot be verified",
+      "guard": "abort/readback failure",
+      "to": "fatal",
+      "effects": "Stop task; do not reset/retry over unknown integration state.",
+      "failure_retry": "",
+      "source": [
+        {
+          "path": "plugins/ca/tools/farm.ts",
+          "symbol": "commit and integrate task",
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca/tools/farm.ts",
+          "lines": "1800-3050"
+        }
+      ],
+      "from": "rollback checking",
+      "transition_id": "S26:06"
+    }
+  },
+  "introduced_edge_reason": "No frozen row represents known nonempty drift newly observed AFTER all quality checks causing immediate pre-stage escalation without retry/reset. S24:07 is first initial-check drift with author retry; S24:08 is repeated/exhausted drift; S26:06 is failed merge rollback. Proposed analytical row records this local admission refusal without a new runtime operation/schema/API.",
+  "test_input_review": "Existing selector identities and assertion bodies remain as retained; only state-contracts.test.ts gained the three named late pre-stage controls. Current literal file bytes are part of actual29 capture. Explicit selected test files missing from an older coarse preservation cone are added to current cone, not fabricated as an old narrower capture.",
+  "limits": [
+    "Source-clause preservation is not an executed old test on changed whole-file inputs. Current TESTED successors use current941 actual named passes.",
+    "Current positive membership/absence reader limitation remains OPEN separately; none of these input lists is called future-proof.",
+    "No hosted/Sandbox/P02 evidence is refreshed by this packet."
+  ]
+}

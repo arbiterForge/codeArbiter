@@ -1,0 +1,54 @@
+{
+  "format": "observer-admission-development/1",
+  "execution_head": "ae4c10e40ab9e37b28958df37fadc40e34e04b04",
+  "receipts": [
+    {
+      "kind": "windows_target_red",
+      "private_receipt": "C:/Users/brenn/AppData/Local/Temp/ca-windows-checkout-admission-successor-_y_58tmf/target-red.json",
+      "sha256": "0e83ffed7a892ceba161784fb55cbc7f697b2ba7d424708508a65644ca88487d",
+      "bytes": 4039
+    },
+    {
+      "kind": "runtime_alias_target_red",
+      "private_receipt": "C:/Users/brenn/AppData/Local/Temp/ca-runtime-alias-regression-fwhdhnoz/result.json",
+      "sha256": "a9fff8f78aed55ab8425b97428b520d5762b40e1625d965edfde95a341b3d2ff",
+      "bytes": 16996
+    },
+    {
+      "kind": "classification_red",
+      "private_receipt": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\source-witness-classification-red.json",
+      "sha256": "6619db9df19fde8f4a6189d7ea6dae7208d9a7281237e53ef27b38a04cda551c",
+      "bytes": 1098
+    },
+    {
+      "kind": "classification_25_green",
+      "private_receipt": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\source-witness-classification-green.json",
+      "sha256": "60bb50f2428c443ba9aae5e5a33692d8639408a690ea9fcb0c2cf781721ea82f",
+      "bytes": 1247
+    },
+    {
+      "kind": "admission_40_green",
+      "private_receipt": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\observer-admission-owning-green.json",
+      "sha256": "38bb04a07edf60f39d3858914bb089f09eb40f80bd00a195e17eee7fa7dbfd43",
+      "bytes": 2312
+    }
+  ],
+  "local_outcomes": {
+    "classifier_owning_tests": 25,
+    "admission_owning_tests": 40,
+    "errors": 0,
+    "skipped": 0,
+    "source_and_index_stable": true
+  },
+  "repairs": [
+    "Hash the same resolved runtime path recorded by the observer, retaining the unchanged regular/non-reparse/64MiB guards.",
+    "Apply explicit Git text policy before materializing fresh owned cold/Pi CI checkouts; do not rewrite user checkouts or historical -text inputs.",
+    "Classify the exact passive source witness capture through the existing whole-file-hash history lane; mutations and active neighbors still refuse."
+  ],
+  "limits": [
+    "Exact failed hosted POSIX runtime path and Windows runner Git configuration were not retained; local mechanisms reproduce matching refusals, without asserting unobserved original values.",
+    "No installed/runtime/user/task qualification or old failed-run retry.",
+    "Earlier private checkout-index setup failure is retained separately and is not an accepted target RED.",
+    "Two private test candidates were merged with original AST preservation; an initially omitted contextmanager decorator was restored before tests ran."
+  ]
+}

@@ -1,0 +1,93 @@
+{
+  "format": "prospective-reader-successor-owner-validation/1",
+  "source_input_epoch": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+  "actual_execution_commit": "108dc767f0873d7fecbfad7ac8017ba0a6e2ea2b",
+  "current_candidate": "108dc767f0873d7fecbfad7ac8017ba0a6e2ea2b",
+  "owner_sha256": "217ffe45e7a812b0a3613626600afe4d9d98c0277f45e532cd1e15b88f77e2d1",
+  "results": [
+    {
+      "cell": "disposition:findings:C-F08",
+      "state": "PASSED_PROSPECTIVE_OWNER_VALIDATION",
+      "bound": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/reader-current-2df/reader6-tested.json",
+          "sha256": "51704d624a8b404d9cba4f389ea4760fd1dc053fff65d0cad7feae723468cba6",
+          "source_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+          "producer_class": "local-host"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:added_transitions:C36:added-prefetched-completion",
+      "state": "PASSED_PROSPECTIVE_OWNER_VALIDATION",
+      "bound": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/reader-current-2df/reader6-tested.json",
+          "sha256": "51704d624a8b404d9cba4f389ea4760fd1dc053fff65d0cad7feae723468cba6",
+          "source_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+          "producer_class": "local-host"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:added_transitions:C36:added-stdin-eof",
+      "state": "PASSED_PROSPECTIVE_OWNER_VALIDATION",
+      "bound": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/reader-current-2df/reader6-tested.json",
+          "sha256": "51704d624a8b404d9cba4f389ea4760fd1dc053fff65d0cad7feae723468cba6",
+          "source_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+          "producer_class": "local-host"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:added_transitions:C36:added-input-once",
+      "state": "PASSED_PROSPECTIVE_OWNER_VALIDATION",
+      "bound": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/reader-current-2df/reader6-tested.json",
+          "sha256": "51704d624a8b404d9cba4f389ea4760fd1dc053fff65d0cad7feae723468cba6",
+          "source_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+          "producer_class": "local-host"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:added_transitions:C36:added-input-timeout",
+      "state": "PASSED_PROSPECTIVE_OWNER_VALIDATION",
+      "bound": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/reader-current-2df/reader6-tested.json",
+          "sha256": "51704d624a8b404d9cba4f389ea4760fd1dc053fff65d0cad7feae723468cba6",
+          "source_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+          "producer_class": "local-host"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:added_transitions:C36:added-cleanup-denied",
+      "state": "PASSED_PROSPECTIVE_OWNER_VALIDATION",
+      "bound": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/reader-current-2df/reader6-tested.json",
+          "sha256": "51704d624a8b404d9cba4f389ea4760fd1dc053fff65d0cad7feae723468cba6",
+          "source_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+          "producer_class": "local-host"
+        }
+      ]
+    }
+  ],
+  "source_blob_reads": 12,
+  "metadata_overlay": [
+    "docs/state-contracts-major/execution/evidence/reader-current-2df/observe.py",
+    "docs/state-contracts-major/execution/evidence/reader-current-2df/original.stderr.log",
+    "docs/state-contracts-major/execution/evidence/reader-current-2df/original.stdout.log",
+    "docs/state-contracts-major/execution/evidence/reader-current-2df/reader6-tested.json",
+    "docs/state-contracts-major/execution/evidence/reader-current-2df/result.json"
+  ],
+  "limits": [
+    "New metadata/raw are an explicit prospective overlay at108dc; not claimed committed there. Source bytes are genuine immutable2df/108dc blobs.",
+    "No API, artifact fetch, reader weakening, source/Gov/index mutation. Final retention commit belongs to Root."
+  ]
+}

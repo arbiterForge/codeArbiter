@@ -1,0 +1,98 @@
+{
+  "schema": "codearbiter.finite-clause-witness/1",
+  "state": "ACTUAL_SOURCE_CLAUSES_OBSERVED_ROOT_ADMISSION_PENDING",
+  "source_commit": "3bd40349f4a403a38ac01979369875faad258548",
+  "finding": "N-F03",
+  "task": "NT-09",
+  "scenario": "SEQ-07",
+  "accepted_governing_decision": ".codearbiter/decisions/0046-independent-progress-derived-evidence.md",
+  "clauses": [
+    {
+      "id": "NF03-C1",
+      "accepted_source": "ADR0046 decision1",
+      "claim": "Upstream ordinary reconciliation leaves dependent recorded progress, command observation history and requirements unchanged; derives transitive pending advice and preserves CAS/replay. Resolving ancestor restores eligible scheduling.",
+      "selectors": [
+        "TestAssistiveReconcileKeepsTransitiveDependencyAdviceCurrent/PENDING",
+        "TestAssistiveReconcileKeepsTransitiveDependencyAdviceCurrent/BLOCKED"
+      ],
+      "source": "dependency_advice_test.go:11-67",
+      "limits": "Three-task A\u2192B\u2192C fixture, not independent fourthX in this same sequence."
+    },
+    {
+      "id": "NF03-C2",
+      "accepted_source": "ADR0046 decision1",
+      "claim": "Upstream block and later recovery preserve each dependent recorded state/reason across PENDING, IN_PROGRESS, REVIEW, DONE, ACCEPTED, BLOCKED and legacySTALE; waiting_on is independently derived and checks are not declared verified.",
+      "selectors": [
+        "TestNT09BlockingDependencyPreservesEveryRecordedProgressLabel/PENDING",
+        "TestNT09BlockingDependencyPreservesEveryRecordedProgressLabel/IN_PROGRESS",
+        "TestNT09BlockingDependencyPreservesEveryRecordedProgressLabel/REVIEW",
+        "TestNT09BlockingDependencyPreservesEveryRecordedProgressLabel/DONE",
+        "TestNT09BlockingDependencyPreservesEveryRecordedProgressLabel/ACCEPTED",
+        "TestNT09BlockingDependencyPreservesEveryRecordedProgressLabel/BLOCKED",
+        "TestNT09BlockingDependencyPreservesEveryRecordedProgressLabel/STALE"
+      ],
+      "source": "intentional_change_test.go:108-145",
+      "limits": "LegacySTALE raw value is retained; this test is not migration or recovered legacy progress."
+    },
+    {
+      "id": "NF03-C3",
+      "accepted_source": "ADR0046 decision1",
+      "claim": "Independent B user-denial reason survives an upstream A block and recovery; downstream C retains REVIEW. Completed REVIEW is not redispatched while blocked ancestor is separately shown.",
+      "selectors": [
+        "TestDependencyInvalidationPreservesIndependentStops",
+        "TestNT09PreservedProgressKeepsDependencyReadinessIndependent"
+      ],
+      "source": "dependency_advice_test.go:87-113;intentional_change_test.go:48-60",
+      "limits": "No independent fourthX in this same stop sequence."
+    },
+    {
+      "id": "NF03-C4",
+      "accepted_source": "NT09 dependent-only conflict requirement;SEQ07 independent work",
+      "claim": "A scoped unresolved fact affecting one branch leaves unrelated T003 eligible; later fact report unlocks affected T001 without fabricating legacy authority/evidence.",
+      "selectors": [
+        "TestAssistiveScopedFactsKeepIndependentWorkMoving"
+      ],
+      "source": "prerequisite_observation_test.go:36-61",
+      "limits": "Scoped fact scenario; does not itself execute upstream task-block on a four-task graph."
+    },
+    {
+      "id": "NF03-C5",
+      "accepted_source": "ADR0046 decision2",
+      "claim": "Task-path/verification/requirement or relevant source changes make old reported check applicability stale; unrelated method, specification prose and unrelated source leave relevant reports applicable. Old reported outcomes remain historical; replay is idempotent and stale CAS refuses.",
+      "selectors": [
+        "TestTaskCheckSubjectPathChangeInvalidatesOnlyReportedCheckApplicability",
+        "TestTaskCheckCASReplaySourceChangesAndPresentationEdits",
+        "TestCheckConflictsRespectDefinitionAndSourceScope"
+      ],
+      "source": "task_check_test.go:165-197,223-245;check_conflicts_test.go:22-67",
+      "limits": "Caller-reported checks remain partial, scoped advisory evidence; no independent full-workspace attestation. Path-change test does not assert full progress state byte-equality in the same mutation."
+    },
+    {
+      "id": "NF03-C6",
+      "accepted_source": "ADR0046 decision1/2 and retained ADR0043 ordinary-work boundary",
+      "claim": "Pass\u2192failure\u2192unknown\u2192skip\u2192pass reports preserve all five historical records; ordinary REVIEW and DONE remain caller_reported with evidence_assessed=false and do not create authority files.",
+      "selectors": [
+        "TestTaskCheckLatestFailureOverridesPriorPassAndSkipsUnknown",
+        "TestNT09OrdinaryReviewAndDoneDoNotClaimIndependentProof"
+      ],
+      "source": "task_check_test.go:145-163;intentional_change_test.go:91-106",
+      "limits": "Ordinary label/nonproof and actual reports only; this selection does not exercise successful strict review capture or installed host enforcement."
+    }
+  ],
+  "unmet_acceptance": [
+    {
+      "owner": "NT09 transitive scope and independent stop / SEQ07",
+      "missing_oracle": "One composed A\u2192B\u2192C plus independentX sequence with Buserstop, upstreamAblock thenresolve, and direct assertions that B remains stopped, C waits appropriately, X can actually start and no duplicate dispatch occurs. Existing selected tests separately establish three-task stop preservation and scoped independent scheduling, not this full joined sequence.",
+      "smallest_test_proposal": "Temp-only existing operations fixture extension adding fourthindependent task. Record B stop, capture all states/history, block A, assert Xeligible/startable and B/C records retained; reconcile A, assert Bdenial remains and C stillwaits on B; repeated start of X rejects. No production change inferred."
+    },
+    {
+      "owner": "NT09 Separate progress from adverse evidence",
+      "missing_oracle": "A single same-subject sequence retaining complete implementation progress while an actual applicable strict failure afterpass changes explicit verification eligibility, followed by corrected freshpass, across UI/context/strict readbacks. Selected ordinary caller-report history is not this strict proof producer."
+    },
+    {
+      "owner": "NT09 accepted optionB/compatibility matrix",
+      "missing_oracle": "Legacy migration interrupted/resumed and old/new client/on-host readbacks are outside this pure source selection. Existing historical/native qualification remains separately owned; no installed claim or current epoch relabel."
+    }
+  ],
+  "recommendation": "The concrete N-F03 upstream-reconcile/block discrepancy has a fresh finite component witness under acceptedADR0046. Root may admit finding-level TESTED only at this explicit operation/assertion scope; this is not whole NT09/SEQ07/installed completion. No blanket status proposal based on31-count."
+}

@@ -5,7 +5,7 @@ import type { FileHandle } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { isAbsolute, join } from "node:path";
 
-import { BROKER_TOKEN_ENV_NAME, RESPONSE_SCAN_OVERLAP_BYTES } from "./inference-broker.ts";
+import { BROKER_TOKEN_ENV_NAME, RESPONSE_SCAN_OVERLAP_BYTES, endpointTransportAllowed } from "./inference-broker.ts";
 
 export interface ChildEnvInput {
   platform: NodeJS.Platform;
@@ -69,10 +69,9 @@ const RESERVED_OBJECT_KEYS = new Set(["__proto__", "constructor", "prototype"]);
 
 /** A projected endpoint is accepted POSITIVELY, never by blocklisting the parameter names that
  * carry credentials (`api-key`, `key`, `token`, `sig`, … is an unbounded list). An endpoint is
- * an `http`/`https` scheme, a host, an optional port, and a short bounded route — nothing
+ * HTTPS (or the existing literal numeric loopback HTTP), a host, an optional port, and a short bounded route — nothing
  * else. Query and fragment are refused outright because a provider endpoint needs neither: Pi's
  * own Azure provider carries `api-version` in `AZURE_OPENAI_API_VERSION`, not in `baseUrl`. */
-const ENDPOINT_PROTOCOLS = new Set(["http:", "https:"]);
 // Case-INSENSITIVE by maintainer decision (2026-07-25). A lowercase-only route looked like a
 // credential control but was not one: `sk-querysecret999` passes it while `GPT4-Prod` — an
 // ordinary Azure deployment name — does not. A short path segment simply cannot be told apart
@@ -305,7 +304,7 @@ function structuralOnly(value: unknown, depth = 0, budget = { nodes: 0 }): boole
  * an endpoint:
  *   - a parseable absolute URL (a value that is not one is refused, never guessed at, since Pi
  *     hands it straight to `fetch`);
- *   - an `http`/`https` scheme;
+ *   - HTTPS except the existing literal numeric127.0.0.1 HTTP loopback (ADR-0049);
  *   - no userinfo (`https://operator:pw@gateway/v1` is credential material wearing an endpoint's
  *     clothes);
  *   - no query and no fragment at all — a provider endpoint needs neither, and Pi's own Azure
@@ -326,7 +325,7 @@ function endpointOnlyValue(value: unknown, endpoints: Set<string>): string {
   // parse to an empty search/hash yet still hand a delimiter to Pi's `fetch`.
   if (value.includes("?") || value.includes("#")) refuseProjection();
   const endpoint = parsedEndpoint(value);
-  if (!ENDPOINT_PROTOCOLS.has(endpoint.protocol)) refuseProjection();
+  if (!endpointTransportAllowed(value, endpoint)) refuseProjection();
   if (endpoint.username !== "" || endpoint.password !== "") refuseProjection();
   if (endpoint.search !== "" || endpoint.hash !== "") refuseProjection();
   const segments = endpoint.pathname.split("/").filter((segment) => segment !== "");

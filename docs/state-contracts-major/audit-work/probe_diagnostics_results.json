@@ -1,0 +1,38 @@
+{
+  "pi_payload_checks": [
+    [
+      "OK",
+      "plugin payload at /workspace/scratch/6dd9dc5f561f/codeArbiter/plugins/ca-pi (version 0.27.5)"
+    ],
+    [
+      "FAIL",
+      "package.json has an invalid ca-pi package/discovery contract; reinstall ca-pi"
+    ],
+    [
+      "OK",
+      "Pi shared core present: pi-bridge.py and 9 support scripts"
+    ]
+  ],
+  "spinner_uninstall_before": {
+    "_codearbiterSpinnerVerbsBackup": {
+      "mode": "replace",
+      "verbs": [
+        "prior"
+      ]
+    },
+    "spinnerVerbs": {
+      "mode": "replace",
+      "verbs": [
+        "user changed after install"
+      ]
+    }
+  },
+  "spinner_uninstall_after": {
+    "spinnerVerbs": {
+      "mode": "replace",
+      "verbs": [
+        "prior"
+      ]
+    }
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "scope": "Pure AST source/membership check only; no test module setup/import, native process or claimed suite execution. Original hosted actual conformance omission retained separately.",
+  "expected_count": 59,
+  "declared_case_count": 60,
+  "duplicates": false,
+  "missing": [
+    "test_launch_refusal_diagnostic_distinguishes_closed_targets_without_payload"
+  ],
+  "extra": [],
+  "inputs": {
+    ".github\\scripts\\test_artifact_conformance.py": "0552398c6f5647746c766bca32c25b8ae9c4a41ce9cc7df5299c688b941f8c2b",
+    ".github\\scripts\\test_artifact_package.py": "c6267d3ed0d9f4b473f88b444dc7688c5c46e9798b3f13063939776c08cef389"
+  },
+  "result": "FAILED"
+}

@@ -1014,6 +1014,10 @@
         "reason": {
           "type": "string",
           "minLength": 1
+        },
+        "original_kind": {
+          "type": "string",
+          "pattern": "^[a-z][a-z_]{0,63}$"
         }
       },
       "required": [

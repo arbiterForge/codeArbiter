@@ -1,0 +1,15 @@
+{
+  "source_after": "0830b95752a05343563be027e513a2845a6c57df",
+  "inputs_after": {
+    "site/scripts/release-applicability.ts": "272fbf607aa1376f999545d3b7f287438a22dc5f85fed4d9ccaf433d6ad555d9",
+    "site/src/release-applicability-presentation.ts": "a94a1f1a1c0b0ea28d00a90e8e49b77ed13e96534ed1dd841644cd5d4d7f4732",
+    "site/test/release-applicability/release-applicability.test.ts": "98ef3086438d07f8de16eaae3799e6247fc03f2e286928252b3befd2cc98905b",
+    "site/test/release-applicability/presentation.test.ts": "b12e5cabdb69f1bada9d5b9a35fea9577c2bc7c5f9514f995326fe39fd7926c1",
+    "site/package.json": "3c00bebcf4d5796050692262ec2791f4ae367d8b450a650419e552a6162aac7c",
+    "site/package-lock.json": "d81f1d4b54c0e2a0fc05815687fcb306e0a12f98c3e382032556e445c614787a",
+    "site/vitest.config.ts": "a65a6dde53bb9bff5d5ee31569d97f2f76e3a6f51e672613d155e3121055ac59",
+    "site/tsconfig.json": "2313012ec43d254daf80ac76385fc550e3a472aa6a96affe8b9e1d4e2dd225f4"
+  },
+  "exit_code": 0,
+  "seconds": 0.579603899968788
+}

@@ -1,0 +1,205 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "6d4c858fff4df40cc14d71c19c0e4d5a0d6bf434",
+  "kind": "test",
+  "result": "PASSED",
+  "producer": {
+    "class": "local-host",
+    "identity": "/root/packaging_site_tools original local Chrome isolated-component execution with immutable6d4 source"
+  },
+  "platform": "windows/amd64",
+  "inputs": {
+    "site/src/components/Search.astro": "42f38941ddb082f392b9802af212a00f1fbc7ae6debcde02173eb8ecd1a4a183",
+    "site/src/components/SplashDocsRail.astro": "9f76985828efd12dd6856a8d2b5bf69538c3c10c19fbe7edca02ed614042dd1e",
+    "site/test/components/lifecycle.spec.ts": "70466c0be7d9fc0ea94dac7b882b7eb5d3c04cd65cd30621f27a4192189c3317",
+    "site/playwright.components.config.ts": "7020bb513095c3a3bbb5c9e1029ab84ce0420b1ed9dff075dd3b0948c37f09ff",
+    "site/package.json": "3c00bebcf4d5796050692262ec2791f4ae367d8b450a650419e552a6162aac7c",
+    "site/package-lock.json": "d81f1d4b54c0e2a0fc05815687fcb306e0a12f98c3e382032556e445c614787a"
+  },
+  "commands": [
+    {
+      "argv": [
+        "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+        "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\@playwright\\test\\cli.js",
+        "test",
+        "test/components/lifecycle.spec.ts",
+        "--config=playwright.components.config.ts",
+        "--reporter=json",
+        "--output=C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-component-prepared-6d4c-3cp1d6nn\\playwright-output"
+      ],
+      "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site",
+      "environment": {
+        "SystemRoot": "C:\\WINDOWS",
+        "WINDIR": "C:\\WINDOWS",
+        "TEMP": "C:\\Users\\brenn\\AppData\\Local\\Temp",
+        "TMP": "C:\\Users\\brenn\\AppData\\Local\\Temp",
+        "COMSPEC": "C:\\WINDOWS\\system32\\cmd.exe",
+        "PATHEXT": ".COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH;.MSC;.PY;.PYW;.CPL",
+        "PATH": "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin;C:/Program Files/Git/cmd;C:/Windows/System32",
+        "HOME": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-component-prepared-6d4c-3cp1d6nn\\home",
+        "USERPROFILE": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-component-prepared-6d4c-3cp1d6nn\\home",
+        "HOMEDRIVE": "C:",
+        "HOMEPATH": "\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-component-prepared-6d4c-3cp1d6nn\\home",
+        "APPDATA": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-component-prepared-6d4c-3cp1d6nn\\home\\AppData\\Roaming",
+        "LOCALAPPDATA": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-component-prepared-6d4c-3cp1d6nn\\home\\AppData\\Local",
+        "XDG_CONFIG_HOME": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-component-prepared-6d4c-3cp1d6nn\\home\\.config",
+        "XDG_CACHE_HOME": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-component-prepared-6d4c-3cp1d6nn\\home\\.cache",
+        "COMPONENT_SOURCE_REF": "6d4c858fff4df40cc14d71c19c0e4d5a0d6bf434",
+        "PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD": "1",
+        "DEBUG": "pw:browser"
+      },
+      "exit_code": 0
+    }
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/site-component-current-6d4c/raw/start.json",
+      "sha256": "b60baa04ed184866fc8a7602b2e2e8229e21c56d0766fea78c054b2a82b80028"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/site-component-current-6d4c/raw/result.json",
+      "sha256": "e204a05ddf88d1506be6c6a4b74d9e0e7ac7591acf5039b28e589715718d3bba"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/site-component-current-6d4c/raw/original-playwright-report.json",
+      "sha256": "66314a9d7a8c97673c0945a26781029cd2ca8c45bba822db5c4282d2f8c0f162"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/site-component-current-6d4c/raw/observe.py",
+      "sha256": "2b69f5fa47c7b103b36de1734dd9cd47823707e1afa6e4b85dc9f1561440f134"
+    }
+  ],
+  "disposition_ids": [
+    "disposition:transitions:S55:07",
+    "disposition:transitions:S55:09",
+    "disposition:transitions:S62:05",
+    "disposition:findings:SF11",
+    "disposition:findings:SF16"
+  ],
+  "per_cell_assertion_mapping": [
+    {
+      "cell": "disposition:transitions:S55:07",
+      "observed_named_cases": [
+        "search recovers query",
+        "search recovers data"
+      ],
+      "assertion_scope": "Actual component query rejection and lazy result-data rejection show explicit error/retry, preserve the typed query, recover one result, then permit ArrowDown option selection.",
+      "limits": [
+        "Accepted SITE-U01 replaces historical unhandled/stale rejection with current error/retry state."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S55:09",
+      "observed_named_cases": [
+        "search recovers expansion"
+      ],
+      "assertion_scope": "Actual failed expansion keeps the first8 results and exposes enabled retry; retry resolves all10 results.",
+      "limits": [
+        "Accepted SITE-U01 catches expansion rejection and restores retry eligibility; controlled Pagefind provider only."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S62:05",
+      "observed_named_cases": [
+        "drawer reconnect owns exactly one set of opener, close and keyboard listeners"
+      ],
+      "assertion_scope": "The same actual custom element disconnects/reconnects3 times. Each single opener click opens rather than double-toggling; Escape closes, background aria-hidden returns to its prior value and opener focus returns.",
+      "limits": [
+        "Opener/Escape observable lifetime only; no claim every close-control handler count or production layout was independently measured."
+      ]
+    },
+    {
+      "cell": "disposition:findings:SF11",
+      "observed_named_cases": [
+        "search recovers query",
+        "search recovers data",
+        "search recovers expansion",
+        "search recovers stale"
+      ],
+      "assertion_scope": "Browser execution of actual Search markup/script observes query/data rejection recovery, expansion retry with old results retained, and an older rejected query never replacing newer successful results.",
+      "limits": [
+        "Component-only fixture and controlled Pagefind responses; no real search-index or production-page claim."
+      ]
+    },
+    {
+      "cell": "disposition:findings:SF16",
+      "observed_named_cases": [
+        "drawer reconnect owns exactly one set of opener, close and keyboard listeners"
+      ],
+      "assertion_scope": "Real browser connection callbacks on the same actual drawer component retain usable single-click opener and Escape behavior across3 reconnections, with background aria and focus restoration.",
+      "limits": [
+        "Known duplicated-toggle risk is exercised; full production DOM/CSS, all close/focus-trap branches and installed host behavior remain separate."
+      ]
+    }
+  ],
+  "execution_context": {
+    "actual_source_before": "6d4c858fff4df40cc14d71c19c0e4d5a0d6bf434",
+    "actual_source_after": "6d4c858fff4df40cc14d71c19c0e4d5a0d6bf434",
+    "inputs_before_after_equal": true,
+    "physical_immutable_Git_equal": true,
+    "source_input_count": 6,
+    "runtime_file_count": 7,
+    "runtime_files_before_after": {
+      "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe": "c0b01496cf3da5cceca86eb6e1b2ef5d088cd46ad4e97cf502e2c937fa7f56b9",
+      "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe": "46461accbdc87dc88a5bdd6d611be095dd6147db009863d794f742ca90662efa",
+      "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\@playwright\\test\\package.json": "5587f932b8979b6889654b60e3c28aeb7ca0abbac00eec8c176c939a16149536",
+      "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\playwright\\package.json": "8bc2ddebe8d9b051b9ecb87d62c6c63877e59d08617f32c3215681ca8bb70998",
+      "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\playwright-core\\package.json": "f061c58427e47e843e26d201f0a57076c734e57c734ecbbd87d4a23b7a20db9b",
+      "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\typescript\\package.json": "822ef7ca6452205657b6288b066481ecf508bfbf43455d715cf7d3ec457561e6",
+      "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\typescript\\lib\\typescript.js": "3ae902c92cc44dace175c0e69e13a4b0899f6983c6121d76b9ab8dd5795e7675"
+    },
+    "node_version": "v24.22.1",
+    "playwright_version": "1.63.0",
+    "typescript_version": "5.9.3",
+    "browser_channel": "chrome",
+    "browser_version_separate_inert_probe": "156.0.8078.80",
+    "browser_version_scope": "Separate managed launch queried actual browser.version; same Chrome executable digest as before/after actual test run. No whole-browser-DLL/OS qualification.",
+    "private_HOME_before_browser": true,
+    "physical_private_AppData_XDG_dirs_created": true,
+    "actual_named_pass": 5,
+    "seconds": 3.9408998489379883
+  },
+  "diagnostic_history_not_tested_witness": {
+    "initial_attempt_exit_code": 1,
+    "initial_stats": {
+      "passed": 0,
+      "browser_launch_failures": 5
+    },
+    "cause_scope": "Private AppData/XDG directories were absent. Creating them allowed an inert managed Chrome launch. This is an observer fixture prerequisite correction, not a product change.",
+    "original_records": [
+      {
+        "path": "docs/state-contracts-major/execution/evidence/site-component-current-6d4c/diagnostics/initial-browser-setup-report.json",
+        "sha256": "bb96eb3a8326a884b5947c038d565e1298b7d08bcdd56025f173e9bb8ef88a0d"
+      },
+      {
+        "path": "docs/state-contracts-major/execution/evidence/site-component-current-6d4c/diagnostics/initial-start.json",
+        "sha256": "7d416b091a59ca88bef47724048b6e8335129c3651e88729a172a8903cdda633"
+      },
+      {
+        "path": "docs/state-contracts-major/execution/evidence/site-component-current-6d4c/diagnostics/initial-result.json",
+        "sha256": "9dc20ba77801831c1512e978023cbc043edf53f2bb82ad259ef8129d7f326e1c"
+      },
+      {
+        "path": "docs/state-contracts-major/execution/evidence/site-component-current-6d4c/diagnostics/launch-probe.cjs",
+        "sha256": "c151c290554641c79b92e13b74efeb82926eabceaf8561c17ec60f31e190167c"
+      },
+      {
+        "path": "docs/state-contracts-major/execution/evidence/site-component-current-6d4c/diagnostics/launch-probe-result.json",
+        "sha256": "22943aab9418d8375639f1554dba23fa16e6f9f6eb7a16a00421b4da937a9ab7"
+      },
+      {
+        "path": "docs/state-contracts-major/execution/evidence/site-component-current-6d4c/diagnostics/launch-probe.stdout.json",
+        "sha256": "6031e76fef3e30f0829f8acc1d79c424585bceafb8381871b65e953a3cd1e3b5"
+      }
+    ],
+    "history_scope": "Original setup failures are retained unchanged and contribute no affirmative cell result. No guard/browser flag/profile-policy relaxation or ignored assertions."
+  },
+  "scope": "Five specific component runtime transitions/findings. Actual Astro component scripts are TypeScript-transpiled and run in a real Chrome DOM; Search markup comes from actual component while drawer surrounds are an explicitly minimal authored fixture.",
+  "limits": [
+    "Controlled fake Pagefind responses, not actual Pagefind module/index/database; no production Astro page/build/CSS/layout/index/route qualification.",
+    "No synthetic parent TUI/media/consent, installed host, provider/cost/native/cohort/platform-union or whole task/machine qualification.",
+    "No new source/tests, installs, broad suites or site build; normal production preview requires currently absent site/dist.",
+    "Search module-load/reload failure, full search close/disconnect matrix and full drawer focus trap/close-control matrix remain pending.",
+    "Source applicability does not claim the installed browser/OS runtime stays unchanged later; original runtime file hashes and observed Chrome version are retained."
+  ]
+}

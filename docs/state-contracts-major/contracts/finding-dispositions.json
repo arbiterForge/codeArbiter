@@ -1,0 +1,1675 @@
+{
+  "schema": "codearbiter-finding-dispositions/1",
+  "source_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "records": [
+    {
+      "finding_id": "W-F01",
+      "title": "Conflict command prescribes a broader stop than the assistive engine contract",
+      "baseline_status": "source-confirmed documentation or policy contradiction",
+      "treatment": "CHANGE_WITH_PRESERVED_BOUNDARIES",
+      "status": "PLANNED",
+      "task_ids": [
+        "HW-06",
+        "HW-27"
+      ],
+      "decision_ids": [
+        "D-CONFLICT"
+      ],
+      "composed_scenario_ids": [
+        "SEQ-08"
+      ],
+      "focused_cases": "See all referenced task tests and owner-ledger acceptance/rejection sequences.",
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/conflict.md",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/SPRINT.md",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/context-check/SKILL.md",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.codearbiter/decisions/0043-assistive-state-engine.md"
+      ],
+      "implementation_evidence": [],
+      "qualification_evidence": [],
+      "closure_rule": "Observe the corrected/preserved behavior at its actual boundary; do not call a planned command or copied historical probe a new pass."
+    },
+    {
+      "finding_id": "W-F02",
+      "title": "Debug handoff treats a correctable packet error as a terminal one-shot boundary",
+      "baseline_status": "source-confirmed documentation or policy contradiction",
+      "treatment": "CHANGE_WITH_PRESERVED_BOUNDARIES",
+      "status": "PLANNED",
+      "task_ids": [
+        "HW-07",
+        "HW-08",
+        "HW-27"
+      ],
+      "decision_ids": [
+        "D-RESUBMIT"
+      ],
+      "composed_scenario_ids": [
+        "SEQ-09"
+      ],
+      "focused_cases": "See all referenced task tests and owner-ledger acceptance/rejection sequences.",
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/debug/SKILL.md",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_debughandofflib.py",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/debug-handoff.py"
+      ],
+      "implementation_evidence": [],
+      "qualification_evidence": [],
+      "closure_rule": "Observe the corrected/preserved behavior at its actual boundary; do not call a planned command or copied historical probe a new pass."
+    },
+    {
+      "finding_id": "W-F03",
+      "title": "Maintenance severity and reviewer disposition conflict",
+      "baseline_status": "source-confirmed documentation or policy contradiction",
+      "treatment": "DECISION_THEN_CHANGE",
+      "status": "PLANNED",
+      "task_ids": [
+        "HW-09",
+        "HW-20",
+        "HW-27"
+      ],
+      "decision_ids": [
+        "D-HIGH"
+      ],
+      "composed_scenario_ids": [],
+      "focused_cases": "See all referenced task tests and owner-ledger acceptance/rejection sequences.",
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/agents/dependency-reviewer.md",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/reviewer-contract.md"
+      ],
+      "implementation_evidence": [],
+      "qualification_evidence": [],
+      "closure_rule": "Observe the corrected/preserved behavior at its actual boundary; do not call a planned command or copied historical probe a new pass."
+    },
+    {
+      "finding_id": "W-F04",
+      "title": "Terminal finding harvest has no implemented recovery for interruption before the terminal step",
+      "baseline_status": "source-confirmed recovery gap",
+      "treatment": "IMPLEMENT_AUTHORIZED_CAPABILITY",
+      "status": "PLANNED",
+      "task_ids": [
+        "HW-10",
+        "HW-11",
+        "HW-12",
+        "HW-13",
+        "HW-14",
+        "HW-15",
+        "HW-27"
+      ],
+      "decision_ids": [
+        "D-RECOVERY"
+      ],
+      "composed_scenario_ids": [
+        "SEQ-10",
+        "SEQ-11"
+      ],
+      "focused_cases": "See all referenced task tests and owner-ledger acceptance/rejection sequences.",
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/harvest.md",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/knowledge.md",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_knowledgelib.py",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/session-start.py",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/standup.md"
+      ],
+      "implementation_evidence": [],
+      "qualification_evidence": [],
+      "closure_rule": "Observe the corrected/preserved behavior at its actual boundary; do not call a planned command or copied historical probe a new pass."
+    },
+    {
+      "finding_id": "W-F05",
+      "title": "SessionStart persona documentation contradicts the prompt-submit owner",
+      "baseline_status": "source-confirmed documentation or policy contradiction",
+      "treatment": "CLARIFY_CONTRACT_AND_VERIFY",
+      "status": "PLANNED",
+      "task_ids": [
+        "HW-16",
+        "HW-27"
+      ],
+      "decision_ids": [],
+      "composed_scenario_ids": [
+        "SEQ-29"
+      ],
+      "focused_cases": "See all referenced task tests and owner-ledger acceptance/rejection sequences.",
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/init.md",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:README.md",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/session-start.py",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/prompt-submit.py",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.codearbiter/decisions/0030-orchestration-mode-plane-with-composed-persona.md"
+      ],
+      "implementation_evidence": [],
+      "qualification_evidence": [],
+      "closure_rule": "Observe the corrected/preserved behavior at its actual boundary; do not call a planned command or copied historical probe a new pass."
+    },
+    {
+      "finding_id": "W-F06",
+      "title": "Sensitive-lines-only override wording understates the implemented candidate binding",
+      "baseline_status": "source-confirmed documentation or policy contradiction",
+      "treatment": "CLARIFY_CONTRACT_AND_VERIFY",
+      "status": "PLANNED",
+      "task_ids": [
+        "HW-17",
+        "HW-27"
+      ],
+      "decision_ids": [],
+      "composed_scenario_ids": [
+        "SEQ-29"
+      ],
+      "focused_cases": "See all referenced task tests and owner-ledger acceptance/rejection sequences.",
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/override.md",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/security-pass.py",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_sensitivelib.py"
+      ],
+      "implementation_evidence": [],
+      "qualification_evidence": [],
+      "closure_rule": "Observe the corrected/preserved behavior at its actual boundary; do not call a planned command or copied historical probe a new pass."
+    },
+    {
+      "finding_id": "W-F07",
+      "title": "Watch confuses absence of agent polling with absence of CLI polling",
+      "baseline_status": "source-confirmed documentation or policy contradiction",
+      "treatment": "CLARIFY_CONTRACT_AND_VERIFY",
+      "status": "PLANNED",
+      "task_ids": [
+        "HW-18",
+        "HW-27"
+      ],
+      "decision_ids": [],
+      "composed_scenario_ids": [
+        "SEQ-29"
+      ],
+      "focused_cases": "See all referenced task tests and owner-ledger acceptance/rejection sequences.",
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/watch.md"
+      ],
+      "implementation_evidence": [],
+      "qualification_evidence": [],
+      "closure_rule": "Observe the corrected/preserved behavior at its actual boundary; do not call a planned command or copied historical probe a new pass."
+    },
+    {
+      "finding_id": "W-F08",
+      "title": "Command catalog and reviewer index drift from their owner bodies",
+      "baseline_status": "source-confirmed documentation or policy contradiction",
+      "treatment": "CHANGE_WITH_PRESERVED_BOUNDARIES",
+      "status": "PLANNED",
+      "task_ids": [
+        "HW-19",
+        "HW-20",
+        "HW-27"
+      ],
+      "decision_ids": [],
+      "composed_scenario_ids": [
+        "SEQ-29"
+      ],
+      "focused_cases": "See all referenced task tests and owner-ledger acceptance/rejection sequences.",
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/COMMANDS.md",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/tribunal.md",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/tribunal/SKILL.md",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/release.md",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/agents/INDEX.md",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/agents/coverage-auditor.md"
+      ],
+      "implementation_evidence": [],
+      "qualification_evidence": [],
+      "closure_rule": "Observe the corrected/preserved behavior at its actual boundary; do not call a planned command or copied historical probe a new pass."
+    },
+    {
+      "finding_id": "W-F09",
+      "title": "Compatibility-removal metadata encodes a different policy than the public owner",
+      "baseline_status": "source-confirmed documentation or policy contradiction",
+      "treatment": "CHANGE_WITH_PRESERVED_BOUNDARIES",
+      "status": "PLANNED",
+      "task_ids": [
+        "HW-21",
+        "HW-27"
+      ],
+      "decision_ids": [],
+      "composed_scenario_ids": [],
+      "focused_cases": "See all referenced task tests and owner-ledger acceptance/rejection sequences.",
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/command-routes.json",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/build-surface.py",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/command-compatibility.md",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/check_command_route_release_state.py"
+      ],
+      "implementation_evidence": [],
+      "qualification_evidence": [],
+      "closure_rule": "Observe the corrected/preserved behavior at its actual boundary; do not call a planned command or copied historical probe a new pass."
+    },
+    {
+      "finding_id": "N-F01",
+      "title": "Ordinary context previews poison strict snapshot output recognition",
+      "baseline_status": "source-confirmed; not runtime reproduced",
+      "treatment": "CHANGE_WITH_PRESERVED_BOUNDARIES",
+      "status": "PLANNED",
+      "task_ids": [
+        "NT-02"
+      ],
+      "decision_ids": [],
+      "composed_scenario_ids": [
+        "SEQ-03"
+      ],
+      "focused_cases": "See all referenced task tests and owner-ledger acceptance/rejection sequences.",
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/context_assistive.go",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/store/infrastructure.go",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/evidence/snapshot.go",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/evidence/completion_workspace.go"
+      ],
+      "implementation_evidence": [],
+      "qualification_evidence": [],
+      "closure_rule": "Observe the corrected/preserved behavior at its actual boundary; do not call a planned command or copied historical probe a new pass."
+    },
+    {
+      "finding_id": "N-F02",
+      "title": "Implemented repair-apply absent from capability operation list",
+      "baseline_status": "source-confirmed",
+      "treatment": "CHANGE_WITH_PRESERVED_BOUNDARIES",
+      "status": "PLANNED",
+      "task_ids": [
+        "NT-03"
+      ],
+      "decision_ids": [],
+      "composed_scenario_ids": [
+        "SEQ-04"
+      ],
+      "focused_cases": "See all referenced task tests and owner-ledger acceptance/rejection sequences.",
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/protocol.go",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/protocol.go",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/protocol.go",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/engine.go"
+      ],
+      "implementation_evidence": [],
+      "qualification_evidence": [],
+      "closure_rule": "Observe the corrected/preserved behavior at its actual boundary; do not call a planned command or copied historical probe a new pass."
+    },
+    {
+      "finding_id": "N-F03",
+      "title": "Ordinary reconciliation and blocking propagate different task-state invalidation",
+      "baseline_status": "source-confirmed semantics; intent requires product decision",
+      "treatment": "DECISION_THEN_CHANGE",
+      "status": "PLANNED",
+      "task_ids": [
+        "NT-09"
+      ],
+      "decision_ids": [
+        "D-PROGRESS"
+      ],
+      "composed_scenario_ids": [
+        "SEQ-07"
+      ],
+      "focused_cases": "See all referenced task tests and owner-ledger acceptance/rejection sequences.",
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/assistive.go",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/lifecycle.go",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/lifecycle.go",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.codearbiter/decisions/0043-assistive-state-engine.md"
+      ],
+      "implementation_evidence": [],
+      "qualification_evidence": [],
+      "closure_rule": "Observe the corrected/preserved behavior at its actual boundary; do not call a planned command or copied historical probe a new pass."
+    },
+    {
+      "finding_id": "N-F04",
+      "title": "Two kinds of review completion share REVIEW and accept-scope dispatch",
+      "baseline_status": "source-confirmed",
+      "treatment": "DECISION_THEN_CHANGE",
+      "status": "PLANNED",
+      "task_ids": [
+        "NT-09"
+      ],
+      "decision_ids": [
+        "D-PROGRESS"
+      ],
+      "composed_scenario_ids": [
+        "SEQ-07"
+      ],
+      "focused_cases": "See all referenced task tests and owner-ledger acceptance/rejection sequences.",
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/assistive.go",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/lifecycle.go",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/prerequisite_observation.go"
+      ],
+      "implementation_evidence": [],
+      "qualification_evidence": [],
+      "closure_rule": "Observe the corrected/preserved behavior at its actual boundary; do not call a planned command or copied historical probe a new pass."
+    },
+    {
+      "finding_id": "N-F05",
+      "title": "Read-side effects depend on operation mode and platform",
+      "baseline_status": "source-confirmed",
+      "treatment": "CLARIFY_CONTRACT_AND_VERIFY",
+      "status": "PLANNED",
+      "task_ids": [
+        "NT-06"
+      ],
+      "decision_ids": [],
+      "composed_scenario_ids": [
+        "SEQ-31"
+      ],
+      "focused_cases": "See all referenced task tests and owner-ledger acceptance/rejection sequences.",
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/read/read.go",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/store/fs_lock_darwin.go",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/store/fs_portable.go",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/store/fs_lock_windows.go",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/engine.go"
+      ],
+      "implementation_evidence": [],
+      "qualification_evidence": [],
+      "closure_rule": "Observe the corrected/preserved behavior at its actual boundary; do not call a planned command or copied historical probe a new pass."
+    },
+    {
+      "finding_id": "N-F06",
+      "title": "Stored check-status vocabulary exceeds reachable public mutation behavior",
+      "baseline_status": "source-confirmed",
+      "treatment": "CLARIFY_CONTRACT_AND_VERIFY",
+      "status": "PLANNED",
+      "task_ids": [
+        "NT-07"
+      ],
+      "decision_ids": [],
+      "composed_scenario_ids": [],
+      "focused_cases": "See all referenced task tests and owner-ledger acceptance/rejection sequences.",
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/schema/work.schema.json",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/work.go",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/work.go",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/work_adopt.go"
+      ],
+      "implementation_evidence": [],
+      "qualification_evidence": [],
+      "closure_rule": "Observe the corrected/preserved behavior at its actual boundary; do not call a planned command or copied historical probe a new pass."
+    },
+    {
+      "finding_id": "N-F07",
+      "title": "Task context does inspect scoped source for recorded checks",
+      "baseline_status": "source-confirmed comment contradiction",
+      "treatment": "CLARIFY_CONTRACT_AND_VERIFY",
+      "status": "PLANNED",
+      "task_ids": [
+        "NT-06"
+      ],
+      "decision_ids": [],
+      "composed_scenario_ids": [],
+      "focused_cases": "See all referenced task tests and owner-ledger acceptance/rejection sequences.",
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/task_context.go",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/task_check.go",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/input_scope.go"
+      ],
+      "implementation_evidence": [],
+      "qualification_evidence": [],
+      "closure_rule": "Observe the corrected/preserved behavior at its actual boundary; do not call a planned command or copied historical probe a new pass."
+    },
+    {
+      "finding_id": "N-F08",
+      "title": "Unsupported-platform message still describes Windows/macOS as pending",
+      "baseline_status": "source-confirmed stale diagnostic",
+      "treatment": "CLARIFY_CONTRACT_AND_VERIFY",
+      "status": "PLANNED",
+      "task_ids": [
+        "NT-08"
+      ],
+      "decision_ids": [],
+      "composed_scenario_ids": [
+        "SEQ-31"
+      ],
+      "focused_cases": "See all referenced task tests and owner-ledger acceptance/rejection sequences.",
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/store/fs_other.go",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/store/fs_portable.go"
+      ],
+      "implementation_evidence": [],
+      "qualification_evidence": [],
+      "closure_rule": "Observe the corrected/preserved behavior at its actual boundary; do not call a planned command or copied historical probe a new pass."
+    },
+    {
+      "finding_id": "N-F09",
+      "title": "Valid npm launch bindings exceed native completion consumer cap",
+      "baseline_status": "Producer output reproduced in Python; native rejection source-confirmed only",
+      "treatment": "CHANGE_WITH_PRESERVED_BOUNDARIES",
+      "status": "PLANNED",
+      "task_ids": [
+        "NT-04"
+      ],
+      "decision_ids": [],
+      "composed_scenario_ids": [
+        "SEQ-05"
+      ],
+      "focused_cases": "See all referenced task tests and owner-ledger acceptance/rejection sequences.",
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/observation/contract.go",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/observation/runner_contract.go",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/evidence/completion_workspace.go"
+      ],
+      "implementation_evidence": [],
+      "qualification_evidence": [],
+      "closure_rule": "Observe the corrected/preserved behavior at its actual boundary; do not call a planned command or copied historical probe a new pass."
+    },
+    {
+      "finding_id": "N-F10",
+      "title": "Retirement with retained task checks or scope baselines is rejected as orphan state",
+      "baseline_status": "source-confirmed; not runtime reproduced",
+      "treatment": "CHANGE_WITH_PRESERVED_BOUNDARIES",
+      "status": "PLANNED",
+      "task_ids": [
+        "NT-05"
+      ],
+      "decision_ids": [],
+      "composed_scenario_ids": [
+        "SEQ-06"
+      ],
+      "focused_cases": "See all referenced task tests and owner-ledger acceptance/rejection sequences.",
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/mutations.go",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/mutations.go",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/symbol/index.go",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/validate/validate.go",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/render/render.go"
+      ],
+      "implementation_evidence": [],
+      "qualification_evidence": [],
+      "closure_rule": "Observe the corrected/preserved behavior at its actual boundary; do not call a planned command or copied historical probe a new pass."
+    },
+    {
+      "finding_id": "HOOK-F01",
+      "title": "Returning to an already delivered mode suppresses the current persona",
+      "baseline_status": "focused isolated runtime probe + implementation read",
+      "treatment": "CHANGE_WITH_PRESERVED_BOUNDARIES",
+      "status": "PLANNED",
+      "task_ids": [
+        "HW-01",
+        "HW-27"
+      ],
+      "decision_ids": [],
+      "composed_scenario_ids": [
+        "SEQ-01"
+      ],
+      "focused_cases": "See all referenced task tests and owner-ledger acceptance/rejection sequences.",
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/prompt-submit.py",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/prompt-submit.py",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/prompt-submit.py",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_modelib.py"
+      ],
+      "implementation_evidence": [],
+      "qualification_evidence": [],
+      "closure_rule": "Observe the corrected/preserved behavior at its actual boundary; do not call a planned command or copied historical probe a new pass."
+    },
+    {
+      "finding_id": "HOOK-F02",
+      "title": "Mode flip failure reports no change after raw state has already changed",
+      "baseline_status": "isolated injected append failure + implementation read",
+      "treatment": "CHANGE_WITH_PRESERVED_BOUNDARIES",
+      "status": "PLANNED",
+      "task_ids": [
+        "HW-02",
+        "HW-27"
+      ],
+      "decision_ids": [],
+      "composed_scenario_ids": [
+        "SEQ-02"
+      ],
+      "focused_cases": "See all referenced task tests and owner-ledger acceptance/rejection sequences.",
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_modelib.py",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_modelib.py",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/prompt-submit.py",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/prompt-submit.py"
+      ],
+      "implementation_evidence": [],
+      "qualification_evidence": [],
+      "closure_rule": "Observe the corrected/preserved behavior at its actual boundary; do not call a planned command or copied historical probe a new pass."
+    },
+    {
+      "finding_id": "HOOK-F03",
+      "title": "Pi doctor rejects the actual scoped package identity",
+      "baseline_status": "actual checkout payload checked through check_payload",
+      "treatment": "CHANGE_WITH_PRESERVED_BOUNDARIES",
+      "status": "PLANNED",
+      "task_ids": [
+        "HW-03",
+        "HW-27"
+      ],
+      "decision_ids": [],
+      "composed_scenario_ids": [
+        "SEQ-16"
+      ],
+      "focused_cases": "See all referenced task tests and owner-ledger acceptance/rejection sequences.",
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/doctor.py",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/hooks/_host.py",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/package.json"
+      ],
+      "implementation_evidence": [],
+      "qualification_evidence": [],
+      "closure_rule": "Observe the corrected/preserved behavior at its actual boundary; do not call a planned command or copied historical probe a new pass."
+    },
+    {
+      "finding_id": "HOOK-F04",
+      "title": "Qualified npm workspace binding can exceed native completion consumer limit",
+      "baseline_status": "actual Python producer probe; Go consumer static read by native_states",
+      "treatment": "CHANGE_WITH_PRESERVED_BOUNDARIES",
+      "status": "PLANNED",
+      "task_ids": [
+        "HW-04",
+        "HW-27"
+      ],
+      "decision_ids": [],
+      "composed_scenario_ids": [
+        "SEQ-05"
+      ],
+      "focused_cases": "See all referenced task tests and owner-ledger acceptance/rejection sequences.",
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_artifactauthoritylib.py",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_artifactauthoritylib.py",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_artifactauthoritylib.py"
+      ],
+      "implementation_evidence": [],
+      "qualification_evidence": [],
+      "closure_rule": "Observe the corrected/preserved behavior at its actual boundary; do not call a planned command or copied historical probe a new pass."
+    },
+    {
+      "finding_id": "HOOK-F05",
+      "title": "Spinner uninstall restores backup over a user change made after install",
+      "baseline_status": "isolated settings transformation probe + implementation read",
+      "treatment": "CHANGE_WITH_PRESERVED_BOUNDARIES",
+      "status": "PLANNED",
+      "task_ids": [
+        "HW-05",
+        "HW-27"
+      ],
+      "decision_ids": [],
+      "composed_scenario_ids": [
+        "SEQ-21"
+      ],
+      "focused_cases": "See all referenced task tests and owner-ledger acceptance/rejection sequences.",
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/wire-statusline.py",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/wire-statusline.py"
+      ],
+      "implementation_evidence": [],
+      "qualification_evidence": [],
+      "closure_rule": "Observe the corrected/preserved behavior at its actual boundary; do not call a planned command or copied historical probe a new pass."
+    },
+    {
+      "finding_id": "HOOK-B01",
+      "title": "Debug validator rejection is stateless and does not prove authorization denial",
+      "baseline_status": "complete executable-source read",
+      "treatment": "CHANGE_WITH_PRESERVED_BOUNDARIES",
+      "status": "PLANNED",
+      "task_ids": [
+        "HW-07",
+        "HW-08",
+        "HW-27"
+      ],
+      "decision_ids": [
+        "D-RESUBMIT"
+      ],
+      "composed_scenario_ids": [
+        "SEQ-09"
+      ],
+      "focused_cases": "See all referenced task tests and owner-ledger acceptance/rejection sequences.",
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_debughandofflib.py",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/debug-handoff.py"
+      ],
+      "implementation_evidence": [],
+      "qualification_evidence": [],
+      "closure_rule": "Observe the corrected/preserved behavior at its actual boundary; do not call a planned command or copied historical probe a new pass."
+    },
+    {
+      "finding_id": "HOOK-B02",
+      "title": "Per-turn prompt owns persona delivery; SessionStart owns startup side effects",
+      "baseline_status": "complete executable-source read",
+      "treatment": "CLARIFY_CONTRACT_AND_VERIFY",
+      "status": "PLANNED",
+      "task_ids": [
+        "HW-16",
+        "HW-27"
+      ],
+      "decision_ids": [],
+      "composed_scenario_ids": [],
+      "focused_cases": "See all referenced task tests and owner-ledger acceptance/rejection sequences.",
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/prompt-submit.py",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/session-start.py"
+      ],
+      "implementation_evidence": [],
+      "qualification_evidence": [],
+      "closure_rule": "Observe the corrected/preserved behavior at its actual boundary; do not call a planned command or copied historical probe a new pass."
+    },
+    {
+      "finding_id": "HOOK-B03",
+      "title": "Security review marker binds the complete staged candidate, not just sensitive lines",
+      "baseline_status": "complete executable-source read",
+      "treatment": "CLARIFY_CONTRACT_AND_VERIFY",
+      "status": "PLANNED",
+      "task_ids": [
+        "HW-17",
+        "HW-27"
+      ],
+      "decision_ids": [],
+      "composed_scenario_ids": [],
+      "focused_cases": "See all referenced task tests and owner-ledger acceptance/rejection sequences.",
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/security-pass.py",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_sensitivelib.py",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_bashguardlib.py",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/git-enforce.py"
+      ],
+      "implementation_evidence": [],
+      "qualification_evidence": [],
+      "closure_rule": "Observe the corrected/preserved behavior at its actual boundary; do not call a planned command or copied historical probe a new pass."
+    },
+    {
+      "finding_id": "HOOK-B04",
+      "title": "No startup or knowledge backstop scans stranded terminal harvest residue",
+      "baseline_status": "complete executable-source read of relevant runtime family",
+      "treatment": "IMPLEMENT_AUTHORIZED_CAPABILITY",
+      "status": "PLANNED",
+      "task_ids": [
+        "HW-10",
+        "HW-11",
+        "HW-12",
+        "HW-13",
+        "HW-14",
+        "HW-15",
+        "HW-27"
+      ],
+      "decision_ids": [
+        "D-RECOVERY"
+      ],
+      "composed_scenario_ids": [
+        "SEQ-10"
+      ],
+      "focused_cases": "See all referenced task tests and owner-ledger acceptance/rejection sequences.",
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/session-start.py",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_standuplib.py",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/knowledge.py"
+      ],
+      "implementation_evidence": [],
+      "qualification_evidence": [],
+      "closure_rule": "Observe the corrected/preserved behavior at its actual boundary; do not call a planned command or copied historical probe a new pass."
+    },
+    {
+      "finding_id": "HOOK-B05",
+      "title": "Native client accepts optional context qualification field",
+      "baseline_status": "implementation read",
+      "treatment": "PRESERVE_AND_VERIFY_INTEROPERABILITY",
+      "status": "PLANNED",
+      "task_ids": [
+        "HW-25",
+        "HW-27"
+      ],
+      "decision_ids": [],
+      "composed_scenario_ids": [
+        "SEQ-16"
+      ],
+      "focused_cases": "See all referenced task tests and owner-ledger acceptance/rejection sequences.",
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_artifactlib.py"
+      ],
+      "implementation_evidence": [],
+      "qualification_evidence": [],
+      "closure_rule": "Observe the corrected/preserved behavior at its actual boundary; do not call a planned command or copied historical probe a new pass."
+    },
+    {
+      "finding_id": "SF01",
+      "title": "Pi author child has no usable mutation authorization path",
+      "baseline_status": "source-confirmed and isolated source-module probe",
+      "treatment": "IMPLEMENT_AUTHORIZED_CAPABILITY",
+      "status": "PLANNED",
+      "task_ids": [
+        "PI-D01",
+        "PI-D02",
+        "PI-D03",
+        "PI-D04",
+        "PI-D05",
+        "PI-D06",
+        "PI-D07"
+      ],
+      "decision_ids": [
+        "D-PI"
+      ],
+      "composed_scenario_ids": [
+        "SEQ-12",
+        "SEQ-13",
+        "SEQ-14"
+      ],
+      "focused_cases": "See all referenced task tests and owner-ledger acceptance/rejection sequences.",
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/child-extension.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/tool-guard.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/policy.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/runner.ts"
+      ],
+      "implementation_evidence": [],
+      "qualification_evidence": [],
+      "closure_rule": "Observe the corrected/preserved behavior at its actual boundary; do not call a planned command or copied historical probe a new pass."
+    },
+    {
+      "finding_id": "SF02",
+      "title": "Pi ready state can outlive failed persona initialization",
+      "baseline_status": "source-confirmed",
+      "treatment": "CHANGE_WITH_PRESERVED_BOUNDARIES",
+      "status": "PLANNED",
+      "task_ids": [
+        "PI-L01"
+      ],
+      "decision_ids": [],
+      "composed_scenario_ids": [
+        "SEQ-15"
+      ],
+      "focused_cases": "See all referenced task tests and owner-ledger acceptance/rejection sequences.",
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/extension.ts"
+      ],
+      "implementation_evidence": [],
+      "qualification_evidence": [],
+      "closure_rule": "Observe the corrected/preserved behavior at its actual boundary; do not call a planned command or copied historical probe a new pass."
+    },
+    {
+      "finding_id": "SF03",
+      "title": "Sidebar installs after disposal when metrics promise resolves late",
+      "baseline_status": "source-confirmed and isolated source-module probe",
+      "treatment": "CHANGE_WITH_PRESERVED_BOUNDARIES",
+      "status": "PLANNED",
+      "task_ids": [
+        "PI-L02"
+      ],
+      "decision_ids": [],
+      "composed_scenario_ids": [
+        "SEQ-15"
+      ],
+      "focused_cases": "See all referenced task tests and owner-ledger acceptance/rejection sequences.",
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/sidebar-manager.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/footer.ts"
+      ],
+      "implementation_evidence": [],
+      "qualification_evidence": [],
+      "closure_rule": "Observe the corrected/preserved behavior at its actual boundary; do not call a planned command or copied historical probe a new pass."
+    },
+    {
+      "finding_id": "SF04",
+      "title": "Qualified production artifact manifests are rejected by farm parser",
+      "baseline_status": "source-confirmed",
+      "treatment": "CHANGE_WITH_PRESERVED_BOUNDARIES",
+      "status": "PLANNED",
+      "task_ids": [
+        "DIST-M01"
+      ],
+      "decision_ids": [],
+      "composed_scenario_ids": [
+        "SEQ-16"
+      ],
+      "focused_cases": "See all referenced task tests and owner-ledger acceptance/rejection sequences.",
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca/tools/farm.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/build-host-packages.py",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/build-host-packages.py",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/install-artifact-payload.py"
+      ],
+      "implementation_evidence": [],
+      "qualification_evidence": [],
+      "closure_rule": "Observe the corrected/preserved behavior at its actual boundary; do not call a planned command or copied historical probe a new pass."
+    },
+    {
+      "finding_id": "SF05",
+      "title": "Farm receipt failure is not a safe author-redispatch instruction",
+      "baseline_status": "source-confirmed",
+      "treatment": "CHANGE_WITH_PRESERVED_BOUNDARIES",
+      "status": "PLANNED",
+      "task_ids": [
+        "FARM-R01"
+      ],
+      "decision_ids": [],
+      "composed_scenario_ids": [
+        "SEQ-17"
+      ],
+      "focused_cases": "See all referenced task tests and owner-ledger acceptance/rejection sequences.",
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca/tools/farm.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca/tools/farm.ts"
+      ],
+      "implementation_evidence": [],
+      "qualification_evidence": [],
+      "closure_rule": "Observe the corrected/preserved behavior at its actual boundary; do not call a planned command or copied historical probe a new pass."
+    },
+    {
+      "finding_id": "SF06",
+      "title": "Farm gate retry loses containment failure",
+      "baseline_status": "source-confirmed",
+      "treatment": "CHANGE_WITH_PRESERVED_BOUNDARIES",
+      "status": "PLANNED",
+      "task_ids": [
+        "FARM-R02"
+      ],
+      "decision_ids": [],
+      "composed_scenario_ids": [
+        "SEQ-18"
+      ],
+      "focused_cases": "See all referenced task tests and owner-ledger acceptance/rejection sequences.",
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca/tools/exec.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca/tools/farm.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca/tools/farm.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca/tools/mutation.ts"
+      ],
+      "implementation_evidence": [],
+      "qualification_evidence": [],
+      "closure_rule": "Observe the corrected/preserved behavior at its actual boundary; do not call a planned command or copied historical probe a new pass."
+    },
+    {
+      "finding_id": "SF07",
+      "title": "Farm Git observation failure can appear as no drift",
+      "baseline_status": "source-confirmed",
+      "treatment": "CHANGE_WITH_PRESERVED_BOUNDARIES",
+      "status": "PLANNED",
+      "task_ids": [
+        "FARM-R03"
+      ],
+      "decision_ids": [],
+      "composed_scenario_ids": [
+        "SEQ-18"
+      ],
+      "focused_cases": "See all referenced task tests and owner-ledger acceptance/rejection sequences.",
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca/tools/farm.ts"
+      ],
+      "implementation_evidence": [],
+      "qualification_evidence": [],
+      "closure_rule": "Observe the corrected/preserved behavior at its actual boundary; do not call a planned command or copied historical probe a new pass."
+    },
+    {
+      "finding_id": "SF08",
+      "title": "Sandbox dependency cache identity is tied to random checkout basename",
+      "baseline_status": "source-confirmed and isolated source-module probe",
+      "treatment": "CHANGE_WITH_PRESERVED_BOUNDARIES",
+      "status": "PLANNED",
+      "task_ids": [
+        "SBX-C01"
+      ],
+      "decision_ids": [],
+      "composed_scenario_ids": [
+        "SEQ-19"
+      ],
+      "focused_cases": "See all referenced task tests and owner-ledger acceptance/rejection sequences.",
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/create.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/build.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/dephash.ts"
+      ],
+      "implementation_evidence": [],
+      "qualification_evidence": [],
+      "closure_rule": "Observe the corrected/preserved behavior at its actual boundary; do not call a planned command or copied historical probe a new pass."
+    },
+    {
+      "finding_id": "SF09",
+      "title": "Sandbox output overflow kills observation client without stopping workload",
+      "baseline_status": "source-confirmed and isolated source-module probe",
+      "treatment": "CHANGE_WITH_PRESERVED_BOUNDARIES",
+      "status": "PLANNED",
+      "task_ids": [
+        "SBX-C02"
+      ],
+      "decision_ids": [],
+      "composed_scenario_ids": [
+        "SEQ-20"
+      ],
+      "focused_cases": "See all referenced task tests and owner-ledger acceptance/rejection sequences.",
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/docker.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/exec.ts"
+      ],
+      "implementation_evidence": [],
+      "qualification_evidence": [],
+      "closure_rule": "Observe the corrected/preserved behavior at its actual boundary; do not call a planned command or copied historical probe a new pass."
+    },
+    {
+      "finding_id": "SF10",
+      "title": "Sandbox cleanup and discovery sometimes claim more than observed",
+      "baseline_status": "source-confirmed",
+      "treatment": "CHANGE_WITH_PRESERVED_BOUNDARIES",
+      "status": "PLANNED",
+      "task_ids": [
+        "SBX-C03"
+      ],
+      "decision_ids": [],
+      "composed_scenario_ids": [
+        "SEQ-20"
+      ],
+      "focused_cases": "See all referenced task tests and owner-ledger acceptance/rejection sequences.",
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/claude-inside.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/create.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/registry.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/destroy.ts"
+      ],
+      "implementation_evidence": [],
+      "qualification_evidence": [],
+      "closure_rule": "Observe the corrected/preserved behavior at its actual boundary; do not call a planned command or copied historical probe a new pass."
+    },
+    {
+      "finding_id": "SF11",
+      "title": "Site search handles loader failure but not query/result-data failure",
+      "baseline_status": "source-confirmed",
+      "treatment": "CHANGE_WITH_PRESERVED_BOUNDARIES",
+      "status": "PLANNED",
+      "task_ids": [
+        "SITE-U01"
+      ],
+      "decision_ids": [],
+      "composed_scenario_ids": [
+        "SEQ-28"
+      ],
+      "focused_cases": "See all referenced task tests and owner-ledger acceptance/rejection sequences.",
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/components/Search.astro"
+      ],
+      "implementation_evidence": [],
+      "qualification_evidence": [],
+      "closure_rule": "Observe the corrected/preserved behavior at its actual boundary; do not call a planned command or copied historical probe a new pass."
+    },
+    {
+      "finding_id": "SF12",
+      "title": "Private Pi artifact prompt is not general installed Pi approval support",
+      "baseline_status": "source-confirmed",
+      "treatment": "CHANGE_WITH_PRESERVED_BOUNDARIES",
+      "status": "PLANNED",
+      "task_ids": [
+        "PI-D06",
+        "PI-C01"
+      ],
+      "decision_ids": [],
+      "composed_scenario_ids": [
+        "SEQ-31"
+      ],
+      "focused_cases": "See all referenced task tests and owner-ledger acceptance/rejection sequences.",
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/approval-entry.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/approval-dialog.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/compatibility.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/build-host-packages.py"
+      ],
+      "implementation_evidence": [],
+      "qualification_evidence": [],
+      "closure_rule": "Observe the corrected/preserved behavior at its actual boundary; do not call a planned command or copied historical probe a new pass."
+    },
+    {
+      "finding_id": "SF13",
+      "title": "Surface and release build helpers have recoverable partial-write states",
+      "baseline_status": "source-confirmed",
+      "treatment": "CHANGE_WITH_PRESERVED_BOUNDARIES",
+      "status": "PLANNED",
+      "task_ids": [
+        "BUILD-G01"
+      ],
+      "decision_ids": [],
+      "composed_scenario_ids": [
+        "SEQ-29"
+      ],
+      "focused_cases": "See all referenced task tests and owner-ledger acceptance/rejection sequences.",
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/build-surface.py",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/sync-core.py",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/generate.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generate-academy.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/pagefind-build.ts"
+      ],
+      "implementation_evidence": [],
+      "qualification_evidence": [],
+      "closure_rule": "Observe the corrected/preserved behavior at its actual boundary; do not call a planned command or copied historical probe a new pass."
+    },
+    {
+      "finding_id": "SF14",
+      "title": "Compatibility metadata validates a removal slogan, not release-history authorization",
+      "baseline_status": "source-confirmed",
+      "treatment": "CHANGE_WITH_PRESERVED_BOUNDARIES",
+      "status": "PLANNED",
+      "task_ids": [
+        "BUILD-G02"
+      ],
+      "decision_ids": [],
+      "composed_scenario_ids": [
+        "SEQ-31"
+      ],
+      "focused_cases": "See all referenced task tests and owner-ledger acceptance/rejection sequences.",
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/build-surface.py"
+      ],
+      "implementation_evidence": [],
+      "qualification_evidence": [],
+      "closure_rule": "Observe the corrected/preserved behavior at its actual boundary; do not call a planned command or copied historical probe a new pass."
+    },
+    {
+      "finding_id": "SF15",
+      "title": "Claude and Codex promotion intentionally differ but share unknown-outcome recovery",
+      "baseline_status": "source-confirmed",
+      "treatment": "CHANGE_WITH_PRESERVED_BOUNDARIES",
+      "status": "PLANNED",
+      "task_ids": [
+        "DIST-M02"
+      ],
+      "decision_ids": [],
+      "composed_scenario_ids": [
+        "SEQ-31"
+      ],
+      "focused_cases": "See all referenced task tests and owner-ledger acceptance/rejection sequences.",
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/promote-claude-marketplace.py",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/promote-codex-marketplace.py"
+      ],
+      "implementation_evidence": [],
+      "qualification_evidence": [],
+      "closure_rule": "Observe the corrected/preserved behavior at its actual boundary; do not call a planned command or copied historical probe a new pass."
+    },
+    {
+      "finding_id": "SF16",
+      "title": "Site drawer reconnect cleanup may duplicate local handlers",
+      "baseline_status": "source-confirmed; browser reconnect behavior not executed",
+      "treatment": "CHANGE_WITH_PRESERVED_BOUNDARIES",
+      "status": "PLANNED",
+      "task_ids": [
+        "SITE-U02"
+      ],
+      "decision_ids": [],
+      "composed_scenario_ids": [
+        "SEQ-28"
+      ],
+      "focused_cases": "See all referenced task tests and owner-ledger acceptance/rejection sequences.",
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/components/SplashDocsRail.astro"
+      ],
+      "implementation_evidence": [],
+      "qualification_evidence": [],
+      "closure_rule": "Observe the corrected/preserved behavior at its actual boundary; do not call a planned command or copied historical probe a new pass."
+    },
+    {
+      "finding_id": "C-F01",
+      "title": "A public Release missing its final receipt cannot enter the advertised rerun recovery path",
+      "baseline_status": "pure local decision probe reproduced; remote interruption not executed",
+      "treatment": "CHANGE_WITH_PRESERVED_BOUNDARIES",
+      "status": "PLANNED",
+      "task_ids": [
+        "R-01"
+      ],
+      "decision_ids": [],
+      "composed_scenario_ids": [
+        "SEQ-22"
+      ],
+      "focused_cases": "See all referenced task tests and owner-ledger acceptance/rejection sequences.",
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/actions/publish-target/action.yml",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/actions/publish-target/action.yml",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/release_target.py",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/release_target.py",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/workflows/release.yml"
+      ],
+      "implementation_evidence": [],
+      "qualification_evidence": [],
+      "closure_rule": "Observe the corrected/preserved behavior at its actual boundary; do not call a planned command or copied historical probe a new pass."
+    },
+    {
+      "finding_id": "C-F02",
+      "title": "Manual release description promises current main while source selection chooses latest successful main CI",
+      "baseline_status": "source-confirmed",
+      "treatment": "CHANGE_WITH_PRESERVED_BOUNDARIES",
+      "status": "PLANNED",
+      "task_ids": [
+        "R-02"
+      ],
+      "decision_ids": [],
+      "composed_scenario_ids": [
+        "SEQ-23"
+      ],
+      "focused_cases": "See all referenced task tests and owner-ledger acceptance/rejection sequences.",
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/workflows/release.yml",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/workflows/release.yml"
+      ],
+      "implementation_evidence": [],
+      "qualification_evidence": [],
+      "closure_rule": "Observe the corrected/preserved behavior at its actual boundary; do not call a planned command or copied historical probe a new pass."
+    },
+    {
+      "finding_id": "C-F03",
+      "title": "Release-skill pre-tag proof is effectively a required gate despite ADR 40 retaining it as advisory",
+      "baseline_status": "source versus accepted ADR conflict",
+      "treatment": "DECISION_THEN_CHANGE",
+      "status": "PLANNED",
+      "task_ids": [
+        "R-03"
+      ],
+      "decision_ids": [
+        "D-GOV-PRETAG"
+      ],
+      "composed_scenario_ids": [],
+      "focused_cases": "See all referenced task tests and owner-ledger acceptance/rejection sequences.",
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/check_auto_release_candidate.py",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/workflows/ci.yml",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/workflows/ci.yml",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/workflows/release.yml",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.codearbiter/decisions/0040-independent-per-target-release-with-consumer-safety-gates.md",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.codearbiter/decisions/0044-trusted-pi-npm-publication.md"
+      ],
+      "implementation_evidence": [],
+      "qualification_evidence": [],
+      "closure_rule": "Observe the corrected/preserved behavior at its actual boundary; do not call a planned command or copied historical probe a new pass."
+    },
+    {
+      "finding_id": "C-F04",
+      "title": "Route compatibility publication clock has an implementation but no current release-workflow observation call",
+      "baseline_status": "source-confirmed wiring gap",
+      "treatment": "CHANGE_WITH_PRESERVED_BOUNDARIES",
+      "status": "PLANNED",
+      "task_ids": [
+        "R-04"
+      ],
+      "decision_ids": [],
+      "composed_scenario_ids": [
+        "SEQ-24"
+      ],
+      "focused_cases": "See all referenced task tests and owner-ledger acceptance/rejection sequences.",
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/check_command_route_release_state.py",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/workflows/ci.yml",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/workflows/release.yml",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/actions/publish-target/action.yml"
+      ],
+      "implementation_evidence": [],
+      "qualification_evidence": [],
+      "closure_rule": "Observe the corrected/preserved behavior at its actual boundary; do not call a planned command or copied historical probe a new pass."
+    },
+    {
+      "finding_id": "C-F05",
+      "title": "Dedicated docs voice gate does not select PRs changing only its two rule implementation files",
+      "baseline_status": "source-confirmed trigger asymmetry",
+      "treatment": "CHANGE_WITH_PRESERVED_BOUNDARIES",
+      "status": "PLANNED",
+      "task_ids": [
+        "R-05"
+      ],
+      "decision_ids": [],
+      "composed_scenario_ids": [],
+      "focused_cases": "See all referenced task tests and owner-ledger acceptance/rejection sequences.",
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/workflows/docs.yml",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/workflows/docs.yml",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/workflows/docs.yml"
+      ],
+      "implementation_evidence": [],
+      "qualification_evidence": [],
+      "closure_rule": "Observe the corrected/preserved behavior at its actual boundary; do not call a planned command or copied historical probe a new pass."
+    },
+    {
+      "finding_id": "C-F06",
+      "title": "A successful exit sometimes means unavailable or optional skip, not verified protection/runtime",
+      "baseline_status": "source-confirmed evidence distinction",
+      "treatment": "CHANGE_WITH_PRESERVED_BOUNDARIES",
+      "status": "PLANNED",
+      "task_ids": [
+        "R-06"
+      ],
+      "decision_ids": [],
+      "composed_scenario_ids": [
+        "SEQ-25"
+      ],
+      "focused_cases": "See all referenced task tests and owner-ledger acceptance/rejection sequences.",
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/check_tag_immutability.py",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/check_branch_protection.py",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/check_codex_host.py"
+      ],
+      "implementation_evidence": [],
+      "qualification_evidence": [],
+      "closure_rule": "Observe the corrected/preserved behavior at its actual boundary; do not call a planned command or copied historical probe a new pass."
+    },
+    {
+      "finding_id": "C-F07",
+      "title": "Payload first-introduction classification conflates absent base manifest and invalid base version",
+      "baseline_status": "source-confirmed branch conflation, no current base defect asserted",
+      "treatment": "CHANGE_WITH_PRESERVED_BOUNDARIES",
+      "status": "PLANNED",
+      "task_ids": [
+        "R-06"
+      ],
+      "decision_ids": [],
+      "composed_scenario_ids": [
+        "SEQ-25"
+      ],
+      "focused_cases": "See all referenced task tests and owner-ledger acceptance/rejection sequences.",
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/payload_version_gate.py",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/payload_version_gate.py",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/payload_version_gate.py"
+      ],
+      "implementation_evidence": [],
+      "qualification_evidence": [],
+      "closure_rule": "Observe the corrected/preserved behavior at its actual boundary; do not call a planned command or copied historical probe a new pass."
+    },
+    {
+      "finding_id": "C-F08",
+      "title": "Two verification subprocess paths lack a bounded wait before their normal timeout path",
+      "baseline_status": "source-confirmed latent liveness limit",
+      "treatment": "CHANGE_WITH_PRESERVED_BOUNDARIES",
+      "status": "PLANNED",
+      "task_ids": [
+        "R-07"
+      ],
+      "decision_ids": [],
+      "composed_scenario_ids": [
+        "SEQ-27"
+      ],
+      "focused_cases": "See all referenced task tests and owner-ledger acceptance/rejection sequences.",
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/check_codex_host.py",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/pi_benchmark.py"
+      ],
+      "implementation_evidence": [],
+      "qualification_evidence": [],
+      "closure_rule": "Observe the corrected/preserved behavior at its actual boundary; do not call a planned command or copied historical probe a new pass."
+    },
+    {
+      "finding_id": "SX-F01",
+      "title": "Documentation derives published-release state from tag presence alone",
+      "baseline_status": "source-confirmed and pure source-function probe; no actual unpublished production tag alleged",
+      "treatment": "CHANGE_WITH_PRESERVED_BOUNDARIES",
+      "status": "PLANNED",
+      "task_ids": [
+        "R-08"
+      ],
+      "decision_ids": [],
+      "composed_scenario_ids": [
+        "SEQ-24"
+      ],
+      "focused_cases": "See all referenced task tests and owner-ledger acceptance/rejection sequences.",
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/release-applicability.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/release-applicability-presentation.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/actions/publish-target/action.yml"
+      ],
+      "implementation_evidence": [],
+      "qualification_evidence": [],
+      "closure_rule": "Observe the corrected/preserved behavior at its actual boundary; do not call a planned command or copied historical probe a new pass."
+    },
+    {
+      "finding_id": "T-F01",
+      "title": "Statusline benchmark comparison can print PASS for zero measurements",
+      "baseline_status": "pure local probe reproduced",
+      "treatment": "CHANGE_WITH_PRESERVED_BOUNDARIES",
+      "status": "PLANNED",
+      "task_ids": [
+        "T-01"
+      ],
+      "decision_ids": [],
+      "composed_scenario_ids": [
+        "SEQ-25"
+      ],
+      "focused_cases": "See all referenced task tests and owner-ledger acceptance/rejection sequences.",
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/statusline-bench.py",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/statusline-bench.py"
+      ],
+      "implementation_evidence": [],
+      "qualification_evidence": [],
+      "closure_rule": "Observe the corrected/preserved behavior at its actual boundary; do not call a planned command or copied historical probe a new pass."
+    },
+    {
+      "finding_id": "T-F02",
+      "title": "Live SMARTS exercise tests literal lens-name presence rather than its stated material-comparison contract",
+      "baseline_status": "pure local oracle probe reproduced; subprocess-result issue source-confirmed",
+      "treatment": "CHANGE_WITH_PRESERVED_BOUNDARIES",
+      "status": "PLANNED",
+      "task_ids": [
+        "T-01"
+      ],
+      "decision_ids": [],
+      "composed_scenario_ids": [
+        "SEQ-26"
+      ],
+      "focused_cases": "See all referenced task tests and owner-ledger acceptance/rejection sequences.",
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/live-smarts-exercise.py",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/live-smarts-exercise.py"
+      ],
+      "implementation_evidence": [],
+      "qualification_evidence": [],
+      "closure_rule": "Observe the corrected/preserved behavior at its actual boundary; do not call a planned command or copied historical probe a new pass."
+    },
+    {
+      "finding_id": "T-F03",
+      "title": "CI20 evidence binds HEAD and current workflow hash without ensuring workflow bytes belong to that HEAD",
+      "baseline_status": "source-confirmed; no live baseline mismatch asserted",
+      "treatment": "CHANGE_WITH_PRESERVED_BOUNDARIES",
+      "status": "PLANNED",
+      "task_ids": [
+        "T-01"
+      ],
+      "decision_ids": [],
+      "composed_scenario_ids": [
+        "SEQ-26"
+      ],
+      "focused_cases": "See all referenced task tests and owner-ledger acceptance/rejection sequences.",
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/ci20_baseline.py",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/ci20_inventory.py"
+      ],
+      "implementation_evidence": [],
+      "qualification_evidence": [],
+      "closure_rule": "Observe the corrected/preserved behavior at its actual boundary; do not call a planned command or copied historical probe a new pass."
+    },
+    {
+      "finding_id": "T-F04",
+      "title": "Statusline illustration can proceed after failed renders and leaves some temporary inputs behind",
+      "baseline_status": "source-confirmed diagnostic-tool behavior",
+      "treatment": "CHANGE_WITH_PRESERVED_BOUNDARIES",
+      "status": "PLANNED",
+      "task_ids": [
+        "T-01"
+      ],
+      "decision_ids": [],
+      "composed_scenario_ids": [
+        "SEQ-26"
+      ],
+      "focused_cases": "See all referenced task tests and owner-ledger acceptance/rejection sequences.",
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/statusline-screenshot.py",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/statusline-screenshot.py"
+      ],
+      "implementation_evidence": [],
+      "qualification_evidence": [],
+      "closure_rule": "Observe the corrected/preserved behavior at its actual boundary; do not call a planned command or copied historical probe a new pass."
+    },
+    {
+      "finding_id": "GEN-F01",
+      "title": "Prune nudge threshold describes total context instead of freed context",
+      "baseline_status": "confirmed static documentation contradiction",
+      "treatment": "CLARIFY_CONTRACT_AND_VERIFY",
+      "status": "PLANNED",
+      "task_ids": [
+        "HW-22",
+        "HW-27"
+      ],
+      "decision_ids": [],
+      "composed_scenario_ids": [
+        "SEQ-29"
+      ],
+      "focused_cases": "See all referenced task tests and owner-ledger acceptance/rejection sequences.",
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/configuration-reference.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prunelib.py"
+      ],
+      "implementation_evidence": [],
+      "qualification_evidence": [],
+      "closure_rule": "Observe the corrected/preserved behavior at its actual boundary; do not call a planned command or copied historical probe a new pass."
+    },
+    {
+      "finding_id": "GEN-F02",
+      "title": "Hook reference is a bounded static extraction, not all actual runtime message text",
+      "baseline_status": "confirmed extractor limitation and overbroad generated claim",
+      "treatment": "CHANGE_WITH_PRESERVED_BOUNDARIES",
+      "status": "PLANNED",
+      "task_ids": [
+        "HW-23",
+        "HW-27"
+      ],
+      "decision_ids": [],
+      "composed_scenario_ids": [
+        "SEQ-29"
+      ],
+      "focused_cases": "See all referenced task tests and owner-ledger acceptance/rejection sequences.",
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/render-hooks-reference.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/extract-hook-gates.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/extract-hook-gates.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_bashguardlib.py"
+      ],
+      "implementation_evidence": [],
+      "qualification_evidence": [],
+      "closure_rule": "Observe the corrected/preserved behavior at its actual boundary; do not call a planned command or copied historical probe a new pass."
+    },
+    {
+      "finding_id": "GEN-B01",
+      "title": "Slug suffix counts do not reserve all output slugs",
+      "baseline_status": "static helper edge case, current production reachability not demonstrated",
+      "treatment": "CHANGE_WITH_PRESERVED_BOUNDARIES",
+      "status": "PLANNED",
+      "task_ids": [
+        "HW-24",
+        "HW-27"
+      ],
+      "decision_ids": [],
+      "composed_scenario_ids": [
+        "SEQ-29"
+      ],
+      "focused_cases": "See all referenced task tests and owner-ledger acceptance/rejection sequences.",
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/assign-slugs.ts"
+      ],
+      "implementation_evidence": [],
+      "qualification_evidence": [],
+      "closure_rule": "Observe the corrected/preserved behavior at its actual boundary; do not call a planned command or copied historical probe a new pass."
+    },
+    {
+      "finding_id": "SW-F01",
+      "title": "Sandbox preflight instructions refuse a dependency configuration that README and driver support",
+      "baseline_status": "documentation conflict with audited implementation",
+      "treatment": "CLARIFY_CONTRACT_AND_VERIFY",
+      "status": "PLANNED",
+      "task_ids": [
+        "SBX-D01"
+      ],
+      "decision_ids": [],
+      "composed_scenario_ids": [
+        "SEQ-30"
+      ],
+      "focused_cases": "See all referenced task tests and owner-ledger acceptance/rejection sequences.",
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/commands/sandbox.md",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/README.md",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/build.ts"
+      ],
+      "implementation_evidence": [],
+      "qualification_evidence": [],
+      "closure_rule": "Observe the corrected/preserved behavior at its actual boundary; do not call a planned command or copied historical probe a new pass."
+    },
+    {
+      "finding_id": "SW-F02",
+      "title": "The same shell exit means persistent box in one owner and teardown in another",
+      "baseline_status": "direct contradiction between fully read command and skill",
+      "treatment": "CLARIFY_CONTRACT_AND_VERIFY",
+      "status": "PLANNED",
+      "task_ids": [
+        "SBX-D02"
+      ],
+      "decision_ids": [],
+      "composed_scenario_ids": [
+        "SEQ-30"
+      ],
+      "focused_cases": "See all referenced task tests and owner-ledger acceptance/rejection sequences.",
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/commands/sandbox-shell.md",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md"
+      ],
+      "implementation_evidence": [],
+      "qualification_evidence": [],
+      "closure_rule": "Observe the corrected/preserved behavior at its actual boundary; do not call a planned command or copied historical probe a new pass."
+    },
+    {
+      "finding_id": "SW-F03",
+      "title": "Single-box destroy prose drifts into a global prune and global-empty postcondition",
+      "baseline_status": "instruction scope conflict with audited target-aware cleanup",
+      "treatment": "CLARIFY_CONTRACT_AND_VERIFY",
+      "status": "PLANNED",
+      "task_ids": [
+        "SBX-D02"
+      ],
+      "decision_ids": [],
+      "composed_scenario_ids": [
+        "SEQ-20",
+        "SEQ-30"
+      ],
+      "focused_cases": "See all referenced task tests and owner-ledger acceptance/rejection sequences.",
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/commands/sandbox-destroy.md",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/commands/sandbox-destroy.md",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/destroy.ts"
+      ],
+      "implementation_evidence": [],
+      "qualification_evidence": [],
+      "closure_rule": "Observe the corrected/preserved behavior at its actual boundary; do not call a planned command or copied historical probe a new pass."
+    },
+    {
+      "finding_id": "SW-F04",
+      "title": "Sandbox docs omit the temporary host copy of cloned source",
+      "baseline_status": "public storage claim contradicted by audited host staging",
+      "treatment": "CLARIFY_CONTRACT_AND_VERIFY",
+      "status": "PLANNED",
+      "task_ids": [
+        "SBX-D03"
+      ],
+      "decision_ids": [],
+      "composed_scenario_ids": [
+        "SEQ-30"
+      ],
+      "focused_cases": "See all referenced task tests and owner-ledger acceptance/rejection sequences.",
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/commands/sandbox.md",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/README.md",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/create.ts"
+      ],
+      "implementation_evidence": [],
+      "qualification_evidence": [],
+      "closure_rule": "Observe the corrected/preserved behavior at its actual boundary; do not call a planned command or copied historical probe a new pass."
+    },
+    {
+      "finding_id": "SW-F05",
+      "title": "Ordinary sandbox allowlist selection is described as applied although its run path stays offline",
+      "baseline_status": "advertised transition unavailable in current ordinary runtime",
+      "treatment": "CLARIFY_CONTRACT_AND_VERIFY",
+      "status": "PLANNED",
+      "task_ids": [
+        "SBX-D03"
+      ],
+      "decision_ids": [],
+      "composed_scenario_ids": [
+        "SEQ-30"
+      ],
+      "focused_cases": "See all referenced task tests and owner-ledger acceptance/rejection sequences.",
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/README.md",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/run.ts"
+      ],
+      "implementation_evidence": [],
+      "qualification_evidence": [],
+      "closure_rule": "Observe the corrected/preserved behavior at its actual boundary; do not call a planned command or copied historical probe a new pass."
+    },
+    {
+      "finding_id": "SW-F06",
+      "title": "Cache reuse promise is repeated across independent sandbox surfaces",
+      "baseline_status": "additional affected documentation for existing runtime finding SF08",
+      "treatment": "CHANGE_WITH_PRESERVED_BOUNDARIES",
+      "status": "PLANNED",
+      "task_ids": [
+        "SBX-C01"
+      ],
+      "decision_ids": [],
+      "composed_scenario_ids": [
+        "SEQ-30"
+      ],
+      "focused_cases": "See all referenced task tests and owner-ledger acceptance/rejection sequences.",
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/COMMANDS.md",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/README.md",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/commands/sandbox.md",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md"
+      ],
+      "implementation_evidence": [],
+      "qualification_evidence": [],
+      "closure_rule": "Observe the corrected/preserved behavior at its actual boundary; do not call a planned command or copied historical probe a new pass."
+    },
+    {
+      "finding_id": "SW-F07",
+      "title": "Claude-inside requires codeArbiter maintainer evidence under the consumer project root",
+      "baseline_status": "source-confirmed model-guided admission limitation",
+      "treatment": "CHANGE_WITH_PRESERVED_BOUNDARIES",
+      "status": "PLANNED",
+      "task_ids": [
+        "SBX-D04"
+      ],
+      "decision_ids": [],
+      "composed_scenario_ids": [
+        "SEQ-30"
+      ],
+      "focused_cases": "See all referenced task tests and owner-ledger acceptance/rejection sequences.",
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/README.md"
+      ],
+      "implementation_evidence": [],
+      "qualification_evidence": [],
+      "closure_rule": "Observe the corrected/preserved behavior at its actual boundary; do not call a planned command or copied historical probe a new pass."
+    },
+    {
+      "finding_id": "SW-F08",
+      "title": "Separate executable placement does not enforce five Claude-inside workflow phases",
+      "baseline_status": "prose enforcement claim exceeds executable admission",
+      "treatment": "CLARIFY_CONTRACT_AND_VERIFY",
+      "status": "PLANNED",
+      "task_ids": [
+        "SBX-D04"
+      ],
+      "decision_ids": [],
+      "composed_scenario_ids": [
+        "SEQ-30"
+      ],
+      "focused_cases": "See all referenced task tests and owner-ledger acceptance/rejection sequences.",
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/claude-inside-cli.ts",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/claude-inside-cli.ts"
+      ],
+      "implementation_evidence": [],
+      "qualification_evidence": [],
+      "closure_rule": "Observe the corrected/preserved behavior at its actual boundary; do not call a planned command or copied historical probe a new pass."
+    },
+    {
+      "finding_id": "SW-F09",
+      "title": "Claude README overstates dormant behavior and confines repository writes too narrowly",
+      "baseline_status": "README claims compared with fully audited hook owner evidence",
+      "treatment": "CLARIFY_CONTRACT_AND_VERIFY",
+      "status": "PLANNED",
+      "task_ids": [
+        "HOST-D01"
+      ],
+      "decision_ids": [],
+      "composed_scenario_ids": [
+        "SEQ-30"
+      ],
+      "focused_cases": "See all referenced task tests and owner-ledger acceptance/rejection sequences.",
+      "source_refs": [
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca/README.md",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/session-start.py",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_githooks.py",
+        "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_taskexcludelib.py"
+      ],
+      "implementation_evidence": [],
+      "qualification_evidence": [],
+      "closure_rule": "Observe the corrected/preserved behavior at its actual boundary; do not call a planned command or copied historical probe a new pass."
+    }
+  ]
+}

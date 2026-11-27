@@ -1,0 +1,39 @@
+{
+  "schema": "codearbiter-unresolved-observation/1",
+  "state": "UNRESOLVED",
+  "source_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+  "ci_run": 43662186921,
+  "job_id": 132653838973,
+  "artifact_id": 14140473144,
+  "artifact_expiry_observed": "2026-11-18T01:15:04Z",
+  "files": {
+    "docs/state-contracts-major/execution/evidence/pi-2df-unresolved-shutdown/rpc-native-exit-khrcb5m5.json": {
+      "sha256": "20c85446d1d1d9a755b2bc402c2d0ca1fdb2983b8845873aafbbfb2f8b039a1b",
+      "bytes": 485
+    },
+    "docs/state-contracts-major/execution/evidence/pi-2df-unresolved-shutdown/rpc-shutdown-lip_fhx4.json": {
+      "sha256": "5b36146a0027f4c9648a85529419b019c2d83fefb811381ad8a4af7cce7493b6",
+      "bytes": 1289
+    },
+    "docs/state-contracts-major/execution/evidence/pi-2df-unresolved-shutdown/diagnostic-artifact-authentication.json": {
+      "sha256": "f760cb400d791c7f30805e63638e5f7a2ad5e8509648cffc9c1c0be324e8f000",
+      "bytes": 1651
+    },
+    "docs/state-contracts-major/execution/evidence/pi-2df-unresolved-shutdown/failure-receipt.json": {
+      "sha256": "c4252b3a1b6e603b0f831fd6325327c411863a20582f584845fb7c3b337a3f0c",
+      "bytes": 7101
+    }
+  },
+  "facts": [
+    "The original discovery/doctor workload failed the natural EOF process wait after30s. Earlier rpc/rpc-observed partitions passed.",
+    "The owned-Node SDK control independently failed: debugger status unrecognized rather than captured.",
+    "The matched original Pi PID7572 remained running before and after the diagnostic despite the JavaScript process_exit and reallyExitCallEntered markers.",
+    "The actual Pi diagnostic reported debugger unavailable with no tool hashes or stack frames. This does not establish that CDB launched for that failure."
+  ],
+  "limits": [
+    "No native call completion, stack, cause or application repair established.",
+    "No successful runtime or installed qualification assigned to this failure. No ledger status is promoted by this manifest.",
+    "The retained receipt reports the whole workflow still running at its observation time; no later whole-workflow conclusion is inferred.",
+    "Raw debugger text was neither retained nor reconstructed. The diagnostic ZIP is not committed."
+  ]
+}

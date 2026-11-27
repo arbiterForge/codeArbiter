@@ -1,0 +1,56 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "/root/packaging_site_tools: split-only successor reusing actual original d594 clause inspection; current physical bytes checked, no rerun"
+  },
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/site-tool-source-clauses-d594/inspection.json",
+      "sha256": "d0e65eb23208d15b31066e5d842fd8c4db2ffd6bed4e2fc8e0a3ee582f7eee56"
+    }
+  ],
+  "scope": "Original finite conditional source clauses only, narrowed to actual payload-scope control cone; no execution or broader task/machine claim.",
+  "dependency_boundary": "Same original inspected direct code/guard/data scope; unrelated CI source removed because this cone does not read it. No runtime observation or imported authority is created by splitting.",
+  "inputs": {
+    ".github/scripts/payload_scope.py": "e4cb1fc915489df8c642ae13d38e3f8c1b9dfba94f511ac8a72f5481de08cbea",
+    "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+    "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+    "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e"
+  },
+  "disposition_ids": [
+    "disposition:transitions:C14:01"
+  ],
+  "semantic_mapping": [
+    {
+      "cell": "disposition:transitions:C14:01",
+      "witnesses": [
+        {
+          "path": ".github/scripts/payload_scope.py",
+          "start": 46,
+          "end": 71,
+          "file_sha256": "e4cb1fc915489df8c642ae13d38e3f8c1b9dfba94f511ac8a72f5481de08cbea"
+        },
+        {
+          "path": ".github/scripts/payload_scope.py",
+          "start": 74,
+          "end": 112,
+          "file_sha256": "e4cb1fc915489df8c642ae13d38e3f8c1b9dfba94f511ac8a72f5481de08cbea"
+        }
+      ],
+      "semantic_assessment": "CLI first limits plugin to declared inventory; git triple-dot diff excludes the whole tools build directory then separately checks explicit shipped bundles. Git exit other than0/1 raises instead of silently treating it unchanged. Source logic is preserved; no actual current version or diff result is asserted.",
+      "failure_retry_boundary": "No execution observed; failures retain the named source path/branch and explicit retry remains caller-owned.",
+      "frozen_row_sha256": "c70904c55bdb3dd874e936b0b4ea27f23c93aaf905ea29e331f5b6942e8b97b4",
+      "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+      "guard_effect_retry_source_only": true
+    }
+  ],
+  "original_inspection": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-tool-source-clauses-d594\\inspection.json",
+    "sha256": "d0e65eb23208d15b31066e5d842fd8c4db2ffd6bed4e2fc8e0a3ee582f7eee56",
+    "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+  }
+}

@@ -1,0 +1,1513 @@
+{
+  "schema": "codearbiter.current-finite-source-inspection/1",
+  "source_commit": "f3cb12f5095401d5b7e8c32c2861816c7109ce02",
+  "original_semantic_inspection_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+  "group": "source-group-050",
+  "positive_input_join": {
+    ".github/scripts/check_sandbox_docker_layers.py": {
+      "sha256": "f7b16e22cfba12d841ac62a7db9b7b3145426e66d0638d4b02c84abfb5f0025a",
+      "previous_sha256": "f7b16e22cfba12d841ac62a7db9b7b3145426e66d0638d4b02c84abfb5f0025a",
+      "bytes": 6440,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "f7b16e22cfba12d841ac62a7db9b7b3145426e66d0638d4b02c84abfb5f0025a",
+        "bytes": 6440
+      }
+    },
+    ".github/workflows/ci.yml": {
+      "sha256": "9b9bbb72e86631c1577135cb3ee13181d3b04ed8db2f5e7f4f957e6fb85f1fb3",
+      "previous_sha256": "c0e8e0f0480ffb0f660c894347f26df49da423a300158a1566da702e5a0d8102",
+      "bytes": 306751,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "9b9bbb72e86631c1577135cb3ee13181d3b04ed8db2f5e7f4f957e6fb85f1fb3",
+        "bytes": 306751
+      }
+    },
+    "docs/state-contracts-major/contracts/machine-coverage.json": {
+      "sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+      "previous_sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+      "bytes": 385316,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+        "bytes": 385316
+      }
+    },
+    "docs/state-contracts-major/contracts/program.json": {
+      "sha256": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+      "previous_sha256": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+      "bytes": 6403,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+        "bytes": 6403
+      }
+    },
+    "docs/state-contracts-major/contracts/tasks.json": {
+      "sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+      "previous_sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+      "bytes": 331224,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+        "bytes": 331224
+      }
+    },
+    "docs/state-contracts-major/contracts/transition-coverage.json": {
+      "sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+      "previous_sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+      "bytes": 3185278,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+        "bytes": 3185278
+      }
+    },
+    "plugins/ca-sandbox/tools/__tests__/isolation.test.ts": {
+      "sha256": "2a9b5e84ee2da640d062d1e762b61d11c50bb062237535abc2d2d08b60f60ffa",
+      "previous_sha256": "2a9b5e84ee2da640d062d1e762b61d11c50bb062237535abc2d2d08b60f60ffa",
+      "bytes": 8242,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "2a9b5e84ee2da640d062d1e762b61d11c50bb062237535abc2d2d08b60f60ffa",
+        "bytes": 8242
+      }
+    },
+    "plugins/ca-sandbox/tools/build-pinned-base.test.ts": {
+      "sha256": "386f1427fa69f9abade4175b9b3e51b465068b77e3c5375f4a6776294f2da3f8",
+      "previous_sha256": "386f1427fa69f9abade4175b9b3e51b465068b77e3c5375f4a6776294f2da3f8",
+      "bytes": 16274,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "386f1427fa69f9abade4175b9b3e51b465068b77e3c5375f4a6776294f2da3f8",
+        "bytes": 16274
+      }
+    },
+    "plugins/ca-sandbox/tools/build.test.ts": {
+      "sha256": "e79aa3aaaafef020f138b0fc38bd886e0abde639ae789c8f7fb95f67c3cc6ae9",
+      "previous_sha256": "e79aa3aaaafef020f138b0fc38bd886e0abde639ae789c8f7fb95f67c3cc6ae9",
+      "bytes": 24171,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "e79aa3aaaafef020f138b0fc38bd886e0abde639ae789c8f7fb95f67c3cc6ae9",
+        "bytes": 24171
+      }
+    },
+    "plugins/ca-sandbox/tools/builder-observation.test.ts": {
+      "sha256": "109d50e185da073a98b858ce57f9419686f3bd32af5d50e0ec58c93ff4d60c7c",
+      "previous_sha256": "109d50e185da073a98b858ce57f9419686f3bd32af5d50e0ec58c93ff4d60c7c",
+      "bytes": 5292,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "109d50e185da073a98b858ce57f9419686f3bd32af5d50e0ec58c93ff4d60c7c",
+        "bytes": 5292
+      }
+    },
+    "plugins/ca-sandbox/tools/cache-provenance.test.ts": {
+      "sha256": "a588314dbe097cf9a89908630b3accf1119df85f9c79ac365609c33881881a3c",
+      "previous_sha256": "a588314dbe097cf9a89908630b3accf1119df85f9c79ac365609c33881881a3c",
+      "bytes": 14542,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "a588314dbe097cf9a89908630b3accf1119df85f9c79ac365609c33881881a3c",
+        "bytes": 14542
+      }
+    },
+    "plugins/ca-sandbox/tools/claude-inside-cli.test.ts": {
+      "sha256": "c1f72c336cec531b0543cf958939751d3c9732c8aab5903c8146d9676c9657bf",
+      "previous_sha256": "c1f72c336cec531b0543cf958939751d3c9732c8aab5903c8146d9676c9657bf",
+      "bytes": 7576,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "c1f72c336cec531b0543cf958939751d3c9732c8aab5903c8146d9676c9657bf",
+        "bytes": 7576
+      }
+    },
+    "plugins/ca-sandbox/tools/claude-inside.test.ts": {
+      "sha256": "f2a7ded3f8238006f614978c7c92f9c6964ee3d55d158a323d4eedb653a8a078",
+      "previous_sha256": "f2a7ded3f8238006f614978c7c92f9c6964ee3d55d158a323d4eedb653a8a078",
+      "bytes": 25522,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "f2a7ded3f8238006f614978c7c92f9c6964ee3d55d158a323d4eedb653a8a078",
+        "bytes": 25522
+      }
+    },
+    "plugins/ca-sandbox/tools/cli-resolve.test.ts": {
+      "sha256": "cdfcbbe5df13e15df1dfadbb410299063731b2e4012cc3bcf65a00d164b939f6",
+      "previous_sha256": "cdfcbbe5df13e15df1dfadbb410299063731b2e4012cc3bcf65a00d164b939f6",
+      "bytes": 5038,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "cdfcbbe5df13e15df1dfadbb410299063731b2e4012cc3bcf65a00d164b939f6",
+        "bytes": 5038
+      }
+    },
+    "plugins/ca-sandbox/tools/cli.test.ts": {
+      "sha256": "5a48799a8543e0454cd3f85b8982f2454b59c2ccd75610fa02e535ab0f18ee27",
+      "previous_sha256": "5a48799a8543e0454cd3f85b8982f2454b59c2ccd75610fa02e535ab0f18ee27",
+      "bytes": 15035,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "5a48799a8543e0454cd3f85b8982f2454b59c2ccd75610fa02e535ab0f18ee27",
+        "bytes": 15035
+      }
+    },
+    "plugins/ca-sandbox/tools/cp.test.ts": {
+      "sha256": "92ebf2fb32b66df2c75e4e62b137deae868aa153cc3ef58fd85520c42c477180",
+      "previous_sha256": "92ebf2fb32b66df2c75e4e62b137deae868aa153cc3ef58fd85520c42c477180",
+      "bytes": 30095,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "92ebf2fb32b66df2c75e4e62b137deae868aa153cc3ef58fd85520c42c477180",
+        "bytes": 30095
+      }
+    },
+    "plugins/ca-sandbox/tools/create-failure-diagnostics.test.ts": {
+      "sha256": "e7bbc8b1d2a365d5988b6bcc361e1cd1785a25c9e474dadbb4be96d9bd4ff45e",
+      "previous_sha256": "e7bbc8b1d2a365d5988b6bcc361e1cd1785a25c9e474dadbb4be96d9bd4ff45e",
+      "bytes": 4077,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "e7bbc8b1d2a365d5988b6bcc361e1cd1785a25c9e474dadbb4be96d9bd4ff45e",
+        "bytes": 4077
+      }
+    },
+    "plugins/ca-sandbox/tools/create-partial-compensation.test.ts": {
+      "sha256": "3739126a37ab70b71b9c4bbb254f127dcf0608ee71a5f40a79dab1d72e94ea4e",
+      "previous_sha256": "3739126a37ab70b71b9c4bbb254f127dcf0608ee71a5f40a79dab1d72e94ea4e",
+      "bytes": 9777,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "3739126a37ab70b71b9c4bbb254f127dcf0608ee71a5f40a79dab1d72e94ea4e",
+        "bytes": 9777
+      }
+    },
+    "plugins/ca-sandbox/tools/create.test.ts": {
+      "sha256": "1d8ac64567ff99b60563ac8529bace3b85ee6b68bda0e8131adcde1c01b1ebad",
+      "previous_sha256": "1d8ac64567ff99b60563ac8529bace3b85ee6b68bda0e8131adcde1c01b1ebad",
+      "bytes": 23146,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "1d8ac64567ff99b60563ac8529bace3b85ee6b68bda0e8131adcde1c01b1ebad",
+        "bytes": 23146
+      }
+    },
+    "plugins/ca-sandbox/tools/deadline.test.ts": {
+      "sha256": "d2b55475e25a3f1f51230c7dcd2b3fe6d03492c1e6d47ba7477d6091b412c65c",
+      "previous_sha256": "d2b55475e25a3f1f51230c7dcd2b3fe6d03492c1e6d47ba7477d6091b412c65c",
+      "bytes": 18656,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "d2b55475e25a3f1f51230c7dcd2b3fe6d03492c1e6d47ba7477d6091b412c65c",
+        "bytes": 18656
+      }
+    },
+    "plugins/ca-sandbox/tools/dephash.test.ts": {
+      "sha256": "948f350a1e162b093404ad889c4793eca9cfc2527dc7dc785ce1d4709c41b2ad",
+      "previous_sha256": "948f350a1e162b093404ad889c4793eca9cfc2527dc7dc785ce1d4709c41b2ad",
+      "bytes": 4693,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "948f350a1e162b093404ad889c4793eca9cfc2527dc7dc785ce1d4709c41b2ad",
+        "bytes": 4693
+      }
+    },
+    "plugins/ca-sandbox/tools/docker-gate.ts": {
+      "sha256": "0f4929feb9b5e41224cd1a276fb0a1aa3b2b6fb064dd0a7c7c28309e35f70e5b",
+      "previous_sha256": "0f4929feb9b5e41224cd1a276fb0a1aa3b2b6fb064dd0a7c7c28309e35f70e5b",
+      "bytes": 6847,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "0f4929feb9b5e41224cd1a276fb0a1aa3b2b6fb064dd0a7c7c28309e35f70e5b",
+        "bytes": 6847
+      }
+    },
+    "plugins/ca-sandbox/tools/exec.test.ts": {
+      "sha256": "eb8e5b337f9e1efc2dcb87a3361b02c1b6374f44bc2165aba7b51a97de864fb1",
+      "previous_sha256": "eb8e5b337f9e1efc2dcb87a3361b02c1b6374f44bc2165aba7b51a97de864fb1",
+      "bytes": 8337,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "eb8e5b337f9e1efc2dcb87a3361b02c1b6374f44bc2165aba7b51a97de864fb1",
+        "bytes": 8337
+      }
+    },
+    "plugins/ca-sandbox/tools/installed-bundle.test.ts": {
+      "sha256": "b8b0f75e1c2cb5ec9324fca7a276e548b6dcf419619a94c375582a72a7acaee2",
+      "previous_sha256": "b8b0f75e1c2cb5ec9324fca7a276e548b6dcf419619a94c375582a72a7acaee2",
+      "bytes": 11483,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "b8b0f75e1c2cb5ec9324fca7a276e548b6dcf419619a94c375582a72a7acaee2",
+        "bytes": 11483
+      }
+    },
+    "plugins/ca-sandbox/tools/layering.test.ts": {
+      "sha256": "c3b00e1ddd7edea8932533cbc7c622302d4835945142331ad24d8d1205ba5f7f",
+      "previous_sha256": "c3b00e1ddd7edea8932533cbc7c622302d4835945142331ad24d8d1205ba5f7f",
+      "bytes": 10041,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "c3b00e1ddd7edea8932533cbc7c622302d4835945142331ad24d8d1205ba5f7f",
+        "bytes": 10041
+      }
+    },
+    "plugins/ca-sandbox/tools/lifecycle.test.ts": {
+      "sha256": "c0960d9ac942ef3cee063de1295ecfa7f907fa4b807b34cf27dd8179d1078a74",
+      "previous_sha256": "c0960d9ac942ef3cee063de1295ecfa7f907fa4b807b34cf27dd8179d1078a74",
+      "bytes": 21824,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "c0960d9ac942ef3cee063de1295ecfa7f907fa4b807b34cf27dd8179d1078a74",
+        "bytes": 21824
+      }
+    },
+    "plugins/ca-sandbox/tools/mounts.test.ts": {
+      "sha256": "4e8062616b2ec7a8e2908880dec65b8c4299783539b816abc1b4e0cc105f856a",
+      "previous_sha256": "4e8062616b2ec7a8e2908880dec65b8c4299783539b816abc1b4e0cc105f856a",
+      "bytes": 3609,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "4e8062616b2ec7a8e2908880dec65b8c4299783539b816abc1b4e0cc105f856a",
+        "bytes": 3609
+      }
+    },
+    "plugins/ca-sandbox/tools/multistack.test.ts": {
+      "sha256": "7e319d65112281a4486dbd7b44c65325cd3c7c1a864c31b321c66f23d8787c9b",
+      "previous_sha256": "7e319d65112281a4486dbd7b44c65325cd3c7c1a864c31b321c66f23d8787c9b",
+      "bytes": 8968,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "7e319d65112281a4486dbd7b44c65325cd3c7c1a864c31b321c66f23d8787c9b",
+        "bytes": 8968
+      }
+    },
+    "plugins/ca-sandbox/tools/native-build-inputs.test.ts": {
+      "sha256": "9e38fce0ea3659c0c2aba3d05e663a50d148cf8825d6f48d000eedd940a6d5ce",
+      "previous_sha256": "9e38fce0ea3659c0c2aba3d05e663a50d148cf8825d6f48d000eedd940a6d5ce",
+      "bytes": 5667,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "9e38fce0ea3659c0c2aba3d05e663a50d148cf8825d6f48d000eedd940a6d5ce",
+        "bytes": 5667
+      }
+    },
+    "plugins/ca-sandbox/tools/network.test.ts": {
+      "sha256": "34ed7a925f8d3f7668530646a4c700f3d9dcef987af39d8e0e3adf99a6093529",
+      "previous_sha256": "34ed7a925f8d3f7668530646a4c700f3d9dcef987af39d8e0e3adf99a6093529",
+      "bytes": 18983,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "34ed7a925f8d3f7668530646a4c700f3d9dcef987af39d8e0e3adf99a6093529",
+        "bytes": 18983
+      }
+    },
+    "plugins/ca-sandbox/tools/run.test.ts": {
+      "sha256": "4bf724a1dd484a423e0575f5dd6b7e03d790682d3a39f39e1395489c45662355",
+      "previous_sha256": "4bf724a1dd484a423e0575f5dd6b7e03d790682d3a39f39e1395489c45662355",
+      "bytes": 8614,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "4bf724a1dd484a423e0575f5dd6b7e03d790682d3a39f39e1395489c45662355",
+        "bytes": 8614
+      }
+    },
+    "plugins/ca-sandbox/tools/smoke.test.ts": {
+      "sha256": "13dd3936d6526679f7d7b07f2afaf65f3597f7cf11d97a09f82398ecea684532",
+      "previous_sha256": "13dd3936d6526679f7d7b07f2afaf65f3597f7cf11d97a09f82398ecea684532",
+      "bytes": 484,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "13dd3936d6526679f7d7b07f2afaf65f3597f7cf11d97a09f82398ecea684532",
+        "bytes": 484
+      }
+    },
+    "plugins/ca-sandbox/tools/state-contracts.test.ts": {
+      "sha256": "a30f1aa76b194bd79e1c4716c5ca1db4dd2adb804d0e352d86e737486fa18441",
+      "previous_sha256": "a30f1aa76b194bd79e1c4716c5ca1db4dd2adb804d0e352d86e737486fa18441",
+      "bytes": 10611,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "a30f1aa76b194bd79e1c4716c5ca1db4dd2adb804d0e352d86e737486fa18441",
+        "bytes": 10611
+      }
+    },
+    "plugins/ca-sandbox/tools/supply-chain.test.ts": {
+      "sha256": "da8c2c7792565c4652e6fe054b755d4751e8522ad4d707e2fcbeacfa10d13b2f",
+      "previous_sha256": "da8c2c7792565c4652e6fe054b755d4751e8522ad4d707e2fcbeacfa10d13b2f",
+      "bytes": 18739,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "da8c2c7792565c4652e6fe054b755d4751e8522ad4d707e2fcbeacfa10d13b2f",
+        "bytes": 18739
+      }
+    },
+    "plugins/ca-sandbox/tools/teardown.test.ts": {
+      "sha256": "099d7bc04797d9863a1f5da7f774a9f5e47ac320e6769e88e367dff561b6680c",
+      "previous_sha256": "099d7bc04797d9863a1f5da7f774a9f5e47ac320e6769e88e367dff561b6680c",
+      "bytes": 24360,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "099d7bc04797d9863a1f5da7f774a9f5e47ac320e6769e88e367dff561b6680c",
+        "bytes": 24360
+      }
+    }
+  },
+  "current_input_membership": [
+    {
+      "profile": "python-import-directory-v1",
+      "root": ".github/scripts",
+      "path_order": "windows",
+      "sha256": "434ab55d7381a628a19f46607073b7a4df23e2dfc2ba9a4b88d4433fac07b334"
+    }
+  ],
+  "closed_namespace_review": {
+    "profile": {
+      "profile": "python-import-directory-v1",
+      "root": ".github/scripts",
+      "path_order": "windows"
+    },
+    "inspection_source": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+    "current_source": "f3cb12f5095401d5b7e8c32c2861816c7109ce02",
+    "inspection_namespace_sha256": "30dfb70857dada7f2af20b58b264573d7e513e9fa5cf520f2de33b9922046943",
+    "current_namespace_sha256": "434ab55d7381a628a19f46607073b7a4df23e2dfc2ba9a4b88d4433fac07b334",
+    "entries_before": 281,
+    "entries_now": 284,
+    "added": [
+      {
+        "path": ".github/scripts/site_vitest_observation.py",
+        "sha256_at_review": "d545215d255ddc9433955a413da58b4f11ccb6d54ef09fb3ab6cbc57a67aab60",
+        "role": "Docs site source and coverage/report owner. Explicitly invoked by the named Docs workflow steps and imported by its own new tests."
+      },
+      {
+        "path": ".github/scripts/test_pi_payload_identity.py",
+        "sha256_at_review": "4adbb9a6d233807f230129d7c5c3e0293ced3fefb74625b12a1c408ec4afe27e",
+        "role": "Fixture selector for the Pi source payload identity predicate. Individually declared by the original Hook evidence route."
+      },
+      {
+        "path": ".github/scripts/test_site_vitest_observation.py",
+        "sha256_at_review": "651d1f0eb2034ff3016da09a7a427722b9960bc3417983958c1d3921062ef942",
+        "role": "Fixture for the named Docs Vitest source/report owner. Explicitly invoked by Docs, with its own main entry point."
+      }
+    ],
+    "negative_scope": "No old namespace member, mode or object class changed. The three new named entry points are explicitly routed, while fixture/module lookup for the assessed predicates remains owned by its reviewed path. The digest binds names, object classes and modes."
+  },
+  "current_owner_delta_review": {
+    "scope": "Owned Sandbox Docker layer detection, npm invocation, verifier and error handling are unchanged. Manifest/lock and checked Docker fixture population remain their same source bindings.",
+    "workflow_callsite_join": {
+      "ca-sandbox-tools": {
+        "previous_sha256": "e90294ef7de6e6ce67e8c0053d8ca6295c2995e9be035640667f91e4da99a45e",
+        "current_sha256": "e90294ef7de6e6ce67e8c0053d8ca6295c2995e9be035640667f91e4da99a45e",
+        "current_scope": "Complete owning job or top-level event/concurrency block unchanged."
+      }
+    }
+  },
+  "semantic_rows": [
+    {
+      "cell": "disposition:machines:C10",
+      "frozen_record": {
+        "machine_id": "C10",
+        "name": "Docker integration test-layer observation",
+        "domain": "Hosted CI and release",
+        "kind": "implemented",
+        "owner": "release-and-tooling",
+        "closure_task": "Q-01",
+        "task_ids": [
+          "Q-01"
+        ],
+        "explicit_machine_task_ids": [],
+        "source_intersection_task_ids": [],
+        "mapping_basis": "Owner assignment uses the inspected audit domain and explicit owner ledger; source intersections flag review impact, not a claim every edge changes.",
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "status": "NOT_RUN",
+        "transition_count": 3,
+        "source_refs": [
+          "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/check_sandbox_docker_layers.py"
+        ],
+        "proposed_composed_scenario_ids": [],
+        "required_disposition": "Read the pinned/current owner, preserve each existing guard/effect/retry boundary except a named authorized change, map meaningful executed tests or reasoned conformance review to the row IDs, and add new rows for introduced events.",
+        "evidence": []
+      },
+      "frozen_record_sha256": "b61495ff2d1970523e91ec4f4d25e444af613f32e112339c68f1ff88d70e70aa",
+      "group": "source-group-050",
+      "literal_inspection": "13-exact-prior65-machine-records",
+      "assessment": "Conditional finite source composition of Docker integration test-layer observation. Constituent guard/effect/retry source scopes and named accepted changes retained; neither task_ids nor model-guided instructions prove executed runtime/installed/model behavior.",
+      "changed_helper_interpretation_ids": [],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/source13-ci-callsite-revalidation/C10-preserved.json",
+          "sha256": "715620bd45e9d5c3e510dbfe150c32c8cba4fed9279ef2802cfe80f06e46ed34",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:C10:01",
+      "frozen_record": {
+        "transition_id": "C10:01",
+        "machine_id": "C10",
+        "owner": "release-and-tooling",
+        "baseline": {
+          "from_state": "declared layer set",
+          "from": "declared layer set",
+          "event": "discover test declarations",
+          "guard": "every declared layer has unique source/name and source inventory is nonempty",
+          "to": "validated declarations",
+          "effects": "Build the expected execution-layer population from test files.",
+          "failure_retry": "Duplicate, missing or malformed declarations reject.",
+          "source": [
+            {
+              "path": ".github/scripts/check_sandbox_docker_layers.py",
+              "symbol": "declared_layer_sites",
+              "lines": [
+                65,
+                72
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/check_sandbox_docker_layers.py"
+            }
+          ],
+          "transition_id": "C10:01"
+        },
+        "task_ids": [
+          "Q-01"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "1b521bd340b4e6549d7d1ec96bb4c4d46a2c30f7a2f252dbfe7833551d43a8c1",
+      "group": "source-group-050",
+      "assessment": "Recognized literal declaration grammar and dedup remain bounded and do not become a TS parser.",
+      "literal_inspection": "65-assessment",
+      "changed_helper_interpretation_ids": [],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/source13-ci-callsite-revalidation/C10-preserved.json",
+          "sha256": "715620bd45e9d5c3e510dbfe150c32c8cba4fed9279ef2802cfe80f06e46ed34",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d"
+        }
+      ],
+      "exact_earlier_clause_assessment": {
+        "cell": "disposition:transitions:C10:01",
+        "frozen_row_sha256": "1b521bd340b4e6549d7d1ec96bb4c4d46a2c30f7a2f252dbfe7833551d43a8c1",
+        "literal": {
+          "event": "discover test declarations",
+          "guard": "every declared layer has unique source/name and source inventory is nonempty",
+          "effects": "Build the expected execution-layer population from test files.",
+          "failure_retry": "Duplicate, missing or malformed declarations reject."
+        },
+        "actual_current_interpretation": "Recognized literal declaration grammar and dedup remain bounded and do not become a TS parser.",
+        "witness_ids": [
+          "w109",
+          "w110",
+          "w111",
+          "w112",
+          "w113",
+          "w114",
+          "w115",
+          "w116",
+          "w117",
+          "w118",
+          "w119",
+          "w120",
+          "w121",
+          "w122",
+          "w123",
+          "w124",
+          "w125"
+        ],
+        "prior_proof": "docs/state-contracts-major/execution/evidence/source13-ci-callsite-revalidation/C10-preserved.json",
+        "selected_for_successor": true,
+        "action": "Append source successor only at actual commit, retaining old evidence."
+      }
+    },
+    {
+      "cell": "disposition:transitions:C10:02",
+      "frozen_record": {
+        "transition_id": "C10:02",
+        "machine_id": "C10",
+        "owner": "release-and-tooling",
+        "baseline": {
+          "from_state": "execution recorded",
+          "from": "execution recorded",
+          "event": "verify runtime records",
+          "guard": "all declared layers present, no unknown layers; enclosing npm test succeeded",
+          "to": "complete observed starts",
+          "effects": "Return successful layer-coverage observation.",
+          "failure_retry": "Records prove starts, not independent test finishes; test-run success supplies the completion prerequisite.",
+          "source": [
+            {
+              "path": ".github/scripts/check_sandbox_docker_layers.py",
+              "symbol": "verify",
+              "lines": [
+                89,
+                137
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/check_sandbox_docker_layers.py"
+            }
+          ],
+          "transition_id": "C10:02"
+        },
+        "task_ids": [
+          "Q-01"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "7050291bc7b342bfe9d04e85547bf458366a7c7a07c186bf4d5f020c284d4a73",
+      "group": "source-group-050",
+      "assessment": "All expected layer starts plus enclosing npm success remain required, without independent-finish claims.",
+      "literal_inspection": "65-assessment",
+      "changed_helper_interpretation_ids": [],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/source13-ci-callsite-revalidation/C10-preserved.json",
+          "sha256": "715620bd45e9d5c3e510dbfe150c32c8cba4fed9279ef2802cfe80f06e46ed34",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d"
+        }
+      ],
+      "exact_earlier_clause_assessment": {
+        "cell": "disposition:transitions:C10:02",
+        "frozen_row_sha256": "7050291bc7b342bfe9d04e85547bf458366a7c7a07c186bf4d5f020c284d4a73",
+        "literal": {
+          "event": "verify runtime records",
+          "guard": "all declared layers present, no unknown layers; enclosing npm test succeeded",
+          "effects": "Return successful layer-coverage observation.",
+          "failure_retry": "Records prove starts, not independent test finishes; test-run success supplies the completion prerequisite."
+        },
+        "actual_current_interpretation": "All expected layer starts plus enclosing npm success remain required, without independent-finish claims.",
+        "witness_ids": [
+          "w126",
+          "w127",
+          "w128",
+          "w129",
+          "w130"
+        ],
+        "prior_proof": "docs/state-contracts-major/execution/evidence/source13-ci-callsite-revalidation/C10-preserved.json",
+        "selected_for_successor": true,
+        "action": "Append source successor only at actual commit, retaining old evidence."
+      }
+    },
+    {
+      "cell": "disposition:transitions:C10:03",
+      "frozen_record": {
+        "transition_id": "C10:03",
+        "machine_id": "C10",
+        "owner": "release-and-tooling",
+        "baseline": {
+          "from_state": "execution recorded",
+          "from": "execution recorded",
+          "event": "verify missing/empty/unknown runtime records",
+          "guard": "one expected observation absent or foreign",
+          "to": "incomplete/unknown",
+          "effects": "Exit nonzero with layer-specific errors.",
+          "failure_retry": "No skip converted to proof; rerun suite with real declared layers.",
+          "source": [
+            {
+              "path": ".github/scripts/check_sandbox_docker_layers.py",
+              "symbol": "verify",
+              "lines": [
+                89,
+                137
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/check_sandbox_docker_layers.py"
+            }
+          ],
+          "transition_id": "C10:03"
+        },
+        "task_ids": [
+          "Q-01"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "8f6d723f6df9851e8509677fe16da635127fc080b5967b5c5170e6dc4e6bc129",
+      "group": "source-group-050",
+      "assessment": "Missing/empty/unknown runtime records still reject without skip promotion.",
+      "literal_inspection": "65-assessment",
+      "changed_helper_interpretation_ids": [],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/source13-ci-callsite-revalidation/C10-preserved.json",
+          "sha256": "715620bd45e9d5c3e510dbfe150c32c8cba4fed9279ef2802cfe80f06e46ed34",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d"
+        }
+      ],
+      "exact_earlier_clause_assessment": {
+        "cell": "disposition:transitions:C10:03",
+        "frozen_row_sha256": "8f6d723f6df9851e8509677fe16da635127fc080b5967b5c5170e6dc4e6bc129",
+        "literal": {
+          "event": "verify missing/empty/unknown runtime records",
+          "guard": "one expected observation absent or foreign",
+          "effects": "Exit nonzero with layer-specific errors.",
+          "failure_retry": "No skip converted to proof; rerun suite with real declared layers."
+        },
+        "actual_current_interpretation": "Missing/empty/unknown runtime records still reject without skip promotion.",
+        "witness_ids": [
+          "w131",
+          "w132",
+          "w130"
+        ],
+        "prior_proof": "docs/state-contracts-major/execution/evidence/source13-ci-callsite-revalidation/C10-preserved.json",
+        "selected_for_successor": true,
+        "action": "Append source successor only at actual commit, retaining old evidence."
+      }
+    }
+  ],
+  "verified_literal_witnesses": [
+    {
+      "witness_id": "w109",
+      "path": ".github/scripts/check_sandbox_docker_layers.py",
+      "actual0ef_spans": [
+        [
+          39,
+          104
+        ]
+      ],
+      "current_file_sha256": "f7b16e22cfba12d841ac62a7db9b7b3145426e66d0638d4b02c84abfb5f0025a",
+      "prior": {
+        "id": "w109",
+        "path": ".github/scripts/check_sandbox_docker_layers.py",
+        "old_source": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+        "old_span": [
+          39,
+          104
+        ],
+        "current_spans": [
+          [
+            39,
+            104
+          ]
+        ],
+        "sha256_of_LF_span": "e209572405c2f274c2418629964d21cc61098af74bc306d7f1cdd45e213b7f5b",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "f7b16e22cfba12d841ac62a7db9b7b3145426e66d0638d4b02c84abfb5f0025a"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift.",
+      "current_f3_spans": [
+        [
+          39,
+          104
+        ]
+      ],
+      "current_f3_sha256": "f7b16e22cfba12d841ac62a7db9b7b3145426e66d0638d4b02c84abfb5f0025a"
+    },
+    {
+      "witness_id": "w110",
+      "path": "plugins/ca-sandbox/tools/__tests__/isolation.test.ts",
+      "actual0ef_spans": [
+        [
+          43,
+          43
+        ]
+      ],
+      "current_file_sha256": "2a9b5e84ee2da640d062d1e762b61d11c50bb062237535abc2d2d08b60f60ffa",
+      "prior": {
+        "id": "w110",
+        "path": "plugins/ca-sandbox/tools/__tests__/isolation.test.ts",
+        "old_source": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+        "old_span": [
+          43,
+          43
+        ],
+        "current_spans": [
+          [
+            43,
+            43
+          ]
+        ],
+        "sha256_of_LF_span": "172e0eb20ade56a1225db96434165033276c3cb79ddc496364e17ef2bed09622",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "2a9b5e84ee2da640d062d1e762b61d11c50bb062237535abc2d2d08b60f60ffa"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift.",
+      "current_f3_spans": [
+        [
+          43,
+          43
+        ]
+      ],
+      "current_f3_sha256": "2a9b5e84ee2da640d062d1e762b61d11c50bb062237535abc2d2d08b60f60ffa"
+    },
+    {
+      "witness_id": "w111",
+      "path": "plugins/ca-sandbox/tools/build.test.ts",
+      "actual0ef_spans": [
+        [
+          264,
+          264
+        ]
+      ],
+      "current_file_sha256": "e79aa3aaaafef020f138b0fc38bd886e0abde639ae789c8f7fb95f67c3cc6ae9",
+      "prior": {
+        "id": "w111",
+        "path": "plugins/ca-sandbox/tools/build.test.ts",
+        "old_source": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+        "old_span": [
+          264,
+          264
+        ],
+        "current_spans": [
+          [
+            264,
+            264
+          ]
+        ],
+        "sha256_of_LF_span": "f4abf061fc43d47ed5cd4e62935143bc5258c14b05c9f83032200bbdb592a148",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "e79aa3aaaafef020f138b0fc38bd886e0abde639ae789c8f7fb95f67c3cc6ae9"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift.",
+      "current_f3_spans": [
+        [
+          264,
+          264
+        ]
+      ],
+      "current_f3_sha256": "e79aa3aaaafef020f138b0fc38bd886e0abde639ae789c8f7fb95f67c3cc6ae9"
+    },
+    {
+      "witness_id": "w112",
+      "path": "plugins/ca-sandbox/tools/cache-provenance.test.ts",
+      "actual0ef_spans": [
+        [
+          38,
+          38
+        ]
+      ],
+      "current_file_sha256": "a588314dbe097cf9a89908630b3accf1119df85f9c79ac365609c33881881a3c",
+      "prior": {
+        "id": "w112",
+        "path": "plugins/ca-sandbox/tools/cache-provenance.test.ts",
+        "old_source": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+        "old_span": [
+          38,
+          38
+        ],
+        "current_spans": [
+          [
+            38,
+            38
+          ]
+        ],
+        "sha256_of_LF_span": "12db0d6af6709a8d7a15ae28d05a5ec1c5e84824b47e05fad7665f40f451d940",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "a588314dbe097cf9a89908630b3accf1119df85f9c79ac365609c33881881a3c"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift.",
+      "current_f3_spans": [
+        [
+          38,
+          38
+        ]
+      ],
+      "current_f3_sha256": "a588314dbe097cf9a89908630b3accf1119df85f9c79ac365609c33881881a3c"
+    },
+    {
+      "witness_id": "w113",
+      "path": "plugins/ca-sandbox/tools/claude-inside.test.ts",
+      "actual0ef_spans": [
+        [
+          212,
+          212
+        ]
+      ],
+      "current_file_sha256": "f2a7ded3f8238006f614978c7c92f9c6964ee3d55d158a323d4eedb653a8a078",
+      "prior": {
+        "id": "w113",
+        "path": "plugins/ca-sandbox/tools/claude-inside.test.ts",
+        "old_source": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+        "old_span": [
+          212,
+          212
+        ],
+        "current_spans": [
+          [
+            212,
+            212
+          ]
+        ],
+        "sha256_of_LF_span": "22fa6c841f3207be45aba58ae5fe72f35edfed0bd2f7ec0fc0bfba476524c45e",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "f2a7ded3f8238006f614978c7c92f9c6964ee3d55d158a323d4eedb653a8a078"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift.",
+      "current_f3_spans": [
+        [
+          212,
+          212
+        ]
+      ],
+      "current_f3_sha256": "f2a7ded3f8238006f614978c7c92f9c6964ee3d55d158a323d4eedb653a8a078"
+    },
+    {
+      "witness_id": "w114",
+      "path": "plugins/ca-sandbox/tools/cli-resolve.test.ts",
+      "actual0ef_spans": [
+        [
+          48,
+          48
+        ]
+      ],
+      "current_file_sha256": "cdfcbbe5df13e15df1dfadbb410299063731b2e4012cc3bcf65a00d164b939f6",
+      "prior": {
+        "id": "w114",
+        "path": "plugins/ca-sandbox/tools/cli-resolve.test.ts",
+        "old_source": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+        "old_span": [
+          48,
+          48
+        ],
+        "current_spans": [
+          [
+            48,
+            48
+          ]
+        ],
+        "sha256_of_LF_span": "1640616b81013f213a535b482002c8b276634df55ae2e3b9d2bd6feaddc6d831",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "cdfcbbe5df13e15df1dfadbb410299063731b2e4012cc3bcf65a00d164b939f6"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift.",
+      "current_f3_spans": [
+        [
+          48,
+          48
+        ]
+      ],
+      "current_f3_sha256": "cdfcbbe5df13e15df1dfadbb410299063731b2e4012cc3bcf65a00d164b939f6"
+    },
+    {
+      "witness_id": "w115",
+      "path": "plugins/ca-sandbox/tools/cp.test.ts",
+      "actual0ef_spans": [
+        [
+          85,
+          85
+        ]
+      ],
+      "current_file_sha256": "92ebf2fb32b66df2c75e4e62b137deae868aa153cc3ef58fd85520c42c477180",
+      "prior": {
+        "id": "w115",
+        "path": "plugins/ca-sandbox/tools/cp.test.ts",
+        "old_source": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+        "old_span": [
+          85,
+          85
+        ],
+        "current_spans": [
+          [
+            85,
+            85
+          ]
+        ],
+        "sha256_of_LF_span": "7c13501e1c35dcbcebfbe01a07f9fe895cdd2cc6ca7db3d698a1a3d1be6a0370",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "92ebf2fb32b66df2c75e4e62b137deae868aa153cc3ef58fd85520c42c477180"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift.",
+      "current_f3_spans": [
+        [
+          85,
+          85
+        ]
+      ],
+      "current_f3_sha256": "92ebf2fb32b66df2c75e4e62b137deae868aa153cc3ef58fd85520c42c477180"
+    },
+    {
+      "witness_id": "w116",
+      "path": "plugins/ca-sandbox/tools/create-partial-compensation.test.ts",
+      "actual0ef_spans": [
+        [
+          11,
+          11
+        ]
+      ],
+      "current_file_sha256": "3739126a37ab70b71b9c4bbb254f127dcf0608ee71a5f40a79dab1d72e94ea4e",
+      "prior": {
+        "id": "w116",
+        "path": "plugins/ca-sandbox/tools/create-partial-compensation.test.ts",
+        "old_source": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+        "old_span": [
+          11,
+          11
+        ],
+        "current_spans": [
+          [
+            11,
+            11
+          ]
+        ],
+        "sha256_of_LF_span": "87667bda5ce0cd16e8db80e06c7d614eb7531018a30525dd8947c858d42e6a0a",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "3739126a37ab70b71b9c4bbb254f127dcf0608ee71a5f40a79dab1d72e94ea4e"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift.",
+      "current_f3_spans": [
+        [
+          11,
+          11
+        ]
+      ],
+      "current_f3_sha256": "3739126a37ab70b71b9c4bbb254f127dcf0608ee71a5f40a79dab1d72e94ea4e"
+    },
+    {
+      "witness_id": "w117",
+      "path": "plugins/ca-sandbox/tools/create.test.ts",
+      "actual0ef_spans": [
+        [
+          298,
+          298
+        ]
+      ],
+      "current_file_sha256": "1d8ac64567ff99b60563ac8529bace3b85ee6b68bda0e8131adcde1c01b1ebad",
+      "prior": {
+        "id": "w117",
+        "path": "plugins/ca-sandbox/tools/create.test.ts",
+        "old_source": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+        "old_span": [
+          298,
+          298
+        ],
+        "current_spans": [
+          [
+            298,
+            298
+          ]
+        ],
+        "sha256_of_LF_span": "0d940c772ad1e27c96b4000bc9a92295b6f9540f7b615768b6c82545dc4781a0",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "1d8ac64567ff99b60563ac8529bace3b85ee6b68bda0e8131adcde1c01b1ebad"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift.",
+      "current_f3_spans": [
+        [
+          298,
+          298
+        ]
+      ],
+      "current_f3_sha256": "1d8ac64567ff99b60563ac8529bace3b85ee6b68bda0e8131adcde1c01b1ebad"
+    },
+    {
+      "witness_id": "w118",
+      "path": "plugins/ca-sandbox/tools/deadline.test.ts",
+      "actual0ef_spans": [
+        [
+          215,
+          215
+        ]
+      ],
+      "current_file_sha256": "d2b55475e25a3f1f51230c7dcd2b3fe6d03492c1e6d47ba7477d6091b412c65c",
+      "prior": {
+        "id": "w118",
+        "path": "plugins/ca-sandbox/tools/deadline.test.ts",
+        "old_source": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+        "old_span": [
+          215,
+          215
+        ],
+        "current_spans": [
+          [
+            215,
+            215
+          ]
+        ],
+        "sha256_of_LF_span": "cc6da3cdcac3e617df7669bcdc1a34be2311b0a1dd94ca794298eeb6dcfab910",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "d2b55475e25a3f1f51230c7dcd2b3fe6d03492c1e6d47ba7477d6091b412c65c"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift.",
+      "current_f3_spans": [
+        [
+          215,
+          215
+        ]
+      ],
+      "current_f3_sha256": "d2b55475e25a3f1f51230c7dcd2b3fe6d03492c1e6d47ba7477d6091b412c65c"
+    },
+    {
+      "witness_id": "w119",
+      "path": "plugins/ca-sandbox/tools/exec.test.ts",
+      "actual0ef_spans": [
+        [
+          130,
+          130
+        ]
+      ],
+      "current_file_sha256": "eb8e5b337f9e1efc2dcb87a3361b02c1b6374f44bc2165aba7b51a97de864fb1",
+      "prior": {
+        "id": "w119",
+        "path": "plugins/ca-sandbox/tools/exec.test.ts",
+        "old_source": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+        "old_span": [
+          130,
+          130
+        ],
+        "current_spans": [
+          [
+            130,
+            130
+          ]
+        ],
+        "sha256_of_LF_span": "1cee93cf1625944e55bd1ced393e649a1db25893c93cc54a3bf85fe187b54ce3",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "eb8e5b337f9e1efc2dcb87a3361b02c1b6374f44bc2165aba7b51a97de864fb1"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift.",
+      "current_f3_spans": [
+        [
+          130,
+          130
+        ]
+      ],
+      "current_f3_sha256": "eb8e5b337f9e1efc2dcb87a3361b02c1b6374f44bc2165aba7b51a97de864fb1"
+    },
+    {
+      "witness_id": "w120",
+      "path": "plugins/ca-sandbox/tools/installed-bundle.test.ts",
+      "actual0ef_spans": [
+        [
+          16,
+          16
+        ]
+      ],
+      "current_file_sha256": "b8b0f75e1c2cb5ec9324fca7a276e548b6dcf419619a94c375582a72a7acaee2",
+      "prior": {
+        "id": "w120",
+        "path": "plugins/ca-sandbox/tools/installed-bundle.test.ts",
+        "old_source": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+        "old_span": [
+          16,
+          16
+        ],
+        "current_spans": [
+          [
+            16,
+            16
+          ]
+        ],
+        "sha256_of_LF_span": "6dba47deb846f5c0dda4032998ae7a5b2ce02ecef43cbfaecb29e49eb58fe16e",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "b8b0f75e1c2cb5ec9324fca7a276e548b6dcf419619a94c375582a72a7acaee2"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift.",
+      "current_f3_spans": [
+        [
+          16,
+          16
+        ]
+      ],
+      "current_f3_sha256": "b8b0f75e1c2cb5ec9324fca7a276e548b6dcf419619a94c375582a72a7acaee2"
+    },
+    {
+      "witness_id": "w121",
+      "path": "plugins/ca-sandbox/tools/layering.test.ts",
+      "actual0ef_spans": [
+        [
+          74,
+          74
+        ]
+      ],
+      "current_file_sha256": "c3b00e1ddd7edea8932533cbc7c622302d4835945142331ad24d8d1205ba5f7f",
+      "prior": {
+        "id": "w121",
+        "path": "plugins/ca-sandbox/tools/layering.test.ts",
+        "old_source": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+        "old_span": [
+          74,
+          74
+        ],
+        "current_spans": [
+          [
+            74,
+            74
+          ]
+        ],
+        "sha256_of_LF_span": "a2a9c6e8dbb2051fb0a55553bd6b7c3dbe4de75be6b59ec59e7163c25a46d275",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "c3b00e1ddd7edea8932533cbc7c622302d4835945142331ad24d8d1205ba5f7f"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift.",
+      "current_f3_spans": [
+        [
+          74,
+          74
+        ]
+      ],
+      "current_f3_sha256": "c3b00e1ddd7edea8932533cbc7c622302d4835945142331ad24d8d1205ba5f7f"
+    },
+    {
+      "witness_id": "w122",
+      "path": "plugins/ca-sandbox/tools/lifecycle.test.ts",
+      "actual0ef_spans": [
+        [
+          249,
+          249
+        ]
+      ],
+      "current_file_sha256": "c0960d9ac942ef3cee063de1295ecfa7f907fa4b807b34cf27dd8179d1078a74",
+      "prior": {
+        "id": "w122",
+        "path": "plugins/ca-sandbox/tools/lifecycle.test.ts",
+        "old_source": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+        "old_span": [
+          249,
+          249
+        ],
+        "current_spans": [
+          [
+            249,
+            249
+          ]
+        ],
+        "sha256_of_LF_span": "39c4133679268b0266340d78f72da9b6ac2f5618dcad134d59212c54b11e2b3b",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "c0960d9ac942ef3cee063de1295ecfa7f907fa4b807b34cf27dd8179d1078a74"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift.",
+      "current_f3_spans": [
+        [
+          249,
+          249
+        ]
+      ],
+      "current_f3_sha256": "c0960d9ac942ef3cee063de1295ecfa7f907fa4b807b34cf27dd8179d1078a74"
+    },
+    {
+      "witness_id": "w123",
+      "path": "plugins/ca-sandbox/tools/multistack.test.ts",
+      "actual0ef_spans": [
+        [
+          128,
+          128
+        ]
+      ],
+      "current_file_sha256": "7e319d65112281a4486dbd7b44c65325cd3c7c1a864c31b321c66f23d8787c9b",
+      "prior": {
+        "id": "w123",
+        "path": "plugins/ca-sandbox/tools/multistack.test.ts",
+        "old_source": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+        "old_span": [
+          128,
+          128
+        ],
+        "current_spans": [
+          [
+            128,
+            128
+          ]
+        ],
+        "sha256_of_LF_span": "aba6ae69c133b6a50e2b368b1c031bc17d4b0a21794bbbdc7581b118387189ed",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "7e319d65112281a4486dbd7b44c65325cd3c7c1a864c31b321c66f23d8787c9b"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift.",
+      "current_f3_spans": [
+        [
+          128,
+          128
+        ]
+      ],
+      "current_f3_sha256": "7e319d65112281a4486dbd7b44c65325cd3c7c1a864c31b321c66f23d8787c9b"
+    },
+    {
+      "witness_id": "w124",
+      "path": "plugins/ca-sandbox/tools/network.test.ts",
+      "actual0ef_spans": [
+        [
+          208,
+          208
+        ]
+      ],
+      "current_file_sha256": "34ed7a925f8d3f7668530646a4c700f3d9dcef987af39d8e0e3adf99a6093529",
+      "prior": {
+        "id": "w124",
+        "path": "plugins/ca-sandbox/tools/network.test.ts",
+        "old_source": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+        "old_span": [
+          208,
+          208
+        ],
+        "current_spans": [
+          [
+            208,
+            208
+          ]
+        ],
+        "sha256_of_LF_span": "dd80a93c5e2d93e5d057b33456824d9433065fc8f001e4d101d3badaae15e992",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "34ed7a925f8d3f7668530646a4c700f3d9dcef987af39d8e0e3adf99a6093529"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift.",
+      "current_f3_spans": [
+        [
+          208,
+          208
+        ]
+      ],
+      "current_f3_sha256": "34ed7a925f8d3f7668530646a4c700f3d9dcef987af39d8e0e3adf99a6093529"
+    },
+    {
+      "witness_id": "w125",
+      "path": "plugins/ca-sandbox/tools/run.test.ts",
+      "actual0ef_spans": [
+        [
+          124,
+          124
+        ]
+      ],
+      "current_file_sha256": "4bf724a1dd484a423e0575f5dd6b7e03d790682d3a39f39e1395489c45662355",
+      "prior": {
+        "id": "w125",
+        "path": "plugins/ca-sandbox/tools/run.test.ts",
+        "old_source": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+        "old_span": [
+          124,
+          124
+        ],
+        "current_spans": [
+          [
+            124,
+            124
+          ]
+        ],
+        "sha256_of_LF_span": "c2ce1b18a70ee12a21dea3b78ce133357c747695f6b39e69c42d05edb6aa6ffc",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "4bf724a1dd484a423e0575f5dd6b7e03d790682d3a39f39e1395489c45662355"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift.",
+      "current_f3_spans": [
+        [
+          124,
+          124
+        ]
+      ],
+      "current_f3_sha256": "4bf724a1dd484a423e0575f5dd6b7e03d790682d3a39f39e1395489c45662355"
+    },
+    {
+      "witness_id": "w126",
+      "path": ".github/scripts/check_sandbox_docker_layers.py",
+      "actual0ef_spans": [
+        [
+          89,
+          137
+        ]
+      ],
+      "current_file_sha256": "f7b16e22cfba12d841ac62a7db9b7b3145426e66d0638d4b02c84abfb5f0025a",
+      "prior": {
+        "id": "w126",
+        "path": ".github/scripts/check_sandbox_docker_layers.py",
+        "old_source": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+        "old_span": [
+          89,
+          137
+        ],
+        "current_spans": [
+          [
+            89,
+            137
+          ]
+        ],
+        "sha256_of_LF_span": "c6f49e8c01d720816c60696e669eb5ffc1cced42aceb1ded164c8f2188e56916",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "f7b16e22cfba12d841ac62a7db9b7b3145426e66d0638d4b02c84abfb5f0025a"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift.",
+      "current_f3_spans": [
+        [
+          89,
+          137
+        ]
+      ],
+      "current_f3_sha256": "f7b16e22cfba12d841ac62a7db9b7b3145426e66d0638d4b02c84abfb5f0025a"
+    },
+    {
+      "witness_id": "w127",
+      "path": "plugins/ca-sandbox/tools/docker-gate.ts",
+      "actual0ef_spans": [
+        [
+          87,
+          125
+        ]
+      ],
+      "current_file_sha256": "0f4929feb9b5e41224cd1a276fb0a1aa3b2b6fb064dd0a7c7c28309e35f70e5b",
+      "prior": {
+        "id": "w127",
+        "path": "plugins/ca-sandbox/tools/docker-gate.ts",
+        "old_source": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+        "old_span": [
+          87,
+          125
+        ],
+        "current_spans": [
+          [
+            87,
+            125
+          ]
+        ],
+        "sha256_of_LF_span": "355e668e982b348398a7217501dbd1fd3e7111642dc57753824b002f8ebd8898",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "0f4929feb9b5e41224cd1a276fb0a1aa3b2b6fb064dd0a7c7c28309e35f70e5b"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift.",
+      "current_f3_spans": [
+        [
+          87,
+          125
+        ]
+      ],
+      "current_f3_sha256": "0f4929feb9b5e41224cd1a276fb0a1aa3b2b6fb064dd0a7c7c28309e35f70e5b"
+    },
+    {
+      "witness_id": "w128",
+      "path": "plugins/ca-sandbox/tools/docker-gate.ts",
+      "actual0ef_spans": [
+        [
+          140,
+          163
+        ]
+      ],
+      "current_file_sha256": "0f4929feb9b5e41224cd1a276fb0a1aa3b2b6fb064dd0a7c7c28309e35f70e5b",
+      "prior": {
+        "id": "w128",
+        "path": "plugins/ca-sandbox/tools/docker-gate.ts",
+        "old_source": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+        "old_span": [
+          140,
+          163
+        ],
+        "current_spans": [
+          [
+            140,
+            163
+          ]
+        ],
+        "sha256_of_LF_span": "6c66781206ccc770b170fb9c99aa1555da91b42348638252c0000032d0c868e7",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "0f4929feb9b5e41224cd1a276fb0a1aa3b2b6fb064dd0a7c7c28309e35f70e5b"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift.",
+      "current_f3_spans": [
+        [
+          140,
+          163
+        ]
+      ],
+      "current_f3_sha256": "0f4929feb9b5e41224cd1a276fb0a1aa3b2b6fb064dd0a7c7c28309e35f70e5b"
+    },
+    {
+      "witness_id": "w131",
+      "path": ".github/scripts/check_sandbox_docker_layers.py",
+      "actual0ef_spans": [
+        [
+          80,
+          159
+        ]
+      ],
+      "current_file_sha256": "f7b16e22cfba12d841ac62a7db9b7b3145426e66d0638d4b02c84abfb5f0025a",
+      "prior": {
+        "id": "w131",
+        "path": ".github/scripts/check_sandbox_docker_layers.py",
+        "old_source": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+        "old_span": [
+          80,
+          159
+        ],
+        "current_spans": [
+          [
+            80,
+            159
+          ]
+        ],
+        "sha256_of_LF_span": "a2aeaf19631528b2b0713e909e0533eb7d6e1f2711347a6a565a5ec957d822a6",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "f7b16e22cfba12d841ac62a7db9b7b3145426e66d0638d4b02c84abfb5f0025a"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift.",
+      "current_f3_spans": [
+        [
+          80,
+          159
+        ]
+      ],
+      "current_f3_sha256": "f7b16e22cfba12d841ac62a7db9b7b3145426e66d0638d4b02c84abfb5f0025a"
+    },
+    {
+      "witness_id": "w132",
+      "path": "plugins/ca-sandbox/tools/docker-gate.ts",
+      "actual0ef_spans": [
+        [
+          140,
+          161
+        ]
+      ],
+      "current_file_sha256": "0f4929feb9b5e41224cd1a276fb0a1aa3b2b6fb064dd0a7c7c28309e35f70e5b",
+      "prior": {
+        "id": "w132",
+        "path": "plugins/ca-sandbox/tools/docker-gate.ts",
+        "old_source": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+        "old_span": [
+          140,
+          161
+        ],
+        "current_spans": [
+          [
+            140,
+            161
+          ]
+        ],
+        "sha256_of_LF_span": "a2f0b25d821b928a4a8c650ebd37e6986d4a34d507adfead394551cd14f439d9",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "0f4929feb9b5e41224cd1a276fb0a1aa3b2b6fb064dd0a7c7c28309e35f70e5b"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift.",
+      "current_f3_spans": [
+        [
+          140,
+          161
+        ]
+      ],
+      "current_f3_sha256": "0f4929feb9b5e41224cd1a276fb0a1aa3b2b6fb064dd0a7c7c28309e35f70e5b"
+    }
+  ],
+  "changed_old_literals": [],
+  "reused_helper_assessments": [],
+  "negative_scope": "Static finite guarded claims only, with inherited scope/limits. No execution, qualification or unchecked new source claim."
+}

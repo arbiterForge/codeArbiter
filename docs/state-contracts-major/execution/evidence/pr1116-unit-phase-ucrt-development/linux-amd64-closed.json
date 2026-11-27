@@ -1,0 +1,67 @@
+{
+  "source": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+  "run_id": 43992411061,
+  "attempt": 1,
+  "job_id": 133736258057,
+  "job_name": "[CHECK] | [CORE] | Tested native candidate build <linux/amd64>",
+  "failed_steps": [
+    {
+      "number": 7,
+      "name": "Test original Python npm binding producer on the qualified runtime",
+      "conclusion": "failure"
+    }
+  ],
+  "metadata_sha256": "df6af28669ab84ac4d725b8e14e384cbfed018e245a81994727b4cbb8b2cc445",
+  "log_sha256": "88982fba310405462363e5d0e661a0bf96ab9057b13961ced35e7ca48d122096",
+  "log_bytes": 87365,
+  "named_failure_methods": [
+    {
+      "line": 911,
+      "kind": "ERROR",
+      "method": "test_original_python_producer_exports_opt_in_consumed_identities",
+      "owner": "__main__.ProducerBoundaryTests.test_original_python_producer_exports_opt_in_consumed_identities"
+    }
+  ],
+  "source_frames": [
+    {
+      "log_line": 914,
+      "source_file": "/home/runner/work/codeArbiter/codeArbiter/.github/scripts/test_npm_binding_observation.py",
+      "source_line": 47
+    },
+    {
+      "log_line": 918,
+      "source_file": "/opt/hostedtoolcache/Python/3.14.10/x64/lib/python3.14/subprocess.py",
+      "source_line": 557
+    },
+    {
+      "log_line": 921,
+      "source_file": "/opt/hostedtoolcache/Python/3.14.10/x64/lib/python3.14/subprocess.py",
+      "source_line": 1221
+    },
+    {
+      "log_line": 924,
+      "source_file": "/opt/hostedtoolcache/Python/3.14.10/x64/lib/python3.14/subprocess.py",
+      "source_line": 2154
+    },
+    {
+      "log_line": 927,
+      "source_file": "/opt/hostedtoolcache/Python/3.14.10/x64/lib/python3.14/subprocess.py",
+      "source_line": 1268
+    }
+  ],
+  "fixed_failure_categories": [
+    {
+      "line": 913,
+      "matched_fixed_category": "Traceback (most recent call last)"
+    },
+    {
+      "line": 936,
+      "matched_fixed_category": "FAILED ("
+    },
+    {
+      "line": 937,
+      "matched_fixed_category": "Process completed with exit code"
+    }
+  ],
+  "cause": "UNKNOWN_PENDING_SOURCE_TRACE"
+}

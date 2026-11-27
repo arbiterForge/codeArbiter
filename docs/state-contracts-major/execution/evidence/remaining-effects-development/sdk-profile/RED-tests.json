@@ -1,0 +1,11 @@
+{
+  "selected_methods": [
+    "SdkPythonSourceProfileTests.test_public_closed_sdk_profile_observes_one_original_python_invocation"
+  ],
+  "testsRun": 1,
+  "failures": 1,
+  "errors": 0,
+  "skips": 0,
+  "successful": false,
+  "seconds": 0.5020596999966074
+}

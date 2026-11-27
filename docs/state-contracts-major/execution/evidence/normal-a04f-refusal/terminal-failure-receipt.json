@@ -1,0 +1,261 @@
+{
+  "schema": "normal-integration-watch-failure/1",
+  "source": "a04f4f07cbb66175faa7f106d2b1c105f408015b",
+  "source_tree": "a8e7217853e989fc3b12c6025bcc9dfa23735ea5",
+  "run_id": 43730381874,
+  "branch": "major/state-contracts",
+  "event": "push",
+  "conclusion": "failure",
+  "watch_exit": 1,
+  "job_counts": {
+    "failure": 12,
+    "skipped": 7,
+    "success": 78
+  },
+  "failed_jobs": [
+    {
+      "id": 132873135159,
+      "name": "[CHECK] | [CDX ] | Installed retained package <codex: 0.143.0>",
+      "failed_steps": [
+        "Observe the original retained Codex CLI installation"
+      ]
+    },
+    {
+      "id": 132873135171,
+      "name": "[CHECK] | [PI  ] | Installed retained package <pi: windows 1.5.0>",
+      "failed_steps": [
+        "Observe the original retained Pi RPC installation"
+      ]
+    },
+    {
+      "id": 132873135200,
+      "name": "[CHECK] | [PI  ] | Installed retained package <pi: linux 1.5.0>",
+      "failed_steps": [
+        "Observe the original retained Pi RPC installation"
+      ]
+    },
+    {
+      "id": 132873135204,
+      "name": "[CHECK] | [CORE] | Structured artifact cold package  <darwin/amd64>",
+      "failed_steps": [
+        "Observe the original exact-package claude workflow"
+      ]
+    },
+    {
+      "id": 132873135207,
+      "name": "[CHECK] | [PI  ] | Installed retained package <pi: darwin 1.5.0>",
+      "failed_steps": [
+        "Observe the original retained Pi RPC installation"
+      ]
+    },
+    {
+      "id": 132873135214,
+      "name": "[CHECK] | [CORE] | Structured artifact cold package  <linux/amd64>",
+      "failed_steps": [
+        "Observe the original exact-package claude workflow"
+      ]
+    },
+    {
+      "id": 132873135228,
+      "name": "[CHECK] | [CORE] | Structured artifact cold package  <linux/arm64>",
+      "failed_steps": [
+        "Observe the original exact-package claude workflow"
+      ]
+    },
+    {
+      "id": 132873135238,
+      "name": "[CHECK] | [CORE] | Structured artifact cold package  <windows/amd64>",
+      "failed_steps": [
+        "Observe the original exact-package claude workflow"
+      ]
+    },
+    {
+      "id": 132873135250,
+      "name": "[CHECK] | [CDX ] | Installed retained package <codex: 0.145.0>",
+      "failed_steps": [
+        "Observe the original retained Codex CLI installation"
+      ]
+    },
+    {
+      "id": 132873135298,
+      "name": "[CHECK] | [CORE] | Structured artifact cold package  <windows/arm64>",
+      "failed_steps": [
+        "Observe the original exact-package claude workflow"
+      ]
+    },
+    {
+      "id": 132873135428,
+      "name": "[CHECK] | [CORE] | Structured artifact cold package  <darwin/arm64>",
+      "failed_steps": [
+        "Observe the original exact-package claude workflow"
+      ]
+    },
+    {
+      "id": 132875586434,
+      "name": "[GATE ] | [REPO] | Merge readiness",
+      "failed_steps": [
+        "Require every required job to have succeeded or been skipped"
+      ]
+    }
+  ],
+  "installed13": [
+    {
+      "cells": [
+        "installed:native:linux:amd64",
+        "installed:claude:workflow"
+      ],
+      "job_id": 132873135214,
+      "job_name": "[CHECK] | [CORE] | Structured artifact cold package  <linux/amd64>",
+      "conclusion": "failure",
+      "qualification_state": "UNQUALIFIED_NORMAL_RUN_FAILED"
+    },
+    {
+      "cells": [
+        "installed:native:linux:arm64"
+      ],
+      "job_id": 132873135228,
+      "job_name": "[CHECK] | [CORE] | Structured artifact cold package  <linux/arm64>",
+      "conclusion": "failure",
+      "qualification_state": "UNQUALIFIED_NORMAL_RUN_FAILED"
+    },
+    {
+      "cells": [
+        "installed:native:windows:amd64"
+      ],
+      "job_id": 132873135238,
+      "job_name": "[CHECK] | [CORE] | Structured artifact cold package  <windows/amd64>",
+      "conclusion": "failure",
+      "qualification_state": "UNQUALIFIED_NORMAL_RUN_FAILED"
+    },
+    {
+      "cells": [
+        "installed:native:windows:arm64"
+      ],
+      "job_id": 132873135298,
+      "job_name": "[CHECK] | [CORE] | Structured artifact cold package  <windows/arm64>",
+      "conclusion": "failure",
+      "qualification_state": "UNQUALIFIED_NORMAL_RUN_FAILED"
+    },
+    {
+      "cells": [
+        "installed:native:darwin:amd64"
+      ],
+      "job_id": 132873135204,
+      "job_name": "[CHECK] | [CORE] | Structured artifact cold package  <darwin/amd64>",
+      "conclusion": "failure",
+      "qualification_state": "UNQUALIFIED_NORMAL_RUN_FAILED"
+    },
+    {
+      "cells": [
+        "installed:native:darwin:arm64"
+      ],
+      "job_id": 132873135428,
+      "job_name": "[CHECK] | [CORE] | Structured artifact cold package  <darwin/arm64>",
+      "conclusion": "failure",
+      "qualification_state": "UNQUALIFIED_NORMAL_RUN_FAILED"
+    },
+    {
+      "cells": [
+        "installed:pi:linux:1.5.0"
+      ],
+      "job_id": 132873135200,
+      "job_name": "[CHECK] | [PI  ] | Installed retained package <pi: linux 1.5.0>",
+      "conclusion": "failure",
+      "qualification_state": "UNQUALIFIED_NORMAL_RUN_FAILED"
+    },
+    {
+      "cells": [
+        "installed:pi:windows:1.5.0"
+      ],
+      "job_id": 132873135171,
+      "job_name": "[CHECK] | [PI  ] | Installed retained package <pi: windows 1.5.0>",
+      "conclusion": "failure",
+      "qualification_state": "UNQUALIFIED_NORMAL_RUN_FAILED"
+    },
+    {
+      "cells": [
+        "installed:pi:darwin:1.5.0"
+      ],
+      "job_id": 132873135207,
+      "job_name": "[CHECK] | [PI  ] | Installed retained package <pi: darwin 1.5.0>",
+      "conclusion": "failure",
+      "qualification_state": "UNQUALIFIED_NORMAL_RUN_FAILED"
+    },
+    {
+      "cells": [
+        "installed:codex:0.143.0"
+      ],
+      "job_id": 132873135159,
+      "job_name": "[CHECK] | [CDX ] | Installed retained package <codex: 0.143.0>",
+      "conclusion": "failure",
+      "qualification_state": "UNQUALIFIED_NORMAL_RUN_FAILED"
+    },
+    {
+      "cells": [
+        "installed:codex:0.145.0"
+      ],
+      "job_id": 132873135250,
+      "job_name": "[CHECK] | [CDX ] | Installed retained package <codex: 0.145.0>",
+      "conclusion": "failure",
+      "qualification_state": "UNQUALIFIED_NORMAL_RUN_FAILED"
+    },
+    {
+      "cells": [
+        "installed:sandbox:docker"
+      ],
+      "job_id": 132861374030,
+      "job_name": "[CHECK] | [SBX ] | Installed shipped bundle <docker>",
+      "conclusion": "success",
+      "qualification_state": "UNQUALIFIED_NORMAL_RUN_FAILED"
+    }
+  ],
+  "closed_confirmed_failure": {
+    "initial_codex2_and_piLinux_diagnostic_sha256": "1d854126158034194ca5313dceeadb9b306f697653a490a920a0c91f6a3cacac",
+    "literal_guard": "upload attribution unavailable or malformed",
+    "literal_owners": [
+      "major_readiness.py:725",
+      "retained_archive_cli_observation.py:577"
+    ],
+    "cold_linux_amd64_actual_code": "UPLOAD_LOG_COMMAND_FAILED",
+    "authenticated_original_Codex_failure_artifact": 14169871255,
+    "original_Codex_phase": "bootstrap",
+    "original_Codex_exception_type": "ReadinessError",
+    "discrimination": "Actual later assembly log+metadata satisfy all attribution source predicates; original failing in-job gh command stderr/HTTP reason was discarded. Exact inner transport reason remains unknown; no gate relaxation justified."
+  },
+  "native_source": {
+    "members": 245,
+    "module_sha256": "f79741ca03192962140efae78835b72d09c3eaf6167ea09d8b9fe6904b4495cf",
+    "source_join": "exact-merge-source-join.json",
+    "qualification": "Source membership verified; failed normal run is not complete installed or publication qualification."
+  },
+  "artifacts": {
+    "run-before.json": "35d8d8612f2e1750c0bf6b6eb49c25410cba1cb809aecdc3ecfb1f3b31b3e57f",
+    "run-after.json": "54ed4410c2c2c2d0c7a57ca27d2843a75cebdc9b93aeb5a33c5f95542914d29a",
+    "watch-command.json": "df01e55dc93c296c21050b2c493360a75100baf1f1fa1b7c09a02c012264b327",
+    "watch-exit.json": "00091f0e62c0ee3eff9246cafca2b5db5a36883ee1848e8f3144de405663dace",
+    "terminal-jobs.json": "5ea804b67d428d1de7b7f9a8c56f0ef604cc6f5dbf6af5217b68cad1cc789569",
+    "exact-merge-source-join.json": "63d46598d944a3feb1f0cef58e8270985100c44338d1bb070786d04571ba44f3",
+    "first-failure-classification.json": "31f2a0b5bbb3f7646063d4f135e72c15a57f1789ddacafadfa6a354fa31b644c",
+    "upload-attribution-discriminator.json": "01bc955c1d634e12e24100783f9d66bead4fc0b2187d750405d465a2235f30f2",
+    "additional-failure-metadata.json": "1db60d466faecb0ec6c8e5a8b971c0f46f170d4b5e353753c897a5ff1b80b21c",
+    "assembly-job.json": "d11c2eaca6c04860f82118f38798039ade74d42ee50823e11a33e659c727f5fc",
+    "assembly-job.log": "6dd2ed7e80f96a839248cfff7c57aeb8233015cc88bcf9ea4eb6ffbd7cd2b446",
+    "first-coordinator-diagnostic.zip": "97392f3371baada01d75f539f8e52f17c6a96676a9bacedbfb74786d37121439",
+    "failure-selected-artifacts.json": "07e243c3e05a6039d18fdddb0ade68bafd3b34c28cb32b6231861e52364b669a",
+    "failed-job-132873135159.json": "a40d565e28d71acabbb50de6c23031918e63b6bff097a77f830e8e73ed88490d",
+    "failed-job-132873135159.log": "b5f26372f6be9c8826c902cf49a7f10fd5dc4bd92cd1f9b50603e31271c665e3",
+    "failed-job-132873135250.json": "c3d710629b790289a51d19b16f7888e91b0a5cca7102b10862a36049ada69ecf",
+    "failed-job-132873135250.log": "f9f9be85d052b150dd2dff8704f0e863d6578319e45d88e19ae4bd7951187a5a",
+    "failed-job-132873135200.json": "8245339a72d6d0b7b7e199569f7004e71a880c73ff09de0207082bc37cfb3ae9",
+    "failed-job-132873135200.log": "9d5d1d999191fd2f960dc3ef514095a3128a51dd5f0cb7de8abe83c161e82d69",
+    "failed-job-132873135214.log": "047257f7e9f40f5bb7ab8e49ed86aa16f7f38790f954c657219dd9633f43aaf0"
+  },
+  "limits": [
+    "Installed13 authentication is held after actual normal run failure; no PREPUBLICATION_READY record or promotion created.",
+    "Sandbox job success is retained separately, not complete normal-run qualification.",
+    "No hosted SDK capture marker asserted; exact local proof remains separate.",
+    "No code, Git/index, provider mutation, CI retry/cancel, merge or deletion performed.",
+    "All evidence remains private and literal to a04f, not admitted to non-ancestor Python branch."
+  ],
+  "completed_utc": "2026-11-15T16:22:32.830727+00:00"
+}

@@ -1,0 +1,76 @@
+{
+  "format": "single-cohort-source-freeze/1",
+  "source": "771604132801a0e67c971581fbbf76227af2f712",
+  "actor_input_sha256": "07fb8a4613096ecbe324150daa74c39e1884810953e32b2c5d4a077925a5e0f0",
+  "actor_context_sha256": "6d6f9866ae2de19d81ad61bb4bd4f550aa021662c4dfc98a98a1c561e00c9bf3",
+  "positive_inputs": {
+    "core/pysrc/_durabilitylib.py": "42e9d3ed6f6f43c76bef073e6edad2b8a119dfc154e2a497909422b4e4d28f9b",
+    "core/pysrc/_hooklib.py": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+    "core/pysrc/wire-statusline.py": "41c489a88d6a6f1be51806d9269013a124d0f0974830f248615201d2be0d8192",
+    "plugins/ca/hooks/_activationlib.py": "60c6391b4d8b143c5e59cf2320291a2d31063e8fbebe0fcf337dd83e07f8fd97",
+    "plugins/ca/hooks/_arbiterstatelib.py": "19ebd7d82fa56d2a4535043d3a163cfe9f0475aa5d457d5ad8953980d57f71c1",
+    "plugins/ca/hooks/_durabilitylib.py": "42e9d3ed6f6f43c76bef073e6edad2b8a119dfc154e2a497909422b4e4d28f9b",
+    "plugins/ca/hooks/_gitexec.py": "a5935246028f506ef5ab13ba379b399cb7a754a077866fd39528545f30f4bef3",
+    "plugins/ca/hooks/_githooks.py": "450d3204c7895d7649c4bd7b1daf40b498b960df48de00138914559d41008e38",
+    "plugins/ca/hooks/_hooklib.py": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+    "plugins/ca/hooks/_host.py": "9d04b88683d1deab03850ef1f2a169579f59756d3430079bdc6aa2160994bc1b",
+    "plugins/ca/hooks/_knowledgelib.py": "abc1f93667faf5241c52931d33fc992e5627bd2c406298937d587c373659eeb9",
+    "plugins/ca/hooks/_modelib.py": "d97433737654bbcad2051e62495e70ec006dc31d458514fa74e338e49d04a1db",
+    "plugins/ca/hooks/_pathnorm.py": "f6a99cddf6277641316f5e8f9d86fb97691e535ba569aa6cb51c9e4f3ed52906",
+    "plugins/ca/hooks/_protectedlib.py": "3156e9ad47cf577476dfcae27fde1d4ebfd71fe33b5e1976d351b8f833ea53d3",
+    "plugins/ca/hooks/_provenancelib.py": "3cbd8d241ff6640e824ee2707ca1a3bd3202db83df371822201ceeabdd2657e4",
+    "plugins/ca/hooks/_prunelib.py": "f34aceae4140a7ff25dff91888cd3b9d7d2e5ddc2e1f084558218b22d1c1bdc4",
+    "plugins/ca/hooks/_prunepolicy.py": "13bc82c138975121c3dbd28379a0bc8dda183f09fa6e47fbe2bab2e9cc0faf35",
+    "plugins/ca/hooks/_scopelib.py": "03d1f066863d08c952ebda8d9b6f1515813f53a4fd3fc0af560a735f63954e0b",
+    "plugins/ca/hooks/_sensitivelib.py": "a3902997c16d367a3c7e6e7247a42ba35d962e2c885f9ed3e8e1ab0ce98ec506",
+    "plugins/ca/hooks/_standuplib.py": "621d318ca6429c95bc45dadeb7fbebbfdd9bc3a5f94267d87fa692e69ef74169",
+    "plugins/ca/hooks/_taskboardlib.py": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+    "plugins/ca/hooks/_updatelib.py": "6a66e7bc681bf5c347529becbe6e5405165d59b336436183e4e7881d4d26d7b4",
+    "plugins/ca/hooks/hostapi.py": "2aea81ad167a458c6053cb52880952521159a367eaa5baa7df6e2e35fea574e4",
+    "plugins/ca/hooks/session-start.py": "4c3c1e9b8180aa571eda8fcacf24569f1fd16366a12c3aba5f76944cf1ba52cb",
+    "plugins/ca/hooks/tests/_helpers.py": "0c4a113a663dab2b9a5c6dd8025378628007f75e4d681c38d98a517d362c6f42",
+    "plugins/ca/hooks/tests/test_atomic_writes.py": "a858453251f73f033fa6dc50f1275366bee2b50a889262987ee8c481d03f6dff",
+    "plugins/ca/hooks/tests/test_durabilitylib.py": "7aa71ed4072209ab2a685c31559bd8afb51ffd9a336775cb66298e56821ffdb1",
+    "plugins/ca/hooks/tests/test_wire_statusline.py": "979d8d33ac36396a0364500b1e94d418a81c7eacb80644bf2cb5df6f0e4d6ee9",
+    "plugins/ca/hooks/wire-statusline.py": "41c489a88d6a6f1be51806d9269013a124d0f0974830f248615201d2be0d8192"
+  },
+  "files": {
+    "capture.py": {
+      "sha256": "8b06d3b83def5bfa552fea365d1ca212d9f97551cfdd2dd8f793ef851a05154d",
+      "bytes": 7743
+    },
+    "run-selected.py": {
+      "sha256": "377ac3a0a923158de791482acbe302a5a3e4148cd083e1932d8ee9b3b3f830fa",
+      "bytes": 17413
+    },
+    "runtime-seed.json": {
+      "sha256": "af3b9f68397c3894f7362229dbe06e329b010cd410183b48141106b5ffd34281",
+      "bytes": 307604
+    },
+    "seed-proof.json": {
+      "sha256": "49a43483d104c3976877f421bb4c1401398633cfda972c4c93a65447db718515",
+      "bytes": 3155
+    },
+    "selectors.json": {
+      "sha256": "93ae8561fd8f661cf61fffa9d7a3f0c3d9316ca2cd104a55152ee9e16bbfff7a",
+      "bytes": 6742
+    },
+    "static-selection-precheck.json": {
+      "sha256": "7fc43198c51ebb5de8a40397b2b92ba640d4f2a38d5233b7f3a7d2c9a8b02418",
+      "bytes": 1956
+    },
+    "observer/sitecustomize.py": {
+      "sha256": "7df396586013f1e16a1c22865662787da894f48f3c7d66d5d53f99829debdc26",
+      "bytes": 3343
+    }
+  },
+  "prospective_argv": [
+    "C:/Python314/python.exe",
+    "-B",
+    "-X",
+    "utf8",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline67-77160413-8qy44xmp\\capture.py"
+  ],
+  "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline67-77160413-8qy44xmp",
+  "state": "FROZEN_BEFORE_FIRST_EXECUTION"
+}

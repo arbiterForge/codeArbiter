@@ -1,0 +1,16 @@
+{
+  "source_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a",
+  "scope": "preserved-source-contract",
+  "inputs_before": {
+    ".github/fixtures/tribunal/cases.json": "6fee4415573e3fe63fc29a26c4d5132c76e08186bcc0e73acaa7b4bf909527e4",
+    "tools/codex-parity-fixture.py": "ad68c3fbdb3b08b51f0fd837e000f1efc1e462d2f95495a24eabb4f0b1799a0b",
+    "tools/tribunal-eval.py": "45d227c3382ee279e3d0649837068b6b306c2daff208c30497f16d4bd9d50576"
+  },
+  "inputs_after": {
+    ".github/fixtures/tribunal/cases.json": "6fee4415573e3fe63fc29a26c4d5132c76e08186bcc0e73acaa7b4bf909527e4",
+    "tools/codex-parity-fixture.py": "ad68c3fbdb3b08b51f0fd837e000f1efc1e462d2f95495a24eabb4f0b1799a0b",
+    "tools/tribunal-eval.py": "45d227c3382ee279e3d0649837068b6b306c2daff208c30497f16d4bd9d50576"
+  },
+  "stable": true,
+  "boundary": "Executed unit import closure; all canonical templates read by descriptor validation; additional contract-mandated owning source files for bounded source-conformance. Full Astro build/endpoints and native binaries are not executed."
+}

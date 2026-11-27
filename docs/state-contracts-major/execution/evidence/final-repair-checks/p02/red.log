@@ -1,0 +1,75 @@
+test_added_and_removed_native_members_are_stale_not_relabelled (test_state_contracts_integration.IntegrationIntegrityTest.test_added_and_removed_native_members_are_stale_not_relabelled) ... 
+  test_added_and_removed_native_members_are_stale_not_relabelled (test_state_contracts_integration.IntegrationIntegrityTest.test_added_and_removed_native_members_are_stale_not_relabelled) (removal=False) ... FAIL
+  test_added_and_removed_native_members_are_stale_not_relabelled (test_state_contracts_integration.IntegrationIntegrityTest.test_added_and_removed_native_members_are_stale_not_relabelled) (removal=True) ... FAIL
+test_explicit_owned_absence_becoming_present_is_stale (test_state_contracts_integration.IntegrationIntegrityTest.test_explicit_owned_absence_becoming_present_is_stale) ... FAIL
+test_forged_original_module_scope_refuses_historical_authentication (test_state_contracts_integration.IntegrationIntegrityTest.test_forged_original_module_scope_refuses_historical_authentication) ... FAIL
+test_legacy_runtime_native_positive_scope_is_unknown_not_complete (test_state_contracts_integration.IntegrationIntegrityTest.test_legacy_runtime_native_positive_scope_is_unknown_not_complete) ... ERROR
+test_valid_declared_scope_and_absence_are_applicable (test_state_contracts_integration.IntegrationIntegrityTest.test_valid_declared_scope_and_absence_are_applicable) ... ok
+
+======================================================================
+ERROR: test_legacy_runtime_native_positive_scope_is_unknown_not_complete (test_state_contracts_integration.IntegrationIntegrityTest.test_legacy_runtime_native_positive_scope_is_unknown_not_complete)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\brenn\AppData\Local\Temp\ca-membership-fix-zipp3oqs\.github\scripts\test_state_contracts_integration.py", line 289, in test_legacy_runtime_native_positive_scope_is_unknown_not_complete
+    current, row = self.membership_case(membership=False)
+                   ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "C:\Users\brenn\AppData\Local\Temp\ca-membership-fix-zipp3oqs\.github\scripts\test_state_contracts_integration.py", line 236, in membership_case
+    self.git("add", "."); self.git("commit", "-qm", "Original membership fixture")
+                          ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\brenn\AppData\Local\Temp\ca-membership-fix-zipp3oqs\.github\scripts\test_state_contracts_integration.py", line 27, in git
+    return subprocess.run(["git", *args], cwd=cls.repo, capture_output=True, check=True).stdout.decode().strip()
+           ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python314\Lib\subprocess.py", line 578, in run
+    raise CalledProcessError(retcode, process.args,
+                             output=stdout, stderr=stderr)
+subprocess.CalledProcessError: Command '['git', 'commit', '-qm', 'Original membership fixture']' returned non-zero exit status 1.
+
+======================================================================
+FAIL: test_added_and_removed_native_members_are_stale_not_relabelled (test_state_contracts_integration.IntegrationIntegrityTest.test_added_and_removed_native_members_are_stale_not_relabelled) (removal=False)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\brenn\AppData\Local\Temp\ca-membership-fix-zipp3oqs\.github\scripts\test_state_contracts_integration.py", line 268, in test_added_and_removed_native_members_are_stale_not_relabelled
+    self.assertEqual(report["current_applicability"][self.cell]["status"], "STALE")
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'APPLICABLE' != 'STALE'
+- APPLICABLE
++ STALE
+
+
+======================================================================
+FAIL: test_added_and_removed_native_members_are_stale_not_relabelled (test_state_contracts_integration.IntegrationIntegrityTest.test_added_and_removed_native_members_are_stale_not_relabelled) (removal=True)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\brenn\AppData\Local\Temp\ca-membership-fix-zipp3oqs\.github\scripts\test_state_contracts_integration.py", line 268, in test_added_and_removed_native_members_are_stale_not_relabelled
+    self.assertEqual(report["current_applicability"][self.cell]["status"], "STALE")
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'APPLICABLE' != 'STALE'
+- APPLICABLE
++ STALE
+
+
+======================================================================
+FAIL: test_explicit_owned_absence_becoming_present_is_stale (test_state_contracts_integration.IntegrationIntegrityTest.test_explicit_owned_absence_becoming_present_is_stale)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\brenn\AppData\Local\Temp\ca-membership-fix-zipp3oqs\.github\scripts\test_state_contracts_integration.py", line 279, in test_explicit_owned_absence_becoming_present_is_stale
+    self.assertEqual(owner.validate(self.repo,candidate)["current_applicability"][self.cell]["status"], "STALE")
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'APPLICABLE' != 'STALE'
+- APPLICABLE
++ STALE
+
+
+======================================================================
+FAIL: test_forged_original_module_scope_refuses_historical_authentication (test_state_contracts_integration.IntegrationIntegrityTest.test_forged_original_module_scope_refuses_historical_authentication)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\brenn\AppData\Local\Temp\ca-membership-fix-zipp3oqs\.github\scripts\test_state_contracts_integration.py", line 285, in test_forged_original_module_scope_refuses_historical_authentication
+    with self.assertRaisesRegex(owner.readiness.ReadinessError, "membership"):
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ReadinessError not raised
+
+----------------------------------------------------------------------
+Ran 5 tests in 19.420s
+
+FAILED (failures=4, errors=1)

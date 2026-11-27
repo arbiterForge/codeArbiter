@@ -1,0 +1,146 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "0830b95752a05343563be027e513a2845a6c57df",
+  "kind": "test",
+  "result": "PASSED",
+  "producer": {
+    "class": "local-host",
+    "identity": "/root/packaging_site_tools original bounded local Windows observation; original epochs retained"
+  },
+  "platform": "windows/amd64",
+  "inputs": {
+    "site/scripts/release-applicability.ts": "272fbf607aa1376f999545d3b7f287438a22dc5f85fed4d9ccaf433d6ad555d9",
+    "site/src/release-applicability-presentation.ts": "a94a1f1a1c0b0ea28d00a90e8e49b77ed13e96534ed1dd841644cd5d4d7f4732",
+    "site/test/release-applicability/release-applicability.test.ts": "98ef3086438d07f8de16eaae3799e6247fc03f2e286928252b3befd2cc98905b",
+    "site/test/release-applicability/presentation.test.ts": "b12e5cabdb69f1bada9d5b9a35fea9577c2bc7c5f9514f995326fe39fd7926c1",
+    "site/package.json": "3c00bebcf4d5796050692262ec2791f4ae367d8b450a650419e552a6162aac7c",
+    "site/package-lock.json": "d81f1d4b54c0e2a0fc05815687fcb306e0a12f98c3e382032556e445c614787a",
+    "site/vitest.config.ts": "a65a6dde53bb9bff5d5ee31569d97f2f76e3a6f51e672613d155e3121055ac59",
+    "site/tsconfig.json": "2313012ec43d254daf80ac76385fc550e3a472aa6a96affe8b9e1d4e2dd225f4",
+    "site/src/pages/release-applicability.json.ts": "3a126d7972292d19202519fc82646d7a9f9fdf96ff3bca3e18d2fe4d50785d2a"
+  },
+  "commands": [
+    {
+      "argv": [
+        "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+        "node_modules/vitest/vitest.mjs",
+        "run",
+        "test/release-applicability/release-applicability.test.ts",
+        "test/release-applicability/presentation.test.ts",
+        "--testNamePattern",
+        "selectCurrentGovernanceReleases selects the highest stable|release declaration provenance contract|original-publication ledger validation|historical release applicability reads every declared manifest|historical release applicability rejects a historical manifest|documentation build identity|deterministic release applicability record requires the replay digest|deterministic release applicability record records an explicit|deterministic release applicability record rejects malformed direct-hook|deterministic release applicability record rejects missing latest-published|published Pi support.*records the Pi versions|release applicability presentation (distinguishes|presents|rejects)",
+        "--reporter=default",
+        "--reporter=json",
+        "--outputFile.json=C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-packaging-baseline-closure-ly4hjqpk\\release-vitest.json"
+      ],
+      "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site",
+      "exit_code": 0,
+      "seconds": 0.579603899968788
+    }
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/packaging-baseline-local-fca-0830/raw/release-start.json",
+      "sha256": "45cc47bfc30b6a8660ffae3d6c03f098990125cbc10b5071eb08c91213ebe030"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/packaging-baseline-local-fca-0830/raw/release-end.json",
+      "sha256": "9d7de566a25c21ef2c6c715636d98169640f2df0a8f72285eb3e6d1ce89d536c"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/packaging-baseline-local-fca-0830/raw/release-vitest.json",
+      "sha256": "04e2377e7505910d85cad45e29399f2cf44b1e469325dd1490b722c076996fe9"
+    }
+  ],
+  "disposition_ids": [
+    "disposition:transitions:SX03:01",
+    "disposition:transitions:SX03:03",
+    "disposition:transitions:SX03:04",
+    "disposition:transitions:SX03:05"
+  ],
+  "per_cell_assertion_mapping": [
+    {
+      "cell": "disposition:transitions:SX03:01",
+      "observed_named_cases": [
+        "selectCurrentGovernanceReleases selects the highest stable SemVer independently for every governance host (O-01)",
+        "release declaration provenance contract rejects missing governed provenance-manifest declaration (O-03)",
+        "release declaration provenance contract rejects duplicate governed provenance-manifest declaration (O-03)",
+        "release declaration provenance contract rejects divergent governed provenance-manifest declaration (O-03)",
+        "original-publication ledger validation rejects unexpected top-level key (O-02)",
+        "original-publication ledger validation rejects wrong namespaces (O-02)",
+        "original-publication ledger validation rejects invalid date (O-02)",
+        "original-publication ledger validation rejects malformed unselected governed tag (O-02)",
+        "original-publication ledger validation rejects extra receipt key (O-02)",
+        "original-publication ledger validation rejects zero identity (O-02)",
+        "original-publication ledger validation rejects uppercase identity (O-02)",
+        "original-publication ledger validation rejects invalid object type (O-02)",
+        "original-publication ledger validation rejects commit identity mismatch (O-02)",
+        "original-publication ledger validation rejects duplicate JSON keys instead of accepting the last value (O-02)",
+        "original-publication ledger validation rejects a numeric prerelease identifier with leading zeroes even when a stable tag exists (O-02)"
+      ],
+      "assertion_scope": "Bounded declaration/provenance and duplicate-free receipt parsing under actual pure owner functions; valid governance input plus malformed ledger/provenance negatives."
+    },
+    {
+      "cell": "disposition:transitions:SX03:03",
+      "observed_named_cases": [
+        "historical release applicability reads every declared manifest at its receipt commit and requires exact tag/version equality (O-03)",
+        "historical release applicability rejects a historical manifest whose version does not exactly match its selected tag (O-04)",
+        "published Pi support (#1071) records the Pi versions the selected ca-pi tag supports, read at that tag's commit"
+      ],
+      "assertion_scope": "Historical fake Git interface assertions pin every manifest/version and Pi declaration read to selected tag commit; no actual hosted tags or installed Pi interpretation."
+    },
+    {
+      "cell": "disposition:transitions:SX03:04",
+      "observed_named_cases": [
+        "documentation build identity binds a GitHub Actions build to an exact 40-hex GITHUB_SHA equal to HEAD (O-06)",
+        "documentation build identity rejects a missing GitHub Actions build identity (O-06)",
+        "documentation build identity rejects a not 40-hex GitHub Actions build identity (O-06)",
+        "documentation build identity rejects a different from HEAD GitHub Actions build identity (O-06)",
+        "documentation build identity records the exact local HEAD and dirty state without using a branch name (O-06)",
+        "documentation build identity rejects a moving or malformed local HEAD identity (O-06)"
+      ],
+      "assertion_scope": "Exact Actions SHA/HEAD vs local dirty identity semantics exercised via explicit fake Git interface, not claiming this local test ran as GitHub Actions."
+    },
+    {
+      "cell": "disposition:transitions:SX03:05",
+      "observed_named_cases": [
+        "release applicability presentation distinguishes a published-artifact mismatch from a current-source mismatch (O-13)",
+        "release applicability presentation presents the exact successful applicability claim (O-13)",
+        "release applicability presentation rejects an internally inconsistent applicability claim (O-13)",
+        "deterministic release applicability record requires the replay digest to match both current and latest-published ca source bytes (O-07)",
+        "deterministic release applicability record records an explicit current-source mismatch without throwing or calling it compatibility (O-08)",
+        "deterministic release applicability record records an explicit published-source mismatch without throwing or calling it compatibility (O-08)",
+        "deterministic release applicability record rejects malformed direct-hook proof evidence: empty evidence kind (O-07)",
+        "deterministic release applicability record rejects malformed direct-hook proof evidence: relabeled evidence kind (O-07)",
+        "deterministic release applicability record rejects malformed direct-hook proof evidence: non-boolean discovery result (O-07)",
+        "deterministic release applicability record rejects malformed direct-hook proof evidence: promoted host discovery result (O-07)",
+        "deterministic release applicability record rejects malformed direct-hook proof evidence: non-canonical source (O-07)",
+        "deterministic release applicability record rejects malformed direct-hook proof evidence: invalid replay digest (O-07)",
+        "deterministic release applicability record rejects missing latest-published hook bytes (O-07)"
+      ],
+      "assertion_scope": "Both current/tag replay entry bytes must match digest; malformed evidence refuses; source mismatch stays distinct from compatibility/publication and inconsistent display throws."
+    }
+  ],
+  "execution_context": {
+    "source_before": "0830b95752a05343563be027e513a2845a6c57df",
+    "source_after": "0830b95752a05343563be027e513a2845a6c57df",
+    "8_runtime_repository_inputs_before_after_equal": true,
+    "extra_source_owner_path": {
+      "path": "site/src/pages/release-applicability.json.ts",
+      "scope": "Owning reference retained as literal subject/source review only; selected tests did not import or execute endpoint. Not a runtime dependency or endpoint acceptance claim."
+    },
+    "runtime": {
+      "node": "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+      "node_sha256": "c0b01496cf3da5cceca86eb6e1b2ef5d088cd46ad4e97cf502e2c937fa7f56b9",
+      "node_version": "v24.22.1",
+      "vitest_version": "4.1.12",
+      "typescript_js_sha256": "3ae902c92cc44dace175c0e69e13a4b0899f6983c6121d76b9ab8dd5795e7675"
+    },
+    "report_output_wrapper": "Subprocess exited0, report/start/end retained successfully; outer console preview hit cp1252 checkmark-encoding error after recording results. No test failed and no rerun was performed."
+  },
+  "scope": "Actual37 selected pure derivation/presentation assertions;35 unselected cases excluded. No site build, generated endpoint execution, browser, GitHub Actions process, public-release observation or production tag claim.",
+  "limits": [
+    "Component boundary only; no production external ref/release/publication, installed qualified cohort, provider or parent UI acceptance.",
+    "No machine/task/whole-program promotion; unexecuted platform and unrelated branches remain pending."
+  ]
+}

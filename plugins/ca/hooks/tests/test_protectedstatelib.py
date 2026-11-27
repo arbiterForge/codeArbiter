@@ -7,6 +7,8 @@ import sys
 import tempfile
 import time
 import unittest
+from unittest import mock
+from pathlib import Path
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import _bashguardlib  # noqa: E402
@@ -25,6 +27,40 @@ from _protectedstatelib import (  # noqa: E402
 
 HOOKS = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PRE_BASH = os.path.join(HOOKS, "pre-bash.py")
+
+
+def setUpModule():
+    # Direct guard calls still exercise the real audit sink, but must never
+    # write synthetic BLOCK events into the caller's checkout.
+    temporary = tempfile.TemporaryDirectory()
+    unittest.addModuleCleanup(temporary.cleanup)
+    os.makedirs(os.path.join(temporary.name, ".codearbiter"))
+    subprocess.run(["git", "init", "--quiet", temporary.name], check=True)
+    environment = mock.patch.dict(os.environ, {"CLAUDE_PROJECT_DIR": temporary.name})
+    environment.start()
+    unittest.addModuleCleanup(environment.stop)
+
+
+class TestCallerAuditIsolation(unittest.TestCase):
+    def test_in_process_guard_tests_preserve_the_callers_audit(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            subprocess.run(["git", "init", "--quiet", str(root)], check=True)
+            state = root / ".codearbiter"
+            state.mkdir()
+            (state / "CONTEXT.md").write_text(
+                "---\narbiter: enabled\nstage: 2\n---\n", encoding="utf-8")
+            log = state / "gate-events.log"
+            original = b"caller audit history\n"
+            log.write_bytes(original)
+            result = subprocess.run(
+                [sys.executable, "-B", str(Path(__file__).resolve()),
+                 "TestRecoveryDescriptors.test_rewrite_truncate_and_utf16_shapes_remain_blocked"],
+                cwd=root, env={**os.environ, "CLAUDE_PROJECT_DIR": str(root), "PYTHONUTF8": "1"},
+                capture_output=True, text=True, encoding="utf-8", timeout=60)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertEqual(log.read_bytes(), original,
+                             "guard tests appended synthetic BLOCK events to caller audit")
 
 
 def _symlinks_supported():
@@ -160,17 +196,88 @@ class TestRecoveryDescriptors(unittest.TestCase):
             prefix = "existing café Ω\n".encode("utf-8")
             with open(path, "wb") as stream:
                 stream.write(prefix)
-            result = subprocess.run(
-                [part.replace("{PATH}", path) for part in argv],
-                capture_output=True, timeout=30, env=environment)
-            self.assertEqual(result.returncode, 0, result.stderr.decode("utf-8", "replace"))
+            command = [part.replace("{PATH}", path) for part in argv]
+            if command[0] in ("powershell.exe", "pwsh"):
+                command.insert(1, "-NonInteractive")
+            appended = "appended Δ".encode("utf-8")
+            # A descendant may retain an output handle after the shell exits.
+            # Use a file for diagnostics so the timeout measures shell exit.
+            with tempfile.TemporaryFile() as stderr:
+                try:
+                    result = subprocess.run(command, stdin=subprocess.DEVNULL,
+                                            stdout=subprocess.DEVNULL, stderr=stderr,
+                                            timeout=30, env=environment)
+                except subprocess.TimeoutExpired as error:
+                    try:
+                        with open(path, "rb") as stream:
+                            observed = stream.read(len(prefix) + len(appended) + 3)
+                    except OSError:
+                        state = "file unavailable"
+                    else:
+                        if observed == prefix:
+                            state = "original prefix only"
+                        elif observed in (prefix + appended + b"\n", prefix + appended + b"\r\n"):
+                            state = "expected append present"
+                        else:
+                            state = "unexpected bytes"
+                    error.add_note(f"Audit log at append timeout: {state}")
+                    raise
+                if result.returncode != 0:
+                    stderr.seek(0)
+                    diagnostic = stderr.read(8192).decode("utf-8", "replace")
+                    self.fail(f"Append command exited with status {result.returncode}.\n{diagnostic}")
             with open(path, "rb") as stream:
                 data = stream.read()
             self.assertEqual(data[:len(prefix)], prefix)
             self.assertFalse(data.startswith(b"\xef\xbb\xbf"))
             self.assertNotIn(b"\x00", data)
-            self.assertIn("appended Δ".encode("utf-8"), data)
+            self.assertIn(appended, data)
             data.decode("utf-8", "strict")
+
+    def test_append_fixture_closes_stdin_and_disables_powershell_prompts(self):
+        for executable, noninteractive in (("powershell.exe", True), ("pwsh", True), ("bash", False)):
+            with self.subTest(executable=executable):
+                def append(argv, **kwargs):
+                    self.assertEqual(kwargs.get("stdin"), subprocess.DEVNULL)
+                    self.assertEqual(kwargs["timeout"], 30)
+                    self.assertEqual(kwargs.get("stdout"), subprocess.DEVNULL)
+                    self.assertGreaterEqual(kwargs["stderr"].fileno(), 0)
+                    self.assertEqual("-NonInteractive" in argv[1:-1], noninteractive)
+                    with Path(argv[-1]).open("ab") as stream:
+                        stream.write("appended Δ".encode("utf-8"))
+                    return subprocess.CompletedProcess(argv, 0, b"", b"")
+
+                with mock.patch.object(subprocess, "run", side_effect=append):
+                    self._assert_append_bytes([executable, "{PATH}"])
+
+    def test_append_timeout_records_the_owned_file_state(self):
+        for suffix, state in (
+            (b"", "original prefix only"),
+            ("appended Δ\n".encode("utf-8"), "expected append present"),
+            ("appended Δ\r\n".encode("utf-8"), "expected append present"),
+            (b"partial", "unexpected bytes"),
+            ("appended Δ\r\nextra".encode("utf-8"), "unexpected bytes"),
+            (None, "file unavailable"),
+        ):
+            with self.subTest(state=state):
+                error = subprocess.TimeoutExpired("powershell.exe", 30)
+
+                def expire(argv, **kwargs):
+                    path = Path(argv[-1])
+                    if suffix is None:
+                        path.unlink()
+                    else:
+                        with path.open("ab") as stream:
+                            stream.write(suffix)
+                    raise error
+
+                with mock.patch.object(subprocess, "run", side_effect=expire):
+                    with self.assertRaises(subprocess.TimeoutExpired) as raised:
+                        self._assert_append_bytes(["powershell.exe", "{PATH}"])
+                self.assertIs(raised.exception, error)
+                self.assertEqual(getattr(error, "__notes__", []), [
+                    f"Audit log at append timeout: {state}",
+                ])
 
     @unittest.skipUnless(shutil.which("powershell.exe"), "Windows PowerShell 5.1 unavailable")
     def test_powershell_51_append_is_utf8_no_bom_and_preserves_prefix(self):

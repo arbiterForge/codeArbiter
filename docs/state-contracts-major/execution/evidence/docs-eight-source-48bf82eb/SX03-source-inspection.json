@@ -1,0 +1,17 @@
+{
+  "source": "48bf82eb83ec674ccd4a2cde4a0440a978d26a50",
+  "previous_source": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+  "previous_proof_sha256": "cb75f613dcca70dcde89ffecbd42ca560f44501c6e5f64e3181d000409e046f5",
+  "trigger_sha256": "64cb046f73869f2913828ffb87190aa648a3e8cedc81e4d6fa461c8a85d98ffd",
+  "site_check_sha256": "d740d3d083b2030d57f221296180f68cc97e2e3ecf58f6b0ab071315e1867d71",
+  "unchanged_build_and_deploy_sha256": "acf69f27c984092df57a3082ef2e9154ee6cf7f2ba37c46053abe7dac7972a9c",
+  "frozen_row_hashes": {
+    "disposition:machines:SX03": "2f42795abe0047289c46d40d25f898190edde5706d972fe300c4cd72b17d1e8a",
+    "disposition:transitions:SX03:06": "04f25be47abf8de823504d6c947c60182f397323efd1e2f8a757cc1b5cbfc388"
+  },
+  "clause_assessments": {
+    "disposition:machines:SX03": "Docs build and publication declarations are byte-identical. The new read-only test capture changes how test evidence is retained. The release applicability generator, endpoint and rendering keep their same inputs.",
+    "disposition:transitions:SX03:06": "The original applicability serialization, endpoint and presentation modules retain identical bytes. The Docs test-bundle transport does not take an input role in those modules."
+  },
+  "scope": "Source conformance in the recorded Docs workflow. Actual hosted execution is a separate evidence class."
+}

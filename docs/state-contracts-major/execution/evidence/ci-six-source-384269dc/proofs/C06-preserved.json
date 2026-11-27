@@ -1,0 +1,161 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "Codex /root/acceptance_security_review infra-author: exact25-clause C05-C10 source/baseline/caller assessment; healthy source-only proposal, C06 partial-spawn cleanup explicitly pending"
+ },
+ "inputs": {
+  ".github/scripts/ci20_native_binding.py": "8a927974424c7c18d3e2e28db0173de07c65e2f1bb068e08dd11e14614284c3f",
+  ".github/scripts/major_qualification_report.py": "b4c63453fedaaa964bad58b179ac0748e2967a45dc620024a16e9c1e9a5a2f4f",
+  ".github/scripts/run_artifact_authority_shard.py": "40ac4be90a8142b623f2ccbdb22a3b5feab5f22015032e30b870d03870a60afa",
+  ".github/workflows/ci.yml": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e"
+ },
+ "disposition_ids": [
+  "disposition:transitions:C06:01",
+  "disposition:transitions:C06:03",
+  "disposition:transitions:C06:04"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/ci-six-source-384269dc/clause-inspection.json",
+   "sha256": "d596f289beda4dac2a82addbc95848d4038ed5f19242298e498e6a8bb2dbb4c1"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/ci-six-source-384269dc/source-bindings.json",
+   "sha256": "49eeb6dd181daa14b41a2a07cf97ff6b87625f1f785a1828e8b82165e91edb79"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/ci-six-source-384269dc/owner-baseline-current.diff",
+   "sha256": "ebb8d8870a2a601f4ad08ae4298d1aa9f76667e82022c68c45d60aaa9f90a47b"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:transitions:C06:01",
+   "frozen_row_sha256": "e1fa7c91295f7c34048372231ebfab7ed26fbf692c68e80d53e920797991bff7",
+   "witnesses": [
+    {
+     "path": ".github/scripts/run_artifact_authority_shard.py",
+     "start": 35,
+     "end": 107,
+     "file_sha256": "40ac4be90a8142b623f2ccbdb22a3b5feab5f22015032e30b870d03870a60afa"
+    },
+    {
+     "path": ".github/scripts/run_artifact_authority_shard.py",
+     "start": 157,
+     "end": 166,
+     "file_sha256": "40ac4be90a8142b623f2ccbdb22a3b5feab5f22015032e30b870d03870a60afa"
+    },
+    {
+     "path": ".github/scripts/run_artifact_authority_shard.py",
+     "start": 396,
+     "end": 418,
+     "file_sha256": "40ac4be90a8142b623f2ccbdb22a3b5feab5f22015032e30b870d03870a60afa"
+    },
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 1300,
+     "end": 1308,
+     "file_sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f"
+    }
+   ],
+   "semantic_assessment": "discover imports the real suite and refuses loader errors/empty inventory. partition admits integer 1..32, nonempty unique actual test IDs and enough fixture classes; sorts indivisible class groups by finite measured scheduling cost, assigns all cases and proves complete disjoint nonempty membership. Weights do not select tests. group_indexes selects disjoint job-local indexes; plan_digest binds ordered membership with SHA256. Normal CI explicitly chooses all four.",
+   "limits": "Reasoned finite source guard/effect/retry conformance only. No actual suite/CI/Go/Docker/Vitest/installed/provider execution or success, runtime evidence epoch, task completion, human acceptance or publication qualification is asserted."
+  },
+  {
+   "cell": "disposition:transitions:C06:03",
+   "frozen_row_sha256": "88bf97de66b5afd46197449d9403036968accb703d5d0dc870830319f09df289",
+   "witnesses": [
+    {
+     "path": ".github/scripts/run_artifact_authority_shard.py",
+     "start": 110,
+     "end": 154,
+     "file_sha256": "40ac4be90a8142b623f2ccbdb22a3b5feab5f22015032e30b870d03870a60afa"
+    },
+    {
+     "path": ".github/scripts/run_artifact_authority_shard.py",
+     "start": 414,
+     "end": 445,
+     "file_sha256": "40ac4be90a8142b623f2ccbdb22a3b5feab5f22015032e30b870d03870a60afa"
+    }
+   ],
+   "semantic_assessment": "Each child rediscovers/partitions actual inventory, validates index, runs exactly its selected TestSuite with TimedResult, and records each actual start/stop outcome and duration. passed requires wasSuccessful, testsRun equal selected and strictly more executions than skip plus expectedFailure. Optional timing destination is exclusive create. Native-only skips remain legitimate; a wholly unexercised shard is refused. This is source behavior, not a current test observation.",
+   "limits": "Reasoned finite source guard/effect/retry conformance only. No actual suite/CI/Go/Docker/Vitest/installed/provider execution or success, runtime evidence epoch, task completion, human acceptance or publication qualification is asserted."
+  },
+  {
+   "cell": "disposition:transitions:C06:04",
+   "frozen_row_sha256": "1d389ea422771ab73a185877c45fab2d9afd1e67ac42b70f7779f9756fd64537",
+   "witnesses": [
+    {
+     "path": ".github/scripts/run_artifact_authority_shard.py",
+     "start": 169,
+     "end": 183,
+     "file_sha256": "40ac4be90a8142b623f2ccbdb22a3b5feab5f22015032e30b870d03870a60afa"
+    },
+    {
+     "path": ".github/scripts/run_artifact_authority_shard.py",
+     "start": 204,
+     "end": 308,
+     "file_sha256": "40ac4be90a8142b623f2ccbdb22a3b5feab5f22015032e30b870d03870a60afa"
+    },
+    {
+     "path": ".github/scripts/run_artifact_authority_shard.py",
+     "start": 359,
+     "end": 393,
+     "file_sha256": "40ac4be90a8142b623f2ccbdb22a3b5feab5f22015032e30b870d03870a60afa"
+    },
+    {
+     "path": ".github/scripts/ci20_native_binding.py",
+     "start": 184,
+     "end": 197,
+     "file_sha256": "8a927974424c7c18d3e2e28db0173de07c65e2f1bb068e08dd11e14614284c3f"
+    },
+    {
+     "path": ".github/scripts/major_qualification_report.py",
+     "start": 1700,
+     "end": 1785,
+     "file_sha256": "b4c63453fedaaa964bad58b179ac0748e2967a45dc620024a16e9c1e9a5a2f4f"
+    }
+   ],
+   "semantic_assessment": "coverage_problems refuses any child nonzero/missing report, conflicting or wrong plan digest, duplicate/missing/foreign selected IDs and any passed field not true. Expected IDs come from actual selected shard populations. Current opt-in retention additionally checks exact four named observations against original timing rows, stable source/native candidate and actual argv, then writes raw bytes exclusively with bundle descriptor last. The successful join makes no promise about the unhandled spawn-failure branch in C06:02; malformed data may throw rather than produce a graceful diagnostic, still without success.",
+   "limits": "Reasoned finite source guard/effect/retry conformance only. No actual suite/CI/Go/Docker/Vitest/installed/provider execution or success, runtime evidence epoch, task completion, human acceptance or publication qualification is asserted."
+  }
+ ],
+ "scope": {
+  "source_only": true,
+  "families": [
+   "C06"
+  ],
+  "complete_machine": false,
+  "inspected_all_literal_clauses": [
+   "disposition:transitions:C06:01",
+   "disposition:transitions:C06:02",
+   "disposition:transitions:C06:03",
+   "disposition:transitions:C06:04"
+  ],
+  "existing_advanced_rows_unchanged": [],
+  "intake_variances": [
+   {
+    "id": "C06-PARTIAL-SPAWN-CLEANUP",
+    "cells": [
+     "C06:02",
+     "C06"
+    ],
+    "classification": "SOURCE_GAP_PENDING_BOUNDED_DIAGNOSIS",
+    "statement": "Both pinned and current run_all lack cleanup for already-started owned direct children when a later Popen raises. Frozen spawn-failure cleanup claim overstates baseline but remains an actual accepted cleanup obligation; no N/A or preservation proposed for this edge/aggregate. No fix authored here."
+   }
+  ]
+ },
+ "limits": [
+  "Reasoned finite source guard/effect/retry conformance only. No actual suite/CI/Go/Docker/Vitest/installed/provider execution or success, runtime evidence epoch, task completion, human acceptance or publication qualification is asserted.",
+  "No canonical/index/ref/marker/ledger writes. These are proposals for Root compare-and-set adoption; no current staged candidate or security marker is fabricated.",
+  "Unkeyed source hashes/records provide cooperative source consistency, not adversarial authentication or observed execution."
+ ]
+}

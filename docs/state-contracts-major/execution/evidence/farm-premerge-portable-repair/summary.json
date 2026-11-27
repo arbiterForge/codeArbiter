@@ -1,0 +1,70 @@
+{
+  "schema": "codearbiter.farm-premerge-repair-retained-summary/1",
+  "state": "TEST_ONLY_REPAIR_OBSERVED_WINDOWS_LINUX_HOSTED_PENDING",
+  "actual_source_base": "6d4c858fff4df40cc14d71c19c0e4d5a0d6bf434",
+  "source_kind": "Actual6d owning source plus one-file Temp test overlay, not a run on future committed source",
+  "test_sha256": "3d7da328c90cadb512f6711a438b761cf00ad9541a438052dd009eeb5572826f",
+  "patch_sha256": "3829acf6e2bb832e73dcfe92aaeb0a58415970ad3e5585bae21acb56347f6982",
+  "source_freeze_sha256": "5eb331827b8b4ef189dd691730228cefb7153b9be4f4e1737bdb0896f0857371",
+  "cause": "Actual producer death closes Git output readers; native Linux Git may receive SIGPIPE before publishing MERGE_HEAD while staged candidate index/worktree remain. Optional metadata must preserve actual successful-read/ENOENT-absent state; other errors throw.",
+  "original_hosted_red": {
+    "run_id": 43572058255,
+    "job_id": 132378425857,
+    "raw_sha256": "fd1f3de899a993b0adf2eb94a5601aaf3b2946283ead6221914f4bf5b8ae25ff",
+    "raw_temp": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-6d4c858f-farm-original.log",
+    "projection": "hosted-red-projection.json"
+  },
+  "WSL_discriminator": {
+    "runtime": "Existing native UbuntuWSL Git2.53.0/Python3.14.4; no Node installed",
+    "actual_cases": "Open readers -> Gitexit1/MERGE_HEADpresent; closed readers -> SIGPIPE13/MERGE_HEADabsent. Both hookparent equals actualGitPID and both staged candidate/payload/base retained.",
+    "raw_sha256": "986b7870f86a8424b9bc7fbdedd6d4ab637e7304b51d4fac15dc27f6cfdcf06c"
+  },
+  "Windows_final": {
+    "host": "Windows amd64 SafeNode24.22.1",
+    "passed": 9,
+    "failed": 0,
+    "skipped_or_unselected": 0,
+    "typecheck_exit_code": 0,
+    "actual_commands": [
+      {
+        "label": "focused-nine",
+        "argv": [
+          "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+          "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\plugins\\ca\\tools\\node_modules\\vitest\\vitest.mjs",
+          "run",
+          "farm-interruption.test.ts",
+          "--reporter=json",
+          "--outputFile=C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-premerge-portable-fix-38idp3pa\\focused-nine.json"
+        ],
+        "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-premerge-portable-fix-38idp3pa\\candidate\\plugins\\ca\\tools",
+        "exit_code": 0,
+        "seconds": 11.51562980003655,
+        "private_home_before_import": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-premerge-portable-fix-38idp3pa\\home",
+        "runtime_sha256": "c0b01496cf3da5cceca86eb6e1b2ef5d088cd46ad4e97cf502e2c937fa7f56b9"
+      },
+      {
+        "label": "typecheck",
+        "argv": [
+          "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+          "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\plugins\\ca\\tools\\node_modules\\typescript\\bin\\tsc",
+          "--noEmit"
+        ],
+        "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-premerge-portable-fix-38idp3pa\\candidate\\plugins\\ca\\tools",
+        "exit_code": 0,
+        "seconds": 1.1551922999788076,
+        "private_home_before_import": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-premerge-portable-fix-38idp3pa\\home",
+        "runtime_sha256": "c0b01496cf3da5cceca86eb6e1b2ef5d088cd46ad4e97cf502e2c937fa7f56b9"
+      }
+    ],
+    "source_inputs": 30,
+    "all_before_after_equal": true
+  },
+  "qualification_limits": [
+    "Repaired full Linux Farm target remains pending replacement hosted CI; native WSL discriminator is not a full Node/Farm target GREEN.",
+    "Local Windows9 and typecheck are actual6d source plus frozen Temp one-file test overlay, not a later committed-source execution.",
+    "No production change, native CLI build, provider/Docker call, whole941 suite, installed artifact, ledger promotion or reviewer marker.",
+    "No OS/version conditional expectation, extra sleep, deletion retry or weakened no-reset/no-author/pending-resource preservation.",
+    "Current6d ARM cold installed diagnostic job passed per Root observation; its original cause remains unknown. This packet does not introduce or claim a new ARM failure diagnosis.",
+    "Root owns source application, one independent review, commit/push and later immutable committed retention validation."
+  ]
+}

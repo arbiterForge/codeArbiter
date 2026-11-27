@@ -1,0 +1,331 @@
+{
+ "authorship": "Root compilation of original six-platform Actions evidence, not GitHub-authored compiled JSON.",
+ "source_commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+ "run_id": 44046125471,
+ "attempt": 1,
+ "source_tree": "2dfcf37c50ccc3dd7c5aac1c43cc321c6e7f3793",
+ "components": [
+  {
+   "platform": "darwin/amd64",
+   "job_id": 133912282151,
+   "artifact_id": 14312265996,
+   "archive_sha256": "4c34372af1e219dd525cfc2ba363db955923d4e786fa0539ed29417513f610d8",
+   "members": [
+    {
+     "path": "artifact-candidate/ca-artifact-darwin-amd64",
+     "sha256": "c1b16b847be29fd59b99111b0143bb0ebfe6d12031323aa8075d1bca3943ee05"
+    },
+    {
+     "path": "artifact-candidate/release.json",
+     "sha256": "a15d17de77fcb303b1cc9fbedba6045f5a892b5b7995add662dfa662b2bbca95"
+    },
+    {
+     "path": "ci20-native-tested.json",
+     "sha256": "69284371a7fba9055263531eb0551f3e01e2e766ed9886e6420221d378fccdbe"
+    },
+    {
+     "path": "native-observation.json",
+     "sha256": "4861028abc2021631fd718a631f3ce2a174733f390cca81dc61d754e6310e668"
+    },
+    {
+     "path": "native-tests.json",
+     "sha256": "cf0db3bd2cc4e6bc0e5256e6dee2843a2a5bbc3fb88ec3572c8b1882b27562fe"
+    }
+   ],
+   "native_binding": {
+    "binary_sha256": "c1b16b847be29fd59b99111b0143bb0ebfe6d12031323aa8075d1bca3943ee05",
+    "format": "codearbiter.ci-native-candidate/1",
+    "go_sha256": "285418143831d996755c236ca0938ad317b22edeeb1d61bfa082f50550399fe3",
+    "manifest_sha256": "a15d17de77fcb303b1cc9fbedba6045f5a892b5b7995add662dfa662b2bbca95",
+    "module_sha256": "cbed4a37fa6852456960eb86c92df6c5e7e7791cbc638b4015d97f80e63ad281",
+    "platform": "darwin/amd64",
+    "producer_job": "artifact-native-build",
+    "run_attempt": "1",
+    "run_id": "44046125471",
+    "source_commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+    "toolchain": "go1.27.1",
+    "workflow": ".github/workflows/ci.yml"
+   },
+   "argv": [
+    "/Library/Frameworks/Python.framework/Versions/3.14/bin/python",
+    "/Users/runner/work/codeArbiter/codeArbiter/tools/go_test_parallel.py",
+    "--module",
+    "/Users/runner/work/codeArbiter/codeArbiter/core/artifacts",
+    "--timeout",
+    "30m",
+    "--observation",
+    "/Users/runner/work/_temp/native-tests.json"
+   ]
+  },
+  {
+   "platform": "darwin/arm64",
+   "job_id": 133912282083,
+   "artifact_id": 14311887093,
+   "archive_sha256": "98d6b943e327e63c8c938bd40d88d23b5bee4a0dbd015b16c5ad46df7d7e6cc9",
+   "members": [
+    {
+     "path": "artifact-candidate/ca-artifact-darwin-arm64",
+     "sha256": "cc2bc7f1fb67fb471e46e540fc5f20e0bf905c8892d8ffe5d9e0fa0febea3331"
+    },
+    {
+     "path": "artifact-candidate/release.json",
+     "sha256": "595edcb615386d4a801817f8d99146aaf761ae901dfaaa69c29e15d23eca8d4f"
+    },
+    {
+     "path": "ci20-native-tested.json",
+     "sha256": "f9b7d3105ba2148451ec6f5995adc53001a73fb1fdebc797fe0c40c58c8dee48"
+    },
+    {
+     "path": "native-observation.json",
+     "sha256": "fd7f08761f07ebe01c739f3ab8c237d65985b4e0d88c99481847ff8af7aa729a"
+    },
+    {
+     "path": "native-tests.json",
+     "sha256": "cf0db3bd2cc4e6bc0e5256e6dee2843a2a5bbc3fb88ec3572c8b1882b27562fe"
+    }
+   ],
+   "native_binding": {
+    "binary_sha256": "cc2bc7f1fb67fb471e46e540fc5f20e0bf905c8892d8ffe5d9e0fa0febea3331",
+    "format": "codearbiter.ci-native-candidate/1",
+    "go_sha256": "132b69336a1f809932a8a20b0201dbbb980e86e3a323ae32e893639d83d71598",
+    "manifest_sha256": "595edcb615386d4a801817f8d99146aaf761ae901dfaaa69c29e15d23eca8d4f",
+    "module_sha256": "cbed4a37fa6852456960eb86c92df6c5e7e7791cbc638b4015d97f80e63ad281",
+    "platform": "darwin/arm64",
+    "producer_job": "artifact-native-build",
+    "run_attempt": "1",
+    "run_id": "44046125471",
+    "source_commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+    "toolchain": "go1.27.1",
+    "workflow": ".github/workflows/ci.yml"
+   },
+   "argv": [
+    "/Library/Frameworks/Python.framework/Versions/3.14/bin/python",
+    "/Users/runner/work/codeArbiter/codeArbiter/tools/go_test_parallel.py",
+    "--module",
+    "/Users/runner/work/codeArbiter/codeArbiter/core/artifacts",
+    "--timeout",
+    "30m",
+    "--observation",
+    "/Users/runner/work/_temp/native-tests.json"
+   ]
+  },
+  {
+   "platform": "linux/amd64",
+   "job_id": 133912281980,
+   "artifact_id": 14311577690,
+   "archive_sha256": "b6fa99c6c2164ec81288d91ed46b039be3b346ef1dca10ad619b2dd858566a54",
+   "members": [
+    {
+     "path": "artifact-candidate/ca-artifact-linux-amd64",
+     "sha256": "1594a98f374d140cd4ef7fcbbe75bcbbfe69253d54e814b13dfdfe8b604637d6"
+    },
+    {
+     "path": "artifact-candidate/release.json",
+     "sha256": "7f42bab2de39d9dd5f7a552324382e16d640fde97cd65670a3aa507679ac8954"
+    },
+    {
+     "path": "ci20-native-tested.json",
+     "sha256": "9ac94321e355407e21f62ff32a75c74aa81337f303181b690a3162a9babbd126"
+    },
+    {
+     "path": "native-observation.json",
+     "sha256": "9908ae586c25b13edb2aafaa3abbc3649ed32c55d49f5c6d420d2b35a4021c79"
+    },
+    {
+     "path": "native-tests.json",
+     "sha256": "590f47ea2994788483c8093908857608480e9b40063470cb31ce23bd49b5845a"
+    }
+   ],
+   "native_binding": {
+    "binary_sha256": "1594a98f374d140cd4ef7fcbbe75bcbbfe69253d54e814b13dfdfe8b604637d6",
+    "format": "codearbiter.ci-native-candidate/1",
+    "go_sha256": "30969f97169d7f43fe6a085873d75613adc21e30818a8c61d95bd27275df4624",
+    "manifest_sha256": "7f42bab2de39d9dd5f7a552324382e16d640fde97cd65670a3aa507679ac8954",
+    "module_sha256": "cbed4a37fa6852456960eb86c92df6c5e7e7791cbc638b4015d97f80e63ad281",
+    "platform": "linux/amd64",
+    "producer_job": "artifact-native-build",
+    "run_attempt": "1",
+    "run_id": "44046125471",
+    "source_commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+    "toolchain": "go1.27.1",
+    "workflow": ".github/workflows/ci.yml"
+   },
+   "argv": [
+    "/opt/hostedtoolcache/Python/3.14.10/x64/bin/python",
+    "/home/runner/work/codeArbiter/codeArbiter/tools/go_test_parallel.py",
+    "--module",
+    "/home/runner/work/codeArbiter/codeArbiter/core/artifacts",
+    "--timeout",
+    "30m",
+    "--observation",
+    "/home/runner/work/_temp/native-tests.json"
+   ]
+  },
+  {
+   "platform": "linux/arm64",
+   "job_id": 133912281985,
+   "artifact_id": 14312066527,
+   "archive_sha256": "8cecb34514070749627b0be29b879647e28155b6e290136bc3cf3d3665332188",
+   "members": [
+    {
+     "path": "artifact-candidate/ca-artifact-linux-arm64",
+     "sha256": "9618c2e135b1104482002ccc17fa67f4dcb5a2101007dba48586aa113d0ac99c"
+    },
+    {
+     "path": "artifact-candidate/release.json",
+     "sha256": "249cc419b0cad3eb55b5750a4641c4d639354db075d43de763fe8654ed1161c7"
+    },
+    {
+     "path": "ci20-native-tested.json",
+     "sha256": "a32e73c1906b51a5b562c3715057e48b70285032327969e7f3766201d41c63d4"
+    },
+    {
+     "path": "native-observation.json",
+     "sha256": "eba2f848ae9ad27d043867c39c0959a642400a0e611744606a7ed2058c6a6b28"
+    },
+    {
+     "path": "native-tests.json",
+     "sha256": "6d233284ef85d9e045884d102f94c9835e5fbe6a1be11962a7e7b4d0e5b9220c"
+    }
+   ],
+   "native_binding": {
+    "binary_sha256": "9618c2e135b1104482002ccc17fa67f4dcb5a2101007dba48586aa113d0ac99c",
+    "format": "codearbiter.ci-native-candidate/1",
+    "go_sha256": "1675694ef690db0f18fbe7046a886170904bede1d9db6ec96ae27945c1705c64",
+    "manifest_sha256": "249cc419b0cad3eb55b5750a4641c4d639354db075d43de763fe8654ed1161c7",
+    "module_sha256": "cbed4a37fa6852456960eb86c92df6c5e7e7791cbc638b4015d97f80e63ad281",
+    "platform": "linux/arm64",
+    "producer_job": "artifact-native-build",
+    "run_attempt": "1",
+    "run_id": "44046125471",
+    "source_commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+    "toolchain": "go1.27.1",
+    "workflow": ".github/workflows/ci.yml"
+   },
+   "argv": [
+    "/opt/hostedtoolcache/Python/3.14.10/arm64/bin/python",
+    "/home/runner/work/codeArbiter/codeArbiter/tools/go_test_parallel.py",
+    "--module",
+    "/home/runner/work/codeArbiter/codeArbiter/core/artifacts",
+    "--timeout",
+    "30m",
+    "--observation",
+    "/home/runner/work/_temp/native-tests.json"
+   ]
+  },
+  {
+   "platform": "windows/amd64",
+   "job_id": 133912282061,
+   "artifact_id": 14312156528,
+   "archive_sha256": "2f8d9f9ed4173a55b596edb202d06561c8961c691da4b79f6ee8a962487632b1",
+   "members": [
+    {
+     "path": "artifact-candidate/ca-artifact-windows-amd64.exe",
+     "sha256": "a7e6a0c869d5fd0c1df8aa519cd64d63df4a090687f92e8bad289a0138abb9f6"
+    },
+    {
+     "path": "artifact-candidate/release.json",
+     "sha256": "b8c2ef0e3120f2011a35ccbdbbc3c073b4d47c7a202a30e04256bc56b8cef792"
+    },
+    {
+     "path": "ci20-native-tested.json",
+     "sha256": "424ede8e6766ba1d768a7fddd6680cc9602c780869e2c3103e3b4846598c1462"
+    },
+    {
+     "path": "native-observation.json",
+     "sha256": "3971d1a4c9d888029a3576ed7737dc07e5313f4bf4eb99104ff6aa0643d0db63"
+    },
+    {
+     "path": "native-tests.json",
+     "sha256": "ac55cd8393e30e4c1e7d92aead58decbcc1eb79f4d7dfdca775b15a8556deeeb"
+    }
+   ],
+   "native_binding": {
+    "binary_sha256": "a7e6a0c869d5fd0c1df8aa519cd64d63df4a090687f92e8bad289a0138abb9f6",
+    "format": "codearbiter.ci-native-candidate/1",
+    "go_sha256": "d3ccdb604eafa6031133aefe1a3db24f0bb7362b857bc2125ac4e4c178b4b490",
+    "manifest_sha256": "b8c2ef0e3120f2011a35ccbdbbc3c073b4d47c7a202a30e04256bc56b8cef792",
+    "module_sha256": "cbed4a37fa6852456960eb86c92df6c5e7e7791cbc638b4015d97f80e63ad281",
+    "platform": "windows/amd64",
+    "producer_job": "artifact-native-build",
+    "run_attempt": "1",
+    "run_id": "44046125471",
+    "source_commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+    "toolchain": "go1.27.1",
+    "workflow": ".github/workflows/ci.yml"
+   },
+   "argv": [
+    "C:\\hostedtoolcache\\windows\\Python\\3.14.10\\x64\\python.exe",
+    "D:\\a\\codeArbiter\\codeArbiter\\tools\\go_test_parallel.py",
+    "--module",
+    "D:\\a\\codeArbiter\\codeArbiter\\core\\artifacts",
+    "--timeout",
+    "30m",
+    "--observation",
+    "D:\\a\\_temp\\native-tests.json"
+   ]
+  },
+  {
+   "platform": "windows/arm64",
+   "job_id": 133912282001,
+   "artifact_id": 14311512768,
+   "archive_sha256": "c537f377ac9a46674a7030f10a885f67aa1ba2840f94d139a99fef4cc832ffa1",
+   "members": [
+    {
+     "path": "artifact-candidate/ca-artifact-windows-arm64.exe",
+     "sha256": "affbba68cc5ad37196364fa1d37aeb66d43dc5a79cb6dbfb0b59d2755ebd5430"
+    },
+    {
+     "path": "artifact-candidate/release.json",
+     "sha256": "0ca5b5ed6bceb9deaf416a85eeb1b92bad1655e10eb691f48124660b1d39dfe5"
+    },
+    {
+     "path": "ci20-native-tested.json",
+     "sha256": "ba51f821f9db33e9c27b5b78e467182c200f916a654dcf89072a853a2ddf6217"
+    },
+    {
+     "path": "native-observation.json",
+     "sha256": "806b083a31bb8088d5d5d084b34e750ca5defabd446b0354847ca320faaa10f6"
+    },
+    {
+     "path": "native-tests.json",
+     "sha256": "fc25981c6a1adfea4eea91703b5a0cbe2b14d43e69a7ca216e3e3b966e401699"
+    }
+   ],
+   "native_binding": {
+    "binary_sha256": "affbba68cc5ad37196364fa1d37aeb66d43dc5a79cb6dbfb0b59d2755ebd5430",
+    "format": "codearbiter.ci-native-candidate/1",
+    "go_sha256": "854e5383bc5d7fa3f3a58268a3c1ca45d9ddc1ec3f34b53f4234fd6b59e79a46",
+    "manifest_sha256": "0ca5b5ed6bceb9deaf416a85eeb1b92bad1655e10eb691f48124660b1d39dfe5",
+    "module_sha256": "cbed4a37fa6852456960eb86c92df6c5e7e7791cbc638b4015d97f80e63ad281",
+    "platform": "windows/arm64",
+    "producer_job": "artifact-native-build",
+    "run_attempt": "1",
+    "run_id": "44046125471",
+    "source_commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+    "toolchain": "go1.27.1",
+    "workflow": ".github/workflows/ci.yml"
+   },
+   "argv": [
+    "C:\\hostedtoolcache\\windows\\Python\\3.14.10\\arm64\\python.exe",
+    "C:\\a\\codeArbiter\\codeArbiter\\tools\\go_test_parallel.py",
+    "--module",
+    "C:\\a\\codeArbiter\\codeArbiter\\core\\artifacts",
+    "--timeout",
+    "30m",
+    "--observation",
+    "C:\\a\\_temp\\native-tests.json"
+   ]
+  }
+ ],
+ "both_observed_module_path_orders": {
+  "posix": "cbed4a37fa6852456960eb86c92df6c5e7e7791cbc638b4015d97f80e63ad281",
+  "windows": "cbed4a37fa6852456960eb86c92df6c5e7e7791cbc638b4015d97f80e63ad281"
+ },
+ "original_component_authentication": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native8-d482-reconciliation-50yty4x2\\authentication.json",
+  "sha256": "15c457df4113d635ccfa6610ebb0b8a39f5ca90a59ba1b3a1f3b04ee12478316",
+  "bytes": 12684
+ },
+ "no_new_execution": true
+}

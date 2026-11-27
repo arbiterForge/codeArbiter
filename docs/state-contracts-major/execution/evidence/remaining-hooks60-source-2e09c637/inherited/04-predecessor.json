@@ -1,0 +1,40 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+  "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "/root/qualification_review: bounded source-clause inspection; no runtime execution"
+  },
+  "inputs": {
+    "core/pysrc/_gitexec.py": "a5935246028f506ef5ab13ba379b399cb7a754a077866fd39528545f30f4bef3",
+    "core/pysrc/_tribunalinventorylib.py": "974533bbe66808475c0e64e3247ee5baf814f9f0762e731f904b924e696de251",
+    "core/pysrc/_tribunalrunlib.py": "c0381e0d22a0e25a22d7ac27adaf518724c322c92dd77b11014702d251fd2624",
+    "core/pysrc/tribunal.py": "01322be9197fbd2ccaabad56ff7f7fa2dd64abda618d98d6194f528a028a343c"
+  },
+  "disposition_ids": [
+    "disposition:transitions:hooks:tribunal-run:01",
+    "disposition:transitions:hooks:tribunal-run:02",
+    "disposition:transitions:hooks:tribunal-run:04",
+    "disposition:transitions:hooks:tribunal-run:05",
+    "disposition:transitions:hooks:tribunal-run:06",
+    "disposition:transitions:hooks:tribunal-run:07",
+    "disposition:transitions:hooks:tribunal-run:08",
+    "disposition:transitions:hooks:tribunal-lock-leads:01",
+    "disposition:transitions:hooks:tribunal-lock-leads:02",
+    "disposition:transitions:hooks:tribunal-lock-leads:03",
+    "disposition:transitions:hooks:tribunal-lock-leads:04",
+    "disposition:transitions:hooks:tribunal-lock-leads:05"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/tribunal-run-leads/source-inspection.json",
+      "sha256": "38cac65cd2c3268755504893077764e1081c55ed8963b74969f12eb6074e6f28"
+    }
+  ],
+  "scope": "tribunal-run-leads: 12 whole transition clauses and 0 complete constituent machines; Finite source guard/effect/retry conformance at the frozen source commit only. No runtime, host/package qualification, model compliance, task/scenario, provider/authentication, physical consent, endpoint policy, publication or whole-program readiness claim. HOLD rows receive no ledger mutation.",
+  "semantic_mapping_ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/tribunal-run-leads/source-inspection.json",
+  "dependency_boundary": "Inputs pin actual current dependencies at named caller boundaries; equality applies to cited owners, not blanket equivalence of changed dependency behavior. Each raw row states exact mapping and explicit HOLDs."
+}

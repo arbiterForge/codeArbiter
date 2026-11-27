@@ -1,0 +1,66 @@
+{
+  "returncode": 1,
+  "duration_seconds": 2.4577704000112135,
+  "timed_out": false,
+  "output_limit_exceeded": false,
+  "containment": "exited",
+  "stability": {
+    "root_module": true,
+    "private_module": true,
+    "tool_and_GOROOT_source": true,
+    "sealed_cache_origin": true
+  },
+  "terminal_outcomes": [
+    {
+      "Action": "pass",
+      "Test": "TestN02CommitAdmissionAndPrepublicationCleanup/invalid-id",
+      "Elapsed": 0
+    },
+    {
+      "Action": "pass",
+      "Test": "TestN02CommitAdmissionAndPrepublicationCleanup/zero-edits",
+      "Elapsed": 0
+    },
+    {
+      "Action": "pass",
+      "Test": "TestN02CommitAdmissionAndPrepublicationCleanup/too-many",
+      "Elapsed": 0
+    },
+    {
+      "Action": "pass",
+      "Test": "TestN02CommitAdmissionAndPrepublicationCleanup/duplicate",
+      "Elapsed": 0
+    },
+    {
+      "Action": "pass",
+      "Test": "TestN02CommitAdmissionAndPrepublicationCleanup/case-alias",
+      "Elapsed": 0
+    },
+    {
+      "Action": "fail",
+      "Test": "TestN02CommitAdmissionAndPrepublicationCleanup/ancestor-overlap",
+      "Elapsed": 0.01
+    },
+    {
+      "Action": "fail",
+      "Test": "TestN02CommitAdmissionAndPrepublicationCleanup",
+      "Elapsed": 0.02
+    }
+  ],
+  "bounded_failure_projection": [
+    "    journal_contract_boundary_test.go:134: want INVALID_TRANSACTION: COMMIT_OUTCOME_UNKNOWN: durable operation needs reconciliation; do not resubmit under a new ID; changed owned paths/hashes=map[.ca-artifact-admit-ancestor-001-0.new:[<absent> ca978112ca1bbdcafac231b39a23dc4da786eff8147c4e72b9807785afee48bb] .codearbiter/:[<absent> directory] .codearbiter/.artifacts/:[<absent> directory] .codearbiter/.artifacts/history/:[<absent> directory] .codearbiter/.artifacts/transactions/:[<absent> directory] .codearbiter/.artifacts/transactions/admit-ancestor-001.json:[<absent> ecd06ea13f8f9f499e314d8b09a368b6d7651d37db5c158b5626be8dbb45adad] nested/:[<absent> directory] nested/.ca-artifact-admit-ancestor-001-1.new:[<absent> 3e23e8160039594a33894f6564e1b1348bbd7a0088d42c4acb73eeaed59c009d]]\n",
+    "--- FAIL: TestN02CommitAdmissionAndPrepublicationCleanup/ancestor-overlap (0.01s)\n",
+    "--- FAIL: TestN02CommitAdmissionAndPrepublicationCleanup (0.02s)\n",
+    "FAIL\n",
+    "FAIL\tgithub.com/arbiterForge/codeArbiter/core/artifacts/internal/store\t0.291s\n"
+  ],
+  "selected_parents": [
+    "TestN02CommitAdmissionAndPrepublicationCleanup",
+    "TestN02PreparedTargetCASRefusesConcurrentBytes",
+    "TestN02AcknowledgementWriteFailureRetainsRecoverableOutcome",
+    "TestN03TerminalRecoveryReplayPreservesBytes",
+    "TestN03RecoveryPreflightPreservesAllTargetsAndEvidence",
+    "TestN03UnreadableFinalJournalNeverBecomesClean"
+  ],
+  "scope": "Actual local Windows Go unit, selected parent/slash outcomes only. -failfast means unexecuted remainder stays unobserved; no qualification/status/route change."
+}

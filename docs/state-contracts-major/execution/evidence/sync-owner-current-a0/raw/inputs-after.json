@@ -1,0 +1,12 @@
+{
+  "source_commit": "a0f4bc274c78613b739757743616bd23b1fe63ef",
+  "inputs": {
+    "tools/sync-core.py": "8d7de484c10e26c9e875ca44d3a1ea1d184eecef97dcefabc5ed9d413974062c",
+    "tools/owned_output.py": "52ee664a00b4f66df8f585047cf38a839428c489762890208a9db1961060b22c",
+    "tools/host_descriptors.py": "2c98ea82723f60879616469ec399cd81db0fb9cb98f4c943eea1dce852123601",
+    "core/hosts.json": "3ea50fd2af1ed359e602210de3f0a9b661a567c45d08a5f947f0f4c2e24a8cd8",
+    ".github/scripts/test_sync_core.py": "3776deb5db4fa1963b419e5a2131fa519da98c484cb4627c33c338629e00f040"
+  },
+  "index_sha256": "afb9b6f3e6f805d5a060ca67c97bdf70df4f4210870d4b34c6b34643ef89a93a",
+  "index_empty": true
+}

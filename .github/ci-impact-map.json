@@ -302,6 +302,12 @@
       ]
     },
     {
+      "glob": "tools/test-artifact-work-old-client.py",
+      "checks": [
+        "artifact-engine"
+      ]
+    },
+    {
       "glob": ".github/fixtures/context-onboarding/**",
       "checks": [
         "hooks"

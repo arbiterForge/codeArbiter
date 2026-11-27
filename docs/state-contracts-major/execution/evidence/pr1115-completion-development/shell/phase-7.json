@@ -1,0 +1,17 @@
+{
+  "state": "PASSED",
+  "expected_exit": 7,
+  "actual_exit": 7,
+  "standalone_marker": "SW_SHELL_19b60bfb-f34c-4475-b9aa-1fe80154b7f2_EXIT_7",
+  "container": {
+    "Id": "8a1fd4f7c87472299bdfab7bdc95da1a94010326fe6542bc3d0ed6820a1d3433",
+    "Name": "/ca-sbx-833f5338-1fe3-402f-bfe0-2f8b0e60cb28-52a7f869",
+    "Created": "2026-11-16T13:19:07.757244515Z",
+    "Image": "sha256:2cf067cfed83d5ea958367df9f966191a942351a2df77d6f0193e162b5febfc0",
+    "Pid": 52069,
+    "StartedAt": "2026-11-16T13:19:07.793753596Z",
+    "RestartCount": 0
+  },
+  "volume": "ca-sbx-vol-833f5338-1fe3-402f-bfe0-2f8b0e60cb28",
+  "source_bundle_scope_only": true
+}

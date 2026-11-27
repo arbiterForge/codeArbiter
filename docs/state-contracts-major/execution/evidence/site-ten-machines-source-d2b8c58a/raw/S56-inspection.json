@@ -1,0 +1,433 @@
+{
+  "format": "codearbiter.site-machine-source-inspection/1",
+  "source_commit": "d2b8c58a650277eeab25d21272c086b19a25c4f2",
+  "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "machine": "S56",
+  "full_frozen_machine": {
+    "machine_id": "S56",
+    "name": "Academy local bookmark and cross-tab state",
+    "domain": "Pi, farm, sandbox, site and packaging",
+    "kind": "implemented",
+    "owner": "site",
+    "closure_task": "Q-01",
+    "task_ids": [
+      "Q-01"
+    ],
+    "explicit_machine_task_ids": [],
+    "source_intersection_task_ids": [],
+    "mapping_basis": "Owner assignment uses the inspected audit domain and explicit owner ledger; source intersections flag review impact, not a claim every edge changes.",
+    "treatment": "PRESERVE_BASELINE_CONTRACT",
+    "status": "NOT_RUN",
+    "transition_count": 8,
+    "source_refs": [
+      "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/components/AcademyBookmark.astro",
+      "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/scripts/academy-bookmark.ts"
+    ],
+    "proposed_composed_scenario_ids": [],
+    "required_disposition": "Read the pinned/current owner, preserve each existing guard/effect/retry boundary except a named authorized change, map meaningful executed tests or reasoned conformance review to the row IDs, and add new rows for introduced events.",
+    "evidence": []
+  },
+  "assessment": "Eight-clause SOURCE-ONLY bookmark/owned listener conformance. Valid generated inventory is a precondition; bookmark state is not verified learning progress.",
+  "clauses": [
+    {
+      "cell": "disposition:transitions:S56:01",
+      "baseline": {
+        "event": "read stored bookmark",
+        "guard": "valid exact schema/release/commit/lesson",
+        "to": "ready",
+        "effects": "Render continue link for declared current lesson.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "site/src/scripts/academy-bookmark.ts",
+            "symbol": "bookmark load/save validation",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/scripts/academy-bookmark.ts",
+            "lines": "1-61"
+          },
+          {
+            "path": "site/src/components/AcademyBookmark.astro",
+            "symbol": "bookmark UI lifecycle",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/components/AcademyBookmark.astro",
+            "lines": "1-86"
+          }
+        ],
+        "from": "connect",
+        "transition_id": "S56:01"
+      },
+      "frozen_row_sha256": "2dc23b9462f5be8e51efb77e420180b2803e309bfe6c3d5eb86aa01776538325",
+      "current_edge_status": "TESTED",
+      "current_edge_row_sha256": "20a5f2b37546854f029861c1f16e6be2fc9a9f52504a4f9c5f72baabc0ac9f44",
+      "current_contract_note": null,
+      "guard_effect_retry_assessment": "Exact-key schema/release/40-hex commit/declared-lesson validation precedes ready state; refresh removes any previous href and creates only an inventory lesson URL.",
+      "witnesses": [
+        {
+          "path": "site/src/scripts/academy-bookmark.ts",
+          "start": 1,
+          "end": 61,
+          "file_sha256": "8015708d6686b7efef1186d7a0ebc3fd1b737462308acfd2d25511428636029e",
+          "coverage": "Complete cited owner read; precise control flow explained in assessment."
+        },
+        {
+          "path": "site/src/components/AcademyBookmark.astro",
+          "start": 1,
+          "end": 86,
+          "file_sha256": "7df832f6754945b2000dce018820eb7385e63858c48be6505924b06d44148c90",
+          "coverage": "Complete cited owner read; precise control flow explained in assessment."
+        }
+      ],
+      "retained_conformance_mappings": [],
+      "new_edge_disposition": null
+    },
+    {
+      "cell": "disposition:transitions:S56:02",
+      "baseline": {
+        "event": "no key",
+        "guard": "read succeeded",
+        "to": "empty",
+        "effects": "Show save/start state; do not infer progress.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "site/src/scripts/academy-bookmark.ts",
+            "symbol": "bookmark load/save validation",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/scripts/academy-bookmark.ts",
+            "lines": "1-61"
+          },
+          {
+            "path": "site/src/components/AcademyBookmark.astro",
+            "symbol": "bookmark UI lifecycle",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/components/AcademyBookmark.astro",
+            "lines": "1-86"
+          }
+        ],
+        "from": "connect/read",
+        "transition_id": "S56:02"
+      },
+      "frozen_row_sha256": "7d815e40ec31813d50b746bd83bb76e76d666f4f5bc2eb0527e94e10c92e05fe",
+      "current_edge_status": "TESTED",
+      "current_edge_row_sha256": "20a5f2b37546854f029861c1f16e6be2fc9a9f52504a4f9c5f72baabc0ac9f44",
+      "current_contract_note": null,
+      "guard_effect_retry_assessment": "A successful null storage read is empty, with save/start controls and no progress-completion claim; it is distinct from read failure.",
+      "witnesses": [
+        {
+          "path": "site/src/scripts/academy-bookmark.ts",
+          "start": 1,
+          "end": 61,
+          "file_sha256": "8015708d6686b7efef1186d7a0ebc3fd1b737462308acfd2d25511428636029e",
+          "coverage": "Complete cited owner read; precise control flow explained in assessment."
+        },
+        {
+          "path": "site/src/components/AcademyBookmark.astro",
+          "start": 1,
+          "end": 86,
+          "file_sha256": "7df832f6754945b2000dce018820eb7385e63858c48be6505924b06d44148c90",
+          "coverage": "Complete cited owner read; precise control flow explained in assessment."
+        }
+      ],
+      "retained_conformance_mappings": [],
+      "new_edge_disposition": null
+    },
+    {
+      "cell": "disposition:transitions:S56:03",
+      "baseline": {
+        "event": "malformed/other release or commit/unknown lesson",
+        "guard": "stored data not current",
+        "to": "invalid or stale",
+        "effects": "Show reset/restart option rather than silently navigate to arbitrary stale data.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "site/src/scripts/academy-bookmark.ts",
+            "symbol": "bookmark load/save validation",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/scripts/academy-bookmark.ts",
+            "lines": "1-61"
+          },
+          {
+            "path": "site/src/components/AcademyBookmark.astro",
+            "symbol": "bookmark UI lifecycle",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/components/AcademyBookmark.astro",
+            "lines": "1-86"
+          }
+        ],
+        "from": "connect/read",
+        "transition_id": "S56:03"
+      },
+      "frozen_row_sha256": "328c6e957c848f9353d3911d699396a183a59abd68871fb68c46347518f6e841",
+      "current_edge_status": "PRESERVED",
+      "current_edge_row_sha256": "d6d6258200baa1d5f601dad879b758b0594dfd6207282cf2a700aaf669c05dbc",
+      "current_contract_note": null,
+      "guard_effect_retry_assessment": "Malformed, oversized, wrong-release, wrong-commit or unknown-lesson values cannot supply a stale arbitrary URL; invalid/stale state offers reset/restart.",
+      "witnesses": [
+        {
+          "path": "site/src/scripts/academy-bookmark.ts",
+          "start": 1,
+          "end": 61,
+          "file_sha256": "8015708d6686b7efef1186d7a0ebc3fd1b737462308acfd2d25511428636029e",
+          "coverage": "Complete cited owner read; precise control flow explained in assessment."
+        },
+        {
+          "path": "site/src/components/AcademyBookmark.astro",
+          "start": 1,
+          "end": 86,
+          "file_sha256": "7df832f6754945b2000dce018820eb7385e63858c48be6505924b06d44148c90",
+          "coverage": "Complete cited owner read; precise control flow explained in assessment."
+        }
+      ],
+      "retained_conformance_mappings": [],
+      "new_edge_disposition": null
+    },
+    {
+      "cell": "disposition:transitions:S56:04",
+      "baseline": {
+        "event": "storage read/write throws",
+        "guard": "browser storage denied/unavailable",
+        "to": "storage unavailable",
+        "effects": "Render unavailable state; distinguish from empty bookmark.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "site/src/scripts/academy-bookmark.ts",
+            "symbol": "bookmark load/save validation",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/scripts/academy-bookmark.ts",
+            "lines": "1-61"
+          },
+          {
+            "path": "site/src/components/AcademyBookmark.astro",
+            "symbol": "bookmark UI lifecycle",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/components/AcademyBookmark.astro",
+            "lines": "1-86"
+          }
+        ],
+        "from": "any bookmark UI",
+        "transition_id": "S56:04"
+      },
+      "frozen_row_sha256": "7f64d37aaea1dfbd9264fe962efa535f0253ebdd5a6c114ee46839163a766dfc",
+      "current_edge_status": "TESTED",
+      "current_edge_row_sha256": "20a5f2b37546854f029861c1f16e6be2fc9a9f52504a4f9c5f72baabc0ac9f44",
+      "current_contract_note": null,
+      "guard_effect_retry_assessment": "Storage acquisition/get/set/remove exceptions are caught and rendered as explicit unavailable or operation failure, rather than successful empty/persistent state.",
+      "witnesses": [
+        {
+          "path": "site/src/scripts/academy-bookmark.ts",
+          "start": 1,
+          "end": 61,
+          "file_sha256": "8015708d6686b7efef1186d7a0ebc3fd1b737462308acfd2d25511428636029e",
+          "coverage": "Complete cited owner read; precise control flow explained in assessment."
+        },
+        {
+          "path": "site/src/components/AcademyBookmark.astro",
+          "start": 1,
+          "end": 86,
+          "file_sha256": "7df832f6754945b2000dce018820eb7385e63858c48be6505924b06d44148c90",
+          "coverage": "Complete cited owner read; precise control flow explained in assessment."
+        }
+      ],
+      "retained_conformance_mappings": [],
+      "new_edge_disposition": null
+    },
+    {
+      "cell": "disposition:transitions:S56:05",
+      "baseline": {
+        "event": "explicit save",
+        "guard": "valid current lesson identity",
+        "to": "saved",
+        "effects": "Write only scoped bookmark key; update display.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "site/src/scripts/academy-bookmark.ts",
+            "symbol": "bookmark load/save validation",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/scripts/academy-bookmark.ts",
+            "lines": "1-61"
+          },
+          {
+            "path": "site/src/components/AcademyBookmark.astro",
+            "symbol": "bookmark UI lifecycle",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/components/AcademyBookmark.astro",
+            "lines": "1-86"
+          }
+        ],
+        "from": "ready/empty",
+        "transition_id": "S56:05"
+      },
+      "frozen_row_sha256": "9796c123a49eb7198fb4e24ace0031bf306b0e6aac4c6c962e3b4cd130ad54f4",
+      "current_edge_status": "TESTED",
+      "current_edge_row_sha256": "20a5f2b37546854f029861c1f16e6be2fc9a9f52504a4f9c5f72baabc0ac9f44",
+      "current_contract_note": null,
+      "guard_effect_retry_assessment": "Explicit save validates current lesson membership and writes only the scoped bookmark key. The listener refreshes the display after either save result, then reports success or failure explicitly.",
+      "witnesses": [
+        {
+          "path": "site/src/scripts/academy-bookmark.ts",
+          "start": 1,
+          "end": 61,
+          "file_sha256": "8015708d6686b7efef1186d7a0ebc3fd1b737462308acfd2d25511428636029e",
+          "coverage": "Complete cited owner read; precise control flow explained in assessment."
+        },
+        {
+          "path": "site/src/components/AcademyBookmark.astro",
+          "start": 1,
+          "end": 86,
+          "file_sha256": "7df832f6754945b2000dce018820eb7385e63858c48be6505924b06d44148c90",
+          "coverage": "Complete cited owner read; precise control flow explained in assessment."
+        }
+      ],
+      "retained_conformance_mappings": [],
+      "new_edge_disposition": null
+    },
+    {
+      "cell": "disposition:transitions:S56:06",
+      "baseline": {
+        "event": "clear",
+        "guard": "explicit user action",
+        "to": "cleared",
+        "effects": "Remove only owned key; preserve unrelated browser data.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "site/src/scripts/academy-bookmark.ts",
+            "symbol": "bookmark load/save validation",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/scripts/academy-bookmark.ts",
+            "lines": "1-61"
+          },
+          {
+            "path": "site/src/components/AcademyBookmark.astro",
+            "symbol": "bookmark UI lifecycle",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/components/AcademyBookmark.astro",
+            "lines": "1-86"
+          }
+        ],
+        "from": "saved/stale/invalid",
+        "transition_id": "S56:06"
+      },
+      "frozen_row_sha256": "31378c5bef60febc7b666ad1c363b7292238ca3e4521331b31e33e87989f992e",
+      "current_edge_status": "TESTED",
+      "current_edge_row_sha256": "20a5f2b37546854f029861c1f16e6be2fc9a9f52504a4f9c5f72baabc0ac9f44",
+      "current_contract_note": null,
+      "guard_effect_retry_assessment": "Explicit clear removes only that bookmark key; failed removal remains visible, and unrelated storage is not cleared.",
+      "witnesses": [
+        {
+          "path": "site/src/scripts/academy-bookmark.ts",
+          "start": 1,
+          "end": 61,
+          "file_sha256": "8015708d6686b7efef1186d7a0ebc3fd1b737462308acfd2d25511428636029e",
+          "coverage": "Complete cited owner read; precise control flow explained in assessment."
+        },
+        {
+          "path": "site/src/components/AcademyBookmark.astro",
+          "start": 1,
+          "end": 86,
+          "file_sha256": "7df832f6754945b2000dce018820eb7385e63858c48be6505924b06d44148c90",
+          "coverage": "Complete cited owner read; precise control flow explained in assessment."
+        }
+      ],
+      "retained_conformance_mappings": [],
+      "new_edge_disposition": null
+    },
+    {
+      "cell": "disposition:transitions:S56:07",
+      "baseline": {
+        "event": "storage event/pageshow",
+        "guard": "external tab/history changed state",
+        "to": "refreshed state",
+        "effects": "Re-read owned key and validate; cross-tab state can update display.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "site/src/scripts/academy-bookmark.ts",
+            "symbol": "bookmark load/save validation",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/scripts/academy-bookmark.ts",
+            "lines": "1-61"
+          },
+          {
+            "path": "site/src/components/AcademyBookmark.astro",
+            "symbol": "bookmark UI lifecycle",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/components/AcademyBookmark.astro",
+            "lines": "1-86"
+          }
+        ],
+        "from": "connected",
+        "transition_id": "S56:07"
+      },
+      "frozen_row_sha256": "229ea7f59ad7bda43b6c24cf16a245c32b4ff6d92f7bc8ae38e9a52dd644671d",
+      "current_edge_status": "PRESERVED",
+      "current_edge_row_sha256": "d6d6258200baa1d5f601dad879b758b0594dfd6207282cf2a700aaf669c05dbc",
+      "current_contract_note": null,
+      "guard_effect_retry_assessment": "Owned storage/pageshow listeners re-read and validate rather than trust event payloads, updating cross-tab state against the same current metadata.",
+      "witnesses": [
+        {
+          "path": "site/src/scripts/academy-bookmark.ts",
+          "start": 1,
+          "end": 61,
+          "file_sha256": "8015708d6686b7efef1186d7a0ebc3fd1b737462308acfd2d25511428636029e",
+          "coverage": "Complete cited owner read; precise control flow explained in assessment."
+        },
+        {
+          "path": "site/src/components/AcademyBookmark.astro",
+          "start": 1,
+          "end": 86,
+          "file_sha256": "7df832f6754945b2000dce018820eb7385e63858c48be6505924b06d44148c90",
+          "coverage": "Complete cited owner read; precise control flow explained in assessment."
+        }
+      ],
+      "retained_conformance_mappings": [],
+      "new_edge_disposition": null
+    },
+    {
+      "cell": "disposition:transitions:S56:08",
+      "baseline": {
+        "event": "disconnect",
+        "guard": "custom element removed",
+        "to": "disconnected",
+        "effects": "Abort owned listeners.",
+        "failure_retry": "Bookmark is navigation convenience, not verified training completion.",
+        "source": [
+          {
+            "path": "site/src/scripts/academy-bookmark.ts",
+            "symbol": "bookmark load/save validation",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/scripts/academy-bookmark.ts",
+            "lines": "1-61"
+          },
+          {
+            "path": "site/src/components/AcademyBookmark.astro",
+            "symbol": "bookmark UI lifecycle",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/components/AcademyBookmark.astro",
+            "lines": "1-86"
+          }
+        ],
+        "from": "connected",
+        "transition_id": "S56:08"
+      },
+      "frozen_row_sha256": "334ad721c62764327b006112a18223c7324638d89c0fd2fe8c76192ae7336441",
+      "current_edge_status": "PRESERVED",
+      "current_edge_row_sha256": "d6d6258200baa1d5f601dad879b758b0594dfd6207282cf2a700aaf669c05dbc",
+      "current_contract_note": null,
+      "guard_effect_retry_assessment": "Disconnect aborts the owned listener controller; generated lesson navigation remains a bookmark, never verified lesson completion.",
+      "witnesses": [
+        {
+          "path": "site/src/scripts/academy-bookmark.ts",
+          "start": 1,
+          "end": 61,
+          "file_sha256": "8015708d6686b7efef1186d7a0ebc3fd1b737462308acfd2d25511428636029e",
+          "coverage": "Complete cited owner read; precise control flow explained in assessment."
+        },
+        {
+          "path": "site/src/components/AcademyBookmark.astro",
+          "start": 1,
+          "end": 86,
+          "file_sha256": "7df832f6754945b2000dce018820eb7385e63858c48be6505924b06d44148c90",
+          "coverage": "Complete cited owner read; precise control flow explained in assessment."
+        }
+      ],
+      "retained_conformance_mappings": [],
+      "new_edge_disposition": null
+    }
+  ],
+  "input_join_ref": {
+    "path": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/source-joins.json",
+    "sha256": "8e328271fc2116902ef90cd4d9e7f9ead1a21e83144a0d6b8d2f2d7150cf91fa"
+  },
+  "existing_conformance_reuse": [],
+  "accepted_changes": "BUILD-G01 replaces delete-first with complete staged owned publication for S64/S67. Existing analytical corrections stay exactly as committed. gen.ts now forwards skipped-call-site annotations; serial stage ordering is unchanged.",
+  "dependency_boundary": "Conditional control flow given valid declared DOM/content/model inputs; no particular corpus, generated build or external Academy checkout was admitted or executed.",
+  "observation": "Source inspection/hash comparison only. No tests, validators, browser, commands under test, build, runtime, network or provider were executed."
+}

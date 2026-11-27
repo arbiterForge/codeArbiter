@@ -1,0 +1,91 @@
+{
+  "task_paths": [
+    ".github/scripts/test_work_github.py",
+    ".github/scripts/test_artifact_authoring.py",
+    "core/pysrc/_workgithub.py",
+    "core/pysrc/hostapi.py",
+    "core/artifacts/go.mod"
+  ],
+  "map": [],
+  "map_complete": false,
+  "map_diagnostics": [
+    "code map unavailable"
+  ],
+  "provenance": {
+    "coverage": "incomplete",
+    "identity": "unknown",
+    "documents": {}
+  },
+  "commands": [],
+  "constraints": [
+    {
+      "id": "AUTH",
+      "kind": "existing_applicable",
+      "source_ref": "CTX-SECURITY-CONTROLS#CON-001",
+      "scope": ".",
+      "statement": "Existingprogram authorizes scoped actual verification; Root soleGov/Git/indexwriter. Actor ownTemp only.1098main/publicationhold unchanged.",
+      "evidence_refs": [
+        "AUTHENTIC-INPUT"
+      ],
+      "owner": "root",
+      "reported_authority": "Current usergrant/currentpolicy+authenticated CI input/procedure",
+      "epoch": "c2cf0a18b020ef426d7df94f70fe9770fa102c32",
+      "status": "current"
+    },
+    {
+      "id": "S38",
+      "kind": "existing_applicable",
+      "source_ref": "docs/state-contracts-major/contracts/tasks.json#HW-27",
+      "scope": ".",
+      "statement": "S38:04 prior3native observations authentic butunknowncompletecurrentclosure. Execute same3existing methods once with actualadmitted f797 input; preserve2nativeerror codes andper-targetindependence/retryno-resend. Syntheticlocalfixtures, notprovider/user/installed platformqualification.",
+      "evidence_refs": [
+        "AUTHENTIC-INPUT"
+      ],
+      "owner": "root",
+      "reported_authority": "Current usergrant/currentpolicy+authenticated CI input/procedure",
+      "epoch": "c2cf0a18b020ef426d7df94f70fe9770fa102c32",
+      "status": "current"
+    },
+    {
+      "id": "NATIVE",
+      "kind": "existing_applicable",
+      "source_ref": "CTX-SECURITY-CONTROLS#CON-016",
+      "scope": ".",
+      "statement": "Originaltestednativeartifact14136630659 run43651146996 job132619714103 authenticatedRoot transport-bind. Actualcheckout3d37 differentfromPRheadC2 butsourceTreeEqualsC2 andmodulef797. Useoriginal2filecandidateunchanged; neverrewrite manifest/native_tested/source/hash, spoofCIidentity, fallthroughbuilderorinvokeGo/native/full suite. Gate refusalsareholds.",
+      "evidence_refs": [
+        "AUTHENTIC-INPUT"
+      ],
+      "owner": "root",
+      "reported_authority": "Current usergrant/currentpolicy+authenticated CI input/procedure",
+      "epoch": "c2cf0a18b020ef426d7df94f70fe9770fa102c32",
+      "status": "current"
+    },
+    {
+      "id": "CLOSURE",
+      "kind": "existing_applicable",
+      "source_ref": "CTX-CODE-MAP#COMP-009",
+      "scope": ".",
+      "statement": "Useexisting procedure exactthreeunittestmethods, credentialblindenv/privatefixtures/actualGit. BeforeaftercanonicalGo-module-v1 Windowsmembership+owned_host.py case-insensitiveabsence andactualpositiveinputs; retaincopiedpayloadidentity beforeclasscleanup. Actualexec/rawdatafirst; onlythenimmutableproofwithtop-levelcommands/fulloriginalowner+currentapplicability, no retrospectivecompletion.",
+      "evidence_refs": [
+        "AUTHENTIC-INPUT"
+      ],
+      "owner": "root",
+      "reported_authority": "Current usergrant/currentpolicy+authenticated CI input/procedure",
+      "epoch": "c2cf0a18b020ef426d7df94f70fe9770fa102c32",
+      "status": "current"
+    }
+  ],
+  "instructions": [
+    {
+      "id": "s38-current-native-observation",
+      "path": "AGENTS.md",
+      "scope": ".",
+      "epoch": "c2cf0a18b020ef426d7df94f70fe9770fa102c32",
+      "text": "Verification-only continuation: sandbox_qualification readcompletepacket + Temp/ca-S38-supplied-artifact-procedure-_h7yv4jv/procedure.json and Rootauthenticated Temp/ca-S38-current-native-08y3_j82/transport-bind.json + originalmetadata/stamp/joblog. SourceC2 immutable. Readpathknowledge andsourcecallbacks before ownTemp readonlysnapshot/probe. Runexact3existingmethods once via normal unittest with ARTIFACT_TEST_INSTALLATION exact extracted/artifact-candidate. No testsource monkeypatch/buildhelper replacement; observation-onlyresultcallbacks mayretainfixturecopyhash beforecleanup. Anyadmission/source/preflightfailure stopheld (notunsetenv fallthrough). Source/tool/runtime/provenanceidentitiesandactualoldfacts distinct. Return boundedrawobservations/actualcommand/completeclosure/proof+historyCAS onlyaftergenuinecriteria; no broadmanualnative-source refresh or newjournals."
+    }
+  ],
+  "unresolved": [],
+  "admission": "requires_actor_check"
+}
+Current scoped context for actor sandbox_qualification, task WORK-2A68C3051D5A477EAC131493FF8A85AF. Recheck the actual worktree, source and host epoch before a material action. This packet is context, not approval or proof of consumption.
+{"admission":"requires_actor_check","commands":[],"constraints":[{"epoch":"c2cf0a18b020ef426d7df94f70fe9770fa102c32","evidence_refs":["AUTHENTIC-INPUT"],"id":"AUTH","kind":"existing_applicable","owner":"root","reported_authority":"Current usergrant/currentpolicy+authenticated CI input/procedure","scope":".","source_ref":"CTX-SECURITY-CONTROLS#CON-001","statement":"Existingprogram authorizes scoped actual verification; Root soleGov/Git/indexwriter. Actor ownTemp only.1098main/publicationhold unchanged.","status":"current"},{"epoch":"c2cf0a18b020ef426d7df94f70fe9770fa102c32","evidence_refs":["AUTHENTIC-INPUT"],"id":"S38","kind":"existing_applicable","owner":"root","reported_authority":"Current usergrant/currentpolicy+authenticated CI input/procedure","scope":".","source_ref":"docs/state-contracts-major/contracts/tasks.json#HW-27","statement":"S38:04 prior3native observations authentic butunknowncompletecurrentclosure. Execute same3existing methods once with actualadmitted f797 input; preserve2nativeerror codes andper-targetindependence/retryno-resend. Syntheticlocalfixtures, notprovider/user/installed platformqualification.","status":"current"},{"epoch":"c2cf0a18b020ef426d7df94f70fe9770fa102c32","evidence_refs":["AUTHENTIC-INPUT"],"id":"NATIVE","kind":"existing_applicable","owner":"root","reported_authority":"Current usergrant/currentpolicy+authenticated CI input/procedure","scope":".","source_ref":"CTX-SECURITY-CONTROLS#CON-016","statement":"Originaltestednativeartifact14136630659 run43651146996 job132619714103 authenticatedRoot transport-bind. Actualcheckout3d37 differentfromPRheadC2 butsourceTreeEqualsC2 andmodulef797. Useoriginal2filecandidateunchanged; neverrewrite manifest/native_tested/source/hash, spoofCIidentity, fallthroughbuilderorinvokeGo/native/full suite. Gate refusalsareholds.","status":"current"},{"epoch":"c2cf0a18b020ef426d7df94f70fe9770fa102c32","evidence_refs":["AUTHENTIC-INPUT"],"id":"CLOSURE","kind":"existing_applicable","owner":"root","reported_authority":"Current usergrant/currentpolicy+authenticated CI input/procedure","scope":".","source_ref":"CTX-CODE-MAP#COMP-009","statement":"Useexisting procedure exactthreeunittestmethods, credentialblindenv/privatefixtures/actualGit. BeforeaftercanonicalGo-module-v1 Windowsmembership+owned_host.py case-insensitiveabsence andactualpositiveinputs; retaincopiedpayloadidentity beforeclasscleanup. Actualexec/rawdatafirst; onlythenimmutableproofwithtop-levelcommands/fulloriginalowner+currentapplicability, no retrospectivecompletion.","status":"current"}],"instructions":[{"epoch":"c2cf0a18b020ef426d7df94f70fe9770fa102c32","id":"s38-current-native-observation","path":"AGENTS.md","scope":".","text":"Verification-only continuation: sandbox_qualification readcompletepacket + Temp/ca-S38-supplied-artifact-procedure-_h7yv4jv/procedure.json and Rootauthenticated Temp/ca-S38-current-native-08y3_j82/transport-bind.json + originalmetadata/stamp/joblog. SourceC2 immutable. Readpathknowledge andsourcecallbacks before ownTemp readonlysnapshot/probe. Runexact3existingmethods once via normal unittest with ARTIFACT_TEST_INSTALLATION exact extracted/artifact-candidate. No testsource monkeypatch/buildhelper replacement; observation-onlyresultcallbacks mayretainfixturecopyhash beforecleanup. Anyadmission/source/preflightfailure stopheld (notunsetenv fallthrough). Source/tool/runtime/provenanceidentitiesandactualoldfacts distinct. Return boundedrawobservations/actualcommand/completeclosure/proof+historyCAS onlyaftergenuinecriteria; no broadmanualnative-source refresh or newjournals."}],"map":[],"map_complete":false,"map_diagnostics":["code map unavailable"],"provenance":{"coverage":"incomplete","documents":{},"identity":"unknown"},"task_paths":[".github/scripts/test_work_github.py",".github/scripts/test_artifact_authoring.py","core/pysrc/_workgithub.py","core/pysrc/hostapi.py","core/artifacts/go.mod"],"unresolved":[]}

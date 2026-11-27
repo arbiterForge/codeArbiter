@@ -1,0 +1,28 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "Major program source assessment"
+  },
+  "inputs": {
+    "core/pysrc/_debughandofflib.py": "1a25b13304f05054f7b3787068b937269066c7cb8c61ef0098f14dad48d78c5f",
+    "core/pysrc/debug-handoff.py": "c6d77fbd2ca05791b59669ce2685cd733afc2a221ebe1bd95801ddc91c26fff9",
+    "core/surface/skills/debug/references/preparation.md": "710ee4df28167fb7f17bbe463ac6a77492144a00e700585b5e09d9428e71c1fa",
+    "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+    "docs/state-contracts-major/contracts/finding-dispositions.json": "de8506e391821b5658d41aff80ff53e985e755d60efd5769c53f41bf05962237",
+    "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+    "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f"
+  },
+  "disposition_ids": [
+    "disposition:findings:HOOK-B01"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/hook-work-seven-source/source-assessment.json",
+      "sha256": "0638f66d8a88d750a15c3e22060165aa8dca4d955c9bc0e0cec8f99c1455825d"
+    }
+  ]
+}

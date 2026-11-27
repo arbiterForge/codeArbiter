@@ -1,0 +1,919 @@
+{
+  "schema": "codearbiter.current-finite-source-inspection/1",
+  "source_commit": "562c6170c010eedbef93a4216b4baa971fd6b9a6",
+  "original_semantic_inspection_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+  "group": "source-group-017",
+  "positive_input_join": {
+    "core/pysrc/_activationlib.py": {
+      "sha256": "60c6391b4d8b143c5e59cf2320291a2d31063e8fbebe0fcf337dd83e07f8fd97",
+      "bytes": 13390,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "60c6391b4d8b143c5e59cf2320291a2d31063e8fbebe0fcf337dd83e07f8fd97",
+        "bytes": 13390
+      }
+    },
+    "core/pysrc/_arbiterstatelib.py": {
+      "sha256": "19ebd7d82fa56d2a4535043d3a163cfe9f0475aa5d457d5ad8953980d57f71c1",
+      "bytes": 14372,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "19ebd7d82fa56d2a4535043d3a163cfe9f0475aa5d457d5ad8953980d57f71c1",
+        "bytes": 14372
+      }
+    },
+    "core/pysrc/_artifactlib.py": {
+      "sha256": "db10153f438023ca6eb7e32f77e1898fbd2f806cdc5ef98bdffb078e27e65187",
+      "bytes": 64924,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "db10153f438023ca6eb7e32f77e1898fbd2f806cdc5ef98bdffb078e27e65187",
+        "bytes": 64924
+      }
+    },
+    "core/pysrc/_entrylib.py": {
+      "sha256": "1f4f95d55502d022f60bc9754a629a3fd38f0914ad69903fb5aa4aa8c4da8f5a",
+      "bytes": 2418,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "1f4f95d55502d022f60bc9754a629a3fd38f0914ad69903fb5aa4aa8c4da8f5a",
+        "bytes": 2418
+      }
+    },
+    "core/pysrc/_hooklib.py": {
+      "sha256": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+      "bytes": 49147,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+        "bytes": 49147
+      }
+    },
+    "core/pysrc/_intentlib.py": {
+      "sha256": "9712bed86854f405475958d07727bf21f58a0faa1bfd03c19d9ada8972007319",
+      "bytes": 12928,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "9712bed86854f405475958d07727bf21f58a0faa1bfd03c19d9ada8972007319",
+        "bytes": 12928
+      }
+    },
+    "core/pysrc/_modelib.py": {
+      "sha256": "1988af5a7b374bc796a0d6744a85d50a8b1213a4039bc91b6fa5d434b3464a03",
+      "bytes": 45342,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "1988af5a7b374bc796a0d6744a85d50a8b1213a4039bc91b6fa5d434b3464a03",
+        "bytes": 45342
+      }
+    },
+    "core/pysrc/_pathnorm.py": {
+      "sha256": "f6a99cddf6277641316f5e8f9d86fb97691e535ba569aa6cb51c9e4f3ed52906",
+      "bytes": 3712,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "f6a99cddf6277641316f5e8f9d86fb97691e535ba569aa6cb51c9e4f3ed52906",
+        "bytes": 3712
+      }
+    },
+    "core/pysrc/_scopelib.py": {
+      "sha256": "03d1f066863d08c952ebda8d9b6f1515813f53a4fd3fc0af560a735f63954e0b",
+      "bytes": 10966,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "03d1f066863d08c952ebda8d9b6f1515813f53a4fd3fc0af560a735f63954e0b",
+        "bytes": 10966
+      }
+    },
+    "core/pysrc/_sloplib.py": {
+      "sha256": "568692fdecb4237ae961bdc3cdb0a3f1566f1630ba2f18ac0ea13fa4df40214e",
+      "bytes": 11969,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "568692fdecb4237ae961bdc3cdb0a3f1566f1630ba2f18ac0ea13fa4df40214e",
+        "bytes": 11969
+      }
+    },
+    "core/pysrc/_taskboardlib.py": {
+      "sha256": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+      "bytes": 69125,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+        "bytes": 69125
+      }
+    },
+    "core/pysrc/boardsync.py": {
+      "sha256": "b6e7b0b7e21bc838929593815a071c1418d35e30f1fa0b64410f5a9c2424023b",
+      "bytes": 6077,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "b6e7b0b7e21bc838929593815a071c1418d35e30f1fa0b64410f5a9c2424023b",
+        "bytes": 6077
+      }
+    },
+    "core/pysrc/hostapi.py": {
+      "sha256": "2aea81ad167a458c6053cb52880952521159a367eaa5baa7df6e2e35fea574e4",
+      "bytes": 38083,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "2aea81ad167a458c6053cb52880952521159a367eaa5baa7df6e2e35fea574e4",
+        "bytes": 38083
+      }
+    },
+    "core/pysrc/post-write-edit.py": {
+      "sha256": "691d3d3691a49d25c60749153a95488a63b31414db34145a719ed14522e9e7cd",
+      "bytes": 11232,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "691d3d3691a49d25c60749153a95488a63b31414db34145a719ed14522e9e7cd",
+        "bytes": 11232
+      }
+    }
+  },
+  "current_input_membership": [
+    {
+      "profile": "python-import-directory-v1",
+      "root": "core/pysrc",
+      "path_order": "windows",
+      "sha256": "47866d8dbbe83d269b0c3311e9bb1df44111bd8596c4c9808865eabf6d10ff9d"
+    }
+  ],
+  "semantic_rows": [
+    {
+      "cell": "disposition:transitions:hooks:legacy-advisories:01",
+      "frozen_record": {
+        "transition_id": "hooks:legacy-advisories:01",
+        "machine_id": "hooks:legacy-advisories",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "legacy board",
+          "event": "boardsync reconcile stdin log",
+          "guard": "legacy work owner selected",
+          "to": "advisory-clear / drift / unknown",
+          "effects": "Compare merged task IDs to board state; print drift/unknown IDs only; never write board.",
+          "failure_retry": "Outer I/O exception substitutes empty inputs and can print no drift; report-internal exception yields error text.",
+          "source": [
+            {
+              "path": "core/pysrc/boardsync.py",
+              "symbol": "module",
+              "lines": "1-139",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/boardsync.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/boardsync.py"
+            },
+            {
+              "path": "core/pysrc/_intentlib.py",
+              "symbol": "module",
+              "lines": "1-291",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_intentlib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_intentlib.py"
+            },
+            {
+              "path": "core/pysrc/post-write-edit.py",
+              "symbol": "module",
+              "lines": "1-231",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/post-write-edit.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/post-write-edit.py"
+            },
+            {
+              "path": "core/pysrc/_scopelib.py",
+              "symbol": "module",
+              "lines": "1-262",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_scopelib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_scopelib.py"
+            },
+            {
+              "path": "core/pysrc/_sloplib.py",
+              "symbol": "module",
+              "lines": "1-244",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_sloplib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_sloplib.py"
+            }
+          ],
+          "transition_id": "hooks:legacy-advisories:01"
+        },
+        "task_ids": [
+          "HW-27"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "6f299fd1408d2d9a945e6b98543b68228d5829614221e04c1b87ad4bdd4503ce",
+      "group": "source-group-017",
+      "assessment": "Legacy boardsync/uncovered-intent/post-write output is advisory and native work conflict stays separate. Preserve actual lexical/mtime-cache limits, including outer-I/O empty-input limitation; do not call a read failure proven no-drift, runtime intent coverage or enforcement.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "artifact-platform-dispatch",
+        "mode-and-adoption-repair-reuse"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/legacy-advisories/preserved.json",
+          "sha256": "6ae8b095f30a11a6abeff221384194e20f060a886cf2a8faa6b574875b6e52fd",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:hooks:legacy-advisories:02",
+      "frozen_record": {
+        "transition_id": "hooks:legacy-advisories:02",
+        "machine_id": "hooks:legacy-advisories",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "native work selected / owner conflict",
+          "event": "boardsync reconcile",
+          "guard": "native selection predicate",
+          "to": "skipped",
+          "effects": "Explain legacy board sweep not performed and direct to work list/owner resolution.",
+          "failure_retry": "No native task status inferred from legacy log.",
+          "source": [
+            {
+              "path": "core/pysrc/boardsync.py",
+              "symbol": "module",
+              "lines": "1-139",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/boardsync.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/boardsync.py"
+            },
+            {
+              "path": "core/pysrc/_intentlib.py",
+              "symbol": "module",
+              "lines": "1-291",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_intentlib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_intentlib.py"
+            },
+            {
+              "path": "core/pysrc/post-write-edit.py",
+              "symbol": "module",
+              "lines": "1-231",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/post-write-edit.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/post-write-edit.py"
+            },
+            {
+              "path": "core/pysrc/_scopelib.py",
+              "symbol": "module",
+              "lines": "1-262",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_scopelib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_scopelib.py"
+            },
+            {
+              "path": "core/pysrc/_sloplib.py",
+              "symbol": "module",
+              "lines": "1-244",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_sloplib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_sloplib.py"
+            }
+          ],
+          "transition_id": "hooks:legacy-advisories:02"
+        },
+        "task_ids": [
+          "HW-27"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "85d07c8f6e58ca444054fcfa064d8df2c2ded3804ba61addbefa6767a6fe12a5",
+      "group": "source-group-017",
+      "assessment": "Legacy boardsync/uncovered-intent/post-write output is advisory and native work conflict stays separate. Preserve actual lexical/mtime-cache limits, including outer-I/O empty-input limitation; do not call a read failure proven no-drift, runtime intent coverage or enforcement.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "artifact-platform-dispatch",
+        "mode-and-adoption-repair-reuse"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/legacy-advisories/preserved.json",
+          "sha256": "6ae8b095f30a11a6abeff221384194e20f060a886cf2a8faa6b574875b6e52fd",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:hooks:legacy-advisories:03",
+      "frozen_record": {
+        "transition_id": "hooks:legacy-advisories:03",
+        "machine_id": "hooks:legacy-advisories",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "Markdown spec",
+          "event": "uncovered-intent",
+          "guard": "scope/issue-checkbox keyword absent from acceptance criteria token set",
+          "to": "advisory findings",
+          "effects": "Emit UNCOVERED-SCOPE/CHECKBOX; exit1 for findings,0 otherwise.",
+          "failure_retry": "Lexical overlap is heuristic coverage, not proof every intent is satisfied.",
+          "source": [
+            {
+              "path": "core/pysrc/boardsync.py",
+              "symbol": "module",
+              "lines": "1-139",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/boardsync.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/boardsync.py"
+            },
+            {
+              "path": "core/pysrc/_intentlib.py",
+              "symbol": "module",
+              "lines": "1-291",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_intentlib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_intentlib.py"
+            },
+            {
+              "path": "core/pysrc/post-write-edit.py",
+              "symbol": "module",
+              "lines": "1-231",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/post-write-edit.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/post-write-edit.py"
+            },
+            {
+              "path": "core/pysrc/_scopelib.py",
+              "symbol": "module",
+              "lines": "1-262",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_scopelib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_scopelib.py"
+            },
+            {
+              "path": "core/pysrc/_sloplib.py",
+              "symbol": "module",
+              "lines": "1-244",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_sloplib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_sloplib.py"
+            }
+          ],
+          "transition_id": "hooks:legacy-advisories:03"
+        },
+        "task_ids": [
+          "HW-27"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "ff6c2f2d94a3a3a5f62fb1996f7c704ad78e6125d903d82e8191704ceeb42213",
+      "group": "source-group-017",
+      "assessment": "Legacy boardsync/uncovered-intent/post-write output is advisory and native work conflict stays separate. Preserve actual lexical/mtime-cache limits, including outer-I/O empty-input limitation; do not call a read failure proven no-drift, runtime intent coverage or enforcement.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "artifact-platform-dispatch",
+        "mode-and-adoption-repair-reuse"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/legacy-advisories/preserved.json",
+          "sha256": "6ae8b095f30a11a6abeff221384194e20f060a886cf2a8faa6b574875b6e52fd",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:hooks:legacy-advisories:04",
+      "frozen_record": {
+        "transition_id": "hooks:legacy-advisories:04",
+        "machine_id": "hooks:legacy-advisories",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "HTML spec",
+          "event": "uncovered-intent file path",
+          "guard": "native ready validation and current model identity agree",
+          "to": "valid / findings",
+          "effects": "Use native validator and current outline criteria; re-read identity after checking.",
+          "failure_retry": "HTML text passed to Markdown helper explicitly returns HTML-REQUIRES-VALIDATION; malformed/unreadable/native drift returns exit2.",
+          "source": [
+            {
+              "path": "core/pysrc/boardsync.py",
+              "symbol": "module",
+              "lines": "1-139",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/boardsync.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/boardsync.py"
+            },
+            {
+              "path": "core/pysrc/_intentlib.py",
+              "symbol": "module",
+              "lines": "1-291",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_intentlib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_intentlib.py"
+            },
+            {
+              "path": "core/pysrc/post-write-edit.py",
+              "symbol": "module",
+              "lines": "1-231",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/post-write-edit.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/post-write-edit.py"
+            },
+            {
+              "path": "core/pysrc/_scopelib.py",
+              "symbol": "module",
+              "lines": "1-262",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_scopelib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_scopelib.py"
+            },
+            {
+              "path": "core/pysrc/_sloplib.py",
+              "symbol": "module",
+              "lines": "1-244",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_sloplib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_sloplib.py"
+            }
+          ],
+          "transition_id": "hooks:legacy-advisories:04"
+        },
+        "task_ids": [
+          "HW-27"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "8495f3903c832e3d978564f9148790cee5bad0495a55188359df0735850650ac",
+      "group": "source-group-017",
+      "assessment": "Legacy boardsync/uncovered-intent/post-write output is advisory and native work conflict stays separate. Preserve actual lexical/mtime-cache limits, including outer-I/O empty-input limitation; do not call a read failure proven no-drift, runtime intent coverage or enforcement.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "artifact-platform-dispatch",
+        "mode-and-adoption-repair-reuse"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/legacy-advisories/preserved.json",
+          "sha256": "6ae8b095f30a11a6abeff221384194e20f060a886cf2a8faa6b574875b6e52fd",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:hooks:legacy-advisories:05",
+      "frozen_record": {
+        "transition_id": "hooks:legacy-advisories:05",
+        "machine_id": "hooks:legacy-advisories",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "active project file write",
+          "event": "post-write operation",
+          "guard": "path/content matches governing ADR, dependency, CI, deployment, auth, crypto, secret or prose-dash patterns",
+          "to": "reminded",
+          "effects": "Emit tagged advisory messages; governing ADR reminder routes conflict to reconcile/adr.",
+          "failure_retry": "No mutation blocked here; commit security gate remains separate.",
+          "source": [
+            {
+              "path": "core/pysrc/boardsync.py",
+              "symbol": "module",
+              "lines": "1-139",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/boardsync.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/boardsync.py"
+            },
+            {
+              "path": "core/pysrc/_intentlib.py",
+              "symbol": "module",
+              "lines": "1-291",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_intentlib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_intentlib.py"
+            },
+            {
+              "path": "core/pysrc/post-write-edit.py",
+              "symbol": "module",
+              "lines": "1-231",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/post-write-edit.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/post-write-edit.py"
+            },
+            {
+              "path": "core/pysrc/_scopelib.py",
+              "symbol": "module",
+              "lines": "1-262",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_scopelib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_scopelib.py"
+            },
+            {
+              "path": "core/pysrc/_sloplib.py",
+              "symbol": "module",
+              "lines": "1-244",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_sloplib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_sloplib.py"
+            }
+          ],
+          "transition_id": "hooks:legacy-advisories:05"
+        },
+        "task_ids": [
+          "HW-27"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "b62f21007a997bb9771d297a5e4b915a980b0fd3a907f12707f25aa3f971cbd5",
+      "group": "source-group-017",
+      "assessment": "Legacy boardsync/uncovered-intent/post-write output is advisory and native work conflict stays separate. Preserve actual lexical/mtime-cache limits, including outer-I/O empty-input limitation; do not call a read failure proven no-drift, runtime intent coverage or enforcement.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "artifact-platform-dispatch",
+        "mode-and-adoption-repair-reuse"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/legacy-advisories/preserved.json",
+          "sha256": "6ae8b095f30a11a6abeff221384194e20f060a886cf2a8faa6b574875b6e52fd",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:hooks:legacy-advisories:06",
+      "frozen_record": {
+        "transition_id": "hooks:legacy-advisories:06",
+        "machine_id": "hooks:legacy-advisories",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "ADR governs cache",
+          "event": "read governs index",
+          "guard": "max decision-file mtime and schema2 unchanged",
+          "to": "cached index",
+          "effects": "Reuse cached first26-line title/status/globs records.",
+          "failure_retry": "Absent/corrupt cache rebuilds; rejected/superseded excluded, other statuses included; mtime cache is not body-hash proof.",
+          "source": [
+            {
+              "path": "core/pysrc/boardsync.py",
+              "symbol": "module",
+              "lines": "1-139",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/boardsync.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/boardsync.py"
+            },
+            {
+              "path": "core/pysrc/_intentlib.py",
+              "symbol": "module",
+              "lines": "1-291",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_intentlib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_intentlib.py"
+            },
+            {
+              "path": "core/pysrc/post-write-edit.py",
+              "symbol": "module",
+              "lines": "1-231",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/post-write-edit.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/post-write-edit.py"
+            },
+            {
+              "path": "core/pysrc/_scopelib.py",
+              "symbol": "module",
+              "lines": "1-262",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_scopelib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_scopelib.py"
+            },
+            {
+              "path": "core/pysrc/_sloplib.py",
+              "symbol": "module",
+              "lines": "1-244",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_sloplib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_sloplib.py"
+            }
+          ],
+          "transition_id": "hooks:legacy-advisories:06"
+        },
+        "task_ids": [
+          "HW-27"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "363d051bd3de44888ca09cdd3f9d0a109935696e2f854a2c16d261d11c49b7de",
+      "group": "source-group-017",
+      "assessment": "Legacy boardsync/uncovered-intent/post-write output is advisory and native work conflict stays separate. Preserve actual lexical/mtime-cache limits, including outer-I/O empty-input limitation; do not call a read failure proven no-drift, runtime intent coverage or enforcement.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "artifact-platform-dispatch",
+        "mode-and-adoption-repair-reuse"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/legacy-advisories/preserved.json",
+          "sha256": "6ae8b095f30a11a6abeff221384194e20f060a886cf2a8faa6b574875b6e52fd",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    }
+  ],
+  "verified_literal_witnesses": [
+    {
+      "path": "core/pysrc/boardsync.py",
+      "old_span": [
+        35,
+        118
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/legacy-advisories/source-inspection.json",
+      "block_sha256_LF": "a52b5e7efcb1f017eee00003f16fb4d987612c793f3b35882996d13a273eae28",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          35,
+          118
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/legacy-advisories/preserved.json",
+      "actual0ef_spans": [
+        [
+          35,
+          118
+        ]
+      ],
+      "actual0ef_file_sha256": "b6e7b0b7e21bc838929593815a071c1418d35e30f1fa0b64410f5a9c2424023b",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/boardsync.py",
+      "old_span": [
+        103,
+        112
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/legacy-advisories/source-inspection.json",
+      "block_sha256_LF": "d61f62a40f144bbd7218cdfd4468d1e6eec021b48bfb5c2aab4385a72f8e5984",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          103,
+          112
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/legacy-advisories/preserved.json",
+      "actual0ef_spans": [
+        [
+          103,
+          112
+        ]
+      ],
+      "actual0ef_file_sha256": "b6e7b0b7e21bc838929593815a071c1418d35e30f1fa0b64410f5a9c2424023b",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/_arbiterstatelib.py",
+      "old_span": [
+        162,
+        184
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/legacy-advisories/source-inspection.json",
+      "block_sha256_LF": "c78f229e14831568c2dd527369278f2dc8722981888210128469accfd8cb68af",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          162,
+          184
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/legacy-advisories/preserved.json",
+      "actual0ef_spans": [
+        [
+          162,
+          184
+        ]
+      ],
+      "actual0ef_file_sha256": "19ebd7d82fa56d2a4535043d3a163cfe9f0475aa5d457d5ad8953980d57f71c1",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/_intentlib.py",
+      "old_span": [
+        73,
+        184
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/legacy-advisories/source-inspection.json",
+      "block_sha256_LF": "3a3e0eb2d2e201b38004c6b2430d8b98621cf7f0578560c885078784dece9909",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          73,
+          184
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/legacy-advisories/preserved.json",
+      "actual0ef_spans": [
+        [
+          73,
+          184
+        ]
+      ],
+      "actual0ef_file_sha256": "9712bed86854f405475958d07727bf21f58a0faa1bfd03c19d9ada8972007319",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/_intentlib.py",
+      "old_span": [
+        284,
+        287
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/legacy-advisories/source-inspection.json",
+      "block_sha256_LF": "6c616b33fc026202f74605e3385624ec9e1ecb05f9756aa3ac0d2c6b753beceb",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          284,
+          287
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/legacy-advisories/preserved.json",
+      "actual0ef_spans": [
+        [
+          284,
+          287
+        ]
+      ],
+      "actual0ef_file_sha256": "9712bed86854f405475958d07727bf21f58a0faa1bfd03c19d9ada8972007319",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/_intentlib.py",
+      "old_span": [
+        169,
+        172
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/legacy-advisories/source-inspection.json",
+      "block_sha256_LF": "a0aa843e0b98bbc0e2b856860721440164f1d9d3d0d3c4a55d1d652d6570f00c",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          169,
+          172
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/legacy-advisories/preserved.json",
+      "actual0ef_spans": [
+        [
+          169,
+          172
+        ]
+      ],
+      "actual0ef_file_sha256": "9712bed86854f405475958d07727bf21f58a0faa1bfd03c19d9ada8972007319",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/_intentlib.py",
+      "old_span": [
+        237,
+        282
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/legacy-advisories/source-inspection.json",
+      "block_sha256_LF": "fd1b417dafdd64f343eaa6d3be33f99e9ba8d728b1c9908301da581dd8e4b37a",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          237,
+          282
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/legacy-advisories/preserved.json",
+      "actual0ef_spans": [
+        [
+          237,
+          282
+        ]
+      ],
+      "actual0ef_file_sha256": "9712bed86854f405475958d07727bf21f58a0faa1bfd03c19d9ada8972007319",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/post-write-edit.py",
+      "old_span": [
+        124,
+        211
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/legacy-advisories/source-inspection.json",
+      "block_sha256_LF": "c0bb4b232078f01e4af8f4bdcaea54f08f0d94b45224a6c3d20df82d99664175",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          124,
+          211
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/legacy-advisories/preserved.json",
+      "actual0ef_spans": [
+        [
+          124,
+          211
+        ]
+      ],
+      "actual0ef_file_sha256": "691d3d3691a49d25c60749153a95488a63b31414db34145a719ed14522e9e7cd",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/post-write-edit.py",
+      "old_span": [
+        68,
+        121
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/legacy-advisories/source-inspection.json",
+      "block_sha256_LF": "2cc1476c7254f53bad5e7e86227e5c7447e9b61afecce25207c594c35374e407",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          68,
+          121
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/legacy-advisories/preserved.json",
+      "actual0ef_spans": [
+        [
+          68,
+          121
+        ]
+      ],
+      "actual0ef_file_sha256": "691d3d3691a49d25c60749153a95488a63b31414db34145a719ed14522e9e7cd",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/_scopelib.py",
+      "old_span": [
+        139,
+        240
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/legacy-advisories/source-inspection.json",
+      "block_sha256_LF": "0ff6207e42f5ddac2282fe6d066a6c966807cdf557576c4984b831425ca1e02e",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          139,
+          240
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/legacy-advisories/preserved.json",
+      "actual0ef_spans": [
+        [
+          139,
+          240
+        ]
+      ],
+      "actual0ef_file_sha256": "03d1f066863d08c952ebda8d9b6f1515813f53a4fd3fc0af560a735f63954e0b",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    }
+  ],
+  "changed_old_literals": [],
+  "reused_helper_assessments": [
+    {
+      "id": "artifact-platform-dispatch",
+      "paths": [
+        "core/pysrc/_artifactlib.py"
+      ],
+      "assessment": "Actual full deltas from7ac/d594/7eba are the same: sys.platform replaces platform.system for supported OS/commandWindows/verified-descriptor launch dispatch. No protocol, gate, request/environment, JSON, root/index or recovery API shape changes. Callers retain finite unsupported-platform and transport limits; fewer platform-discovery effects are not new native qualification."
+    },
+    {
+      "id": "mode-and-adoption-repair-reuse",
+      "paths": [
+        "core/pysrc/_modelib.py",
+        "core/pysrc/_workadopt.py"
+      ],
+      "assessment": "Use the actual committed exit/enter audit repair and transition-owned persistence guidance, never global unrelated debt as replay proof. Safe regular descriptor acquisition covers optional/archive/replay with bounded reads, link/reparse refusal, before/fstat/after identity and explicit close; platform flags remain limited. Prior own repair analyses/independent closures apply only at matching bytes; no universal storage durability or OS race confinement."
+    }
+  ],
+  "negative_scope": "Static finite guarded claims only, with inherited scope/limits. No execution, qualification or unchecked new source claim."
+}

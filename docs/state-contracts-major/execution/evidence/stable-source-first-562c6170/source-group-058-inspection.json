@@ -1,0 +1,1405 @@
+{
+  "schema": "codearbiter.current-finite-source-inspection/1",
+  "source_commit": "562c6170c010eedbef93a4216b4baa971fd6b9a6",
+  "original_semantic_inspection_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+  "group": "source-group-058",
+  "positive_input_join": {
+    ".codearbiter/decisions/0043-assistive-state-engine.md": {
+      "sha256": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+      "bytes": 6365,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+        "bytes": 6365
+      }
+    },
+    "core/pysrc/_activationlib.py": {
+      "sha256": "60c6391b4d8b143c5e59cf2320291a2d31063e8fbebe0fcf337dd83e07f8fd97",
+      "bytes": 13390,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "60c6391b4d8b143c5e59cf2320291a2d31063e8fbebe0fcf337dd83e07f8fd97",
+        "bytes": 13390
+      }
+    },
+    "core/pysrc/init-codearbiter.py": {
+      "sha256": "641f0d04057ea22bff6fc39ce6fd95324901c4cc810617f4a783842cd31086b3",
+      "bytes": 27811,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "641f0d04057ea22bff6fc39ce6fd95324901c4cc810617f4a783842cd31086b3",
+        "bytes": 27811
+      }
+    },
+    "core/surface/commands/init.md": {
+      "sha256": "2f7f9e13e5e7e69e7fa59c49c58ca6f590abf7bebc38e52ccc14b6aa46960a66",
+      "bytes": 8075,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "2f7f9e13e5e7e69e7fa59c49c58ca6f590abf7bebc38e52ccc14b6aa46960a66",
+        "bytes": 8075
+      }
+    },
+    "core/surface/includes/artifacts.md": {
+      "sha256": "be4fb60919830f128adc5bf7a5120d4151132b24efdf7de8e960e2e7a2cd3776",
+      "bytes": 8931,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "be4fb60919830f128adc5bf7a5120d4151132b24efdf7de8e960e2e7a2cd3776",
+        "bytes": 8931
+      }
+    },
+    "core/surface/includes/knowledge.md": {
+      "sha256": "269e1830434801736d32753c955683048ac7b6b8c84040c551f8e4068220505c",
+      "bytes": 8798,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "269e1830434801736d32753c955683048ac7b6b8c84040c551f8e4068220505c",
+        "bytes": 8798
+      }
+    },
+    "core/surface/skills/context-check/SKILL.md": {
+      "sha256": "f9add66b35d19eea5592dabd4c1e29fa8a7df22a9a3a694577daa1b917937360",
+      "bytes": 14678,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "f9add66b35d19eea5592dabd4c1e29fa8a7df22a9a3a694577daa1b917937360",
+        "bytes": 14678
+      }
+    },
+    "core/surface/skills/context-creation/SKILL.md": {
+      "sha256": "37b97c41de90c7226c698e8011ef00cab60f1d03b5e744fc129d01eb85441bfd",
+      "bytes": 21218,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "37b97c41de90c7226c698e8011ef00cab60f1d03b5e744fc129d01eb85441bfd",
+        "bytes": 21218
+      }
+    },
+    "core/surface/skills/context-creation/references/markdown-format.md": {
+      "sha256": "29e7add1ba8884f1c80b357aed5b6c3ac88a4110f2bd72cdceee124e84c90477",
+      "bytes": 23826,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "29e7add1ba8884f1c80b357aed5b6c3ac88a4110f2bd72cdceee124e84c90477",
+        "bytes": 23826
+      }
+    },
+    "docs/state-contracts-major/PROGRAM.md": {
+      "sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+      "bytes": 7910,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+        "bytes": 7910
+      }
+    },
+    "docs/state-contracts-major/contracts/machine-coverage.json": {
+      "sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+      "bytes": 385316,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+        "bytes": 385316
+      }
+    },
+    "docs/state-contracts-major/contracts/program.json": {
+      "sha256": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+      "bytes": 6403,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+        "bytes": 6403
+      }
+    },
+    "docs/state-contracts-major/contracts/tasks.json": {
+      "sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+      "bytes": 331224,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+        "bytes": 331224
+      }
+    },
+    "docs/state-contracts-major/contracts/transition-coverage.json": {
+      "sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+      "bytes": 3185278,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+        "bytes": 3185278
+      }
+    }
+  },
+  "current_input_membership": [
+    {
+      "profile": "python-import-directory-v1",
+      "root": "core/pysrc",
+      "path_order": "windows",
+      "sha256": "47866d8dbbe83d269b0c3311e9bb1df44111bd8596c4c9808865eabf6d10ff9d"
+    }
+  ],
+  "semantic_rows": [
+    {
+      "cell": "disposition:machines:WF-17",
+      "frozen_record": {
+        "machine_id": "WF-17",
+        "name": "Scaffold, activation and initial context population",
+        "domain": "Workflow and resource contracts",
+        "kind": "model-guided",
+        "owner": "hooks-workflows",
+        "closure_task": "HW-27",
+        "task_ids": [
+          "HW-10",
+          "HW-16",
+          "HW-27"
+        ],
+        "explicit_machine_task_ids": [],
+        "source_intersection_task_ids": [
+          "HW-10",
+          "HW-16"
+        ],
+        "mapping_basis": "Owner assignment uses the inspected audit domain and explicit owner ledger; source intersections flag review impact, not a claim every edge changes.",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "status": "NOT_RUN",
+        "transition_count": 8,
+        "source_refs": [
+          "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/init.md",
+          "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/knowledge.md",
+          "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/context-creation/SKILL.md",
+          "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/context-creation/references/markdown-format.md"
+        ],
+        "proposed_composed_scenario_ids": [
+          "SEQ-10",
+          "SEQ-11",
+          "SEQ-29"
+        ],
+        "required_disposition": "Read the pinned/current owner, preserve each existing guard/effect/retry boundary except a named authorized change, map meaningful executed tests or reasoned conformance review to the row IDs, and add new rows for introduced events.",
+        "evidence": []
+      },
+      "frozen_record_sha256": "b5044b69fed6ce5715aa5db52f795725a6913eeac555acf958fdf208c453e4c7",
+      "group": "source-group-058",
+      "literal_inspection": "13-exact-prior65-machine-records",
+      "assessment": "Conditional finite source composition of Scaffold, activation and initial context population. Constituent guard/effect/retry source scopes and named accepted changes retained; neither task_ids nor model-guided instructions prove executed runtime/installed/model behavior.",
+      "changed_helper_interpretation_ids": [],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/workflow-next-six-source-59/proofs/WF-17-preserved.json",
+          "sha256": "872688cd6bf27eebf4802192084c65d7a137e8256155707a2543e9ae8bf7051c",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:WF-17:01",
+      "frozen_record": {
+        "transition_id": "WF-17:01",
+        "machine_id": "WF-17",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "Repository uninspected",
+          "event": "Passive init check",
+          "guard": "Explicit directory; --check --passive",
+          "to": "Inventory only",
+          "effects": "Report existing state without repository scripts, Git/network effects or authority claims.",
+          "failure_retry": "performed:false does not establish initialization or enforcement.",
+          "source": [
+            {
+              "path": "core/surface/commands/init.md",
+              "symbol": "Complete workflow body",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/init.md"
+            },
+            {
+              "path": "core/surface/skills/context-creation/SKILL.md",
+              "symbol": "Complete workflow body",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/context-creation/SKILL.md"
+            },
+            {
+              "path": "core/surface/skills/context-creation/references/markdown-format.md",
+              "symbol": "Complete workflow body",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/context-creation/references/markdown-format.md"
+            },
+            {
+              "path": "core/surface/includes/knowledge.md",
+              "symbol": "Complete workflow body",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/knowledge.md"
+            }
+          ],
+          "transition_id": "WF-17:01"
+        },
+        "task_ids": [
+          "HW-10",
+          "HW-16",
+          "HW-27"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-10",
+          "SEQ-11",
+          "SEQ-29"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "1b3a4a0dda8ae9243670f9b18deb93bbce925aa4257fa9a3eb6658f4a0ae5e98",
+      "group": "source-group-058",
+      "assessment": "Explicit-root passive inventory still has performed:false and no enforcement claim.",
+      "literal_inspection": "65-assessment",
+      "changed_helper_interpretation_ids": [],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/workflow-next-six-source-59/proofs/WF-17-preserved.json",
+          "sha256": "872688cd6bf27eebf4802192084c65d7a137e8256155707a2543e9ae8bf7051c",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d"
+        }
+      ],
+      "exact_earlier_clause_assessment": {
+        "cell": "disposition:transitions:WF-17:01",
+        "frozen_row_sha256": "1b3a4a0dda8ae9243670f9b18deb93bbce925aa4257fa9a3eb6658f4a0ae5e98",
+        "literal": {
+          "event": "Passive init check",
+          "guard": "Explicit directory; --check --passive",
+          "effects": "Report existing state without repository scripts, Git/network effects or authority claims.",
+          "failure_retry": "performed:false does not establish initialization or enforcement."
+        },
+        "actual_current_interpretation": "Explicit-root passive inventory still has performed:false and no enforcement claim.",
+        "witness_ids": [
+          "w133",
+          "w134"
+        ],
+        "prior_proof": "docs/state-contracts-major/execution/evidence/workflow-next-six-source-59/proofs/WF-17-preserved.json",
+        "selected_for_successor": true,
+        "action": "Append source successor only at actual commit, retaining old evidence."
+      }
+    },
+    {
+      "cell": "disposition:transitions:WF-17:02",
+      "frozen_record": {
+        "transition_id": "WF-17:02",
+        "machine_id": "WF-17",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "Uninitialized repository",
+          "event": "Scaffold",
+          "guard": "Existing files are admissible and no initialized/conflicting state",
+          "to": "Activation scaffold",
+          "effects": "Create missing scaffold; default new context format is HTML. Preserve existing regular files and history.",
+          "failure_retry": "An initialized/malformed/conflicting scaffold requires review; never clear the directory to retry.",
+          "source": [
+            {
+              "path": "core/surface/commands/init.md",
+              "symbol": "Complete workflow body",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/init.md"
+            },
+            {
+              "path": "core/surface/skills/context-creation/SKILL.md",
+              "symbol": "Complete workflow body",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/context-creation/SKILL.md"
+            },
+            {
+              "path": "core/surface/skills/context-creation/references/markdown-format.md",
+              "symbol": "Complete workflow body",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/context-creation/references/markdown-format.md"
+            },
+            {
+              "path": "core/surface/includes/knowledge.md",
+              "symbol": "Complete workflow body",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/knowledge.md"
+            }
+          ],
+          "transition_id": "WF-17:02"
+        },
+        "task_ids": [
+          "HW-10",
+          "HW-16",
+          "HW-27"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-10",
+          "SEQ-11",
+          "SEQ-29"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "7b3fb04dc399769ac8c864aa6af7acaa684ecb3f5e5cca228c23ecc3fecb0b89",
+      "group": "source-group-058",
+      "assessment": "Scaffold retains existing regular content, with exclusion-rule creation now correctly attributed to init.",
+      "literal_inspection": "65-assessment",
+      "changed_helper_interpretation_ids": [],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/workflow-next-six-source-59/proofs/WF-17-preserved.json",
+          "sha256": "872688cd6bf27eebf4802192084c65d7a137e8256155707a2543e9ae8bf7051c",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d"
+        }
+      ],
+      "exact_earlier_clause_assessment": {
+        "cell": "disposition:transitions:WF-17:02",
+        "frozen_row_sha256": "7b3fb04dc399769ac8c864aa6af7acaa684ecb3f5e5cca228c23ecc3fecb0b89",
+        "literal": {
+          "event": "Scaffold",
+          "guard": "Existing files are admissible and no initialized/conflicting state",
+          "effects": "Create missing scaffold; default new context format is HTML. Preserve existing regular files and history.",
+          "failure_retry": "An initialized/malformed/conflicting scaffold requires review; never clear the directory to retry."
+        },
+        "actual_current_interpretation": "Scaffold retains existing regular content, with exclusion-rule creation now correctly attributed to init.",
+        "witness_ids": [
+          "w135",
+          "w136"
+        ],
+        "prior_proof": "docs/state-contracts-major/execution/evidence/workflow-next-six-source-59/proofs/WF-17-preserved.json",
+        "selected_for_successor": true,
+        "action": "Append source successor only at actual commit, retaining old evidence."
+      }
+    },
+    {
+      "cell": "disposition:transitions:WF-17:03",
+      "frozen_record": {
+        "transition_id": "WF-17:03",
+        "machine_id": "WF-17",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "Activation scaffold",
+          "event": "Choose acquisition path",
+          "guard": "Meaningful implementation exists",
+          "to": "Brownfield acquisition",
+          "effects": "Inspect six bounded evidence categories and derive context from source.",
+          "failure_retry": "No meaningful implementation routes to decompose; context flags are not proof of implementation.",
+          "source": [
+            {
+              "path": "core/surface/commands/init.md",
+              "symbol": "Complete workflow body",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/init.md"
+            },
+            {
+              "path": "core/surface/skills/context-creation/SKILL.md",
+              "symbol": "Complete workflow body",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/context-creation/SKILL.md"
+            },
+            {
+              "path": "core/surface/skills/context-creation/references/markdown-format.md",
+              "symbol": "Complete workflow body",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/context-creation/references/markdown-format.md"
+            },
+            {
+              "path": "core/surface/includes/knowledge.md",
+              "symbol": "Complete workflow body",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/knowledge.md"
+            }
+          ],
+          "transition_id": "WF-17:03"
+        },
+        "task_ids": [
+          "HW-10",
+          "HW-16",
+          "HW-27"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-10",
+          "SEQ-11",
+          "SEQ-29"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "71b76238f2e4c3d8111a3ba30a8a2d1ef0727f15c7f7fe6135660b6c90d3921b",
+      "group": "source-group-058",
+      "assessment": "Meaningful implementation selects brownfield acquisition, otherwise decomposition.",
+      "literal_inspection": "65-assessment",
+      "changed_helper_interpretation_ids": [],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/workflow-next-six-source-59/proofs/WF-17-preserved.json",
+          "sha256": "872688cd6bf27eebf4802192084c65d7a137e8256155707a2543e9ae8bf7051c",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d"
+        }
+      ],
+      "exact_earlier_clause_assessment": {
+        "cell": "disposition:transitions:WF-17:03",
+        "frozen_row_sha256": "71b76238f2e4c3d8111a3ba30a8a2d1ef0727f15c7f7fe6135660b6c90d3921b",
+        "literal": {
+          "event": "Choose acquisition path",
+          "guard": "Meaningful implementation exists",
+          "effects": "Inspect six bounded evidence categories and derive context from source.",
+          "failure_retry": "No meaningful implementation routes to decompose; context flags are not proof of implementation."
+        },
+        "actual_current_interpretation": "Meaningful implementation selects brownfield acquisition, otherwise decomposition.",
+        "witness_ids": [
+          "w137",
+          "w138"
+        ],
+        "prior_proof": "docs/state-contracts-major/execution/evidence/workflow-next-six-source-59/proofs/WF-17-preserved.json",
+        "selected_for_successor": true,
+        "action": "Append source successor only at actual commit, retaining old evidence."
+      }
+    },
+    {
+      "cell": "disposition:transitions:WF-17:04",
+      "frozen_record": {
+        "transition_id": "WF-17:04",
+        "machine_id": "WF-17",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "Acquisition",
+          "event": "Synthesize claims",
+          "guard": "Actual observations and sources known",
+          "to": "Draft context",
+          "effects": "Separate observed/inferred/proposed/approved/unknown claims, commands and scope.",
+          "failure_retry": "A missing report or search gap is not not_found; confidence is not authority.",
+          "source": [
+            {
+              "path": "core/surface/commands/init.md",
+              "symbol": "Complete workflow body",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/init.md"
+            },
+            {
+              "path": "core/surface/skills/context-creation/SKILL.md",
+              "symbol": "Complete workflow body",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/context-creation/SKILL.md"
+            },
+            {
+              "path": "core/surface/skills/context-creation/references/markdown-format.md",
+              "symbol": "Complete workflow body",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/context-creation/references/markdown-format.md"
+            },
+            {
+              "path": "core/surface/includes/knowledge.md",
+              "symbol": "Complete workflow body",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/knowledge.md"
+            }
+          ],
+          "transition_id": "WF-17:04"
+        },
+        "task_ids": [
+          "HW-10",
+          "HW-16",
+          "HW-27"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-10",
+          "SEQ-11",
+          "SEQ-29"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "c9a5525d472cb469e5fd92dd9f78efb523e744a077df0c7a18c4d6338f13a61a",
+      "group": "source-group-058",
+      "assessment": "Observed/inferred/proposed/approved/unknown claims remain distinct.",
+      "literal_inspection": "65-assessment",
+      "changed_helper_interpretation_ids": [],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/workflow-next-six-source-59/proofs/WF-17-preserved.json",
+          "sha256": "872688cd6bf27eebf4802192084c65d7a137e8256155707a2543e9ae8bf7051c",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d"
+        }
+      ],
+      "exact_earlier_clause_assessment": {
+        "cell": "disposition:transitions:WF-17:04",
+        "frozen_row_sha256": "c9a5525d472cb469e5fd92dd9f78efb523e744a077df0c7a18c4d6338f13a61a",
+        "literal": {
+          "event": "Synthesize claims",
+          "guard": "Actual observations and sources known",
+          "effects": "Separate observed/inferred/proposed/approved/unknown claims, commands and scope.",
+          "failure_retry": "A missing report or search gap is not not_found; confidence is not authority."
+        },
+        "actual_current_interpretation": "Observed/inferred/proposed/approved/unknown claims remain distinct.",
+        "witness_ids": [
+          "w139",
+          "w140"
+        ],
+        "prior_proof": "docs/state-contracts-major/execution/evidence/workflow-next-six-source-59/proofs/WF-17-preserved.json",
+        "selected_for_successor": true,
+        "action": "Append source successor only at actual commit, retaining old evidence."
+      }
+    },
+    {
+      "cell": "disposition:transitions:WF-17:05",
+      "frozen_record": {
+        "transition_id": "WF-17:05",
+        "machine_id": "WF-17",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "Draft context",
+          "event": "Resolve relevant gaps",
+          "guard": "User-owned decisions genuinely needed now",
+          "to": "Resolved/explicitly deferred questions",
+          "effects": "Batch independent choices and preserve both sides of conflicts; retain explicit deferrals on the question board.",
+          "failure_retry": "Unresolved prerequisites block dependent work; unrelated uncertainty does not freeze all work.",
+          "source": [
+            {
+              "path": "core/surface/commands/init.md",
+              "symbol": "Complete workflow body",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/init.md"
+            },
+            {
+              "path": "core/surface/skills/context-creation/SKILL.md",
+              "symbol": "Complete workflow body",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/context-creation/SKILL.md"
+            },
+            {
+              "path": "core/surface/skills/context-creation/references/markdown-format.md",
+              "symbol": "Complete workflow body",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/context-creation/references/markdown-format.md"
+            },
+            {
+              "path": "core/surface/includes/knowledge.md",
+              "symbol": "Complete workflow body",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/knowledge.md"
+            }
+          ],
+          "transition_id": "WF-17:05"
+        },
+        "task_ids": [
+          "HW-10",
+          "HW-16",
+          "HW-27"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-10",
+          "SEQ-11",
+          "SEQ-29"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "2ef7df9061ea5aea3a13156ea7041f427fad8c8f0af12139ee7b2cbca9041a65",
+      "group": "source-group-058",
+      "assessment": "Only genuinely relevant user-owned decisions block dependent work and deferrals remain explicit.",
+      "literal_inspection": "65-assessment",
+      "changed_helper_interpretation_ids": [],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/workflow-next-six-source-59/proofs/WF-17-preserved.json",
+          "sha256": "872688cd6bf27eebf4802192084c65d7a137e8256155707a2543e9ae8bf7051c",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d"
+        }
+      ],
+      "exact_earlier_clause_assessment": {
+        "cell": "disposition:transitions:WF-17:05",
+        "frozen_row_sha256": "2ef7df9061ea5aea3a13156ea7041f427fad8c8f0af12139ee7b2cbca9041a65",
+        "literal": {
+          "event": "Resolve relevant gaps",
+          "guard": "User-owned decisions genuinely needed now",
+          "effects": "Batch independent choices and preserve both sides of conflicts; retain explicit deferrals on the question board.",
+          "failure_retry": "Unresolved prerequisites block dependent work; unrelated uncertainty does not freeze all work."
+        },
+        "actual_current_interpretation": "Only genuinely relevant user-owned decisions block dependent work and deferrals remain explicit.",
+        "witness_ids": [
+          "w141",
+          "w142"
+        ],
+        "prior_proof": "docs/state-contracts-major/execution/evidence/workflow-next-six-source-59/proofs/WF-17-preserved.json",
+        "selected_for_successor": true,
+        "action": "Append source successor only at actual commit, retaining old evidence."
+      }
+    },
+    {
+      "cell": "disposition:transitions:WF-17:06",
+      "frozen_record": {
+        "transition_id": "WF-17:06",
+        "machine_id": "WF-17",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "Draft context",
+          "event": "Write selected documents",
+          "guard": "Preview and exact source/preimage bindings valid",
+          "to": "Managed context pairs",
+          "effects": "Use native paired writer/knowledge owner; preserve human content, provenance and selected work owner.",
+          "failure_retry": "Source/output drift needs a fresh preview; uncertain writes use the original ID/recovery.",
+          "source": [
+            {
+              "path": "core/surface/commands/init.md",
+              "symbol": "Complete workflow body",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/init.md"
+            },
+            {
+              "path": "core/surface/skills/context-creation/SKILL.md",
+              "symbol": "Complete workflow body",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/context-creation/SKILL.md"
+            },
+            {
+              "path": "core/surface/skills/context-creation/references/markdown-format.md",
+              "symbol": "Complete workflow body",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/context-creation/references/markdown-format.md"
+            },
+            {
+              "path": "core/surface/includes/knowledge.md",
+              "symbol": "Complete workflow body",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/knowledge.md"
+            }
+          ],
+          "transition_id": "WF-17:06"
+        },
+        "task_ids": [
+          "HW-10",
+          "HW-16",
+          "HW-27"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-10",
+          "SEQ-11",
+          "SEQ-29"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "b20c9fc3a7772d21564d6dd5ba46ffebb928c066186bcb2bfa7a8914e5d18215",
+      "group": "source-group-058",
+      "assessment": "Paired writer retains exact preview/preimage/provenance and original recovery ID.",
+      "literal_inspection": "65-assessment",
+      "changed_helper_interpretation_ids": [],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/workflow-next-six-source-59/proofs/WF-17-preserved.json",
+          "sha256": "872688cd6bf27eebf4802192084c65d7a137e8256155707a2543e9ae8bf7051c",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d"
+        }
+      ],
+      "exact_earlier_clause_assessment": {
+        "cell": "disposition:transitions:WF-17:06",
+        "frozen_row_sha256": "b20c9fc3a7772d21564d6dd5ba46ffebb928c066186bcb2bfa7a8914e5d18215",
+        "literal": {
+          "event": "Write selected documents",
+          "guard": "Preview and exact source/preimage bindings valid",
+          "effects": "Use native paired writer/knowledge owner; preserve human content, provenance and selected work owner.",
+          "failure_retry": "Source/output drift needs a fresh preview; uncertain writes use the original ID/recovery."
+        },
+        "actual_current_interpretation": "Paired writer retains exact preview/preimage/provenance and original recovery ID.",
+        "witness_ids": [
+          "w143",
+          "w144"
+        ],
+        "prior_proof": "docs/state-contracts-major/execution/evidence/workflow-next-six-source-59/proofs/WF-17-preserved.json",
+        "selected_for_successor": true,
+        "action": "Append source successor only at actual commit, retaining old evidence."
+      }
+    },
+    {
+      "cell": "disposition:transitions:WF-17:07",
+      "frozen_record": {
+        "transition_id": "WF-17:07",
+        "machine_id": "WF-17",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "Required outputs present",
+          "event": "Finalize initialization",
+          "guard": "All selected-format prerequisites and identities validate",
+          "to": "Initialized marker committed",
+          "effects": "Commit marker with matching provenance/project identity and read back.",
+          "failure_retry": "The marker proves population, not semantic truth, host enforcement or passing checks.",
+          "source": [
+            {
+              "path": "core/surface/commands/init.md",
+              "symbol": "Complete workflow body",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/init.md"
+            },
+            {
+              "path": "core/surface/skills/context-creation/SKILL.md",
+              "symbol": "Complete workflow body",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/context-creation/SKILL.md"
+            },
+            {
+              "path": "core/surface/skills/context-creation/references/markdown-format.md",
+              "symbol": "Complete workflow body",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/context-creation/references/markdown-format.md"
+            },
+            {
+              "path": "core/surface/includes/knowledge.md",
+              "symbol": "Complete workflow body",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/knowledge.md"
+            }
+          ],
+          "transition_id": "WF-17:07"
+        },
+        "task_ids": [
+          "HW-10",
+          "HW-16",
+          "HW-27"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-10",
+          "SEQ-11",
+          "SEQ-29"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "e841a7692def3ba3ffc1db8e6a628de7dd793b2600f24ac52d8316c99a9eedda",
+      "group": "source-group-058",
+      "assessment": "Finalization validates selected-format prerequisites and reads back marker without semantic/host qualification.",
+      "literal_inspection": "65-assessment",
+      "changed_helper_interpretation_ids": [],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/workflow-next-six-source-59/proofs/WF-17-preserved.json",
+          "sha256": "872688cd6bf27eebf4802192084c65d7a137e8256155707a2543e9ae8bf7051c",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d"
+        }
+      ],
+      "exact_earlier_clause_assessment": {
+        "cell": "disposition:transitions:WF-17:07",
+        "frozen_row_sha256": "e841a7692def3ba3ffc1db8e6a628de7dd793b2600f24ac52d8316c99a9eedda",
+        "literal": {
+          "event": "Finalize initialization",
+          "guard": "All selected-format prerequisites and identities validate",
+          "effects": "Commit marker with matching provenance/project identity and read back.",
+          "failure_retry": "The marker proves population, not semantic truth, host enforcement or passing checks."
+        },
+        "actual_current_interpretation": "Finalization validates selected-format prerequisites and reads back marker without semantic/host qualification.",
+        "witness_ids": [
+          "w145",
+          "w146"
+        ],
+        "prior_proof": "docs/state-contracts-major/execution/evidence/workflow-next-six-source-59/proofs/WF-17-preserved.json",
+        "selected_for_successor": true,
+        "action": "Append source successor only at actual commit, retaining old evidence."
+      }
+    },
+    {
+      "cell": "disposition:transitions:WF-17:08",
+      "frozen_record": {
+        "transition_id": "WF-17:08",
+        "machine_id": "WF-17",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "Initialized project",
+          "event": "Refresh requested",
+          "guard": "Selected affected domains",
+          "to": "Context refresh owner",
+          "effects": "Retain marker, decisions, work IDs and history; use context-check.",
+          "failure_retry": "Never remove initialization to rerun onboarding.",
+          "source": [
+            {
+              "path": "core/surface/commands/init.md",
+              "symbol": "Complete workflow body",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/init.md"
+            },
+            {
+              "path": "core/surface/skills/context-creation/SKILL.md",
+              "symbol": "Complete workflow body",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/context-creation/SKILL.md"
+            },
+            {
+              "path": "core/surface/skills/context-creation/references/markdown-format.md",
+              "symbol": "Complete workflow body",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/context-creation/references/markdown-format.md"
+            },
+            {
+              "path": "core/surface/includes/knowledge.md",
+              "symbol": "Complete workflow body",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/knowledge.md"
+            }
+          ],
+          "transition_id": "WF-17:08"
+        },
+        "task_ids": [
+          "HW-10",
+          "HW-16",
+          "HW-27"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-10",
+          "SEQ-11",
+          "SEQ-29"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "b1e34282404a3fdd4d4d73519da034709bf13027449a54fb13a4690d8ecae1b2",
+      "group": "source-group-058",
+      "assessment": "Initialized refresh preserves marker and history and routes to context-check.",
+      "literal_inspection": "65-assessment",
+      "changed_helper_interpretation_ids": [],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/workflow-next-six-source-59/proofs/WF-17-preserved.json",
+          "sha256": "872688cd6bf27eebf4802192084c65d7a137e8256155707a2543e9ae8bf7051c",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d"
+        }
+      ],
+      "exact_earlier_clause_assessment": {
+        "cell": "disposition:transitions:WF-17:08",
+        "frozen_row_sha256": "b1e34282404a3fdd4d4d73519da034709bf13027449a54fb13a4690d8ecae1b2",
+        "literal": {
+          "event": "Refresh requested",
+          "guard": "Selected affected domains",
+          "effects": "Retain marker, decisions, work IDs and history; use context-check.",
+          "failure_retry": "Never remove initialization to rerun onboarding."
+        },
+        "actual_current_interpretation": "Initialized refresh preserves marker and history and routes to context-check.",
+        "witness_ids": [
+          "w147",
+          "w148"
+        ],
+        "prior_proof": "docs/state-contracts-major/execution/evidence/workflow-next-six-source-59/proofs/WF-17-preserved.json",
+        "selected_for_successor": true,
+        "action": "Append source successor only at actual commit, retaining old evidence."
+      }
+    }
+  ],
+  "verified_literal_witnesses": [
+    {
+      "witness_id": "w133",
+      "path": "core/surface/commands/init.md",
+      "actual0ef_spans": [
+        [
+          67,
+          83
+        ]
+      ],
+      "current_file_sha256": "2f7f9e13e5e7e69e7fa59c49c58ca6f590abf7bebc38e52ccc14b6aa46960a66",
+      "prior": {
+        "id": "w133",
+        "path": "core/surface/commands/init.md",
+        "old_source": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+        "old_span": [
+          67,
+          83
+        ],
+        "current_spans": [
+          [
+            67,
+            83
+          ]
+        ],
+        "sha256_of_LF_span": "ee01b5b46564ba14efb40121dbe77c8650d3add2b88be24717a6d0f025c3f198",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "2f7f9e13e5e7e69e7fa59c49c58ca6f590abf7bebc38e52ccc14b6aa46960a66"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift."
+    },
+    {
+      "witness_id": "w134",
+      "path": "core/pysrc/_activationlib.py",
+      "actual0ef_spans": [
+        [
+          190,
+          233
+        ]
+      ],
+      "current_file_sha256": "60c6391b4d8b143c5e59cf2320291a2d31063e8fbebe0fcf337dd83e07f8fd97",
+      "prior": {
+        "id": "w134",
+        "path": "core/pysrc/_activationlib.py",
+        "old_source": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+        "old_span": [
+          190,
+          233
+        ],
+        "current_spans": [
+          [
+            190,
+            233
+          ]
+        ],
+        "sha256_of_LF_span": "e641b1a2ab2aa746f224c41fbbd33ac50c5eab759bfc72d1b304971344b2a781",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "60c6391b4d8b143c5e59cf2320291a2d31063e8fbebe0fcf337dd83e07f8fd97"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift."
+    },
+    {
+      "witness_id": "w135",
+      "path": "core/surface/commands/init.md",
+      "actual0ef_spans": [
+        [
+          85,
+          105
+        ]
+      ],
+      "current_file_sha256": "2f7f9e13e5e7e69e7fa59c49c58ca6f590abf7bebc38e52ccc14b6aa46960a66",
+      "prior": {
+        "id": "w135",
+        "path": "core/surface/commands/init.md",
+        "old_source": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+        "old_span": [
+          85,
+          105
+        ],
+        "current_spans": [
+          [
+            85,
+            105
+          ]
+        ],
+        "sha256_of_LF_span": "631789c4226e2b7602c4984f440db18c5126d954b5ebcc0f349cf7155881c1cf",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "2f7f9e13e5e7e69e7fa59c49c58ca6f590abf7bebc38e52ccc14b6aa46960a66"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift."
+    },
+    {
+      "witness_id": "w136",
+      "path": "core/pysrc/init-codearbiter.py",
+      "actual0ef_spans": [
+        [
+          220,
+          312
+        ]
+      ],
+      "current_file_sha256": "641f0d04057ea22bff6fc39ce6fd95324901c4cc810617f4a783842cd31086b3",
+      "prior": {
+        "id": "w136",
+        "path": "core/pysrc/init-codearbiter.py",
+        "old_source": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+        "old_span": [
+          220,
+          312
+        ],
+        "current_spans": [
+          [
+            220,
+            312
+          ]
+        ],
+        "sha256_of_LF_span": "d2661921fbbcfd16d35a5cc3dbf8f2dfc78a488f7f03037d9c54d91bfe25754a",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "641f0d04057ea22bff6fc39ce6fd95324901c4cc810617f4a783842cd31086b3"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift."
+    },
+    {
+      "witness_id": "w137",
+      "path": "core/surface/skills/context-creation/SKILL.md",
+      "actual0ef_spans": [
+        [
+          15,
+          34
+        ]
+      ],
+      "current_file_sha256": "37b97c41de90c7226c698e8011ef00cab60f1d03b5e744fc129d01eb85441bfd",
+      "prior": {
+        "id": "w137",
+        "path": "core/surface/skills/context-creation/SKILL.md",
+        "old_source": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+        "old_span": [
+          15,
+          34
+        ],
+        "current_spans": [
+          [
+            15,
+            34
+          ]
+        ],
+        "sha256_of_LF_span": "d6ad6d23a64923702fc312d5ec5be9d4d4b4fd03f0d8ea04839a0b3829796ff3",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "37b97c41de90c7226c698e8011ef00cab60f1d03b5e744fc129d01eb85441bfd"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift."
+    },
+    {
+      "witness_id": "w138",
+      "path": "core/surface/skills/context-creation/SKILL.md",
+      "actual0ef_spans": [
+        [
+          50,
+          111
+        ]
+      ],
+      "current_file_sha256": "37b97c41de90c7226c698e8011ef00cab60f1d03b5e744fc129d01eb85441bfd",
+      "prior": {
+        "id": "w138",
+        "path": "core/surface/skills/context-creation/SKILL.md",
+        "old_source": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+        "old_span": [
+          50,
+          111
+        ],
+        "current_spans": [
+          [
+            50,
+            111
+          ]
+        ],
+        "sha256_of_LF_span": "89b40f1f8ce5c6065aaa6a141062b83daaec420c0376c5f324df0bed4f638fa7",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "37b97c41de90c7226c698e8011ef00cab60f1d03b5e744fc129d01eb85441bfd"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift."
+    },
+    {
+      "witness_id": "w139",
+      "path": "core/surface/skills/context-creation/SKILL.md",
+      "actual0ef_spans": [
+        [
+          93,
+          111
+        ]
+      ],
+      "current_file_sha256": "37b97c41de90c7226c698e8011ef00cab60f1d03b5e744fc129d01eb85441bfd",
+      "prior": {
+        "id": "w139",
+        "path": "core/surface/skills/context-creation/SKILL.md",
+        "old_source": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+        "old_span": [
+          93,
+          111
+        ],
+        "current_spans": [
+          [
+            93,
+            111
+          ]
+        ],
+        "sha256_of_LF_span": "74c08bfce7f409ab3e157d845836355bb96570bc83e20ac065481361254b4493",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "37b97c41de90c7226c698e8011ef00cab60f1d03b5e744fc129d01eb85441bfd"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift."
+    },
+    {
+      "witness_id": "w140",
+      "path": "core/surface/skills/context-creation/SKILL.md",
+      "actual0ef_spans": [
+        [
+          113,
+          167
+        ]
+      ],
+      "current_file_sha256": "37b97c41de90c7226c698e8011ef00cab60f1d03b5e744fc129d01eb85441bfd",
+      "prior": {
+        "id": "w140",
+        "path": "core/surface/skills/context-creation/SKILL.md",
+        "old_source": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+        "old_span": [
+          113,
+          167
+        ],
+        "current_spans": [
+          [
+            113,
+            167
+          ]
+        ],
+        "sha256_of_LF_span": "42ace248892cf042bc8ec8bec8a023aefd43cf5f1657ed646c28587575f60f19",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "37b97c41de90c7226c698e8011ef00cab60f1d03b5e744fc129d01eb85441bfd"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift."
+    },
+    {
+      "witness_id": "w141",
+      "path": "core/surface/skills/context-creation/SKILL.md",
+      "actual0ef_spans": [
+        [
+          190,
+          215
+        ]
+      ],
+      "current_file_sha256": "37b97c41de90c7226c698e8011ef00cab60f1d03b5e744fc129d01eb85441bfd",
+      "prior": {
+        "id": "w141",
+        "path": "core/surface/skills/context-creation/SKILL.md",
+        "old_source": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+        "old_span": [
+          190,
+          215
+        ],
+        "current_spans": [
+          [
+            190,
+            215
+          ]
+        ],
+        "sha256_of_LF_span": "499741f002ee912d2217e3507ffa12a180d9fa603bde10014fbc526208fac155",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "37b97c41de90c7226c698e8011ef00cab60f1d03b5e744fc129d01eb85441bfd"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift."
+    },
+    {
+      "witness_id": "w142",
+      "path": "core/surface/skills/context-creation/references/markdown-format.md",
+      "actual0ef_spans": [
+        [
+          189,
+          219
+        ]
+      ],
+      "current_file_sha256": "29e7add1ba8884f1c80b357aed5b6c3ac88a4110f2bd72cdceee124e84c90477",
+      "prior": {
+        "id": "w142",
+        "path": "core/surface/skills/context-creation/references/markdown-format.md",
+        "old_source": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+        "old_span": [
+          189,
+          219
+        ],
+        "current_spans": [
+          [
+            189,
+            219
+          ]
+        ],
+        "sha256_of_LF_span": "11e9ddbda9b6a0ef46164e50fccfda11feadc513f315b4657bc6009992132c00",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "29e7add1ba8884f1c80b357aed5b6c3ac88a4110f2bd72cdceee124e84c90477"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift."
+    },
+    {
+      "witness_id": "w143",
+      "path": "core/surface/skills/context-creation/SKILL.md",
+      "actual0ef_spans": [
+        [
+          217,
+          235
+        ]
+      ],
+      "current_file_sha256": "37b97c41de90c7226c698e8011ef00cab60f1d03b5e744fc129d01eb85441bfd",
+      "prior": {
+        "id": "w143",
+        "path": "core/surface/skills/context-creation/SKILL.md",
+        "old_source": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+        "old_span": [
+          217,
+          235
+        ],
+        "current_spans": [
+          [
+            217,
+            235
+          ]
+        ],
+        "sha256_of_LF_span": "bd1b5442f1ca86ffa4ba21d9cd5cabd2364b17cbf235c41368576d75a8a573db",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "37b97c41de90c7226c698e8011ef00cab60f1d03b5e744fc129d01eb85441bfd"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift."
+    },
+    {
+      "witness_id": "w144",
+      "path": "core/surface/skills/context-creation/references/markdown-format.md",
+      "actual0ef_spans": [
+        [
+          221,
+          263
+        ]
+      ],
+      "current_file_sha256": "29e7add1ba8884f1c80b357aed5b6c3ac88a4110f2bd72cdceee124e84c90477",
+      "prior": {
+        "id": "w144",
+        "path": "core/surface/skills/context-creation/references/markdown-format.md",
+        "old_source": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+        "old_span": [
+          221,
+          263
+        ],
+        "current_spans": [
+          [
+            221,
+            263
+          ]
+        ],
+        "sha256_of_LF_span": "3a645a621ffa337420a0726eb689318af182597e015391ecccd0fdfc760db17d",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "29e7add1ba8884f1c80b357aed5b6c3ac88a4110f2bd72cdceee124e84c90477"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift."
+    },
+    {
+      "witness_id": "w145",
+      "path": "core/surface/skills/context-creation/SKILL.md",
+      "actual0ef_spans": [
+        [
+          256,
+          270
+        ]
+      ],
+      "current_file_sha256": "37b97c41de90c7226c698e8011ef00cab60f1d03b5e744fc129d01eb85441bfd",
+      "prior": {
+        "id": "w145",
+        "path": "core/surface/skills/context-creation/SKILL.md",
+        "old_source": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+        "old_span": [
+          256,
+          270
+        ],
+        "current_spans": [
+          [
+            256,
+            270
+          ]
+        ],
+        "sha256_of_LF_span": "f7b5d4883182a1455066c74d6dcdda41d96eb72d998bb7d1e5e415ba56dd48f9",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "37b97c41de90c7226c698e8011ef00cab60f1d03b5e744fc129d01eb85441bfd"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift."
+    },
+    {
+      "witness_id": "w146",
+      "path": "core/surface/skills/context-creation/references/markdown-format.md",
+      "actual0ef_spans": [
+        [
+          265,
+          288
+        ]
+      ],
+      "current_file_sha256": "29e7add1ba8884f1c80b357aed5b6c3ac88a4110f2bd72cdceee124e84c90477",
+      "prior": {
+        "id": "w146",
+        "path": "core/surface/skills/context-creation/references/markdown-format.md",
+        "old_source": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+        "old_span": [
+          265,
+          288
+        ],
+        "current_spans": [
+          [
+            265,
+            288
+          ]
+        ],
+        "sha256_of_LF_span": "f4cd88be68f8c65349e6095ba4cd00d10600c4d04f7da1a3cda0c8d60b0284ab",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "29e7add1ba8884f1c80b357aed5b6c3ac88a4110f2bd72cdceee124e84c90477"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift."
+    },
+    {
+      "witness_id": "w147",
+      "path": "core/surface/commands/init.md",
+      "actual0ef_spans": [
+        [
+          30,
+          64
+        ]
+      ],
+      "current_file_sha256": "2f7f9e13e5e7e69e7fa59c49c58ca6f590abf7bebc38e52ccc14b6aa46960a66",
+      "prior": {
+        "id": "w147",
+        "path": "core/surface/commands/init.md",
+        "old_source": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+        "old_span": [
+          30,
+          64
+        ],
+        "current_spans": [
+          [
+            30,
+            64
+          ]
+        ],
+        "sha256_of_LF_span": "5fe7e20b696db6fdfb2b2a1c2fd092965db4e90c6a2ef3c7a2954ceffaf36aca",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "2f7f9e13e5e7e69e7fa59c49c58ca6f590abf7bebc38e52ccc14b6aa46960a66"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift."
+    },
+    {
+      "witness_id": "w148",
+      "path": "core/surface/skills/context-check/SKILL.md",
+      "actual0ef_spans": [
+        [
+          24,
+          40
+        ]
+      ],
+      "current_file_sha256": "f9add66b35d19eea5592dabd4c1e29fa8a7df22a9a3a694577daa1b917937360",
+      "prior": {
+        "id": "w148",
+        "path": "core/surface/skills/context-check/SKILL.md",
+        "old_source": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+        "old_span": [
+          24,
+          40
+        ],
+        "current_spans": [
+          [
+            24,
+            40
+          ]
+        ],
+        "sha256_of_LF_span": "55749e3c30c6c9484a31bc1ac4c7952086cc1937b0c45e887e69815f3a492494",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "f9add66b35d19eea5592dabd4c1e29fa8a7df22a9a3a694577daa1b917937360"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift."
+    }
+  ],
+  "changed_old_literals": [],
+  "reused_helper_assessments": [],
+  "negative_scope": "Static finite guarded claims only, with inherited scope/limits. No execution, qualification or unchecked new source claim."
+}

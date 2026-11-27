@@ -1,0 +1,156 @@
+{
+  "source": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+  "run_id": 43992411061,
+  "attempt": 1,
+  "job_id": 133736258482,
+  "job_name": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+  "failed_steps": [
+    {
+      "number": 50,
+      "name": "Observe original Q02 publication guard tests",
+      "conclusion": "failure"
+    }
+  ],
+  "metadata_sha256": "95b7f9a4a14f1b74063cc8c213acee44b7d080fb483c66a5930e4df70e14474b",
+  "log_sha256": "f2dd5e37a252b16f50ec64d2ef82a54047399d00fc15538c2bd0d5555886c96f",
+  "log_bytes": 278524,
+  "named_failure_methods": [
+    {
+      "line": 2519,
+      "kind": "FAIL",
+      "method": "test_pi_publish_refuses_a_different_workflow_commit",
+      "owner": "__main__.ConsumerSafetyGateTest.test_pi_publish_refuses_a_different_workflow_commit"
+    },
+    {
+      "line": 2530,
+      "kind": "FAIL",
+      "method": "test_literal_extraction_refuses_missing_duplicate_and_unsupported_shapes",
+      "owner": "__main__.ReceiptShellBoundaryTest.test_literal_extraction_refuses_missing_duplicate_and_unsupported_shapes"
+    },
+    {
+      "line": 2541,
+      "kind": "FAIL",
+      "method": "test_missing_receipt_is_uploaded_once_and_replay_only_reads",
+      "owner": "__main__.ReceiptShellBoundaryTest.test_missing_receipt_is_uploaded_once_and_replay_only_reads"
+    },
+    {
+      "line": 2552,
+      "kind": "FAIL",
+      "method": "test_same_named_wrong_receipt_is_downloaded_and_refused_without_overwrite",
+      "owner": "__main__.ReceiptShellBoundaryTest.test_same_named_wrong_receipt_is_downloaded_and_refused_without_overwrite"
+    },
+    {
+      "line": 2563,
+      "kind": "FAIL",
+      "method": "test_uploaded_receipt_with_lost_response_is_observed_before_retry",
+      "owner": "__main__.ReceiptShellBoundaryTest.test_uploaded_receipt_with_lost_response_is_observed_before_retry"
+    }
+  ],
+  "source_frames": [
+    {
+      "log_line": 1857,
+      "source_file": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\ca-vitest-original-plduvbtd\\repo\\inert-vitest.py",
+      "source_line": 14
+    },
+    {
+      "log_line": 2522,
+      "source_file": "D:\\a\\codeArbiter\\codeArbiter\\.github\\scripts\\test_release_workflow.py",
+      "source_line": 415
+    },
+    {
+      "log_line": 2533,
+      "source_file": "D:\\a\\codeArbiter\\codeArbiter\\.github\\scripts\\test_release_workflow.py",
+      "source_line": 634
+    },
+    {
+      "log_line": 2544,
+      "source_file": "D:\\a\\codeArbiter\\codeArbiter\\.github\\scripts\\test_release_workflow.py",
+      "source_line": 634
+    },
+    {
+      "log_line": 2555,
+      "source_file": "D:\\a\\codeArbiter\\codeArbiter\\.github\\scripts\\test_release_workflow.py",
+      "source_line": 634
+    },
+    {
+      "log_line": 2566,
+      "source_file": "D:\\a\\codeArbiter\\codeArbiter\\.github\\scripts\\test_release_workflow.py",
+      "source_line": 634
+    }
+  ],
+  "fixed_failure_categories": [
+    {
+      "line": 1856,
+      "matched_fixed_category": "Traceback (most recent call last)"
+    },
+    {
+      "line": 2519,
+      "matched_fixed_category": "FAIL:"
+    },
+    {
+      "line": 2521,
+      "matched_fixed_category": "Traceback (most recent call last)"
+    },
+    {
+      "line": 2527,
+      "matched_fixed_category": "AssertionError"
+    },
+    {
+      "line": 2530,
+      "matched_fixed_category": "FAIL:"
+    },
+    {
+      "line": 2532,
+      "matched_fixed_category": "Traceback (most recent call last)"
+    },
+    {
+      "line": 2538,
+      "matched_fixed_category": "AssertionError"
+    },
+    {
+      "line": 2541,
+      "matched_fixed_category": "FAIL:"
+    },
+    {
+      "line": 2543,
+      "matched_fixed_category": "Traceback (most recent call last)"
+    },
+    {
+      "line": 2549,
+      "matched_fixed_category": "AssertionError"
+    },
+    {
+      "line": 2552,
+      "matched_fixed_category": "FAIL:"
+    },
+    {
+      "line": 2554,
+      "matched_fixed_category": "Traceback (most recent call last)"
+    },
+    {
+      "line": 2560,
+      "matched_fixed_category": "AssertionError"
+    },
+    {
+      "line": 2563,
+      "matched_fixed_category": "FAIL:"
+    },
+    {
+      "line": 2565,
+      "matched_fixed_category": "Traceback (most recent call last)"
+    },
+    {
+      "line": 2571,
+      "matched_fixed_category": "AssertionError"
+    },
+    {
+      "line": 2576,
+      "matched_fixed_category": "FAILED ("
+    },
+    {
+      "line": 2577,
+      "matched_fixed_category": "Process completed with exit code"
+    }
+  ],
+  "cause": "UNKNOWN_PENDING_SOURCE_TRACE"
+}

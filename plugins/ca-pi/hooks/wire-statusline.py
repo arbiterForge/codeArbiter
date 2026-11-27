@@ -11,7 +11,7 @@
 #   python wire-statusline.py install      # back up any existing line, wire ours
 #   python wire-statusline.py uninstall    # restore the backed-up line (or remove)
 #   python wire-statusline.py status       # report current wiring, change nothing
-#   python wire-statusline.py refresh      # self-heal a stale ca-owned path only
+#   python wire-statusline.py refresh      # self-heal an owned path or legacy backup
 #                                          # (no-op unless ours AND changed) — run
 #                                          # from SessionStart so a plugin update
 #                                          # re-points the pin automatically
@@ -39,7 +39,9 @@ import hostapi  # noqa: E402 — host seam (ADR-0011): plugin-root resolution
 
 BACKUP_KEY = "_codearbiterStatuslineBackup"       # holds the prior statusLine value
 OWNER_KEY = "_codearbiterStatuslineOwner"         # exact command last written by us
-SPINNER_BACKUP_KEY = "_codearbiterSpinnerVerbsBackup"  # holds prior spinnerVerbs
+SPINNER_BACKUP_KEY = "_codearbiterSpinnerVerbsBackupV2"  # holds prior spinnerVerbs
+LEGACY_SPINNER_BACKUP_KEY = "_codearbiterSpinnerVerbsBackup"
+SPINNER_OWNER_KEY = "_codearbiterSpinnerVerbsOwned"    # exact spinnerVerbs value we wrote (HW-05)
 _COMMAND_RE = re.compile(
     r'''^\s*(?P<interp>"[^"]*"|'[^']*'|\S+)\s+'''
     r'''(?P<script>"[^"]*"|'[^']*'|\S+)\s*$''')
@@ -231,7 +233,7 @@ def cmd_status(settings, exists, script_abs):
         print("spinnerVerbs: (none set)")
     else:
         count = len(sv.get("verbs", [])) if isinstance(sv, dict) else "?"
-        owned = SPINNER_BACKUP_KEY in settings
+        owned = _spinner_owned(settings)
         print(f"spinnerVerbs: {count} verb(s), {'codeArbiter' if owned else 'user-owned'}")
 
 
@@ -287,11 +289,14 @@ def refresh_if_stale(settings, script_abs, interp):
 
     Scope is deliberately narrow — this is NOT install:
       - statusLine is ours AND its command != the desired current command -> rewrite, True
-      - statusLine is ours and already current                            -> no change, False
+      - statusLine is ours and already current -> only legacy backup migration may change it
       - statusLine is a third-party line, or absent                       -> never touched, False
 
-    Returning a changed-flag lets the caller persist ONLY on a real change, so a
-    steady-state session start never churns settings.json.
+    An owned line also migrates a legacy spinner backup before an older reader
+    can blindly restore it over a later user choice. This preserves the backup
+    value and current spinner; a real metadata migration returns True even when
+    the command is already current. A steady-state current-format session does
+    not churn settings.json. Ambiguous mixed backup formats remain untouched.
 
     NON-DURABLE ROOTS ARE INERT (found in-session 2026-07-25, after it broke the
     maintainer's statusline three times in one day). settings.json is GLOBAL and
@@ -318,38 +323,80 @@ def refresh_if_stale(settings, script_abs, interp):
     current = settings.get("statusLine")
     if not is_ours(current, settings):
         return False
+    if SPINNER_BACKUP_KEY in settings and LEGACY_SPINNER_BACKUP_KEY in settings:
+        return False
+    metadata_changed = _migrate_spinner_backup(settings)
     desired = build_command(interp, script_abs)
     cur_cmd = current.get("command") if isinstance(current, dict) else current
     if cur_cmd == desired and settings.get(OWNER_KEY) == desired:
-        return False
+        return metadata_changed
     settings["statusLine"] = owned_statusline(desired)
     settings[OWNER_KEY] = desired
     return True
 
 
 def cmd_refresh(settings, path, script_abs, interp):
-    """SessionStart self-heal entry. Refresh a stale ca-owned path and persist ONLY
-    if it changed; otherwise leave settings.json untouched (no mtime churn)."""
+    """Persist a real owned-path or legacy-backup migration; otherwise no write."""
     if not os.path.exists(script_abs):
         # Renderer missing (mid-update?) — do nothing rather than write a path that
         # 404s. A later session with the file present will heal it.
         return
+    prior_line = settings.get("statusLine")
     if refresh_if_stale(settings, script_abs, interp):
         save_settings(path, settings)
-        print(f"REFRESHED stale codeArbiter statusline path -> {settings['statusLine']['command']}")
+        if prior_line != settings.get("statusLine"):
+            print(f"REFRESHED stale codeArbiter statusline path -> {settings['statusLine']['command']}")
+        else:
+            print("Updated codeArbiter settings.")
+
+
+def _migrate_spinner_backup(settings):
+    """Keep prior data while removing the unsafe released-reader trigger.
+
+    Released readers restore whenever the old key exists, without consulting
+    the ownership stamp. They ignore the new key and retain its metadata.
+    Never choose between two existing backup formats or discard either value.
+    """
+    if LEGACY_SPINNER_BACKUP_KEY not in settings:
+        return False
+    if SPINNER_BACKUP_KEY in settings:
+        raise SystemExit("REFUSING conflicting spinner backup formats; settings left unchanged.")
+    settings[SPINNER_BACKUP_KEY] = settings.pop(LEGACY_SPINNER_BACKUP_KEY)
+    return True
+
+
+def _spinner_owned(settings):
+    """True iff the CURRENT spinnerVerbs is still the value codeArbiter wrote.
+
+    HW-05 (HOOK-F05): ownership used to be inferred from the mere presence of
+    the backup key, so a spinner the user set AFTER install was restored over
+    on uninstall. Ownership is now the exact installed value, stamped beside
+    the backup. A legacy backup with no stamp is owned only while the current
+    value is exactly the verbs this version installs — the conservative
+    reading: anything else may be the user's."""
+    if ((SPINNER_BACKUP_KEY not in settings and LEGACY_SPINNER_BACKUP_KEY not in settings)
+            or (SPINNER_BACKUP_KEY in settings and LEGACY_SPINNER_BACKUP_KEY in settings)):
+        return False
+    current = settings.get("spinnerVerbs")
+    if SPINNER_OWNER_KEY in settings:
+        return current is not None and current == settings[SPINNER_OWNER_KEY]
+    return current == ARBITER_SPINNER_VERBS
 
 
 def _install_spinner_verbs(settings, refresh):
+    _migrate_spinner_backup(settings)
     current_sv = settings.get("spinnerVerbs")
-    already_ours = SPINNER_BACKUP_KEY in settings
-    if already_ours:
-        # Refresh: update to latest verb list, preserve the backup.
+    if _spinner_owned(settings):
+        # Still ours: update to the latest verb list, keep the original backup.
         settings["spinnerVerbs"] = ARBITER_SPINNER_VERBS
+        settings[SPINNER_OWNER_KEY] = ARBITER_SPINNER_VERBS
         return
-    # First install: back up whatever is there (may be None), then set ours.
-    if not refresh or current_sv is not None:
-        settings[SPINNER_BACKUP_KEY] = current_sv
+    # Not (or no longer) ours: back up whatever is there NOW (may be None) —
+    # a value the user set after an earlier install is the one to restore —
+    # then set ours and stamp exactly what was written.
+    settings[SPINNER_BACKUP_KEY] = current_sv
     settings["spinnerVerbs"] = ARBITER_SPINNER_VERBS
+    settings[SPINNER_OWNER_KEY] = ARBITER_SPINNER_VERBS
 
 
 def cmd_uninstall(settings, path, script_abs):
@@ -364,8 +411,17 @@ def cmd_uninstall(settings, path, script_abs):
         save_settings(path, settings)
         print("codeArbiter statusline was replaced; preserved the current line.")
         return
-    if not is_ours(current, settings) and BACKUP_KEY not in settings:
-        print("codeArbiter statusline is not wired here; nothing to do.")
+    if not is_ours(current, settings):
+        # A legacy backup proves a past install, not ownership of the current
+        # line. Preserve a later user replacement or removal; settle only our
+        # stale bookkeeping and the independently owned spinner (HW-05).
+        stale = BACKUP_KEY in settings or OWNER_KEY in settings
+        settings.pop(BACKUP_KEY, None)
+        settings.pop(OWNER_KEY, None)
+        spinner_changed = _uninstall_spinner_verbs(settings) is not None
+        if stale or spinner_changed:
+            save_settings(path, settings)
+        print("codeArbiter statusline is not wired here; preserved the current setting.")
         return
     if BACKUP_KEY in settings:
         prior = settings.pop(BACKUP_KEY)
@@ -385,13 +441,24 @@ def cmd_uninstall(settings, path, script_abs):
 
 
 def _uninstall_spinner_verbs(settings):
-    if SPINNER_BACKUP_KEY not in settings:
-        return
-    prior_sv = settings.pop(SPINNER_BACKUP_KEY)
+    """Restore the pre-install spinnerVerbs only while codeArbiter still owns
+    the current value; otherwise leave the user's value and drop only our
+    bookkeeping. Touches no other key. Returns a short report or None."""
+    _migrate_spinner_backup(settings)
+    if SPINNER_BACKUP_KEY not in settings and SPINNER_OWNER_KEY not in settings:
+        return None
+    owned = _spinner_owned(settings)
+    prior_sv = settings.pop(SPINNER_BACKUP_KEY, None)
+    settings.pop(SPINNER_OWNER_KEY, None)
+    if not owned:
+        print("spinner ownership ended: spinnerVerbs was changed after install; "
+              "preserved the current value.")
+        return "preserved"
     if prior_sv is None:
         settings.pop("spinnerVerbs", None)
     else:
         settings["spinnerVerbs"] = prior_sv
+    return "restored"
 
 
 def main(argv=None):

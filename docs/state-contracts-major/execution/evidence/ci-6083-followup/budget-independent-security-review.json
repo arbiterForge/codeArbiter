@@ -1,0 +1,48 @@
+{
+  "schema": "codearbiter.bounded-independent-ci-security-review/1",
+  "reviewer": "/root/packaging_site_tools",
+  "author_independence": "No budget patch authored/edited by reviewer.",
+  "verdict": "PASS",
+  "findings": [],
+  "candidate": "candidate-v1:f1974f7d187eb977546e1eedbe66305d6dcd0a3c1ab3cae48d2dcaf935a866bb",
+  "files": {
+    ".github/workflows/ci.yml": "e2dd496b8d10d368a1f879597b0796b94d3c1ca7eff785dab09549fe9f0cac99",
+    ".github/scripts/test_hook_ci_partition.py": "c1e7ad0051bb5509b158ea5c2f8c439b1e574f951daa18e2b24a76566001ca15"
+  },
+  "preimages_verified_against_actual_HEAD": {
+    ".github/workflows/ci.yml": "a9c3465ac76712a5d78392acecd496ed722ffb01e6c9ee90f85a3aeb78e5d535",
+    ".github/scripts/test_hook_ci_partition.py": "5cbe651b5d26b258a0ec4a4dcedb59594ecd2ab0c466cbfd9f6dba6ede29af2a"
+  },
+  "physical_and_staged_literal_equal": true,
+  "canonical_scan_observed": {
+    "candidate": "candidate-v1:f1974f7d187eb977546e1eedbe66305d6dcd0a3c1ab3cae48d2dcaf935a866bb",
+    "crypto_flag": false,
+    "findings": 0,
+    "read_only": true
+  },
+  "patch_sha256": "2fcf18af0828098bc271bc1d79cb5c84c41ddf1413c1efcf20282826db4cfc55",
+  "staged_diff_sha256": "c03f8741b198e0ff5b6fb3be4f9a87e3103d613bb86c7d8a968c1a6059191392",
+  "inspection": [
+    "Entire two-file diff and owning validator/fixture/mutant changes inspected.",
+    "Actual prior job132311178328 success03:17:33\u219203:37:20 confirms19m47; current132323671915 cancelled04:01:18\u219204:21:24, explicit20m maximum annotation confirms aggregate budget failure. Not promoted to an assertion pass.",
+    "Matrix expression permits25 only when os==windows-latest AND partition==contracts; all other hook cells retain20. No other job/permission/action/event/secret/publication change.",
+    "Command digest73/partition72+isolation/native-qualified-once semantics and required failure behavior unchanged. Individual test/command/recovery deadlines unchanged.",
+    "New validator pins exact bounded expression and rejects host/partition/other-ceiling/global-budget/30-minute mutations. Existing canonical observed44 owning tests PASS retained, not rerun by reviewer."
+  ],
+  "controls": [
+    "CON-004 bounded execution",
+    "CON-009 truthful evidence and no fabricated completion",
+    "CON-011 exact-source verification and no permission weakening",
+    "CON-016 actual owner/test assertions"
+  ],
+  "evidence": {
+    "author_freeze_sha256": "22ccaf69b4bb786b2c1d19dbff68f3acd47e40748ca12b60ed64c13db61dbda8",
+    "author_GREEN_log_sha256": "17f666a789081b4e9fda0037218aef0f173b946970933bea1fb785fa4fd1bad5",
+    "actual_job_metadata": "C:/Users/brenn/AppData/Local/Temp/ca-sbx-transport-peer-l8a7x3zv/{prior-6a-jobs.json,windows-job.json,windows-annotations.json}"
+  },
+  "limits": [
+    "Future hosted25-minute cell must actually finish; local guard PASS does not prove that future execution.",
+    "No broad suite rerun by reviewer; no source/index/marker changes."
+  ],
+  "mutations": "This Temp verdict only."
+}

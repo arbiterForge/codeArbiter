@@ -1,0 +1,10 @@
+{
+  "classification": "INVALID_FIXTURE_SETUP_NOT_PRODUCT_RED",
+  "initial_test_sha256": "3d4667e33d4539eb1b5a88aafbbf7ad4da188f62d6b895789724b2584049a2f6",
+  "actual_exit_code": 1,
+  "actual_duration_seconds": 11.536559100000886,
+  "actual_failures": "Empty checkpoint record.add refused INVALID_MODEL: too few items before scope assertions; other three top-levels passed.",
+  "retained_initial_test": "initial-test.go",
+  "correction": "Assert actual schema-owned emptiness refusal/no writes; create retired checkpoint only through real apply with valid task reassignment. No production edit.",
+  "rerun": "Not executed until Root scoped successor authorization."
+}

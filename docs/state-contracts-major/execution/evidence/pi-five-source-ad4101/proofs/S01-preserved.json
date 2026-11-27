@@ -1,0 +1,493 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "ad4101ab36c30e9b46b69e32455911d3311f8bd6",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "/root/crypto_evidence_review: literal50-clause Pi source/guard/effect/retry assessment;29eligible source-only proposals"
+ },
+ "inputs": {
+  ".codearbiter/decisions/0043-assistive-state-engine.md": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+  "plugins/ca-pi/tools/src/activation.ts": "3ca7a691fe05ca96dee7a8e26a005a84baa0b03ba58e9b1f3f6c1102b3d1bb31",
+  "plugins/ca-pi/tools/src/activity.ts": "06239371173598c3f20388c49ca36f4497befe27dbb5e93d3d91fa660c1ed8d1",
+  "plugins/ca-pi/tools/src/command-ownership.ts": "2d2024b57f32b47d42b785afe8a44624b2f67513a9697cd8e18c4e684b7021e6",
+  "plugins/ca-pi/tools/src/commands.ts": "4abab741132cfa844ec4de89ade8f117bc248a90972797dda3f53718efa8c6d8",
+  "plugins/ca-pi/tools/src/extension.ts": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532",
+  "plugins/ca-pi/tools/src/native-background.ts": "7108750536f09a7924950ba934c2c88deb239b52e18216e8967cc8f1398d3bad",
+  "plugins/ca-pi/tools/src/native-plan.ts": "b638b19da6078d9f86281d900a05b53602e6b034cc8890fa221229655c6fdce8",
+  "plugins/ca-pi/tools/src/session-identity.ts": "310a9d6c005f73b0d7d54aeb3be067aece92d700371fae6db7681c6831ef8bdc",
+  "plugins/ca-pi/tools/src/sidebar-manager.ts": "bcdc241808ed6b1faf778292702e374408afe1175e3b2768a84c3c1103e5be58",
+  "plugins/ca-pi/tools/src/status.ts": "959aa8a98865b7a2b1ecdb276de3df2cee4d442545504716d1f5a5747c656403",
+  "plugins/ca-pi/tools/src/tool-guard.ts": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+ },
+ "disposition_ids": [
+  "disposition:machines:S01",
+  "disposition:transitions:S01:01",
+  "disposition:transitions:S01:02",
+  "disposition:transitions:S01:03",
+  "disposition:transitions:S01:04",
+  "disposition:transitions:S01:05",
+  "disposition:transitions:S01:06",
+  "disposition:transitions:S01:07",
+  "disposition:transitions:S01:08",
+  "disposition:transitions:S01:09",
+  "disposition:transitions:S01:10"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/pi-five-source-ad4101/clause-inspection.json",
+   "sha256": "82e104d384721262ba0fe814724babeb4e90b94f5955bcf9f2a36995cd4f280f"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/pi-five-source-ad4101/source-bindings.json",
+   "sha256": "104c1235e3632122d6dfcb6b2f7bf75b1d4ccd8105b4f56d2c96bb7c108650aa"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:S01",
+   "frozen_row_sha256": "6b924a8789591c4fb280050c790fe486e617925930893e0c5a54f8d3632a8d1a",
+   "clause_ids": [
+    "disposition:transitions:S01:01",
+    "disposition:transitions:S01:02",
+    "disposition:transitions:S01:03",
+    "disposition:transitions:S01:04",
+    "disposition:transitions:S01:05",
+    "disposition:transitions:S01:06",
+    "disposition:transitions:S01:07",
+    "disposition:transitions:S01:08",
+    "disposition:transitions:S01:09",
+    "disposition:transitions:S01:10"
+   ],
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/extension.ts",
+     "start": 641,
+     "end": 672,
+     "file_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/extension.ts",
+     "start": 531,
+     "end": 549,
+     "file_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+     "start": 780,
+     "end": 820,
+     "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/status.ts",
+     "start": 103,
+     "end": 137,
+     "file_sha256": "959aa8a98865b7a2b1ecdb276de3df2cee4d442545504716d1f5a5747c656403"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/activation.ts",
+     "start": 9,
+     "end": 24,
+     "file_sha256": "3ca7a691fe05ca96dee7a8e26a005a84baa0b03ba58e9b1f3f6c1102b3d1bb31"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/extension.ts",
+     "start": 659,
+     "end": 677,
+     "file_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/extension.ts",
+     "start": 245,
+     "end": 252,
+     "file_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/extension.ts",
+     "start": 678,
+     "end": 686,
+     "file_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+     "start": 766,
+     "end": 811,
+     "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/extension.ts",
+     "start": 683,
+     "end": 697,
+     "file_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/extension.ts",
+     "start": 1261,
+     "end": 1314,
+     "file_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+     "start": 766,
+     "end": 843,
+     "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/extension.ts",
+     "start": 691,
+     "end": 705,
+     "file_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/extension.ts",
+     "start": 717,
+     "end": 752,
+     "file_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/extension.ts",
+     "start": 689,
+     "end": 715,
+     "file_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/extension.ts",
+     "start": 464,
+     "end": 470,
+     "file_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/extension.ts",
+     "start": 574,
+     "end": 603,
+     "file_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/extension.ts",
+     "start": 522,
+     "end": 526,
+     "file_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/extension.ts",
+     "start": 550,
+     "end": 603,
+     "file_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/extension.ts",
+     "start": 755,
+     "end": 795,
+     "file_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/extension.ts",
+     "start": 798,
+     "end": 809,
+     "file_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/status.ts",
+     "start": 222,
+     "end": 265,
+     "file_sha256": "959aa8a98865b7a2b1ecdb276de3df2cee4d442545504716d1f5a5747c656403"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/sidebar-manager.ts",
+     "start": 96,
+     "end": 107,
+     "file_sha256": "bcdc241808ed6b1faf778292702e374408afe1175e3b2768a84c3c1103e5be58"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/extension.ts",
+     "start": 811,
+     "end": 828,
+     "file_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/sidebar-manager.ts",
+     "start": 110,
+     "end": 120,
+     "file_sha256": "bcdc241808ed6b1faf778292702e374408afe1175e3b2768a84c3c1103e5be58"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/sidebar-manager.ts",
+     "start": 133,
+     "end": 175,
+     "file_sha256": "bcdc241808ed6b1faf778292702e374408afe1175e3b2768a84c3c1103e5be58"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/status.ts",
+     "start": 267,
+     "end": 277,
+     "file_sha256": "959aa8a98865b7a2b1ecdb276de3df2cee4d442545504716d1f5a5747c656403"
+    }
+   ],
+   "semantic_assessment": "Every literal guard/effect/retry clause is separately mapped in the source inspection, including accepted task changes and residual limitations. Complete source-contract preservation only; no runtime/host/task qualification."
+  },
+  {
+   "cell": "disposition:transitions:S01:01",
+   "frozen_row_sha256": "dcc7ae1ce41c06865edbf0a434a4892c6f3a58d9253be392da087fa80d9c6857",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/extension.ts",
+     "start": 641,
+     "end": 672,
+     "file_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/extension.ts",
+     "start": 531,
+     "end": 549,
+     "file_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+     "start": 780,
+     "end": 820,
+     "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/status.ts",
+     "start": 103,
+     "end": 137,
+     "file_sha256": "959aa8a98865b7a2b1ecdb276de3df2cee4d442545504716d1f5a5747c656403"
+    }
+   ],
+   "semantic_assessment": "On session_start retire active/ready leases before awaiting previous background stop; dispose UI/activity, deactivate/begin activation, reset bridge/session, mint current lifecycle, start/refresh footer, read activation. After each asynchronous activation boundary check object identity; stale continuation returns. Existing side effects of a failing prior-stop callback are not invented as rolled back.",
+   "limits": "Reasoned source conformance only. No execution, human confirmation, disk/process/network/installed success, test result, task/host qualification, or evidence-epoch renewal is asserted."
+  },
+  {
+   "cell": "disposition:transitions:S01:02",
+   "frozen_row_sha256": "5d3ec9836209fb191b56f8e4ecd5578a9211889d193ff725c36b8c8e989cf75f",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/activation.ts",
+     "start": 9,
+     "end": 24,
+     "file_sha256": "3ca7a691fe05ca96dee7a8e26a005a84baa0b03ba58e9b1f3f6c1102b3d1bb31"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/extension.ts",
+     "start": 659,
+     "end": 677,
+     "file_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532"
+    }
+   ],
+   "semantic_assessment": "Default marker reader requires opening/closing frontmatter and enabled marker; read error returns false. Footer/sidebar setup precedes disabled early return, which clears active lease and deactivates enforcement. No mutation authority follows from marker error/absence; native fallback remains the inactive behavior.",
+   "limits": "Reasoned source conformance only. No execution, human confirmation, disk/process/network/installed success, test result, task/host qualification, or evidence-epoch renewal is asserted."
+  },
+  {
+   "cell": "disposition:transitions:S01:03",
+   "frozen_row_sha256": "38e3aa5134887265d1efd31907d625ef7ec91011734f3e039f0b3cd88a800c1c",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/extension.ts",
+     "start": 245,
+     "end": 252,
+     "file_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/extension.ts",
+     "start": 678,
+     "end": 686,
+     "file_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+     "start": 766,
+     "end": 811,
+     "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+    }
+   ],
+   "semantic_assessment": "Enabled marker with nonaffirmative/throwing project trust returns waiting status before enabling/registering/installing. BeginActivation already selected blocked generation; merely changing trust later does not complete the retired activation. A new eligible session lifecycle is required.",
+   "limits": "Reasoned source conformance only. No execution, human confirmation, disk/process/network/installed success, test result, task/host qualification, or evidence-epoch renewal is asserted."
+  },
+  {
+   "cell": "disposition:transitions:S01:04",
+   "frozen_row_sha256": "85ae6ea38af8a05edb58611865990c501a660edacf2bf30c3c223134376937d1",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/extension.ts",
+     "start": 683,
+     "end": 697,
+     "file_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/extension.ts",
+     "start": 1261,
+     "end": 1314,
+     "file_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+     "start": 766,
+     "end": 843,
+     "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+    }
+   ],
+   "semantic_assessment": "Current trusted lifecycle enables adapter, registers native plan/jobs, begins blocked bootstrap, records command ownership state, prepares bridge then installs owned native/custom wrappers using compiled policy and live trust. PrepareBridge is before installation try; readiness is not marked here. Dependency callbacks/runtime factories retain their own effect contracts.",
+   "limits": "Reasoned source conformance only. No execution, human confirmation, disk/process/network/installed success, test result, task/host qualification, or evidence-epoch renewal is asserted."
+  },
+  {
+   "cell": "disposition:transitions:S01:05",
+   "frozen_row_sha256": "9d5392a1680bd9cd839c9463c5855fbf5e9e644ef1701b7780db685d718284ee",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/extension.ts",
+     "start": 691,
+     "end": 705,
+     "file_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/extension.ts",
+     "start": 717,
+     "end": 752,
+     "file_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532"
+    }
+   ],
+   "semantic_assessment": "After successful same-lifecycle wrapper install set readyLifecycle/markReady, activate registered background manager and restore plan. Then independently load persona and call session_start bridge. A later stale lifecycle suppresses use. Full persona/dispatch readiness is separately truthful under accepted PI-L01 rather than inferred from markReady alone.",
+   "limits": "Reasoned source conformance only. No execution, human confirmation, disk/process/network/installed success, test result, task/host qualification, or evidence-epoch renewal is asserted."
+  },
+  {
+   "cell": "disposition:transitions:S01:06",
+   "frozen_row_sha256": "cb0b132ae2905906a3283ec3f9157045f67cb5c7a8f5ba4349f317fb3eaaab8b",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/extension.ts",
+     "start": 689,
+     "end": 715,
+     "file_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532"
+    }
+   ],
+   "semantic_assessment": "Installation/activation/restore exceptions inside try clear both lease fields, stop jobs with fatal, disable adapter and report/throw fixed unhealthy status with cause. PrepareBridge failures remain outside this catch. Source review does not claim every partial wrapper/native-side effect is rolled back or that enforcement.deactivate runs in this catch.",
+   "limits": "Reasoned source conformance only. No execution, human confirmation, disk/process/network/installed success, test result, task/host qualification, or evidence-epoch renewal is asserted."
+  },
+  {
+   "cell": "disposition:transitions:S01:07",
+   "frozen_row_sha256": "ec8532fb0e69f9aa8a3b70d73e6fced5a59674c33b39fcc1f3ccafda7815e219",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/extension.ts",
+     "start": 464,
+     "end": 470,
+     "file_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/extension.ts",
+     "start": 574,
+     "end": 603,
+     "file_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/extension.ts",
+     "start": 717,
+     "end": 752,
+     "file_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/extension.ts",
+     "start": 522,
+     "end": 526,
+     "file_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532"
+    }
+   ],
+   "semantic_assessment": "Accepted PI-L01 replaces historical persona-loss defect: persona failure has independent failed/ready/load state and fixed unavailable prompt/status; author dispatch receives no lifecycle until personaReady. Bridge failure separately degrades while enabled/ready remain. This preserves the accepted changed contract, not the obsolete no-retry/misreported-persona limitation.",
+   "limits": "Reasoned source conformance only. No execution, human confirmation, disk/process/network/installed success, test result, task/host qualification, or evidence-epoch renewal is asserted."
+  },
+  {
+   "cell": "disposition:transitions:S01:08",
+   "frozen_row_sha256": "a8b7d6a0a0e2f8549a99853e90cfda567660a41a4f8a6967e32111b4c059e4bb",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/extension.ts",
+     "start": 550,
+     "end": 603,
+     "file_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/extension.ts",
+     "start": 755,
+     "end": 795,
+     "file_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532"
+    }
+   ],
+   "semantic_assessment": "Before-agent-start current enabled ready lease observes recovery, checks trust/abort, retries persona for current lifecycle, refreshes bridge, and finally appends actual persona or explicit unavailable sentinel plus state/notices. Bridge success clears only bridge degradation, never persona failure. Repeated workflow notices are deduplicated per sink and stale results return.",
+   "limits": "Reasoned source conformance only. No execution, human confirmation, disk/process/network/installed success, test result, task/host qualification, or evidence-epoch renewal is asserted."
+  },
+  {
+   "cell": "disposition:transitions:S01:09",
+   "frozen_row_sha256": "04b1c73790a41f70158e407348999385d8b091fadbaab17a38340e35250af97d",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/extension.ts",
+     "start": 798,
+     "end": 809,
+     "file_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/status.ts",
+     "start": 222,
+     "end": 265,
+     "file_sha256": "959aa8a98865b7a2b1ecdb276de3df2cee4d442545504716d1f5a5747c656403"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/sidebar-manager.ts",
+     "start": 96,
+     "end": 107,
+     "file_sha256": "bcdc241808ed6b1faf778292702e374408afe1175e3b2768a84c3c1103e5be58"
+    }
+   ],
+   "semantic_assessment": "Current supported registration uses agent_start and agent_settled for the frozen end/turn abstraction: publish governed/degraded state and refresh footer, then retry sidebar only if lifecycle sequence unchanged. No extra agent_end/turn_end handlers are claimed. Footer owns separate generation checks across awaits; UI status never supplies mutation authority.",
+   "limits": "Reasoned source conformance only. No execution, human confirmation, disk/process/network/installed success, test result, task/host qualification, or evidence-epoch renewal is asserted."
+  },
+  {
+   "cell": "disposition:transitions:S01:10",
+   "frozen_row_sha256": "8d683d2f75ad1a15416f3990258b2efc2fd4ee96be1aab773b7ce25c47910a89",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/extension.ts",
+     "start": 811,
+     "end": 828,
+     "file_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/sidebar-manager.ts",
+     "start": 110,
+     "end": 120,
+     "file_sha256": "bcdc241808ed6b1faf778292702e374408afe1175e3b2768a84c3c1103e5be58"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/sidebar-manager.ts",
+     "start": 133,
+     "end": 175,
+     "file_sha256": "bcdc241808ed6b1faf778292702e374408afe1175e3b2768a84c3c1103e5be58"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/status.ts",
+     "start": 267,
+     "end": 277,
+     "file_sha256": "959aa8a98865b7a2b1ecdb276de3df2cee4d442545504716d1f5a5747c656403"
+    }
+   ],
+   "semantic_assessment": "Shutdown reasons map new/resume/fork to session-switch, reload to unload, otherwise shutdown; invalidate lease fields first, await background stop then dispose/reset UI/session/enforcement. Accepted PI-L02 adds sidebar generation invalidation and post-metrics-await guard, superseding historical stale-install defect. No whole UI/runtime cancellation qualification is asserted.",
+   "limits": "Reasoned source conformance only. No execution, human confirmation, disk/process/network/installed success, test result, task/host qualification, or evidence-epoch renewal is asserted."
+  }
+ ],
+ "scope": "Source-only reasoned current S01 conformance under accepted task changes; no runtime/consent/provider/task outcome.",
+ "excluded_cells": [],
+ "limits": [
+  "Only4complete machines and25PLANNEDtransitions are proposed,29cells total; S03 machine/S03:03 stayPLANNED.",
+  "All24existingPRESERVEDtransition objects/evidence/history are retained exactly; no runtime proof refreshed.",
+  "PI-L01 persona retry and PI-L02 sidebar generation are named accepted task changes; historical defects are not represented as still current.",
+  "ADR0043 removes artifact authorization ceremony, not actual host operation permissions. PI-D02 explicitly reuses parent bridge/policy/confirmation/audit gate. No fabricated human consent or old artifact receipt is supplied.",
+  "ADR0049 changes external endpoint plain-HTTP allowance only; no provider transport/credential flow is tested or qualified here.",
+  "Conditional process-tree verified result/cached cleanup is source behavior, not evidence of actual OS process containment.",
+  "S03:03 is a bounded unproven durable-session-state join/ambiguous summary. Exact-symbol lookup is not a complete public-owner trace and does not establish a missing product feature."
+ ]
+}

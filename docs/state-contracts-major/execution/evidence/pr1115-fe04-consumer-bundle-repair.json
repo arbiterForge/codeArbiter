@@ -1,0 +1,147 @@
+{
+  "schema": "state-contract-development-observations/1",
+  "source_epoch": "fe04c04971bad4799240309f94f89637849a0c5f",
+  "recorded_at": "2026-11-16T17:19:54.359341+00:00",
+  "purpose": "Repair two integration omissions exposed by original fe04 CI, without relabeling individual successful jobs as whole-run qualification.",
+  "original": {
+    "ci_run": 43912541989,
+    "docs_run": 43912541965,
+    "docs_conclusion": "success",
+    "ci_at_recording": "Required jobs failed; original whole CI remains running and is unqualified.",
+    "primary_causes": [
+      "Owning HOOK_TIMEOUT validator/current-workflow assertions still required25 after the reviewed Windows/contracts budget moved to45.",
+      "The shipped Pi parent JavaScript bundle was not regenerated after the two reviewed HTTPS source changes."
+    ],
+    "prior_source_review": "The earlier21file source PASS remains retained; this actual-CI followup is BLOCK until these omissions and fresh complete hosted checks pass."
+  },
+  "repairs": {
+    "budget": {
+      "subjects": [
+        {
+          "path": ".github/scripts/test_hook_ci_partition.py",
+          "preimage_sha256": "03468708b64ecbd29871d864286da654d6002de602fe9ce530220ad447903993",
+          "candidate_sha256": "4d45dc269bc529dbf7c2c52f84e93b31ecb2cddb96a7997968ec2b45ece2e063",
+          "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-fe04-budget-reader-run-54zi3i3_\\candidate\\.github\\scripts\\test_hook_ci_partition.py"
+        },
+        {
+          "path": ".github/scripts/test_state_contracts_integration.py",
+          "preimage_sha256": "a33f259a12710cc39dd3ebc29aa20c87c06992af618b530f95ffd47cb8804319",
+          "candidate_sha256": "6eb9f2e3e622cb6740065d2a4c3dd3b6d6c36a66502c7b05d7dc5bf76bebc919",
+          "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-fe04-budget-reader-run-54zi3i3_\\candidate\\.github\\scripts\\test_state_contracts_integration.py"
+        }
+      ],
+      "standalone_methods_passed": 47,
+      "selected_integration_methods_passed": 1,
+      "skipped": 0,
+      "oracle": "Exactly45 for Windows/contracts,20 elsewhere; reject stale conditional25, changed host/partition/other ceiling, unconditional45/25/20 and46. Preserve command population/source roles.",
+      "controller_limit": "One exact Windows list2cmdline import-permission correction before the integration test; standalone was not repeated. No assertion or candidate changes."
+    },
+    "bundle": {
+      "subjects": [
+        {
+          "path": "plugins/ca-pi/extensions/codearbiter.js",
+          "preimage_sha256": "d1a04ceb8a60b6b15cc49feb5743134395f0e8977f66c3a86e5ec49c319b8b1a",
+          "candidate_sha256": "66a7b1a50bd4c5e9b0c3cd5e95735136a106011fe31fde703d9e720bf21c96f2",
+          "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-bundle-rebuild-fe04\\apply_files\\plugins\\ca-pi\\extensions\\codearbiter.js"
+        }
+      ],
+      "builds": [
+        {
+          "command": "first",
+          "exit_code": 0,
+          "elapsed_seconds": 0.23128820001147687,
+          "timed_out": false,
+          "cap_exceeded": false,
+          "stream_bytes": {
+            "stdout.log": 0,
+            "stderr.log": 227
+          }
+        },
+        {
+          "command": "second",
+          "exit_code": 0,
+          "elapsed_seconds": 0.17284419998759404,
+          "timed_out": false,
+          "cap_exceeded": false,
+          "stream_bytes": {
+            "stdout.log": 0,
+            "stderr.log": 227
+          }
+        }
+      ],
+      "all_four_outputs": [
+        {
+          "path": "plugins/ca-pi/helpers/windows-supervisor.js",
+          "preimage_sha256": "8516f4fc0966aef8d4d2555fdee33e83fd295974db6c6f345b5468ee79929cc1",
+          "generated_sha256": "8516f4fc0966aef8d4d2555fdee33e83fd295974db6c6f345b5468ee79929cc1",
+          "repeat_sha256": "8516f4fc0966aef8d4d2555fdee33e83fd295974db6c6f345b5468ee79929cc1",
+          "repeat_bytes_equal": true,
+          "changed_from_fe04": false,
+          "generated_bytes": 7335
+        },
+        {
+          "path": "plugins/ca-pi/helpers/approval-dialog.js",
+          "preimage_sha256": "a04bc82fba6abea92dd2b2246368520857904f5b8b530e463dd72acb61aeb411",
+          "generated_sha256": "a04bc82fba6abea92dd2b2246368520857904f5b8b530e463dd72acb61aeb411",
+          "repeat_sha256": "a04bc82fba6abea92dd2b2246368520857904f5b8b530e463dd72acb61aeb411",
+          "repeat_bytes_equal": true,
+          "changed_from_fe04": false,
+          "generated_bytes": 37855
+        },
+        {
+          "path": "plugins/ca-pi/extensions/codearbiter-child.js",
+          "preimage_sha256": "37631652c5f382bac4c8d5bb93c7a46b32f433df425be8230aaff24a98f94691",
+          "generated_sha256": "37631652c5f382bac4c8d5bb93c7a46b32f433df425be8230aaff24a98f94691",
+          "repeat_sha256": "37631652c5f382bac4c8d5bb93c7a46b32f433df425be8230aaff24a98f94691",
+          "repeat_bytes_equal": true,
+          "changed_from_fe04": false,
+          "generated_bytes": 100795
+        },
+        {
+          "path": "plugins/ca-pi/extensions/codearbiter.js",
+          "preimage_sha256": "d1a04ceb8a60b6b15cc49feb5743134395f0e8977f66c3a86e5ec49c319b8b1a",
+          "generated_sha256": "66a7b1a50bd4c5e9b0c3cd5e95735136a106011fe31fde703d9e720bf21c96f2",
+          "repeat_sha256": "66a7b1a50bd4c5e9b0c3cd5e95735136a106011fe31fde703d9e720bf21c96f2",
+          "repeat_bytes_equal": true,
+          "changed_from_fe04": true,
+          "generated_bytes": 554996
+        }
+      ],
+      "oracle": "Unchanged owning esbuild build emits4outputs; all4repeat byte-for-byte. Only parent changes vsfe04; other3equal original bytes. This owner has no --check mode; original hosted rebuild-plus-Git-diff gate is still required.",
+      "tools": "Existing lock-matching esbuild0.28.1/native helper and approved physical Node24 only; source/dependency/helper/Node stable. No install/provider/SDK/CA-native effects."
+    }
+  },
+  "retained_results": [
+    {
+      "kind": "original_failed_jobs",
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1115-fe04-watch-hi3at3xq\\first-failures-closed-diagnosis.json",
+      "sha256": "291c4212592578bb097b765a6181a27d7fecf4b5f04aa52c4836f3200257bdec",
+      "bytes": 2319
+    },
+    {
+      "kind": "budget_reader_controls",
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-fe04-budget-reader-run-54zi3i3_\\delivery.json",
+      "sha256": "68c6d2c2d4963a70aa7d57fdbff57b12048da65b683bab1d496ddcc09acff601",
+      "bytes": 4365
+    },
+    {
+      "kind": "generated_bundle_parity",
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-bundle-rebuild-fe04\\delivery.json",
+      "sha256": "76594c59bdf07e45ffb125251232d8e6c14c31300d027d6eb369a5b1030cf9fd",
+      "bytes": 10892
+    }
+  ],
+  "previous_feature_observations": "pr1115-transport-portability-development.json",
+  "limits": [
+    "Scoped development results, not a new runtime proof or task-status admission.",
+    "Current fe04 has passing individual native/Sandbox/WindowsPi jobs; its failed required jobs prevent whole-run qualification.",
+    "Root keeps the original watch running to terminal before the next push; no unchanged retry or cancellation.",
+    "Future native kernel/cleanup/Native32 drafts remain private and excluded from this repair.",
+    "Parent1098 remains draft and held from main; no publication."
+  ],
+  "release_intent_followup": {
+    "initial_gate": "FAILED_CURRENT_GENERATED_PAYLOAD_NOT_BOUND_BY_TARGET_CHANGELOG",
+    "failure_record": "C:/Users/brenn/AppData/Local/Temp/ca-host-observer-integration-root/fe04-consumer-bundle-initial-intent-failure.json",
+    "repair": "Update the Pi candidate changelog alongside the regenerated shipped payload; version stays provisional0.30.0. No publication or pre-tag execution."
+  }
+}

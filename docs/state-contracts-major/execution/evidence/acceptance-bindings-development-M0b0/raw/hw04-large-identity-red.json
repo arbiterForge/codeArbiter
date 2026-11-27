@@ -1,0 +1,29 @@
+{
+  "argv": [
+    "C:\\Python314\\python.exe",
+    "-I",
+    "-S",
+    "-B",
+    "-X",
+    "utf8",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hw04-launch-binding-feature-i7lca186\\identity-streaming-successor\\approved-large-identity-probe.py",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hw04-launch-binding-feature-i7lca186\\identity-streaming-successor\\candidate\\.github\\scripts",
+    "D:\\dev\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe"
+  ],
+  "exit_code": 1,
+  "duration_seconds": 0.17444570001680404,
+  "file_before": {
+    "bytes": 93713712,
+    "mtime_ns": 1794510463000000000,
+    "device": 7248155724283317156,
+    "inode": 281474977891397
+  },
+  "file_after": {
+    "bytes": 93713712,
+    "mtime_ns": 1794510463000000000,
+    "device": 7248155724283317156,
+    "inode": 281474977891397
+  },
+  "observer_sha256": "250d4a3b2c253ced6770fb3ab46d6a9387ff26be96135684fb095e2536783a32",
+  "node_executed": false
+}

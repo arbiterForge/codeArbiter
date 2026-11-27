@@ -1,0 +1,84 @@
+{
+ "old_entire_test_module_AST_equal_after_removing_only_ten_added_methods": true,
+ "new_test_methods": [
+  "test_transition_exits_prior_mode_exactly_once",
+  "test_implicit_arbiter_and_unbacked_raw_modes_have_no_invented_exit",
+  "test_explicitly_entered_arbiter_is_exited_on_its_next_transition",
+  "test_marker_failure_leaves_prior_audit_and_mode_unchanged",
+  "test_partial_pair_retries_even_with_old_requested_mode_backing",
+  "test_same_second_cycle_debt_is_not_satisfied_by_older_rows",
+  "test_failed_queue_and_trail_do_not_claim_persisted_debt",
+  "test_transition_exit_is_attributed_only_to_its_session",
+  "test_legacy_backed_dangerous_transition_keeps_history_and_records_exit",
+  "test_fallback_arbiter_with_old_enter_has_no_invented_exit"
+ ],
+ "old_assertions_changed": [],
+ "only_changed_production_functions": [
+  "_mode_audit_line",
+  "flip_outcome",
+  "_flip",
+  "_settle_dev_close"
+ ],
+ "all_module_assignment_ASTs_including_caps_and_modes_unchanged": true,
+ "four_private_source_copies_byte_identical": true,
+ "syntax_compile_in_memory_five_candidates": true,
+ "canonical_seven_subjects_still_exact_6d8_preimages": true,
+ "observed_root_HEAD": "9bc844c61d4ef05ec16796a9671628913f10a5a6",
+ "dependency_source_joins": {
+  "core/pysrc/_activationlib.py": {
+   "git_blob_oid": "3e3875a454941317efb1f172d2861e407b1c6b4c",
+   "sha256": "60c6391b4d8b143c5e59cf2320291a2d31063e8fbebe0fcf337dd83e07f8fd97",
+   "physical_sha256": "60c6391b4d8b143c5e59cf2320291a2d31063e8fbebe0fcf337dd83e07f8fd97"
+  },
+  "core/pysrc/_hooklib.py": {
+   "git_blob_oid": "ef7b48317f0875ac0dc0189326206f5fef8e3050",
+   "sha256": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+   "physical_sha256": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895"
+  },
+  "core/pysrc/_gitexec.py": {
+   "git_blob_oid": "6f959b77dbe4a1779bb55e7002ddc237c9b0eab1",
+   "sha256": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5",
+   "physical_sha256": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5"
+  },
+  "core/pysrc/hostapi.py": {
+   "git_blob_oid": "1a7db1792ef432615a47a7cf4aed7714b16045dc",
+   "sha256": "2aea81ad167a458c6053cb52880952521159a367eaa5baa7df6e2e35fea574e4",
+   "physical_sha256": "2aea81ad167a458c6053cb52880952521159a367eaa5baa7df6e2e35fea574e4"
+  },
+  "core/pysrc/_prunepolicy.py": {
+   "git_blob_oid": "0ae81c9e5e6ab086061d82d24bc3ae7fe0c09be6",
+   "sha256": "13bc82c138975121c3dbd28379a0bc8dda183f09fa6e47fbe2bab2e9cc0faf35",
+   "physical_sha256": "13bc82c138975121c3dbd28379a0bc8dda183f09fa6e47fbe2bab2e9cc0faf35"
+  },
+  "core/pysrc/_readinjectlib.py": {
+   "git_blob_oid": "eb9ac0c2ed4516450ec8607327790e3edaab8252",
+   "sha256": "a4d689293690beefa28e33834c7aa421145bab6547685f8d25e5c29425b61138",
+   "physical_sha256": "a4d689293690beefa28e33834c7aa421145bab6547685f8d25e5c29425b61138"
+  },
+  "core/pysrc/_artifactauthoritylib.py": {
+   "git_blob_oid": "fb3089e12ddb95242a511cb7754f1e744f7bf53d",
+   "sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+   "physical_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c"
+  },
+  "core/pysrc/_approvallib.py": {
+   "git_blob_oid": "f73bf5d4fdd423114a8ed465d7d1a96a1d00ba13",
+   "sha256": "fc71ec67a9c44ebbadd9897244da291b6b50768dbe19e59d576ee3f15505828b",
+   "physical_sha256": "fc71ec67a9c44ebbadd9897244da291b6b50768dbe19e59d576ee3f15505828b"
+  },
+  "core/pysrc/_prerequisitelib.py": {
+   "git_blob_oid": "124e82479efdf836aebfcd00746d94a84fbd8a48",
+   "sha256": "8263651e6f29f987b3cc935827c2f6a4b4745251ecddb87a3a7d51fd3d861479",
+   "physical_sha256": "8263651e6f29f987b3cc935827c2f6a4b4745251ecddb87a3a7d51fd3d861479"
+  },
+  "core/pysrc/_reconciliationlib.py": {
+   "git_blob_oid": "394a2212fac91ea597a9989414cae10ee004e915",
+   "sha256": "7a281f3f4cdf7c29d62185d12ac24ebb26e3f1c01f42004aa99a1f8080ae2691",
+   "physical_sha256": "7a281f3f4cdf7c29d62185d12ac24ebb26e3f1c01f42004aa99a1f8080ae2691"
+  },
+  "core/pysrc/_workflowrecoverylib.py": {
+   "git_blob_oid": "a211da361e2fa03333b98fce0260687af330079d",
+   "sha256": "a37291b659cdc1ae94482f7591e50b0e869a87c4a16fdf427bd1373c2e7ade9e",
+   "physical_sha256": "a37291b659cdc1ae94482f7591e50b0e869a87c4a16fdf427bd1373c2e7ade9e"
+  }
+ }
+}

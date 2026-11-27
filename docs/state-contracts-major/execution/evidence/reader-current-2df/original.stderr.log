@@ -1,0 +1,19 @@
+test_binary_readiness_preserves_completion_from_one_write (test_boundedproc.ReadinessWaitTest.test_binary_readiness_preserves_completion_from_one_write) ... ok
+test_binary_early_eof_reports_closed_and_finishes_empty (test_boundedproc.ReadinessWaitTest.test_binary_early_eof_reports_closed_and_finishes_empty) ... ok
+test_communicate_without_input_closes_stdin_after_readiness (test_boundedproc.ReadinessWaitTest.test_communicate_without_input_closes_stdin_after_readiness) ... ok
+test_communicate_sends_text_or_binary_input_after_readiness (test_boundedproc.ReadinessWaitTest.test_communicate_sends_text_or_binary_input_after_readiness) ... ok
+test_communicate_timeout_retry_sends_the_original_payload_once (test_boundedproc.ReadinessWaitTest.test_communicate_timeout_retry_sends_the_original_payload_once) ... ok
+test_unread_stdin_stays_bounded_and_cleanup_settles_writer (test_boundedproc.ReadinessWaitTest.test_unread_stdin_stays_bounded_and_cleanup_settles_writer) ... ok
+test_hanging_codex_command_fails_with_timeout_and_containment (test_boundedproc.CodexHostCommandDeadlineTest.test_hanging_codex_command_fails_with_timeout_and_containment) ... ok
+test_a_timed_out_marketplace_add_is_a_recorded_failure (test_boundedproc.CodexHostCommandDeadlineTest.test_a_timed_out_marketplace_add_is_a_recorded_failure) ... ok
+test_no_ready_line_is_a_bounded_failure_with_containment (test_boundedproc.PiBenchmarkReadinessDeadlineTest.test_no_ready_line_is_a_bounded_failure_with_containment) ... ok
+test_partial_ready_line_is_refused (test_boundedproc.PiBenchmarkReadinessDeadlineTest.test_partial_ready_line_is_refused) ... ok
+test_immediate_exit_is_refused (test_boundedproc.PiBenchmarkReadinessDeadlineTest.test_immediate_exit_is_refused) ... ok
+test_hang_after_ready_is_bounded (test_boundedproc.PiBenchmarkReadinessDeadlineTest.test_hang_after_ready_is_bounded) ... ok
+test_well_behaved_boundary_completes (test_boundedproc.PiBenchmarkReadinessDeadlineTest.test_well_behaved_boundary_completes) ... ok
+test_partial_early_exit_retains_readiness_failure_when_group_signal_is_denied (test_boundedproc.PiBenchmarkReadinessDeadlineTest.test_partial_early_exit_retains_readiness_failure_when_group_signal_is_denied) ... ok
+
+----------------------------------------------------------------------
+Ran 14 tests in 5.991s
+
+OK

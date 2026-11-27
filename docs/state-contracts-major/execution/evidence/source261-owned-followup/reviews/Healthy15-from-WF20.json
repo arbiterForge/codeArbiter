@@ -1,0 +1,137 @@
+{
+ "schema": "codearbiter.private-independent-source-review/1",
+ "verdict": "NEEDS_CORRECTION",
+ "reviewer": "/root/ci_repair_review",
+ "task_id": "WORK-2A68C3051D5A477EAC131493FF8A85AF",
+ "source_commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+ "review_context_epoch": "ac826ed2c77aab89449799cebdcf7b61d3513d6c",
+ "candidate": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-workflow-four-healthy-source-cb-e3wh_jgl\\delivery.json",
+  "sha256": "6bdd09e73fc001ff99f11ad6e0b4180f2bf3379ccba47f93127cfe7911ba882e"
+ },
+ "full_subjects": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/workflow-four-healthy-source-cb/source-bindings.json",
+   "sha256": "f626283d1d1932962a94cde87936799776cecf5b877bc07ac8a6708384f13a68",
+   "bytes": 18408,
+   "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-workflow-four-healthy-source-cb-e3wh_jgl\\source-bindings.json",
+   "binding": "PRIVATE_PROPOSED_NOT_STAGED",
+   "git_index_oid": null
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/workflow-four-healthy-source-cb/clause-inspection.json",
+   "sha256": "5c621baecd5fe9e412e848d439014de399b4615807914ef2f809dd97c73c61e1",
+   "bytes": 96496,
+   "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-workflow-four-healthy-source-cb-e3wh_jgl\\clause-inspection.json",
+   "binding": "PRIVATE_PROPOSED_NOT_STAGED",
+   "git_index_oid": null
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/workflow-four-healthy-source-cb/owner-baseline-current.diff",
+   "sha256": "f110caf5b33b12ea165fe8cd831a8c891276aacb674699f73baa0a6b46193dca",
+   "bytes": 14849,
+   "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-workflow-four-healthy-source-cb-e3wh_jgl\\owner-baseline-current.diff",
+   "binding": "PRIVATE_PROPOSED_NOT_STAGED",
+   "git_index_oid": null
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/workflow-four-healthy-source-cb/proofs/WF-25-preserved.json",
+   "sha256": "007ccf2e5744cdf32d2db051ccd7cd5035fb3be392585e6700215fe2b355cd56",
+   "bytes": 12119,
+   "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-workflow-four-healthy-source-cb-e3wh_jgl\\proofs\\WF-25-preserved.json",
+   "binding": "PRIVATE_PROPOSED_NOT_STAGED",
+   "git_index_oid": null
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/workflow-four-healthy-source-cb/proofs/WF-26-preserved.json",
+   "sha256": "b60d39977281dce64c6af1cabad78be367aedac8927bf2fe2b35e8099034f8ab",
+   "bytes": 13450,
+   "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-workflow-four-healthy-source-cb-e3wh_jgl\\proofs\\WF-26-preserved.json",
+   "binding": "PRIVATE_PROPOSED_NOT_STAGED",
+   "git_index_oid": null
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/workflow-four-healthy-source-cb/proofs/WF-33-preserved.json",
+   "sha256": "9f9f927df14cc19db86aad55db78a5ae2aebace37673590a1fa5a47874f6d6ae",
+   "bytes": 14267,
+   "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-workflow-four-healthy-source-cb-e3wh_jgl\\proofs\\WF-33-preserved.json",
+   "binding": "PRIVATE_PROPOSED_NOT_STAGED",
+   "git_index_oid": null
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/workflow-four-healthy-source-cb/proofs/WF-35-preserved.json",
+   "sha256": "f7bfb1975c8fdf541356b4228af960d546eef40042f0dbe48e18463677eca8d9",
+   "bytes": 13985,
+   "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-workflow-four-healthy-source-cb-e3wh_jgl\\proofs\\WF-35-preserved.json",
+   "binding": "PRIVATE_PROPOSED_NOT_STAGED",
+   "git_index_oid": null
+  }
+ ],
+ "findings": [
+  {
+   "id": "WF33-DELIVERY-RECORD-01",
+   "severity": "MEDIUM",
+   "affected_cells": [
+    "machines:WF-33",
+    "transitions:WF-33:03"
+   ],
+   "path": "core/pysrc/prompt-submit.py",
+   "lines": [
+    245,
+    257,
+    442,
+    483
+   ],
+   "proof_path": "proofs/WF-33-preserved.json",
+   "finding": "The unconditional failure-path preservation claim is unsupported: B is printed before _record_delivered. A failed B record write is swallowed without invalidating the prior A record. Returning to A in the same compaction generation can therefore match that old A tuple and suppress the required return persona.",
+   "literal_claim": "Failed record read/write degrades toward redundant emission, not invented successful delivery.",
+   "source_sequence": [
+    "Persisted/session-matching tuple A,g exists.",
+    "B is the actual effective mode and is printed by _inject_claude or _inject_codex.",
+    "The atomic write for B fails before replacing the prior tuple; _record_delivered catches and passes.",
+    "Effective mode returns to A,g; _already_delivered compares old tuple A,g and returns true, so no A emission follows B."
+   ],
+   "basis": "HW-01 explicitly requires actual A\u2192B\u2192A transitions. This is a source-confirmed failure path, not a runtime reproduction or original-host cause attribution.",
+   "required_action": "Hold the affected machine/edge, retain literal finding and route a named owning regression before any repair; do not replace with N/A or claim old cache defect fully preserved."
+  }
+ ],
+ "scope": {
+  "proposed_families": [
+   "WF-25",
+   "WF-26",
+   "WF-33",
+   "WF-35"
+  ],
+  "reviewed_clauses": 16,
+  "proposed_cells": 20,
+  "healthy_whole_families": [
+   "WF-25",
+   "WF-26",
+   "WF-35"
+  ],
+  "healthy_whole_family_cells": 15,
+  "held_affected_cells": [
+   "machines:WF-33",
+   "transitions:WF-33:03"
+  ],
+  "WF31_WF34_excluded": true,
+  "prior30rowdraft": "NOT_FOR_ADOPTION"
+ },
+ "checks": {
+  "all20row_CAS_current_exact": true,
+  "frozen_contract_and_semantic_hashes_exact": true,
+  "raw_and_active_proof_hash_joins_exact": true,
+  "declared_current_positive_inputs": 26,
+  "source_spans_verified": true,
+  "advanced_target_rows": 0
+ },
+ "bindings": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-workflow-healthy20-independent-review-9z95o0b6\\bindings.json",
+  "sha256": "b69c90eefbd7698da076f77d4913cf2b0f5011ef06e5fe8aea446e3f91d89986"
+ },
+ "limits": [
+  "Source-only semantic review; no tests/runtime/owner validation/API/network/install/provider/fleet or canonical/index/ref/marker writes.",
+  "No source-runtime claim, whole-task acceptance or fake index OID. Root owns narrowed adoption and actual repair.",
+  "Original sourcecb remains the observation epoch; current source input joins checked separately under Ac82."
+ ]
+}

@@ -1,0 +1,45 @@
+{
+  "schema": "codearbiter.independent-hook-finding-owner-review/1",
+  "reviewer": "/root",
+  "author": "/root/ci_repair_review",
+  "independent_of_authorship": true,
+  "verdict": "PASS",
+  "findings": [],
+  "source_commit": "ebdc46c7bcea01d5c4cb35729ef4e47e5c56fef4",
+  "full_subjects": {
+    ".github/scripts/test_hook_ci_partition.py": {
+      "preimage": {
+        "sha256": "eef56fd43a5d857c42cde7ef4d8a88c0835e7da92f4f9f87f37a3273bd88e5a4",
+        "bytes": 51198
+      },
+      "candidate": {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hook-f04-owner-fix-q8ie53ku\\candidate\\.github\\scripts\\test_hook_ci_partition.py",
+        "sha256": "190eaa3f76ff99b5fce83ecf95a7c35faa0e3bef004f596bc9f3596d74c54592",
+        "bytes": 52221
+      }
+    },
+    ".github/workflows/ci.yml": {
+      "preimage": {
+        "sha256": "c0e8e0f0480ffb0f660c894347f26df49da423a300158a1566da702e5a0d8102",
+        "bytes": 284338
+      },
+      "candidate": {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hook-f04-owner-fix-q8ie53ku\\candidate\\.github\\workflows\\ci.yml",
+        "sha256": "f3ffb37a927c50b9b4a146cec4848f8d4d75f3582fec11fe15577d8fc057079f",
+        "bytes": 284373
+      }
+    }
+  },
+  "proposal_sha256": "77fa7a75310230278fce5810e0d303d6c257efcb7783c63eaef15aa0068f8dd2",
+  "context_input": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\hook-f04-root-peer-input.txt",
+  "assessment": [
+    "Actual new class was absent from the explicit original Hook argv, not just an outdated assertion. One exact additive class argument repairs execution; no duplicate original suite or native runtime producer invocation.",
+    "Exact four pure classes select all23 pure methods, distinct from the existing1method native producer on all6 pinned Python3.14 builders. Three new finite-finding methods use existing inert archive/admission fixtures; no actual native execution is moved onto Hook.",
+    "Original20pure+1producer populations remain explicit; exact new3 method names and whole24 union/disjointness guarded. Missing/repeated newclass and producer-misrouting controls reject. Root actual top-level class inventory has52methods,50unchanged; authors56/54 count includes other nested definitions and is not used as the executed inventory. Only required exact class inventory/mutants change.",
+    "Workflow bytes differ only by the exact new class argument. All event/token/permission/job/order/deadline controls and original75 command baseline digest remain unchanged; updated current76 digest is bound to actual modified command.",
+    "Original precise targetRED and8affectedreader/negative methodsPASS retained. Static tests do not grant runtime qualification. Python has no numeric coverage tooling; direct critical controls cover the exact ownership repair."
+  ],
+  "limits": [
+    "No CI rerun, native/provider execution, new finding/task/source epoch or main/publication promotion. Current wholeCI remains blocked by separately unknown WindowsPi process-exit timeout."
+  ]
+}

@@ -1,0 +1,80 @@
+{
+  "schema": "codearbiter-C36-current-cas/1",
+  "source_commit": "b3b2b5a091c4f3d28366bb29d10ae3fb1b3e22bc",
+  "actual_execution_commit": "b3b2b5a091c4f3d28366bb29d10ae3fb1b3e22bc",
+  "ledger_path": "docs/state-contracts-major/execution/coverage-ledger.json",
+  "row_hash_encoding": "SHA256 UTF8 json.dumps(row,sort_keys=True,separators=(comma,colon),ensure_ascii=False)",
+  "updates": [
+    {
+      "table": "transitions",
+      "id": "C36:02",
+      "old_row_sha256": "5e31515edce38539ea00803ae77587c0b984b7b4462c28c5cc6c8656a14d7d19",
+      "proposed_row": {
+        "owner": "release-and-tooling",
+        "task_ids": [
+          "R-07",
+          "Q-01"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "b3b2b5a091c4f3d28366bb29d10ae3fb1b3e22bc",
+            "ref": "docs/state-contracts-major/execution/evidence/C36-current-b3b2/C36-two-tested.json",
+            "sha256": "92652823a2d9bd464c40d7cfcd75705179b12a23a53fb4cd1f53b4da0412afd5"
+          }
+        ],
+        "evidence_history": [
+          {
+            "kind": "test",
+            "commit": "dde429b98eb16622cf4ed211386783342fc9d48a",
+            "ref": "docs/state-contracts-major/execution/evidence/reader-integrity-dde4/reader-fixtures.json",
+            "sha256": "55a78c96c423cea3890321f04e6bef73e17d21f7776b72275821d60e7e06ff88",
+            "ref_commit": "b3b2b5a091c4f3d28366bb29d10ae3fb1b3e22bc"
+          }
+        ]
+      }
+    },
+    {
+      "table": "transitions",
+      "id": "C36:03",
+      "old_row_sha256": "5e31515edce38539ea00803ae77587c0b984b7b4462c28c5cc6c8656a14d7d19",
+      "proposed_row": {
+        "owner": "release-and-tooling",
+        "task_ids": [
+          "R-07",
+          "Q-01"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "status": "TESTED",
+        "evidence": [
+          {
+            "kind": "test",
+            "commit": "b3b2b5a091c4f3d28366bb29d10ae3fb1b3e22bc",
+            "ref": "docs/state-contracts-major/execution/evidence/C36-current-b3b2/C36-two-tested.json",
+            "sha256": "92652823a2d9bd464c40d7cfcd75705179b12a23a53fb4cd1f53b4da0412afd5"
+          }
+        ],
+        "evidence_history": [
+          {
+            "kind": "test",
+            "commit": "dde429b98eb16622cf4ed211386783342fc9d48a",
+            "ref": "docs/state-contracts-major/execution/evidence/reader-integrity-dde4/reader-fixtures.json",
+            "sha256": "55a78c96c423cea3890321f04e6bef73e17d21f7776b72275821d60e7e06ff88",
+            "ref_commit": "b3b2b5a091c4f3d28366bb29d10ae3fb1b3e22bc"
+          }
+        ]
+      }
+    }
+  ],
+  "history": "Original dde4 scope/raw facts preserved; original proof bytes retained in actualb3b2 Git, not relabeled as the current production run.",
+  "limits": [
+    "Local Windows/amd64 ordinary adapter benchmark only; no installed Pi, actual parent consent/UI, provider/model, native executable, Go, Docker, network, publication or task/machine qualification.",
+    "The105 nativeCallCount increments are the original in-memory factory invocations;105 bridgeCallCount increments are the original stub BridgePort. Actual production wrapBuiltins is bundled and executed, not real105 Go calls.",
+    "Python read-only profiling adds overhead; recorded absolute/relative performance is instrumented, not an uninstrumented performance or improvement claim. Node boundary timings are the original child's values.",
+    "Existing Windows process-group/taskkill bounded reader semantics retained; no stronger Job Object/native-rundown claim.",
+    "No fresh negative workload, installation, --real-spawn, source modification, test additions or extra group executed. Existing reader failure controls/history remain separate.",
+    "Authenticated f797 native artifact was not consumed or needed; no native input attestation is borrowed."
+  ]
+}

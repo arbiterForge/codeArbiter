@@ -92,6 +92,104 @@ class _Fixture(unittest.TestCase):
 
 
 class TestSecurityPassBranches(_Fixture):
+    def test_binary_override_rejects_changed_full_staged_candidate_with_unchanged_binary(self):
+        self._ca()
+        self._write(".codearbiter/overrides.log", "# append-only overrides\n")
+        self._write("notes.txt", "ordinary reviewed text\n")
+        path = os.path.join(self.root, "payload.bin")
+        with open(path, "wb") as stream:
+            stream.write(b"\x00\xffopaque fixture\x00")
+        _git(["add", "payload.bin", "notes.txt", ".codearbiter/CONTEXT.md"], self.root)
+        before_diff = _git([*_hooklib.SECURITY_DIFF_GIT_ARGS, "--cached"], self.root).stdout
+        before = _hooklib.security_scan_diff(before_diff)
+        binary = _gitexec.binary_candidate_binding(self.root, preserve_index=True)
+        self.assertIsInstance(before, _hooklib.BinarySecurityContext)
+        self.assertFalse(before.digests)
+        recorded = self.run_pass(args=[
+            "--root", self.root, "--binary-override",
+            "--security-finding", "opaque payload.bin fixture",
+            "--reason", "required opaque test asset",
+        ])
+        self.assertEqual(recorded.returncode, 0, recorded.stderr)
+        unchanged = _sh([sys.executable, GIT_ENFORCE, "pre-commit"], self.root)
+        unchanged_hook = self.run_commit_hook()
+        self.assertEqual(unchanged.returncode, 0, unchanged.stderr)
+        self.assertEqual(unchanged_hook.returncode, 0, unchanged_hook.stderr)
+
+        self._write("notes.txt", "ordinary text changed after review\n")
+        _git(["add", "notes.txt"], self.root)
+        after_diff = _git([*_hooklib.SECURITY_DIFF_GIT_ARGS, "--cached"], self.root).stdout
+        after = _hooklib.security_scan_diff(after_diff)
+        self.assertIsInstance(after, _hooklib.BinarySecurityContext)
+        self.assertFalse(after.digests)
+        self.assertNotEqual(before.candidate, after.candidate)
+        self.assertEqual(binary, _gitexec.binary_candidate_binding(
+            self.root, preserve_index=True))
+        refused = _sh([sys.executable, GIT_ENFORCE, "pre-commit"], self.root)
+        refused_hook = self.run_commit_hook()
+        for consumer, result, expected in (
+                ("git backstop", refused, 1), ("command guard", refused_hook, 2)):
+            with self.subTest(consumer=consumer):
+                self.assertEqual(result.returncode, expected, result.stderr)
+                self.assertIn("[H-09b]", result.stderr)
+
+    def test_binary_override_rejects_legacy_binary_only_marker(self):
+        self._ca()
+        self._write(".codearbiter/overrides.log", "# append-only overrides\n")
+        with open(os.path.join(self.root, "payload.bin"), "wb") as stream:
+            stream.write(b"\x00\xffopaque fixture\x00")
+        _git(["add", "payload.bin", ".codearbiter/CONTEXT.md"], self.root)
+        recorded = self.run_pass(args=[
+            "--root", self.root, "--binary-override",
+            "--security-finding", "opaque payload.bin fixture",
+            "--reason", "required opaque test asset",
+        ])
+        self.assertEqual(recorded.returncode, 0, recorded.stderr)
+        marker = os.path.join(self.root, ".codearbiter", ".markers", "security-gate-passed")
+        lines = self.marker().splitlines()
+        with open(marker, "w", encoding="utf-8") as stream:
+            stream.write("\n".join(line for line in lines
+                                   if not line.startswith("candidate-v1:")) + "\n")
+        refused = _sh([sys.executable, GIT_ENFORCE, "pre-commit"], self.root)
+        refused_hook = self.run_commit_hook()
+        for consumer, result, expected in (
+                ("git backstop", refused, 1), ("command guard", refused_hook, 2)):
+            with self.subTest(consumer=consumer):
+                self.assertEqual(result.returncode, expected, result.stderr)
+                self.assertIn("[H-09b]", result.stderr)
+
+    def test_binary_override_rejects_same_candidate_in_another_linked_worktree(self):
+        self._ca()
+        _git(["add", ".codearbiter/CONTEXT.md"], self.root)
+        _git(["commit", "-qm", "private fixture seed"], self.root)
+        linked = os.path.join(self._tmp.name, "linked")
+        _git(["worktree", "add", "-qb", "feat/other", linked], self.root)
+        for root in (self.root, linked):
+            with open(os.path.join(root, "payload.bin"), "wb") as stream:
+                stream.write(b"\x00\xffsame opaque fixture\x00")
+            _git(["add", "payload.bin"], root)
+        self._write(".codearbiter/overrides.log", "# append-only overrides\n")
+        self.assertEqual(
+            _git([*_hooklib.SECURITY_DIFF_GIT_ARGS, "--cached"], self.root).stdout,
+            _git([*_hooklib.SECURITY_DIFF_GIT_ARGS, "--cached"], linked).stdout)
+        recorded = self.run_pass(args=[
+            "--root", self.root, "--binary-override",
+            "--security-finding", "opaque payload.bin fixture",
+            "--reason", "required opaque test asset",
+        ])
+        self.assertEqual(recorded.returncode, 0, recorded.stderr)
+        allowed = _sh([sys.executable, GIT_ENFORCE, "pre-commit"], self.root)
+        allowed_hook = self.run_commit_hook()
+        self.assertEqual(allowed.returncode, 0, allowed.stderr)
+        self.assertEqual(allowed_hook.returncode, 0, allowed_hook.stderr)
+        refused = _sh([sys.executable, GIT_ENFORCE, "pre-commit"], linked)
+        refused_hook = _sh([sys.executable, PRE_BASH], linked, input=json.dumps({
+            "tool_name": "Bash", "tool_input": {"command": "git commit -m fixture"}}))
+        self.assertEqual(refused.returncode, 1, refused.stderr)
+        self.assertEqual(refused_hook.returncode, 2, refused_hook.stderr)
+        self.assertIn("[H-09b]", refused.stderr)
+        self.assertIn("[H-09b]", refused_hook.stderr)
+
     def test_binary_override_audit_failure_cannot_create_or_replace_marker(self):
         self._ca()
         marker = os.path.join(
@@ -394,7 +492,7 @@ class TestSecurityPassBranches(_Fixture):
         self.assertEqual(audit.count("SECURITY-OVERRIDE"), 1)
         self.assertIn("genuine binary assets/payload.bin", audit)
         self.assertRegex(self.marker(),
-                         r"^root-v1:[0-9a-f]{64}\nbinary-override-v1:[0-9a-f]{64}\n$")
+                         r"^root-v1:[0-9a-f]{64}\ncandidate-v1:[0-9a-f]{64}\nbinary-override-v1:[0-9a-f]{64}\n$")
         self.assertIn(_hooklib.binary_override_binding(binary_candidate), self.marker())
         allowed = _sh([sys.executable, GIT_ENFORCE, "pre-commit"], self.root)
         self.assertEqual(allowed.returncode, 0, allowed.stderr)

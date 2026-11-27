@@ -1,0 +1,270 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "/root/ci_repair_review: literal53clause/currentguidance/callee/baselineinspection; noexecution"
+ },
+ "inputs": {
+  ".codearbiter/decisions/0043-assistive-state-engine.md": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+  "core/surface/SPRINT.md": "d3d469e9f741985493a1a391d1d9239a59f6995acd1c2b45463a2978c5146aa6",
+  "core/surface/includes/artifacts.md": "be4fb60919830f128adc5bf7a5120d4151132b24efdf7de8e960e2e7a2cd3776",
+  "core/surface/includes/smarts/core.md": "2f11f99c70aa39ae541e376a1cc7571c7ee0bd636b10c9d19b2ba4b276969e95",
+  "core/surface/includes/smarts/lenses.md": "e0ac6e8a8e3579297bc10b61bd4fe1d60261b67f74b4700c5664186084e15f06",
+  "core/surface/skills/brainstorming/SKILL.md": "77f658b30ac9842b0f052ff16563075142d0ab25ac5a0bf895072c40dcd64c2b",
+  "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e"
+ },
+ "disposition_ids": [
+  "disposition:machines:WF-04",
+  "disposition:transitions:WF-04:01",
+  "disposition:transitions:WF-04:02",
+  "disposition:transitions:WF-04:03",
+  "disposition:transitions:WF-04:04"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/workflow-ten-source-384/source-bindings.json",
+   "sha256": "3103212963370e3d7c1ff6e84a8e3852e55a1401987e528dcd60b3e13d282cfc"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/workflow-ten-source-384/clause-inspection.json",
+   "sha256": "4f0a656b05f94b18669093b3387d1319b591ea56d809dba57a8211f2b2bade8f"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:WF-04",
+   "frozen_row_sha256": "245c977a18ae1c850a3eee8c6fd7846643b7c306f51d63c6e6ed667ab5e3351e",
+   "clause_ids": [
+    "disposition:transitions:WF-04:01",
+    "disposition:transitions:WF-04:02",
+    "disposition:transitions:WF-04:03",
+    "disposition:transitions:WF-04:04"
+   ],
+   "witnesses": [
+    {
+     "path": "core/surface/includes/smarts/core.md",
+     "start": 22,
+     "end": 51,
+     "file_sha256": "2f11f99c70aa39ae541e376a1cc7571c7ee0bd636b10c9d19b2ba4b276969e95",
+     "span_sha256": "e6a0f4247a4f4b500422bd8f0ad8274f6c2625432a505969e9d949883957a8ef"
+    },
+    {
+     "path": "core/surface/skills/brainstorming/SKILL.md",
+     "start": 17,
+     "end": 44,
+     "file_sha256": "77f658b30ac9842b0f052ff16563075142d0ab25ac5a0bf895072c40dcd64c2b",
+     "span_sha256": "19b7bceb4fdb115c944023c607a4dda7c5d92f931370533f541e6690f1fcedc1"
+    },
+    {
+     "path": "core/surface/SPRINT.md",
+     "start": 28,
+     "end": 43,
+     "file_sha256": "d3d469e9f741985493a1a391d1d9239a59f6995acd1c2b45463a2978c5146aa6",
+     "span_sha256": "5c85b4fddea8c2d66f5872573f2c41190162ae95dff85d332cfe2141af437b55"
+    },
+    {
+     "path": "core/surface/includes/smarts/core.md",
+     "start": 38,
+     "end": 45,
+     "file_sha256": "2f11f99c70aa39ae541e376a1cc7571c7ee0bd636b10c9d19b2ba4b276969e95",
+     "span_sha256": "cd17271180a794d41a3cfa8215cc0c3665069e10d13f664c45094398bc1b7be9"
+    },
+    {
+     "path": "core/surface/skills/brainstorming/SKILL.md",
+     "start": 32,
+     "end": 44,
+     "file_sha256": "77f658b30ac9842b0f052ff16563075142d0ab25ac5a0bf895072c40dcd64c2b",
+     "span_sha256": "ddc98cd3e535bedb84cf2ff2a887e0fba329134f590ff956435ac6b95cfa9e7d"
+    },
+    {
+     "path": "core/surface/SPRINT.md",
+     "start": 80,
+     "end": 89,
+     "file_sha256": "d3d469e9f741985493a1a391d1d9239a59f6995acd1c2b45463a2978c5146aa6",
+     "span_sha256": "d9a7058a05750d7a6c73ec615d8455713360141e45425f9bb1d7a2497f3d7fe3"
+    },
+    {
+     "path": "core/surface/includes/smarts/core.md",
+     "start": 53,
+     "end": 137,
+     "file_sha256": "2f11f99c70aa39ae541e376a1cc7571c7ee0bd636b10c9d19b2ba4b276969e95",
+     "span_sha256": "0c67937507e1f5e088bea51a92d3deae08208d6952192c33924035ded5941265"
+    },
+    {
+     "path": "core/surface/includes/smarts/lenses.md",
+     "start": 11,
+     "end": 115,
+     "file_sha256": "e0ac6e8a8e3579297bc10b61bd4fe1d60261b67f74b4700c5664186084e15f06",
+     "span_sha256": "dbf52b9464e7eb5b4ba24eae7cfd6e27a0b3cb26b7f32b18c0c0b333e09543a8"
+    },
+    {
+     "path": "core/surface/skills/brainstorming/SKILL.md",
+     "start": 50,
+     "end": 60,
+     "file_sha256": "77f658b30ac9842b0f052ff16563075142d0ab25ac5a0bf895072c40dcd64c2b",
+     "span_sha256": "cdad42eff73a067f7d01831ebc3ab80c87521afa55cab534db5e93a09f363e4d"
+    },
+    {
+     "path": "core/surface/includes/smarts/core.md",
+     "start": 139,
+     "end": 153,
+     "file_sha256": "2f11f99c70aa39ae541e376a1cc7571c7ee0bd636b10c9d19b2ba4b276969e95",
+     "span_sha256": "4117c508295b6881a94c85878ca8ca56f092fbd4f9d034b4674210bd4e9bee98"
+    },
+    {
+     "path": "core/surface/skills/brainstorming/SKILL.md",
+     "start": 58,
+     "end": 89,
+     "file_sha256": "77f658b30ac9842b0f052ff16563075142d0ab25ac5a0bf895072c40dcd64c2b",
+     "span_sha256": "108ed4a4a84a9bbf8ae11164c43b39f9308465dad4d66fdf68e41a4f22b247aa"
+    },
+    {
+     "path": "core/surface/includes/artifacts.md",
+     "start": 26,
+     "end": 47,
+     "file_sha256": "be4fb60919830f128adc5bf7a5120d4151132b24efdf7de8e960e2e7a2cd3776",
+     "span_sha256": "74f247dd39ec8df4aefb5fc75bc759669b470de22bd9dd16f3553ae7126c569a"
+    }
+   ],
+   "semantic_assessment": "Everyliteralguard/effect/retryclause separatelymappedtoactualguidance/callee, includingnamedacceptedreplacementsandintakecorrections. No actualagentexecution, commandresult, taskcompletionoruniversalruntimeguard asserted.",
+   "limits": "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:WF-04:01",
+   "frozen_row_sha256": "b7b336e8784cc8ffe6f7dc71fc9e9805381ddc95b4f4121b7cab94f7068e98ba",
+   "witnesses": [
+    {
+     "path": "core/surface/includes/smarts/core.md",
+     "start": 22,
+     "end": 51,
+     "file_sha256": "2f11f99c70aa39ae541e376a1cc7571c7ee0bd636b10c9d19b2ba4b276969e95",
+     "span_sha256": "e6a0f4247a4f4b500422bd8f0ad8274f6c2625432a505969e9d949883957a8ef"
+    },
+    {
+     "path": "core/surface/skills/brainstorming/SKILL.md",
+     "start": 17,
+     "end": 44,
+     "file_sha256": "77f658b30ac9842b0f052ff16563075142d0ab25ac5a0bf895072c40dcd64c2b",
+     "span_sha256": "19b7bceb4fdb115c944023c607a4dda7c5d92f931370533f541e6690f1fcedc1"
+    },
+    {
+     "path": "core/surface/SPRINT.md",
+     "start": 28,
+     "end": 43,
+     "file_sha256": "d3d469e9f741985493a1a391d1d9239a59f6995acd1c2b45463a2978c5146aa6",
+     "span_sha256": "5c85b4fddea8c2d66f5872573f2c41190162ae95dff85d332cfe2141af437b55"
+    }
+   ],
+   "semantic_assessment": "SMARTS recorded-intent step applies only to sprint/brainstorming and exempts named arbitration consumers. Index-first relevant records are ranked by actual user steer, unsuperseded decision log, acceptedADR and plans; absent optional directories are silent, not automaticSTOP.",
+   "intake_variances": [],
+   "limits": "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:WF-04:02",
+   "frozen_row_sha256": "1ce370ef8043d492534ecd3e31e86d765caf4f1652971e46e9fecfecf5a3cada",
+   "witnesses": [
+    {
+     "path": "core/surface/includes/smarts/core.md",
+     "start": 38,
+     "end": 45,
+     "file_sha256": "2f11f99c70aa39ae541e376a1cc7571c7ee0bd636b10c9d19b2ba4b276969e95",
+     "span_sha256": "cd17271180a794d41a3cfa8215cc0c3665069e10d13f664c45094398bc1b7be9"
+    },
+    {
+     "path": "core/surface/skills/brainstorming/SKILL.md",
+     "start": 32,
+     "end": 44,
+     "file_sha256": "77f658b30ac9842b0f052ff16563075142d0ab25ac5a0bf895072c40dcd64c2b",
+     "span_sha256": "ddc98cd3e535bedb84cf2ff2a887e0fba329134f590ff956435ac6b95cfa9e7d"
+    },
+    {
+     "path": "core/surface/SPRINT.md",
+     "start": 80,
+     "end": 89,
+     "file_sha256": "d3d469e9f741985493a1a391d1d9239a59f6995acd1c2b45463a2978c5146aa6",
+     "span_sha256": "d9a7058a05750d7a6c73ec615d8455713360141e45425f9bb1d7a2497f3d7fe3"
+    }
+   ],
+   "semantic_assessment": "A material contradiction is surfaced with sourcecitations; highestcurrentsteer prevails over lowerrecord, genuine unresolved outcome goes to attributeddecisionowner. Sprint scopes pause to affecteddependencies and preserves global user/host stops.",
+   "intake_variances": [
+    "SMARTS old stop-and-surface wording is read with current scoped-conflict owner/PROGRAM; no invented whole-program stop or silent supersession."
+   ],
+   "limits": "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:WF-04:03",
+   "frozen_row_sha256": "dbb164383c855a38cb2f6f51d5271596e2059b71a89996eeef8d8acbcf53f0a6",
+   "witnesses": [
+    {
+     "path": "core/surface/includes/smarts/core.md",
+     "start": 53,
+     "end": 137,
+     "file_sha256": "2f11f99c70aa39ae541e376a1cc7571c7ee0bd636b10c9d19b2ba4b276969e95",
+     "span_sha256": "0c67937507e1f5e088bea51a92d3deae08208d6952192c33924035ded5941265"
+    },
+    {
+     "path": "core/surface/includes/smarts/lenses.md",
+     "start": 11,
+     "end": 115,
+     "file_sha256": "e0ac6e8a8e3579297bc10b61bd4fe1d60261b67f74b4700c5664186084e15f06",
+     "span_sha256": "dbf52b9464e7eb5b4ba24eae7cfd6e27a0b3cb26b7f32b18c0c0b333e09543a8"
+    },
+    {
+     "path": "core/surface/skills/brainstorming/SKILL.md",
+     "start": 50,
+     "end": 60,
+     "file_sha256": "77f658b30ac9842b0f052ff16563075142d0ab25ac5a0bf895072c40dcd64c2b",
+     "span_sha256": "cdad42eff73a067f7d01831ebc3ab80c87521afa55cab534db5e93a09f363e4d"
+    }
+   ],
+   "semantic_assessment": "Six qualitative lenses share Strong/Adequate/Weak/Indifferent/Unknown, no numericweights/count winner. MaterialUnknowns name missingobservation/criticality; criticalUnknown preventsselection/strongrecommendation, unprioritizedtie remains tied. Alternatives are genuine, not manufactured.",
+   "intake_variances": [],
+   "limits": "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:WF-04:04",
+   "frozen_row_sha256": "3a02b0d684384e1f0bf5b20118abdcebfd49d24cae25c42c2984526dfee6be53",
+   "witnesses": [
+    {
+     "path": "core/surface/includes/smarts/core.md",
+     "start": 139,
+     "end": 153,
+     "file_sha256": "2f11f99c70aa39ae541e376a1cc7571c7ee0bd636b10c9d19b2ba4b276969e95",
+     "span_sha256": "4117c508295b6881a94c85878ca8ca56f092fbd4f9d034b4674210bd4e9bee98"
+    },
+    {
+     "path": "core/surface/skills/brainstorming/SKILL.md",
+     "start": 58,
+     "end": 89,
+     "file_sha256": "77f658b30ac9842b0f052ff16563075142d0ab25ac5a0bf895072c40dcd64c2b",
+     "span_sha256": "108ed4a4a84a9bbf8ae11164c43b39f9308465dad4d66fdf68e41a4f22b247aa"
+    },
+    {
+     "path": "core/surface/includes/artifacts.md",
+     "start": 26,
+     "end": 47,
+     "file_sha256": "be4fb60919830f128adc5bf7a5120d4151132b24efdf7de8e960e2e7a2cd3776",
+     "span_sha256": "74f247dd39ec8df4aefb5fc75bc759669b470de22bd9dd16f3553ae7126c569a"
+    }
+   ],
+   "semantic_assessment": "Selected rationale is typed approach+decisions+SEC-SMARTS or one legacyMarkdownsection, then readback. Singleapproach gets only actualreason; savedrationale/schema/digest grants no actionauthority.",
+   "intake_variances": [],
+   "limits": "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification."
+  }
+ ],
+ "scope": "Source-only actualguidanceconformance withnamedacceptedchanges; notagent/tool/runtime/taskqualification.",
+ "limits": [
+  "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification.",
+  "CurrentPROGRAM/ADR43 acceptedassistive direction and scopedHW07/HW09/HW11-14/HW18 changes are explicit; no artifactcode/reviewerfleet/secondpermissionbarrier invented.",
+  "Real userstops/hostpermissions/security/source-store integrity/CAS/journal failures remain binding; source guidance or a validproof never grantsauthority.",
+  "Exactly54 currentPLANNED rowproposals;9advancededges untouched withfullhistory, allunrelated/WF02/WF03 records preserved.",
+  "Sourceepoch384269 isliteralinspectionbasis. Per-rowCAS bindsactualselectedrows, wholeledgerhashadvisoryonly. Rootalone owns strictprospectiveauthentication/adoption."
+ ]
+}

@@ -1,0 +1,118 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "Codex /root/acceptance_security_review infra-author: exact25-clause C05-C10 source/baseline/caller assessment; healthy source-only proposal, C06 partial-spawn cleanup explicitly pending"
+ },
+ "inputs": {
+  ".github/scripts/_context_fixturelib.py": "189a9886823c17ef1235213049c2301941dc2113e562e3a571c4e4c1c21849df",
+  ".github/scripts/test_context_evaluation.py": "2419cb4d6dcb1fd0096f00aa6f90fc3a9b7bcef69434ab3227150fc934ee2c12",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e"
+ },
+ "disposition_ids": [
+  "disposition:machines:C08"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/ci-six-source-384269dc/clause-inspection.json",
+   "sha256": "d596f289beda4dac2a82addbc95848d4038ed5f19242298e498e6a8bb2dbb4c1"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/ci-six-source-384269dc/source-bindings.json",
+   "sha256": "49eeb6dd181daa14b41a2a07cf97ff6b87625f1f785a1828e8b82165e91edb79"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/ci-six-source-384269dc/owner-baseline-current.diff",
+   "sha256": "ebb8d8870a2a601f4ad08ae4298d1aa9f76667e82022c68c45d60aaa9f90a47b"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:C08",
+   "frozen_row_sha256": "fadd1be70a50d53473fd3765241859e4a32a4825a751c8b5db81541f2d229188",
+   "clause_ids": [
+    "disposition:transitions:C08:01",
+    "disposition:transitions:C08:02",
+    "disposition:transitions:C08:03"
+   ],
+   "witnesses": [
+    {
+     "path": ".github/scripts/_context_fixturelib.py",
+     "start": 21,
+     "end": 40,
+     "file_sha256": "189a9886823c17ef1235213049c2301941dc2113e562e3a571c4e4c1c21849df"
+    },
+    {
+     "path": ".github/scripts/_context_fixturelib.py",
+     "start": 43,
+     "end": 196,
+     "file_sha256": "189a9886823c17ef1235213049c2301941dc2113e562e3a571c4e4c1c21849df"
+    },
+    {
+     "path": ".github/scripts/_context_fixturelib.py",
+     "start": 225,
+     "end": 288,
+     "file_sha256": "189a9886823c17ef1235213049c2301941dc2113e562e3a571c4e4c1c21849df"
+    },
+    {
+     "path": ".github/scripts/_context_fixturelib.py",
+     "start": 199,
+     "end": 222,
+     "file_sha256": "189a9886823c17ef1235213049c2301941dc2113e562e3a571c4e4c1c21849df"
+    },
+    {
+     "path": ".github/scripts/_context_fixturelib.py",
+     "start": 260,
+     "end": 296,
+     "file_sha256": "189a9886823c17ef1235213049c2301941dc2113e562e3a571c4e4c1c21849df"
+    },
+    {
+     "path": ".github/scripts/test_context_evaluation.py",
+     "start": 368,
+     "end": 424,
+     "file_sha256": "2419cb4d6dcb1fd0096f00aa6f90fc3a9b7bcef69434ab3227150fc934ee2c12"
+    }
+   ],
+   "semantic_assessment": "All literal event/guard/effect/retry clauses map to current source and pinned baseline, with explicit intake scopes/previous strengthening above; only source contract is preserved, and any existing TESTED/PRESERVED edge rows remain unchanged."
+  }
+ ],
+ "scope": {
+  "source_only": true,
+  "families": [
+   "C08"
+  ],
+  "complete_machine": true,
+  "inspected_all_literal_clauses": [
+   "disposition:transitions:C08:01",
+   "disposition:transitions:C08:02",
+   "disposition:transitions:C08:03"
+  ],
+  "existing_advanced_rows_unchanged": [
+   "disposition:transitions:C08:01",
+   "disposition:transitions:C08:02",
+   "disposition:transitions:C08:03"
+  ],
+  "intake_variances": [
+   {
+    "id": "C08-COOPERATIVE-PLACEMENT-BOUNDARY",
+    "cells": [
+     "C08:02",
+     "C08:03"
+    ],
+    "classification": "EXISTING_SOURCE_LIMIT_RETAINED",
+    "statement": "Catalog validates initial digest; materialize writes and returns actual snapshot rather than independently proving hostile solver confinement or concurrent source CAS. The frozen guard is interpreted as successful bounded setup/readback; existing three source-preserved rows already state this limit. No claim of an independent expected final-oracle validator."
+   }
+  ]
+ },
+ "limits": [
+  "Reasoned finite source guard/effect/retry conformance only. No actual suite/CI/Go/Docker/Vitest/installed/provider execution or success, runtime evidence epoch, task completion, human acceptance or publication qualification is asserted.",
+  "No canonical/index/ref/marker/ledger writes. These are proposals for Root compare-and-set adoption; no current staged candidate or security marker is fabricated.",
+  "Unkeyed source hashes/records provide cooperative source consistency, not adversarial authentication or observed execution."
+ ]
+}

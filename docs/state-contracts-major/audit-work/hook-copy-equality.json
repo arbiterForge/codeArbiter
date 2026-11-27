@@ -1,0 +1,1676 @@
+[
+  {
+    "source": "core/pysrc/artifact-authority-hook.py",
+    "host": "ca",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/artifact-authority-hook.py",
+    "host": "ca-codex",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/artifact-authority-hook.py",
+    "host": "ca-pi",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_releaselib.py",
+    "host": "ca",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_releaselib.py",
+    "host": "ca-codex",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_releaselib.py",
+    "host": "ca-pi",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/artifact-reconcile.py",
+    "host": "ca",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/artifact-reconcile.py",
+    "host": "ca-codex",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/artifact-reconcile.py",
+    "host": "ca-pi",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/session-start.py",
+    "host": "ca",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/session-start.py",
+    "host": "ca-codex",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/session-start.py",
+    "host": "ca-pi",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_boxlib.py",
+    "host": "ca",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_boxlib.py",
+    "host": "ca-codex",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_boxlib.py",
+    "host": "ca-pi",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_cleanuplib.py",
+    "host": "ca",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_cleanuplib.py",
+    "host": "ca-codex",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_cleanuplib.py",
+    "host": "ca-pi",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/babysit.py",
+    "host": "ca",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/babysit.py",
+    "host": "ca-codex",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/babysit.py",
+    "host": "ca-pi",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_replylib.py",
+    "host": "ca",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_replylib.py",
+    "host": "ca-codex",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_replylib.py",
+    "host": "ca-pi",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_workadopt.py",
+    "host": "ca",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_workadopt.py",
+    "host": "ca-codex",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_workadopt.py",
+    "host": "ca-pi",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_fmtlib.py",
+    "host": "ca",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_fmtlib.py",
+    "host": "ca-codex",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_fmtlib.py",
+    "host": "ca-pi",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_gitlib.py",
+    "host": "ca",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_gitlib.py",
+    "host": "ca-codex",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_gitlib.py",
+    "host": "ca-pi",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_taskboardlib.py",
+    "host": "ca",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_taskboardlib.py",
+    "host": "ca-codex",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_taskboardlib.py",
+    "host": "ca-pi",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_tribunalrunlib.py",
+    "host": "ca",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_tribunalrunlib.py",
+    "host": "ca-codex",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_tribunalrunlib.py",
+    "host": "ca-pi",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/init-codearbiter.py",
+    "host": "ca",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/init-codearbiter.py",
+    "host": "ca-codex",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/init-codearbiter.py",
+    "host": "ca-pi",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_standuplib.py",
+    "host": "ca",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_standuplib.py",
+    "host": "ca-codex",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_standuplib.py",
+    "host": "ca-pi",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_babysitlib.py",
+    "host": "ca",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_babysitlib.py",
+    "host": "ca-codex",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_babysitlib.py",
+    "host": "ca-pi",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_knowledgelib.py",
+    "host": "ca",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_knowledgelib.py",
+    "host": "ca-codex",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_knowledgelib.py",
+    "host": "ca-pi",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_modelib.py",
+    "host": "ca",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_modelib.py",
+    "host": "ca-codex",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_modelib.py",
+    "host": "ca-pi",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_taskexcludelib.py",
+    "host": "ca",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_taskexcludelib.py",
+    "host": "ca-codex",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_taskexcludelib.py",
+    "host": "ca-pi",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_scopelib.py",
+    "host": "ca",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_scopelib.py",
+    "host": "ca-codex",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_scopelib.py",
+    "host": "ca-pi",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_contextreportlib.py",
+    "host": "ca",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_contextreportlib.py",
+    "host": "ca-codex",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_contextreportlib.py",
+    "host": "ca-pi",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/security-pass.py",
+    "host": "ca",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/security-pass.py",
+    "host": "ca-codex",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/security-pass.py",
+    "host": "ca-pi",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/resolve-append-only-conflict.py",
+    "host": "ca",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/resolve-append-only-conflict.py",
+    "host": "ca-codex",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/resolve-append-only-conflict.py",
+    "host": "ca-pi",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_usagelib.py",
+    "host": "ca",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_usagelib.py",
+    "host": "ca-codex",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_usagelib.py",
+    "host": "ca-pi",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_contextmergelib.py",
+    "host": "ca",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_contextmergelib.py",
+    "host": "ca-codex",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_contextmergelib.py",
+    "host": "ca-pi",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_sprintapprovallib.py",
+    "host": "ca",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_sprintapprovallib.py",
+    "host": "ca-codex",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_sprintapprovallib.py",
+    "host": "ca-pi",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_protectedstatelib.py",
+    "host": "ca",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_protectedstatelib.py",
+    "host": "ca-codex",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_protectedstatelib.py",
+    "host": "ca-pi",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_hooklib.py",
+    "host": "ca",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_hooklib.py",
+    "host": "ca-codex",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_hooklib.py",
+    "host": "ca-pi",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_gitexec.py",
+    "host": "ca",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_gitexec.py",
+    "host": "ca-codex",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_gitexec.py",
+    "host": "ca-pi",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/pre-write.py",
+    "host": "ca",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/pre-write.py",
+    "host": "ca-codex",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/pre-write.py",
+    "host": "ca-pi",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/debug-handoff.py",
+    "host": "ca",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/debug-handoff.py",
+    "host": "ca-codex",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/debug-handoff.py",
+    "host": "ca-pi",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_sessionlib.py",
+    "host": "ca",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_sessionlib.py",
+    "host": "ca-codex",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_sessionlib.py",
+    "host": "ca-pi",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_activationlib.py",
+    "host": "ca",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_activationlib.py",
+    "host": "ca-codex",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_activationlib.py",
+    "host": "ca-pi",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/pre-read.py",
+    "host": "ca",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/pre-read.py",
+    "host": "ca-codex",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/pre-read.py",
+    "host": "ca-pi",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_bashguardlib.py",
+    "host": "ca",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_bashguardlib.py",
+    "host": "ca-codex",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_bashguardlib.py",
+    "host": "ca-pi",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_adrlifecyclegit.py",
+    "host": "ca",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_adrlifecyclegit.py",
+    "host": "ca-codex",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_adrlifecyclegit.py",
+    "host": "ca-pi",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_prunepolicy.py",
+    "host": "ca",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_prunepolicy.py",
+    "host": "ca-codex",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_prunepolicy.py",
+    "host": "ca-pi",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/migration-pass.py",
+    "host": "ca",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/migration-pass.py",
+    "host": "ca-codex",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/migration-pass.py",
+    "host": "ca-pi",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_adrlifecycle.py",
+    "host": "ca",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_adrlifecycle.py",
+    "host": "ca-codex",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_adrlifecycle.py",
+    "host": "ca-pi",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_protectedlib.py",
+    "host": "ca",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_protectedlib.py",
+    "host": "ca-codex",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_protectedlib.py",
+    "host": "ca-pi",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_debughandofflib.py",
+    "host": "ca",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_debughandofflib.py",
+    "host": "ca-codex",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_debughandofflib.py",
+    "host": "ca-pi",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/adr-merge-method.py",
+    "host": "ca",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/adr-merge-method.py",
+    "host": "ca-codex",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/adr-merge-method.py",
+    "host": "ca-pi",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/hostapi.py",
+    "host": "ca",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/hostapi.py",
+    "host": "ca-codex",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/hostapi.py",
+    "host": "ca-pi",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_artifactlib.py",
+    "host": "ca",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_artifactlib.py",
+    "host": "ca-codex",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_artifactlib.py",
+    "host": "ca-pi",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_workgithub.py",
+    "host": "ca",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_workgithub.py",
+    "host": "ca-codex",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_workgithub.py",
+    "host": "ca-pi",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_artifactauthoritylib.py",
+    "host": "ca",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_artifactauthoritylib.py",
+    "host": "ca-codex",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_artifactauthoritylib.py",
+    "host": "ca-pi",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_durabilitylib.py",
+    "host": "ca",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_durabilitylib.py",
+    "host": "ca-codex",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_durabilitylib.py",
+    "host": "ca-pi",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_intentlib.py",
+    "host": "ca",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_intentlib.py",
+    "host": "ca-codex",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_intentlib.py",
+    "host": "ca-pi",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_contextsnapshotlib.py",
+    "host": "ca",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_contextsnapshotlib.py",
+    "host": "ca-codex",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_contextsnapshotlib.py",
+    "host": "ca-pi",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_reconciliationlib.py",
+    "host": "ca",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_reconciliationlib.py",
+    "host": "ca-codex",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_reconciliationlib.py",
+    "host": "ca-pi",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_subagentslib.py",
+    "host": "ca",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_subagentslib.py",
+    "host": "ca-codex",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_subagentslib.py",
+    "host": "ca-pi",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/artifact-authority.py",
+    "host": "ca",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/artifact-authority.py",
+    "host": "ca-codex",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/artifact-authority.py",
+    "host": "ca-pi",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/doctor.py",
+    "host": "ca",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/doctor.py",
+    "host": "ca-codex",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/doctor.py",
+    "host": "ca-pi",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/append-override.py",
+    "host": "ca",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/append-override.py",
+    "host": "ca-codex",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/append-override.py",
+    "host": "ca-pi",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/taskwrite.py",
+    "host": "ca",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/taskwrite.py",
+    "host": "ca-codex",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/taskwrite.py",
+    "host": "ca-pi",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_provenancelib.py",
+    "host": "ca",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_provenancelib.py",
+    "host": "ca-codex",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_provenancelib.py",
+    "host": "ca-pi",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_readinjectlib.py",
+    "host": "ca",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_readinjectlib.py",
+    "host": "ca-codex",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_readinjectlib.py",
+    "host": "ca-pi",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_tribunalinventorylib.py",
+    "host": "ca",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_tribunalinventorylib.py",
+    "host": "ca-codex",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_tribunalinventorylib.py",
+    "host": "ca-pi",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_segmentslib.py",
+    "host": "ca",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_segmentslib.py",
+    "host": "ca-codex",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_segmentslib.py",
+    "host": "ca-pi",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/wire-statusline.py",
+    "host": "ca",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/wire-statusline.py",
+    "host": "ca-codex",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/wire-statusline.py",
+    "host": "ca-pi",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/update-refresh.py",
+    "host": "ca",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/update-refresh.py",
+    "host": "ca-codex",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/update-refresh.py",
+    "host": "ca-pi",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_entrylib.py",
+    "host": "ca",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_entrylib.py",
+    "host": "ca-codex",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_entrylib.py",
+    "host": "ca-pi",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_ledgerlib.py",
+    "host": "ca",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_ledgerlib.py",
+    "host": "ca-codex",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_ledgerlib.py",
+    "host": "ca-pi",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/prune-transcript.py",
+    "host": "ca",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/prune-transcript.py",
+    "host": "ca-codex",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/prune-transcript.py",
+    "host": "ca-pi",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/git-enforce.py",
+    "host": "ca",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/git-enforce.py",
+    "host": "ca-codex",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/git-enforce.py",
+    "host": "ca-pi",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_appendonlyconflictlib.py",
+    "host": "ca",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_appendonlyconflictlib.py",
+    "host": "ca-codex",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_appendonlyconflictlib.py",
+    "host": "ca-pi",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/resolve-context-conflict.py",
+    "host": "ca",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/resolve-context-conflict.py",
+    "host": "ca-codex",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/resolve-context-conflict.py",
+    "host": "ca-pi",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/tribunal.py",
+    "host": "ca",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/tribunal.py",
+    "host": "ca-codex",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/tribunal.py",
+    "host": "ca-pi",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/knowledge.py",
+    "host": "ca",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/knowledge.py",
+    "host": "ca-codex",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/knowledge.py",
+    "host": "ca-pi",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_overrideappendlib.py",
+    "host": "ca",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_overrideappendlib.py",
+    "host": "ca-codex",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_overrideappendlib.py",
+    "host": "ca-pi",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/work.py",
+    "host": "ca",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/work.py",
+    "host": "ca-codex",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/work.py",
+    "host": "ca-pi",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/boardsync.py",
+    "host": "ca",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/boardsync.py",
+    "host": "ca-codex",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/boardsync.py",
+    "host": "ca-pi",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_worklib.py",
+    "host": "ca",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_worklib.py",
+    "host": "ca-codex",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_worklib.py",
+    "host": "ca-pi",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/statusline.py",
+    "host": "ca",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/statusline.py",
+    "host": "ca-codex",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/statusline.py",
+    "host": "ca-pi",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_pathnorm.py",
+    "host": "ca",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_pathnorm.py",
+    "host": "ca-codex",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_pathnorm.py",
+    "host": "ca-pi",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_sensitivelib.py",
+    "host": "ca",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_sensitivelib.py",
+    "host": "ca-codex",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_sensitivelib.py",
+    "host": "ca-pi",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_contextwriterlib.py",
+    "host": "ca",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_contextwriterlib.py",
+    "host": "ca-codex",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_contextwriterlib.py",
+    "host": "ca-pi",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/prompt-submit.py",
+    "host": "ca",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/prompt-submit.py",
+    "host": "ca-codex",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/prompt-submit.py",
+    "host": "ca-pi",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_approvallib.py",
+    "host": "ca",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_approvallib.py",
+    "host": "ca-codex",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_approvallib.py",
+    "host": "ca-pi",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_updatelib.py",
+    "host": "ca",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_updatelib.py",
+    "host": "ca-codex",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_updatelib.py",
+    "host": "ca-pi",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/pre-edit.py",
+    "host": "ca",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/pre-edit.py",
+    "host": "ca-codex",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/pre-edit.py",
+    "host": "ca-pi",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_prunelib.py",
+    "host": "ca",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_prunelib.py",
+    "host": "ca-codex",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_prunelib.py",
+    "host": "ca-pi",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_colorlib.py",
+    "host": "ca",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_colorlib.py",
+    "host": "ca-codex",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_colorlib.py",
+    "host": "ca-pi",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_contextselectlib.py",
+    "host": "ca",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_contextselectlib.py",
+    "host": "ca-codex",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_contextselectlib.py",
+    "host": "ca-pi",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/pre-bash.py",
+    "host": "ca",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/pre-bash.py",
+    "host": "ca-codex",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/pre-bash.py",
+    "host": "ca-pi",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_planfilelib.py",
+    "host": "ca",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_planfilelib.py",
+    "host": "ca-codex",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_planfilelib.py",
+    "host": "ca-pi",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_githooks.py",
+    "host": "ca",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_githooks.py",
+    "host": "ca-codex",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_githooks.py",
+    "host": "ca-pi",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_artifactpromptlib.py",
+    "host": "ca",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_artifactpromptlib.py",
+    "host": "ca-codex",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_artifactpromptlib.py",
+    "host": "ca-pi",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/releasehash.py",
+    "host": "ca",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/releasehash.py",
+    "host": "ca-codex",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/releasehash.py",
+    "host": "ca-pi",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/post-write-edit.py",
+    "host": "ca",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/post-write-edit.py",
+    "host": "ca-codex",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/post-write-edit.py",
+    "host": "ca-pi",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_sloplib.py",
+    "host": "ca",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_sloplib.py",
+    "host": "ca-codex",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_sloplib.py",
+    "host": "ca-pi",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_arbiterstatelib.py",
+    "host": "ca",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_arbiterstatelib.py",
+    "host": "ca-codex",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_arbiterstatelib.py",
+    "host": "ca-pi",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_prerequisitelib.py",
+    "host": "ca",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_prerequisitelib.py",
+    "host": "ca-codex",
+    "exists": true,
+    "equal": true
+  },
+  {
+    "source": "core/pysrc/_prerequisitelib.py",
+    "host": "ca-pi",
+    "exists": true,
+    "equal": true
+  }
+]

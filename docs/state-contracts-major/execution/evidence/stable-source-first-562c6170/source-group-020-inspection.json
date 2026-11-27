@@ -1,0 +1,950 @@
+{
+  "schema": "codearbiter.current-finite-source-inspection/1",
+  "source_commit": "562c6170c010eedbef93a4216b4baa971fd6b9a6",
+  "original_semantic_inspection_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+  "group": "source-group-020",
+  "positive_input_join": {
+    "core/pysrc/_approvallib.py": {
+      "sha256": "fc71ec67a9c44ebbadd9897244da291b6b50768dbe19e59d576ee3f15505828b",
+      "bytes": 25093,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "fc71ec67a9c44ebbadd9897244da291b6b50768dbe19e59d576ee3f15505828b",
+        "bytes": 25093
+      }
+    },
+    "core/pysrc/_artifactauthoritylib.py": {
+      "sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+      "bytes": 251805,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+        "bytes": 251805
+      }
+    },
+    "core/pysrc/_artifactlib.py": {
+      "sha256": "db10153f438023ca6eb7e32f77e1898fbd2f806cdc5ef98bdffb078e27e65187",
+      "bytes": 64924,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "db10153f438023ca6eb7e32f77e1898fbd2f806cdc5ef98bdffb078e27e65187",
+        "bytes": 64924
+      }
+    },
+    "core/pysrc/_artifactpromptlib.py": {
+      "sha256": "03e0c4b32c806cc054ef34ae7ac58ed093cbe80521a8fea723b7ceb8ac72e1d9",
+      "bytes": 12221,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "03e0c4b32c806cc054ef34ae7ac58ed093cbe80521a8fea723b7ceb8ac72e1d9",
+        "bytes": 12221
+      }
+    },
+    "core/pysrc/_reconciliationlib.py": {
+      "sha256": "7a281f3f4cdf7c29d62185d12ac24ebb26e3f1c01f42004aa99a1f8080ae2691",
+      "bytes": 36207,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "7a281f3f4cdf7c29d62185d12ac24ebb26e3f1c01f42004aa99a1f8080ae2691",
+        "bytes": 36207
+      }
+    },
+    "core/pysrc/_replylib.py": {
+      "sha256": "127d9bcfd842bcea941f2d61b86963cd3e50fcb34a603e8a834fe18d2cc9bf0d",
+      "bytes": 25320,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "127d9bcfd842bcea941f2d61b86963cd3e50fcb34a603e8a834fe18d2cc9bf0d",
+        "bytes": 25320
+      }
+    },
+    "core/pysrc/artifact-reconcile.py": {
+      "sha256": "adc01569ed70ca46c4dd6d9201b25a32747b7ad413dd3a68a5676d1fdc1b502b",
+      "bytes": 3990,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "adc01569ed70ca46c4dd6d9201b25a32747b7ad413dd3a68a5676d1fdc1b502b",
+        "bytes": 3990
+      }
+    }
+  },
+  "current_input_membership": [
+    {
+      "profile": "python-import-directory-v1",
+      "root": "core/pysrc",
+      "path_order": "windows",
+      "sha256": "47866d8dbbe83d269b0c3311e9bb1df44111bd8596c4c9808865eabf6d10ff9d"
+    }
+  ],
+  "semantic_rows": [
+    {
+      "cell": "disposition:machines:hooks:reconciliation",
+      "frozen_record": {
+        "machine_id": "hooks:reconciliation",
+        "name": "Frozen reconciliation prompt and recoverable native mutation",
+        "domain": "Python hooks and shared state",
+        "kind": "implemented",
+        "owner": "hooks-workflows",
+        "closure_task": "HW-27",
+        "task_ids": [
+          "HW-11",
+          "HW-27"
+        ],
+        "explicit_machine_task_ids": [],
+        "source_intersection_task_ids": [
+          "HW-11"
+        ],
+        "mapping_basis": "Owner assignment uses the inspected audit domain and explicit owner ledger; source intersections flag review impact, not a claim every edge changes.",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "status": "NOT_RUN",
+        "transition_count": 8,
+        "source_refs": [
+          "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_reconciliationlib.py",
+          "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/artifact-reconcile.py"
+        ],
+        "proposed_composed_scenario_ids": [
+          "SEQ-10",
+          "SEQ-11"
+        ],
+        "required_disposition": "Read the pinned/current owner, preserve each existing guard/effect/retry boundary except a named authorized change, map meaningful executed tests or reasoned conformance review to the row IDs, and add new rows for introduced events.",
+        "evidence": []
+      },
+      "frozen_record_sha256": "a07eac477f36084e4810d1739d98ddca2ef14255662c153f9ed8ed49ebb0ed63",
+      "group": "source-group-020",
+      "literal_inspection": "74-new-full-frozen-machine-or-finding-records",
+      "assessment": "Conditional finite source composition of Frozen reconciliation prompt and recoverable native mutation. Constituent guard/effect/retry source scopes and named accepted changes retained; neither task_ids nor model-guided instructions prove executed runtime/installed/model behavior.",
+      "changed_helper_interpretation_ids": [
+        "artifact-platform-dispatch"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/reconciliation/preserved.json",
+          "sha256": "0db39f227b57bb8f3dc948ee7da250af22eb44adf808bb76e855f06208e5da52",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:hooks:reconciliation:01",
+      "frozen_record": {
+        "transition_id": "hooks:reconciliation:01",
+        "machine_id": "hooks:reconciliation",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "absent",
+          "event": "arm task/scope reconciliation",
+          "guard": "current frozen artifact and target; exclusive route",
+          "to": "armed",
+          "effects": "Write pending snapshot and register exact prompt.",
+          "failure_retry": "Mixed current spool plus legacy marker or invalid pending refuses.",
+          "source": [
+            {
+              "path": "core/pysrc/_reconciliationlib.py",
+              "symbol": "module",
+              "lines": "1-718",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_reconciliationlib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_reconciliationlib.py"
+            },
+            {
+              "path": "core/pysrc/artifact-reconcile.py",
+              "symbol": "module",
+              "lines": "1-70",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/artifact-reconcile.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/artifact-reconcile.py"
+            }
+          ],
+          "transition_id": "hooks:reconciliation:01"
+        },
+        "task_ids": [
+          "HW-11",
+          "HW-27"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-10",
+          "SEQ-11"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "0165cbfaf8e5f4bee7ff4f58d4224f33ea073b4de15cf43eab25ab77e039e44f",
+      "group": "source-group-020",
+      "assessment": "Immutable observed reply and durable exact attempt precede native reconcile. Success must bind recorded operation; uncertainty retains state, ambiguity/mixed/orphan evidence is not guessed. Only proven unanswered or terminal noncommit can retire; no new user input fabricated.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "artifact-platform-dispatch"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/reconciliation/preserved.json",
+          "sha256": "0db39f227b57bb8f3dc948ee7da250af22eb44adf808bb76e855f06208e5da52",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:hooks:reconciliation:02",
+      "frozen_record": {
+        "transition_id": "hooks:reconciliation:02",
+        "machine_id": "hooks:reconciliation",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "armed",
+          "event": "matching observed reply",
+          "guard": "current prompt and expected artifact state",
+          "to": "captured",
+          "effects": "Publish immutable reply observation.",
+          "failure_retry": "Unmatched reply leaves pending unchanged.",
+          "source": [
+            {
+              "path": "core/pysrc/_reconciliationlib.py",
+              "symbol": "module",
+              "lines": "1-718",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_reconciliationlib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_reconciliationlib.py"
+            },
+            {
+              "path": "core/pysrc/artifact-reconcile.py",
+              "symbol": "module",
+              "lines": "1-70",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/artifact-reconcile.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/artifact-reconcile.py"
+            }
+          ],
+          "transition_id": "hooks:reconciliation:02"
+        },
+        "task_ids": [
+          "HW-11",
+          "HW-27"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-10",
+          "SEQ-11"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "43cba21d1f9f7a3748794aee945c3d6d42e034ee4bd32932902ab3942314a605",
+      "group": "source-group-020",
+      "assessment": "Immutable observed reply and durable exact attempt precede native reconcile. Success must bind recorded operation; uncertainty retains state, ambiguity/mixed/orphan evidence is not guessed. Only proven unanswered or terminal noncommit can retire; no new user input fabricated.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "artifact-platform-dispatch"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/reconciliation/preserved.json",
+          "sha256": "0db39f227b57bb8f3dc948ee7da250af22eb44adf808bb76e855f06208e5da52",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:hooks:reconciliation:03",
+      "frozen_record": {
+        "transition_id": "hooks:reconciliation:03",
+        "machine_id": "hooks:reconciliation",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "captured",
+          "event": "consume",
+          "guard": "mutation request derived from frozen pending/source",
+          "to": "attempt-persisted",
+          "effects": "Write durable attempt before native task-reconcile/scope-reconcile.",
+          "failure_retry": "Attempt write failure prevents mutation.",
+          "source": [
+            {
+              "path": "core/pysrc/_reconciliationlib.py",
+              "symbol": "module",
+              "lines": "1-718",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_reconciliationlib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_reconciliationlib.py"
+            },
+            {
+              "path": "core/pysrc/artifact-reconcile.py",
+              "symbol": "module",
+              "lines": "1-70",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/artifact-reconcile.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/artifact-reconcile.py"
+            }
+          ],
+          "transition_id": "hooks:reconciliation:03"
+        },
+        "task_ids": [
+          "HW-11",
+          "HW-27"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-10",
+          "SEQ-11"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "c434a4a6f6f3d085e82281cbefc3d55eef4075c8262fe49923dec54620c8a0f2",
+      "group": "source-group-020",
+      "assessment": "Immutable observed reply and durable exact attempt precede native reconcile. Success must bind recorded operation; uncertainty retains state, ambiguity/mixed/orphan evidence is not guessed. Only proven unanswered or terminal noncommit can retire; no new user input fabricated.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "artifact-platform-dispatch"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/reconciliation/preserved.json",
+          "sha256": "0db39f227b57bb8f3dc948ee7da250af22eb44adf808bb76e855f06208e5da52",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:hooks:reconciliation:04",
+      "frozen_record": {
+        "transition_id": "hooks:reconciliation:04",
+        "machine_id": "hooks:reconciliation",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "attempt-persisted",
+          "event": "native success",
+          "guard": "receipt matches recorded operation",
+          "to": "committed",
+          "effects": "Remove completed pending and reply route.",
+          "failure_retry": "Unknown failure retains pending/attempt.",
+          "source": [
+            {
+              "path": "core/pysrc/_reconciliationlib.py",
+              "symbol": "module",
+              "lines": "1-718",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_reconciliationlib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_reconciliationlib.py"
+            },
+            {
+              "path": "core/pysrc/artifact-reconcile.py",
+              "symbol": "module",
+              "lines": "1-70",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/artifact-reconcile.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/artifact-reconcile.py"
+            }
+          ],
+          "transition_id": "hooks:reconciliation:04"
+        },
+        "task_ids": [
+          "HW-11",
+          "HW-27"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-10",
+          "SEQ-11"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "498c987f92cf18317efde19daa3da47db395c7399e4545dc08c3302bc88ccbc5",
+      "group": "source-group-020",
+      "assessment": "Immutable observed reply and durable exact attempt precede native reconcile. Success must bind recorded operation; uncertainty retains state, ambiguity/mixed/orphan evidence is not guessed. Only proven unanswered or terminal noncommit can retire; no new user input fabricated.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "artifact-platform-dispatch"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/reconciliation/preserved.json",
+          "sha256": "0db39f227b57bb8f3dc948ee7da250af22eb44adf808bb76e855f06208e5da52",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:hooks:reconciliation:05",
+      "frozen_record": {
+        "transition_id": "hooks:reconciliation:05",
+        "machine_id": "hooks:reconciliation",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "unknown / legacy-recoverable",
+          "event": "recover",
+          "guard": "recorded source/request can be reconstructed exactly",
+          "to": "committed or retained unknown",
+          "effects": "Recover/replay captured request; legacy path is recovery-only.",
+          "failure_retry": "Ambiguous/mixed/orphan evidence is not guessed.",
+          "source": [
+            {
+              "path": "core/pysrc/_reconciliationlib.py",
+              "symbol": "module",
+              "lines": "1-718",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_reconciliationlib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_reconciliationlib.py"
+            },
+            {
+              "path": "core/pysrc/artifact-reconcile.py",
+              "symbol": "module",
+              "lines": "1-70",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/artifact-reconcile.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/artifact-reconcile.py"
+            }
+          ],
+          "transition_id": "hooks:reconciliation:05"
+        },
+        "task_ids": [
+          "HW-11",
+          "HW-27"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-10",
+          "SEQ-11"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "73c7330b317eb3a2d9d765d06f1cd9b0ff50c902952768c9014b10cf4ea9d371",
+      "group": "source-group-020",
+      "assessment": "Immutable observed reply and durable exact attempt precede native reconcile. Success must bind recorded operation; uncertainty retains state, ambiguity/mixed/orphan evidence is not guessed. Only proven unanswered or terminal noncommit can retire; no new user input fabricated.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "artifact-platform-dispatch"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/reconciliation/preserved.json",
+          "sha256": "0db39f227b57bb8f3dc948ee7da250af22eb44adf808bb76e855f06208e5da52",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:hooks:reconciliation:06",
+      "frozen_record": {
+        "transition_id": "hooks:reconciliation:06",
+        "machine_id": "hooks:reconciliation",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "armed unanswered",
+          "event": "cancel / supersede",
+          "guard": "no attempt or published reply observation; explicit reason for supersede",
+          "to": "absent / superseded",
+          "effects": "Retire unanswered prompt without capturing code.",
+          "failure_retry": "Captured state refuses cancellation.",
+          "source": [
+            {
+              "path": "core/pysrc/_reconciliationlib.py",
+              "symbol": "module",
+              "lines": "1-718",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_reconciliationlib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_reconciliationlib.py"
+            },
+            {
+              "path": "core/pysrc/artifact-reconcile.py",
+              "symbol": "module",
+              "lines": "1-70",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/artifact-reconcile.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/artifact-reconcile.py"
+            }
+          ],
+          "transition_id": "hooks:reconciliation:06"
+        },
+        "task_ids": [
+          "HW-11",
+          "HW-27"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-10",
+          "SEQ-11"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "8e7e99e047f03ba78d61c731220d72db65b141b479ea1c732ffaccf8938f70ca",
+      "group": "source-group-020",
+      "assessment": "Immutable observed reply and durable exact attempt precede native reconcile. Success must bind recorded operation; uncertainty retains state, ambiguity/mixed/orphan evidence is not guessed. Only proven unanswered or terminal noncommit can retire; no new user input fabricated.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "artifact-platform-dispatch"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/reconciliation/preserved.json",
+          "sha256": "0db39f227b57bb8f3dc948ee7da250af22eb44adf808bb76e855f06208e5da52",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:hooks:reconciliation:07",
+      "frozen_record": {
+        "transition_id": "hooks:reconciliation:07",
+        "machine_id": "hooks:reconciliation",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "orphaned pending",
+          "event": "cancel orphan",
+          "guard": "no route and no observation",
+          "to": "cancelled",
+          "effects": "Remove proven unanswered orphan.",
+          "failure_retry": "Any source evidence prevents discard.",
+          "source": [
+            {
+              "path": "core/pysrc/_reconciliationlib.py",
+              "symbol": "module",
+              "lines": "1-718",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_reconciliationlib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_reconciliationlib.py"
+            },
+            {
+              "path": "core/pysrc/artifact-reconcile.py",
+              "symbol": "module",
+              "lines": "1-70",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/artifact-reconcile.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/artifact-reconcile.py"
+            }
+          ],
+          "transition_id": "hooks:reconciliation:07"
+        },
+        "task_ids": [
+          "HW-11",
+          "HW-27"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-10",
+          "SEQ-11"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "da1d764766a58989b1a8e0632a9d064ecd5dc754e0bd99f27fe28ed23eaf4c64",
+      "group": "source-group-020",
+      "assessment": "Immutable observed reply and durable exact attempt precede native reconcile. Success must bind recorded operation; uncertainty retains state, ambiguity/mixed/orphan evidence is not guessed. Only proven unanswered or terminal noncommit can retire; no new user input fabricated.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "artifact-platform-dispatch"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/reconciliation/preserved.json",
+          "sha256": "0db39f227b57bb8f3dc948ee7da250af22eb44adf808bb76e855f06208e5da52",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:hooks:reconciliation:08",
+      "frozen_record": {
+        "transition_id": "hooks:reconciliation:08",
+        "machine_id": "hooks:reconciliation",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "attempt-persisted",
+          "event": "revision conflict / operation rolled back",
+          "guard": "native response proves terminal noncommit",
+          "to": "absent / retry with new prompt",
+          "effects": "Clean old request and require current reconciliation.",
+          "failure_retry": "Uncertain response remains recoverable.",
+          "source": [
+            {
+              "path": "core/pysrc/_reconciliationlib.py",
+              "symbol": "module",
+              "lines": "1-718",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_reconciliationlib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_reconciliationlib.py"
+            },
+            {
+              "path": "core/pysrc/artifact-reconcile.py",
+              "symbol": "module",
+              "lines": "1-70",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/artifact-reconcile.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/artifact-reconcile.py"
+            }
+          ],
+          "transition_id": "hooks:reconciliation:08"
+        },
+        "task_ids": [
+          "HW-11",
+          "HW-27"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-10",
+          "SEQ-11"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "fc7d09432a784584d421ed98d6ef5361fcd1c5ed4e14540f4fda51af3826dfc1",
+      "group": "source-group-020",
+      "assessment": "Immutable observed reply and durable exact attempt precede native reconcile. Success must bind recorded operation; uncertainty retains state, ambiguity/mixed/orphan evidence is not guessed. Only proven unanswered or terminal noncommit can retire; no new user input fabricated.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "artifact-platform-dispatch"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/reconciliation/preserved.json",
+          "sha256": "0db39f227b57bb8f3dc948ee7da250af22eb44adf808bb76e855f06208e5da52",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    }
+  ],
+  "verified_literal_witnesses": [
+    {
+      "path": "core/pysrc/_reconciliationlib.py",
+      "old_span": [
+        47,
+        115
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/reconciliation/source-inspection.json",
+      "block_sha256_LF": "848b7cb0de861647855a3ccd1726a6c5c98f3dc42dfe190ce606352e0368c567",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          47,
+          115
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/reconciliation/preserved.json",
+      "actual0ef_spans": [
+        [
+          47,
+          115
+        ]
+      ],
+      "actual0ef_file_sha256": "7a281f3f4cdf7c29d62185d12ac24ebb26e3f1c01f42004aa99a1f8080ae2691",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/_reconciliationlib.py",
+      "old_span": [
+        342,
+        473
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/reconciliation/source-inspection.json",
+      "block_sha256_LF": "e351cb990a40637b95fbe1596e2c58df7d6e89c016d476eeb92263280f54c7dd",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          342,
+          473
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/reconciliation/preserved.json",
+      "actual0ef_spans": [
+        [
+          342,
+          473
+        ]
+      ],
+      "actual0ef_file_sha256": "7a281f3f4cdf7c29d62185d12ac24ebb26e3f1c01f42004aa99a1f8080ae2691",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/_reconciliationlib.py",
+      "old_span": [
+        634,
+        684
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/reconciliation/source-inspection.json",
+      "block_sha256_LF": "16681ca3b1b6285130288edc625785d02756977fd11a4282367c0cbf333a37a5",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          634,
+          684
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/reconciliation/preserved.json",
+      "actual0ef_spans": [
+        [
+          634,
+          684
+        ]
+      ],
+      "actual0ef_file_sha256": "7a281f3f4cdf7c29d62185d12ac24ebb26e3f1c01f42004aa99a1f8080ae2691",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/_reconciliationlib.py",
+      "old_span": [
+        118,
+        129
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/reconciliation/source-inspection.json",
+      "block_sha256_LF": "1833eda3183c7d1a5307c5e1bf83e0d676892352c5a6297bab538960597de3f7",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          118,
+          129
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/reconciliation/preserved.json",
+      "actual0ef_spans": [
+        [
+          118,
+          129
+        ]
+      ],
+      "actual0ef_file_sha256": "7a281f3f4cdf7c29d62185d12ac24ebb26e3f1c01f42004aa99a1f8080ae2691",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/_reconciliationlib.py",
+      "old_span": [
+        184,
+        238
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/reconciliation/source-inspection.json",
+      "block_sha256_LF": "c15e26af56b883bf9b6c8bd17118c1cf35994a42d4d1d643fdb71a2d24dbeb4f",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          184,
+          238
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/reconciliation/preserved.json",
+      "actual0ef_spans": [
+        [
+          184,
+          238
+        ]
+      ],
+      "actual0ef_file_sha256": "7a281f3f4cdf7c29d62185d12ac24ebb26e3f1c01f42004aa99a1f8080ae2691",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/_reconciliationlib.py",
+      "old_span": [
+        682,
+        692
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/reconciliation/source-inspection.json",
+      "block_sha256_LF": "c00ecc5daaea94a5815f39069cac825c4c941b6c0655caa13d57ace7415597d2",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          682,
+          692
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/reconciliation/preserved.json",
+      "actual0ef_spans": [
+        [
+          682,
+          692
+        ]
+      ],
+      "actual0ef_file_sha256": "7a281f3f4cdf7c29d62185d12ac24ebb26e3f1c01f42004aa99a1f8080ae2691",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/_reconciliationlib.py",
+      "old_span": [
+        692,
+        697
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/reconciliation/source-inspection.json",
+      "block_sha256_LF": "9e3e7328a6dcfbbd16a38c12995820d683a0790b8f899fd61af95ebb52c05402",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          692,
+          697
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/reconciliation/preserved.json",
+      "actual0ef_spans": [
+        [
+          692,
+          697
+        ]
+      ],
+      "actual0ef_file_sha256": "7a281f3f4cdf7c29d62185d12ac24ebb26e3f1c01f42004aa99a1f8080ae2691",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/_reconciliationlib.py",
+      "old_span": [
+        587,
+        618
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/reconciliation/source-inspection.json",
+      "block_sha256_LF": "99b3abeddf7d6845f33fcbbbee6a5656c0c3095d14af37b6f8f04574f2e04f8d",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          587,
+          618
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/reconciliation/preserved.json",
+      "actual0ef_spans": [
+        [
+          587,
+          618
+        ]
+      ],
+      "actual0ef_file_sha256": "7a281f3f4cdf7c29d62185d12ac24ebb26e3f1c01f42004aa99a1f8080ae2691",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/_reconciliationlib.py",
+      "old_span": [
+        295,
+        339
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/reconciliation/source-inspection.json",
+      "block_sha256_LF": "e9d7a58db17f6848389cbbd76c332c6ddf92c7be1359c5386a3730eb547c30c4",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          295,
+          339
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/reconciliation/preserved.json",
+      "actual0ef_spans": [
+        [
+          295,
+          339
+        ]
+      ],
+      "actual0ef_file_sha256": "7a281f3f4cdf7c29d62185d12ac24ebb26e3f1c01f42004aa99a1f8080ae2691",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/_reconciliationlib.py",
+      "old_span": [
+        483,
+        560
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/reconciliation/source-inspection.json",
+      "block_sha256_LF": "1fe5bb48cec0404357aa9f721bbdc7265a720b5468cdb3b240453be677aa0229",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          483,
+          560
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/reconciliation/preserved.json",
+      "actual0ef_spans": [
+        [
+          483,
+          560
+        ]
+      ],
+      "actual0ef_file_sha256": "7a281f3f4cdf7c29d62185d12ac24ebb26e3f1c01f42004aa99a1f8080ae2691",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/_reconciliationlib.py",
+      "old_span": [
+        563,
+        584
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/reconciliation/source-inspection.json",
+      "block_sha256_LF": "c0c16d8152cf137df7f22527fb11284c613db65a95bf87e7063229f84e28f16f",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          563,
+          584
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/reconciliation/preserved.json",
+      "actual0ef_spans": [
+        [
+          563,
+          584
+        ]
+      ],
+      "actual0ef_file_sha256": "7a281f3f4cdf7c29d62185d12ac24ebb26e3f1c01f42004aa99a1f8080ae2691",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    }
+  ],
+  "changed_old_literals": [],
+  "reused_helper_assessments": [
+    {
+      "id": "artifact-platform-dispatch",
+      "paths": [
+        "core/pysrc/_artifactlib.py"
+      ],
+      "assessment": "Actual full deltas from7ac/d594/7eba are the same: sys.platform replaces platform.system for supported OS/commandWindows/verified-descriptor launch dispatch. No protocol, gate, request/environment, JSON, root/index or recovery API shape changes. Callers retain finite unsupported-platform and transport limits; fewer platform-discovery effects are not new native qualification."
+    }
+  ],
+  "negative_scope": "Static finite guarded claims only, with inherited scope/limits. No execution, qualification or unchecked new source claim."
+}

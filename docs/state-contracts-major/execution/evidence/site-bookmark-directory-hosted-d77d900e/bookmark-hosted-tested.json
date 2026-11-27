@@ -1,0 +1,116 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "d77d900ee827e204241c2de94e4cc2939647c5a5",
+  "kind": "hosted-run",
+  "result": "PASSED",
+  "producer": {
+    "class": "hosted",
+    "identity": "GitHub Docs normal push 44347755000 attempt 1 original Site | [Build] - Astro Pages job 134954706461"
+  },
+  "inputs": {
+    ".github/workflows/docs.yml": "65ed7547ac447257221bcac5a3afe8d77d07ba3142f730ed06c1e0cdc75af0f4",
+    "site/astro.config.mjs": "20d9902155edc22090f5d4929b8643684dc7d0ffa8e306158ee28bafe899e47f",
+    "site/base.mjs": "16dffd9508277355c801e56cff1d8c49bbb26f809b6b279d799aaae5c7e78931",
+    "site/package-lock.json": "d81f1d4b54c0e2a0fc05815687fcb306e0a12f98c3e382032556e445c614787a",
+    "site/package.json": "f5fc189cffe4dd4f4ba2de7ee1a31f36cacc017d0f4b598d69a3ffc4e1bdffd3",
+    "site/playwright.config.ts": "f2a38948fcd2328be7db945fbfca08ccaa1d6e05f58acdb1e5cd26c1b19f9fd8",
+    "site/scripts/academy-source.ts": "6f5e2447e3e065f09d12f6d62e9af3292e4131430bb4761a6feec641a122aa9c",
+    "site/scripts/academy-wayfinding.ts": "834239f0853c91950f60bc7061c5459d1de4abf148de6857be051d706a34ff31",
+    "site/scripts/generate-academy.ts": "bd59c53b0654d213929b60cfe43614806d906d33687d55d0d27227f95892516e",
+    "site/src/components/AcademyBookmark.astro": "7df832f6754945b2000dce018820eb7385e63858c48be6505924b06d44148c90",
+    "site/src/components/AcademyOverview.astro": "91c6001f997b8e0856a239c79cc9a2f848f6874bbd2b229696e57dee28a0f0f6",
+    "site/src/components/AcademyWayfinding.astro": "6796af6ab581bd06ed30a6282a9014d0b12344297b4d96dae499076bcea3ec3f",
+    "site/src/scripts/academy-bookmark.ts": "8015708d6686b7efef1186d7a0ebc3fd1b737462308acfd2d25511428636029e",
+    "site/src/styles/academy-wayfinding.css": "7af3a3fa26f8f7a848cdbfbf18d4631f74a53a0fbed79d654e3ebb2bb19f3dc2",
+    "site/test/browser/academy-wayfinding.spec.ts": "7f0420bd5403410aa24fc8470702f38718f1aefa4109ff5025cb32aa4dc33563"
+  },
+  "commands": [
+    {
+      "argv": [
+        "npm",
+        "run",
+        "test:browser"
+      ],
+      "cwd": "site",
+      "exit_code": 0
+    }
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/site-bookmark-directory-hosted-d77d900e/original-browser-results-projection.json",
+      "sha256": "ffeb619ce5a5ee82cae8b100672459bfbbe12fa58918a61dd2faaf7301cd547a"
+    },
+    {
+      "run_id": 44347755000,
+      "run_attempt": 1,
+      "job_id": 134954706461,
+      "artifact_id": 14446304282,
+      "sha256": "3ab5a092ce810a9aef0c29ec5b163bf899e67554dd3dabc08e8b744156ecf6e9"
+    },
+    {
+      "run_id": 44347755000,
+      "run_attempt": 1,
+      "job_id": 134954706461,
+      "artifact_id": 14448370665,
+      "sha256": "976c226a86cc3d3ac7c395ddc1fd620a48186301c8c84a85bfda1abb69000ee4"
+    }
+  ],
+  "disposition_ids": [
+    "disposition:transitions:S56:01",
+    "disposition:transitions:S56:02",
+    "disposition:transitions:S56:04",
+    "disposition:transitions:S56:05",
+    "disposition:transitions:S56:06"
+  ],
+  "per_cell_assertion_mapping": [
+    {
+      "cell": "disposition:transitions:S56:01",
+      "selectors": [
+        "playwright:site/test/browser/academy-wayfinding.spec.ts:chrome:a bookmark is opt-in, survives navigation, and never becomes completion"
+      ],
+      "assertion_scope": "Valid current bookmark saved by the explicit button survives lesson/all-lessons/back navigation and resolves only to the current declared practitioner lesson URL; source validates exact schema/release/commit/lesson before constructing its inventory-based URL."
+    },
+    {
+      "cell": "disposition:transitions:S56:02",
+      "selectors": [
+        "playwright:site/test/browser/academy-wayfinding.spec.ts:chrome:a bookmark is opt-in, survives navigation, and never becomes completion"
+      ],
+      "assertion_scope": "Initial declared owned key is null while the Save control is visible. Visiting the lesson does not create a record; saving is opt-in and the UI explicitly says completion is not checked."
+    },
+    {
+      "cell": "disposition:transitions:S56:04",
+      "selectors": [
+        "playwright:site/test/browser/academy-wayfinding.spec.ts:chrome:denied storage retains the full lesson and an actionable explanation"
+      ],
+      "assertion_scope": "A denied localStorage getter exercises unavailable reading, then Save failure yields actionable could-not-be-saved text while the full lesson/action and curriculum link remain visible. This is deliberate storage denial, not ordinary empty state."
+    },
+    {
+      "cell": "disposition:transitions:S56:05",
+      "selectors": [
+        "playwright:site/test/browser/academy-wayfinding.spec.ts:chrome:a bookmark is opt-in, survives navigation, and never becomes completion",
+        "playwright:site/test/browser/academy-wayfinding.spec.ts:chrome:saving and removing a place work by keyboard in forced colors"
+      ],
+      "assertion_scope": "Explicit click and keyboard Save create the exact four-field current source/lesson record and update does-not-mark-complete feedback. Source inspection supplies the only-scoped-key clause: one derived-key setItem call inside saveBookmark, no other write route; no unobserved arbitrary account data claim."
+    },
+    {
+      "cell": "disposition:transitions:S56:06",
+      "selectors": [
+        "playwright:site/test/browser/academy-wayfinding.spec.ts:chrome:a bookmark is opt-in, survives navigation, and never becomes completion",
+        "playwright:site/test/browser/academy-wayfinding.spec.ts:chrome:stale source identity has no resume URL and clearing retains command preferences",
+        "playwright:site/test/browser/academy-wayfinding.spec.ts:chrome:saving and removing a place work by keyboard in forced colors"
+      ],
+      "assertion_scope": "Explicit clear removes the scoped bookmark, preserves independent academy-os=linux, hides resume and restores status/Save focus. Unknown verifier progress is never created or changed."
+    }
+  ],
+  "execution_context": {
+    "run_id": 44347755000,
+    "run_attempt": 1,
+    "job_id": 134954706461,
+    "source_tree": "26798b6f7ade5d3fe1597bc9b84e4fea952f2525"
+  },
+  "scope": "Finite bookmark and guide directory browser software assertions against the exact original built Pages bytes.",
+  "limits": [
+    "Observer and report producer identities are retained original provenance.",
+    "No installed, live public, task or publication qualification is asserted."
+  ]
+}

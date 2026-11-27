@@ -1,0 +1,31 @@
+{
+  "state": "FAILED_RETAINED_STOPPED",
+  "elapsed_seconds": 40.1900896000152,
+  "phases": [],
+  "primary_failure": {
+    "type": "AssertionError",
+    "message": "standalone terminal marker absent"
+  },
+  "source_tools_stable": true,
+  "cleanup": {
+    "containers": [
+      {
+        "Id": "2d97edcd0fdecf5c63d97dda6a9f8c1c6d06cee2fe0a4b160aa9d1a8fd584c0d",
+        "Created": "2026-11-16T13:17:04.442353928Z",
+        "absent": true
+      }
+    ],
+    "volume": {
+      "name": "ca-sbx-vol-0f466e7a-9dfe-4e0d-85e4-2fbbdc6d19f9",
+      "absent": true
+    },
+    "errors": [],
+    "seconds": 0.5907871999952476
+  },
+  "scope": [
+    "Source/shippedbundle realPTYownedDocker fixture only; notclone/build/create/installed/wholelifecyclequalification.",
+    "Root receives complete toolchunks<=4096tokens each and total<=64KiB, outputcap is toolreturneddata not provenkernelbufferceiling.",
+    "Windows processgroup/taskkill cleanup bound10s+3s; noJobObject/fulltreeclaim. No credentials/provider/source/hostbind/socket, pull/build orfallbackPTY.",
+    "After natural exit use same original open HANDLE/GetProcessId/GetProcessTimes creation+nonzero exitTime. Post-exit image query was unavailable31; image hash verified before launch and after fixture, never inferred OSexit from JS."
+  ]
+}

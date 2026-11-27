@@ -1,0 +1,2183 @@
+{
+  "schema": 1,
+  "lane": "farm-sandbox",
+  "state": "VERIFIED_BOUNDED_MANIFEST_REPAIR_READY_FOR_NARROW_REVIEW",
+  "branch": "codex/program-farm-sandbox",
+  "base_head": "97e1ecac795138cacb83a9d5e81c39d4c234867a",
+  "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter",
+  "source_hashes": {
+    "core/surface/includes/farm.md": "eb202a3baee5b5c3ef74b797437a5512ee99954d7c721f02014bdf3434a69366",
+    "core/surface/skills/subagent-driven-development/references/farm-dispatch.md": "1e99b50ca963e05fbbafd91b68ca1359de3fd7574eb4e25f1ea5624b49bd410b",
+    "plugins/ca-codex/includes/farm.md": "c7033e232bca1ca3da832f54014a207ede3314d3eed6a91e448fe30c193b3433",
+    "plugins/ca-codex/routines/subagent-driven-development/references/farm-dispatch.md": "40befa43a393e603712f190a72d4533e3ee3b0822811a85cd99a8a17f50ef93b",
+    "plugins/ca-pi/includes/farm.md": "1d79e22e0ab25f4d9fd6cb354fb778009334f87251fb5c3ad9806eeddcd6e3d6",
+    "plugins/ca-pi/routines/subagent-driven-development/references/farm-dispatch.md": "7221da3c8d25c852e508cf25a48b54f031ffda12bf5efdf4f47ac65c663b7b49",
+    "plugins/ca-sandbox/README.md": "5e1d39b2242f247f5d411fa40c5243a4ea0e0af6785d4d0e782edd05d432c8c1",
+    "plugins/ca-sandbox/commands/sandbox-destroy.md": "5119e80360fd5f219ed2f7067072a7b939bb06f1b2588ba092a426e71471cea1",
+    "plugins/ca-sandbox/commands/sandbox.md": "77c70d21ed44f79c14783a5f68dee0baec958901cfa73c675ae4e69e16ee60c9",
+    "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md": "67064779a9c2079db862fdf162b9c38bef6254147bf8a06e1a259d9ea8edab01",
+    "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md": "811a35109aea51c85774040ac3f2bade7172986f94d9fd3c258c02181fe0f1d8",
+    "plugins/ca-sandbox/tools/build.test.ts": "a99bda4708abf7dbf8aa7d1fd51812a6b86eb6ad07a377da7b318064db83b09a",
+    "plugins/ca-sandbox/tools/build.ts": "fc26968d98ad2c0d09b3f1f4b1aa5f0c956f1415502a358bcae3c63d6e9faee4",
+    "plugins/ca-sandbox/tools/cache-provenance.test.ts": "c0d251b237d0ace3079a6411d8508471f6ab8166e42fd3cbff0e4e67333272fb",
+    "plugins/ca-sandbox/tools/claude-inside.js": "3c7db1ab1c01c7e6d28565f3361d5eaf605d5af10e8fc6bb5c4b60ffb2d4877f",
+    "plugins/ca-sandbox/tools/claude-inside.ts": "d7e2fc4ec87ee06ec029e9f2810a5c61bde1de9727a0eec7baa5abd94f92d954",
+    "plugins/ca-sandbox/tools/create.ts": "d04c9e6d7c8d096e8c69a96cf6337a6857ef51799d933d0eba61571235fc5475",
+    "plugins/ca-sandbox/tools/deadline.test.ts": "be52f6812e0936cde4f2de9d4e37c610a68a24d45280280eb79b7c28478e46dc",
+    "plugins/ca-sandbox/tools/exec.ts": "31b0297d6bf0288c4d16bfd6c8604b31141ddf887cd8103c63b2e9ac0343458e",
+    "plugins/ca-sandbox/tools/registry.ts": "33ea06212a0206dbe0dde787f69ac9cde34c24a75f27ad9e38b1eef807488fb8",
+    "plugins/ca-sandbox/tools/run.ts": "face1577c8c8b299438e32fd66da4c80327b1ed086e6ad4ad1e16abfbd4706b6",
+    "plugins/ca-sandbox/tools/sandbox.js": "e77bad0620556058c2efba5bdc48a13cc98d7f10ee988acdaa976e08b087fff2",
+    "plugins/ca-sandbox/tools/state-contracts.test.ts": "a30f1aa76b194bd79e1c4716c5ca1db4dd2adb804d0e352d86e737486fa18441",
+    "plugins/ca/includes/farm.md": "905e3bbf6d5aa7e6cc3d90e7fcea0520c89cfef92c193fc378329c6cd48616b6",
+    "plugins/ca/skills/subagent-driven-development/references/farm-dispatch.md": "93aa7bcbcd7d64fb6845916dadcdc78aaeae0aa00316738fff87a3cfc4476cf5",
+    "plugins/ca/tools/exec.ts": "670265c10b56ee9c20379ddc64b81280964428f5df3e2f5f570a38bf0197bb70",
+    "plugins/ca/tools/farm-recovery.ts": "4a175edaf4d8053f2bb2693b57d0b14242cf1fac2423285b15dfda805736edaa",
+    "plugins/ca/tools/farm.js": "0e7a2d1f6c1de4a43a55f09a051a9167ad62d7903205ed650ad3bc86038bb805",
+    "plugins/ca/tools/farm.test.ts": "395ec94484631ee6ffdb66b57b6b8241201592db3b081b218128ddee9758a15e",
+    "plugins/ca/tools/farm.ts": "cd41571e0a865726821070f1157c1219ab55ff29bc412091bbb0482a1cc31b6a",
+    "plugins/ca/tools/farm.unit.test.ts": "23ba125efe2493fe0839ec23120805b04866d472cc5705b78568788d7d2f151f",
+    "plugins/ca/tools/state-contracts.test.ts": "098543b2d565f82a7a3efcd9bb140ed1c34ac88c7f567b70ddd8056b48815e72"
+  },
+  "verification_started_at": "2026-11-13T15:15:20.861132+00:00",
+  "frozen_tasks": [
+    "FARM-R01",
+    "FARM-R02",
+    "FARM-R03",
+    "SBX-C01",
+    "SBX-C02",
+    "SBX-C03",
+    "SBX-D01",
+    "SBX-D02",
+    "SBX-D03",
+    "SBX-D04"
+  ],
+  "qualification_gaps": [
+    "Docker engine unavailable locally: missing dockerDesktopLinuxEngine named pipe",
+    "Required installed Nixpacks and forced fallback two-create Docker qualification pending hosted environment",
+    "Parent integration independent review, shared HW-12/HW-13 harvest producer coordination and main PR user testing remain required"
+  ],
+  "publication": "not authorized; PR1098 held",
+  "commands": [
+    {
+      "command": "npm --prefix plugins/ca/tools ci --ignore-scripts",
+      "result": "PASS; no lock/dependency change; 69 packages and 0 vulnerabilities",
+      "phase": "environment setup"
+    },
+    {
+      "command": "npm --prefix plugins/ca-sandbox/tools ci --ignore-scripts",
+      "result": "PASS; no lock/dependency change; 69 packages and 0 vulnerabilities",
+      "phase": "environment setup"
+    },
+    {
+      "command": "npm --prefix plugins/ca/tools run typecheck",
+      "result": "PASS on current candidate"
+    },
+    {
+      "command": "npm --prefix plugins/ca-sandbox/tools run typecheck",
+      "result": "PASS on current candidate"
+    },
+    {
+      "command": "npm --prefix plugins/ca/tools run build",
+      "result": "PASS; farm.js is the actual owning esbuild artifact"
+    },
+    {
+      "command": "npm --prefix plugins/ca-sandbox/tools run build",
+      "result": "PASS; sandbox.js and claude-inside.js are actual owning esbuild artifacts"
+    },
+    {
+      "command": "python tools/build-surface.py",
+      "result": "PASS; 6 generated farm guidance derivatives changed across Claude/Codex/Pi"
+    },
+    {
+      "command": "python tools/build-surface.py --check",
+      "result": "PASS; all three host projections equal current templates"
+    },
+    {
+      "command": "git diff --check",
+      "result": "PASS"
+    },
+    {
+      "command": "docker info --format {{.OSType}}",
+      "result": "UNAVAILABLE; dockerDesktopLinuxEngine named pipe missing; not success/N/A"
+    },
+    {
+      "command": "npm --prefix plugins/ca-sandbox/tools run coverage -- --reporter=json --outputFile=state-contracts-final-results.json",
+      "result": "PASS:282 passed,34actual Docker skips; lines81.99%,branches78.20%,statements80.32%; Stage2 lines+branches>=70 met locally; skipped cells unqualified",
+      "report_sha256": "12ab92086696dcbc417b3c756fd524fc68082d03a4c7f764ecd9413f8761fa42"
+    },
+    {
+      "command": "npm --prefix plugins/ca/tools run coverage -- --reporter=json --outputFile=state-contracts-final-results.json",
+      "result": "Default parallel Windows sweep:901passed,2tests exactly5s timeout,3host skips. Bounded full rerun903pass/3host skips; no assertion removed or runtime deadline changed."
+    },
+    {
+      "command": "npm --prefix plugins/ca/tools test -- state-contracts.test.ts --reporter=json --outputFile=state-contracts-recovery-unit-final-results.json",
+      "result": "PASS:6; real Git plus run-cleanup unknown negative control",
+      "report_sha256": "6dcd20cc33725382081b6a31e8137312fac387a9beccd1fdb07b3b696c6de52a"
+    },
+    {
+      "command": "npm --prefix plugins/ca/tools test -- farm.test.ts -t 'journal publication failure drains' --reporter=json --outputFile=state-contracts-journal-final-results.json",
+      "result": "PASS:1;146-test file with145 deselected; actual Git/loopback effect-write fault",
+      "report_sha256": "bad16144941779ae67e30694d6340f103905ff5a46fbe139a8b48b2d2366bbbe"
+    },
+    {
+      "command": "npm --prefix plugins/ca/tools test -- farm.test.ts -t '#387|verified merge recovery CLI' --reporter=json --outputFile=state-contracts-recovery-cli-final-results.json",
+      "result": "PASS:19; source/bundle recovery and merge boundary checks;126deselected",
+      "report_sha256": "b78c6905484987afff11c47d07182571e6e3fa30d1302af31149bbd79fc5e01f"
+    },
+    {
+      "command": "npm --prefix plugins/ca/tools run coverage -- --maxWorkers=2 --testTimeout=30000 --reporter=json --outputFile=state-contracts-final-bounded-results.json",
+      "result": "PASS:903passed,3host skips; lines73.12%,branches71.74%,statements71.40%; before final journal/setup deltas",
+      "report_sha256": "2e22cdc582a36b2b44d03f403f62e7a9fa0fd8d6e803e13f22421e860c8969d2"
+    },
+    {
+      "command": "npm --prefix plugins/ca/tools test -- state-contracts.test.ts",
+      "result": "PASS:7 current focused contracts including typed setup containment and real Git recovery/run cleanup unknown"
+    },
+    {
+      "command": "npm --prefix plugins/ca/tools run coverage -- --exclude farm.test.ts --maxWorkers=2 --testTimeout=30000 --reporter=json --outputFile=state-contracts-final-owner-coverage.json",
+      "result": "PASS:759passed,0failed,3host skips; lines73.07%,branches71.55%,statements71.26%; actual current source with unchanged production coverage scope and floors; longCLIfile separately checked",
+      "report_sha256": "1e8f9aab3125aea73f6cbcd5feb4ec2e8b0822a3148bc47f8b6aa885c51aa0dd"
+    },
+    {
+      "command": "npm --prefix plugins/ca-sandbox/tools test -- state-contracts.test.ts create.test.ts build.test.ts --reporter=json --outputFile=state-contracts-manifest-repair-results.json",
+      "result": "PASS:55passed,0failed,3Docker skips; real filesystem absent/valid/directory/dangling-link controls require noDocker",
+      "report_sha256": "153eeebf3e2021a7ca271688a9de3ffca48fbffc48ad548a9ced31e2a61d23e1"
+    },
+    {
+      "command": "npm --prefix plugins/ca-sandbox/tools run typecheck; npm --prefix plugins/ca-sandbox/tools run build; git diff --check",
+      "result": "PASS after bounded repair; sandbox.js changed, claude-inside.js digest unchanged"
+    }
+  ],
+  "transition_groups": [
+    {
+      "id": "farm-artifact-admission-preserved",
+      "transition_ids": [
+        "S22:01",
+        "S22:02",
+        "S22:03",
+        "S22:04",
+        "S22:05",
+        "S22:06",
+        "S22:07"
+      ],
+      "checks": [
+        {
+          "file": "plan-contract.test.ts",
+          "test": "#412 parsePlan \u2014 rejects malformed plans before any field access rejects null instead of throwing a raw TypeError",
+          "result": "passed",
+          "report": "plugins/ca/tools/state-contracts-coverage-results.json"
+        },
+        {
+          "file": "plan-contract.test.ts",
+          "test": "#412 parsePlan \u2014 rejects malformed plans before any field access accepts a minimal valid plan and returns it",
+          "result": "passed",
+          "report": "plugins/ca/tools/state-contracts-coverage-results.json"
+        },
+        {
+          "file": "farm-dist.test.ts",
+          "test": "#407 \u2014 the SHIPPED farm.js bundle, under plain Node starts at all: the bundle parses and resolves its own modules",
+          "result": "passed",
+          "report": "plugins/ca/tools/state-contracts-coverage-results.json"
+        },
+        {
+          "file": "farm-dist.test.ts",
+          "test": "#407 \u2014 the SHIPPED farm.js bundle, under plain Node validates the plan and refuses unparseable JSON with a bounded message",
+          "result": "passed",
+          "report": "plugins/ca/tools/state-contracts-coverage-results.json"
+        }
+      ],
+      "preservation_review": "Normal dispatch still parses/validates the plan and verifies its artifact boundary before run-directory claim or author scheduling. New --recover-receipt enters a separate read-only Git observation path before provider configuration; it cannot dispatch. Native exact-engine/platform admission remains its existing owner and is not inferred from legacy plan fixtures.",
+      "qualification": "Local implementation/preservation evidence; final integration qualification is separate"
+    },
+    {
+      "id": "farm-exclusive-effects-and-receipt-recovery",
+      "transition_ids": [
+        "S23:01",
+        "S23:02",
+        "S23:07",
+        "S23:08",
+        "S23:09",
+        "S23:10",
+        "S23:11",
+        "S23:12",
+        "S31:01",
+        "S31:02",
+        "S31:03",
+        "S31:04",
+        "S31:05",
+        "S31:06",
+        "WF-31:06"
+      ],
+      "checks": [
+        {
+          "file": "state-contracts.test.ts",
+          "test": "FARM-R01 exclusive identities preserve evidence under a same-ID race",
+          "result": "passed",
+          "report": "plugins/ca/tools/state-contracts-coverage-results.json"
+        },
+        {
+          "file": "state-contracts.test.ts",
+          "test": "FARM-R01 reconciles a post-merge crash in real Git without changing a ref or calling an author",
+          "result": "passed",
+          "report": "plugins/ca/tools/state-contracts-coverage-results.json"
+        },
+        {
+          "file": "farm.test.ts",
+          "test": "farm artifact publication (#397 / #387) #387: a green run whose farm-report.json cannot be published exits non-zero and never claims a Report path",
+          "result": "passed",
+          "report": "plugins/ca/tools/state-contracts-coverage-results.json"
+        },
+        {
+          "file": "farm.test.ts",
+          "test": "farm artifact publication (#397 / #387) #387: a green run whose farm-report.json cannot be published exits non-zero and never claims a Report path",
+          "result": "passed",
+          "report": "plugins/ca/tools/state-contracts-receipt-results.json"
+        },
+        {
+          "file": "farm.test.ts",
+          "test": "farm artifact publication (#397 / #387) #397: a failed report publication leaves the previous run's complete report intact \u2014 never a truncated one",
+          "result": "passed",
+          "report": "plugins/ca/tools/state-contracts-coverage-results.json"
+        },
+        {
+          "file": "farm.test.ts",
+          "test": "farm artifact publication (#397 / #387) #397: a failed report publication leaves the previous run's complete report intact \u2014 never a truncated one",
+          "result": "passed",
+          "report": "plugins/ca/tools/state-contracts-receipt-results.json"
+        },
+        {
+          "file": "farm.test.ts",
+          "test": "farm.ts smoke tests refuses reused Git resources without discarding prior branches or evidence",
+          "result": "passed",
+          "report": "plugins/ca/tools/state-contracts-coverage-results.json"
+        },
+        {
+          "file": "farm.test.ts",
+          "test": "farm artifact publication (#397 / #387) FARM-R01 journal publication failure drains independent tasks and retains their real outcomes",
+          "result": "passed",
+          "report": "plugins/ca/tools/state-contracts-journal-final-results.json"
+        }
+      ],
+      "preservation_review": "Exclusive mkdir rejects the same run without truncating its stream. Integration/task resource collisions are refused, never pre-cleaned or force-reset. Critical effect stages retain commit/tree/base/integration identities and append history. Recovery observes exact refs/merge parents, invokes no author, preserves originals and writes an independent receipt. Changed/missing refs, schema mismatch and unknown task/run cleanup remain unknown. Logical crash-point fixtures use real Git commits/merges; they do not certify power-loss durability or every OS kill timing.",
+      "qualification": "Local implementation/preservation evidence; final integration qualification is separate"
+    },
+    {
+      "id": "farm-independent-scheduling",
+      "transition_ids": [
+        "S23:03",
+        "S23:04",
+        "S23:05",
+        "S23:06"
+      ],
+      "checks": [
+        {
+          "file": "farm.test.ts",
+          "test": "farm.ts smoke tests dependency-ready predecessor wins over an unready lower ID (source)",
+          "result": "passed",
+          "report": "plugins/ca/tools/state-contracts-coverage-results.json"
+        },
+        {
+          "file": "farm.test.ts",
+          "test": "farm.ts smoke tests dependency-ready predecessor wins over an unready lower ID (bundle)",
+          "result": "passed",
+          "report": "plugins/ca/tools/state-contracts-coverage-results.json"
+        },
+        {
+          "file": "farm.test.ts",
+          "test": "farm.ts smoke tests reliability-013: every dispatched task appears in farm-report.json with a status after a breaker abort, none vanish",
+          "result": "passed",
+          "report": "plugins/ca/tools/state-contracts-coverage-results.json"
+        },
+        {
+          "file": "farm.test.ts",
+          "test": "farm artifact publication (#397 / #387) #397: two concurrent farm processes on one repo both keep complete, independently parseable receipts",
+          "result": "passed",
+          "report": "plugins/ca/tools/state-contracts-coverage-results.json"
+        },
+        {
+          "file": "farm.test.ts",
+          "test": "farm artifact publication (#397 / #387) #397: two concurrent farm processes on one repo both keep complete, independently parseable receipts",
+          "result": "passed",
+          "report": "plugins/ca/tools/state-contracts-receipt-results.json"
+        }
+      ],
+      "preservation_review": "Existing dependency-ready admission, scope serialization, usage accounting and breaker draining stay intact. A held task/branch cannot erase independent results. Breaker diagnostics describe the observed threshold and do not establish premium dispatch or model incapability. T-01 owns farm-first-pass.py claim correction.",
+      "qualification": "Local implementation/preservation evidence; final integration qualification is separate"
+    },
+    {
+      "id": "farm-task-gate-and-drift",
+      "transition_ids": [
+        "S24:01",
+        "S24:02",
+        "S24:03",
+        "S24:04",
+        "S24:05",
+        "S24:06",
+        "S24:07",
+        "S24:08",
+        "S24:09",
+        "S24:10",
+        "S24:11",
+        "S24:12",
+        "S24:13",
+        "S24:14",
+        "S29:01",
+        "S29:02",
+        "S29:03",
+        "S29:04",
+        "S29:05",
+        "S29:06"
+      ],
+      "checks": [
+        {
+          "file": "state-contracts.test.ts",
+          "test": "FARM-R02 preserves failed containment and admits no reset or second author",
+          "result": "passed",
+          "report": "plugins/ca/tools/state-contracts-coverage-results.json"
+        },
+        {
+          "file": "state-contracts.test.ts",
+          "test": "FARM-R02 gate retains executor outcome instead of flattening code 125 into test failure",
+          "result": "passed",
+          "report": "plugins/ca/tools/state-contracts-coverage-results.json"
+        },
+        {
+          "file": "state-contracts.test.ts",
+          "test": "FARM-R03 refuses unknown Git drift instead of inventing a clean observation",
+          "result": "passed",
+          "report": "plugins/ca/tools/state-contracts-coverage-results.json"
+        },
+        {
+          "file": "state-contracts.test.ts",
+          "test": "FARM-R03 bounded read-only retry accepts only a successful current observation",
+          "result": "passed",
+          "report": "plugins/ca/tools/state-contracts-coverage-results.json"
+        },
+        {
+          "file": "exec.test.ts",
+          "test": "run() \u2014 containment failure is distinguishable from a clean timeout reports EXIT_TIMEOUT and no cleanupFailed when the tree is verified gone",
+          "result": "passed",
+          "report": "plugins/ca/tools/state-contracts-coverage-results.json"
+        },
+        {
+          "file": "exec.test.ts",
+          "test": "run() \u2014 containment failure is distinguishable from a clean timeout reports EXIT_TIMEOUT_UNCLEAN and carries the reason when the tree is NOT verified gone",
+          "result": "passed",
+          "report": "plugins/ca/tools/state-contracts-coverage-results.json"
+        },
+        {
+          "file": "farm-surface.test.ts",
+          "test": "runTask escalations are distinguished by note, not just by status escalates immediately on a setup failure WITHOUT burning a worker retry",
+          "result": "passed",
+          "report": "plugins/ca/tools/state-contracts-coverage-results.json"
+        },
+        {
+          "file": "farm-surface.test.ts",
+          "test": "best-of-N sample failures each surface their own cause reports a sample's setup failure",
+          "result": "passed",
+          "report": "plugins/ca/tools/state-contracts-coverage-results.json"
+        },
+        {
+          "file": "farm-surface.test.ts",
+          "test": "runTask escalations are distinguished by note, not just by status names the tampered test path when the test hash moves under the worker",
+          "result": "passed",
+          "report": "plugins/ca/tools/state-contracts-coverage-results.json"
+        },
+        {
+          "file": "farm.unit.test.ts",
+          "test": "attributed retry context retains candidate evidence and refuses new author/reset when sample drift observation is unavailable",
+          "result": "passed",
+          "report": "plugins/ca/tools/state-contracts-retry-results.json"
+        },
+        {
+          "file": "state-contracts.test.ts",
+          "test": "FARM-R02 uncontained sample setup retains scratch resources without authoring or reset",
+          "result": "passed",
+          "report": "plugins/ca/tools/state-contracts-final-owner-coverage.json"
+        }
+      ],
+      "preservation_review": "Preserve scope/tamper/setup/quality checks, ordinary retries and clean timeout policy. Code124 versus125, timeout and process reference reach gate/task reporting. Unknown containment admits no reset or second author. Git success remains the compatible clean/dirty path array; two exhausted/malformed read probes raise typed unavailable. Reobserve before reset and index effects. No farm output-overflow behavior is invented. Windows executor checks do not qualify POSIX-only cells.",
+      "qualification": "Local implementation/preservation evidence; final integration qualification is separate"
+    },
+    {
+      "id": "farm-sampling-and-merge",
+      "transition_ids": [
+        "S25:01",
+        "S25:02",
+        "S25:03",
+        "S25:04",
+        "S25:05",
+        "S25:06",
+        "S25:07",
+        "S25:08",
+        "S26:01",
+        "S26:02",
+        "S26:03",
+        "S26:04",
+        "S26:05",
+        "S26:06",
+        "S26:07",
+        "S26:08",
+        "S26:09"
+      ],
+      "checks": [
+        {
+          "file": "farm.unit.test.ts",
+          "test": "attributed retry context carries one candidate through partial-worker without replaying untouched source",
+          "result": "passed",
+          "report": "plugins/ca/tools/state-contracts-coverage-results.json"
+        },
+        {
+          "file": "farm.unit.test.ts",
+          "test": "attributed retry context carries one candidate through gate-failed without replaying untouched source",
+          "result": "passed",
+          "report": "plugins/ca/tools/state-contracts-coverage-results.json"
+        },
+        {
+          "file": "farm.unit.test.ts",
+          "test": "verified merge recovery retries 1 transient stages without another worker or authoring allowance",
+          "result": "passed",
+          "report": "plugins/ca/tools/state-contracts-coverage-results.json"
+        },
+        {
+          "file": "farm.unit.test.ts",
+          "test": "verified merge recovery retains evidence and dispatches no new author when recovery fails: abort",
+          "result": "passed",
+          "report": "plugins/ca/tools/state-contracts-coverage-results.json"
+        },
+        {
+          "file": "farm.unit.test.ts",
+          "test": "verified merge recovery retains evidence and dispatches no new author when recovery fails: abort-throw",
+          "result": "passed",
+          "report": "plugins/ca/tools/state-contracts-coverage-results.json"
+        },
+        {
+          "file": "farm.test.ts",
+          "test": "verified merge recovery CLI source: single retains merge evidence and uses the verified baseline",
+          "result": "passed",
+          "report": "plugins/ca/tools/state-contracts-coverage-results.json"
+        },
+        {
+          "file": "farm.test.ts",
+          "test": "verified merge recovery CLI source: samples retains merge evidence and uses the verified baseline",
+          "result": "passed",
+          "report": "plugins/ca/tools/state-contracts-coverage-results.json"
+        }
+      ],
+      "preservation_review": "Candidate selection retains deterministic index order and scope/test/mutation checks. Unknown sample containment retains that sample worktree/branch and stops task admission. Unavailable sample drift cannot buy a fresh round. Staging retries only identical explicit paths; production merges the rechecked pinned candidate commit. Merge rollback/reset and new protected-test baseline remain verified before author regeneration.",
+      "qualification": "Local implementation/preservation evidence; final integration qualification is separate"
+    },
+    {
+      "id": "farm-transport-and-risk-preserved",
+      "transition_ids": [
+        "S27:01",
+        "S27:02",
+        "S27:03",
+        "S27:04",
+        "S27:05",
+        "S27:06",
+        "S27:07",
+        "S27:08",
+        "S27:09",
+        "S28:01",
+        "S28:02",
+        "S28:03",
+        "S28:04",
+        "S28:05",
+        "S28:06",
+        "S28:07",
+        "S28:08",
+        "S28:09",
+        "S28:10",
+        "S28:11",
+        "S28:12"
+      ],
+      "checks": [
+        {
+          "file": "farm.test.ts",
+          "test": "farm.ts smoke tests HTTP transport lifecycle via source defers an excessive cooldown without multiplying 1 planned sample(s)",
+          "result": "passed",
+          "report": "plugins/ca/tools/state-contracts-coverage-results.json"
+        },
+        {
+          "file": "farm.test.ts",
+          "test": "farm.ts smoke tests HTTP transport lifecycle via source defers an excessive cooldown without multiplying 2 planned sample(s)",
+          "result": "passed",
+          "report": "plugins/ca/tools/state-contracts-coverage-results.json"
+        },
+        {
+          "file": "mutation.test.ts",
+          "test": "mutationCheck \u2014 built-in text mutation restores the original file through BOTH the in-loop and the final path",
+          "result": "passed",
+          "report": "plugins/ca/tools/state-contracts-coverage-results.json"
+        },
+        {
+          "file": "mutation.test.ts",
+          "test": "built-in mutation deadline and terminal evidence restores without running the test when a mutant write consumes the whole budget",
+          "result": "passed",
+          "report": "plugins/ca/tools/state-contracts-coverage-results.json"
+        },
+        {
+          "file": "farm-surface.test.ts",
+          "test": "runTask mutation-score handling pins the default thresholds the boundary tests below reason about",
+          "result": "passed",
+          "report": "plugins/ca/tools/state-contracts-coverage-results.json"
+        },
+        {
+          "file": "farm-surface.test.ts",
+          "test": "runTask mutation-score handling renders the survivor count as survivors-over-evaluated, never evaluated alone (#525)",
+          "result": "passed",
+          "report": "plugins/ca/tools/state-contracts-coverage-results.json"
+        }
+      ],
+      "preservation_review": "No provider/default/budget/auth change. Preserve non-retryable cooldown, bounded body handling, redaction, mutation evidence uncertainty, restoration and anti-gaming heuristic limits. New fatal drift/gate routes run before dependent mutations and do not turn missing evidence into measured success.",
+      "qualification": "Local implementation/preservation evidence; final integration qualification is separate"
+    },
+    {
+      "id": "farm-cleanup-and-canary-preserved",
+      "transition_ids": [
+        "S30:01",
+        "S30:02",
+        "S30:03",
+        "S30:04",
+        "S30:05",
+        "S30:06",
+        "S32:01",
+        "S32:02",
+        "S32:03",
+        "S32:04",
+        "S32:05",
+        "S32:06",
+        "S32:07",
+        "S33:01",
+        "S33:02",
+        "S33:03",
+        "S33:04",
+        "S33:05"
+      ],
+      "checks": [
+        {
+          "file": "farm.unit.test.ts",
+          "test": "#398 \u2014 verified, retried, reported worktree teardown retries a transient remove failure and confirms git no longer registers the worktree",
+          "result": "passed",
+          "report": "plugins/ca/tools/state-contracts-coverage-results.json"
+        },
+        {
+          "file": "farm.unit.test.ts",
+          "test": "#398 \u2014 verified, retried, reported worktree teardown returns ok:false with diagnostics when git still registers the worktree after every attempt",
+          "result": "passed",
+          "report": "plugins/ca/tools/state-contracts-coverage-results.json"
+        },
+        {
+          "file": "farm.test.ts",
+          "test": "farm.ts smoke tests canary isolates every model and preserves existing refs, samples=1 (source)",
+          "result": "passed",
+          "report": "plugins/ca/tools/state-contracts-coverage-results.json"
+        },
+        {
+          "file": "farm.test.ts",
+          "test": "farm.ts smoke tests canary isolates every model and preserves existing refs, samples=1 (bundle)",
+          "result": "passed",
+          "report": "plugins/ca/tools/state-contracts-coverage-results.json"
+        },
+        {
+          "file": "worktree-fs.test.ts",
+          "test": "symlink-safe worktree writer rejects a directory symlink or Windows junction without changing an external sentinel",
+          "result": "passed",
+          "report": "plugins/ca/tools/state-contracts-coverage-results.json"
+        },
+        {
+          "file": "worktree-fs.test.ts",
+          "test": "symlink-safe worktree writer rejects a hard link introduced after initial destination validation",
+          "result": "passed",
+          "report": "plugins/ca/tools/state-contracts-coverage-results.json"
+        }
+      ],
+      "preservation_review": "Keep canonical containment, no-follow file writes, detached frozen-base canary isolation, exact resource teardown/re-observation and cleanup failure counts. Remove only newly owned sample/worktree resources; fresh run pre-clean and branch-force reset are removed. New receipt repair performs no cleanup. S21 Pi adapter is outside this lane and remains Pi/Q-01-owned.",
+      "qualification": "Local implementation/preservation evidence; final integration qualification is separate"
+    },
+    {
+      "id": "sandbox-client-exec-containment",
+      "transition_ids": [
+        "S47:01",
+        "S47:02",
+        "S47:03",
+        "S47:04",
+        "S47:05",
+        "S47:06",
+        "S47:07",
+        "S52:01",
+        "S52:02",
+        "S52:03",
+        "S52:04",
+        "S52:05",
+        "S52:06"
+      ],
+      "checks": [
+        {
+          "file": "state-contracts.test.ts",
+          "test": "SBX-C02 treats overflow as lost observation and verifies target containment",
+          "result": "passed",
+          "report": "plugins/ca-sandbox/tools/state-contracts-final-results.json"
+        },
+        {
+          "file": "deadline.test.ts",
+          "test": "#479 \u2014 an in-flight docker call is cancellable stops the container an ABORTED exec targeted, exactly as a timeout does (AC-2)",
+          "result": "passed",
+          "report": "plugins/ca-sandbox/tools/state-contracts-final-results.json"
+        },
+        {
+          "file": "exec.test.ts",
+          "test": "run() \u2014 containment failure is distinguishable from a clean timeout uses non-zero, DISTINCT literal exit codes",
+          "result": "passed",
+          "report": "plugins/ca/tools/state-contracts-coverage-results.json"
+        },
+        {
+          "file": "exec.test.ts",
+          "test": "execInSandbox \u2014 JSON contract (AC-09) propagates a non-zero exit code (exit 7 -> exitCode 7)",
+          "result": "passed",
+          "report": "plugins/ca-sandbox/tools/state-contracts-final-results.json"
+        },
+        {
+          "file": "exec.test.ts",
+          "test": "execInSandbox \u2014 JSON contract (AC-09) trips truncated:true and caps stdout past the byte cap",
+          "result": "passed",
+          "report": "plugins/ca-sandbox/tools/state-contracts-final-results.json"
+        },
+        {
+          "file": "exec.test.ts",
+          "test": "execInSandbox \u2014 JSON contract (AC-09) trips truncated:true when only stderr exceeds the cap",
+          "result": "passed",
+          "report": "plugins/ca-sandbox/tools/state-contracts-final-results.json"
+        },
+        {
+          "file": "cp.test.ts",
+          "test": "buildCpOutArgs \u2014 pull-only direction (AC-10) assembles `cp <id>:<containerPath> <hostDest>` in the pull direction",
+          "result": "passed",
+          "report": "plugins/ca-sandbox/tools/state-contracts-final-results.json"
+        }
+      ],
+      "preservation_review": "Raw runner overflow is lost observation, separate from bounded display truncation. Timeout/cancel/overflow stops only the exact container and independently inspects running=false without the aborted ordinary signal. Unverified stop/inspect remains unknown with identity retained. Ordinary nonzero exit and outward-only copy behavior stay intact.",
+      "qualification": "Pure/fault and bounded client tests passed locally. Required actual Docker stop/overflow and copy cells remain unexecuted locally."
+    },
+    {
+      "id": "sandbox-create-compensation",
+      "transition_ids": [
+        "S48:01",
+        "S48:02",
+        "S48:03",
+        "S48:04",
+        "S48:05",
+        "S48:06",
+        "S48:07",
+        "S48:08"
+      ],
+      "checks": [
+        {
+          "file": "state-contracts.test.ts",
+          "test": "SBX-C03 cancellation cannot cancel compensation and unknown cleanup retains exact references",
+          "result": "passed",
+          "report": "plugins/ca-sandbox/tools/state-contracts-final-results.json"
+        },
+        {
+          "file": "create.test.ts",
+          "test": "validateRepoUrl \u2014 clone-input trust model (AC-01) accepts plain network remotes (https / ssh / scp-like)",
+          "result": "passed",
+          "report": "plugins/ca-sandbox/tools/state-contracts-final-results.json"
+        },
+        {
+          "file": "create.test.ts",
+          "test": "validateRepoUrl \u2014 clone-input trust model (AC-01) REJECTS git argument injection (a url beginning with '-')",
+          "result": "passed",
+          "report": "plugins/ca-sandbox/tools/state-contracts-final-results.json"
+        },
+        {
+          "file": "lifecycle.test.ts",
+          "test": "createSandbox \u2014 clones into a named volume + runs (AC-01) tears down the volume if the clone fails (no leaked half-sandbox)",
+          "result": "passed",
+          "report": "plugins/ca-sandbox/tools/state-contracts-final-results.json"
+        }
+      ],
+      "preservation_review": "Preserve URL/argv boundaries and labeled volumes. Clone, staging copy and build receive cancellation; helper/staging cleanup is independently bounded and observed. Failed volume creation retains possible effects. CreateFailure separates original failure from cleanup and retains exact refs. No failed listing stdout becomes a deletion target. No cleanup is described as absent when observation is unavailable.",
+      "qualification": "Local injected failures pass; real clone/copy/build cancellation and helper/temp failure cells need hosted Docker qualification."
+    },
+    {
+      "id": "sandbox-cache-builder-capabilities",
+      "transition_ids": [
+        "S49:01",
+        "S49:02",
+        "S49:03",
+        "S49:04",
+        "S49:05",
+        "S49:06",
+        "S49:07",
+        "S49:08",
+        "S49:09"
+      ],
+      "checks": [
+        {
+          "file": "state-contracts.test.ts",
+          "test": "SBX-C01 equal inputs in different checkout basenames select a verified stable key",
+          "result": "passed",
+          "report": "plugins/ca-sandbox/tools/state-contracts-final-results.json"
+        },
+        {
+          "file": "state-contracts.test.ts",
+          "test": "SBX-C01 existence alone is a cache miss and toolchain identity changes the tag",
+          "result": "passed",
+          "report": "plugins/ca-sandbox/tools/state-contracts-final-results.json"
+        },
+        {
+          "file": "state-contracts.test.ts",
+          "test": "SBX-D01 builder capability permits Node/Python fallback and refuses unsupported stacks",
+          "result": "passed",
+          "report": "plugins/ca-sandbox/tools/state-contracts-final-results.json"
+        },
+        {
+          "file": "build.test.ts",
+          "test": "buildOrReuseImage \u2014 cache hit (AC-04) reuses an existing tag and performs NO build",
+          "result": "passed",
+          "report": "plugins/ca-sandbox/tools/state-contracts-final-results.json"
+        },
+        {
+          "file": "build.test.ts",
+          "test": "dephash drives the tag \u2014 unchanged vs manifest-changed (AC-04/AC-05) unchanged manifest set -> same tag -> cache hit -> no build",
+          "result": "passed",
+          "report": "plugins/ca-sandbox/tools/state-contracts-final-results.json"
+        },
+        {
+          "file": "build.test.ts",
+          "test": "buildOrReuseImage \u2014 cache miss builds (AC-05) builds when the tag does not exist",
+          "result": "passed",
+          "report": "plugins/ca-sandbox/tools/state-contracts-final-results.json"
+        },
+        {
+          "file": "build.test.ts",
+          "test": "buildOrReuseImage \u2014 cache miss builds (AC-05) propagates a build failure",
+          "result": "passed",
+          "report": "plugins/ca-sandbox/tools/state-contracts-final-results.json"
+        },
+        {
+          "file": "build.test.ts",
+          "test": "relocationOverlay \u2014 appended to the nixpacks-generated Dockerfile relocates deps FROM /app (nixpacks' app dir) TO /deps, not from /work/repo",
+          "result": "passed",
+          "report": "plugins/ca-sandbox/tools/state-contracts-final-results.json"
+        },
+        {
+          "file": "build.test.ts",
+          "test": "relocationOverlay \u2014 appended to the nixpacks-generated Dockerfile relocates python deps from nixpacks' /opt/venv, not /app/.venv only",
+          "result": "passed",
+          "report": "plugins/ca-sandbox/tools/state-contracts-final-results.json"
+        },
+        {
+          "file": "supply-chain.test.ts",
+          "test": "supply chain: no remote-fetch-and-execute in production code (#401) never pipes network-fetched bytes into a shell or interpreter",
+          "result": "passed",
+          "report": "plugins/ca-sandbox/tools/state-contracts-final-results.json"
+        },
+        {
+          "file": "state-contracts.test.ts",
+          "test": "SBX-C01 manifest observation distinguishes absent inputs, valid bytes and unreadable declared inputs",
+          "result": "passed",
+          "report": "plugins/ca-sandbox/tools/state-contracts-manifest-repair-results.json"
+        },
+        {
+          "file": "state-contracts.test.ts",
+          "test": "SBX-C01 dangling declared configuration is unavailable rather than a missing input",
+          "result": "passed",
+          "report": "plugins/ca-sandbox/tools/state-contracts-manifest-repair-results.json"
+        }
+      ],
+      "preservation_review": "V2 SHA256 identity includes manifest/config digest, observed effective builder/version, actual target daemon platform and build templates/options. Checkout basename is cosmetic. Reuse needs the matching cache-key label and immutable image ID; create launches that ID. Real build success verifies the emitted identity. Malformed version/platform and unknown inspection fail closed. Existing cache tags stay untouched. Node/Python fallback and unsupported stack refusal share buildCapabilities; no builder acquisition is introduced. Independent-review repair: present unsafe/unreadable declared files cannot alias absent cache inputs; only confirmed ENOENT is omission. Existing48-bit preliminary dephash remains an explicit identity limit.",
+      "qualification": "Local key/probe/provenance/capability tests pass. cache-provenance.test.ts adds mandatory two-create installed-Nixpacks and forced fallback Docker cells; both unexecuted locally. No approved CI Nixpacks version/digest acquisition owner found in .github; parent owns ca-add-dep/security provisioning."
+    },
+    {
+      "id": "sandbox-effective-network-preserved",
+      "transition_ids": [
+        "S50:01",
+        "S50:02",
+        "S50:03",
+        "S50:04",
+        "S50:05",
+        "S50:06"
+      ],
+      "checks": [
+        {
+          "file": "state-contracts.test.ts",
+          "test": "SBX-D03 requested ordinary allowlist is unavailable and the real argv stays offline",
+          "result": "passed",
+          "report": "plugins/ca-sandbox/tools/state-contracts-final-results.json"
+        },
+        {
+          "file": "run.test.ts",
+          "test": "buildRunArgs \u2014 network policy (AC-01 / AC-08 seam) offline detaches the container from all networking",
+          "result": "passed",
+          "report": "plugins/ca-sandbox/tools/state-contracts-final-results.json"
+        },
+        {
+          "file": "run.test.ts",
+          "test": "buildRunArgs \u2014 network policy (AC-01 / AC-08 seam) a typo of 'offline' still gets --network none (fail closed)",
+          "result": "passed",
+          "report": "plugins/ca-sandbox/tools/state-contracts-final-results.json"
+        },
+        {
+          "file": "run.test.ts",
+          "test": "buildRunArgs \u2014 isolation flags (AC-01) sets workdir, non-root user, read-only root, and a tmpfs /tmp",
+          "result": "passed",
+          "report": "plugins/ca-sandbox/tools/state-contracts-final-results.json"
+        },
+        {
+          "file": "network.test.ts",
+          "test": "applyNetworkPolicy \u2014 offline (AC-08, solid default) detaches the container from all networking via --network none",
+          "result": "passed",
+          "report": "plugins/ca-sandbox/tools/state-contracts-final-results.json"
+        },
+        {
+          "file": "network.test.ts",
+          "test": "applyNetworkPolicy \u2014 offline (AC-08, solid default) adds no NET_ADMIN/NET_RAW caps and no firewall script (nothing to allow)",
+          "result": "passed",
+          "report": "plugins/ca-sandbox/tools/state-contracts-final-results.json"
+        },
+        {
+          "file": "network.test.ts",
+          "test": "applyNetworkPolicy \u2014 egress-allowlist (AC-08, EXPERIMENTAL) is flagged EXPERIMENTAL (Spike C: CDN drift + DNS-exfil hole)",
+          "result": "passed",
+          "report": "plugins/ca-sandbox/tools/state-contracts-final-results.json"
+        },
+        {
+          "file": "network.test.ts",
+          "test": "applyNetworkPolicy \u2014 egress-allowlist (AC-08, EXPERIMENTAL) attaches the custom bridge network and adds NET_ADMIN + NET_RAW caps",
+          "result": "passed",
+          "report": "plugins/ca-sandbox/tools/state-contracts-final-results.json"
+        }
+      ],
+      "preservation_review": "Ordinary NETWORKED_POLICIES remains empty: requested names never widen network. Create exposes requested/effective offline and availability=false for unsupported ordinary richer names. Standalone experimental network helper and Claude firewall remain separate; helper presence is not ordinary integration. Host build staging is documented separately from runtime no-bind/no-socket/no-privileged controls.",
+      "qualification": "Actual ordinary argv and pure network plans checked. Real network/firewall/helper enforcement remains hosted Docker qualification."
+    },
+    {
+      "id": "sandbox-token-firewall",
+      "transition_ids": [
+        "S51:01",
+        "S51:02",
+        "S51:03",
+        "S51:04",
+        "S51:05",
+        "S51:06"
+      ],
+      "checks": [
+        {
+          "file": "state-contracts.test.ts",
+          "test": "SBX-C03 cancelled firewall setup keeps exact cleanup live and never invents destruction",
+          "result": "passed",
+          "report": "plugins/ca-sandbox/tools/state-contracts-final-results.json"
+        },
+        {
+          "file": "claude-inside.test.ts",
+          "test": "buildClaudeRunArgs \u2014 hardened posture is enforced, not optional (AC-12) THROWS when the token volume would be co-mounted with an untrusted-code run",
+          "result": "passed",
+          "report": "plugins/ca-sandbox/tools/state-contracts-final-results.json"
+        },
+        {
+          "file": "claude-inside.test.ts",
+          "test": "#377 - a token-bearing box never runs NET_ADMIN without its firewall supplies the token only to the Docker run process environment",
+          "result": "passed",
+          "report": "plugins/ca-sandbox/tools/state-contracts-final-results.json"
+        },
+        {
+          "file": "claude-inside.test.ts",
+          "test": "#377 - a token-bearing box never runs NET_ADMIN without its firewall redacts a token echoed by a failing Docker client",
+          "result": "passed",
+          "report": "plugins/ca-sandbox/tools/state-contracts-final-results.json"
+        },
+        {
+          "file": "claude-inside.test.ts",
+          "test": "#377 - a token-bearing box never runs NET_ADMIN without its firewall redacts a token echoed by a failed firewall command and tears down without it",
+          "result": "passed",
+          "report": "plugins/ca-sandbox/tools/state-contracts-final-results.json"
+        },
+        {
+          "file": "claude-inside-cli.test.ts",
+          "test": "#377 parseClaudeCli \u2014 what the entry point refuses REFUSES --token, because argv is world-readable",
+          "result": "passed",
+          "report": "plugins/ca-sandbox/tools/state-contracts-final-results.json"
+        },
+        {
+          "file": "claude-inside-cli.test.ts",
+          "test": "#377 runClaudeInsideCli \u2014 the process contract passes the token from the ENVIRONMENT, not from argv",
+          "result": "passed",
+          "report": "plugins/ca-sandbox/tools/state-contracts-final-results.json"
+        }
+      ],
+      "preservation_review": "Keep env-only dummy credential tests, approved image pins, token/source-volume separation and offline/explicit Anthropic posture. Failed firewall cleanup drops ordinary cancellation, removes exact id, observes absence and throws structured FirewallSetupFailure with independent command/remove/observation codes. Unknown never says destroyed.",
+      "qualification": "No real token/provider call performed. Actual Docker token-box/firewall and installed host proof remain pending."
+    },
+    {
+      "id": "sandbox-discovery-teardown-and-cli",
+      "transition_ids": [
+        "S53:01",
+        "S53:02",
+        "S53:03",
+        "S53:04",
+        "S53:05",
+        "S53:06",
+        "S53:07",
+        "S54:01",
+        "S54:02",
+        "S54:03",
+        "S54:04",
+        "S54:05",
+        "S54:06"
+      ],
+      "checks": [
+        {
+          "file": "state-contracts.test.ts",
+          "test": "SBX-C03 reports failed resource observations as unavailable, not empty",
+          "result": "passed",
+          "report": "plugins/ca-sandbox/tools/state-contracts-final-results.json"
+        },
+        {
+          "file": "state-contracts.test.ts",
+          "test": "SBX-C03 partial failure stdout cannot authorize destruction of an unobserved target",
+          "result": "passed",
+          "report": "plugins/ca-sandbox/tools/state-contracts-final-results.json"
+        },
+        {
+          "file": "teardown.test.ts",
+          "test": "#433 \u2014 teardown diagnostics say what actually happened AC-2: a sandbox created AFTER discovery does not fail prune",
+          "result": "passed",
+          "report": "plugins/ca-sandbox/tools/state-contracts-final-results.json"
+        },
+        {
+          "file": "teardown.test.ts",
+          "test": "destroySandbox \u2014 a failed removal is retained, not dropped (#393) keeps attempting EVERY discovered target after the first failure",
+          "result": "passed",
+          "report": "plugins/ca-sandbox/tools/state-contracts-final-results.json"
+        },
+        {
+          "file": "teardown.test.ts",
+          "test": "#433 \u2014 teardown diagnostics say what actually happened AC-1: two listings failing DIFFERENTLY stay two failures",
+          "result": "passed",
+          "report": "plugins/ca-sandbox/tools/state-contracts-final-results.json"
+        },
+        {
+          "file": "cli.test.ts",
+          "test": "parseCli \u2014 destroy / prune (AC-11) parses `destroy <id>` into a destroy command",
+          "result": "passed",
+          "report": "plugins/ca-sandbox/tools/state-contracts-final-results.json"
+        },
+        {
+          "file": "cli.test.ts",
+          "test": "parseCli \u2014 destroy / prune (AC-11) parses `destroy <id> --keep-volume`",
+          "result": "passed",
+          "report": "plugins/ca-sandbox/tools/state-contracts-final-results.json"
+        }
+      ],
+      "preservation_review": "Unavailable discovery differs from empty and partial failure stdout is discarded. Existing destroy remains per-id and prune remains initial snapshot; neither expands after discovery. Shell exit detaches. Missing id never implies prune. Preserve keep-volume, separate exit codes, signals, outward copy and named survivor diagnostics.",
+      "qualification": "Pure scoped-state/CLI checks pass. New real two-create cell preserves a second active box while destroying the first; actual cell awaits Docker."
+    },
+    {
+      "id": "sandbox-installed-guidance",
+      "transition_ids": [
+        "SW01:01",
+        "SW01:02",
+        "SW01:03",
+        "SW01:04",
+        "SW01:05",
+        "SW01:06",
+        "SW01:07",
+        "SW01:08",
+        "SW01:09",
+        "SW01:10",
+        "SW01:11",
+        "SW01:12",
+        "SW01:13",
+        "SW01:14",
+        "SW01:15",
+        "SW01:16",
+        "SW01:17",
+        "SW01:18",
+        "SW01:19",
+        "SW01:20",
+        "SW01:21",
+        "SW01:22",
+        "SW01:23",
+        "SW01:24",
+        "SW02:01",
+        "SW02:02",
+        "SW02:03",
+        "SW02:04",
+        "SW02:05",
+        "SW02:06",
+        "SW02:07",
+        "SW02:08",
+        "SW02:09",
+        "SW02:10",
+        "SW02:11",
+        "SW02:12",
+        "SW02:13",
+        "SW02:14",
+        "WF-31:01",
+        "WF-31:02",
+        "WF-31:03",
+        "WF-31:04",
+        "WF-31:05",
+        "WF-31:07"
+      ],
+      "checks": [
+        {
+          "file": "state-contracts.test.ts",
+          "test": "SBX-D01 builder capability permits Node/Python fallback and refuses unsupported stacks",
+          "result": "passed",
+          "report": "plugins/ca-sandbox/tools/state-contracts-final-results.json"
+        },
+        {
+          "file": "state-contracts.test.ts",
+          "test": "SBX-D03 requested ordinary allowlist is unavailable and the real argv stays offline",
+          "result": "passed",
+          "report": "plugins/ca-sandbox/tools/state-contracts-final-results.json"
+        },
+        {
+          "file": "cli.test.ts",
+          "test": "parseCli \u2014 subcommand recognition rejects an empty argv (no subcommand) with a CliError",
+          "result": "passed",
+          "report": "plugins/ca-sandbox/tools/state-contracts-final-results.json"
+        },
+        {
+          "file": "claude-inside-cli.test.ts",
+          "test": "#377 parseClaudeCli \u2014 what the entry point refuses REFUSES --token, because argv is world-readable",
+          "result": "passed",
+          "report": "plugins/ca-sandbox/tools/state-contracts-final-results.json"
+        },
+        {
+          "file": "claude-inside-cli.test.ts",
+          "test": "#377 runClaudeInsideCli \u2014 the process contract passes the token from the ENVIRONMENT, not from argv",
+          "result": "passed",
+          "report": "plugins/ca-sandbox/tools/state-contracts-final-results.json"
+        }
+      ],
+      "preservation_review": "Reasoned conformance review of current command/skill/README against actual driver owners: package prerequisites replace consumer-only maintainer spike/ADR requirements; binary controls and model-guided phases are distinguished. Missing Nixpacks permits supported fallback, shell detaches, named destroy does not prune, host staging and effective offline are explicit. Offline never implicitly opens network for a dummy401; such maintainer qualification needs separate authority. Farm task review/verification and promotion barriers stay with their workflow owners. Six generated farm surfaces were rebuilt by build-surface and equality check passed.",
+      "qualification": "Guidance/source conformance reviewed and local driver assertions passed; this is not an installed upstream host observation or a complete WF-31/HW-27 closure."
+    }
+  ],
+  "machine_ids": [
+    "S22",
+    "S23",
+    "S24",
+    "S25",
+    "S26",
+    "S27",
+    "S28",
+    "S29",
+    "S30",
+    "S31",
+    "S32",
+    "S33",
+    "S47",
+    "S48",
+    "S49",
+    "S50",
+    "S51",
+    "S52",
+    "S53",
+    "S54",
+    "SW01",
+    "SW02",
+    "WF-31"
+  ],
+  "task_evidence": [
+    {
+      "task_id": "FARM-R01",
+      "finding_ids": [
+        "SF05"
+      ],
+      "implementation": "implemented; independent review pending",
+      "old_trace": "report failure recommended redispatch after force-reset/pre-clean",
+      "new_trace": "exclusive run/effect journal plus read-only recovery; exact effects and task/run cleanup stay independent",
+      "transition_ids": [
+        "WF-31:01",
+        "WF-31:02",
+        "WF-31:03",
+        "WF-31:04",
+        "WF-31:05",
+        "WF-31:06",
+        "WF-31:07",
+        "S22:01",
+        "S22:02",
+        "S22:03",
+        "S22:04",
+        "S22:05",
+        "S22:06",
+        "S22:07",
+        "S23:01",
+        "S23:02",
+        "S23:03",
+        "S23:04",
+        "S23:05",
+        "S23:06",
+        "S23:07",
+        "S23:08",
+        "S23:09",
+        "S23:10",
+        "S23:11",
+        "S23:12",
+        "S24:01",
+        "S24:02",
+        "S24:03",
+        "S24:04",
+        "S24:05",
+        "S24:06",
+        "S24:07",
+        "S24:08",
+        "S24:09",
+        "S24:10",
+        "S24:11",
+        "S24:12",
+        "S24:13",
+        "S24:14",
+        "S25:01",
+        "S25:02",
+        "S25:03",
+        "S25:04",
+        "S25:05",
+        "S25:06",
+        "S25:07",
+        "S25:08",
+        "S26:01",
+        "S26:02",
+        "S26:03",
+        "S26:04",
+        "S26:05",
+        "S26:06",
+        "S26:07",
+        "S26:08",
+        "S26:09",
+        "S27:01",
+        "S27:02",
+        "S27:03",
+        "S27:04",
+        "S27:05",
+        "S27:06",
+        "S27:07",
+        "S27:08",
+        "S27:09",
+        "S28:01",
+        "S28:02",
+        "S28:03",
+        "S28:04",
+        "S28:05",
+        "S28:06",
+        "S28:07",
+        "S28:08",
+        "S28:09",
+        "S28:10",
+        "S28:11",
+        "S28:12",
+        "S30:01",
+        "S30:02",
+        "S30:03",
+        "S30:04",
+        "S30:05",
+        "S30:06",
+        "S31:01",
+        "S31:02",
+        "S31:03",
+        "S31:04",
+        "S31:05",
+        "S31:06",
+        "S32:01",
+        "S32:02",
+        "S32:03",
+        "S32:04",
+        "S32:05",
+        "S32:06",
+        "S32:07"
+      ],
+      "qualification": "Required hosted/installed gaps retained; local checks are not final program settlement"
+    },
+    {
+      "task_id": "FARM-R02",
+      "finding_ids": [
+        "SF06"
+      ],
+      "implementation": "implemented; independent review pending",
+      "old_trace": "executor125 flattened to ordinary failed gate and retried",
+      "new_trace": "typed command/timeout/process/containment reaches fatal task hold with zero reset/new author",
+      "transition_ids": [
+        "S22:01",
+        "S22:02",
+        "S22:03",
+        "S22:04",
+        "S22:05",
+        "S22:06",
+        "S22:07",
+        "S23:01",
+        "S23:02",
+        "S23:03",
+        "S23:04",
+        "S23:05",
+        "S23:06",
+        "S23:07",
+        "S23:08",
+        "S23:09",
+        "S23:10",
+        "S23:11",
+        "S23:12",
+        "S24:01",
+        "S24:02",
+        "S24:03",
+        "S24:04",
+        "S24:05",
+        "S24:06",
+        "S24:07",
+        "S24:08",
+        "S24:09",
+        "S24:10",
+        "S24:11",
+        "S24:12",
+        "S24:13",
+        "S24:14",
+        "S25:01",
+        "S25:02",
+        "S25:03",
+        "S25:04",
+        "S25:05",
+        "S25:06",
+        "S25:07",
+        "S25:08",
+        "S26:01",
+        "S26:02",
+        "S26:03",
+        "S26:04",
+        "S26:05",
+        "S26:06",
+        "S26:07",
+        "S26:08",
+        "S26:09",
+        "S27:01",
+        "S27:02",
+        "S27:03",
+        "S27:04",
+        "S27:05",
+        "S27:06",
+        "S27:07",
+        "S27:08",
+        "S27:09",
+        "S28:01",
+        "S28:02",
+        "S28:03",
+        "S28:04",
+        "S28:05",
+        "S28:06",
+        "S28:07",
+        "S28:08",
+        "S28:09",
+        "S28:10",
+        "S28:11",
+        "S28:12",
+        "S29:01",
+        "S29:02",
+        "S29:03",
+        "S29:04",
+        "S29:05",
+        "S29:06",
+        "S30:01",
+        "S30:02",
+        "S30:03",
+        "S30:04",
+        "S30:05",
+        "S30:06",
+        "S31:01",
+        "S31:02",
+        "S31:03",
+        "S31:04",
+        "S31:05",
+        "S31:06",
+        "S32:01",
+        "S32:02",
+        "S32:03",
+        "S32:04",
+        "S32:05",
+        "S32:06",
+        "S32:07"
+      ],
+      "qualification": "Required hosted/installed gaps retained; local checks are not final program settlement"
+    },
+    {
+      "task_id": "FARM-R03",
+      "finding_ids": [
+        "SF07"
+      ],
+      "implementation": "implemented; independent review pending",
+      "old_trace": "failed Git probes yielded empty clean array",
+      "new_trace": "bounded successful read retry or typed unavailable; no dependent mutation",
+      "transition_ids": [
+        "S22:01",
+        "S22:02",
+        "S22:03",
+        "S22:04",
+        "S22:05",
+        "S22:06",
+        "S22:07",
+        "S23:01",
+        "S23:02",
+        "S23:03",
+        "S23:04",
+        "S23:05",
+        "S23:06",
+        "S23:07",
+        "S23:08",
+        "S23:09",
+        "S23:10",
+        "S23:11",
+        "S23:12",
+        "S24:01",
+        "S24:02",
+        "S24:03",
+        "S24:04",
+        "S24:05",
+        "S24:06",
+        "S24:07",
+        "S24:08",
+        "S24:09",
+        "S24:10",
+        "S24:11",
+        "S24:12",
+        "S24:13",
+        "S24:14",
+        "S25:01",
+        "S25:02",
+        "S25:03",
+        "S25:04",
+        "S25:05",
+        "S25:06",
+        "S25:07",
+        "S25:08",
+        "S26:01",
+        "S26:02",
+        "S26:03",
+        "S26:04",
+        "S26:05",
+        "S26:06",
+        "S26:07",
+        "S26:08",
+        "S26:09",
+        "S27:01",
+        "S27:02",
+        "S27:03",
+        "S27:04",
+        "S27:05",
+        "S27:06",
+        "S27:07",
+        "S27:08",
+        "S27:09",
+        "S28:01",
+        "S28:02",
+        "S28:03",
+        "S28:04",
+        "S28:05",
+        "S28:06",
+        "S28:07",
+        "S28:08",
+        "S28:09",
+        "S28:10",
+        "S28:11",
+        "S28:12",
+        "S30:01",
+        "S30:02",
+        "S30:03",
+        "S30:04",
+        "S30:05",
+        "S30:06",
+        "S31:01",
+        "S31:02",
+        "S31:03",
+        "S31:04",
+        "S31:05",
+        "S31:06",
+        "S32:01",
+        "S32:02",
+        "S32:03",
+        "S32:04",
+        "S32:05",
+        "S32:06",
+        "S32:07"
+      ],
+      "qualification": "Required hosted/installed gaps retained; local checks are not final program settlement"
+    },
+    {
+      "task_id": "SBX-C01",
+      "finding_ids": [
+        "SF08",
+        "SW-F06"
+      ],
+      "implementation": "implemented; independent review pending",
+      "old_trace": "temporary basename tags and existence-only reuse omitted actual toolchain",
+      "new_trace": "V2 content key, strict provenance/immutable ID and pinned launch; old tags retained",
+      "transition_ids": [
+        "S48:01",
+        "S48:02",
+        "S48:03",
+        "S48:04",
+        "S48:05",
+        "S48:06",
+        "S48:07",
+        "S48:08",
+        "S49:01",
+        "S49:02",
+        "S49:03",
+        "S49:04",
+        "S49:05",
+        "S49:06",
+        "S49:07",
+        "S49:08",
+        "S49:09",
+        "SW01:01",
+        "SW01:02",
+        "SW01:03",
+        "SW01:04",
+        "SW01:05",
+        "SW01:06",
+        "SW01:07",
+        "SW01:08",
+        "SW01:09",
+        "SW01:10",
+        "SW01:11",
+        "SW01:12",
+        "SW01:13",
+        "SW01:14",
+        "SW01:15",
+        "SW01:16",
+        "SW01:17",
+        "SW01:18",
+        "SW01:19",
+        "SW01:20",
+        "SW01:21",
+        "SW01:22",
+        "SW01:23",
+        "SW01:24"
+      ],
+      "qualification": "Required hosted/installed gaps retained; local checks are not final program settlement"
+    },
+    {
+      "task_id": "SBX-C02",
+      "finding_ids": [
+        "SF09"
+      ],
+      "implementation": "implemented; independent review pending",
+      "old_trace": "overflow killed Docker client without target containment",
+      "new_trace": "lost observation triggers exact stop plus independent running-state observation",
+      "transition_ids": [
+        "S47:01",
+        "S47:02",
+        "S47:03",
+        "S47:04",
+        "S47:05",
+        "S47:06",
+        "S47:07",
+        "S52:01",
+        "S52:02",
+        "S52:03",
+        "S52:04",
+        "S52:05",
+        "S52:06"
+      ],
+      "qualification": "Required hosted/installed gaps retained; local checks are not final program settlement"
+    },
+    {
+      "task_id": "SBX-C03",
+      "finding_ids": [
+        "SF10"
+      ],
+      "implementation": "implemented; independent review pending",
+      "old_trace": "failed list looked empty and compensation outcomes/signals were ignored",
+      "new_trace": "structured unknown/verified compensation, retained refs and cancellation-independent cleanup",
+      "transition_ids": [
+        "S47:01",
+        "S47:02",
+        "S47:03",
+        "S47:04",
+        "S47:05",
+        "S47:06",
+        "S47:07",
+        "S48:01",
+        "S48:02",
+        "S48:03",
+        "S48:04",
+        "S48:05",
+        "S48:06",
+        "S48:07",
+        "S48:08",
+        "S49:01",
+        "S49:02",
+        "S49:03",
+        "S49:04",
+        "S49:05",
+        "S49:06",
+        "S49:07",
+        "S49:08",
+        "S49:09",
+        "S51:01",
+        "S51:02",
+        "S51:03",
+        "S51:04",
+        "S51:05",
+        "S51:06",
+        "S53:01",
+        "S53:02",
+        "S53:03",
+        "S53:04",
+        "S53:05",
+        "S53:06",
+        "S53:07"
+      ],
+      "qualification": "Required hosted/installed gaps retained; local checks are not final program settlement"
+    },
+    {
+      "task_id": "SBX-D01",
+      "finding_ids": [
+        "SW-F01"
+      ],
+      "implementation": "implemented; independent review pending",
+      "old_trace": "blanket missing-Nixpacks stop contradicted fallback",
+      "new_trace": "capability owner permits Node/Python fallback and refuses unsupported shapes",
+      "transition_ids": [
+        "S49:01",
+        "S49:02",
+        "S49:03",
+        "S49:04",
+        "S49:05",
+        "S49:06",
+        "S49:07",
+        "S49:08",
+        "S49:09",
+        "SW01:01",
+        "SW01:02",
+        "SW01:03",
+        "SW01:04",
+        "SW01:05",
+        "SW01:06",
+        "SW01:07",
+        "SW01:08",
+        "SW01:09",
+        "SW01:10",
+        "SW01:11",
+        "SW01:12",
+        "SW01:13",
+        "SW01:14",
+        "SW01:15",
+        "SW01:16",
+        "SW01:17",
+        "SW01:18",
+        "SW01:19",
+        "SW01:20",
+        "SW01:21",
+        "SW01:22",
+        "SW01:23",
+        "SW01:24"
+      ],
+      "qualification": "Required hosted/installed gaps retained; local checks are not final program settlement"
+    },
+    {
+      "task_id": "SBX-D02",
+      "finding_ids": [
+        "SW-F02",
+        "SW-F03"
+      ],
+      "implementation": "implemented; independent review pending",
+      "old_trace": "lifecycle prose destroyed on shell close and broadened named cleanup",
+      "new_trace": "detach, named destroy and separately explicit snapshot prune agree with runtime",
+      "transition_ids": [
+        "S53:01",
+        "S53:02",
+        "S53:03",
+        "S53:04",
+        "S53:05",
+        "S53:06",
+        "S53:07",
+        "SW01:01",
+        "SW01:02",
+        "SW01:03",
+        "SW01:04",
+        "SW01:05",
+        "SW01:06",
+        "SW01:07",
+        "SW01:08",
+        "SW01:09",
+        "SW01:10",
+        "SW01:11",
+        "SW01:12",
+        "SW01:13",
+        "SW01:14",
+        "SW01:15",
+        "SW01:16",
+        "SW01:17",
+        "SW01:18",
+        "SW01:19",
+        "SW01:20",
+        "SW01:21",
+        "SW01:22",
+        "SW01:23",
+        "SW01:24"
+      ],
+      "qualification": "Required hosted/installed gaps retained; local checks are not final program settlement"
+    },
+    {
+      "task_id": "SBX-D03",
+      "finding_ids": [
+        "SW-F04",
+        "SW-F05"
+      ],
+      "implementation": "implemented; independent review pending",
+      "old_trace": "never-host-source and applied ordinary allowlist claims contradicted actual path",
+      "new_trace": "host staging lifetime and requested/effective offline capability are explicit",
+      "transition_ids": [
+        "S48:01",
+        "S48:02",
+        "S48:03",
+        "S48:04",
+        "S48:05",
+        "S48:06",
+        "S48:07",
+        "S48:08",
+        "S49:01",
+        "S49:02",
+        "S49:03",
+        "S49:04",
+        "S49:05",
+        "S49:06",
+        "S49:07",
+        "S49:08",
+        "S49:09",
+        "S50:01",
+        "S50:02",
+        "S50:03",
+        "S50:04",
+        "S50:05",
+        "S50:06",
+        "SW01:01",
+        "SW01:02",
+        "SW01:03",
+        "SW01:04",
+        "SW01:05",
+        "SW01:06",
+        "SW01:07",
+        "SW01:08",
+        "SW01:09",
+        "SW01:10",
+        "SW01:11",
+        "SW01:12",
+        "SW01:13",
+        "SW01:14",
+        "SW01:15",
+        "SW01:16",
+        "SW01:17",
+        "SW01:18",
+        "SW01:19",
+        "SW01:20",
+        "SW01:21",
+        "SW01:22",
+        "SW01:23",
+        "SW01:24"
+      ],
+      "qualification": "Required hosted/installed gaps retained; local checks are not final program settlement"
+    },
+    {
+      "task_id": "SBX-D04",
+      "finding_ids": [
+        "SW-F07",
+        "SW-F08"
+      ],
+      "implementation": "implemented; independent review pending",
+      "old_trace": "consumer maintainer files and separate binary were treated as workflow enforcement",
+      "new_trace": "packaged prerequisites and actual enforcement distinguished from guidance; no fabricated consumer ADR/auth ceremony",
+      "transition_ids": [
+        "S51:01",
+        "S51:02",
+        "S51:03",
+        "S51:04",
+        "S51:05",
+        "S51:06",
+        "S54:01",
+        "S54:02",
+        "S54:03",
+        "S54:04",
+        "S54:05",
+        "S54:06",
+        "SW02:01",
+        "SW02:02",
+        "SW02:03",
+        "SW02:04",
+        "SW02:05",
+        "SW02:06",
+        "SW02:07",
+        "SW02:08",
+        "SW02:09",
+        "SW02:10",
+        "SW02:11",
+        "SW02:12",
+        "SW02:13",
+        "SW02:14"
+      ],
+      "qualification": "Required hosted/installed gaps retained; local checks are not final program settlement"
+    }
+  ],
+  "compatibility": [
+    "Existing farm status/plan contracts remain; appended containment/gate fields are additive.",
+    "Existing run/resource adoption intentionally refused; no forced migration/deletion. Explicit new author attempts require unused run and resource identities.",
+    "V2 cache tags/labels coexist with untouched legacy tags; no cache deletion migration.",
+    "Sandbox network result is additive; existing accepted CLI names keep offline runtime.",
+    "Git drift successful path arrays remain compatible; unavailable probes are now typed errors.",
+    "Rollback keeps journals, before/after refs, recovered receipts and historical cache images; disable recovery entry if necessary, never reset completed effects."
+  ],
+  "generated_artifacts": [
+    "plugins/ca-codex/includes/farm.md",
+    "plugins/ca-codex/routines/subagent-driven-development/references/farm-dispatch.md",
+    "plugins/ca-pi/includes/farm.md",
+    "plugins/ca-pi/routines/subagent-driven-development/references/farm-dispatch.md",
+    "plugins/ca-sandbox/tools/claude-inside.js",
+    "plugins/ca-sandbox/tools/sandbox.js",
+    "plugins/ca/includes/farm.md",
+    "plugins/ca/skills/subagent-driven-development/references/farm-dispatch.md",
+    "plugins/ca/tools/farm.js"
+  ],
+  "cross_owner_requests": [
+    {
+      "task": "T-01",
+      "owner": "parent",
+      "source": "tools/farm-first-pass.py:96-119",
+      "request": "Do not infer circuit-breaker cause/premium Max dispatch/spend from generic abort or escalation; use recorded observations."
+    },
+    {
+      "tasks": [
+        "HW-12",
+        "HW-13"
+      ],
+      "owner": "parent/hooks",
+      "request": "Coordinate actual farm report/effect producer discovery and owed harvest. Effect/recovery bookkeeping is not reviewed acceptance input; receipt repair never reruns an author."
+    },
+    {
+      "tasks": [
+        "SBX-C01",
+        "Q-01"
+      ],
+      "owner": "parent/CI",
+      "request": "Provision reviewed pinned installed Nixpacks through ca-add-dep/security before running required installed-builder two-create Docker cell; no runtime acquisition."
+    }
+  ],
+  "last_evidence_update": "2026-11-13T15:57:30.235614+00:00",
+  "source_hashes_before_run_cleanup_hardening": {
+    "core/surface/includes/farm.md": "9f47e68d902042878adb1bb6395b70409afefb4a333c676936afecb59ba0ad3f",
+    "core/surface/skills/subagent-driven-development/references/farm-dispatch.md": "f9b01f0cd6b9da8782be59eb086979b4a43c7c2bd7b52454301a9ab05c461d83",
+    "plugins/ca-codex/includes/farm.md": "2582ebd7da1bcac255ee4af88b3d5b4dba5867c6ffff01d8125f261a4913eddb",
+    "plugins/ca-codex/routines/subagent-driven-development/references/farm-dispatch.md": "41c137c1af39aaf5db868336339c1cbdfaf85a2ef2def5c3bfa48cd028f23d8f",
+    "plugins/ca-pi/includes/farm.md": "c66fccb4efadaab0ce78e8c3b9fdb079b3cbe5eee96011cc88f6cb946430c0be",
+    "plugins/ca-pi/routines/subagent-driven-development/references/farm-dispatch.md": "99ef85329bbc7006fe13cde926f616562c645fb9033839fe3e3266afb76d82d2",
+    "plugins/ca-sandbox/README.md": "5e1d39b2242f247f5d411fa40c5243a4ea0e0af6785d4d0e782edd05d432c8c1",
+    "plugins/ca-sandbox/commands/sandbox-destroy.md": "5119e80360fd5f219ed2f7067072a7b939bb06f1b2588ba092a426e71471cea1",
+    "plugins/ca-sandbox/commands/sandbox.md": "77c70d21ed44f79c14783a5f68dee0baec958901cfa73c675ae4e69e16ee60c9",
+    "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md": "67064779a9c2079db862fdf162b9c38bef6254147bf8a06e1a259d9ea8edab01",
+    "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md": "811a35109aea51c85774040ac3f2bade7172986f94d9fd3c258c02181fe0f1d8",
+    "plugins/ca-sandbox/tools/build.test.ts": "a99bda4708abf7dbf8aa7d1fd51812a6b86eb6ad07a377da7b318064db83b09a",
+    "plugins/ca-sandbox/tools/build.ts": "fc26968d98ad2c0d09b3f1f4b1aa5f0c956f1415502a358bcae3c63d6e9faee4",
+    "plugins/ca-sandbox/tools/cache-provenance.test.ts": "c0d251b237d0ace3079a6411d8508471f6ab8166e42fd3cbff0e4e67333272fb",
+    "plugins/ca-sandbox/tools/claude-inside.js": "3c7db1ab1c01c7e6d28565f3361d5eaf605d5af10e8fc6bb5c4b60ffb2d4877f",
+    "plugins/ca-sandbox/tools/claude-inside.ts": "d7e2fc4ec87ee06ec029e9f2810a5c61bde1de9727a0eec7baa5abd94f92d954",
+    "plugins/ca-sandbox/tools/create.ts": "15002b9c4f4a8ecb4d5e0535a950d19fcdff6d4a543a065e815c230eca84d40e",
+    "plugins/ca-sandbox/tools/deadline.test.ts": "be52f6812e0936cde4f2de9d4e37c610a68a24d45280280eb79b7c28478e46dc",
+    "plugins/ca-sandbox/tools/exec.ts": "31b0297d6bf0288c4d16bfd6c8604b31141ddf887cd8103c63b2e9ac0343458e",
+    "plugins/ca-sandbox/tools/registry.ts": "33ea06212a0206dbe0dde787f69ac9cde34c24a75f27ad9e38b1eef807488fb8",
+    "plugins/ca-sandbox/tools/run.ts": "face1577c8c8b299438e32fd66da4c80327b1ed086e6ad4ad1e16abfbd4706b6",
+    "plugins/ca-sandbox/tools/sandbox.js": "adc3bc85e4371cb935915588dcc3e8fd483f0c5f76fb987d12e6672bbf660882",
+    "plugins/ca-sandbox/tools/state-contracts.test.ts": "c8516a207062b486cd321a273648a3c7b9cbacd8582186e1750d02e39e3fe4a3",
+    "plugins/ca/includes/farm.md": "c079aa4e6cbc7442be5bfcf6ae28882d9b6e60eeb45afe921e14a2a151c54a4b",
+    "plugins/ca/skills/subagent-driven-development/references/farm-dispatch.md": "577983fd5d3af22a24386c7b252a94eb60f2e1820614fca49997a813e2305fe8",
+    "plugins/ca/tools/exec.ts": "670265c10b56ee9c20379ddc64b81280964428f5df3e2f5f570a38bf0197bb70",
+    "plugins/ca/tools/farm-recovery.ts": "99b5090c5d621ef2cd8468b727237815125f72848de9b7f897621bc73b6e1aee",
+    "plugins/ca/tools/farm.js": "50e76cea63d64f477b631a21404ec864afab9507a8be70de55c3e3247d88faa8",
+    "plugins/ca/tools/farm.test.ts": "bc4f698064f7ede4f126511c08da47fb1d53cec020b7c2f87e50eac20df35e8f",
+    "plugins/ca/tools/farm.ts": "ce09c0ff027796c646012e0b05c57f5cca871399e9b9cb4a798a37c483bc9d15",
+    "plugins/ca/tools/farm.unit.test.ts": "23ba125efe2493fe0839ec23120805b04866d472cc5705b78568788d7d2f151f",
+    "plugins/ca/tools/state-contracts.test.ts": "eae7dffa16d626c7740aa1fb69cd95bc95553e9ac9cc74c73009320e319cbac8"
+  },
+  "hardening_delta": {
+    "reason": "Recovered task green must also require independently observed final integration-worktree cleanup. Run cleanup recorded after removal, not inferred from per-task state.",
+    "changed_paths": [
+      "plugins/ca/tools/farm-recovery.ts",
+      "plugins/ca/tools/farm.js",
+      "plugins/ca/tools/farm.ts",
+      "plugins/ca/tools/state-contracts.test.ts"
+    ],
+    "focused_verification": "state-contracts-recovery-unit-final-results.json: 6 pass; source+bundle report/merge cases being rerun serially after one 5s real-Git test budget failure. New actual-Git matrix has bounded30s budget, no assertion removed."
+  },
+  "scenario_evidence": [
+    {
+      "scenario_id": "SEQ-16",
+      "status": "PARTIAL_PARENT_OWNED",
+      "basis": "Normal artifact admission remains unchanged; package/native/install/doctor composition is shared with native/distribution and not certified by this lane."
+    },
+    {
+      "scenario_id": "SEQ-17",
+      "status": "LOCAL_REAL_GIT_AND_SOURCE_BUNDLE_CHECKED",
+      "basis": "Actual commit/merge followed by post-claim report failure, keyless recover receipt through source and bundle, refs preserved. Pending crash point and changed schema/ref cases remain unknown; concurrent recoverers keep independent receipt names."
+    },
+    {
+      "scenario_id": "SEQ-18",
+      "status": "LOCAL_EXECUTOR_AND_FAULT_CHECKED",
+      "basis": "Actual bounded executor/containment tests plus gate->task typed125/no-reset/no-second-author and failed Git probes no clean fallback. POSIX cells remain supported-host qualification."
+    },
+    {
+      "scenario_id": "SEQ-19",
+      "status": "LOCAL_KEYS_CHECKED_DOCKER_PENDING",
+      "basis": "Equal random staging basenames converge, builder/platform/manifest changes invalidate, provenance and immutable launch asserted. Both actual two-create builder cells pending Docker/Nixpacks host."
+    },
+    {
+      "scenario_id": "SEQ-20",
+      "status": "LOCAL_FAULT_CHECKED_DOCKER_PENDING",
+      "basis": "Overflow/abort containment and create/firewall teardown unknown are distinct; partial failed listings cannot target deletion. Real Docker re-observation and unrelated-box preservation pending."
+    },
+    {
+      "scenario_id": "SEQ-30",
+      "status": "GUIDANCE_CONFORMANCE_CHECKED_INSTALLED_HOST_PENDING",
+      "basis": "Current command/skill/README checked against capability/network/CLI owners. No consumer maintainer ADR prerequisite or implicit dummy401/network change; no actual upstream host claim."
+    }
+  ],
+  "frozen_contract_hashes": {
+    "tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+    "machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+    "transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+    "scenarios.json": "5fe7863a28d28c7a2d3484cc23a85f74e47476a4743597ace1d24e27df541af3"
+  },
+  "final_source_hashes": {
+    "core/surface/includes/farm.md": "eb202a3baee5b5c3ef74b797437a5512ee99954d7c721f02014bdf3434a69366",
+    "core/surface/skills/subagent-driven-development/references/farm-dispatch.md": "1e99b50ca963e05fbbafd91b68ca1359de3fd7574eb4e25f1ea5624b49bd410b",
+    "plugins/ca-codex/includes/farm.md": "c7033e232bca1ca3da832f54014a207ede3314d3eed6a91e448fe30c193b3433",
+    "plugins/ca-codex/routines/subagent-driven-development/references/farm-dispatch.md": "40befa43a393e603712f190a72d4533e3ee3b0822811a85cd99a8a17f50ef93b",
+    "plugins/ca-pi/includes/farm.md": "1d79e22e0ab25f4d9fd6cb354fb778009334f87251fb5c3ad9806eeddcd6e3d6",
+    "plugins/ca-pi/routines/subagent-driven-development/references/farm-dispatch.md": "7221da3c8d25c852e508cf25a48b54f031ffda12bf5efdf4f47ac65c663b7b49",
+    "plugins/ca-sandbox/README.md": "5e1d39b2242f247f5d411fa40c5243a4ea0e0af6785d4d0e782edd05d432c8c1",
+    "plugins/ca-sandbox/commands/sandbox-destroy.md": "5119e80360fd5f219ed2f7067072a7b939bb06f1b2588ba092a426e71471cea1",
+    "plugins/ca-sandbox/commands/sandbox.md": "77c70d21ed44f79c14783a5f68dee0baec958901cfa73c675ae4e69e16ee60c9",
+    "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md": "67064779a9c2079db862fdf162b9c38bef6254147bf8a06e1a259d9ea8edab01",
+    "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md": "811a35109aea51c85774040ac3f2bade7172986f94d9fd3c258c02181fe0f1d8",
+    "plugins/ca-sandbox/tools/build.test.ts": "a99bda4708abf7dbf8aa7d1fd51812a6b86eb6ad07a377da7b318064db83b09a",
+    "plugins/ca-sandbox/tools/build.ts": "fc26968d98ad2c0d09b3f1f4b1aa5f0c956f1415502a358bcae3c63d6e9faee4",
+    "plugins/ca-sandbox/tools/cache-provenance.test.ts": "c0d251b237d0ace3079a6411d8508471f6ab8166e42fd3cbff0e4e67333272fb",
+    "plugins/ca-sandbox/tools/claude-inside.js": "3c7db1ab1c01c7e6d28565f3361d5eaf605d5af10e8fc6bb5c4b60ffb2d4877f",
+    "plugins/ca-sandbox/tools/claude-inside.ts": "d7e2fc4ec87ee06ec029e9f2810a5c61bde1de9727a0eec7baa5abd94f92d954",
+    "plugins/ca-sandbox/tools/create.ts": "d04c9e6d7c8d096e8c69a96cf6337a6857ef51799d933d0eba61571235fc5475",
+    "plugins/ca-sandbox/tools/deadline.test.ts": "be52f6812e0936cde4f2de9d4e37c610a68a24d45280280eb79b7c28478e46dc",
+    "plugins/ca-sandbox/tools/exec.ts": "31b0297d6bf0288c4d16bfd6c8604b31141ddf887cd8103c63b2e9ac0343458e",
+    "plugins/ca-sandbox/tools/registry.ts": "33ea06212a0206dbe0dde787f69ac9cde34c24a75f27ad9e38b1eef807488fb8",
+    "plugins/ca-sandbox/tools/run.ts": "face1577c8c8b299438e32fd66da4c80327b1ed086e6ad4ad1e16abfbd4706b6",
+    "plugins/ca-sandbox/tools/sandbox.js": "e77bad0620556058c2efba5bdc48a13cc98d7f10ee988acdaa976e08b087fff2",
+    "plugins/ca-sandbox/tools/state-contracts.test.ts": "a30f1aa76b194bd79e1c4716c5ca1db4dd2adb804d0e352d86e737486fa18441",
+    "plugins/ca/includes/farm.md": "905e3bbf6d5aa7e6cc3d90e7fcea0520c89cfef92c193fc378329c6cd48616b6",
+    "plugins/ca/skills/subagent-driven-development/references/farm-dispatch.md": "93aa7bcbcd7d64fb6845916dadcdc78aaeae0aa00316738fff87a3cfc4476cf5",
+    "plugins/ca/tools/exec.ts": "670265c10b56ee9c20379ddc64b81280964428f5df3e2f5f570a38bf0197bb70",
+    "plugins/ca/tools/farm-recovery.ts": "4a175edaf4d8053f2bb2693b57d0b14242cf1fac2423285b15dfda805736edaa",
+    "plugins/ca/tools/farm.js": "0e7a2d1f6c1de4a43a55f09a051a9167ad62d7903205ed650ad3bc86038bb805",
+    "plugins/ca/tools/farm.test.ts": "395ec94484631ee6ffdb66b57b6b8241201592db3b081b218128ddee9758a15e",
+    "plugins/ca/tools/farm.ts": "cd41571e0a865726821070f1157c1219ab55ff29bc412091bbb0482a1cc31b6a",
+    "plugins/ca/tools/farm.unit.test.ts": "23ba125efe2493fe0839ec23120805b04866d472cc5705b78568788d7d2f151f",
+    "plugins/ca/tools/state-contracts.test.ts": "098543b2d565f82a7a3efcd9bb140ed1c34ac88c7f567b70ddd8056b48815e72"
+  },
+  "final_verification_started_at": "2026-11-13T15:28:19.756131+00:00",
+  "local_timing_observation": "Default parallel Windows coverage sweep:901passed,2tests reached exactly5s budget,3host skips. Prior broad sweep903passed. No runtime gate timeout changed; final command limits workers to2 and gives actual filesystem/Git tests a bounded30s test budget.",
+  "red_green": [
+    {
+      "task": "FARM-R03",
+      "test": "FARM-R03 refuses unknown Git drift instead of inventing a clean observation",
+      "red": "Old failed128 probes resolved [] rather than rejecting unavailable.",
+      "green": "Bounded retry/typed unavailable; no dependent reset or staging."
+    },
+    {
+      "task": "FARM-R02",
+      "test": "FARM-R02 preserves failed containment and admits no reset or second author",
+      "red": "Old flattened gate result lost containment note/outcome and entered retry path.",
+      "green": "Escalates with125/timeout/processId/unknown; author1,reset0,mutations0."
+    },
+    {
+      "task": "SBX-C02",
+      "test": "SBX-C02 treats overflow as lost observation and verifies target containment",
+      "red": "Old overflow path made no stop call.",
+      "green": "Exact stop and inspect; verified-stopped only after observedfalse."
+    },
+    {
+      "task": "SBX-C03",
+      "test": "SBX-C03 reports failed resource observations as unavailable, not empty",
+      "red": "Old listSandboxes resolved empty list for failed Docker observation.",
+      "green": "Failure is unavailable; partial failed stdout does not authorize removal."
+    },
+    {
+      "task": "SBX-C01",
+      "test": "SBX-C01 equal inputs in different checkout basenames select a verified stable key / existence alone is a cache miss and toolchain identity changes the tag",
+      "red": "Old basenames produced different tags and numeric inspect0 caused0builds regardless of builder version.",
+      "green": "Content key equal across paths; unverified cache causes2builds, version change changes key."
+    },
+    {
+      "task": "FARM-R01",
+      "test": "FARM-R01 journal publication failure drains independent tasks and retains their real outcomes",
+      "red": "Actual task journal rename EPERM escaped main settlement: exit1 instead of receipt3, abandoning independent settlement.",
+      "green": "Focused actual Git/loopback regression passes: a escalates, independent b merges,2authors, exit3, effects incomplete while stream complete."
+    },
+    {
+      "task": "FARM-R02",
+      "test": "FARM-R02 uncontained sample setup retains scratch resources without authoring or reset",
+      "red": "Actual runTask path lost cleanupFailed/typed fields after runSetupPhases; result lacked containment and ordinary sample cleanup/retry path remained admissible.",
+      "green": "7focused contract tests pass. Unknown sample setup yields125/processId456,2retained scratch refs,author0/reset0/Git mutation0."
+    },
+    {
+      "task": "SBX-C01",
+      "test": "SBX-C01 manifest observation distinguishes absent inputs, valid bytes and unreadable declared inputs / dangling declared configuration is unavailable rather than a missing input",
+      "red": "Actual EISDIR/EPERM directory input and dangling link were omitted; promised rejection instead resolved valid-only[] input sets.",
+      "green": "Both reject unavailable before cache/build; absent input and exact valid bytes controls pass."
+    }
+  ],
+  "introduced_transitions": [
+    {
+      "id": "FARM-RECOVERY:01",
+      "event": "exclusive run directory claim",
+      "outcome": "Existing identity refuses before stream truncation; fresh record namespace has no destructive adoption."
+    },
+    {
+      "id": "FARM-RECOVERY:02",
+      "event": "before/after commit or merge",
+      "outcome": "Append-preserve stage and exact base/candidate/integration commit+tree; merge pinned rechecked candidate."
+    },
+    {
+      "id": "FARM-RECOVERY:03",
+      "event": "task/final journal publication unavailable",
+      "outcome": "Record receipt debt independently, drain in-flight independent tasks, preserve actual results, exit3."
+    },
+    {
+      "id": "FARM-RECOVERY:04",
+      "event": "receipt-only reconciliation",
+      "outcome": "Observe exact refs and supported merge parents; no authors/ref mutation/cleanup. Changed schema, refs or task/run cleanup remain unknown."
+    },
+    {
+      "id": "FARM-RECOVERY:05",
+      "event": "concurrent recoverers",
+      "outcome": "Independent recovered receipt names; original stream/report untouched."
+    },
+    {
+      "id": "FARM-GATE:01",
+      "event": "unverified gate process tree",
+      "outcome": "Hold affected worktree; retain command/timeout/process/containment fields, no reset or second author."
+    },
+    {
+      "id": "FARM-DRIFT:01",
+      "event": "failed or malformed read after bounded retry",
+      "outcome": "Unavailable observation blocks dependent reset/index/commit, preserving compatibility for successful clean/dirty arrays."
+    },
+    {
+      "id": "SBX-CACHE-V2:01",
+      "event": "observe effective builder/version/daemon platform",
+      "outcome": "Content-key V2 tag independent of staging basename; malformed/unavailable identity cannot reuse."
+    },
+    {
+      "id": "SBX-CACHE-V2:02",
+      "event": "cache label+immutable ID match",
+      "outcome": "Reuse exact ID; new real build verifies provenance and launches immutable ID."
+    },
+    {
+      "id": "SBX-CONTAINMENT:01",
+      "event": "raw output overflow",
+      "outcome": "Lost observation triggers exact stop and independent inspection; unverified stays unknown."
+    },
+    {
+      "id": "SBX-CREATE:01",
+      "event": "create/firewall failure or cancellation",
+      "outcome": "Compensation owns independent bounded calls and structured unknown/verified state with exact targets."
+    },
+    {
+      "id": "SBX-DISCOVERY:01",
+      "event": "failed list with partial stdout",
+      "outcome": "Unavailable state, no parsed removal target."
+    },
+    {
+      "id": "SBX-CAPABILITY:01",
+      "event": "missing Nixpacks with supported stack",
+      "outcome": "Node/Python fallback proceeds; unsupported shape refuses; no runtime tool acquisition."
+    },
+    {
+      "id": "SBX-NETWORK:01",
+      "event": "ordinary richer policy requested",
+      "outcome": "Return requested/effective offline, unavailable capability; no incidental networking expansion."
+    },
+    {
+      "id": "SBX-GUIDANCE:01",
+      "event": "shell detach or named destroy",
+      "outcome": "Detach keeps box; named destroy stays per-id; separately explicit prune stays snapshot-scoped."
+    },
+    {
+      "id": "SBX-GUIDANCE:02",
+      "event": "consumer lacks maintainer files or separate binary invoked",
+      "outcome": "Packaged prerequisites, no fabricated ADR/auth ceremony; actual mechanical controls distinct from model-guided phases."
+    }
+  ],
+  "debt_drain_delta": {
+    "paths": [
+      "plugins/ca/tools/farm.ts",
+      "plugins/ca/tools/farm.test.ts",
+      "plugins/ca/tools/farm.js"
+    ],
+    "reason": "Actual journal publication failure must not terminate scheduler before independent in-flight task settles.",
+    "focused_result": "state-contracts-journal-final-results.json:1pass,145deselected; no assertion removed; target RED retained above."
+  },
+  "last_source_change": "FARM-R02 setup result propagation: sample setup unknown containment now retains scratch refs and forbids reset/author admission; main/candidate setup reporting keeps typed gate outcomes.",
+  "verification_notes": [
+    "Full bounded903-pass sweep completed before final journal-debt/setup propagation deltas; those changed paths have their own focused actual regressions and current owning coverage rerun.",
+    "Current owning coverage command excludes only separately verified long farm.test.ts CLI scenarios; production include/exclusions/threshold remain unchanged. Required exact-head CI reruns the full ordinary command.",
+    "No source changes after current owning rerun begins; only this scoped lane evidence is updated.",
+    "Public Pi docs narrow review was read-only; independently observed13tests pass/94.398s at source SHA b005c08ce776dc4bafeb376ce8bb24b4f41445dd7c6f4cd808f51e62403529a2; parent owns its separate commit.",
+    "Final owner rerun initially preserved758pass but caught1ordinary sample setup diagnostic change; fixed to retain old ordinary policy and make only uncontained sample setup non-retryable. Focused ordinary/uncontained checks3pass. Final owner rerun active with exact current source hashes."
+  ],
+  "final_owner_source_epoch": "100bf280aceca6eb9d816fa617cfdec191ee5aa4d3e0fc7abc74d563152ccea8",
+  "final_owner_scope": "All owning production files with unchanged coverage include/exclusions; all owner/dist tests except long farm.test.ts CLI file. That CLI file has prior full903-pass execution and current19-case receipt/merge +1journal-fault executions. Exact-head hosted full run remains required.",
+  "final_owner_started_at": "2026-11-13T15:44:30Z",
+  "implementation": "All10assignedtask implementations present. Review/qualification/release are separate and remain pending.",
+  "current_verification": {
+    "farm_current_owner": {
+      "passed": 759,
+      "failed": 0,
+      "host_skips": 3,
+      "coverage": {
+        "lines": 73.07,
+        "branches": 71.55,
+        "statements": 71.26
+      },
+      "profile": "lines-branches",
+      "stage": 2,
+      "floor": 70,
+      "production_scope": "UNCHANGED; all owning .ts sources",
+      "command": "npm --prefix plugins/ca/tools run coverage -- --exclude farm.test.ts --maxWorkers=2 --testTimeout=30000 --reporter=json --outputFile=state-contracts-final-owner-coverage.json",
+      "report_sha256": "1e8f9aab3125aea73f6cbcd5feb4ec2e8b0822a3148bc47f8b6aa885c51aa0dd"
+    },
+    "sandbox_final": {
+      "passed": 282,
+      "failed": 0,
+      "docker_skips": 34,
+      "coverage": {
+        "lines": 81.99,
+        "branches": 78.2,
+        "statements": 80.32
+      },
+      "profile": "lines-branches",
+      "stage": 2,
+      "floor": 70
+    },
+    "farm_broad_previous": {
+      "passed": 903,
+      "failed": 0,
+      "host_skips": 3,
+      "note": "Full bounded sweep before final journal-debt/setup changes; affected final changes have focused current checks plus fresh759-test owner coverage. No final exact-head hosted claim."
+    },
+    "farm_current_cli": {
+      "receipt_merge_source_and_bundle": 19,
+      "journal_fault_and_independent_drain": 1,
+      "note": "Separately retained actual Git/loopback CLI executions; no provider spend/credential use."
+    },
+    "typechecks": "PASS for both owners",
+    "owning_builds": "PASS: farm.js, sandbox.js, claude-inside.js",
+    "generated_guidance": "PASS: build-surface actual6outputs then --check across all3hosts",
+    "diff_check": "PASS"
+  },
+  "artifact_digests": {
+    "plugins/ca/tools/farm.js": "0e7a2d1f6c1de4a43a55f09a051a9167ad62d7903205ed650ad3bc86038bb805",
+    "plugins/ca-sandbox/tools/sandbox.js": "e77bad0620556058c2efba5bdc48a13cc98d7f10ee988acdaa976e08b087fff2",
+    "plugins/ca-sandbox/tools/claude-inside.js": "3c7db1ab1c01c7e6d28565f3361d5eaf605d5af10e8fc6bb5c4b60ffb2d4877f"
+  },
+  "review": "Pending independent security/auth-crypto/coverage/contract review by integration owner. This author handoff is not a review marker.",
+  "commit": null,
+  "head_at_handoff": "97e1ecac795138cacb83a9d5e81c39d4c234867a",
+  "local_transient_outputs": "Untracked state-contracts-*-results.json / state-contracts-*-coverage.json and ignored coverage output retained in both tools directories; do not stage as source. This lane JSON retains hashes, actual commands, row mappings and known failure limits.",
+  "source_hashes_before_manifest_read_repair": {
+    "core/surface/includes/farm.md": "eb202a3baee5b5c3ef74b797437a5512ee99954d7c721f02014bdf3434a69366",
+    "core/surface/skills/subagent-driven-development/references/farm-dispatch.md": "1e99b50ca963e05fbbafd91b68ca1359de3fd7574eb4e25f1ea5624b49bd410b",
+    "plugins/ca-codex/includes/farm.md": "c7033e232bca1ca3da832f54014a207ede3314d3eed6a91e448fe30c193b3433",
+    "plugins/ca-codex/routines/subagent-driven-development/references/farm-dispatch.md": "40befa43a393e603712f190a72d4533e3ee3b0822811a85cd99a8a17f50ef93b",
+    "plugins/ca-pi/includes/farm.md": "1d79e22e0ab25f4d9fd6cb354fb778009334f87251fb5c3ad9806eeddcd6e3d6",
+    "plugins/ca-pi/routines/subagent-driven-development/references/farm-dispatch.md": "7221da3c8d25c852e508cf25a48b54f031ffda12bf5efdf4f47ac65c663b7b49",
+    "plugins/ca-sandbox/README.md": "5e1d39b2242f247f5d411fa40c5243a4ea0e0af6785d4d0e782edd05d432c8c1",
+    "plugins/ca-sandbox/commands/sandbox-destroy.md": "5119e80360fd5f219ed2f7067072a7b939bb06f1b2588ba092a426e71471cea1",
+    "plugins/ca-sandbox/commands/sandbox.md": "77c70d21ed44f79c14783a5f68dee0baec958901cfa73c675ae4e69e16ee60c9",
+    "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md": "67064779a9c2079db862fdf162b9c38bef6254147bf8a06e1a259d9ea8edab01",
+    "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md": "811a35109aea51c85774040ac3f2bade7172986f94d9fd3c258c02181fe0f1d8",
+    "plugins/ca-sandbox/tools/build.test.ts": "a99bda4708abf7dbf8aa7d1fd51812a6b86eb6ad07a377da7b318064db83b09a",
+    "plugins/ca-sandbox/tools/build.ts": "fc26968d98ad2c0d09b3f1f4b1aa5f0c956f1415502a358bcae3c63d6e9faee4",
+    "plugins/ca-sandbox/tools/cache-provenance.test.ts": "c0d251b237d0ace3079a6411d8508471f6ab8166e42fd3cbff0e4e67333272fb",
+    "plugins/ca-sandbox/tools/claude-inside.js": "3c7db1ab1c01c7e6d28565f3361d5eaf605d5af10e8fc6bb5c4b60ffb2d4877f",
+    "plugins/ca-sandbox/tools/claude-inside.ts": "d7e2fc4ec87ee06ec029e9f2810a5c61bde1de9727a0eec7baa5abd94f92d954",
+    "plugins/ca-sandbox/tools/create.ts": "15002b9c4f4a8ecb4d5e0535a950d19fcdff6d4a543a065e815c230eca84d40e",
+    "plugins/ca-sandbox/tools/deadline.test.ts": "be52f6812e0936cde4f2de9d4e37c610a68a24d45280280eb79b7c28478e46dc",
+    "plugins/ca-sandbox/tools/exec.ts": "31b0297d6bf0288c4d16bfd6c8604b31141ddf887cd8103c63b2e9ac0343458e",
+    "plugins/ca-sandbox/tools/registry.ts": "33ea06212a0206dbe0dde787f69ac9cde34c24a75f27ad9e38b1eef807488fb8",
+    "plugins/ca-sandbox/tools/run.ts": "face1577c8c8b299438e32fd66da4c80327b1ed086e6ad4ad1e16abfbd4706b6",
+    "plugins/ca-sandbox/tools/sandbox.js": "adc3bc85e4371cb935915588dcc3e8fd483f0c5f76fb987d12e6672bbf660882",
+    "plugins/ca-sandbox/tools/state-contracts.test.ts": "c8516a207062b486cd321a273648a3c7b9cbacd8582186e1750d02e39e3fe4a3",
+    "plugins/ca/includes/farm.md": "905e3bbf6d5aa7e6cc3d90e7fcea0520c89cfef92c193fc378329c6cd48616b6",
+    "plugins/ca/skills/subagent-driven-development/references/farm-dispatch.md": "93aa7bcbcd7d64fb6845916dadcdc78aaeae0aa00316738fff87a3cfc4476cf5",
+    "plugins/ca/tools/exec.ts": "670265c10b56ee9c20379ddc64b81280964428f5df3e2f5f570a38bf0197bb70",
+    "plugins/ca/tools/farm-recovery.ts": "4a175edaf4d8053f2bb2693b57d0b14242cf1fac2423285b15dfda805736edaa",
+    "plugins/ca/tools/farm.js": "0e7a2d1f6c1de4a43a55f09a051a9167ad62d7903205ed650ad3bc86038bb805",
+    "plugins/ca/tools/farm.test.ts": "395ec94484631ee6ffdb66b57b6b8241201592db3b081b218128ddee9758a15e",
+    "plugins/ca/tools/farm.ts": "cd41571e0a865726821070f1157c1219ab55ff29bc412091bbb0482a1cc31b6a",
+    "plugins/ca/tools/farm.unit.test.ts": "23ba125efe2493fe0839ec23120805b04866d472cc5705b78568788d7d2f151f",
+    "plugins/ca/tools/state-contracts.test.ts": "098543b2d565f82a7a3efcd9bb140ed1c34ac88c7f567b70ddd8056b48815e72"
+  },
+  "historical_source_hashes_pre_final_owner_hardening": {
+    "core/surface/includes/farm.md": "9f47e68d902042878adb1bb6395b70409afefb4a333c676936afecb59ba0ad3f",
+    "core/surface/skills/subagent-driven-development/references/farm-dispatch.md": "f9b01f0cd6b9da8782be59eb086979b4a43c7c2bd7b52454301a9ab05c461d83",
+    "plugins/ca-codex/includes/farm.md": "2582ebd7da1bcac255ee4af88b3d5b4dba5867c6ffff01d8125f261a4913eddb",
+    "plugins/ca-codex/routines/subagent-driven-development/references/farm-dispatch.md": "41c137c1af39aaf5db868336339c1cbdfaf85a2ef2def5c3bfa48cd028f23d8f",
+    "plugins/ca-pi/includes/farm.md": "c66fccb4efadaab0ce78e8c3b9fdb079b3cbe5eee96011cc88f6cb946430c0be",
+    "plugins/ca-pi/routines/subagent-driven-development/references/farm-dispatch.md": "99ef85329bbc7006fe13cde926f616562c645fb9033839fe3e3266afb76d82d2",
+    "plugins/ca-sandbox/README.md": "5e1d39b2242f247f5d411fa40c5243a4ea0e0af6785d4d0e782edd05d432c8c1",
+    "plugins/ca-sandbox/commands/sandbox-destroy.md": "5119e80360fd5f219ed2f7067072a7b939bb06f1b2588ba092a426e71471cea1",
+    "plugins/ca-sandbox/commands/sandbox.md": "77c70d21ed44f79c14783a5f68dee0baec958901cfa73c675ae4e69e16ee60c9",
+    "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md": "67064779a9c2079db862fdf162b9c38bef6254147bf8a06e1a259d9ea8edab01",
+    "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md": "811a35109aea51c85774040ac3f2bade7172986f94d9fd3c258c02181fe0f1d8",
+    "plugins/ca-sandbox/tools/build.test.ts": "a99bda4708abf7dbf8aa7d1fd51812a6b86eb6ad07a377da7b318064db83b09a",
+    "plugins/ca-sandbox/tools/build.ts": "fc26968d98ad2c0d09b3f1f4b1aa5f0c956f1415502a358bcae3c63d6e9faee4",
+    "plugins/ca-sandbox/tools/cache-provenance.test.ts": "c0d251b237d0ace3079a6411d8508471f6ab8166e42fd3cbff0e4e67333272fb",
+    "plugins/ca-sandbox/tools/claude-inside.js": "3c7db1ab1c01c7e6d28565f3361d5eaf605d5af10e8fc6bb5c4b60ffb2d4877f",
+    "plugins/ca-sandbox/tools/claude-inside.ts": "d7e2fc4ec87ee06ec029e9f2810a5c61bde1de9727a0eec7baa5abd94f92d954",
+    "plugins/ca-sandbox/tools/create.ts": "15002b9c4f4a8ecb4d5e0535a950d19fcdff6d4a543a065e815c230eca84d40e",
+    "plugins/ca-sandbox/tools/deadline.test.ts": "be52f6812e0936cde4f2de9d4e37c610a68a24d45280280eb79b7c28478e46dc",
+    "plugins/ca-sandbox/tools/exec.ts": "31b0297d6bf0288c4d16bfd6c8604b31141ddf887cd8103c63b2e9ac0343458e",
+    "plugins/ca-sandbox/tools/registry.ts": "33ea06212a0206dbe0dde787f69ac9cde34c24a75f27ad9e38b1eef807488fb8",
+    "plugins/ca-sandbox/tools/run.ts": "face1577c8c8b299438e32fd66da4c80327b1ed086e6ad4ad1e16abfbd4706b6",
+    "plugins/ca-sandbox/tools/sandbox.js": "adc3bc85e4371cb935915588dcc3e8fd483f0c5f76fb987d12e6672bbf660882",
+    "plugins/ca-sandbox/tools/state-contracts.test.ts": "c8516a207062b486cd321a273648a3c7b9cbacd8582186e1750d02e39e3fe4a3",
+    "plugins/ca/includes/farm.md": "c079aa4e6cbc7442be5bfcf6ae28882d9b6e60eeb45afe921e14a2a151c54a4b",
+    "plugins/ca/skills/subagent-driven-development/references/farm-dispatch.md": "577983fd5d3af22a24386c7b252a94eb60f2e1820614fca49997a813e2305fe8",
+    "plugins/ca/tools/exec.ts": "670265c10b56ee9c20379ddc64b81280964428f5df3e2f5f570a38bf0197bb70",
+    "plugins/ca/tools/farm-recovery.ts": "4a175edaf4d8053f2bb2693b57d0b14242cf1fac2423285b15dfda805736edaa",
+    "plugins/ca/tools/farm.js": "2c94be84164e58990e8acb28c15eeccae8ae1c2371df9847ec2e91f27452f10d",
+    "plugins/ca/tools/farm.test.ts": "395ec94484631ee6ffdb66b57b6b8241201592db3b081b218128ddee9758a15e",
+    "plugins/ca/tools/farm.ts": "6a8b869e3386666acb25b407aae8f783b9834b3ec20e63e0bbd4abd95a07d8b0",
+    "plugins/ca/tools/farm.unit.test.ts": "23ba125efe2493fe0839ec23120805b04866d472cc5705b78568788d7d2f151f",
+    "plugins/ca/tools/state-contracts.test.ts": "caf73be48325405a9f90129532d19e0bd8ace40c3d33a7f14d4395a026757ab7"
+  },
+  "source_epoch_after_manifest_read_repair": "e846b81fac20108813c77ace77ef2ce65bf924e4484d39b490a2146d5e4fa2cb",
+  "source_epoch_encoding": "SHA256(UTF8(concatenate sorted repository-relative path + colon + source SHA256 hex + LF)). Exactly the32 entries in final_source_hashes; scoped evidence itself is excluded.",
+  "manifest_read_repair": {
+    "finding": "MEDIUM independent review: unreadable/present declared manifests were silently omitted and aliased absent inputs in a provenance-valid V2 cache key.",
+    "changed_paths": [
+      "plugins/ca-sandbox/tools/create.ts",
+      "plugins/ca-sandbox/tools/sandbox.js",
+      "plugins/ca-sandbox/tools/state-contracts.test.ts"
+    ],
+    "red": "Actual filesystem .dockerignore directory resolved only package.json; dangling nixpacks.toml junction resolved[] instead of rejection. Both precise assertions failed before the behavior change.",
+    "green": {
+      "passed": 55,
+      "failed": 0,
+      "docker_skips": 3,
+      "report_sha256": "153eeebf3e2021a7ca271688a9de3ffca48fbffc48ad548a9ced31e2a61d23e1"
+    },
+    "behavior": "Inspect declared entries with lstat. Reject links/nonregular files and any unreadable/failed observation before cache/build. On ENOENT, separately confirm actual absence before omission. Existing directory discovery failures remain unavailable.",
+    "scope_limit": "No farm change or unaffected903-test rerun; no source/temp evidence cleanup or additional Docker attempts. Full prior sandbox coverage is pre-repair; current affected cases, typecheck and owning build passed.",
+    "preliminary_digest_limit": "V2 still contains the existing12hex manifest dephash discriminator(48bits), now supplemented by its builder/platform/template identity. This repair does not claim or accept a stronger full-manifest collision bound."
+  }
+}

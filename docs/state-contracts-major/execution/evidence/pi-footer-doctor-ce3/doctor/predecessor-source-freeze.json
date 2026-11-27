@@ -1,0 +1,221 @@
+{
+  "state": "TEMP_TEST_ONLY_AUTHOR_FREEZE_NOT_COMMITTED_QUALIFICATION",
+  "author": "/root/pi_program",
+  "actual_base_source": "ce3a4a91a3164e1b778e81d206ec76517633c518",
+  "paths": {
+    "plugins/ca-pi/tools/test/doctor.test.ts": {
+      "before_sha256": "7d73d9a7336710a12dcad6965756d87d93f7630b26d8171be43a386cc5a1e1f0",
+      "after_sha256": "f70bdb4e60767aaac544e5739d9874ce7928e1cfdd61e69f1fa2e1522b25c4b4",
+      "proposed_file": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-doctor-aggregate-yfb1_rma\\candidate\\plugins\\ca-pi\\tools\\test\\doctor.test.ts"
+    }
+  },
+  "patch_sha256": "c1840c9c4bd02f63f6b6742c1cf46eaf15ca85fec4a7781ad66b5ce97c532ff0",
+  "original_test_bodies_unchanged": true,
+  "candidate_input_count": 140,
+  "candidate_source_changes": [
+    "plugins/ca-pi/tools/test/doctor.test.ts"
+  ],
+  "production_mutant_restored": true,
+  "commands": {
+    "commands": [
+      {
+        "label": "precedence-negative-control",
+        "argv": [
+          "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+          "node_modules/vitest/vitest.mjs",
+          "run",
+          "test/doctor.test.ts",
+          "-t",
+          "aggregates the terminal doctor verdict without clearing active-dispatch degradation or granting state",
+          "--reporter=json",
+          "--outputFile=C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-doctor-aggregate-yfb1_rma\\precedence-negative-control.json"
+        ],
+        "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-doctor-aggregate-yfb1_rma\\candidate\\plugins\\ca-pi\\tools",
+        "exit_code": 1,
+        "seconds": 0.9159296998986974
+      },
+      {
+        "label": "focused-green",
+        "argv": [
+          "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+          "node_modules/vitest/vitest.mjs",
+          "run",
+          "test/doctor.test.ts",
+          "-t",
+          "aggregates the terminal doctor verdict without clearing active-dispatch degradation or granting state|reports exact active origins and limits the module-identity claim|wrapper self-test calls only the stored wrapper with the exact H-03 dry-run|wrapper self-test is unhealthy if the dry-run executes or lacks an exact H-03 block|wrapper self-test skips while dormant without claiming active dispatch|reports enabled global untrusted state without a bridge probe or wrapper self-test",
+          "--reporter=json",
+          "--outputFile=C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-doctor-aggregate-yfb1_rma\\focused-green.json"
+        ],
+        "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-doctor-aggregate-yfb1_rma\\candidate\\plugins\\ca-pi\\tools",
+        "exit_code": 0,
+        "seconds": 0.7518854000372812
+      },
+      {
+        "label": "typecheck",
+        "argv": [
+          "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+          "node_modules/typescript/bin/tsc",
+          "--noEmit"
+        ],
+        "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-doctor-aggregate-yfb1_rma\\candidate\\plugins\\ca-pi\\tools",
+        "exit_code": 0,
+        "seconds": 2.4616848999867216
+      }
+    ],
+    "runtime_sha256": "c0b01496cf3da5cceca86eb6e1b2ef5d088cd46ad4e97cf502e2c937fa7f56b9",
+    "environment_keys": [
+      "APPDATA",
+      "COMSPEC",
+      "HOME",
+      "LOCALAPPDATA",
+      "NO_COLOR",
+      "PATH",
+      "PATHEXT",
+      "SYSTEMROOT",
+      "TEMP",
+      "TMP",
+      "USERPROFILE",
+      "WINDIR",
+      "XDG_CACHE_HOME",
+      "XDG_CONFIG_HOME"
+    ],
+    "source_restored_sha256": "32aa5790fc4fe54efc3d65870f179f0aa0b3d8581f2aefe753ba73f2d12f83d0"
+  },
+  "actual_results": [
+    {
+      "raw": "precedence-negative-control.json",
+      "actual_named": [
+        {
+          "name": "Pi structured doctor aggregates the terminal doctor verdict without clearing active-dispatch degradation or granting state",
+          "status": "failed",
+          "duration_ms": 8.942800000000034,
+          "failures": [
+            "AssertionError: expected 'doctor: DEGRADED' to be 'doctor: UNHEALTHY' // Object.is equality\n    at C:/Users/brenn/AppData/Local/Temp/ca-pi-doctor-aggregate-yfb1_rma/candidate/plugins/ca-pi/tools/test/doctor.test.ts:245:63\n    at file:///C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter/plugins/ca-pi/tools/node_modules/@vitest/runner/dist/chunk-artifact.js:302:11\n    at file:///C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter/plugins/ca-pi/tools/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:26\n    at file:///C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter/plugins/ca-pi/tools/node_modules/@vitest/runner/dist/chunk-artifact.js:2326:20\n    at new Promise (<anonymous>)\n    at runWithCancel (file:///C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter/plugins/ca-pi/tools/node_modules/@vitest/runner/dist/chunk-artifact.js:2323:10)\n    at file:///C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter/plugins/ca-pi/tools/node_modules/@vitest/runner/dist/chunk-artifact.js:2305:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter/plugins/ca-pi/tools/node_modules/@vitest/runner/dist/chunk-artifact.js:2272:10)\n    at file:///C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter/plugins/ca-pi/tools/node_modules/@vitest/runner/dist/chunk-artifact.js:2956:64"
+          ]
+        }
+      ],
+      "filtered_unselected": 27
+    },
+    {
+      "raw": "focused-green.json",
+      "actual_named": [
+        {
+          "name": "Pi structured doctor aggregates the terminal doctor verdict without clearing active-dispatch degradation or granting state",
+          "status": "passed",
+          "duration_ms": 5.478800000000035,
+          "failures": []
+        },
+        {
+          "name": "Pi structured doctor reports exact active origins and limits the module-identity claim",
+          "status": "passed",
+          "duration_ms": 3.019900000000007,
+          "failures": []
+        },
+        {
+          "name": "Pi structured doctor reports enabled global untrusted state without a bridge probe or wrapper self-test",
+          "status": "passed",
+          "duration_ms": 4.4243000000000166,
+          "failures": []
+        },
+        {
+          "name": "Pi structured doctor wrapper self-test calls only the stored wrapper with the exact H-03 dry-run",
+          "status": "passed",
+          "duration_ms": 0.18430000000000746,
+          "failures": []
+        },
+        {
+          "name": "Pi structured doctor wrapper self-test is unhealthy if the dry-run executes or lacks an exact H-03 block",
+          "status": "passed",
+          "duration_ms": 2.144300000000044,
+          "failures": []
+        },
+        {
+          "name": "Pi structured doctor wrapper self-test skips while dormant without claiming active dispatch",
+          "status": "passed",
+          "duration_ms": 2.112000000000023,
+          "failures": []
+        }
+      ],
+      "filtered_unselected": 22
+    }
+  ],
+  "criterion_mapping": {
+    "frozen_cell": "S20:06",
+    "frozen_clause": {
+      "event": "doctor",
+      "guard": "read-only observations and H03 dry-run probe",
+      "to": "diagnosed",
+      "effects": "Aggregate unhealthy > degraded > healthy; active dispatch is always degraded while running.",
+      "failure_retry": "Doctor reports observed capability; it does not grant tool authority or repair state.",
+      "source": [
+        {
+          "path": "plugins/ca-pi/tools/src/command-ownership.ts",
+          "symbol": "ownership inspection",
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/command-ownership.ts",
+          "lines": "1-201"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/commands.ts",
+          "symbol": "command adapters",
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/commands.ts",
+          "lines": "1-129"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/notices.ts",
+          "symbol": "deduplicated notices",
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/notices.ts",
+          "lines": "1-81"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/doctor.ts",
+          "symbol": "doctor facts and outcome",
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/doctor.ts",
+          "lines": "1-502"
+        }
+      ],
+      "from": "any",
+      "transition_id": "S20:06"
+    },
+    "source_witnesses": [
+      {
+        "path": "plugins/ca-pi/tools/src/doctor.ts",
+        "ranges": [
+          "122-215",
+          "256-439",
+          "448-501"
+        ]
+      },
+      {
+        "path": "plugins/ca-pi/tools/src/extension.ts",
+        "ranges": [
+          "627-639",
+          "1191-1258"
+        ]
+      }
+    ],
+    "what_existing_assertions_prove": [
+      "Exact active-dispatch row remains degraded despite every ordinary healthy diagnostic; exact origins explicitly do not prove publisher authenticity.",
+      "Stored wrapper callback receives only the exact H03 dry-run probe; exact BLOCKED[H03] is the success criterion, while execution/wrong block/bait are unhealthy. Callbacks are substituted in this unit, not actual host authority or staging.",
+      "Dormant self-test does not call wrapper; enabled/untrusted collector invokes neither bridge nor wrapper. Observed no-call unit boundary, not host-trust grant."
+    ],
+    "new_missing_assertion_proved": "Exact terminal DEGRADED from otherwise-healthy real diagnosePi because active-dispatch is degraded. Adding an unhealthy Python diagnostic makes terminal UNHEALTHY despite degradation and reversed row order. A separately labelled formatter-only healthy control produces HEALTHY. Inputs remain byte-identical JSON before/after.",
+    "negative_control": "Temp production precedence intentionally omitted unhealthy priority; new test failed expected doctor:UNHEALTHY vs actual doctor:DEGRADED. Original production restored before6PASS. Test-sensitivity control, not product-bug RED.",
+    "not_proved": [
+      "Installed doctor/bridge/wrapper execution or active dispatcher behavior",
+      "Publisher/author qualification, grants, repairs, human consent, completeS20machine/task",
+      "Future committed test-source runtime until literal source/inputs joined"
+    ]
+  },
+  "admission_recommendation": "Missing S20:06 terminal precedence acceptance plus genuine existing exactH03/no-call negatives. Retain Temp candidate observation until Root owns test commit/source binding; no future execution label or wholemachine promotion.",
+  "non_actions": [
+    "No Gov source/index/ledger/marker edit",
+    "No runtime/bundle change",
+    "No endpoint/ADR policy change",
+    "No activation/provider/dependency/native build/installed journey"
+  ],
+  "limits": [
+    "Windows amd64 Node24.22.1 component observation only",
+    "22 unselected cases are not executed/platform skips",
+    "Only owned fake package/runtime and disposable auth home"
+  ]
+}

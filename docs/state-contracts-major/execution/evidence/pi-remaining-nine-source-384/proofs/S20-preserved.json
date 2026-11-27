@@ -1,0 +1,196 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "/root/ci_repair_review: literal62-clause immutable Pi/current-callee/baseline inspection; no execution"
+ },
+ "inputs": {
+  ".codearbiter/decisions/0043-assistive-state-engine.md": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+  ".codearbiter/decisions/0049-require-https-outside-bounded-loopback.md": "c757cef9d5e318b75ff164d270b29a49255449360f0b7cde51e53775e6916ab8",
+  "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+  "docs/state-contracts-major/surfaces-tasks.json": "5a68b14cdc637e369fa5298d3f566b950dec9fb8056e4f1fa77baf40cb4b0d97",
+  "plugins/ca-pi/tools/src/command-ownership.ts": "2d2024b57f32b47d42b785afe8a44624b2f67513a9697cd8e18c4e684b7021e6",
+  "plugins/ca-pi/tools/src/commands.ts": "4abab741132cfa844ec4de89ade8f117bc248a90972797dda3f53718efa8c6d8",
+  "plugins/ca-pi/tools/src/doctor.ts": "32aa5790fc4fe54efc3d65870f179f0aa0b3d8581f2aefe753ba73f2d12f83d0",
+  "plugins/ca-pi/tools/src/extension.ts": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532",
+  "plugins/ca-pi/tools/src/notices.ts": "48fa54e675837ad0b06ea68e053d72cce734294131eb72b144de608d5f4e697c"
+ },
+ "disposition_ids": [
+  "disposition:machines:S20",
+  "disposition:transitions:S20:02"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/source-bindings.json",
+   "sha256": "5ff5edd6e452412a3caec604eae002b4d10132d8321c3a991c99e8949bce025f"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/clause-inspection.json",
+   "sha256": "c64cc79bbe9a660bfe891b9af36197023a543a82c16bb4e333a96dc7cec32dfa"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:S20",
+   "frozen_row_sha256": "5b957ef3a7fd2457187a734ab02642e58d3a3c0ac73ebbec966976f313640339",
+   "clause_ids": [
+    "disposition:transitions:S20:01",
+    "disposition:transitions:S20:02",
+    "disposition:transitions:S20:03",
+    "disposition:transitions:S20:04",
+    "disposition:transitions:S20:05",
+    "disposition:transitions:S20:06"
+   ],
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/command-ownership.ts",
+     "start": 42,
+     "end": 147,
+     "file_sha256": "2d2024b57f32b47d42b785afe8a44624b2f67513a9697cd8e18c4e684b7021e6",
+     "span_sha256": "fb6858d668d34c70444da3d0557da289f09910dc4dda534a9cfaaecc334b0b9b"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/commands.ts",
+     "start": 73,
+     "end": 125,
+     "file_sha256": "4abab741132cfa844ec4de89ade8f117bc248a90972797dda3f53718efa8c6d8",
+     "span_sha256": "d27b0824905ec9d0b5db8cccc31a7beb48274deb7b89b51edf2c3cfe424a7cfd"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/extension.ts",
+     "start": 627,
+     "end": 639,
+     "file_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532",
+     "span_sha256": "7fd362d732277e47706332bf7996fd9efc75c57e90802a223a0ba2d1886fdc12"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/commands.ts",
+     "start": 54,
+     "end": 125,
+     "file_sha256": "4abab741132cfa844ec4de89ade8f117bc248a90972797dda3f53718efa8c6d8",
+     "span_sha256": "cb5f0fdd7b62f6b35d4ad2a32d3db194be20ae3eb656b415c2545b7045af8f2f"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/command-ownership.ts",
+     "start": 53,
+     "end": 98,
+     "file_sha256": "2d2024b57f32b47d42b785afe8a44624b2f67513a9697cd8e18c4e684b7021e6",
+     "span_sha256": "e9f436b4f794d986f8707915911573fc85b3ca0ec722637bf07729511956b6b2"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/extension.ts",
+     "start": 831,
+     "end": 868,
+     "file_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532",
+     "span_sha256": "681db6149043acad05052ff110fe237ca190c2a38193f49ed59977f52dd7e7ca"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/commands.ts",
+     "start": 105,
+     "end": 127,
+     "file_sha256": "4abab741132cfa844ec4de89ade8f117bc248a90972797dda3f53718efa8c6d8",
+     "span_sha256": "790b2505f71fd2e5af11c016c3bf937e71f8e4e1f3500304d2b07ec73fd25d92"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/extension.ts",
+     "start": 477,
+     "end": 479,
+     "file_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532",
+     "span_sha256": "7f9a3d241235a02c0af6167d8ff75cfea088b45d61df9e6e8d84915a315677a4"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/extension.ts",
+     "start": 574,
+     "end": 575,
+     "file_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532",
+     "span_sha256": "69bd1e0d4e020936d44d4c83128c6ca51dcfa0bc8e53b98235467b07a54c3310"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/notices.ts",
+     "start": 25,
+     "end": 80,
+     "file_sha256": "48fa54e675837ad0b06ea68e053d72cce734294131eb72b144de608d5f4e697c",
+     "span_sha256": "16058fd3f771de8cebcb6ce1ee9c2d3c879bbc91de4c35da6247111d913a6dc0"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/doctor.ts",
+     "start": 122,
+     "end": 215,
+     "file_sha256": "32aa5790fc4fe54efc3d65870f179f0aa0b3d8581f2aefe753ba73f2d12f83d0",
+     "span_sha256": "684cfe9c23edaef47560d6536eaef7f51aa4214cec79f70f397b5d511a3fe00a"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/doctor.ts",
+     "start": 256,
+     "end": 300,
+     "file_sha256": "32aa5790fc4fe54efc3d65870f179f0aa0b3d8581f2aefe753ba73f2d12f83d0",
+     "span_sha256": "c191a073903de9a709dd4b94ac02867c89042ac719a8371f5e102d2314823489"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/doctor.ts",
+     "start": 420,
+     "end": 502,
+     "file_sha256": "32aa5790fc4fe54efc3d65870f179f0aa0b3d8581f2aefe753ba73f2d12f83d0",
+     "span_sha256": "9a38c55cd5aeeba164fe52a0244b4a43a45275a9698db8b3f45ba1a0595fe98b"
+    }
+   ],
+   "semantic_assessment": "All actual current owner guards/effects/retry branches mapped individually. Explicit analytical corrections/accepted task deltas are incorporated; no literal nonexistent guard or bug preservation claimed. ",
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S20:02",
+   "frozen_row_sha256": "111674cfcb5f4c59166b10772da94c9a3a08802b85e0469cb91d3a8f7eedeb52",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/commands.ts",
+     "start": 54,
+     "end": 125,
+     "file_sha256": "4abab741132cfa844ec4de89ade8f117bc248a90972797dda3f53718efa8c6d8",
+     "span_sha256": "cb5f0fdd7b62f6b35d4ad2a32d3db194be20ae3eb656b415c2545b7045af8f2f"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/command-ownership.ts",
+     "start": 53,
+     "end": 98,
+     "file_sha256": "2d2024b57f32b47d42b785afe8a44624b2f67513a9697cd8e18c4e684b7021e6",
+     "span_sha256": "e9f436b4f794d986f8707915911573fc85b3ca0ec722637bf07729511956b6b2"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/extension.ts",
+     "start": 627,
+     "end": 639,
+     "file_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532",
+     "span_sha256": "7fd362d732277e47706332bf7996fd9efc75c57e90802a223a0ba2d1886fdc12"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/extension.ts",
+     "start": 831,
+     "end": 868,
+     "file_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532",
+     "span_sha256": "681db6149043acad05052ff110fe237ca190c2a38193f49ed59977f52dd7e7ca"
+    }
+   ],
+   "semantic_assessment": "Invocation rechecks exact extension+skill ownership, no symlinkcomponents/canonicalpackageescape, strictUTF8 file, frontmatterstrip, closing-skill-tag/path envelope safety. Doctor may append separately bounded report.",
+   "intake_variances": [
+    "Literal baseline/current strictUtf8 uses readFileSync without a skill-bytecap; frozen boundedUTF8/livelease language overstatesthisadapter. No new bytecap/authoritygrant or impliedruntimecontainment claimed."
+   ],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  }
+ ],
+ "scope": "Actual current source-only conformance underPROGRAM/ADR43/49/acceptedPi tasks; no strongerliteral/runtime/host/task claim.",
+ "limits": [
+  "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification.",
+  "PROGRAM actual-source/current accepted direction takes precedence over inaccurate analytical intake. Every variance is explicit; frozen rows remain unchanged.",
+  "PI-L02 intentionally replaces S19 resurrection bug; ADR49 narrows endpoint transports, ordinary artifact ceremony is separate from real host permissions underADR43.",
+  "S17:07 exact absent confirmation-dedup route is N/A only; retained proposal no-op/fingerprint checks and bounded best-effort audit remain supported.",
+  "Only47 PLANNED row proposals;24advanced edges and all other ledger records/history remain untouched. Whole ledgerhash advisory; exact per-rowCAS authoritative.",
+  "All proofs bind genuine immutable384269 source inspection, not futureCI or currentRoot staging. No stagedOIDs or fullowner authentication claimed."
+ ]
+}

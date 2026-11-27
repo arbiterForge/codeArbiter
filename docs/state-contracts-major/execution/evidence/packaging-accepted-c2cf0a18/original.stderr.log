@@ -1,0 +1,13 @@
+test_retirement_policy_is_closed_and_rendered_from_its_owner (test_build_surface.CommandCatalogTest.test_retirement_policy_is_closed_and_rendered_from_its_owner) ... ok
+test_second_host_render_failure_has_no_first_host_effect (test_generated_output.GeneratedOutputTests.test_second_host_render_failure_has_no_first_host_effect) ... ok
+test_write_then_check_green_then_idempotent (test_build_surface.WriteAndCheckTest.test_write_then_check_green_then_idempotent) ... ok
+test_check_flags_modified_missing_and_orphan (test_build_surface.WriteAndCheckTest.test_check_flags_modified_missing_and_orphan) ... ok
+test_write_removes_orphans (test_build_surface.WriteAndCheckTest.test_write_removes_orphans) ... ok
+test_main_check_exit_codes (test_build_surface.WriteAndCheckTest.test_main_check_exit_codes) ... build-surface: unknown argument(s): --bogus
+usage: python tools/build-surface.py [--check] [--host NAME]
+ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.524s
+
+OK

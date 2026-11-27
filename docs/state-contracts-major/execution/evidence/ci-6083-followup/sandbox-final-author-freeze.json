@@ -1,0 +1,133 @@
+{
+  "schema": "codearbiter.sandbox-original-result-transport-freeze/1",
+  "state": "TEMP_ONLY_NOT_APPLIED",
+  "purpose": "Retain the original single Docker-required Sandbox Vitest run as authenticated named JSON evidence through the existing pinned GitHub artifact uploader; no log-admission or reader workaround.",
+  "source_base_git": "6083dd63b651cb13a45fb37d6f5ffb4fdc32d47a",
+  "base_files": {
+    ".github/workflows/ci.yml": "119a7708523aa65253387091fb85f41a272bf90632d8da096e10c15d3fb59358",
+    ".github/scripts/test_ci_impact.py": "3c423ef6b79d0f8c2041ec7baf3a73f0a58c965ed9798d40522198a91abd8ce6"
+  },
+  "files": {
+    ".github/workflows/ci.yml": "a9c3465ac76712a5d78392acecd496ed722ffb01e6c9ee90f85a3aeb78e5d535",
+    ".github/scripts/test_ci_impact.py": "0aef797e1aa8bd841c7dbf0721422514c4d861540254f4eab0da8fdb706164e8"
+  },
+  "patch": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sandbox-result-transport-90gqbg21\\final.patch",
+    "sha256": "e5d7297521a68c581c2dfbe9914f8f609d9028a3fe34feb3bedc90a5dc72d518",
+    "apply_whitespace_ast": "PASS"
+  },
+  "preserved": [
+    "All other jobs byte-identical.",
+    "Original Sandbox prefix/env/Docker-required/sentinel/defaults/timeouts/permissions unchanged.",
+    "Every original job step remains in original order, with only reporter flags on the one unfiltered npm test and a final pinned upload.",
+    "Default console plus actual original GitHub annotations preserved; JSON reporter adds transport only.",
+    "Docker preflight, reviewed Nixpacks acquisition, sentinel assertion, bundle rebuild/staleness checks unchanged."
+  ],
+  "new_transport": {
+    "test_command": "npm test -- --reporter=default --reporter=github-actions --reporter=json --outputFile.json=\"$RUNNER_TEMP/ca-sandbox-vitest.json\"",
+    "upload_name": "sandbox-vitest-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}",
+    "upload_step": "Preserve original Sandbox named test results",
+    "action": "actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9",
+    "report_path": "${{ runner.temp }}/ca-sandbox-vitest.json",
+    "missing_file": "error",
+    "retention_days": 14,
+    "overwrite": false,
+    "if": "always() for diagnostics; existing strong reader still requires successful original run/job; no continue-on-error or reader change."
+  },
+  "locked_tool_contract": {
+    "version": "Vitest4.1.12",
+    "reporter_array": {
+      "path": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\plugins\\ca-sandbox\\tools\\node_modules\\vitest\\dist\\chunks\\cac.DzDtg8hz.js",
+      "sha256": "82d1742c47a458460a673c3b99b6784e5c80d55ec6a5978fec5cdb6f008c27f5",
+      "line": 702,
+      "observed": "reporters alias reporter, array:true; outputFile supports reporter-specific dot notation."
+    },
+    "default_annotations": {
+      "path": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\plugins\\ca-sandbox\\tools\\node_modules\\vitest\\dist\\chunks\\coverage.DM_a_rWm.js",
+      "sha256": "e509f3cc1bd81ae6426265253fa926cbde02be5cebfe35b1df422017bffdca31",
+      "line": 454,
+      "observed": "Unconfigured GitHub default adds github-actions; explicit list must retain that reporter to preserve annotations."
+    },
+    "JSON_file_writer": {
+      "path": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\plugins\\ca-sandbox\\tools\\node_modules\\vitest\\dist\\chunks\\index.UpGiHP7g.js",
+      "sha256": "cdafaf8e508042dddba72f8c7bbae84e2836ddb6b06c7026520c35d91af4e798",
+      "line": 3621,
+      "observed": "JSON reporter chooses per-json outputFile and writes UTF8 original report, making parent directories."
+    }
+  },
+  "red_green": {
+    "red": {
+      "methods": 2,
+      "failures": 2,
+      "reason": "Original workflow had no JSON reporter command or named original upload.",
+      "raw_sha256": "49addb8af4c7417c0e7df260d183d82b04c02b49692196a7cd90adf0ccdb08c5"
+    },
+    "green": {
+      "methods": 6,
+      "failures": 0,
+      "raw_sha256": "2d030a79c37d9d0b25db0c63563590877e09fa924924cb16f2a17a9ef6bfcbd3",
+      "scope": "New command/transport guards, five deliberate wiring mutants, and three existing Docker required/preflight/sentinel/shared-gate checks."
+    },
+    "setup_error_preserved": "red-setup-error.log: initial disposable test copy lacked tools source; corrected only the runner resource anchor before actual2targetRED.",
+    "tiny_existing_unit_smoke": {
+      "argv": [
+        "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+        "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\plugins\\ca-sandbox\\tools\\node_modules\\vitest\\vitest.mjs",
+        "run",
+        "dephash.test.ts",
+        "--testNamePattern",
+        "^computeDepHash returns an identical hash for an identical manifest set$",
+        "--reporter=default",
+        "--reporter=github-actions",
+        "--reporter=json",
+        "--outputFile.json=C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sandbox-result-transport-90gqbg21\\report path with spaces\\original-unit.json"
+      ],
+      "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\plugins\\ca-sandbox\\tools",
+      "exit_code": 0,
+      "seconds": 0.40099029999691993,
+      "selected_case": "computeDepHash returns an identical hash for an identical manifest set",
+      "passed": 1,
+      "failed": 0,
+      "JSON_file_exists": true,
+      "JSON_sha256": "8d07a9bde4a502f04544a55f353035e09db84736e4879e27f6416cddcfc80439",
+      "default_console_summary_preserved": true,
+      "node_version": "v24.22.1",
+      "vitest_version": "4.1.12",
+      "inputs_before_after": {
+        "plugins/ca-sandbox/tools/dephash.test.ts": "948f350a1e162b093404ad889c4793eca9cfc2527dc7dc785ce1d4709c41b2ad",
+        "plugins/ca-sandbox/tools/dephash.ts": "4eb0ffdbc5d66eeb47409a43a04ccec81f1ea41dc391074be44488028f23139c",
+        "plugins/ca-sandbox/tools/vitest.config.ts": "bb1c82a13ca1af089ef3db4af843da2bfef3def0733b812ccd5fb36f6460dd5e",
+        "plugins/ca-sandbox/tools/package.json": "cf3b87fea39148d3b3bee0db60c84b8fcbf353f4b0565d513141fd2937ae3138",
+        "plugins/ca-sandbox/tools/package-lock.json": "815b4523f446b39c6eb078a2e7249601432240582a444d0c48e2aff02179ef67"
+      },
+      "environment_keys": [
+        "COMSPEC",
+        "HOME",
+        "NO_COLOR",
+        "PATH",
+        "PATHEXT",
+        "SystemRoot",
+        "TEMP",
+        "TMP",
+        "USERPROFILE",
+        "WINDIR"
+      ],
+      "scope": "Actual locked Vitest CLI multi-reporter smoke on one existing pure unit only; not Docker/full395/hosted npm-wrapper execution."
+    }
+  },
+  "raw_evidence": {
+    "green_log": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sandbox-result-transport-90gqbg21\\green.log",
+    "red_log": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sandbox-result-transport-90gqbg21\\red.log",
+    "smoke_JSON": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sandbox-result-transport-90gqbg21\\report path with spaces\\original-unit.json",
+    "smoke_stdout_sha256": "16eaea869ddf44eb1498a765f93c75c7b038b838e966a13308242d453cb1faa3",
+    "smoke_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "limits": [
+    "No395-suite/Docker/provider/native run; local smoke was one existing pure unit with exact locked CLI reporter flags.",
+    "No hosted upload was executed locally; missing-file behavior is pinned uploader error configuration, and hosted producer transport remains pending actual CI.",
+    "actionlint unavailable on PATH; no dependency installed. Owning workflow guards and AST/apply/whitespace checks pass.",
+    "The future CI-file change conservatively stales whole-ci.yml P02 evidence inputs; no old proof source identity is rewritten.",
+    "This producer patch is Temp-only. Separately authorized four site capture JSON changes remain unstaged in Gov, handed off in their own freeze."
+  ],
+  "no_Gov_CI_test_index_metadata_marker_or_installedcache_changes": true
+}

@@ -1,0 +1,40 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "562c6170c010eedbef93a4216b4baa971fd6b9a6",
+  "kind": "conformance-check",
+  "result": "NOT_APPLICABLE",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "Exact prepared finite clauses with immutable current witness and namespace join"
+  },
+  "inputs": {
+    "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md": "5be31d7fc3f94142792563437adeb92b6a75dbe7fab0a8a40e50a271e22e34f9"
+  },
+  "disposition_ids": [
+    "disposition:transitions:SW01:16"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/stable-source-first-562c6170/source-group-008-inspection.json",
+      "sha256": "3e4777fa56c302efca6229eaf9e79405e0e5214c4f2a5ee288bbc446b7a2da66"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/retired-SW01-16.json",
+      "sha256": "d97d4117c33b24059aed8708049b0107c4efce42a29daab5461416fe5a812a9f"
+    }
+  ],
+  "retained_prior_proof": {
+    "path": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/retired-SW01-16.json",
+    "sha256": "d97d4117c33b24059aed8708049b0107c4efce42a29daab5461416fe5a812a9f",
+    "source_commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+    "retained_at": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca"
+  },
+  "semantic_mapping_ref": "docs/state-contracts-major/execution/evidence/stable-source-first-562c6170/source-group-008-inspection.json",
+  "scope": "Finite declared guard, effect and retry source conformance with inherited limits.",
+  "limits": [
+    "No run, platform, package, task, provider, user or installed evidence was renewed.",
+    "All prior original source epochs and raw evidence remain exact."
+  ],
+  "contract": "frozen-task:SBX-D02",
+  "rationale": "Normal shell close is detach; contradictory automatic destruction prescription is explicitly removed."
+}

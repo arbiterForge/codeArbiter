@@ -1,0 +1,14 @@
+F.
+======================================================================
+FAIL: test_emit_refusal_retains_safe_location_without_exception_contents (test_site_playwright_observation.DocsAuthorityTests.test_emit_refusal_retains_safe_location_without_exception_contents)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\brenn\.codex\worktrees\program-governance-prep\codeArbiter\.github\scripts\test_site_playwright_observation.py", line 37, in test_emit_refusal_retains_safe_location_without_exception_contents
+    self.assertTrue(diagnostic.is_file(), 'refused emitter lost its diagnostic')
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: False is not true : refused emitter lost its diagnostic
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.028s
+
+FAILED (failures=1)

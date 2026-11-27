@@ -1,0 +1,6 @@
+{
+ "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-binary-full-candidate-fix-bz_qxlkd\\green-target.stdout",
+ "original_sha256": "8a0f6342cbab660416911a18d9d902cb23796956d4f2c828f49a6363c4d489ed",
+ "original_bytes": 92,
+ "utf8_text": "{\"tests\": 3, \"failures\": 0, \"errors\": 0, \"skips\": 0, \"elapsed_seconds\": 5.790088099980494}\r\n"
+}

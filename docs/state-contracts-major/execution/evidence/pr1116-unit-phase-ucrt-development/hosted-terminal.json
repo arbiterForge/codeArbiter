@@ -1,0 +1,1628 @@
+{
+  "schema": "exact-head-watch-terminal/1",
+  "utc": "2026-11-17T01:24:47.757808+00:00",
+  "pr": 1116,
+  "expected_head": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+  "observed_head": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+  "head_pin": true,
+  "base": "major/state-contracts",
+  "ci": {
+    "id": 43992411061,
+    "head_sha": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+    "event": "pull_request",
+    "run_attempt": 1,
+    "path": ".github/workflows/ci.yml",
+    "status": "completed",
+    "conclusion": "failure",
+    "head_branch": "codex/state-contracts-acceptance-bindings",
+    "created_at": "2026-11-17T01:02:13Z",
+    "updated_at": "2026-11-17T01:24:36Z"
+  },
+  "docs": {
+    "id": 43992410933,
+    "head_sha": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+    "event": "pull_request",
+    "run_attempt": 1,
+    "path": ".github/workflows/docs.yml",
+    "status": "completed",
+    "conclusion": "success",
+    "head_branch": "codex/state-contracts-acceptance-bindings",
+    "created_at": "2026-11-17T01:02:12Z",
+    "updated_at": "2026-11-17T01:10:52Z"
+  },
+  "all_checks_terminal": true,
+  "checks": [
+    {
+      "bucket": "skipping",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43992411061/job/133745931715",
+      "name": "major readiness producer",
+      "state": "SKIPPED"
+    },
+    {
+      "bucket": "fail",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43992411061/job/133745889936",
+      "name": "[GATE ] | [REPO] | Merge readiness",
+      "state": "FAILURE"
+    },
+    {
+      "bucket": "skipping",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43992411061/job/133742964192",
+      "name": "[CHECK] | [CORE] | Structured artifact browser qualification",
+      "state": "SKIPPED"
+    },
+    {
+      "bucket": "skipping",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43992411061/job/133742965165",
+      "name": "[CHECK] | [PI  ] | Installed retained package <pi: ${{ matrix.system }} 1.5.0>",
+      "state": "SKIPPED"
+    },
+    {
+      "bucket": "skipping",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43992411061/job/133742964353",
+      "name": "[CHECK] | [CORE] | Structured artifact cold package  <${{ matrix.platform }}>",
+      "state": "SKIPPED"
+    },
+    {
+      "bucket": "skipping",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43992411061/job/133742964732",
+      "name": "[CHECK] | [CDX ] | Installed retained package <codex: ${{ matrix.codex-version }}>",
+      "state": "SKIPPED"
+    },
+    {
+      "bucket": "skipping",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43992411061/job/133742964763",
+      "name": "[CHECK] | [CORE] | Structured artifact package assembly",
+      "state": "SKIPPED"
+    },
+    {
+      "bucket": "fail",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43992411061/job/133742842115",
+      "name": "[CHECK] | [CORE] | Structured artifact qualification",
+      "state": "FAILURE"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43992411061/job/133742462418",
+      "name": "[CHECK] | [CORE] | Native Go statement coverage",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43992411061/job/133741808904",
+      "name": "[CHECK] | [REPO] | Coverage union",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43992411061/job/133741026913",
+      "name": "[CHECK] | [PI  ] | Coverage union",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43992411061/job/133736258920",
+      "name": "[WATCH] | [CDX ] | Upstream compatibility  <runtime: npm latest>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43992411061/job/133736259053",
+      "name": "[CHECK] | [SBX ] | Sandbox driver contract",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43992411061/job/133736258875",
+      "name": "Coverage union (Pi)  <os: ubuntu-latest>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43992411061/job/133736258596",
+      "name": "[GATE ] | [PI  ] | Payload version",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43992411061/job/133736258724",
+      "name": "[CHECK] | [REPO] | Program integrity  <os: ubuntu-latest>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "skipping",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43992410933/job/133739939871",
+      "name": "Site | [Deploy] - GitHub Pages",
+      "state": "SKIPPED"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43992411061/job/133736258817",
+      "name": "[CHECK] | [CDX ] | Reference graph",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43992411061/job/133736258763",
+      "name": "[CHECK] | [CORE] | Workflow recovery  <os: ubuntu-latest>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43992411061/job/133736258761",
+      "name": "[CHECK] | [CA  ] | Reference graph",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43992411061/job/133736258627",
+      "name": "[CHECK] | [SBX ] | Reference graph",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43992411061/job/133736258804",
+      "name": "Coverage union (Pi)  <os: windows-latest>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43992411061/job/133736258775",
+      "name": "[CHECK] | [CORE] | Workflow recovery  <os: macos-latest>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43992411061/job/133736258390",
+      "name": "[GATE ] | [SBX ] | Payload version",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "skipping",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43992411061/job/133739665877",
+      "name": "[CHECK] | [CORE] | Native adapters and conformance <${{ matrix.expected_platform }}>",
+      "state": "SKIPPED"
+    },
+    {
+      "bucket": "skipping",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43992411061/job/133739665445",
+      "name": "[CHECK] | [CORE] | Native authority <${{ matrix.expected_platform }}>",
+      "state": "SKIPPED"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43992411061/job/133736258609",
+      "name": "[GATE ] | [CDX ] | Candidate provenance",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43992411061/job/133736258838",
+      "name": "[GATE ] | [CA  ] | Payload version",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43992411061/job/133736258592",
+      "name": "Coverage union  <os: ubuntu-latest>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43992411061/job/133736258409",
+      "name": "[GATE ] | [CDX ] | Payload version",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43992411061/job/133736258545",
+      "name": "[CHECK] | [CDX ] | Real-host install  <codex: 0.143.0>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43992411061/job/133736258621",
+      "name": "[CHECK] | [CDX ] | Real-host install  <codex: 0.145.0>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43992411061/job/133736258729",
+      "name": "[CHECK] | [PI  ] | Adapter contract  <os: macos-latest \u00b7 runtime: Pi 1.5.0>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43992411061/job/133736258788",
+      "name": "[CHECK] | [CORE] | Workflow recovery  <os: windows-latest>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43992411061/job/133736258484",
+      "name": "[CHECK] | [CORE] | Hook contract  <os: macos-latest \u00b7 partition: all>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43992411061/job/133736258603",
+      "name": "Coverage union  <os: windows-latest>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43992411061/job/133736258486",
+      "name": "[CHECK] | [PI  ] | Host-independent adapter contract",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43992411061/job/133736258647",
+      "name": "[CHECK] | [REPO] | Program integrity  <os: macos-latest>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43992411061/job/133736258730",
+      "name": "[CHECK] | [PI  ] | Adapter contract  <os: ubuntu-latest \u00b7 runtime: Pi 1.5.0>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43992411061/job/133736258740",
+      "name": "[WATCH] | [PI  ] | Upstream compatibility  <runtime: npm latest>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43992411061/job/133736258557",
+      "name": "[CHECK] | [CA  ] | Documentation consistency",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43992411061/job/133736258551",
+      "name": "[CHECK] | [CORE] | Hook contract  <os: ubuntu-latest \u00b7 partition: all>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43992411061/job/133736258190",
+      "name": "[CHECK] | [CORE] | Instrumented native coverage <darwin/amd64>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43992411061/job/133736258697",
+      "name": "[CHECK] | [PI  ] | Security analysis  <language: JavaScript/TypeScript>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "fail",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43992411061/job/133736258848",
+      "name": "[CHECK] | [PI  ] | Adapter contract  <os: windows-latest \u00b7 runtime: Pi 1.5.0>",
+      "state": "FAILURE"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43992411061/job/133736258389",
+      "name": "[CHECK] | [CA  ] | Farm dispatcher contract",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43992411061/job/133736258451",
+      "name": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: isolation>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "fail",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43992411061/job/133736258482",
+      "name": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+      "state": "FAILURE"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43992411061/job/133736258166",
+      "name": "[CHECK] | [CORE] | Default native, storage and context checks <windows/arm64>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43992411061/job/133736258397",
+      "name": "[CHECK] | [REPO] | Manifest contract",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43992411061/job/133736258175",
+      "name": "[CHECK] | [CORE] | Instrumented native coverage <windows/arm64>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43992411061/job/133736258109",
+      "name": "[CHECK] | [CORE] | Default native, storage and context checks <linux/amd64>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43992411061/job/133736258157",
+      "name": "[CHECK] | [REPO] | Impact planner contract",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43992411061/job/133736258278",
+      "name": "[CHECK] | [CORE] | Instrumented native coverage <darwin/arm64>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43992411061/job/133736258707",
+      "name": "[CHECK] | [REPO] | Program integrity  <os: windows-latest>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43992411061/job/133736258062",
+      "name": "[CHECK] | [CORE] | Tested native candidate build <darwin/amd64>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43992411061/job/133736258012",
+      "name": "[CHECK] | [CORE] | Default native, storage and context checks <darwin/amd64>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "fail",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43992411061/job/133736258068",
+      "name": "[CHECK] | [CORE] | Tested native candidate build <linux/arm64>",
+      "state": "FAILURE"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43992411061/job/133736258151",
+      "name": "[CHECK] | [CORE] | Instrumented native coverage <linux/arm64>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43992411061/job/133736258013",
+      "name": "[CHECK] | [CORE] | Default native, storage and context checks <linux/arm64>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43992411061/job/133736258027",
+      "name": "[CHECK] | [CORE] | Default native, storage and context checks <darwin/arm64>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43992411061/job/133736258041",
+      "name": "[CHECK] | [CORE] | Tested native candidate build <darwin/arm64>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43992411061/job/133736258172",
+      "name": "[CHECK] | [CORE] | Instrumented native coverage <linux/amd64>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43992411061/job/133736258091",
+      "name": "[CHECK] | [CORE] | Tested native candidate build <windows/arm64>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "fail",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43992411061/job/133736258057",
+      "name": "[CHECK] | [CORE] | Tested native candidate build <linux/amd64>",
+      "state": "FAILURE"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43992411061/job/133736257990",
+      "name": "[CHECK] | [CORE] | Default native, storage and context checks <windows/amd64>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43992411061/job/133736257868",
+      "name": "[CHECK] | [CDX ] | Skill resource evidence contract",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43992411061/job/133736258142",
+      "name": "[CHECK] | [CORE] | Instrumented native coverage <windows/amd64>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43992411061/job/133736258108",
+      "name": "[CHECK] | [CORE] | Tested native candidate build <windows/amd64>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43992411061/job/133736257899",
+      "name": "[CHECK] | [CORE] | Host descriptor contract",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "skipping",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43992411061/job/133736261058",
+      "name": "[CHECK] | [SBX ] | Installed shipped bundle <docker>",
+      "state": "SKIPPED"
+    },
+    {
+      "bucket": "skipping",
+      "link": "https://coderabbit.ai?utm_source=cr_app&utm_medium=github",
+      "name": "CodeRabbit",
+      "state": "SKIPPED"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43992411061/job/133736070497",
+      "name": "[GATE ] | [RELEASE] | Candidate readiness",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43992411061/job/133736070503",
+      "name": "[CHECK] | [REPO] | Branch protection",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43992411061/job/133736070593",
+      "name": "[CHECK] | [REPO] | Published tag immutability",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43992411061/job/133736070505",
+      "name": "[CHECK] | [REPO] | Documentation contract",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43992411061/job/133736070511",
+      "name": "[CHECK] | [REPO] | Control bytes",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43992411061/job/133736070335",
+      "name": "[CHECK] | [REPO] | Secret scan",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43992411061/job/133736070357",
+      "name": "[CHECK] | [CORE] | Generated surface",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43992411061/job/133736070037",
+      "name": "[CHECK] | [REPO] | License consistency",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43992410933/job/133736069435",
+      "name": "Site | [Build] - Astro Pages",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43992411061/job/133736070520",
+      "name": "[CHECK] | [REPO] | Impact selection",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43992410933/job/133736069136",
+      "name": "Site | [Test] - Generator",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "skipping",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43992410933/job/133736072267",
+      "name": "Site | [Deploy] - Qualified GitHub Pages",
+      "state": "SKIPPED"
+    },
+    {
+      "bucket": "skipping",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43992410933/job/133736072107",
+      "name": "Site | [Prepare] - Qualified Pages",
+      "state": "SKIPPED"
+    }
+  ],
+  "counts": {
+    "skipping": 13,
+    "fail": 6,
+    "pass": 66
+  },
+  "required": [
+    {
+      "bucket": "fail",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43992411061/job/133745889936",
+      "name": "[GATE ] | [REPO] | Merge readiness",
+      "state": "FAILURE"
+    }
+  ],
+  "merge_readiness": [
+    {
+      "bucket": "fail",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43992411061/job/133745889936",
+      "name": "[GATE ] | [REPO] | Merge readiness",
+      "state": "FAILURE"
+    }
+  ],
+  "watch_exit": 1,
+  "jobs": {
+    "ci": [
+      {
+        "id": 133736070037,
+        "run_id": 43992411061,
+        "head_sha": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+        "run_attempt": 1,
+        "name": "[CHECK] | [REPO] | License consistency",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 133736070335,
+        "run_id": 43992411061,
+        "head_sha": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+        "run_attempt": 1,
+        "name": "[CHECK] | [REPO] | Secret scan",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 133736070357,
+        "run_id": 43992411061,
+        "head_sha": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+        "run_attempt": 1,
+        "name": "[CHECK] | [CORE] | Generated surface",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 133736070497,
+        "run_id": 43992411061,
+        "head_sha": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+        "run_attempt": 1,
+        "name": "[GATE ] | [RELEASE] | Candidate readiness",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 133736070503,
+        "run_id": 43992411061,
+        "head_sha": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+        "run_attempt": 1,
+        "name": "[CHECK] | [REPO] | Branch protection",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 133736070505,
+        "run_id": 43992411061,
+        "head_sha": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+        "run_attempt": 1,
+        "name": "[CHECK] | [REPO] | Documentation contract",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 133736070511,
+        "run_id": 43992411061,
+        "head_sha": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+        "run_attempt": 1,
+        "name": "[CHECK] | [REPO] | Control bytes",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 133736070520,
+        "run_id": 43992411061,
+        "head_sha": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+        "run_attempt": 1,
+        "name": "[CHECK] | [REPO] | Impact selection",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 133736070593,
+        "run_id": 43992411061,
+        "head_sha": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+        "run_attempt": 1,
+        "name": "[CHECK] | [REPO] | Published tag immutability",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 133736257868,
+        "run_id": 43992411061,
+        "head_sha": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+        "run_attempt": 1,
+        "name": "[CHECK] | [CDX ] | Skill resource evidence contract",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 133736257899,
+        "run_id": 43992411061,
+        "head_sha": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+        "run_attempt": 1,
+        "name": "[CHECK] | [CORE] | Host descriptor contract",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 133736257990,
+        "run_id": 43992411061,
+        "head_sha": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+        "run_attempt": 1,
+        "name": "[CHECK] | [CORE] | Default native, storage and context checks <windows/amd64>",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 133736258012,
+        "run_id": 43992411061,
+        "head_sha": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+        "run_attempt": 1,
+        "name": "[CHECK] | [CORE] | Default native, storage and context checks <darwin/amd64>",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 133736258013,
+        "run_id": 43992411061,
+        "head_sha": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+        "run_attempt": 1,
+        "name": "[CHECK] | [CORE] | Default native, storage and context checks <linux/arm64>",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 133736258027,
+        "run_id": 43992411061,
+        "head_sha": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+        "run_attempt": 1,
+        "name": "[CHECK] | [CORE] | Default native, storage and context checks <darwin/arm64>",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 133736258041,
+        "run_id": 43992411061,
+        "head_sha": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+        "run_attempt": 1,
+        "name": "[CHECK] | [CORE] | Tested native candidate build <darwin/arm64>",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 133736258057,
+        "run_id": 43992411061,
+        "head_sha": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+        "run_attempt": 1,
+        "name": "[CHECK] | [CORE] | Tested native candidate build <linux/amd64>",
+        "status": "completed",
+        "conclusion": "failure"
+      },
+      {
+        "id": 133736258062,
+        "run_id": 43992411061,
+        "head_sha": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+        "run_attempt": 1,
+        "name": "[CHECK] | [CORE] | Tested native candidate build <darwin/amd64>",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 133736258068,
+        "run_id": 43992411061,
+        "head_sha": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+        "run_attempt": 1,
+        "name": "[CHECK] | [CORE] | Tested native candidate build <linux/arm64>",
+        "status": "completed",
+        "conclusion": "failure"
+      },
+      {
+        "id": 133736258091,
+        "run_id": 43992411061,
+        "head_sha": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+        "run_attempt": 1,
+        "name": "[CHECK] | [CORE] | Tested native candidate build <windows/arm64>",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 133736258108,
+        "run_id": 43992411061,
+        "head_sha": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+        "run_attempt": 1,
+        "name": "[CHECK] | [CORE] | Tested native candidate build <windows/amd64>",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 133736258109,
+        "run_id": 43992411061,
+        "head_sha": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+        "run_attempt": 1,
+        "name": "[CHECK] | [CORE] | Default native, storage and context checks <linux/amd64>",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 133736258142,
+        "run_id": 43992411061,
+        "head_sha": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+        "run_attempt": 1,
+        "name": "[CHECK] | [CORE] | Instrumented native coverage <windows/amd64>",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 133736258151,
+        "run_id": 43992411061,
+        "head_sha": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+        "run_attempt": 1,
+        "name": "[CHECK] | [CORE] | Instrumented native coverage <linux/arm64>",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 133736258157,
+        "run_id": 43992411061,
+        "head_sha": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+        "run_attempt": 1,
+        "name": "[CHECK] | [REPO] | Impact planner contract",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 133736258166,
+        "run_id": 43992411061,
+        "head_sha": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+        "run_attempt": 1,
+        "name": "[CHECK] | [CORE] | Default native, storage and context checks <windows/arm64>",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 133736258172,
+        "run_id": 43992411061,
+        "head_sha": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+        "run_attempt": 1,
+        "name": "[CHECK] | [CORE] | Instrumented native coverage <linux/amd64>",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 133736258175,
+        "run_id": 43992411061,
+        "head_sha": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+        "run_attempt": 1,
+        "name": "[CHECK] | [CORE] | Instrumented native coverage <windows/arm64>",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 133736258190,
+        "run_id": 43992411061,
+        "head_sha": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+        "run_attempt": 1,
+        "name": "[CHECK] | [CORE] | Instrumented native coverage <darwin/amd64>",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 133736258278,
+        "run_id": 43992411061,
+        "head_sha": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+        "run_attempt": 1,
+        "name": "[CHECK] | [CORE] | Instrumented native coverage <darwin/arm64>",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 133736258389,
+        "run_id": 43992411061,
+        "head_sha": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+        "run_attempt": 1,
+        "name": "[CHECK] | [CA  ] | Farm dispatcher contract",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 133736258390,
+        "run_id": 43992411061,
+        "head_sha": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+        "run_attempt": 1,
+        "name": "[GATE ] | [SBX ] | Payload version",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 133736258397,
+        "run_id": 43992411061,
+        "head_sha": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+        "run_attempt": 1,
+        "name": "[CHECK] | [REPO] | Manifest contract",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 133736258409,
+        "run_id": 43992411061,
+        "head_sha": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+        "run_attempt": 1,
+        "name": "[GATE ] | [CDX ] | Payload version",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 133736258451,
+        "run_id": 43992411061,
+        "head_sha": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+        "run_attempt": 1,
+        "name": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: isolation>",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 133736258482,
+        "run_id": 43992411061,
+        "head_sha": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+        "run_attempt": 1,
+        "name": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+        "status": "completed",
+        "conclusion": "failure"
+      },
+      {
+        "id": 133736258484,
+        "run_id": 43992411061,
+        "head_sha": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+        "run_attempt": 1,
+        "name": "[CHECK] | [CORE] | Hook contract  <os: macos-latest \u00b7 partition: all>",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 133736258486,
+        "run_id": 43992411061,
+        "head_sha": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+        "run_attempt": 1,
+        "name": "[CHECK] | [PI  ] | Host-independent adapter contract",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 133736258545,
+        "run_id": 43992411061,
+        "head_sha": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+        "run_attempt": 1,
+        "name": "[CHECK] | [CDX ] | Real-host install  <codex: 0.143.0>",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 133736258551,
+        "run_id": 43992411061,
+        "head_sha": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+        "run_attempt": 1,
+        "name": "[CHECK] | [CORE] | Hook contract  <os: ubuntu-latest \u00b7 partition: all>",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 133736258557,
+        "run_id": 43992411061,
+        "head_sha": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+        "run_attempt": 1,
+        "name": "[CHECK] | [CA  ] | Documentation consistency",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 133736258592,
+        "run_id": 43992411061,
+        "head_sha": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+        "run_attempt": 1,
+        "name": "Coverage union  <os: ubuntu-latest>",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 133736258596,
+        "run_id": 43992411061,
+        "head_sha": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+        "run_attempt": 1,
+        "name": "[GATE ] | [PI  ] | Payload version",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 133736258603,
+        "run_id": 43992411061,
+        "head_sha": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+        "run_attempt": 1,
+        "name": "Coverage union  <os: windows-latest>",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 133736258609,
+        "run_id": 43992411061,
+        "head_sha": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+        "run_attempt": 1,
+        "name": "[GATE ] | [CDX ] | Candidate provenance",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 133736258621,
+        "run_id": 43992411061,
+        "head_sha": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+        "run_attempt": 1,
+        "name": "[CHECK] | [CDX ] | Real-host install  <codex: 0.145.0>",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 133736258627,
+        "run_id": 43992411061,
+        "head_sha": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+        "run_attempt": 1,
+        "name": "[CHECK] | [SBX ] | Reference graph",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 133736258647,
+        "run_id": 43992411061,
+        "head_sha": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+        "run_attempt": 1,
+        "name": "[CHECK] | [REPO] | Program integrity  <os: macos-latest>",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 133736258697,
+        "run_id": 43992411061,
+        "head_sha": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+        "run_attempt": 1,
+        "name": "[CHECK] | [PI  ] | Security analysis  <language: JavaScript/TypeScript>",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 133736258707,
+        "run_id": 43992411061,
+        "head_sha": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+        "run_attempt": 1,
+        "name": "[CHECK] | [REPO] | Program integrity  <os: windows-latest>",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 133736258724,
+        "run_id": 43992411061,
+        "head_sha": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+        "run_attempt": 1,
+        "name": "[CHECK] | [REPO] | Program integrity  <os: ubuntu-latest>",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 133736258729,
+        "run_id": 43992411061,
+        "head_sha": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+        "run_attempt": 1,
+        "name": "[CHECK] | [PI  ] | Adapter contract  <os: macos-latest \u00b7 runtime: Pi 1.5.0>",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 133736258730,
+        "run_id": 43992411061,
+        "head_sha": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+        "run_attempt": 1,
+        "name": "[CHECK] | [PI  ] | Adapter contract  <os: ubuntu-latest \u00b7 runtime: Pi 1.5.0>",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 133736258740,
+        "run_id": 43992411061,
+        "head_sha": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+        "run_attempt": 1,
+        "name": "[WATCH] | [PI  ] | Upstream compatibility  <runtime: npm latest>",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 133736258761,
+        "run_id": 43992411061,
+        "head_sha": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+        "run_attempt": 1,
+        "name": "[CHECK] | [CA  ] | Reference graph",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 133736258763,
+        "run_id": 43992411061,
+        "head_sha": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+        "run_attempt": 1,
+        "name": "[CHECK] | [CORE] | Workflow recovery  <os: ubuntu-latest>",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 133736258775,
+        "run_id": 43992411061,
+        "head_sha": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+        "run_attempt": 1,
+        "name": "[CHECK] | [CORE] | Workflow recovery  <os: macos-latest>",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 133736258788,
+        "run_id": 43992411061,
+        "head_sha": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+        "run_attempt": 1,
+        "name": "[CHECK] | [CORE] | Workflow recovery  <os: windows-latest>",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 133736258804,
+        "run_id": 43992411061,
+        "head_sha": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+        "run_attempt": 1,
+        "name": "Coverage union (Pi)  <os: windows-latest>",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 133736258817,
+        "run_id": 43992411061,
+        "head_sha": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+        "run_attempt": 1,
+        "name": "[CHECK] | [CDX ] | Reference graph",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 133736258838,
+        "run_id": 43992411061,
+        "head_sha": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+        "run_attempt": 1,
+        "name": "[GATE ] | [CA  ] | Payload version",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 133736258848,
+        "run_id": 43992411061,
+        "head_sha": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+        "run_attempt": 1,
+        "name": "[CHECK] | [PI  ] | Adapter contract  <os: windows-latest \u00b7 runtime: Pi 1.5.0>",
+        "status": "completed",
+        "conclusion": "failure"
+      },
+      {
+        "id": 133736258875,
+        "run_id": 43992411061,
+        "head_sha": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+        "run_attempt": 1,
+        "name": "Coverage union (Pi)  <os: ubuntu-latest>",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 133736258920,
+        "run_id": 43992411061,
+        "head_sha": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+        "run_attempt": 1,
+        "name": "[WATCH] | [CDX ] | Upstream compatibility  <runtime: npm latest>",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 133736259053,
+        "run_id": 43992411061,
+        "head_sha": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+        "run_attempt": 1,
+        "name": "[CHECK] | [SBX ] | Sandbox driver contract",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 133736261058,
+        "run_id": 43992411061,
+        "head_sha": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+        "run_attempt": 1,
+        "name": "[CHECK] | [SBX ] | Installed shipped bundle <docker>",
+        "status": "completed",
+        "conclusion": "skipped"
+      },
+      {
+        "id": 133739665445,
+        "run_id": 43992411061,
+        "head_sha": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+        "run_attempt": 1,
+        "name": "[CHECK] | [CORE] | Native authority <${{ matrix.expected_platform }}>",
+        "status": "completed",
+        "conclusion": "skipped"
+      },
+      {
+        "id": 133739665877,
+        "run_id": 43992411061,
+        "head_sha": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+        "run_attempt": 1,
+        "name": "[CHECK] | [CORE] | Native adapters and conformance <${{ matrix.expected_platform }}>",
+        "status": "completed",
+        "conclusion": "skipped"
+      },
+      {
+        "id": 133741026913,
+        "run_id": 43992411061,
+        "head_sha": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+        "run_attempt": 1,
+        "name": "[CHECK] | [PI  ] | Coverage union",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 133741808904,
+        "run_id": 43992411061,
+        "head_sha": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+        "run_attempt": 1,
+        "name": "[CHECK] | [REPO] | Coverage union",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 133742462418,
+        "run_id": 43992411061,
+        "head_sha": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+        "run_attempt": 1,
+        "name": "[CHECK] | [CORE] | Native Go statement coverage",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 133742842115,
+        "run_id": 43992411061,
+        "head_sha": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+        "run_attempt": 1,
+        "name": "[CHECK] | [CORE] | Structured artifact qualification",
+        "status": "completed",
+        "conclusion": "failure"
+      },
+      {
+        "id": 133742964192,
+        "run_id": 43992411061,
+        "head_sha": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+        "run_attempt": 1,
+        "name": "[CHECK] | [CORE] | Structured artifact browser qualification",
+        "status": "completed",
+        "conclusion": "skipped"
+      },
+      {
+        "id": 133742964353,
+        "run_id": 43992411061,
+        "head_sha": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+        "run_attempt": 1,
+        "name": "[CHECK] | [CORE] | Structured artifact cold package  <${{ matrix.platform }}>",
+        "status": "completed",
+        "conclusion": "skipped"
+      },
+      {
+        "id": 133742964732,
+        "run_id": 43992411061,
+        "head_sha": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+        "run_attempt": 1,
+        "name": "[CHECK] | [CDX ] | Installed retained package <codex: ${{ matrix.codex-version }}>",
+        "status": "completed",
+        "conclusion": "skipped"
+      },
+      {
+        "id": 133742964763,
+        "run_id": 43992411061,
+        "head_sha": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+        "run_attempt": 1,
+        "name": "[CHECK] | [CORE] | Structured artifact package assembly",
+        "status": "completed",
+        "conclusion": "skipped"
+      },
+      {
+        "id": 133742965165,
+        "run_id": 43992411061,
+        "head_sha": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+        "run_attempt": 1,
+        "name": "[CHECK] | [PI  ] | Installed retained package <pi: ${{ matrix.system }} 1.5.0>",
+        "status": "completed",
+        "conclusion": "skipped"
+      },
+      {
+        "id": 133745889936,
+        "run_id": 43992411061,
+        "head_sha": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+        "run_attempt": 1,
+        "name": "[GATE ] | [REPO] | Merge readiness",
+        "status": "completed",
+        "conclusion": "failure"
+      },
+      {
+        "id": 133745931715,
+        "run_id": 43992411061,
+        "head_sha": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+        "run_attempt": 1,
+        "name": "major readiness producer",
+        "status": "completed",
+        "conclusion": "skipped"
+      }
+    ],
+    "docs": [
+      {
+        "id": 133736069136,
+        "run_id": 43992410933,
+        "head_sha": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+        "run_attempt": 1,
+        "name": "Site | [Test] - Generator",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 133736069435,
+        "run_id": 43992410933,
+        "head_sha": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+        "run_attempt": 1,
+        "name": "Site | [Build] - Astro Pages",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 133736072107,
+        "run_id": 43992410933,
+        "head_sha": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+        "run_attempt": 1,
+        "name": "Site | [Prepare] - Qualified Pages",
+        "status": "completed",
+        "conclusion": "skipped"
+      },
+      {
+        "id": 133736072267,
+        "run_id": 43992410933,
+        "head_sha": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+        "run_attempt": 1,
+        "name": "Site | [Deploy] - Qualified GitHub Pages",
+        "status": "completed",
+        "conclusion": "skipped"
+      },
+      {
+        "id": 133739939871,
+        "run_id": 43992410933,
+        "head_sha": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+        "run_attempt": 1,
+        "name": "Site | [Deploy] - GitHub Pages",
+        "status": "completed",
+        "conclusion": "skipped"
+      }
+    ]
+  },
+  "artifacts": {
+    "ci": [
+      {
+        "id": 14290315037,
+        "name": "sandbox-vitest-2b4db6f13ecf55e16baf85a7915e053ef8ff355d-43992411061-1",
+        "size_in_bytes": 20798,
+        "digest": "sha256:d8cbb8647c0661228ae62598a198f4273ef7beccba22201dd99b3d697cde07f0",
+        "expired": false
+      },
+      {
+        "id": 14290096004,
+        "name": "major-source-inputs-q02-implementation",
+        "size_in_bytes": 3694389,
+        "digest": "sha256:9c4af0b2c8bb2fe2abaaa2de20babd936172c9c94bee61746397b0797a6babb3",
+        "expired": false
+      },
+      {
+        "id": 14290065916,
+        "name": "major-source-inputs-pi-sdk-footer",
+        "size_in_bytes": 584875,
+        "digest": "sha256:13861a48b924769e06ab95608adebb3e8be30e4486424b09b96bf4094ad02f73",
+        "expired": false
+      },
+      {
+        "id": 14289941307,
+        "name": "sandbox-source-observations-2b4db6f13ecf55e16baf85a7915e053ef8ff355d-43992411061-1",
+        "size_in_bytes": 13440,
+        "digest": "sha256:5c434ca4c69f0e7b845f8914c987207031e94739577181fb96fbc26a27055471",
+        "expired": false
+      },
+      {
+        "id": 14289546601,
+        "name": "major-source-inputs-sandbox-driver",
+        "size_in_bytes": 483989,
+        "digest": "sha256:d39c642a9313307851cf978fdf7c52d26fee8797a1638437cf6182390ebd8616",
+        "expired": false
+      },
+      {
+        "id": 14289490696,
+        "name": "pi-rpc-diagnostics-windows-latest-1.5.0",
+        "size_in_bytes": 6331,
+        "digest": "sha256:a3ab0fe225d92a8c4f758d163d2796ef4eae526b973c44db6f65f1d61c4e8708",
+        "expired": false
+      },
+      {
+        "id": 14289480522,
+        "name": "coverage-blob-ca-os-windows-latest",
+        "size_in_bytes": 245409,
+        "digest": "sha256:e476d3c6240ce77de5c79ef3bdcedb9c34ad7b6a0eed0a301c34aca93d5999d7",
+        "expired": false
+      },
+      {
+        "id": 14289280231,
+        "name": "pi-source-observations-2b4db6f13ecf55e16baf85a7915e053ef8ff355d-43992411061-1",
+        "size_in_bytes": 462030,
+        "digest": "sha256:05287c81b6e7cc4a6f697346df727121bac8569710737bb409ab95867caf00f0",
+        "expired": false
+      },
+      {
+        "id": 14289270179,
+        "name": "coverage-blob-ca-pi-os-ubuntu-latest",
+        "size_in_bytes": 679899,
+        "digest": "sha256:09aa4186740d30884eba51a00b726ddd5eb1f9f3be5036834ffbe44f07892444",
+        "expired": false
+      },
+      {
+        "id": 14289255148,
+        "name": "ci20-native-context-ubuntu-24.04",
+        "size_in_bytes": 2113,
+        "digest": "sha256:8ffee3b38043bcd8586352b80bee8f42db5bb588d1112c8c5c9c3419500e293d",
+        "expired": false
+      },
+      {
+        "id": 14289240161,
+        "name": "artifact-statements-windows-11-arm",
+        "size_in_bytes": 1383560,
+        "digest": "sha256:c62902382753ba79e29d8aa5f42aa6c30468760a2891cacfeb0298579994a164",
+        "expired": false
+      },
+      {
+        "id": 14289007405,
+        "name": "artifact-statement-summary",
+        "size_in_bytes": 480,
+        "digest": "sha256:e9ca76bf053b507a8489528428ed03131e9eb5f2623a0e543cd288f1d4f13fbc",
+        "expired": false
+      },
+      {
+        "id": 14288892409,
+        "name": "major-source-inputs-pi-windows-coverage",
+        "size_in_bytes": 931260,
+        "digest": "sha256:a4e7b1387d12b80ef4ae8026d94273af41b78efe5a1a4767b04cf016b881fac9",
+        "expired": false
+      },
+      {
+        "id": 14288882444,
+        "name": "coverage-blob-ca-pi-os-windows-latest",
+        "size_in_bytes": 679615,
+        "digest": "sha256:d034dedb04f459435aa9884f64f694282a0d2cd95789b2b2a1aab591122a1ca2",
+        "expired": false
+      },
+      {
+        "id": 14288822359,
+        "name": "coverage-blob-ca-os-ubuntu-latest",
+        "size_in_bytes": 246827,
+        "digest": "sha256:33e51a1a7a891d473f2f9e299169e63c52d5e487c78b03cccf99c3bcca53f23d",
+        "expired": false
+      },
+      {
+        "id": 14288806845,
+        "name": "ci20-native-tested-windows-2025",
+        "size_in_bytes": 2862504,
+        "digest": "sha256:b75cf3d69e1ab21ab2d87344d9b48b5fc67fa64fe9b591737472537461677aec",
+        "expired": false
+      },
+      {
+        "id": 14288799082,
+        "name": "major-source-inputs-hooks-windows-contracts",
+        "size_in_bytes": 680349,
+        "digest": "sha256:5641e72eab874982b6b00dc29a1c9ddc49381414e7be43e20e1a5c7fac018d0c",
+        "expired": false
+      },
+      {
+        "id": 14288727202,
+        "name": "ci20-native-tested-windows-11-arm",
+        "size_in_bytes": 2514905,
+        "digest": "sha256:302bddf6c2bab7689cabfa2b3fb1629bc0e0db1100eae9169bff0276ab6e03a7",
+        "expired": false
+      },
+      {
+        "id": 14288652344,
+        "name": "artifact-statements-windows-2025",
+        "size_in_bytes": 1383568,
+        "digest": "sha256:c640cfa4746d58a08fdb05354a3c1091a30ce9590b31c2236cc4bd031017eb61",
+        "expired": false
+      },
+      {
+        "id": 14288609238,
+        "name": "python-source-observations-2b4db6f13ecf55e16baf85a7915e053ef8ff355d-43992411061-1",
+        "size_in_bytes": 6984,
+        "digest": "sha256:5b0d7e017212ac8910093d83d29b19736b3596d8a89f515e1870ee1ab4829980",
+        "expired": false
+      },
+      {
+        "id": 14288568463,
+        "name": "artifact-statements-macos-15-intel",
+        "size_in_bytes": 1356305,
+        "digest": "sha256:3c16b992ce69e71133124658fd728be87f016c5f1408e9e54eb95f8321104b7f",
+        "expired": false
+      },
+      {
+        "id": 14288497835,
+        "name": "ci20-native-context-macos-15-intel",
+        "size_in_bytes": 2112,
+        "digest": "sha256:ee7eccaec04de1197091543c0cab91cdc21d4548a31bceec05c8cdbfe3c94805",
+        "expired": false
+      },
+      {
+        "id": 14288477920,
+        "name": "pi-rpc-diagnostics-ubuntu-latest-1.5.0",
+        "size_in_bytes": 4233,
+        "digest": "sha256:b8364102f4d35bfee75893972b7309cffd25b39a6f96ce5a700b42c5bc1fb609",
+        "expired": false
+      },
+      {
+        "id": 14288362809,
+        "name": "ci20-native-context-windows-11-arm",
+        "size_in_bytes": 2109,
+        "digest": "sha256:06f26ce6dc48c60992f3b3c923485ec1571078a221a15c1c37ad5bc281d30509",
+        "expired": false
+      },
+      {
+        "id": 14288253530,
+        "name": "native-npm-binding-identities-macos-26",
+        "size_in_bytes": 2141134,
+        "digest": "sha256:2f0a37712b28127a26d5cbe1648fde984e0188e26abae93b60a2c500abab0333",
+        "expired": false
+      },
+      {
+        "id": 14288194284,
+        "name": "ci20-native-tested-macos-15-intel",
+        "size_in_bytes": 2742634,
+        "digest": "sha256:bd1a8979410e630b303d3f72096588d4931dc463eef480cd83a4a98936632318",
+        "expired": false
+      },
+      {
+        "id": 14288062583,
+        "name": "ci-impact-receipt",
+        "size_in_bytes": 375,
+        "digest": "sha256:bd511cc82e19761a56bdafa6a85339ed653364221f5a56fe46d46a6081df32fe",
+        "expired": false
+      },
+      {
+        "id": 14288048916,
+        "name": "ci20-native-context-ubuntu-24.04-arm",
+        "size_in_bytes": 2113,
+        "digest": "sha256:de22f72d04dbc05ecde163b824c6d8b9b98ac065258b33e4befe0b9d8060dbf0",
+        "expired": false
+      },
+      {
+        "id": 14287964772,
+        "name": "native-npm-binding-identities-windows-11-arm",
+        "size_in_bytes": 1199894,
+        "digest": "sha256:6dc2fa6dac3772d3b43acecb688051efeb486a124af8041cdbbc8547bc5cf253",
+        "expired": false
+      },
+      {
+        "id": 14287789838,
+        "name": "native-npm-binding-identities-windows-2025",
+        "size_in_bytes": 1199475,
+        "digest": "sha256:71c78527b7944c58e56806ccbe3c981ee843e232aef0afb23bcb1f6e90532d87",
+        "expired": false
+      },
+      {
+        "id": 14287769709,
+        "name": "artifact-statements-macos-26",
+        "size_in_bytes": 1356416,
+        "digest": "sha256:5d7b439203771a07d504ed0dc48241c88b117d48111ae0e6a56538e9e6f4ba3a",
+        "expired": false
+      },
+      {
+        "id": 14287638969,
+        "name": "artifact-statements-ubuntu-24.04-arm",
+        "size_in_bytes": 1348776,
+        "digest": "sha256:989c12f1998b8931bf7b23f5c2e8c426ca8bc76651074c0d7558d795acdb2077",
+        "expired": false
+      },
+      {
+        "id": 14287574939,
+        "name": "ci20-native-context-windows-2025",
+        "size_in_bytes": 2109,
+        "digest": "sha256:da330de662aabdf07bd9962347e741a91a5d27aee797c1e5bad9930f7cc101ab",
+        "expired": false
+      },
+      {
+        "id": 14287379718,
+        "name": "pi-rpc-diagnostics-macos-latest-1.5.0",
+        "size_in_bytes": 4251,
+        "digest": "sha256:51403e506433977821bf40da3f98782b7299d5cc08edab6bba2dd6f374635c7c",
+        "expired": false
+      },
+      {
+        "id": 14287194002,
+        "name": "ci20-native-context-macos-26",
+        "size_in_bytes": 2110,
+        "digest": "sha256:a195db44b43a869eceb62d88918c4b71d0cd8751319da8c1c7f61c317ab71c4a",
+        "expired": false
+      },
+      {
+        "id": 14287184245,
+        "name": "native-npm-binding-identities-macos-15-intel",
+        "size_in_bytes": 2137227,
+        "digest": "sha256:6258e97a3941507bdcf0e337c88f7d1646e1ae2fe30d07968e6f338bccbc85f6",
+        "expired": false
+      },
+      {
+        "id": 14287168964,
+        "name": "artifact-statements-ubuntu-24.04",
+        "size_in_bytes": 1348772,
+        "digest": "sha256:1f4fbc5e30bd2d6ba5975cef7925b4427f4e57a08c0d11c50861436afbf85711",
+        "expired": false
+      },
+      {
+        "id": 14287153835,
+        "name": "ci20-native-tested-macos-26",
+        "size_in_bytes": 2479182,
+        "digest": "sha256:4f8920b56a728b8b63c7ee2f6fa885650bc0c6ee9521f2eccd8cef4e712b6dea",
+        "expired": false
+      }
+    ],
+    "docs": [
+      {
+        "id": 14288591432,
+        "name": "site-coverage-2b4db6f13ecf55e16baf85a7915e053ef8ff355d",
+        "size_in_bytes": 16158,
+        "digest": "sha256:d060385791d02f0801010a2dcb1a812a841eb332598aca685df00835db99f4df",
+        "expired": false
+      },
+      {
+        "id": 14287359193,
+        "name": "github-pages",
+        "size_in_bytes": 6576821,
+        "digest": "sha256:1f72e2caa342151fdebdd1a002e0a0891797d8161935fe44b0607380a11a28d6",
+        "expired": false
+      },
+      {
+        "id": 14287184329,
+        "name": "site-browser-evidence",
+        "size_in_bytes": 97057710,
+        "digest": "sha256:867e9c39cc4d15f35226b6357fbd82835923e5f410f0e3fca7de7a952381fa4f",
+        "expired": false
+      }
+    ]
+  },
+  "verdict": "BLOCK",
+  "limits": [
+    "PR outcomes do not establish normal integration/installed/task/publication qualification.",
+    "Root alone merges; parent1098 remains draft/main-held. No retry/cancel/source/index/ref/marker mutations."
+  ]
+}

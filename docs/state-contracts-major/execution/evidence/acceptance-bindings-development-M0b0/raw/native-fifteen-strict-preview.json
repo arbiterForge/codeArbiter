@@ -1,0 +1,288 @@
+{
+  "result": "PASS",
+  "preview_source": "3d7fcfbe71ebad45429b00c4434ecca9338b1b01",
+  "preview_tree": "d227124d25668d32124d13334c793d32c1c23a56",
+  "fixture": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-nine-native-source-preview-c28ovf_k",
+  "actual_head": "9d714e4c09acac13b33bdd5623ec6b8e647873d1",
+  "frozen": 105,
+  "records": 1333,
+  "applicability": {
+    "APPLICABLE": 415,
+    "STALE": 918
+  },
+  "source_dispositions": {
+    "disposition:machines:N18": {
+      "result": "PRESERVED",
+      "proofs": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/native-source-conformance-2137/proof.json",
+          "ref_commit": "3d7fcfbe71ebad45429b00c4434ecca9338b1b01",
+          "sha256": "572b09bd1851ff6179b5062a6faf0a00f4376636cc4c23e64bebc9bb0c4853a6",
+          "source_commit": "2137136dc9e45f8518da1f31b5ac246dae57e97f",
+          "kind": "conformance-check",
+          "result": "PRESERVED",
+          "producer": {
+            "class": "source-conformance",
+            "identity": "Codex /root/packaging_site_tools complete N18 N19 N25 source guard/effect/retry inspection"
+          },
+          "current_at": "3d7fcfbe71ebad45429b00c4434ecca9338b1b01"
+        }
+      ]
+    },
+    "disposition:machines:N19": {
+      "result": "PRESERVED",
+      "proofs": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/native-source-conformance-2137/proof.json",
+          "ref_commit": "3d7fcfbe71ebad45429b00c4434ecca9338b1b01",
+          "sha256": "572b09bd1851ff6179b5062a6faf0a00f4376636cc4c23e64bebc9bb0c4853a6",
+          "source_commit": "2137136dc9e45f8518da1f31b5ac246dae57e97f",
+          "kind": "conformance-check",
+          "result": "PRESERVED",
+          "producer": {
+            "class": "source-conformance",
+            "identity": "Codex /root/packaging_site_tools complete N18 N19 N25 source guard/effect/retry inspection"
+          },
+          "current_at": "3d7fcfbe71ebad45429b00c4434ecca9338b1b01"
+        }
+      ]
+    },
+    "disposition:machines:N25": {
+      "result": "PRESERVED",
+      "proofs": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/native-source-conformance-2137/proof.json",
+          "ref_commit": "3d7fcfbe71ebad45429b00c4434ecca9338b1b01",
+          "sha256": "572b09bd1851ff6179b5062a6faf0a00f4376636cc4c23e64bebc9bb0c4853a6",
+          "source_commit": "2137136dc9e45f8518da1f31b5ac246dae57e97f",
+          "kind": "conformance-check",
+          "result": "PRESERVED",
+          "producer": {
+            "class": "source-conformance",
+            "identity": "Codex /root/packaging_site_tools complete N18 N19 N25 source guard/effect/retry inspection"
+          },
+          "current_at": "3d7fcfbe71ebad45429b00c4434ecca9338b1b01"
+        }
+      ]
+    },
+    "disposition:machines:N05": {
+      "result": "PRESERVED",
+      "proofs": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/native-n05-n06-n08-source-89a2/proof.json",
+          "ref_commit": "3d7fcfbe71ebad45429b00c4434ecca9338b1b01",
+          "sha256": "a9de03a7b327c7655e69908d10751a972b215c37efcb323b866f4b7ef512ee3a",
+          "source_commit": "89a2d43b573681b993353609fc24956ccb175f7d",
+          "kind": "conformance-check",
+          "result": "PRESERVED",
+          "producer": {
+            "class": "source-conformance",
+            "identity": "Codex /root/packaging_site_tools full11 N05/N06/N08 source guard/effect/retry inspection"
+          },
+          "current_at": "3d7fcfbe71ebad45429b00c4434ecca9338b1b01"
+        }
+      ]
+    },
+    "disposition:machines:N06": {
+      "result": "PRESERVED",
+      "proofs": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/native-n05-n06-n08-source-89a2/proof.json",
+          "ref_commit": "3d7fcfbe71ebad45429b00c4434ecca9338b1b01",
+          "sha256": "a9de03a7b327c7655e69908d10751a972b215c37efcb323b866f4b7ef512ee3a",
+          "source_commit": "89a2d43b573681b993353609fc24956ccb175f7d",
+          "kind": "conformance-check",
+          "result": "PRESERVED",
+          "producer": {
+            "class": "source-conformance",
+            "identity": "Codex /root/packaging_site_tools full11 N05/N06/N08 source guard/effect/retry inspection"
+          },
+          "current_at": "3d7fcfbe71ebad45429b00c4434ecca9338b1b01"
+        }
+      ]
+    },
+    "disposition:machines:N08": {
+      "result": "PRESERVED",
+      "proofs": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/native-n05-n06-n08-source-89a2/proof.json",
+          "ref_commit": "3d7fcfbe71ebad45429b00c4434ecca9338b1b01",
+          "sha256": "a9de03a7b327c7655e69908d10751a972b215c37efcb323b866f4b7ef512ee3a",
+          "source_commit": "89a2d43b573681b993353609fc24956ccb175f7d",
+          "kind": "conformance-check",
+          "result": "PRESERVED",
+          "producer": {
+            "class": "source-conformance",
+            "identity": "Codex /root/packaging_site_tools full11 N05/N06/N08 source guard/effect/retry inspection"
+          },
+          "current_at": "3d7fcfbe71ebad45429b00c4434ecca9338b1b01"
+        }
+      ]
+    },
+    "disposition:machines:N20": {
+      "result": "PRESERVED",
+      "proofs": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/native-n20-n27-n29-n38-source-970518e7/proof.json",
+          "ref_commit": "3d7fcfbe71ebad45429b00c4434ecca9338b1b01",
+          "sha256": "6b1bc4e0454765c822731dbabd2f4eb523bc3359b75eb0104a4c51fd5e126bc0",
+          "source_commit": "970518e787c13f82d688a79a55b683ed60225752",
+          "kind": "conformance-check",
+          "result": "PRESERVED",
+          "producer": {
+            "class": "source-conformance",
+            "identity": "Codex /root/packaging_site_tools full19 N20/N27/N29/N38 source guard/effect/retry inspection"
+          },
+          "current_at": "3d7fcfbe71ebad45429b00c4434ecca9338b1b01"
+        }
+      ]
+    },
+    "disposition:machines:N27": {
+      "result": "PRESERVED",
+      "proofs": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/native-n20-n27-n29-n38-source-970518e7/proof.json",
+          "ref_commit": "3d7fcfbe71ebad45429b00c4434ecca9338b1b01",
+          "sha256": "6b1bc4e0454765c822731dbabd2f4eb523bc3359b75eb0104a4c51fd5e126bc0",
+          "source_commit": "970518e787c13f82d688a79a55b683ed60225752",
+          "kind": "conformance-check",
+          "result": "PRESERVED",
+          "producer": {
+            "class": "source-conformance",
+            "identity": "Codex /root/packaging_site_tools full19 N20/N27/N29/N38 source guard/effect/retry inspection"
+          },
+          "current_at": "3d7fcfbe71ebad45429b00c4434ecca9338b1b01"
+        }
+      ]
+    },
+    "disposition:machines:N29": {
+      "result": "PRESERVED",
+      "proofs": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/native-n20-n27-n29-n38-source-970518e7/proof.json",
+          "ref_commit": "3d7fcfbe71ebad45429b00c4434ecca9338b1b01",
+          "sha256": "6b1bc4e0454765c822731dbabd2f4eb523bc3359b75eb0104a4c51fd5e126bc0",
+          "source_commit": "970518e787c13f82d688a79a55b683ed60225752",
+          "kind": "conformance-check",
+          "result": "PRESERVED",
+          "producer": {
+            "class": "source-conformance",
+            "identity": "Codex /root/packaging_site_tools full19 N20/N27/N29/N38 source guard/effect/retry inspection"
+          },
+          "current_at": "3d7fcfbe71ebad45429b00c4434ecca9338b1b01"
+        }
+      ]
+    },
+    "disposition:machines:N38": {
+      "result": "PRESERVED",
+      "proofs": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/native-n20-n27-n29-n38-source-970518e7/proof.json",
+          "ref_commit": "3d7fcfbe71ebad45429b00c4434ecca9338b1b01",
+          "sha256": "6b1bc4e0454765c822731dbabd2f4eb523bc3359b75eb0104a4c51fd5e126bc0",
+          "source_commit": "970518e787c13f82d688a79a55b683ed60225752",
+          "kind": "conformance-check",
+          "result": "PRESERVED",
+          "producer": {
+            "class": "source-conformance",
+            "identity": "Codex /root/packaging_site_tools full19 N20/N27/N29/N38 source guard/effect/retry inspection"
+          },
+          "current_at": "3d7fcfbe71ebad45429b00c4434ecca9338b1b01"
+        }
+      ]
+    },
+    "disposition:machines:N03": {
+      "result": "PRESERVED",
+      "proofs": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/native-last-five-source-9d714e4c/proof.json",
+          "ref_commit": "3d7fcfbe71ebad45429b00c4434ecca9338b1b01",
+          "sha256": "d33e93621c57d49efd73155298fc74a7ed1c7113f6b4209c0b28b58e8f3676a2",
+          "source_commit": "9d714e4c09acac13b33bdd5623ec6b8e647873d1",
+          "kind": "conformance-check",
+          "result": "PRESERVED",
+          "producer": {
+            "class": "source-conformance",
+            "identity": "Codex /root/packaging_site_tools full22 N03/N04/N07/N10/N12 guard/effect/retry inspection"
+          },
+          "current_at": "3d7fcfbe71ebad45429b00c4434ecca9338b1b01"
+        }
+      ]
+    },
+    "disposition:machines:N04": {
+      "result": "PRESERVED",
+      "proofs": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/native-last-five-source-9d714e4c/proof.json",
+          "ref_commit": "3d7fcfbe71ebad45429b00c4434ecca9338b1b01",
+          "sha256": "d33e93621c57d49efd73155298fc74a7ed1c7113f6b4209c0b28b58e8f3676a2",
+          "source_commit": "9d714e4c09acac13b33bdd5623ec6b8e647873d1",
+          "kind": "conformance-check",
+          "result": "PRESERVED",
+          "producer": {
+            "class": "source-conformance",
+            "identity": "Codex /root/packaging_site_tools full22 N03/N04/N07/N10/N12 guard/effect/retry inspection"
+          },
+          "current_at": "3d7fcfbe71ebad45429b00c4434ecca9338b1b01"
+        }
+      ]
+    },
+    "disposition:machines:N07": {
+      "result": "PRESERVED",
+      "proofs": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/native-last-five-source-9d714e4c/proof.json",
+          "ref_commit": "3d7fcfbe71ebad45429b00c4434ecca9338b1b01",
+          "sha256": "d33e93621c57d49efd73155298fc74a7ed1c7113f6b4209c0b28b58e8f3676a2",
+          "source_commit": "9d714e4c09acac13b33bdd5623ec6b8e647873d1",
+          "kind": "conformance-check",
+          "result": "PRESERVED",
+          "producer": {
+            "class": "source-conformance",
+            "identity": "Codex /root/packaging_site_tools full22 N03/N04/N07/N10/N12 guard/effect/retry inspection"
+          },
+          "current_at": "3d7fcfbe71ebad45429b00c4434ecca9338b1b01"
+        }
+      ]
+    },
+    "disposition:machines:N10": {
+      "result": "PRESERVED",
+      "proofs": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/native-last-five-source-9d714e4c/proof.json",
+          "ref_commit": "3d7fcfbe71ebad45429b00c4434ecca9338b1b01",
+          "sha256": "d33e93621c57d49efd73155298fc74a7ed1c7113f6b4209c0b28b58e8f3676a2",
+          "source_commit": "9d714e4c09acac13b33bdd5623ec6b8e647873d1",
+          "kind": "conformance-check",
+          "result": "PRESERVED",
+          "producer": {
+            "class": "source-conformance",
+            "identity": "Codex /root/packaging_site_tools full22 N03/N04/N07/N10/N12 guard/effect/retry inspection"
+          },
+          "current_at": "3d7fcfbe71ebad45429b00c4434ecca9338b1b01"
+        }
+      ]
+    },
+    "disposition:machines:N12": {
+      "result": "PRESERVED",
+      "proofs": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/native-last-five-source-9d714e4c/proof.json",
+          "ref_commit": "3d7fcfbe71ebad45429b00c4434ecca9338b1b01",
+          "sha256": "d33e93621c57d49efd73155298fc74a7ed1c7113f6b4209c0b28b58e8f3676a2",
+          "source_commit": "9d714e4c09acac13b33bdd5623ec6b8e647873d1",
+          "kind": "conformance-check",
+          "result": "PRESERVED",
+          "producer": {
+            "class": "source-conformance",
+            "identity": "Codex /root/packaging_site_tools full22 N03/N04/N07/N10/N12 guard/effect/retry inspection"
+          },
+          "current_at": "3d7fcfbe71ebad45429b00c4434ecca9338b1b01"
+        }
+      ]
+    }
+  },
+  "seconds": 40.464,
+  "canonical_index_refs_markers_unchanged": true,
+  "runtime_task_qualification": false
+}

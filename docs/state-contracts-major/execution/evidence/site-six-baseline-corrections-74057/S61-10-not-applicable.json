@@ -1,0 +1,59 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "74057c377ae7934fe7074443b7ab71f378798ef2",
+  "kind": "conformance-check",
+  "result": "NOT_APPLICABLE",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "/root/packaging_site_tools: exact inherited analytical-contract correction; no runtime test"
+  },
+  "inputs": {
+    "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+    "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+    "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+    "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+    "site/src/components/WorkflowAtlas.astro": "40120780283cc6fddec19b657ef49e069612514aa77d093cb840500ea846174e",
+    "site/src/scripts/workflow-atlas.ts": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e",
+    "site/src/styles/workflow-atlas.css": "4c9ee30fb6006a62db600f80ec3d2e50805eb32afce66341572044927889e22c"
+  },
+  "disposition_ids": [
+    "disposition:transitions:S61:10"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/site-six-baseline-corrections-74057/correction-inspection.json",
+      "sha256": "d0d23a770d1f7f8f493d925b1ad413b0161fc3bf62c23ad1aecb7a5d72e74295"
+    }
+  ],
+  "contract": "analytical-baseline:S61:10",
+  "rationale": "The literal composite was never implemented or declared by the baseline owner. No accepted SITE-U01/U02/BUILD-G01 task advertises this additional feature. The analytical summary overstates the actual owner contract; correcting it does not retire supported concrete behavior. PROGRAM5/9/13/46 supplies the governing analytical-versus-advertised-feature distinction. Reentrant beforeprint saves reading.open and opens static reading; CSS hides controls/frame/dialog/downloads and prints the complete static reading edition. It does not fit the interactive canvas or snapshot general selection/viewport.",
+  "semantic_mapping": [
+    {
+      "cell": "disposition:transitions:S61:10",
+      "unsupported_contract": "A beforeprint general interactive-state snapshot and fit of the canvas for print.",
+      "actual_owner_contract": "Reentrant beforeprint saves reading.open and opens static reading; CSS hides controls/frame/dialog/downloads and prints the complete static reading edition. It does not fit the interactive canvas or snapshot general selection/viewport.",
+      "whole_clause_nonapplicability": "The literal composite was never implemented or declared by the baseline owner. No accepted SITE-U01/U02/BUILD-G01 task advertises this additional feature. The analytical summary overstates the actual owner contract; correcting it does not retire supported concrete behavior.",
+      "frozen_row_sha256": "5bd75cd295eb99a9edea7e7e6f24ba3f73b10d6befaa66e373f6411a782410f5",
+      "witnesses": [
+        {
+          "path": "site/src/scripts/workflow-atlas.ts",
+          "start": 242,
+          "end": 255,
+          "file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+        },
+        {
+          "path": "site/src/styles/workflow-atlas.css",
+          "start": 92,
+          "end": 92,
+          "file_sha256": "4c9ee30fb6006a62db600f80ec3d2e50805eb32afce66341572044927889e22c"
+        }
+      ]
+    }
+  ],
+  "limits": [
+    "Source inspection only; no new tests/browser/visual/physical-user/installed observations.",
+    "Original frozen105 intake remains unchanged. Append analytical-audit correction to live accounting; no new user policy choice or advertised-feature deferral.",
+    "N/A covers unsupported whole analytical composites, not valid initialization/native-button keyboard/static print/TOC/source-validation behavior. No broad capability waiver.",
+    "Parent1098 remains held for full user testing; no publication."
+  ]
+}

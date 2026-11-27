@@ -1,0 +1,649 @@
+{
+  "schema": "codearbiter.current-finite-source-inspection/1",
+  "source_commit": "f3cb12f5095401d5b7e8c32c2861816c7109ce02",
+  "original_semantic_inspection_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+  "group": "source-group-037",
+  "positive_input_join": {
+    ".codearbiter/decisions/0040-independent-per-target-release-with-consumer-safety-gates.md": {
+      "sha256": "2dce2651ea067cc7bec25982ce23fdeb1528e9bfb003906c55be7e243a3a8964",
+      "previous_sha256": "2dce2651ea067cc7bec25982ce23fdeb1528e9bfb003906c55be7e243a3a8964",
+      "bytes": 5797,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "2dce2651ea067cc7bec25982ce23fdeb1528e9bfb003906c55be7e243a3a8964",
+        "bytes": 5797
+      }
+    },
+    ".codearbiter/decisions/0043-assistive-state-engine.md": {
+      "sha256": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+      "previous_sha256": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+      "bytes": 6365,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+        "bytes": 6365
+      }
+    },
+    ".codearbiter/decisions/0044-trusted-pi-npm-publication.md": {
+      "sha256": "fda3c0194f83d41bcb169fae7c14d1b24bdaf3bace8d41780a88825e10fe30d6",
+      "previous_sha256": "fda3c0194f83d41bcb169fae7c14d1b24bdaf3bace8d41780a88825e10fe30d6",
+      "bytes": 3015,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "fda3c0194f83d41bcb169fae7c14d1b24bdaf3bace8d41780a88825e10fe30d6",
+        "bytes": 3015
+      }
+    },
+    ".codearbiter/decisions/0049-require-https-outside-bounded-loopback.md": {
+      "sha256": "c757cef9d5e318b75ff164d270b29a49255449360f0b7cde51e53775e6916ab8",
+      "previous_sha256": "c757cef9d5e318b75ff164d270b29a49255449360f0b7cde51e53775e6916ab8",
+      "bytes": 2450,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "c757cef9d5e318b75ff164d270b29a49255449360f0b7cde51e53775e6916ab8",
+        "bytes": 2450
+      }
+    },
+    ".github/workflows/ci.yml": {
+      "sha256": "9b9bbb72e86631c1577135cb3ee13181d3b04ed8db2f5e7f4f957e6fb85f1fb3",
+      "previous_sha256": "c0e8e0f0480ffb0f660c894347f26df49da423a300158a1566da702e5a0d8102",
+      "bytes": 306751,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "9b9bbb72e86631c1577135cb3ee13181d3b04ed8db2f5e7f4f957e6fb85f1fb3",
+        "bytes": 306751
+      }
+    },
+    ".github/workflows/release.yml": {
+      "sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126",
+      "previous_sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126",
+      "bytes": 25073,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126",
+        "bytes": 25073
+      }
+    },
+    "docs/state-contracts-major/PROGRAM.md": {
+      "sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+      "previous_sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+      "bytes": 7910,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+        "bytes": 7910
+      }
+    },
+    "docs/state-contracts-major/contracts/machine-coverage.json": {
+      "sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+      "previous_sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+      "bytes": 385316,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+        "bytes": 385316
+      }
+    },
+    "docs/state-contracts-major/contracts/program.json": {
+      "sha256": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+      "previous_sha256": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+      "bytes": 6403,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+        "bytes": 6403
+      }
+    },
+    "docs/state-contracts-major/contracts/tasks.json": {
+      "sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+      "previous_sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+      "bytes": 331224,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+        "bytes": 331224
+      }
+    },
+    "docs/state-contracts-major/contracts/transition-coverage.json": {
+      "sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+      "previous_sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+      "bytes": 3185278,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+        "bytes": 3185278
+      }
+    }
+  },
+  "current_input_membership": [],
+  "closed_namespace_review": null,
+  "current_owner_delta_review": {
+    "scope": "Required/strict versus advisory evaluation and exact job-ID population are unchanged. Additional observations in existing jobs do not change what required and advisory results mean or allow a skipped required release gate.",
+    "workflow_callsite_join": {
+      "auto-release-candidate": {
+        "previous_sha256": "b6d116b3f2673ae729bcfcf09a9204e7b9dc9e45a347409fda53399f011c7a6c",
+        "current_sha256": "b6d116b3f2673ae729bcfcf09a9204e7b9dc9e45a347409fda53399f011c7a6c",
+        "current_scope": "Complete owning job or top-level event/concurrency block unchanged."
+      },
+      "ca-pi-latest": {
+        "previous_sha256": "f7e9cffbcdfa208e6c14ed2c4f9ff60fc94c78226798066d695acd8aa19c8fa7",
+        "current_sha256": "f7e9cffbcdfa208e6c14ed2c4f9ff60fc94c78226798066d695acd8aa19c8fa7",
+        "current_scope": "Complete owning job or top-level event/concurrency block unchanged."
+      },
+      "ci-passed": {
+        "previous_sha256": "81001122248ea9a598041073e239f01f3f2f6d68e3c350db7a00f4fa88bc019b",
+        "current_sha256": "81001122248ea9a598041073e239f01f3f2f6d68e3c350db7a00f4fa88bc019b",
+        "current_scope": "Complete owning job or top-level event/concurrency block unchanged."
+      },
+      "codex-host-latest": {
+        "previous_sha256": "3e3b20ce5c01c3e03c142ee02e9fe76d80ef2a57d98b605b2e69fe3dbaed8b4e",
+        "current_sha256": "3e3b20ce5c01c3e03c142ee02e9fe76d80ef2a57d98b605b2e69fe3dbaed8b4e",
+        "current_scope": "Complete owning job or top-level event/concurrency block unchanged."
+      },
+      "coverage-union": {
+        "previous_sha256": "d1c29522e0cda4b1e2e2ee8be945e58165938bcaa2b23307a6efa044ca4fbbfc",
+        "current_sha256": "d1c29522e0cda4b1e2e2ee8be945e58165938bcaa2b23307a6efa044ca4fbbfc",
+        "current_scope": "Complete owning job or top-level event/concurrency block unchanged."
+      },
+      "coverage-union-merge": {
+        "previous_sha256": "7b9e02102ee3052aea705d906b188722febad210e1d5a4d76f31af517ebc506c",
+        "current_sha256": "7b9e02102ee3052aea705d906b188722febad210e1d5a4d76f31af517ebc506c",
+        "current_scope": "Complete owning job or top-level event/concurrency block unchanged."
+      },
+      "coverage-union-pi": {
+        "previous_sha256": "24ea369869bd391fdc0949848697124ecd2b83ac5fd880799a559d12a8db83ac",
+        "current_sha256": "24ea369869bd391fdc0949848697124ecd2b83ac5fd880799a559d12a8db83ac",
+        "current_scope": "Complete owning job or top-level event/concurrency block unchanged."
+      },
+      "coverage-union-pi-merge": {
+        "previous_sha256": "2c21a1fd416685630aca523d560b8864b41bb9e4b6ea213e08495cec8a61d3da",
+        "current_sha256": "2c21a1fd416685630aca523d560b8864b41bb9e4b6ea213e08495cec8a61d3da",
+        "current_scope": "Complete owning job or top-level event/concurrency block unchanged."
+      }
+    }
+  },
+  "semantic_rows": [
+    {
+      "cell": "disposition:machines:C02",
+      "frozen_record": {
+        "machine_id": "C02",
+        "name": "Required CI aggregate and advisory lanes",
+        "domain": "Hosted CI and release",
+        "kind": "implemented",
+        "owner": "release-and-tooling",
+        "closure_task": "Q-01",
+        "task_ids": [
+          "NT-12",
+          "R-03",
+          "R-04",
+          "Q-01"
+        ],
+        "explicit_machine_task_ids": [],
+        "source_intersection_task_ids": [
+          "NT-12",
+          "R-03",
+          "R-04"
+        ],
+        "mapping_basis": "Owner assignment uses the inspected audit domain and explicit owner ledger; source intersections flag review impact, not a claim every edge changes.",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "status": "NOT_RUN",
+        "transition_count": 4,
+        "source_refs": [
+          "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/workflows/ci.yml"
+        ],
+        "proposed_composed_scenario_ids": [
+          "SEQ-24"
+        ],
+        "required_disposition": "Read the pinned/current owner, preserve each existing guard/effect/retry boundary except a named authorized change, map meaningful executed tests or reasoned conformance review to the row IDs, and add new rows for introduced events.",
+        "evidence": []
+      },
+      "frozen_record_sha256": "cd8b36a960c0f5981258dc191db1dad322f0290a9a6c8a943afe1867cf120291",
+      "group": "source-group-037",
+      "literal_inspection": "13-exact-prior65-machine-records",
+      "assessment": "Conditional finite source composition of Required CI aggregate and advisory lanes. Constituent guard/effect/retry source scopes and named accepted changes retained; neither task_ids nor model-guided instructions prove executed runtime/installed/model behavior.",
+      "changed_helper_interpretation_ids": [],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/release27-ci-callsite-revalidation/C02-preserved.json",
+          "sha256": "94a01bba6b4b4592362cbfe251d46ece75c80d62f4b2dc4c8aa4519ae995bea1",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:C02:01",
+      "frozen_record": {
+        "transition_id": "C02:01",
+        "machine_id": "C02",
+        "owner": "release-and-tooling",
+        "baseline": {
+          "from_state": "waiting",
+          "from": "waiting",
+          "event": "all declared dependencies settle",
+          "guard": "aggregate always condition admits evaluation",
+          "to": "evaluating",
+          "effects": "Collect required job results, selected artifact result, release candidate result and advisory results.",
+          "failure_retry": "Failure to evaluate the aggregator is not a pass.",
+          "source": [
+            {
+              "path": ".github/workflows/ci.yml",
+              "symbol": "3658",
+              "lines": [
+                3658,
+                3658
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/workflows/ci.yml"
+            }
+          ],
+          "transition_id": "C02:01"
+        },
+        "task_ids": [
+          "NT-12",
+          "R-03",
+          "R-04",
+          "Q-01"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-24"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "c44ae62fc188d22a8c71cf94f6841279653269c71c789be7e2304d42382497b3",
+      "group": "source-group-037",
+      "assessment": "Always aggregate retains all declared dependency results.",
+      "literal_inspection": "65-assessment",
+      "changed_helper_interpretation_ids": [],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/release27-ci-callsite-revalidation/C02-preserved.json",
+          "sha256": "94a01bba6b4b4592362cbfe251d46ece75c80d62f4b2dc4c8aa4519ae995bea1",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18"
+        }
+      ],
+      "exact_earlier_clause_assessment": {
+        "cell": "disposition:transitions:C02:01",
+        "frozen_row_sha256": "c44ae62fc188d22a8c71cf94f6841279653269c71c789be7e2304d42382497b3",
+        "literal": {
+          "event": "all declared dependencies settle",
+          "guard": "aggregate always condition admits evaluation",
+          "effects": "Collect required job results, selected artifact result, release candidate result and advisory results.",
+          "failure_retry": "Failure to evaluate the aggregator is not a pass."
+        },
+        "actual_current_interpretation": "Always aggregate retains all declared dependency results.",
+        "witness_ids": [
+          "w32"
+        ],
+        "prior_proof": "docs/state-contracts-major/execution/evidence/release27-ci-callsite-revalidation/C02-preserved.json",
+        "selected_for_successor": true,
+        "action": "Append source successor only at actual commit, retaining old evidence."
+      }
+    },
+    {
+      "cell": "disposition:transitions:C02:02",
+      "frozen_record": {
+        "transition_id": "C02:02",
+        "machine_id": "C02",
+        "owner": "release-and-tooling",
+        "baseline": {
+          "from_state": "evaluating",
+          "from": "evaluating",
+          "event": "required job result inspected",
+          "guard": "every required result is success or skipped, auto-release-candidate is success, and selected artifact coverage is success",
+          "to": "aggregate pass",
+          "effects": "Return success for ci-passed; successful main CI can trigger release workflow.",
+          "failure_retry": "The additional strict candidate/artifact checks prevent generic skipped acceptance from bypassing those gates.",
+          "source": [
+            {
+              "path": ".github/workflows/ci.yml",
+              "symbol": "3719",
+              "lines": [
+                3719,
+                3719
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/workflows/ci.yml"
+            }
+          ],
+          "transition_id": "C02:02"
+        },
+        "task_ids": [
+          "NT-12",
+          "R-03",
+          "R-04",
+          "Q-01"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-24"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "7207eaae364d355c5da5cf4831ce51a5ead7b6d0b24ab8d65586315e97a3fb04",
+      "group": "source-group-037",
+      "assessment": "Generic required success/skipped handling still has stricter candidate and selected-artifact success predicates.",
+      "literal_inspection": "65-assessment",
+      "changed_helper_interpretation_ids": [],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/release27-ci-callsite-revalidation/C02-preserved.json",
+          "sha256": "94a01bba6b4b4592362cbfe251d46ece75c80d62f4b2dc4c8aa4519ae995bea1",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18"
+        }
+      ],
+      "exact_earlier_clause_assessment": {
+        "cell": "disposition:transitions:C02:02",
+        "frozen_row_sha256": "7207eaae364d355c5da5cf4831ce51a5ead7b6d0b24ab8d65586315e97a3fb04",
+        "literal": {
+          "event": "required job result inspected",
+          "guard": "every required result is success or skipped, auto-release-candidate is success, and selected artifact coverage is success",
+          "effects": "Return success for ci-passed; successful main CI can trigger release workflow.",
+          "failure_retry": "The additional strict candidate/artifact checks prevent generic skipped acceptance from bypassing those gates."
+        },
+        "actual_current_interpretation": "Generic required success/skipped handling still has stricter candidate and selected-artifact success predicates.",
+        "witness_ids": [
+          "w31",
+          "w33"
+        ],
+        "prior_proof": "docs/state-contracts-major/execution/evidence/release27-ci-callsite-revalidation/C02-preserved.json",
+        "selected_for_successor": true,
+        "action": "Append source successor only at actual commit, retaining old evidence."
+      }
+    },
+    {
+      "cell": "disposition:transitions:C02:03",
+      "frozen_record": {
+        "transition_id": "C02:03",
+        "machine_id": "C02",
+        "owner": "release-and-tooling",
+        "baseline": {
+          "from_state": "evaluating",
+          "from": "evaluating",
+          "event": "required failure, cancellation, unexpected result, or strict gate skip",
+          "guard": "one required result violates acceptance predicates",
+          "to": "aggregate fail",
+          "effects": "Exit nonzero; no CI success authorization.",
+          "failure_retry": "Rerun after correcting cause; prior success on another commit/run is not substituted.",
+          "source": [
+            {
+              "path": ".github/workflows/ci.yml",
+              "symbol": "3719",
+              "lines": [
+                3719,
+                3719
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/workflows/ci.yml"
+            }
+          ],
+          "transition_id": "C02:03"
+        },
+        "task_ids": [
+          "NT-12",
+          "R-03",
+          "R-04",
+          "Q-01"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-24"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "29eedc2bad486084c2143b9a2978852d55d5fb867ff4dee7302c67350481c148",
+      "group": "source-group-037",
+      "assessment": "Required failures/cancellations/unexpected results and strict-gate skips fail the aggregate.",
+      "literal_inspection": "65-assessment",
+      "changed_helper_interpretation_ids": [],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/release27-ci-callsite-revalidation/C02-preserved.json",
+          "sha256": "94a01bba6b4b4592362cbfe251d46ece75c80d62f4b2dc4c8aa4519ae995bea1",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18"
+        }
+      ],
+      "exact_earlier_clause_assessment": {
+        "cell": "disposition:transitions:C02:03",
+        "frozen_row_sha256": "29eedc2bad486084c2143b9a2978852d55d5fb867ff4dee7302c67350481c148",
+        "literal": {
+          "event": "required failure, cancellation, unexpected result, or strict gate skip",
+          "guard": "one required result violates acceptance predicates",
+          "effects": "Exit nonzero; no CI success authorization.",
+          "failure_retry": "Rerun after correcting cause; prior success on another commit/run is not substituted."
+        },
+        "actual_current_interpretation": "Required failures/cancellations/unexpected results and strict-gate skips fail the aggregate.",
+        "witness_ids": [
+          "w34"
+        ],
+        "prior_proof": "docs/state-contracts-major/execution/evidence/release27-ci-callsite-revalidation/C02-preserved.json",
+        "selected_for_successor": true,
+        "action": "Append source successor only at actual commit, retaining old evidence."
+      }
+    },
+    {
+      "cell": "disposition:transitions:C02:04",
+      "frozen_record": {
+        "transition_id": "C02:04",
+        "machine_id": "C02",
+        "owner": "release-and-tooling",
+        "baseline": {
+          "from_state": "evaluating",
+          "from": "evaluating",
+          "event": "advisory lane settles",
+          "guard": "lane is Pi latest, Codex latest, Claude coverage cell/merge or Pi coverage cell/merge",
+          "to": "advisory result",
+          "effects": "Retain lane visibility/evidence; its status is excluded from required_results.",
+          "failure_retry": "Advisory failure does not veto ci-passed. Comment naming only Pi latest is stale.",
+          "source": [
+            {
+              "path": ".github/workflows/ci.yml",
+              "symbol": "3719",
+              "lines": [
+                3719,
+                3719
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/workflows/ci.yml"
+            }
+          ],
+          "transition_id": "C02:04"
+        },
+        "task_ids": [
+          "NT-12",
+          "R-03",
+          "R-04",
+          "Q-01"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-24"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "29fb84bff8a86c84a56d2879f6f5469ce986987ae3f755c2ecf1ff0b35c7e2ff",
+      "group": "source-group-037",
+      "assessment": "Latest and coverage advisory lanes remain outside required_results without baseline promotion.",
+      "literal_inspection": "65-assessment",
+      "changed_helper_interpretation_ids": [],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/release27-ci-callsite-revalidation/C02-preserved.json",
+          "sha256": "94a01bba6b4b4592362cbfe251d46ece75c80d62f4b2dc4c8aa4519ae995bea1",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18"
+        }
+      ],
+      "exact_earlier_clause_assessment": {
+        "cell": "disposition:transitions:C02:04",
+        "frozen_row_sha256": "29fb84bff8a86c84a56d2879f6f5469ce986987ae3f755c2ecf1ff0b35c7e2ff",
+        "literal": {
+          "event": "advisory lane settles",
+          "guard": "lane is Pi latest, Codex latest, Claude coverage cell/merge or Pi coverage cell/merge",
+          "effects": "Retain lane visibility/evidence; its status is excluded from required_results.",
+          "failure_retry": "Advisory failure does not veto ci-passed. Comment naming only Pi latest is stale."
+        },
+        "actual_current_interpretation": "Latest and coverage advisory lanes remain outside required_results without baseline promotion.",
+        "witness_ids": [
+          "w35"
+        ],
+        "prior_proof": "docs/state-contracts-major/execution/evidence/release27-ci-callsite-revalidation/C02-preserved.json",
+        "selected_for_successor": true,
+        "action": "Append source successor only at actual commit, retaining old evidence."
+      }
+    }
+  ],
+  "verified_literal_witnesses": [
+    {
+      "witness_id": "w13",
+      "path": ".github/workflows/release.yml",
+      "actual0ef_spans": [
+        [
+          472,
+          513
+        ]
+      ],
+      "current_file_sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126",
+      "prior": {
+        "id": "w13",
+        "path": ".github/workflows/release.yml",
+        "old_source": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+        "old_span": [
+          472,
+          513
+        ],
+        "current_spans": [
+          [
+            472,
+            513
+          ]
+        ],
+        "sha256_of_LF_span": "d878d7d44fa806c6a1ff07198c920bc9b8b0f162c21c0e9c0ef0c517ed72d851",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift.",
+      "current_f3_spans": [
+        [
+          472,
+          513
+        ]
+      ],
+      "current_f3_sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126"
+    },
+    {
+      "witness_id": "w33",
+      "path": ".github/workflows/release.yml",
+      "actual0ef_spans": [
+        [
+          31,
+          63
+        ]
+      ],
+      "current_file_sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126",
+      "prior": {
+        "id": "w33",
+        "path": ".github/workflows/release.yml",
+        "old_source": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+        "old_span": [
+          31,
+          63
+        ],
+        "current_spans": [
+          [
+            31,
+            63
+          ]
+        ],
+        "sha256_of_LF_span": "5105f6969e75baad3743f95b19291e0a7e6fd594ae1cf11a6aa32aede72b4a60",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift.",
+      "current_f3_spans": [
+        [
+          31,
+          63
+        ]
+      ],
+      "current_f3_sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126"
+    },
+    {
+      "witness_id": "w60",
+      "path": ".github/workflows/release.yml",
+      "actual0ef_spans": [
+        [
+          178,
+          191
+        ]
+      ],
+      "current_file_sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126",
+      "prior": {
+        "id": "w60",
+        "path": ".github/workflows/release.yml",
+        "old_source": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+        "old_span": [
+          178,
+          191
+        ],
+        "current_spans": [
+          [
+            178,
+            191
+          ]
+        ],
+        "sha256_of_LF_span": "476cf91bb6bb8341e04ce2217aa983ec6750be1b69fbf2e8105e0ea98359afdb",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift.",
+      "current_f3_spans": [
+        [
+          178,
+          191
+        ]
+      ],
+      "current_f3_sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126"
+    }
+  ],
+  "changed_old_literals": [],
+  "reused_helper_assessments": [],
+  "negative_scope": "Static finite guarded claims only, with inherited scope/limits. No execution, qualification or unchecked new source claim."
+}

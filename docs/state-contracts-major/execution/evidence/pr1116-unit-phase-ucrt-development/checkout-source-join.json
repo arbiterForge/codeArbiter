@@ -1,0 +1,37 @@
+{
+  "actual_failed_checkout": "2b4db6f13ecf55e16baf85a7915e053ef8ff355d",
+  "workflow_API_head": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+  "rows": [
+    {
+      "path": ".github/scripts/test_npm_binding_observation.py",
+      "checkout_blob_oid": "75965cb808c4022355b8235a321b117f075d6b5f",
+      "api_head_blob_oid": "75965cb808c4022355b8235a321b117f075d6b5f",
+      "blob_oid_equal": true,
+      "checkout_sha256": "b7347574f4b32cd9f39f5408cc7c6d7ee716783be627b0a6989ca7831b8c7c3f",
+      "api_head_sha256": "b7347574f4b32cd9f39f5408cc7c6d7ee716783be627b0a6989ca7831b8c7c3f",
+      "literal_bytes_equal": true,
+      "bytes": 26997
+    },
+    {
+      "path": ".github/scripts/npm_binding_observation.py",
+      "checkout_blob_oid": "2384ad748dcc9c96f79ae9e17230997e04910923",
+      "api_head_blob_oid": "2384ad748dcc9c96f79ae9e17230997e04910923",
+      "blob_oid_equal": true,
+      "checkout_sha256": "d203d30b593783fb05454904311d7e25c7f7f1b913f3a501f45cf7aac27a95ab",
+      "api_head_sha256": "d203d30b593783fb05454904311d7e25c7f7f1b913f3a501f45cf7aac27a95ab",
+      "literal_bytes_equal": true,
+      "bytes": 24383
+    },
+    {
+      "path": "core/artifacts/internal/evidence/launch_binding_limits_test.go",
+      "checkout_blob_oid": "b8ff83ebe880655e2e1cdf06a37ef7c569abe283",
+      "api_head_blob_oid": "b8ff83ebe880655e2e1cdf06a37ef7c569abe283",
+      "blob_oid_equal": true,
+      "checkout_sha256": "1a320a186987678561a8a01e0e4eaf641d3fafe65cd38a0c9667d165a9c81810",
+      "api_head_sha256": "1a320a186987678561a8a01e0e4eaf641d3fafe65cd38a0c9667d165a9c81810",
+      "literal_bytes_equal": true,
+      "bytes": 6780
+    }
+  ],
+  "identity_basis": "GitHub immutable contents API for exact checkoutref; local Git-owned blob OIDs/bytes for APIhead; no SHA1 computation, fetch or ref mutation."
+}

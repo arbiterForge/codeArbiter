@@ -1,0 +1,2663 @@
+{
+  "repository": "arbiterForge/codeArbiter",
+  "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "status": "complete reserved generator-helper source coverage",
+  "machines": [
+    {
+      "id": "generator:markdown",
+      "name": "Source normalization, frontmatter and fenced Markdown scanner",
+      "kind": "implemented",
+      "state_storage": "Per-call string/line cursor, open fence character+length, parsed flat fields; no persisted workflow state",
+      "states": [
+        "raw",
+        "normalized",
+        "no-frontmatter",
+        "frontmatter-open",
+        "parsed",
+        "outside-fence",
+        "inside-fence",
+        "unterminated-fence"
+      ],
+      "sources": [
+        {
+          "path": "site/scripts/generator/normalize-source.ts",
+          "symbol": "module",
+          "lines": "1-11",
+          "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/normalize-source.ts"
+        },
+        {
+          "path": "site/scripts/generator/split-frontmatter.ts",
+          "symbol": "module",
+          "lines": "1-41",
+          "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/split-frontmatter.ts"
+        },
+        {
+          "path": "site/scripts/generator/parse-fields.ts",
+          "symbol": "module",
+          "lines": "1-43",
+          "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/parse-fields.ts"
+        },
+        {
+          "path": "site/scripts/generator/parse-doc.ts",
+          "symbol": "module",
+          "lines": "1-18",
+          "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/parse-doc.ts"
+        },
+        {
+          "path": "site/scripts/generator/markdown-fences.ts",
+          "symbol": "module",
+          "lines": "1-79",
+          "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/markdown-fences.ts"
+        }
+      ],
+      "transitions": [
+        {
+          "from": "raw",
+          "event": "normalizeSource",
+          "guard": "leading BOM or CRLF",
+          "to": "normalized",
+          "effects": "Strip one leading BOM and convert CRLF to LF.",
+          "failure_retry": "Other bytes preserved; parser alone does not normalize input.",
+          "source": [
+            {
+              "path": "site/scripts/generator/normalize-source.ts",
+              "symbol": "module",
+              "lines": "1-11",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/normalize-source.ts"
+            },
+            {
+              "path": "site/scripts/generator/split-frontmatter.ts",
+              "symbol": "module",
+              "lines": "1-41",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/split-frontmatter.ts"
+            },
+            {
+              "path": "site/scripts/generator/parse-fields.ts",
+              "symbol": "module",
+              "lines": "1-43",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/parse-fields.ts"
+            },
+            {
+              "path": "site/scripts/generator/parse-doc.ts",
+              "symbol": "module",
+              "lines": "1-18",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/parse-doc.ts"
+            },
+            {
+              "path": "site/scripts/generator/markdown-fences.ts",
+              "symbol": "module",
+              "lines": "1-79",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/markdown-fences.ts"
+            }
+          ]
+        },
+        {
+          "from": "normalized",
+          "event": "split frontmatter",
+          "guard": "first line exactly --- and later closing exact ---",
+          "to": "parsed",
+          "effects": "Return flat frontmatter plus body after leading empty lines.",
+          "failure_retry": "Missing/unclosed opener returns null frontmatter and whole original body, not a hard error.",
+          "source": [
+            {
+              "path": "site/scripts/generator/normalize-source.ts",
+              "symbol": "module",
+              "lines": "1-11",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/normalize-source.ts"
+            },
+            {
+              "path": "site/scripts/generator/split-frontmatter.ts",
+              "symbol": "module",
+              "lines": "1-41",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/split-frontmatter.ts"
+            },
+            {
+              "path": "site/scripts/generator/parse-fields.ts",
+              "symbol": "module",
+              "lines": "1-43",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/parse-fields.ts"
+            },
+            {
+              "path": "site/scripts/generator/parse-doc.ts",
+              "symbol": "module",
+              "lines": "1-18",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/parse-doc.ts"
+            },
+            {
+              "path": "site/scripts/generator/markdown-fences.ts",
+              "symbol": "module",
+              "lines": "1-79",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/markdown-fences.ts"
+            }
+          ]
+        },
+        {
+          "from": "frontmatter",
+          "event": "parse fields",
+          "guard": "line contains colon",
+          "to": "field map",
+          "effects": "Split first colon, trim, strip one matching outer quote pair; last repeated key wins.",
+          "failure_retry": "Blank/colonless lines ignored; nested YAML unsupported but not generally rejected by this flat parser.",
+          "source": [
+            {
+              "path": "site/scripts/generator/normalize-source.ts",
+              "symbol": "module",
+              "lines": "1-11",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/normalize-source.ts"
+            },
+            {
+              "path": "site/scripts/generator/split-frontmatter.ts",
+              "symbol": "module",
+              "lines": "1-41",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/split-frontmatter.ts"
+            },
+            {
+              "path": "site/scripts/generator/parse-fields.ts",
+              "symbol": "module",
+              "lines": "1-43",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/parse-fields.ts"
+            },
+            {
+              "path": "site/scripts/generator/parse-doc.ts",
+              "symbol": "module",
+              "lines": "1-18",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/parse-doc.ts"
+            },
+            {
+              "path": "site/scripts/generator/markdown-fences.ts",
+              "symbol": "module",
+              "lines": "1-79",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/markdown-fences.ts"
+            }
+          ]
+        },
+        {
+          "from": "outside-fence",
+          "event": "fence opener",
+          "guard": "0\u20133 spaces plus >=3 backticks or tildes",
+          "to": "inside-fence",
+          "effects": "Remember character and opener length; mark delimiter fenced.",
+          "failure_retry": "No semantic interpretation of code inside fence.",
+          "source": [
+            {
+              "path": "site/scripts/generator/normalize-source.ts",
+              "symbol": "module",
+              "lines": "1-11",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/normalize-source.ts"
+            },
+            {
+              "path": "site/scripts/generator/split-frontmatter.ts",
+              "symbol": "module",
+              "lines": "1-41",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/split-frontmatter.ts"
+            },
+            {
+              "path": "site/scripts/generator/parse-fields.ts",
+              "symbol": "module",
+              "lines": "1-43",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/parse-fields.ts"
+            },
+            {
+              "path": "site/scripts/generator/parse-doc.ts",
+              "symbol": "module",
+              "lines": "1-18",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/parse-doc.ts"
+            },
+            {
+              "path": "site/scripts/generator/markdown-fences.ts",
+              "symbol": "module",
+              "lines": "1-79",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/markdown-fences.ts"
+            }
+          ]
+        },
+        {
+          "from": "inside-fence",
+          "event": "candidate closer",
+          "guard": "same character,at least opener length,only whitespace after",
+          "to": "outside-fence",
+          "effects": "Mark closing line fenced, then resume headings.",
+          "failure_retry": "Short/mixed/nonterminal closer stays inside; unclosed fence extends to EOF.",
+          "source": [
+            {
+              "path": "site/scripts/generator/normalize-source.ts",
+              "symbol": "module",
+              "lines": "1-11",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/normalize-source.ts"
+            },
+            {
+              "path": "site/scripts/generator/split-frontmatter.ts",
+              "symbol": "module",
+              "lines": "1-41",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/split-frontmatter.ts"
+            },
+            {
+              "path": "site/scripts/generator/parse-fields.ts",
+              "symbol": "module",
+              "lines": "1-43",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/parse-fields.ts"
+            },
+            {
+              "path": "site/scripts/generator/parse-doc.ts",
+              "symbol": "module",
+              "lines": "1-18",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/parse-doc.ts"
+            },
+            {
+              "path": "site/scripts/generator/markdown-fences.ts",
+              "symbol": "module",
+              "lines": "1-79",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/markdown-fences.ts"
+            }
+          ]
+        },
+        {
+          "from": "outside-fence",
+          "event": "ATX heading",
+          "guard": "1\u20136 hashes and admitted spacing",
+          "to": "heading emitted",
+          "effects": "Extract heading/level/index and optional trailing-hash trimming; demote1\u20135 only when requested.",
+          "failure_retry": "Fenced headings ignored; level6 unchanged by demotion.",
+          "source": [
+            {
+              "path": "site/scripts/generator/normalize-source.ts",
+              "symbol": "module",
+              "lines": "1-11",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/normalize-source.ts"
+            },
+            {
+              "path": "site/scripts/generator/split-frontmatter.ts",
+              "symbol": "module",
+              "lines": "1-41",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/split-frontmatter.ts"
+            },
+            {
+              "path": "site/scripts/generator/parse-fields.ts",
+              "symbol": "module",
+              "lines": "1-43",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/parse-fields.ts"
+            },
+            {
+              "path": "site/scripts/generator/parse-doc.ts",
+              "symbol": "module",
+              "lines": "1-18",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/parse-doc.ts"
+            },
+            {
+              "path": "site/scripts/generator/markdown-fences.ts",
+              "symbol": "module",
+              "lines": "1-79",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/markdown-fences.ts"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "generator:discovery",
+      "name": "Plugin source discovery, names, slugs and host availability projection",
+      "kind": "implemented",
+      "state_storage": "Per-run collected files, per-base slug counts and host command sets; filesystem reads only",
+      "states": [
+        "missing-root",
+        "collected",
+        "classified",
+        "named",
+        "slugged",
+        "host-known",
+        "host-fallback"
+      ],
+      "sources": [
+        {
+          "path": "site/scripts/generator/collect-sources.ts",
+          "symbol": "module",
+          "lines": "1-59",
+          "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/collect-sources.ts"
+        },
+        {
+          "path": "site/scripts/generator/collect-lenses.ts",
+          "symbol": "module",
+          "lines": "1-33",
+          "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/collect-lenses.ts"
+        },
+        {
+          "path": "site/scripts/generator/classify-source.ts",
+          "symbol": "module",
+          "lines": "1-30",
+          "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/classify-source.ts"
+        },
+        {
+          "path": "site/scripts/generator/derive-name.ts",
+          "symbol": "module",
+          "lines": "1-27",
+          "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/derive-name.ts"
+        },
+        {
+          "path": "site/scripts/generator/assign-slugs.ts",
+          "symbol": "module",
+          "lines": "1-28",
+          "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/assign-slugs.ts"
+        },
+        {
+          "path": "site/scripts/generator/slugify.ts",
+          "symbol": "module",
+          "lines": "1-14",
+          "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/slugify.ts"
+        },
+        {
+          "path": "site/scripts/generator/host-command-catalog.ts",
+          "symbol": "module",
+          "lines": "1-66",
+          "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/host-command-catalog.ts"
+        }
+      ],
+      "transitions": [
+        {
+          "from": "missing root/lens directory",
+          "event": "collect",
+          "guard": "path absent",
+          "to": "empty inventory",
+          "effects": "Return empty list.",
+          "failure_retry": "Other read/stat failures propagate; existence alone not a successful parse.",
+          "source": [
+            {
+              "path": "site/scripts/generator/collect-sources.ts",
+              "symbol": "module",
+              "lines": "1-59",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/collect-sources.ts"
+            },
+            {
+              "path": "site/scripts/generator/collect-lenses.ts",
+              "symbol": "module",
+              "lines": "1-33",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/collect-lenses.ts"
+            },
+            {
+              "path": "site/scripts/generator/classify-source.ts",
+              "symbol": "module",
+              "lines": "1-30",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/classify-source.ts"
+            },
+            {
+              "path": "site/scripts/generator/derive-name.ts",
+              "symbol": "module",
+              "lines": "1-27",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/derive-name.ts"
+            },
+            {
+              "path": "site/scripts/generator/assign-slugs.ts",
+              "symbol": "module",
+              "lines": "1-28",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/assign-slugs.ts"
+            },
+            {
+              "path": "site/scripts/generator/slugify.ts",
+              "symbol": "module",
+              "lines": "1-14",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/slugify.ts"
+            },
+            {
+              "path": "site/scripts/generator/host-command-catalog.ts",
+              "symbol": "module",
+              "lines": "1-66",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/host-command-catalog.ts"
+            }
+          ]
+        },
+        {
+          "from": "plugin tree",
+          "event": "collect",
+          "guard": "top-level command/agent .md or skill directory containing SKILL.md",
+          "to": "collected",
+          "effects": "Read full text; classify by normalized path substring and stable sort path. Lenses separately collect sorted .md basenames.",
+          "failure_retry": "Unknown path class throws; discovery does not validate semantic contents.",
+          "source": [
+            {
+              "path": "site/scripts/generator/collect-sources.ts",
+              "symbol": "module",
+              "lines": "1-59",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/collect-sources.ts"
+            },
+            {
+              "path": "site/scripts/generator/collect-lenses.ts",
+              "symbol": "module",
+              "lines": "1-33",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/collect-lenses.ts"
+            },
+            {
+              "path": "site/scripts/generator/classify-source.ts",
+              "symbol": "module",
+              "lines": "1-30",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/classify-source.ts"
+            },
+            {
+              "path": "site/scripts/generator/derive-name.ts",
+              "symbol": "module",
+              "lines": "1-27",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/derive-name.ts"
+            },
+            {
+              "path": "site/scripts/generator/assign-slugs.ts",
+              "symbol": "module",
+              "lines": "1-28",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/assign-slugs.ts"
+            },
+            {
+              "path": "site/scripts/generator/slugify.ts",
+              "symbol": "module",
+              "lines": "1-14",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/slugify.ts"
+            },
+            {
+              "path": "site/scripts/generator/host-command-catalog.ts",
+              "symbol": "module",
+              "lines": "1-66",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/host-command-catalog.ts"
+            }
+          ]
+        },
+        {
+          "from": "collected document",
+          "event": "deriveName",
+          "guard": "nonempty fields.name supplied",
+          "to": "named",
+          "effects": "Use supplied name; otherwise basename without .md, or parent for SKILL.",
+          "failure_retry": "Callers can explicitly pass empty fields to enforce filename identity.",
+          "source": [
+            {
+              "path": "site/scripts/generator/collect-sources.ts",
+              "symbol": "module",
+              "lines": "1-59",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/collect-sources.ts"
+            },
+            {
+              "path": "site/scripts/generator/collect-lenses.ts",
+              "symbol": "module",
+              "lines": "1-33",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/collect-lenses.ts"
+            },
+            {
+              "path": "site/scripts/generator/classify-source.ts",
+              "symbol": "module",
+              "lines": "1-30",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/classify-source.ts"
+            },
+            {
+              "path": "site/scripts/generator/derive-name.ts",
+              "symbol": "module",
+              "lines": "1-27",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/derive-name.ts"
+            },
+            {
+              "path": "site/scripts/generator/assign-slugs.ts",
+              "symbol": "module",
+              "lines": "1-28",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/assign-slugs.ts"
+            },
+            {
+              "path": "site/scripts/generator/slugify.ts",
+              "symbol": "module",
+              "lines": "1-14",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/slugify.ts"
+            },
+            {
+              "path": "site/scripts/generator/host-command-catalog.ts",
+              "symbol": "module",
+              "lines": "1-66",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/host-command-catalog.ts"
+            }
+          ]
+        },
+        {
+          "from": "name list",
+          "event": "assignSlugs",
+          "guard": "lowercase ASCII-alphanumeric normalization",
+          "to": "slugged",
+          "effects": "Increment per-normalized-base counter and suffix repeated base -2,-3.",
+          "failure_retry": "No global reserved-output set: generated suffix can equal a different natural base; no current production collision claimed.",
+          "source": [
+            {
+              "path": "site/scripts/generator/collect-sources.ts",
+              "symbol": "module",
+              "lines": "1-59",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/collect-sources.ts"
+            },
+            {
+              "path": "site/scripts/generator/collect-lenses.ts",
+              "symbol": "module",
+              "lines": "1-33",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/collect-lenses.ts"
+            },
+            {
+              "path": "site/scripts/generator/classify-source.ts",
+              "symbol": "module",
+              "lines": "1-30",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/classify-source.ts"
+            },
+            {
+              "path": "site/scripts/generator/derive-name.ts",
+              "symbol": "module",
+              "lines": "1-27",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/derive-name.ts"
+            },
+            {
+              "path": "site/scripts/generator/assign-slugs.ts",
+              "symbol": "module",
+              "lines": "1-28",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/assign-slugs.ts"
+            },
+            {
+              "path": "site/scripts/generator/slugify.ts",
+              "symbol": "module",
+              "lines": "1-14",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/slugify.ts"
+            },
+            {
+              "path": "site/scripts/generator/host-command-catalog.ts",
+              "symbol": "module",
+              "lines": "1-66",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/host-command-catalog.ts"
+            }
+          ]
+        },
+        {
+          "from": "host catalog present",
+          "event": "parse command catalog Markdown",
+          "guard": "host-specific backticked /ca:,$ca-,/ca- spelling",
+          "to": "host-known",
+          "effects": "Return unique matched names then boolean availability per command.",
+          "failure_retry": "Regex discovery is not live host registration proof.",
+          "source": [
+            {
+              "path": "site/scripts/generator/collect-sources.ts",
+              "symbol": "module",
+              "lines": "1-59",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/collect-sources.ts"
+            },
+            {
+              "path": "site/scripts/generator/collect-lenses.ts",
+              "symbol": "module",
+              "lines": "1-33",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/collect-lenses.ts"
+            },
+            {
+              "path": "site/scripts/generator/classify-source.ts",
+              "symbol": "module",
+              "lines": "1-30",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/classify-source.ts"
+            },
+            {
+              "path": "site/scripts/generator/derive-name.ts",
+              "symbol": "module",
+              "lines": "1-27",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/derive-name.ts"
+            },
+            {
+              "path": "site/scripts/generator/assign-slugs.ts",
+              "symbol": "module",
+              "lines": "1-28",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/assign-slugs.ts"
+            },
+            {
+              "path": "site/scripts/generator/slugify.ts",
+              "symbol": "module",
+              "lines": "1-14",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/slugify.ts"
+            },
+            {
+              "path": "site/scripts/generator/host-command-catalog.ts",
+              "symbol": "module",
+              "lines": "1-66",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/host-command-catalog.ts"
+            }
+          ]
+        },
+        {
+          "from": "host catalog absent",
+          "event": "load catalogs",
+          "guard": "filesystem path missing",
+          "to": "host-fallback",
+          "effects": "Claude falls back to collected command names; Codex/Pi empty availability.",
+          "failure_retry": "Does not infer same availability across hosts.",
+          "source": [
+            {
+              "path": "site/scripts/generator/collect-sources.ts",
+              "symbol": "module",
+              "lines": "1-59",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/collect-sources.ts"
+            },
+            {
+              "path": "site/scripts/generator/collect-lenses.ts",
+              "symbol": "module",
+              "lines": "1-33",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/collect-lenses.ts"
+            },
+            {
+              "path": "site/scripts/generator/classify-source.ts",
+              "symbol": "module",
+              "lines": "1-30",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/classify-source.ts"
+            },
+            {
+              "path": "site/scripts/generator/derive-name.ts",
+              "symbol": "module",
+              "lines": "1-27",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/derive-name.ts"
+            },
+            {
+              "path": "site/scripts/generator/assign-slugs.ts",
+              "symbol": "module",
+              "lines": "1-28",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/assign-slugs.ts"
+            },
+            {
+              "path": "site/scripts/generator/slugify.ts",
+              "symbol": "module",
+              "lines": "1-14",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/slugify.ts"
+            },
+            {
+              "path": "site/scripts/generator/host-command-catalog.ts",
+              "symbol": "module",
+              "lines": "1-66",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/host-command-catalog.ts"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "generator:catalog-graph",
+      "name": "Command discovery validation, command-skill pairing and legacy URL routing",
+      "kind": "implemented",
+      "state_storage": "Read-only generated command JSON and shipped source headings; derived graph/redirect maps",
+      "states": [
+        "unvalidated",
+        "valid-catalog",
+        "claimed-owner",
+        "unpaired",
+        "merge-pair",
+        "alias-pair",
+        "invalid-graph",
+        "redirected"
+      ],
+      "sources": [
+        {
+          "path": "site/scripts/generator/landing-stats.ts",
+          "symbol": "module",
+          "lines": "1-199",
+          "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/landing-stats.ts"
+        },
+        {
+          "path": "site/scripts/generator/workflow-pairs.ts",
+          "symbol": "module",
+          "lines": "1-193",
+          "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/workflow-pairs.ts"
+        },
+        {
+          "path": "site/scripts/generator/plugin-workflow-pairs.ts",
+          "symbol": "module",
+          "lines": "1-38",
+          "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/plugin-workflow-pairs.ts"
+        },
+        {
+          "path": "site/scripts/generator/build-index.ts",
+          "symbol": "module",
+          "lines": "1-138",
+          "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/build-index.ts"
+        },
+        {
+          "path": "site/scripts/generator/types.ts",
+          "symbol": "module",
+          "lines": "1-297",
+          "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/types.ts"
+        }
+      ],
+      "transitions": [
+        {
+          "from": "unvalidated catalog",
+          "event": "load",
+          "guard": "schemaVersion1; exact visibility/workflow orders; metadata object and route set exact",
+          "to": "valid-catalog",
+          "effects": "Validate every installed route, description/path, canonical/replacement and legacy alias closure.",
+          "failure_retry": "Missing/malformed catalog, unknown/missing route, duplicate legacy alias, alias-to-alias/deprecated target throws.",
+          "source": [
+            {
+              "path": "site/scripts/generator/landing-stats.ts",
+              "symbol": "module",
+              "lines": "1-199",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/landing-stats.ts"
+            },
+            {
+              "path": "site/scripts/generator/workflow-pairs.ts",
+              "symbol": "module",
+              "lines": "1-193",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/workflow-pairs.ts"
+            },
+            {
+              "path": "site/scripts/generator/plugin-workflow-pairs.ts",
+              "symbol": "module",
+              "lines": "1-38",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/plugin-workflow-pairs.ts"
+            },
+            {
+              "path": "site/scripts/generator/build-index.ts",
+              "symbol": "module",
+              "lines": "1-138",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/build-index.ts"
+            },
+            {
+              "path": "site/scripts/generator/types.ts",
+              "symbol": "module",
+              "lines": "1-297",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/types.ts"
+            }
+          ]
+        },
+        {
+          "from": "command source",
+          "event": "claimedSkill",
+          "guard": "first level1 heading outside frontmatter/fences is bare lowercase skill identifier",
+          "to": "claimed-owner",
+          "effects": "Resolve explicit owning skill convention.",
+          "failure_retry": "/ca: heading or no matching identifier produces no claim; no guessed pairing from filename.",
+          "source": [
+            {
+              "path": "site/scripts/generator/landing-stats.ts",
+              "symbol": "module",
+              "lines": "1-199",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/landing-stats.ts"
+            },
+            {
+              "path": "site/scripts/generator/workflow-pairs.ts",
+              "symbol": "module",
+              "lines": "1-193",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/workflow-pairs.ts"
+            },
+            {
+              "path": "site/scripts/generator/plugin-workflow-pairs.ts",
+              "symbol": "module",
+              "lines": "1-38",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/plugin-workflow-pairs.ts"
+            },
+            {
+              "path": "site/scripts/generator/build-index.ts",
+              "symbol": "module",
+              "lines": "1-138",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/build-index.ts"
+            },
+            {
+              "path": "site/scripts/generator/types.ts",
+              "symbol": "module",
+              "lines": "1-297",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/types.ts"
+            }
+          ]
+        },
+        {
+          "from": "claims",
+          "event": "derive pairs",
+          "guard": "every claimed skill exists; unique command owner per skill; catalog available",
+          "to": "merge-pair / alias-pair",
+          "effects": "Alias visibility retains skill page and pointer; other visibility merges skill into command page.",
+          "failure_retry": "Unknown/duplicate owner aggregated error; claim without catalog throws; no claims returns empty even if catalog absent.",
+          "source": [
+            {
+              "path": "site/scripts/generator/landing-stats.ts",
+              "symbol": "module",
+              "lines": "1-199",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/landing-stats.ts"
+            },
+            {
+              "path": "site/scripts/generator/workflow-pairs.ts",
+              "symbol": "module",
+              "lines": "1-193",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/workflow-pairs.ts"
+            },
+            {
+              "path": "site/scripts/generator/plugin-workflow-pairs.ts",
+              "symbol": "module",
+              "lines": "1-38",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/plugin-workflow-pairs.ts"
+            },
+            {
+              "path": "site/scripts/generator/build-index.ts",
+              "symbol": "module",
+              "lines": "1-138",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/build-index.ts"
+            },
+            {
+              "path": "site/scripts/generator/types.ts",
+              "symbol": "module",
+              "lines": "1-297",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/types.ts"
+            }
+          ]
+        },
+        {
+          "from": "shipped skill",
+          "event": "classify role",
+          "guard": "derived pairs",
+          "to": "merged / alias-owner / internal-only",
+          "effects": "Merged skills have no own page; aliases keep owning skill page.",
+          "failure_retry": "No runtime skill enable/disable is performed.",
+          "source": [
+            {
+              "path": "site/scripts/generator/landing-stats.ts",
+              "symbol": "module",
+              "lines": "1-199",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/landing-stats.ts"
+            },
+            {
+              "path": "site/scripts/generator/workflow-pairs.ts",
+              "symbol": "module",
+              "lines": "1-193",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/workflow-pairs.ts"
+            },
+            {
+              "path": "site/scripts/generator/plugin-workflow-pairs.ts",
+              "symbol": "module",
+              "lines": "1-38",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/plugin-workflow-pairs.ts"
+            },
+            {
+              "path": "site/scripts/generator/build-index.ts",
+              "symbol": "module",
+              "lines": "1-138",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/build-index.ts"
+            },
+            {
+              "path": "site/scripts/generator/types.ts",
+              "symbol": "module",
+              "lines": "1-297",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/types.ts"
+            }
+          ]
+        },
+        {
+          "from": "merged/legacy skill URL",
+          "event": "build redirect",
+          "guard": "pair map and supplied historical old-slug set",
+          "to": "redirected",
+          "effects": "Emit base-aware one-hop final target; preserve known historical -2 URLs.",
+          "failure_retry": "Alias owner URLs remain live; new skills not automatically added to historical set.",
+          "source": [
+            {
+              "path": "site/scripts/generator/landing-stats.ts",
+              "symbol": "module",
+              "lines": "1-199",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/landing-stats.ts"
+            },
+            {
+              "path": "site/scripts/generator/workflow-pairs.ts",
+              "symbol": "module",
+              "lines": "1-193",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/workflow-pairs.ts"
+            },
+            {
+              "path": "site/scripts/generator/plugin-workflow-pairs.ts",
+              "symbol": "module",
+              "lines": "1-38",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/plugin-workflow-pairs.ts"
+            },
+            {
+              "path": "site/scripts/generator/build-index.ts",
+              "symbol": "module",
+              "lines": "1-138",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/build-index.ts"
+            },
+            {
+              "path": "site/scripts/generator/types.ts",
+              "symbol": "module",
+              "lines": "1-297",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/types.ts"
+            }
+          ]
+        },
+        {
+          "from": "rendered pages",
+          "event": "index/sidebar",
+          "guard": "every command has catalog metadata",
+          "to": "index/sidebar returned",
+          "effects": "Group fixed command/skill/agent order, sort sidebar labels, nest command visibility and workflow groups.",
+          "failure_retry": "Missing command catalog/metadata throws; pure return, parent generator owns writes.",
+          "source": [
+            {
+              "path": "site/scripts/generator/landing-stats.ts",
+              "symbol": "module",
+              "lines": "1-199",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/landing-stats.ts"
+            },
+            {
+              "path": "site/scripts/generator/workflow-pairs.ts",
+              "symbol": "module",
+              "lines": "1-193",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/workflow-pairs.ts"
+            },
+            {
+              "path": "site/scripts/generator/plugin-workflow-pairs.ts",
+              "symbol": "module",
+              "lines": "1-38",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/plugin-workflow-pairs.ts"
+            },
+            {
+              "path": "site/scripts/generator/build-index.ts",
+              "symbol": "module",
+              "lines": "1-138",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/build-index.ts"
+            },
+            {
+              "path": "site/scripts/generator/types.ts",
+              "symbol": "module",
+              "lines": "1-297",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/types.ts"
+            }
+          ]
+        },
+        {
+          "from": "landing count request",
+          "event": "compute stats",
+          "guard": "actual hook extraction plus catalog and filesystem",
+          "to": "counts projected",
+          "effects": "Count extracted distinct H-tags, catalog core/aliases, .md agents excludingINDEX and all skill directories.",
+          "failure_retry": "Counts are definition-specific; skill directory count alone does not require SKILL.md and gate extraction has stated limitations.",
+          "source": [
+            {
+              "path": "site/scripts/generator/landing-stats.ts",
+              "symbol": "module",
+              "lines": "1-199",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/landing-stats.ts"
+            },
+            {
+              "path": "site/scripts/generator/workflow-pairs.ts",
+              "symbol": "module",
+              "lines": "1-193",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/workflow-pairs.ts"
+            },
+            {
+              "path": "site/scripts/generator/plugin-workflow-pairs.ts",
+              "symbol": "module",
+              "lines": "1-38",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/plugin-workflow-pairs.ts"
+            },
+            {
+              "path": "site/scripts/generator/build-index.ts",
+              "symbol": "module",
+              "lines": "1-138",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/build-index.ts"
+            },
+            {
+              "path": "site/scripts/generator/types.ts",
+              "symbol": "module",
+              "lines": "1-297",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/types.ts"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "generator:curated-validation",
+      "name": "Curated framing shape, gate-row parser and command/flag drift attribution",
+      "kind": "implemented",
+      "state_storage": "Per-file gate accumulator and code-block command owner; collected-key set; accumulated errors",
+      "states": [
+        "optional-absent",
+        "parsing-gates",
+        "curated-valid",
+        "orphan",
+        "duplicate",
+        "reader-invalid",
+        "drift-free",
+        "drift-found"
+      ],
+      "sources": [
+        {
+          "path": "site/scripts/generator/load-curated.ts",
+          "symbol": "module",
+          "lines": "1-318",
+          "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/load-curated.ts"
+        },
+        {
+          "path": "site/scripts/generator/curated-drift.ts",
+          "symbol": "module",
+          "lines": "1-214",
+          "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/curated-drift.ts"
+        },
+        {
+          "path": "site/scripts/generator/types.ts",
+          "symbol": "module",
+          "lines": "1-297",
+          "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/types.ts"
+        }
+      ],
+      "transitions": [
+        {
+          "from": "curated directory absent",
+          "event": "load",
+          "guard": "optional absent directory",
+          "to": "optional-absent",
+          "effects": "Return empty map for generated-only fallback.",
+          "failure_retry": "Existing malformed file is not ignored as absent.",
+          "source": [
+            {
+              "path": "site/scripts/generator/load-curated.ts",
+              "symbol": "module",
+              "lines": "1-318",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/load-curated.ts"
+            },
+            {
+              "path": "site/scripts/generator/curated-drift.ts",
+              "symbol": "module",
+              "lines": "1-214",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/curated-drift.ts"
+            },
+            {
+              "path": "site/scripts/generator/types.ts",
+              "symbol": "module",
+              "lines": "1-297",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/types.ts"
+            }
+          ]
+        },
+        {
+          "from": "curated file",
+          "event": "parse",
+          "guard": "frontmatter and nonempty entity; minimal related/gates syntax",
+          "to": "curated-valid candidate",
+          "effects": "Normalize BOM/CRLF; read one-line related list; accumulate gates until next item/dedent.",
+          "failure_retry": "Each recognized gate must have gate/when/effect; unsupported unrelated nested lines ignored by subset parser.",
+          "source": [
+            {
+              "path": "site/scripts/generator/load-curated.ts",
+              "symbol": "module",
+              "lines": "1-318",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/load-curated.ts"
+            },
+            {
+              "path": "site/scripts/generator/curated-drift.ts",
+              "symbol": "module",
+              "lines": "1-214",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/curated-drift.ts"
+            },
+            {
+              "path": "site/scripts/generator/types.ts",
+              "symbol": "module",
+              "lines": "1-297",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/types.ts"
+            }
+          ]
+        },
+        {
+          "from": "curated candidate",
+          "event": "validate identity",
+          "guard": "entity in collected source set and not seen before",
+          "to": "curated-valid",
+          "effects": "Map by declared entity.",
+          "failure_retry": "Duplicate immediately throws; collect all orphans then throw. Implementation does not independently enforce entity equals file location.",
+          "source": [
+            {
+              "path": "site/scripts/generator/load-curated.ts",
+              "symbol": "module",
+              "lines": "1-318",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/load-curated.ts"
+            },
+            {
+              "path": "site/scripts/generator/curated-drift.ts",
+              "symbol": "module",
+              "lines": "1-214",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/curated-drift.ts"
+            },
+            {
+              "path": "site/scripts/generator/types.ts",
+              "symbol": "module",
+              "lines": "1-297",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/types.ts"
+            }
+          ]
+        },
+        {
+          "from": "shaped curated page",
+          "event": "validate reader fields",
+          "guard": "required fields top-level and nonempty; workflow has nonempty Example outside fences",
+          "to": "curated-valid",
+          "effects": "Use shared field specification for required set/order.",
+          "failure_retry": "Missing/empty fields aggregate; block scalars reject; retired When to reach for it heading rejects all shapes.",
+          "source": [
+            {
+              "path": "site/scripts/generator/load-curated.ts",
+              "symbol": "module",
+              "lines": "1-318",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/load-curated.ts"
+            },
+            {
+              "path": "site/scripts/generator/curated-drift.ts",
+              "symbol": "module",
+              "lines": "1-214",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/curated-drift.ts"
+            },
+            {
+              "path": "site/scripts/generator/types.ts",
+              "symbol": "module",
+              "lines": "1-297",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/types.ts"
+            }
+          ]
+        },
+        {
+          "from": "curated text line",
+          "event": "command event",
+          "guard": "/ca:<name> token recognized",
+          "to": "current command owner",
+          "effects": "Check catalog membership; nearest preceding command owns following same-line flags.",
+          "failure_retry": "Unknown command reported; no source means flag check skipped after command error.",
+          "source": [
+            {
+              "path": "site/scripts/generator/load-curated.ts",
+              "symbol": "module",
+              "lines": "1-318",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/load-curated.ts"
+            },
+            {
+              "path": "site/scripts/generator/curated-drift.ts",
+              "symbol": "module",
+              "lines": "1-214",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/curated-drift.ts"
+            },
+            {
+              "path": "site/scripts/generator/types.ts",
+              "symbol": "module",
+              "lines": "1-297",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/types.ts"
+            }
+          ]
+        },
+        {
+          "from": "code block",
+          "event": "flag event",
+          "guard": "no same-line owner; carried prior command, or page own command under Usage",
+          "to": "attributed flag",
+          "effects": "Validate whole --flag token exists in command+paired-skill shipped text.",
+          "failure_retry": "Intervening known foreign program skips flag attribution; outside attribution no flag check.",
+          "source": [
+            {
+              "path": "site/scripts/generator/load-curated.ts",
+              "symbol": "module",
+              "lines": "1-318",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/load-curated.ts"
+            },
+            {
+              "path": "site/scripts/generator/curated-drift.ts",
+              "symbol": "module",
+              "lines": "1-214",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/curated-drift.ts"
+            },
+            {
+              "path": "site/scripts/generator/types.ts",
+              "symbol": "module",
+              "lines": "1-297",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/types.ts"
+            }
+          ]
+        },
+        {
+          "from": "block state",
+          "event": "leave fence or delimiter",
+          "guard": "current line outside fence or fence delimiter",
+          "to": "owner reset",
+          "effects": "Clear carried command.",
+          "failure_retry": "This lexical check does not prove flag is implemented; it proves source text contains it.",
+          "source": [
+            {
+              "path": "site/scripts/generator/load-curated.ts",
+              "symbol": "module",
+              "lines": "1-318",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/load-curated.ts"
+            },
+            {
+              "path": "site/scripts/generator/curated-drift.ts",
+              "symbol": "module",
+              "lines": "1-214",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/curated-drift.ts"
+            },
+            {
+              "path": "site/scripts/generator/types.ts",
+              "symbol": "module",
+              "lines": "1-297",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/types.ts"
+            }
+          ]
+        },
+        {
+          "from": "all curated files",
+          "event": "assert drift-free",
+          "guard": "no unknown command/flag misses",
+          "to": "drift-free",
+          "effects": "Continue generator.",
+          "failure_retry": "Any misses throw one aggregate error naming every detected file/line/token.",
+          "source": [
+            {
+              "path": "site/scripts/generator/load-curated.ts",
+              "symbol": "module",
+              "lines": "1-318",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/load-curated.ts"
+            },
+            {
+              "path": "site/scripts/generator/curated-drift.ts",
+              "symbol": "module",
+              "lines": "1-214",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/curated-drift.ts"
+            },
+            {
+              "path": "site/scripts/generator/types.ts",
+              "symbol": "module",
+              "lines": "1-297",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/types.ts"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "generator:hook-extractor",
+      "name": "Bounded Python call-site extraction and hook-reference event attribution",
+      "kind": "implemented",
+      "state_storage": "Per-file code mask, regex cursor, argument parentheses/string state, claimed spans and skipped call census",
+      "states": [
+        "code",
+        "comment",
+        "string",
+        "call-depth1",
+        "nested-expression",
+        "literal-tag",
+        "resolved-variable-tag",
+        "skipped",
+        "rendered"
+      ],
+      "sources": [
+        {
+          "path": "site/scripts/generator/extract-hook-gates.ts",
+          "symbol": "module",
+          "lines": "1-325",
+          "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/extract-hook-gates.ts"
+        },
+        {
+          "path": "site/scripts/generator/render-hooks-reference.ts",
+          "symbol": "module",
+          "lines": "1-168",
+          "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/render-hooks-reference.ts"
+        },
+        {
+          "path": "site/scripts/generator/source-ref.ts",
+          "symbol": "module",
+          "lines": "1-13",
+          "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/source-ref.ts"
+        }
+      ],
+      "transitions": [
+        {
+          "from": "source file",
+          "event": "mask scan",
+          "guard": "comment/# or quote/prefixed literal boundary",
+          "to": "comment / string / code",
+          "effects": "Mask comments/strings, consume escaped single/triple strings; unterminated literal consumes EOF.",
+          "failure_retry": "Not a full Python parser; f-string expressions are not evaluated.",
+          "source": [
+            {
+              "path": "site/scripts/generator/extract-hook-gates.ts",
+              "symbol": "module",
+              "lines": "1-325",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/extract-hook-gates.ts"
+            },
+            {
+              "path": "site/scripts/generator/render-hooks-reference.ts",
+              "symbol": "module",
+              "lines": "1-168",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/render-hooks-reference.ts"
+            },
+            {
+              "path": "site/scripts/generator/source-ref.ts",
+              "symbol": "module",
+              "lines": "1-13",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/source-ref.ts"
+            }
+          ]
+        },
+        {
+          "from": "source",
+          "event": "literal-tag regex",
+          "guard": "block/remind with double-quoted H-digits suffix tag",
+          "to": "literal-tag",
+          "effects": "Extract static message segments and claim span.",
+          "failure_retry": "This first literal pass does not check computed codeMask, unlike variable/skipped passes.",
+          "source": [
+            {
+              "path": "site/scripts/generator/extract-hook-gates.ts",
+              "symbol": "module",
+              "lines": "1-325",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/extract-hook-gates.ts"
+            },
+            {
+              "path": "site/scripts/generator/render-hooks-reference.ts",
+              "symbol": "module",
+              "lines": "1-168",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/render-hooks-reference.ts"
+            },
+            {
+              "path": "site/scripts/generator/source-ref.ts",
+              "symbol": "module",
+              "lines": "1-13",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/source-ref.ts"
+            }
+          ]
+        },
+        {
+          "from": "source",
+          "event": "variable-tag regex",
+          "guard": "real code; nearest exact simple/conditional assignment within30 preceding lines",
+          "to": "resolved-variable-tag",
+          "effects": "Emit one site for each literal conditional tag, same static message.",
+          "failure_retry": "No general dataflow; unresolved tag ends in skipped census.",
+          "source": [
+            {
+              "path": "site/scripts/generator/extract-hook-gates.ts",
+              "symbol": "module",
+              "lines": "1-325",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/extract-hook-gates.ts"
+            },
+            {
+              "path": "site/scripts/generator/render-hooks-reference.ts",
+              "symbol": "module",
+              "lines": "1-168",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/render-hooks-reference.ts"
+            },
+            {
+              "path": "site/scripts/generator/source-ref.ts",
+              "symbol": "module",
+              "lines": "1-13",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/source-ref.ts"
+            }
+          ]
+        },
+        {
+          "from": "argument scan",
+          "event": "string segment",
+          "guard": "parenthesis depth1",
+          "to": "message appended",
+          "effects": "Unescape common sequences and concatenate depth1 literal bodies.",
+          "failure_retry": "Nested helper call/variable glue contributes no output; runtime interpolation retained as placeholder text, not executed.",
+          "source": [
+            {
+              "path": "site/scripts/generator/extract-hook-gates.ts",
+              "symbol": "module",
+              "lines": "1-325",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/extract-hook-gates.ts"
+            },
+            {
+              "path": "site/scripts/generator/render-hooks-reference.ts",
+              "symbol": "module",
+              "lines": "1-168",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/render-hooks-reference.ts"
+            },
+            {
+              "path": "site/scripts/generator/source-ref.ts",
+              "symbol": "module",
+              "lines": "1-13",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/source-ref.ts"
+            }
+          ]
+        },
+        {
+          "from": "any call regex",
+          "event": "unclaimed actual code call",
+          "guard": "not function definition/comment/string or claimed span",
+          "to": "skipped",
+          "effects": "Report file/line omitted from resolved gate table.",
+          "failure_retry": "Skipped census is not a rendered runtime gate or proof absence.",
+          "source": [
+            {
+              "path": "site/scripts/generator/extract-hook-gates.ts",
+              "symbol": "module",
+              "lines": "1-325",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/extract-hook-gates.ts"
+            },
+            {
+              "path": "site/scripts/generator/render-hooks-reference.ts",
+              "symbol": "module",
+              "lines": "1-168",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/render-hooks-reference.ts"
+            },
+            {
+              "path": "site/scripts/generator/source-ref.ts",
+              "symbol": "module",
+              "lines": "1-13",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/source-ref.ts"
+            }
+          ]
+        },
+        {
+          "from": "hooks.json",
+          "event": "build event map",
+          "guard": "script basename recognized in hooks/<file>.py command",
+          "to": "event-attributed",
+          "effects": "Dedup labels per registered event/matcher; map _bashguardlib to pre-bash and Git enforcer to hand-labeled backstop.",
+          "failure_retry": "Other delegated helpers absent mapping have no registered event label.",
+          "source": [
+            {
+              "path": "site/scripts/generator/extract-hook-gates.ts",
+              "symbol": "module",
+              "lines": "1-325",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/extract-hook-gates.ts"
+            },
+            {
+              "path": "site/scripts/generator/render-hooks-reference.ts",
+              "symbol": "module",
+              "lines": "1-168",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/render-hooks-reference.ts"
+            },
+            {
+              "path": "site/scripts/generator/source-ref.ts",
+              "symbol": "module",
+              "lines": "1-13",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/source-ref.ts"
+            }
+          ]
+        },
+        {
+          "from": "call sites",
+          "event": "render reference",
+          "guard": "static extracted tags/messages",
+          "to": "rendered",
+          "effects": "Natural-sort H-tags, mark blocking/advisory, union events, quote static message and line-pinned source URL.",
+          "failure_retry": "Claims Every gate/never drift overstate bounded extraction; dynamic recovery messages and unresolvable calls are not fully rendered.",
+          "source": [
+            {
+              "path": "site/scripts/generator/extract-hook-gates.ts",
+              "symbol": "module",
+              "lines": "1-325",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/extract-hook-gates.ts"
+            },
+            {
+              "path": "site/scripts/generator/render-hooks-reference.ts",
+              "symbol": "module",
+              "lines": "1-168",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/render-hooks-reference.ts"
+            },
+            {
+              "path": "site/scripts/generator/source-ref.ts",
+              "symbol": "module",
+              "lines": "1-13",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/source-ref.ts"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "generator:public-catalog",
+      "name": "Manual preview/configuration facts and generated public-source identity",
+      "kind": "implemented",
+      "state_storage": "Static typed Feature Forge/configuration data; environment GITHUB_SHA; runtime version-fact getter",
+      "states": [
+        "preview-command",
+        "preview-flag",
+        "preview-plugin",
+        "unlisted",
+        "configured-fact",
+        "commit-ref",
+        "main-ref"
+      ],
+      "sources": [
+        {
+          "path": "site/scripts/generator/forge-status.ts",
+          "symbol": "module",
+          "lines": "1-179",
+          "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/forge-status.ts"
+        },
+        {
+          "path": "site/scripts/generator/configuration-reference.ts",
+          "symbol": "module",
+          "lines": "1-453",
+          "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/configuration-reference.ts"
+        },
+        {
+          "path": "site/scripts/generator/source-ref.ts",
+          "symbol": "module",
+          "lines": "1-13",
+          "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/source-ref.ts"
+        }
+      ],
+      "transitions": [
+        {
+          "from": "Feature Forge declaration",
+          "event": "build PREVIEW_COMMANDS",
+          "guard": "preview-command or preview-flag",
+          "to": "command badge data",
+          "effects": "Derive command map; exclude separate preview-plugin entries; Pi requirements read version facts at render time.",
+          "failure_retry": "Unlisted command resolves null/stable display; allowlist does not inspect actual release maturity evidence.",
+          "source": [
+            {
+              "path": "site/scripts/generator/forge-status.ts",
+              "symbol": "module",
+              "lines": "1-179",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/forge-status.ts"
+            },
+            {
+              "path": "site/scripts/generator/configuration-reference.ts",
+              "symbol": "module",
+              "lines": "1-453",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/configuration-reference.ts"
+            },
+            {
+              "path": "site/scripts/generator/source-ref.ts",
+              "symbol": "module",
+              "lines": "1-13",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/source-ref.ts"
+            }
+          ]
+        },
+        {
+          "from": "configuration entries",
+          "event": "render reference",
+          "guard": "one of five fixed groups",
+          "to": "configuration page",
+          "effects": "Render maintained defaults/accepted-values/purpose/caution table.",
+          "failure_retry": "Executable defaults are not extracted; typed data is not runtime truth verification.",
+          "source": [
+            {
+              "path": "site/scripts/generator/forge-status.ts",
+              "symbol": "module",
+              "lines": "1-179",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/forge-status.ts"
+            },
+            {
+              "path": "site/scripts/generator/configuration-reference.ts",
+              "symbol": "module",
+              "lines": "1-453",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/configuration-reference.ts"
+            },
+            {
+              "path": "site/scripts/generator/source-ref.ts",
+              "symbol": "module",
+              "lines": "1-13",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/source-ref.ts"
+            }
+          ]
+        },
+        {
+          "from": "source permalink request",
+          "event": "repositorySourceRef",
+          "guard": "GITHUB_SHA exactly40hex after trim",
+          "to": "commit-ref",
+          "effects": "Use supplied commit in source URL.",
+          "failure_retry": "Absent/malformed SHA falls back to main; no tag lookup/release attestation.",
+          "source": [
+            {
+              "path": "site/scripts/generator/forge-status.ts",
+              "symbol": "module",
+              "lines": "1-179",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/forge-status.ts"
+            },
+            {
+              "path": "site/scripts/generator/configuration-reference.ts",
+              "symbol": "module",
+              "lines": "1-453",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/configuration-reference.ts"
+            },
+            {
+              "path": "site/scripts/generator/source-ref.ts",
+              "symbol": "module",
+              "lines": "1-13",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/source-ref.ts"
+            }
+          ]
+        },
+        {
+          "from": "page source version label",
+          "event": "render embed",
+          "guard": "plugin version supplied",
+          "to": "version-labeled source",
+          "effects": "Show v<version> beside actual source and URL.",
+          "failure_retry": "Version label does not prove released artifact; URL is commit or main despite stale tag-pinned comments.",
+          "source": [
+            {
+              "path": "site/scripts/generator/forge-status.ts",
+              "symbol": "module",
+              "lines": "1-179",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/forge-status.ts"
+            },
+            {
+              "path": "site/scripts/generator/configuration-reference.ts",
+              "symbol": "module",
+              "lines": "1-453",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/configuration-reference.ts"
+            },
+            {
+              "path": "site/scripts/generator/source-ref.ts",
+              "symbol": "module",
+              "lines": "1-13",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/source-ref.ts"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "generator:rendering",
+      "name": "Pure reference rendering, reader token safety and source embeds",
+      "kind": "implemented",
+      "state_storage": "Per-call output strings/section arrays; inline token cursor; no durable/browser state",
+      "states": [
+        "input",
+        "sections-selected",
+        "plain-text",
+        "code-token",
+        "safe-link",
+        "unsafe-link",
+        "fenced-source",
+        "rendered"
+      ],
+      "sources": [
+        {
+          "path": "site/scripts/generator/render-agent-page.ts",
+          "symbol": "module",
+          "lines": "1-60",
+          "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/render-agent-page.ts"
+        },
+        {
+          "path": "site/scripts/generator/render-command-page.ts",
+          "symbol": "module",
+          "lines": "1-129",
+          "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/render-command-page.ts"
+        },
+        {
+          "path": "site/scripts/generator/render-skill-page.ts",
+          "symbol": "module",
+          "lines": "1-66",
+          "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/render-skill-page.ts"
+        },
+        {
+          "path": "site/scripts/generator/render-lens-page.ts",
+          "symbol": "module",
+          "lines": "1-74",
+          "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/render-lens-page.ts"
+        },
+        {
+          "path": "site/scripts/generator/render-reader-fields.ts",
+          "symbol": "module",
+          "lines": "1-87",
+          "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/render-reader-fields.ts"
+        },
+        {
+          "path": "site/scripts/generator/render-reference-lead.ts",
+          "symbol": "module",
+          "lines": "1-116",
+          "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/render-reference-lead.ts"
+        },
+        {
+          "path": "site/scripts/generator/render-source-embed.ts",
+          "symbol": "module",
+          "lines": "1-100",
+          "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/render-source-embed.ts"
+        },
+        {
+          "path": "site/scripts/generator/render-changelog.ts",
+          "symbol": "module",
+          "lines": "1-66",
+          "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/render-changelog.ts"
+        },
+        {
+          "path": "site/scripts/generator/render-gates-table.ts",
+          "symbol": "module",
+          "lines": "1-20",
+          "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/render-gates-table.ts"
+        },
+        {
+          "path": "site/scripts/generator/render-related-links.ts",
+          "symbol": "module",
+          "lines": "1-15",
+          "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/render-related-links.ts"
+        },
+        {
+          "path": "site/scripts/generator/format-tools-list.ts",
+          "symbol": "module",
+          "lines": "1-19",
+          "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/format-tools-list.ts"
+        },
+        {
+          "path": "site/scripts/generator/model-tier.ts",
+          "symbol": "module",
+          "lines": "1-22",
+          "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/model-tier.ts"
+        },
+        {
+          "path": "site/scripts/generator/truncate-description.ts",
+          "symbol": "module",
+          "lines": "1-27",
+          "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/truncate-description.ts"
+        },
+        {
+          "path": "site/scripts/generator/yaml-quote.ts",
+          "symbol": "module",
+          "lines": "1-25",
+          "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/yaml-quote.ts"
+        }
+      ],
+      "transitions": [
+        {
+          "from": "page input",
+          "event": "render entity",
+          "guard": "kind command/skill/agent and supplied optional curated/pair/preview data",
+          "to": "sections-selected",
+          "effects": "Assemble description, reader panel, curated content, merged skill, gate table, related/compatibility/source sections.",
+          "failure_retry": "Absent optional sections omitted; no workflow execution occurs.",
+          "source": [
+            {
+              "path": "site/scripts/generator/render-agent-page.ts",
+              "symbol": "module",
+              "lines": "1-60",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/render-agent-page.ts"
+            },
+            {
+              "path": "site/scripts/generator/render-command-page.ts",
+              "symbol": "module",
+              "lines": "1-129",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/render-command-page.ts"
+            },
+            {
+              "path": "site/scripts/generator/render-skill-page.ts",
+              "symbol": "module",
+              "lines": "1-66",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/render-skill-page.ts"
+            },
+            {
+              "path": "site/scripts/generator/render-lens-page.ts",
+              "symbol": "module",
+              "lines": "1-74",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/render-lens-page.ts"
+            },
+            {
+              "path": "site/scripts/generator/render-reader-fields.ts",
+              "symbol": "module",
+              "lines": "1-87",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/render-reader-fields.ts"
+            },
+            {
+              "path": "site/scripts/generator/render-reference-lead.ts",
+              "symbol": "module",
+              "lines": "1-116",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/render-reference-lead.ts"
+            },
+            {
+              "path": "site/scripts/generator/render-source-embed.ts",
+              "symbol": "module",
+              "lines": "1-100",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/render-source-embed.ts"
+            },
+            {
+              "path": "site/scripts/generator/render-changelog.ts",
+              "symbol": "module",
+              "lines": "1-66",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/render-changelog.ts"
+            },
+            {
+              "path": "site/scripts/generator/render-gates-table.ts",
+              "symbol": "module",
+              "lines": "1-20",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/render-gates-table.ts"
+            },
+            {
+              "path": "site/scripts/generator/render-related-links.ts",
+              "symbol": "module",
+              "lines": "1-15",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/render-related-links.ts"
+            },
+            {
+              "path": "site/scripts/generator/format-tools-list.ts",
+              "symbol": "module",
+              "lines": "1-19",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/format-tools-list.ts"
+            },
+            {
+              "path": "site/scripts/generator/model-tier.ts",
+              "symbol": "module",
+              "lines": "1-22",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/model-tier.ts"
+            },
+            {
+              "path": "site/scripts/generator/truncate-description.ts",
+              "symbol": "module",
+              "lines": "1-27",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/truncate-description.ts"
+            },
+            {
+              "path": "site/scripts/generator/yaml-quote.ts",
+              "symbol": "module",
+              "lines": "1-25",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/yaml-quote.ts"
+            }
+          ]
+        },
+        {
+          "from": "reader field text",
+          "event": "inline token scan",
+          "guard": "backtick code or Markdown link regex",
+          "to": "code-token / safe-link / unsafe-link",
+          "effects": "Escape HTML text/code; render emphasis; allow relative or http/https/mailto target without whitespace/control/DEL.",
+          "failure_retry": "Unsafe target renders escaped literal token rather than hyperlink.",
+          "source": [
+            {
+              "path": "site/scripts/generator/render-agent-page.ts",
+              "symbol": "module",
+              "lines": "1-60",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/render-agent-page.ts"
+            },
+            {
+              "path": "site/scripts/generator/render-command-page.ts",
+              "symbol": "module",
+              "lines": "1-129",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/render-command-page.ts"
+            },
+            {
+              "path": "site/scripts/generator/render-skill-page.ts",
+              "symbol": "module",
+              "lines": "1-66",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/render-skill-page.ts"
+            },
+            {
+              "path": "site/scripts/generator/render-lens-page.ts",
+              "symbol": "module",
+              "lines": "1-74",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/render-lens-page.ts"
+            },
+            {
+              "path": "site/scripts/generator/render-reader-fields.ts",
+              "symbol": "module",
+              "lines": "1-87",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/render-reader-fields.ts"
+            },
+            {
+              "path": "site/scripts/generator/render-reference-lead.ts",
+              "symbol": "module",
+              "lines": "1-116",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/render-reference-lead.ts"
+            },
+            {
+              "path": "site/scripts/generator/render-source-embed.ts",
+              "symbol": "module",
+              "lines": "1-100",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/render-source-embed.ts"
+            },
+            {
+              "path": "site/scripts/generator/render-changelog.ts",
+              "symbol": "module",
+              "lines": "1-66",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/render-changelog.ts"
+            },
+            {
+              "path": "site/scripts/generator/render-gates-table.ts",
+              "symbol": "module",
+              "lines": "1-20",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/render-gates-table.ts"
+            },
+            {
+              "path": "site/scripts/generator/render-related-links.ts",
+              "symbol": "module",
+              "lines": "1-15",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/render-related-links.ts"
+            },
+            {
+              "path": "site/scripts/generator/format-tools-list.ts",
+              "symbol": "module",
+              "lines": "1-19",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/format-tools-list.ts"
+            },
+            {
+              "path": "site/scripts/generator/model-tier.ts",
+              "symbol": "module",
+              "lines": "1-22",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/model-tier.ts"
+            },
+            {
+              "path": "site/scripts/generator/truncate-description.ts",
+              "symbol": "module",
+              "lines": "1-27",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/truncate-description.ts"
+            },
+            {
+              "path": "site/scripts/generator/yaml-quote.ts",
+              "symbol": "module",
+              "lines": "1-25",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/yaml-quote.ts"
+            }
+          ]
+        },
+        {
+          "from": "source embed",
+          "event": "choose fence",
+          "guard": "raw source contains arbitrary backtick runs",
+          "to": "fenced-source",
+          "effects": "Use longest backtick run+1 with floor4; wrap unchanged source in collapsed search-excluded details and actual ref URL.",
+          "failure_retry": "No interpretation as procedure execution; parent writer owns disk effects.",
+          "source": [
+            {
+              "path": "site/scripts/generator/render-agent-page.ts",
+              "symbol": "module",
+              "lines": "1-60",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/render-agent-page.ts"
+            },
+            {
+              "path": "site/scripts/generator/render-command-page.ts",
+              "symbol": "module",
+              "lines": "1-129",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/render-command-page.ts"
+            },
+            {
+              "path": "site/scripts/generator/render-skill-page.ts",
+              "symbol": "module",
+              "lines": "1-66",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/render-skill-page.ts"
+            },
+            {
+              "path": "site/scripts/generator/render-lens-page.ts",
+              "symbol": "module",
+              "lines": "1-74",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/render-lens-page.ts"
+            },
+            {
+              "path": "site/scripts/generator/render-reader-fields.ts",
+              "symbol": "module",
+              "lines": "1-87",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/render-reader-fields.ts"
+            },
+            {
+              "path": "site/scripts/generator/render-reference-lead.ts",
+              "symbol": "module",
+              "lines": "1-116",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/render-reference-lead.ts"
+            },
+            {
+              "path": "site/scripts/generator/render-source-embed.ts",
+              "symbol": "module",
+              "lines": "1-100",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/render-source-embed.ts"
+            },
+            {
+              "path": "site/scripts/generator/render-changelog.ts",
+              "symbol": "module",
+              "lines": "1-66",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/render-changelog.ts"
+            },
+            {
+              "path": "site/scripts/generator/render-gates-table.ts",
+              "symbol": "module",
+              "lines": "1-20",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/render-gates-table.ts"
+            },
+            {
+              "path": "site/scripts/generator/render-related-links.ts",
+              "symbol": "module",
+              "lines": "1-15",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/render-related-links.ts"
+            },
+            {
+              "path": "site/scripts/generator/format-tools-list.ts",
+              "symbol": "module",
+              "lines": "1-19",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/format-tools-list.ts"
+            },
+            {
+              "path": "site/scripts/generator/model-tier.ts",
+              "symbol": "module",
+              "lines": "1-22",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/model-tier.ts"
+            },
+            {
+              "path": "site/scripts/generator/truncate-description.ts",
+              "symbol": "module",
+              "lines": "1-27",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/truncate-description.ts"
+            },
+            {
+              "path": "site/scripts/generator/yaml-quote.ts",
+              "symbol": "module",
+              "lines": "1-25",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/yaml-quote.ts"
+            }
+          ]
+        },
+        {
+          "from": "lens source",
+          "event": "render",
+          "guard": "collected lens card",
+          "to": "rendered lens",
+          "effects": "Remove first leading H1, normalize text and translate Claude placeholders in public body; tie card to generic reviewer.",
+          "failure_retry": "Rendering does not prove host dispatched lens.",
+          "source": [
+            {
+              "path": "site/scripts/generator/render-agent-page.ts",
+              "symbol": "module",
+              "lines": "1-60",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/render-agent-page.ts"
+            },
+            {
+              "path": "site/scripts/generator/render-command-page.ts",
+              "symbol": "module",
+              "lines": "1-129",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/render-command-page.ts"
+            },
+            {
+              "path": "site/scripts/generator/render-skill-page.ts",
+              "symbol": "module",
+              "lines": "1-66",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/render-skill-page.ts"
+            },
+            {
+              "path": "site/scripts/generator/render-lens-page.ts",
+              "symbol": "module",
+              "lines": "1-74",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/render-lens-page.ts"
+            },
+            {
+              "path": "site/scripts/generator/render-reader-fields.ts",
+              "symbol": "module",
+              "lines": "1-87",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/render-reader-fields.ts"
+            },
+            {
+              "path": "site/scripts/generator/render-reference-lead.ts",
+              "symbol": "module",
+              "lines": "1-116",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/render-reference-lead.ts"
+            },
+            {
+              "path": "site/scripts/generator/render-source-embed.ts",
+              "symbol": "module",
+              "lines": "1-100",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/render-source-embed.ts"
+            },
+            {
+              "path": "site/scripts/generator/render-changelog.ts",
+              "symbol": "module",
+              "lines": "1-66",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/render-changelog.ts"
+            },
+            {
+              "path": "site/scripts/generator/render-gates-table.ts",
+              "symbol": "module",
+              "lines": "1-20",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/render-gates-table.ts"
+            },
+            {
+              "path": "site/scripts/generator/render-related-links.ts",
+              "symbol": "module",
+              "lines": "1-15",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/render-related-links.ts"
+            },
+            {
+              "path": "site/scripts/generator/format-tools-list.ts",
+              "symbol": "module",
+              "lines": "1-19",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/format-tools-list.ts"
+            },
+            {
+              "path": "site/scripts/generator/model-tier.ts",
+              "symbol": "module",
+              "lines": "1-22",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/model-tier.ts"
+            },
+            {
+              "path": "site/scripts/generator/truncate-description.ts",
+              "symbol": "module",
+              "lines": "1-27",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/truncate-description.ts"
+            },
+            {
+              "path": "site/scripts/generator/yaml-quote.ts",
+              "symbol": "module",
+              "lines": "1-25",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/yaml-quote.ts"
+            }
+          ]
+        },
+        {
+          "from": "changelog input",
+          "event": "render",
+          "guard": "first ## [ heading present or fallback entire trimmed source",
+          "to": "rendered history",
+          "effects": "Drop preamble before first version heading, absolutize ../../pull links, append sibling changelog links.",
+          "failure_retry": "No release metadata validation; renderer preserves supplied timeline.",
+          "source": [
+            {
+              "path": "site/scripts/generator/render-agent-page.ts",
+              "symbol": "module",
+              "lines": "1-60",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/render-agent-page.ts"
+            },
+            {
+              "path": "site/scripts/generator/render-command-page.ts",
+              "symbol": "module",
+              "lines": "1-129",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/render-command-page.ts"
+            },
+            {
+              "path": "site/scripts/generator/render-skill-page.ts",
+              "symbol": "module",
+              "lines": "1-66",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/render-skill-page.ts"
+            },
+            {
+              "path": "site/scripts/generator/render-lens-page.ts",
+              "symbol": "module",
+              "lines": "1-74",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/render-lens-page.ts"
+            },
+            {
+              "path": "site/scripts/generator/render-reader-fields.ts",
+              "symbol": "module",
+              "lines": "1-87",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/render-reader-fields.ts"
+            },
+            {
+              "path": "site/scripts/generator/render-reference-lead.ts",
+              "symbol": "module",
+              "lines": "1-116",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/render-reference-lead.ts"
+            },
+            {
+              "path": "site/scripts/generator/render-source-embed.ts",
+              "symbol": "module",
+              "lines": "1-100",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/render-source-embed.ts"
+            },
+            {
+              "path": "site/scripts/generator/render-changelog.ts",
+              "symbol": "module",
+              "lines": "1-66",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/render-changelog.ts"
+            },
+            {
+              "path": "site/scripts/generator/render-gates-table.ts",
+              "symbol": "module",
+              "lines": "1-20",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/render-gates-table.ts"
+            },
+            {
+              "path": "site/scripts/generator/render-related-links.ts",
+              "symbol": "module",
+              "lines": "1-15",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/render-related-links.ts"
+            },
+            {
+              "path": "site/scripts/generator/format-tools-list.ts",
+              "symbol": "module",
+              "lines": "1-19",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/format-tools-list.ts"
+            },
+            {
+              "path": "site/scripts/generator/model-tier.ts",
+              "symbol": "module",
+              "lines": "1-22",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/model-tier.ts"
+            },
+            {
+              "path": "site/scripts/generator/truncate-description.ts",
+              "symbol": "module",
+              "lines": "1-27",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/truncate-description.ts"
+            },
+            {
+              "path": "site/scripts/generator/yaml-quote.ts",
+              "symbol": "module",
+              "lines": "1-25",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/yaml-quote.ts"
+            }
+          ]
+        },
+        {
+          "from": "format values",
+          "event": "helper transformation",
+          "guard": "name/model/tools/description/YAML input",
+          "to": "rendered values",
+          "effects": "Map known model tier labels, comma tools list, first/second sentence summaries, YAML slash/quote escaping, public placeholder wording.",
+          "failure_retry": "These are pure formatting branches, not persistent user workflow state.",
+          "source": [
+            {
+              "path": "site/scripts/generator/render-agent-page.ts",
+              "symbol": "module",
+              "lines": "1-60",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/render-agent-page.ts"
+            },
+            {
+              "path": "site/scripts/generator/render-command-page.ts",
+              "symbol": "module",
+              "lines": "1-129",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/render-command-page.ts"
+            },
+            {
+              "path": "site/scripts/generator/render-skill-page.ts",
+              "symbol": "module",
+              "lines": "1-66",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/render-skill-page.ts"
+            },
+            {
+              "path": "site/scripts/generator/render-lens-page.ts",
+              "symbol": "module",
+              "lines": "1-74",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/render-lens-page.ts"
+            },
+            {
+              "path": "site/scripts/generator/render-reader-fields.ts",
+              "symbol": "module",
+              "lines": "1-87",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/render-reader-fields.ts"
+            },
+            {
+              "path": "site/scripts/generator/render-reference-lead.ts",
+              "symbol": "module",
+              "lines": "1-116",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/render-reference-lead.ts"
+            },
+            {
+              "path": "site/scripts/generator/render-source-embed.ts",
+              "symbol": "module",
+              "lines": "1-100",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/render-source-embed.ts"
+            },
+            {
+              "path": "site/scripts/generator/render-changelog.ts",
+              "symbol": "module",
+              "lines": "1-66",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/render-changelog.ts"
+            },
+            {
+              "path": "site/scripts/generator/render-gates-table.ts",
+              "symbol": "module",
+              "lines": "1-20",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/render-gates-table.ts"
+            },
+            {
+              "path": "site/scripts/generator/render-related-links.ts",
+              "symbol": "module",
+              "lines": "1-15",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/render-related-links.ts"
+            },
+            {
+              "path": "site/scripts/generator/format-tools-list.ts",
+              "symbol": "module",
+              "lines": "1-19",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/format-tools-list.ts"
+            },
+            {
+              "path": "site/scripts/generator/model-tier.ts",
+              "symbol": "module",
+              "lines": "1-22",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/model-tier.ts"
+            },
+            {
+              "path": "site/scripts/generator/truncate-description.ts",
+              "symbol": "module",
+              "lines": "1-27",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/truncate-description.ts"
+            },
+            {
+              "path": "site/scripts/generator/yaml-quote.ts",
+              "symbol": "module",
+              "lines": "1-25",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/yaml-quote.ts"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "id": "GEN-F01",
+      "classification": "confirmed static documentation contradiction",
+      "title": "Prune nudge threshold describes total context instead of freed context",
+      "description": "Configuration table says CODEARBITER_PRUNE_NUDGE_MIN_TOKENS sets minimum model-context size. Current nudge_decision compares estimated tokens from rec.context_bytes_freed to threshold. No runtime behavior change is recommended for this documentation correction.",
+      "sources": [
+        {
+          "path": "site/scripts/generator/configuration-reference.ts",
+          "symbol": "CONFIGURATION_ENTRIES",
+          "lines": "180-185",
+          "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/configuration-reference.ts"
+        },
+        {
+          "path": "core/pysrc/_prunelib.py",
+          "symbol": "nudge_decision",
+          "lines": "1173-1215",
+          "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prunelib.py"
+        }
+      ],
+      "recommendation": "Describe freed avoidable context accurately and derive this predicate/default from an executable contract instead of maintaining a second semantic description."
+    },
+    {
+      "id": "GEN-F02",
+      "classification": "confirmed extractor limitation and overbroad generated claim",
+      "title": "Hook reference is a bounded static extraction, not all actual runtime message text",
+      "description": "Generated intro says it can never drift from what a hook prints. scanMessage drops variable/helper message suffixes, variable tag resolution is limited to30 lines, and skipped calls are not extracted. Current _bashguardlib security blocks append dynamic recovery strings. Literal-tag pass also omits codeMask test, so quoted/commented examples can be extracted as real calls; this latter false-positive possibility is static, not a demonstrated current site occurrence.",
+      "sources": [
+        {
+          "path": "site/scripts/generator/render-hooks-reference.ts",
+          "symbol": "renderHooksReference",
+          "lines": "153-165",
+          "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/render-hooks-reference.ts"
+        },
+        {
+          "path": "site/scripts/generator/extract-hook-gates.ts",
+          "symbol": "scanMessage",
+          "lines": "122-149",
+          "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/extract-hook-gates.ts"
+        },
+        {
+          "path": "site/scripts/generator/extract-hook-gates.ts",
+          "symbol": "extractFromFile",
+          "lines": "233-303",
+          "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/extract-hook-gates.ts"
+        },
+        {
+          "path": "core/pysrc/_bashguardlib.py",
+          "symbol": "_check_h09b_h10b_crypto_secret",
+          "lines": "2593-2695",
+          "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_bashguardlib.py"
+        }
+      ],
+      "recommendation": "Label static templates/omitted dynamic pieces and display extraction gaps; use a typed gate registry or robust AST extraction for canonical IDs/events/recovery while keeping actual runtime code authoritative."
+    },
+    {
+      "id": "GEN-B01",
+      "classification": "static helper edge case, current production reachability not demonstrated",
+      "title": "Slug suffix counts do not reserve all output slugs",
+      "description": "assignSlugs tracks each base independently. The input sequence foo,foo,foo-2 produces foo,foo-2,foo-2 by direct control-flow inspection. Current installed-source names were not evaluated for such a collision in this supplemental read.",
+      "sources": [
+        {
+          "path": "site/scripts/generator/assign-slugs.ts",
+          "symbol": "assignSlugs",
+          "lines": "10-28",
+          "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/assign-slugs.ts"
+        }
+      ],
+      "recommendation": "If arbitrary names remain supported, reserve emitted slugs globally and fail or consistently disambiguate collisions. Preserve previously published URL redirects when changing assignment."
+    }
+  ],
+  "coverage": {
+    "complete_raw_read_files": [
+      {
+        "path": "site/scripts/generator/assign-slugs.ts",
+        "lines": 28,
+        "sha256": "9469de207ea9d3c3ff1af06b4077357766749d22527d4cdc4524f50b0a7c3831",
+        "read": "complete raw source including comments/literals",
+        "owner": "hook_states supplemental"
+      },
+      {
+        "path": "site/scripts/generator/build-index.ts",
+        "lines": 138,
+        "sha256": "4d99e79d62cce8666dd76f5d699a3f498ca7f5f14ae910b9fe10e289236562d0",
+        "read": "complete raw source including comments/literals",
+        "owner": "hook_states supplemental"
+      },
+      {
+        "path": "site/scripts/generator/classify-source.ts",
+        "lines": 30,
+        "sha256": "08e41c224b3d0faf700df404d0bf1cbdaa29f4e863ac4bb6226142fff42853d2",
+        "read": "complete raw source including comments/literals",
+        "owner": "hook_states supplemental"
+      },
+      {
+        "path": "site/scripts/generator/collect-lenses.ts",
+        "lines": 33,
+        "sha256": "18eed1236677e6217ee5028f113a36704ccc8fea96ce87cc4e612e3e91e8a13c",
+        "read": "complete raw source including comments/literals",
+        "owner": "hook_states supplemental"
+      },
+      {
+        "path": "site/scripts/generator/collect-sources.ts",
+        "lines": 59,
+        "sha256": "31973d8a555b97ff21449882f40cdf8aa6f670ee40f8e6721b6fc35ef3186711",
+        "read": "complete raw source including comments/literals",
+        "owner": "hook_states supplemental"
+      },
+      {
+        "path": "site/scripts/generator/configuration-reference.ts",
+        "lines": 453,
+        "sha256": "5b586efc2c2d06f8dd8fcc0e0007f634b8309cdc98ff3779d8c4241dd5e2a9c5",
+        "read": "complete raw source including comments/literals",
+        "owner": "hook_states supplemental"
+      },
+      {
+        "path": "site/scripts/generator/curated-drift.ts",
+        "lines": 214,
+        "sha256": "89fa0dfdd1d8d380cadeacaf06eb9cd42885f7a808f6b7b2ef821e1414b666a7",
+        "read": "complete raw source including comments/literals",
+        "owner": "hook_states supplemental"
+      },
+      {
+        "path": "site/scripts/generator/derive-name.ts",
+        "lines": 27,
+        "sha256": "b3e8321eaa1ba7e4f953b5e937c94da38d041e58220eac0114d88e7dacd6a5e2",
+        "read": "complete raw source including comments/literals",
+        "owner": "hook_states supplemental"
+      },
+      {
+        "path": "site/scripts/generator/extract-hook-gates.ts",
+        "lines": 325,
+        "sha256": "c8471e0fc62528e1cd0eaf434058abe5b93684fae8967b9b9a666efda5a49873",
+        "read": "complete raw source including comments/literals",
+        "owner": "hook_states supplemental"
+      },
+      {
+        "path": "site/scripts/generator/forge-status.ts",
+        "lines": 179,
+        "sha256": "2318709085d04a81ba7daa82e2e906fb0e44e80c279bd1dab41e3b01977cc7a0",
+        "read": "complete raw source including comments/literals",
+        "owner": "hook_states supplemental"
+      },
+      {
+        "path": "site/scripts/generator/format-tools-list.ts",
+        "lines": 19,
+        "sha256": "28f967f03d267f62f4b54eddee3896f74fd575fa94cead6eda281d5bb5fe1603",
+        "read": "complete raw source including comments/literals",
+        "owner": "hook_states supplemental"
+      },
+      {
+        "path": "site/scripts/generator/host-command-catalog.ts",
+        "lines": 66,
+        "sha256": "880715cd374a995647e93b700f5f7e67402233e793aa0406196946a06eef0abd",
+        "read": "complete raw source including comments/literals",
+        "owner": "hook_states supplemental"
+      },
+      {
+        "path": "site/scripts/generator/landing-stats.ts",
+        "lines": 199,
+        "sha256": "58b6b23c596a429d2fe395d1010e7c333883f237f536d5b7da3a29e60a5eec5f",
+        "read": "complete raw source including comments/literals",
+        "owner": "hook_states supplemental"
+      },
+      {
+        "path": "site/scripts/generator/load-curated.ts",
+        "lines": 318,
+        "sha256": "4fe86d54f190ea3085ed61f79a84481dc6bdbcf1a399a5fcb8fd731df36a054b",
+        "read": "complete raw source including comments/literals",
+        "owner": "hook_states supplemental"
+      },
+      {
+        "path": "site/scripts/generator/markdown-fences.ts",
+        "lines": 79,
+        "sha256": "218622a1a701cdd0e7a19dfcd1152334618cff0ea8b3207de5127e9530aa98d7",
+        "read": "complete raw source including comments/literals",
+        "owner": "hook_states supplemental"
+      },
+      {
+        "path": "site/scripts/generator/model-tier.ts",
+        "lines": 22,
+        "sha256": "c984182eeb6f47706be6659b0364b3e2aa5cec8ff30f9f7c389a9679b59c3b1e",
+        "read": "complete raw source including comments/literals",
+        "owner": "hook_states supplemental"
+      },
+      {
+        "path": "site/scripts/generator/normalize-source.ts",
+        "lines": 11,
+        "sha256": "f65bea1b186d39bea076af195471f07cb7be0444103270853f6e2a03c96e6034",
+        "read": "complete raw source including comments/literals",
+        "owner": "hook_states supplemental"
+      },
+      {
+        "path": "site/scripts/generator/parse-doc.ts",
+        "lines": 18,
+        "sha256": "eb94710fe8f6c28d48fe0c9c1d0bd3727a73211c07f6f7935112a025bcae0261",
+        "read": "complete raw source including comments/literals",
+        "owner": "hook_states supplemental"
+      },
+      {
+        "path": "site/scripts/generator/parse-fields.ts",
+        "lines": 43,
+        "sha256": "6026f2779d2b59098c60ea860edba026b2d4ddf108b29be50b26284fc3f0ab56",
+        "read": "complete raw source including comments/literals",
+        "owner": "hook_states supplemental"
+      },
+      {
+        "path": "site/scripts/generator/plugin-workflow-pairs.ts",
+        "lines": 38,
+        "sha256": "d0e9d560816f9b9d7614fd05c66aa8857d6baac239a2a46f512fbeb191738d81",
+        "read": "complete raw source including comments/literals",
+        "owner": "hook_states supplemental"
+      },
+      {
+        "path": "site/scripts/generator/render-agent-page.ts",
+        "lines": 60,
+        "sha256": "e7137ba65cc49e476d4718358d59d1b883666aeafb5da89fa013d59e01395f50",
+        "read": "complete raw source including comments/literals",
+        "owner": "hook_states supplemental"
+      },
+      {
+        "path": "site/scripts/generator/render-changelog.ts",
+        "lines": 66,
+        "sha256": "a690e4bb0b3993c3204bb56439c0fa3adef79d7ee9ffcde07666402c8aca2238",
+        "read": "complete raw source including comments/literals",
+        "owner": "hook_states supplemental"
+      },
+      {
+        "path": "site/scripts/generator/render-command-page.ts",
+        "lines": 129,
+        "sha256": "5c3927d6140f28439d1aeefb2e937050348e8d58bcf74ff1e0afe63a8cf3d957",
+        "read": "complete raw source including comments/literals",
+        "owner": "hook_states supplemental"
+      },
+      {
+        "path": "site/scripts/generator/render-gates-table.ts",
+        "lines": 20,
+        "sha256": "9826ccb4d3c5620b6b07501e4b2d593de7f556dd24ba585f7ac244fc8c8fcb99",
+        "read": "complete raw source including comments/literals",
+        "owner": "hook_states supplemental"
+      },
+      {
+        "path": "site/scripts/generator/render-hooks-reference.ts",
+        "lines": 168,
+        "sha256": "be34c234ad5548fe956c022a60e421024714fc20b45e7601f37f80255eba45fb",
+        "read": "complete raw source including comments/literals",
+        "owner": "hook_states supplemental"
+      },
+      {
+        "path": "site/scripts/generator/render-lens-page.ts",
+        "lines": 74,
+        "sha256": "c381a9331365edcc77ddb2390e9f6f919d558fc08de2bea715459cc1afe6ee02",
+        "read": "complete raw source including comments/literals",
+        "owner": "hook_states supplemental"
+      },
+      {
+        "path": "site/scripts/generator/render-reader-fields.ts",
+        "lines": 87,
+        "sha256": "d5eae57314dac17f2c5fef49d79b98c97e256fbee9d477aa5531ea1543d05cef",
+        "read": "complete raw source including comments/literals",
+        "owner": "hook_states supplemental"
+      },
+      {
+        "path": "site/scripts/generator/render-reference-lead.ts",
+        "lines": 116,
+        "sha256": "076007c9d1ba5c8b5bf24b67ca9d1acda6c50203428d4d058b34ae02535f7508",
+        "read": "complete raw source including comments/literals",
+        "owner": "hook_states supplemental"
+      },
+      {
+        "path": "site/scripts/generator/render-related-links.ts",
+        "lines": 15,
+        "sha256": "f52494a2c12d06b57d9808ab64947dfae10d7b1b253e7be1c2054d666f7d22d1",
+        "read": "complete raw source including comments/literals",
+        "owner": "hook_states supplemental"
+      },
+      {
+        "path": "site/scripts/generator/render-skill-page.ts",
+        "lines": 66,
+        "sha256": "fad4ff655b694b05f191bcdce0784a25e4f7123b4340a6f2a1e5677f3474c5b0",
+        "read": "complete raw source including comments/literals",
+        "owner": "hook_states supplemental"
+      },
+      {
+        "path": "site/scripts/generator/render-source-embed.ts",
+        "lines": 100,
+        "sha256": "5d4557effc5d93559c838990e08e3a63ea3c39d77a6fb3ac1c7a91a6f77ed299",
+        "read": "complete raw source including comments/literals",
+        "owner": "hook_states supplemental"
+      },
+      {
+        "path": "site/scripts/generator/slugify.ts",
+        "lines": 14,
+        "sha256": "8c22752b4ed11c1037d6c8b9d294834e06f8c185d144d05d62fd69666eaeba82",
+        "read": "complete raw source including comments/literals",
+        "owner": "hook_states supplemental"
+      },
+      {
+        "path": "site/scripts/generator/source-ref.ts",
+        "lines": 13,
+        "sha256": "ea2b479f00df225aa33d7d6188009e07056fd24f7645f94de6c8170b55134da1",
+        "read": "complete raw source including comments/literals",
+        "owner": "hook_states supplemental"
+      },
+      {
+        "path": "site/scripts/generator/split-frontmatter.ts",
+        "lines": 41,
+        "sha256": "7090f1e296c0723037e14c830de3fb1107bf76c2c40b894613d4a48ed6241e2b",
+        "read": "complete raw source including comments/literals",
+        "owner": "hook_states supplemental"
+      },
+      {
+        "path": "site/scripts/generator/truncate-description.ts",
+        "lines": 27,
+        "sha256": "ba08432bf12bc696ff772fa765ea21702dc28f69ae92d1cb658fb16bdc25ff3e",
+        "read": "complete raw source including comments/literals",
+        "owner": "hook_states supplemental"
+      },
+      {
+        "path": "site/scripts/generator/types.ts",
+        "lines": 297,
+        "sha256": "9460d3143192ece9bb33314fafb5659c896a799536d099105cc8c9ea66cbd25b",
+        "read": "complete raw source including comments/literals",
+        "owner": "hook_states supplemental"
+      },
+      {
+        "path": "site/scripts/generator/workflow-pairs.ts",
+        "lines": 193,
+        "sha256": "05c47ed6d7e0a22c64205d2438f3fc3869020b3d1d6ed525394a24df2f1df84a",
+        "read": "complete raw source including comments/literals",
+        "owner": "hook_states supplemental"
+      },
+      {
+        "path": "site/scripts/generator/yaml-quote.ts",
+        "lines": 25,
+        "sha256": "2cd1545f09c28e85f86e50a8e87ea945658d6dab7967a1e86c885efe1ce2f9cc",
+        "read": "complete raw source including comments/literals",
+        "owner": "hook_states supplemental"
+      }
+    ],
+    "total_files": 38,
+    "physical_lines": 3810,
+    "excluded_owner": {
+      "site/scripts/generator/generate.ts": "host_site_lifecycle, previously complete"
+    },
+    "tests_run": [],
+    "product_files_changed": false,
+    "note": "Build-time/read-only/transient machines only in these helpers. Parent generator file owns filesystem publication and stale-output cleanup; do not count this as a second durable generation owner."
+  }
+}

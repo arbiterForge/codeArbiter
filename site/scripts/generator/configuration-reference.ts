@@ -182,7 +182,7 @@ export const CONFIGURATION_ENTRIES: readonly ConfigurationEntry[] = [
     group: "Transcript pruning",
     defaultValue: "`80000`",
     accepted: "positive estimated token count",
-    purpose: "Sets the minimum model-context size before a cold-miss nudge can appear.",
+    purpose: "Sets the minimum estimated model-context tokens a prune would free (`context_bytes_freed` / 4) before a cold-miss nudge can appear; total context size does not count.",
   },
   {
     name: "FARM_API_KEY",
@@ -342,7 +342,7 @@ export const CONFIGURATION_ENTRIES: readonly ConfigurationEntry[] = [
     defaultValue: "fresh random id",
     accepted: "1–64 characters from `A-Z`, `a-z`, `0-9`, `.`, `_`, or `-`",
     purpose: "Pins the run receipt directory name for reproducibility.",
-    caution: "Reusing an id publishes over that run's existing receipt directory; use a fresh id per run.",
+    caution: "An existing run id is refused before any receipt stream is truncated; inspect retained effects with receipt-only recovery or use an explicit new attempt with an unused id.",
   },
   {
     name: "FARM_MUTATION",

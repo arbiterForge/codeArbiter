@@ -1,0 +1,22 @@
+{
+  "source_api_head": "f5dff55e71530806c58a5dd6c352935d369ac5ae",
+  "run_id": 44002348079,
+  "attempt": 1,
+  "job_id": 133769377667,
+  "job_conclusion": "success",
+  "original_named_outcomes": [
+    {
+      "line": 319,
+      "name": "test_real_isolated_rpc_command_discovery_and_keyed_status",
+      "verdict": "PASS"
+    }
+  ],
+  "observed_checkouts": [],
+  "log_sha256": "a497e4b6f63d22f9c07ed1395a17a7fd5cee28472e51d4b70f662583e23a6e15",
+  "log_bytes": 47764,
+  "metadata_sha256": "060338f97c0786fe9d7641e61b6d08ee93969ac3d5cd2db937063c9c69d67330",
+  "limits": [
+    "Original individual PR outcomes, not normalintegration or wholequalification.",
+    "No historical native-exit root cause inferred from a different successful execution."
+  ]
+}

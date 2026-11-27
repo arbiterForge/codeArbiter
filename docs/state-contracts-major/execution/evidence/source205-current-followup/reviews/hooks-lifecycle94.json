@@ -1,0 +1,258 @@
+{
+ "schema": "codearbiter.private-source-independent-review/1",
+ "verdict": "PASS",
+ "reviewer": "/root/ci_repair_review",
+ "source_commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+ "observed_current_head": "cfa8effd8e3e856571052f94311f4f01c96b7f77",
+ "delivery": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hooks-lifecycle-current-source-0d73-okllzdpx\\delivery.json",
+  "sha256": "0101d4401cae893557db5d136831fdf2422a161e3a04aa92b287352153752475"
+ },
+ "full_subjects": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/source-bindings.json",
+   "private_source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hooks-lifecycle-current-source-0d73-okllzdpx\\source-bindings.json",
+   "sha256": "c42504c013b5c1e9673e47a51f8e33b609f9b365cf9830478dbec065df87d2f4",
+   "bytes": 48229,
+   "binding": "PRIVATE_PROPOSAL_NOT_STAGED",
+   "git_index_oid": null
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/clause-inspection.json",
+   "private_source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hooks-lifecycle-current-source-0d73-okllzdpx\\clause-inspection.json",
+   "sha256": "0020b4f082221414c7e6e513665f0725b1b592a3d02fe789565df50a69dde593",
+   "bytes": 257843,
+   "binding": "PRIVATE_PROPOSAL_NOT_STAGED",
+   "git_index_oid": null
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/intake-and-limits.json",
+   "private_source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hooks-lifecycle-current-source-0d73-okllzdpx\\intake-and-limits.json",
+   "sha256": "cd46da96efcaf1c38aff76cf3168ec98afd7971d315addd34fb3720eec84e5f7",
+   "bytes": 12531,
+   "binding": "PRIVATE_PROPOSAL_NOT_STAGED",
+   "git_index_oid": null
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/retained-history.json",
+   "private_source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hooks-lifecycle-current-source-0d73-okllzdpx\\retained-history.json",
+   "sha256": "5329297af40dff771aa893950d7f8fd8ce504bffc2ded986b80cc4dd130f138b",
+   "bytes": 49264,
+   "binding": "PRIVATE_PROPOSAL_NOT_STAGED",
+   "git_index_oid": null
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/review-reuse-and-reinspection.json",
+   "private_source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hooks-lifecycle-current-source-0d73-okllzdpx\\review-reuse-and-reinspection.json",
+   "sha256": "371ced28ee3ccfaf3c4d1553327a20c0c4a732311990f68019a08946ac0c0cfe",
+   "bytes": 3845,
+   "binding": "PRIVATE_PROPOSAL_NOT_STAGED",
+   "git_index_oid": null
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-activation-preserved.json",
+   "private_source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hooks-lifecycle-current-source-0d73-okllzdpx\\proofs\\hooks-activation-preserved.json",
+   "sha256": "a8adb041b0d01606b2dab032d8fb951b3f79c0dc117a1c0ff4fc264bf357282f",
+   "bytes": 23924,
+   "binding": "PRIVATE_PROPOSAL_NOT_STAGED",
+   "git_index_oid": null
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-host-preserved.json",
+   "private_source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hooks-lifecycle-current-source-0d73-okllzdpx\\proofs\\hooks-host-preserved.json",
+   "sha256": "310f6185cd1498b7b44ddbd1c1c12076282bba266ba7fbae8b28940e6caa42f5",
+   "bytes": 21474,
+   "binding": "PRIVATE_PROPOSAL_NOT_STAGED",
+   "git_index_oid": null
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-mode-preserved.json",
+   "private_source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hooks-lifecycle-current-source-0d73-okllzdpx\\proofs\\hooks-mode-preserved.json",
+   "sha256": "c1ad6f87ea6f1c328981c3b2c2dbaddb9904eec25bd63518be016a4117f3530d",
+   "bytes": 28461,
+   "binding": "PRIVATE_PROPOSAL_NOT_STAGED",
+   "git_index_oid": null
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-mode-audit-preserved.json",
+   "private_source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hooks-lifecycle-current-source-0d73-okllzdpx\\proofs\\hooks-mode-audit-preserved.json",
+   "sha256": "7d185e77162618cc601cacee469bd5c6894f4179db862676c2b3548ebd756afc",
+   "bytes": 28041,
+   "binding": "PRIVATE_PROPOSAL_NOT_STAGED",
+   "git_index_oid": null
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-persona-preserved.json",
+   "private_source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hooks-lifecycle-current-source-0d73-okllzdpx\\proofs\\hooks-persona-preserved.json",
+   "sha256": "99bad2f62007f714b3d12e5f718548e029a30fc7a257f759bd0b5114b2024541",
+   "bytes": 20050,
+   "binding": "PRIVATE_PROPOSAL_NOT_STAGED",
+   "git_index_oid": null
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-startup-preserved.json",
+   "private_source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hooks-lifecycle-current-source-0d73-okllzdpx\\proofs\\hooks-startup-preserved.json",
+   "sha256": "de09539c41ab27832d08055df09cb2f8a401125f89838d23d142cc1bf5633e94",
+   "bytes": 26657,
+   "binding": "PRIVATE_PROPOSAL_NOT_STAGED",
+   "git_index_oid": null
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-commit-gates-preserved.json",
+   "private_source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hooks-lifecycle-current-source-0d73-okllzdpx\\proofs\\hooks-commit-gates-preserved.json",
+   "sha256": "278d5b1feda0237fc90c26a11d3e19bac5bda36774d6d89229bdb24e269e80ee",
+   "bytes": 30649,
+   "binding": "PRIVATE_PROPOSAL_NOT_STAGED",
+   "git_index_oid": null
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-security-producers-preserved.json",
+   "private_source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hooks-lifecycle-current-source-0d73-okllzdpx\\proofs\\hooks-security-producers-preserved.json",
+   "sha256": "3c26ac1f4ed95a311b9d0efcfe7a6b5357dc22ef5f120df6834776ef45048cb7",
+   "bytes": 16480,
+   "binding": "PRIVATE_PROPOSAL_NOT_STAGED",
+   "git_index_oid": null
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-push-preserved.json",
+   "private_source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hooks-lifecycle-current-source-0d73-okllzdpx\\proofs\\hooks-push-preserved.json",
+   "sha256": "3b593b3c78f6e5ee03b4bb4225803f6d32ac391aad863c4fca63ee73411cdb38",
+   "bytes": 7827,
+   "binding": "PRIVATE_PROPOSAL_NOT_STAGED",
+   "git_index_oid": null
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-authority-request-preserved.json",
+   "private_source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hooks-lifecycle-current-source-0d73-okllzdpx\\proofs\\hooks-authority-request-preserved.json",
+   "sha256": "34598705c8c86dc4aae7de86ef8e27f68ac6e0a73804da2b233da339b81afe12",
+   "bytes": 24580,
+   "binding": "PRIVATE_PROPOSAL_NOT_STAGED",
+   "git_index_oid": null
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-work-owner-preserved.json",
+   "private_source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hooks-lifecycle-current-source-0d73-okllzdpx\\proofs\\hooks-work-owner-preserved.json",
+   "sha256": "c1dfd895470978e4b90486e7c9caaba521e84d5ce503d5e09dde6f5363239f07",
+   "bytes": 12657,
+   "binding": "PRIVATE_PROPOSAL_NOT_STAGED",
+   "git_index_oid": null
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-work-adoption-preserved.json",
+   "private_source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hooks-lifecycle-current-source-0d73-okllzdpx\\proofs\\hooks-work-adoption-preserved.json",
+   "sha256": "986513d9ab8525619e1364521b59a50830d712c3402683951b54e09845276729",
+   "bytes": 17665,
+   "binding": "PRIVATE_PROPOSAL_NOT_STAGED",
+   "git_index_oid": null
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-legacy-advisories-preserved.json",
+   "private_source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hooks-lifecycle-current-source-0d73-okllzdpx\\proofs\\hooks-legacy-advisories-preserved.json",
+   "sha256": "09ccd1461ffa574b31db490462266fba8118c259101294096598a73ab43ecafd",
+   "bytes": 13970,
+   "binding": "PRIVATE_PROPOSAL_NOT_STAGED",
+   "git_index_oid": null
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-plan-file-preserved.json",
+   "private_source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hooks-lifecycle-current-source-0d73-okllzdpx\\proofs\\hooks-plan-file-preserved.json",
+   "sha256": "b89297f36fae078ac411e111f93e3b1a0ca11c6ec244b6e654523eea92dec9f3",
+   "bytes": 15071,
+   "binding": "PRIVATE_PROPOSAL_NOT_STAGED",
+   "git_index_oid": null
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-adr-lifecycle-preserved.json",
+   "private_source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hooks-lifecycle-current-source-0d73-okllzdpx\\proofs\\hooks-adr-lifecycle-preserved.json",
+   "sha256": "a2fa8ea4ee829417118ed2cb67a201f263880c4ad3492c43b365b7fa8ef85a2e",
+   "bytes": 30115,
+   "binding": "PRIVATE_PROPOSAL_NOT_STAGED",
+   "git_index_oid": null
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-cleanup-eligibility-preserved.json",
+   "private_source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hooks-lifecycle-current-source-0d73-okllzdpx\\proofs\\hooks-cleanup-eligibility-preserved.json",
+   "sha256": "cb079f12fb6d45e59b0d631c9c3afcbc1291f797c7e91618982b9242fa409acf",
+   "bytes": 10219,
+   "binding": "PRIVATE_PROPOSAL_NOT_STAGED",
+   "git_index_oid": null
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-cleanup-journal-preserved.json",
+   "private_source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hooks-lifecycle-current-source-0d73-okllzdpx\\proofs\\hooks-cleanup-journal-preserved.json",
+   "sha256": "3a0148add145ad2e71b2365d32c8ca7f9d45eee7a911f9ecd81d0efd9f35f2fb",
+   "bytes": 8761,
+   "binding": "PRIVATE_PROPOSAL_NOT_STAGED",
+   "git_index_oid": null
+  }
+ ],
+ "metadata_subjects": [
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hooks-lifecycle-current-source-0d73-okllzdpx\\adoption-filemap.json",
+   "sha256": "c1978ced2d9ae754f9e7cc79a67db5745d4f6bb0d87488cceb5befd9dca89f82",
+   "bytes": 8712
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hooks-lifecycle-current-source-0d73-okllzdpx\\cas-proposal.json",
+   "sha256": "b0ef52b253365b039929f9724a652b8c66cd1323195cfe11390b2cafdf78f2c4",
+   "bytes": 150174
+  }
+ ],
+ "findings": [],
+ "method": "Narrow changed-owner/previous-hold source reinspection plus exact frozen/witness/CAS/history authentication; actual prior Hook68 and Lifecycle18 peer verdicts and exact mode/reader code closures reused for unaffected semantics. No runtime evidence renewal.",
+ "review_reuse": [
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hook68-independent-source-review-i6l4svwb\\review.json",
+   "sha256": "eedeef5cff4777530b638816bf5289c07398a88b738baeb3925a19d04fa5f1cc",
+   "bytes": 12848
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-lifecycle18-closure-jj0dqle2\\review.json",
+   "sha256": "b7939fae53bb4c33e26c2fb6f2bc5b28a89195e3840224ba90fbbd593e08de7e",
+   "bytes": 16154
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-mode-exit-guidance-independent-closure-5492y33s\\review.json",
+   "sha256": "1be5e14be90ffa1688c4350dbc5203af268908ca54f2c65a8eb9cafdb906096d",
+   "bytes": 6248
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-work-adopt-regular-reader-independent-review-fiv1waho\\review.json",
+   "sha256": "459b8d4d458c0c8eb3bafd701b743f6d4c10d88e8c1e86789173004c691201e5",
+   "bytes": 8072
+  }
+ ],
+ "verified": {
+  "adoption_subjects": 22,
+  "sealed_descriptor_records": 17,
+  "literal_clauses": 111,
+  "CAS_source_only_rows": 94,
+  "whole_advanced_rows": 34,
+  "current_positive_files": 67,
+  "all_source_bytes_same_at_cfa8": true,
+  "file_span_checks": 774,
+  "newly_supported_held_cells": [
+   "disposition:machines:hooks:mode",
+   "disposition:transitions:hooks:mode:03",
+   "disposition:machines:hooks:mode-audit",
+   "disposition:transitions:hooks:mode-audit:04",
+   "disposition:machines:hooks:work-adoption",
+   "disposition:transitions:hooks:work-adoption:01",
+   "disposition:transitions:hooks:work-adoption:02",
+   "disposition:transitions:hooks:work-adoption:03"
+  ],
+  "proof_ID_universe_equals_CAS": true
+ },
+ "focused_semantic_conclusions": [
+  "Mode03/04/05 and audit01 correctly describe attributable paired rows, fresh transition identity, pending-enter settlement before noop and exact-row success. Current source1988 matches independently closed code. Marker-before-journal crash, max8 eviction, queue race and dual-denial loss remain explicit; global old debt is not persistence proof.",
+  "Mode-audit04 accurately distinguishes three silent best-effort seen-marker attempts from positive readable same-session and ledger-backed choice. Root-accepted analytical classification imposes no new universal clearing or terminal-diagnostic behavior. Effective mode and deterministic gates remain separate.",
+  "Work-adoption01/02/03 correctly bind repaired5931 reader acquisition before Python consumption, optional absence/limits/UTF8/cleanup and immutable inventory/request boundaries. Native cutover and replay identity remain separate source contracts; no Windows universal nofollow/nonblock/ancestor/same-inode snapshot claim.",
+  "Work-owner native peer predicate remains the exact isdir/not-islink/empty-scandir test; regular/reparse lstat applies to legacy board. The prior b793 scope correction is preserved rather than reintroducing a universal Windows junction refusal.",
+  "Other previously reviewed source clauses retain their scope, original advanced evidence/history and current source joins. No TESTED/N-A/task/host/human/provider/CI/publication conclusion follows from this source-only proposal."
+ ],
+ "limits": [
+  "No tests, original owner validators, product imports, native/API/network/provider/install/runtime effects or canonical/index/ref/marker/ledger writes.",
+  "Private proposal only with no index OIDs; Root alone owns strict combined prospective admission and canonical integration.",
+  "Source0d73 is retained explicitly while current cfa8 is a byte-identical positive-input join, not a re-labelled runtime epoch."
+ ]
+}

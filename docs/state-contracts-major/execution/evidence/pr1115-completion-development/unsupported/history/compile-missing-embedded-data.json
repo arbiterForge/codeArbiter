@@ -1,0 +1,108 @@
+{
+  "format": "private-unsupported-wasm-unit/1",
+  "state": "FAILED_RETAINED_STOPPED",
+  "source_epoch": "1984510402d8f662d27e6ecd5f3186da9bf71978",
+  "draft": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-unsupported-boundary-plan-c03bb9ae\\fs_other_boundary_test.go",
+    "sha256": "28e3dbea39cd63209f21362011644c64abc4a8ce00c66456fde56f37c9053856"
+  },
+  "compile": {
+    "argv": [
+      "C:\\Program Files\\Go\\bin\\go.exe",
+      "test",
+      "-c",
+      "-mod=readonly",
+      "-p=2",
+      "-x",
+      "-work",
+      "-o",
+      "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-unsupported-wasm-run\\output\\store-fallback.test.wasm",
+      "./internal/store"
+    ],
+    "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-unsupported-wasm-run\\candidate\\core\\artifacts",
+    "exit_code": 1,
+    "elapsed_seconds": 0.22698780000791885,
+    "timeout_seconds": 90,
+    "timed_out": false,
+    "overflowed": false,
+    "containment": "exited",
+    "setup_error": null,
+    "streams": {
+      "stdout": {
+        "observed_bytes": 91,
+        "retained_bytes": 91,
+        "observed_sha256": "7baac461ef71225a1c6c4fae49cb9360ba091582836031934f895175661bb2d6",
+        "reader_error": null
+      },
+      "stderr": {
+        "observed_bytes": 249,
+        "retained_bytes": 249,
+        "observed_sha256": "c7d5fc5c80f8491de20aefcf667309e8854d1d84774e08bd3df9f68f4e122dfc",
+        "reader_error": null
+      }
+    }
+  },
+  "unit": null,
+  "validation": {
+    "compile_pass": false,
+    "unit_pass": false,
+    "source_stable": true,
+    "candidate_stable": true,
+    "goroot_stable": true,
+    "tools_stable": true,
+    "helper_stable": true,
+    "node_stable": true,
+    "module_inputs": 226,
+    "goroot_files": 15639,
+    "explicit_trace_files": 0,
+    "executed_test_names": [],
+    "limits": "Unsupported js/wasm source unit only; not native unsupported OS, supported six platforms, installed native, whole NT08/NF08/SEQ31 or status qualification.",
+    "exact_one_named_pass": false
+  },
+  "files": [
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-unsupported-wasm-run\\before.json",
+      "sha256": "c6703cdc4a285b9d4828f37c34e154acb838907f6fadc87f6b3390a930fd4a88",
+      "bytes": 2787434
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-unsupported-wasm-run\\after.json",
+      "sha256": "250886fbd7749d432c83ee6240ced0c902a3f3b635dbf9817c60dc80a6773101",
+      "bytes": 2784460
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-unsupported-wasm-run\\compile-outcome.json",
+      "sha256": "4c206c902b63d413288ed1a0a2926f246b3ce13cf931e05623ec8c5d2c00899f",
+      "bytes": 995
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-unsupported-wasm-run\\compile.stdout.log",
+      "sha256": "7baac461ef71225a1c6c4fae49cb9360ba091582836031934f895175661bb2d6",
+      "bytes": 91
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-unsupported-wasm-run\\compile.stderr.log",
+      "sha256": "c7d5fc5c80f8491de20aefcf667309e8854d1d84774e08bd3df9f68f4e122dfc",
+      "bytes": 249
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-unsupported-wasm-run\\compiler-source-trace.json",
+      "sha256": "b55f77a76a313c521790eb2a00a649801c915656853b8cbb7a6cb12fbfa6ab7e",
+      "bytes": 777
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-unsupported-wasm-run\\validation.json",
+      "sha256": "abd42898b182ff00e140ea91826760f9ed72933581726ea86f3042f2c3b02efb",
+      "bytes": 510
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-unsupported-wasm-run\\execute.py",
+      "sha256": "3e8f8a46e19c5df638f0c5ed55d30df3715b64c798356ad190eee7c516f45d04",
+      "bytes": 12406
+    }
+  ],
+  "no_canonical_writes": true,
+  "no_status_promotion": true,
+  "failure_policy": "First actual failure retained; no retry/fix/alternate target.",
+  "qualification": false
+}

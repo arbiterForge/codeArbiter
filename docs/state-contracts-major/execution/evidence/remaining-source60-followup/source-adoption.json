@@ -1,0 +1,495 @@
+{
+ "schema": "codearbiter.additive-source-private-preview/1",
+ "expected_head": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+ "proposals": [
+  {
+   "delivery": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-remaining-hooks60-source-2e09-rwhj0q48\\delivery.json",
+   "sha256": "99decf671169673e93aa3f436942e1df14161cb0e3ae2acd2fd5e0e105a43753",
+   "cells": 60,
+   "skipped_old_epoch_cells": [],
+   "skip_reason": null
+  }
+ ],
+ "files": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/remaining-hooks60-source-2e09c637/source-bindings.json",
+   "preimage_sha256": null,
+   "sha256": "49ceb8835845eb0eb591600af4b0acb25cdc3292d9894e40d9460f362aa79b2f",
+   "bytes": 25425,
+   "successor_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-additive-source-preview-bqpaj6rq\\candidate\\docs\\state-contracts-major\\execution\\evidence\\remaining-hooks60-source-2e09c637\\source-bindings.json"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/remaining-hooks60-source-2e09c637/baseline-current-joins.json",
+   "preimage_sha256": null,
+   "sha256": "54c3a482febdb2c016750a70c275758a46538ea6aafde188aabdb94fd37ca260",
+   "bytes": 19811,
+   "successor_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-additive-source-preview-bqpaj6rq\\candidate\\docs\\state-contracts-major\\execution\\evidence\\remaining-hooks60-source-2e09c637\\baseline-current-joins.json"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/remaining-hooks60-source-2e09c637/inherited-evidence-inventory.json",
+   "preimage_sha256": null,
+   "sha256": "eb2da6ec744f83648f1f08f0ce74a71b2799c54bc9a73a5b064217fe76efa4a7",
+   "bytes": 37856,
+   "successor_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-additive-source-preview-bqpaj6rq\\candidate\\docs\\state-contracts-major\\execution\\evidence\\remaining-hooks60-source-2e09c637\\inherited-evidence-inventory.json"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/remaining-hooks60-source-2e09c637/clause-inspection.json",
+   "preimage_sha256": null,
+   "sha256": "f1c5d66315d2fa44d366cc436ee35c931356edbc33da649c5fc0e1738202e8f7",
+   "bytes": 421867,
+   "successor_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-additive-source-preview-bqpaj6rq\\candidate\\docs\\state-contracts-major\\execution\\evidence\\remaining-hooks60-source-2e09c637\\clause-inspection.json"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/remaining-hooks60-source-2e09c637/prune-repair-binding.json",
+   "preimage_sha256": null,
+   "sha256": "03f21fd5ac71cce6b28dcaa1a1b77f7f4c4e092a79a161c06effb11602adfd1b",
+   "bytes": 3054,
+   "successor_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-additive-source-preview-bqpaj6rq\\candidate\\docs\\state-contracts-major\\execution\\evidence\\remaining-hooks60-source-2e09c637\\prune-repair-binding.json"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/remaining-hooks60-source-2e09c637/inherited/01-predecessor.json",
+   "preimage_sha256": null,
+   "sha256": "32ee110f5af4353de4cbcf95f48a643f973a46832b5eaaded250b7933307b7f2",
+   "bytes": 3178,
+   "successor_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-additive-source-preview-bqpaj6rq\\candidate\\docs\\state-contracts-major\\execution\\evidence\\remaining-hooks60-source-2e09c637\\inherited\\01-predecessor.json"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/remaining-hooks60-source-2e09c637/inherited/02-predecessor.json",
+   "preimage_sha256": null,
+   "sha256": "079122f21ed70b6608c3f2e4f916d4ab59154e30d4c6680224199577ff4c3bb8",
+   "bytes": 2622,
+   "successor_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-additive-source-preview-bqpaj6rq\\candidate\\docs\\state-contracts-major\\execution\\evidence\\remaining-hooks60-source-2e09c637\\inherited\\02-predecessor.json"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/remaining-hooks60-source-2e09c637/inherited/03-predecessor.json",
+   "preimage_sha256": null,
+   "sha256": "6d23c0edf366510f74ef1247e5223bd5f259fba716f2b02dd564c85f74eee392",
+   "bytes": 1805,
+   "successor_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-additive-source-preview-bqpaj6rq\\candidate\\docs\\state-contracts-major\\execution\\evidence\\remaining-hooks60-source-2e09c637\\inherited\\03-predecessor.json"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/remaining-hooks60-source-2e09c637/inherited/04-predecessor.json",
+   "preimage_sha256": null,
+   "sha256": "7cfdcea3c75474aac56009bd990439f05833ae0262893e957ef268d54317dfda",
+   "bytes": 2562,
+   "successor_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-additive-source-preview-bqpaj6rq\\candidate\\docs\\state-contracts-major\\execution\\evidence\\remaining-hooks60-source-2e09c637\\inherited\\04-predecessor.json"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/remaining-hooks60-source-2e09c637/inherited/05-predecessor.json",
+   "preimage_sha256": null,
+   "sha256": "4afe3de897bffd1ccb27028b7dc83473223f9461f97a7d54572635a72d572617",
+   "bytes": 49859,
+   "successor_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-additive-source-preview-bqpaj6rq\\candidate\\docs\\state-contracts-major\\execution\\evidence\\remaining-hooks60-source-2e09c637\\inherited\\05-predecessor.json"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/remaining-hooks60-source-2e09c637/proofs/hooks-prune-plan-preserved.json",
+   "preimage_sha256": null,
+   "sha256": "c811ee97b2e6f9d6b778bda765ba90db5febce889bffa9f8907d900a79df97ae",
+   "bytes": 15624,
+   "successor_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-additive-source-preview-bqpaj6rq\\candidate\\docs\\state-contracts-major\\execution\\evidence\\remaining-hooks60-source-2e09c637\\proofs\\hooks-prune-plan-preserved.json"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/remaining-hooks60-source-2e09c637/proofs/hooks-prune-execute-preserved.json",
+   "preimage_sha256": null,
+   "sha256": "c2cae997e3149f79b32bf387f32bcb9c69101e9139e7ff878c76968af3d81e28",
+   "bytes": 11659,
+   "successor_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-additive-source-preview-bqpaj6rq\\candidate\\docs\\state-contracts-major\\execution\\evidence\\remaining-hooks60-source-2e09c637\\proofs\\hooks-prune-execute-preserved.json"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/remaining-hooks60-source-2e09c637/proofs/hooks-pi-accounting-preserved.json",
+   "preimage_sha256": null,
+   "sha256": "bc59d4cd9c4cc0cef0eb8f0d5313bc9223962a0ff05d059fbb1b1aed04b8ad0a",
+   "bytes": 15383,
+   "successor_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-additive-source-preview-bqpaj6rq\\candidate\\docs\\state-contracts-major\\execution\\evidence\\remaining-hooks60-source-2e09c637\\proofs\\hooks-pi-accounting-preserved.json"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/remaining-hooks60-source-2e09c637/proofs/hooks-doctor-preserved.json",
+   "preimage_sha256": null,
+   "sha256": "8ed7ee50b39617b1a426370cd8903375427a4a05175415b558c02f541a0ad94b",
+   "bytes": 24482,
+   "successor_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-additive-source-preview-bqpaj6rq\\candidate\\docs\\state-contracts-major\\execution\\evidence\\remaining-hooks60-source-2e09c637\\proofs\\hooks-doctor-preserved.json"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/remaining-hooks60-source-2e09c637/proofs/hooks-tribunal-inventory-preserved.json",
+   "preimage_sha256": null,
+   "sha256": "55c0e7e0c008cc51c97c442f4658d096d705ce456cf14d1418f973c484ee7c5f",
+   "bytes": 8200,
+   "successor_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-additive-source-preview-bqpaj6rq\\candidate\\docs\\state-contracts-major\\execution\\evidence\\remaining-hooks60-source-2e09c637\\proofs\\hooks-tribunal-inventory-preserved.json"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/remaining-hooks60-source-2e09c637/proofs/hooks-tribunal-run-preserved.json",
+   "preimage_sha256": null,
+   "sha256": "e73cdd88108ea91e302e7c50851bf7e28f6ec41808f34ea1a03d37541b2fb26d",
+   "bytes": 10434,
+   "successor_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-additive-source-preview-bqpaj6rq\\candidate\\docs\\state-contracts-major\\execution\\evidence\\remaining-hooks60-source-2e09c637\\proofs\\hooks-tribunal-run-preserved.json"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/remaining-hooks60-source-2e09c637/proofs/hooks-tribunal-lock-leads-preserved.json",
+   "preimage_sha256": null,
+   "sha256": "453a67a086d1fc1daa237e5fc061cb19260215a9ecb4177e53f75a98506f02e4",
+   "bytes": 12480,
+   "successor_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-additive-source-preview-bqpaj6rq\\candidate\\docs\\state-contracts-major\\execution\\evidence\\remaining-hooks60-source-2e09c637\\proofs\\hooks-tribunal-lock-leads-preserved.json"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/remaining-hooks60-source-2e09c637/proofs/hooks-pi-python-bridge-preserved.json",
+   "preimage_sha256": null,
+   "sha256": "415e3771a57e3a213290be0c9e23e38eadc51b2fe77423dbffff04cdd5c13f0a",
+   "bytes": 29312,
+   "successor_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-additive-source-preview-bqpaj6rq\\candidate\\docs\\state-contracts-major\\execution\\evidence\\remaining-hooks60-source-2e09c637\\proofs\\hooks-pi-python-bridge-preserved.json"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/remaining-hooks60-source-2e09c637/proofs/hooks-codex-pretool-preserved.json",
+   "preimage_sha256": null,
+   "sha256": "e29e127cb6cbb1983da99013e9aa2c264df90ca83ca7f943fb5f68447570ff4a",
+   "bytes": 19265,
+   "successor_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-additive-source-preview-bqpaj6rq\\candidate\\docs\\state-contracts-major\\execution\\evidence\\remaining-hooks60-source-2e09c637\\proofs\\hooks-codex-pretool-preserved.json"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/remaining-hooks60-source-2e09c637/proofs/S39-preserved.json",
+   "preimage_sha256": null,
+   "sha256": "b0bf1e397790c5aaba6432923db76efa710aa70f942c3aa1d72b0729bf1363f3",
+   "bytes": 26137,
+   "successor_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-additive-source-preview-bqpaj6rq\\candidate\\docs\\state-contracts-major\\execution\\evidence\\remaining-hooks60-source-2e09c637\\proofs\\S39-preserved.json"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/remaining-hooks60-source-2e09c637/proofs/S40-preserved.json",
+   "preimage_sha256": null,
+   "sha256": "b3fab6a690ce31e3d44ee3782a6e3181c662d3a5e25ae281b30b6b0dd5789752",
+   "bytes": 16742,
+   "successor_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-additive-source-preview-bqpaj6rq\\candidate\\docs\\state-contracts-major\\execution\\evidence\\remaining-hooks60-source-2e09c637\\proofs\\S40-preserved.json"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/remaining-hooks60-source-2e09c637/proofs/S41-preserved.json",
+   "preimage_sha256": null,
+   "sha256": "d16ddf6b82b8020a58e2a793dfba518e475e5c84633a9d0ec7bb7dd0b078364d",
+   "bytes": 18807,
+   "successor_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-additive-source-preview-bqpaj6rq\\candidate\\docs\\state-contracts-major\\execution\\evidence\\remaining-hooks60-source-2e09c637\\proofs\\S41-preserved.json"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/coverage-ledger.json",
+   "preimage_sha256": "82d2bb02ccd8898789344c71cbe61fd21cd0a0831ab5fb12636731c3e4016275",
+   "sha256": "21e7fdc540540ee0d41ad8546ec6c06e62901fb7bf123b24185b9dda8b1328b2",
+   "bytes": 2198943,
+   "successor_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-additive-source-preview-bqpaj6rq\\candidate\\docs\\state-contracts-major\\execution\\coverage-ledger.json"
+  }
+ ],
+ "source_cells": {
+  "disposition:machines:hooks:prune-plan": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+  "disposition:transitions:hooks:prune-plan:02": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+  "disposition:transitions:hooks:prune-plan:05": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+  "disposition:machines:hooks:prune-execute": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+  "disposition:transitions:hooks:prune-execute:04": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+  "disposition:machines:hooks:pi-accounting": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+  "disposition:transitions:hooks:pi-accounting:04": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+  "disposition:transitions:hooks:pi-accounting:05": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+  "disposition:machines:hooks:doctor": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+  "disposition:transitions:hooks:doctor:01": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+  "disposition:transitions:hooks:doctor:02": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+  "disposition:transitions:hooks:doctor:03": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+  "disposition:transitions:hooks:doctor:04": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+  "disposition:transitions:hooks:doctor:05": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+  "disposition:machines:hooks:tribunal-inventory": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+  "disposition:transitions:hooks:tribunal-inventory:02": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+  "disposition:machines:hooks:tribunal-run": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+  "disposition:transitions:hooks:tribunal-run:03": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+  "disposition:machines:hooks:tribunal-lock-leads": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+  "disposition:transitions:hooks:tribunal-lock-leads:06": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+  "disposition:machines:hooks:pi-python-bridge": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+  "disposition:transitions:hooks:pi-python-bridge:01": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+  "disposition:transitions:hooks:pi-python-bridge:02": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+  "disposition:transitions:hooks:pi-python-bridge:03": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+  "disposition:transitions:hooks:pi-python-bridge:04": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+  "disposition:transitions:hooks:pi-python-bridge:05": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+  "disposition:transitions:hooks:pi-python-bridge:06": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+  "disposition:transitions:hooks:pi-python-bridge:07": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+  "disposition:machines:hooks:codex-pretool": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+  "disposition:transitions:hooks:codex-pretool:01": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+  "disposition:transitions:hooks:codex-pretool:02": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+  "disposition:transitions:hooks:codex-pretool:03": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+  "disposition:transitions:hooks:codex-pretool:04": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+  "disposition:transitions:hooks:codex-pretool:05": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+  "disposition:transitions:hooks:codex-pretool:06": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+  "disposition:machines:S39": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+  "disposition:transitions:S39:01": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+  "disposition:transitions:S39:02": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+  "disposition:transitions:S39:03": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+  "disposition:transitions:S39:04": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+  "disposition:transitions:S39:05": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+  "disposition:transitions:S39:06": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+  "disposition:transitions:S39:07": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+  "disposition:transitions:S39:08": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+  "disposition:transitions:S39:09": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+  "disposition:transitions:S39:10": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+  "disposition:machines:S40": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+  "disposition:transitions:S40:01": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+  "disposition:transitions:S40:02": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+  "disposition:transitions:S40:03": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+  "disposition:transitions:S40:04": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+  "disposition:transitions:S40:05": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+  "disposition:machines:S41": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+  "disposition:transitions:S41:01": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+  "disposition:transitions:S41:02": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+  "disposition:transitions:S41:03": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+  "disposition:transitions:S41:04": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+  "disposition:transitions:S41:05": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+  "disposition:transitions:S41:06": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+  "disposition:transitions:S41:07": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08"
+ },
+ "source_inputs": {
+  ".codearbiter/decisions/0043-assistive-state-engine.md": {
+   "sha256": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+   "bytes": 6365,
+   "physical_join": {
+    "kind": "EXACT",
+    "sha256": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5"
+   }
+  },
+  "core/pysrc/_prunelib.py": {
+   "sha256": "0fa5469a3992cb1c8076c566d99407c1cf40d0f11a88d7a80bc82721122f5a72",
+   "bytes": 58415,
+   "physical_join": {
+    "kind": "EXACT",
+    "sha256": "0fa5469a3992cb1c8076c566d99407c1cf40d0f11a88d7a80bc82721122f5a72"
+   }
+  },
+  "core/pysrc/_prunepolicy.py": {
+   "sha256": "13bc82c138975121c3dbd28379a0bc8dda183f09fa6e47fbe2bab2e9cc0faf35",
+   "bytes": 10440,
+   "physical_join": {
+    "kind": "EXACT",
+    "sha256": "13bc82c138975121c3dbd28379a0bc8dda183f09fa6e47fbe2bab2e9cc0faf35"
+   }
+  },
+  "core/pysrc/prune-transcript.py": {
+   "sha256": "697c844472240ac0440e4043d17eb7de832d70eadf6e21de0ab0684a07008977",
+   "bytes": 10814,
+   "physical_join": {
+    "kind": "EXACT",
+    "sha256": "697c844472240ac0440e4043d17eb7de832d70eadf6e21de0ab0684a07008977"
+   }
+  },
+  "docs/state-contracts-major/PROGRAM.md": {
+   "sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+   "bytes": 7910,
+   "physical_join": {
+    "kind": "EXACT",
+    "sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7"
+   }
+  },
+  "docs/state-contracts-major/contracts/machine-coverage.json": {
+   "sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+   "bytes": 385316,
+   "physical_join": {
+    "kind": "EXACT",
+    "sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd"
+   }
+  },
+  "docs/state-contracts-major/contracts/program.json": {
+   "sha256": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+   "bytes": 6403,
+   "physical_join": {
+    "kind": "EXACT",
+    "sha256": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d"
+   }
+  },
+  "docs/state-contracts-major/contracts/tasks.json": {
+   "sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+   "bytes": 331224,
+   "physical_join": {
+    "kind": "EXACT",
+    "sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f"
+   }
+  },
+  "docs/state-contracts-major/contracts/transition-coverage.json": {
+   "sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+   "bytes": 3185278,
+   "physical_join": {
+    "kind": "EXACT",
+    "sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e"
+   }
+  },
+  "plugins/ca-pi/hooks/pi-bridge.py": {
+   "sha256": "ac922e71900aabcd43fc73a4e8c6c5479b309da8af7c7658512fcfd12514b6d4",
+   "bytes": 23604,
+   "physical_join": {
+    "kind": "EXACT",
+    "sha256": "ac922e71900aabcd43fc73a4e8c6c5479b309da8af7c7658512fcfd12514b6d4"
+   }
+  },
+  "core/pysrc/_hooklib.py": {
+   "sha256": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+   "bytes": 49147,
+   "physical_join": {
+    "kind": "EXACT",
+    "sha256": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895"
+   }
+  },
+  "core/pysrc/_ledgerlib.py": {
+   "sha256": "33fdd7e0ec5505e4faea7776c861a123206bb5c2c09315b09965ab4f92dda580",
+   "bytes": 65565,
+   "physical_join": {
+    "kind": "EXACT",
+    "sha256": "33fdd7e0ec5505e4faea7776c861a123206bb5c2c09315b09965ab4f92dda580"
+   }
+  },
+  "core/pysrc/_artifactlib.py": {
+   "sha256": "db10153f438023ca6eb7e32f77e1898fbd2f806cdc5ef98bdffb078e27e65187",
+   "bytes": 64924,
+   "physical_join": {
+    "kind": "EXACT",
+    "sha256": "db10153f438023ca6eb7e32f77e1898fbd2f806cdc5ef98bdffb078e27e65187"
+   }
+  },
+  "core/pysrc/_githooks.py": {
+   "sha256": "450d3204c7895d7649c4bd7b1daf40b498b960df48de00138914559d41008e38",
+   "bytes": 64758,
+   "physical_join": {
+    "kind": "EXACT",
+    "sha256": "450d3204c7895d7649c4bd7b1daf40b498b960df48de00138914559d41008e38"
+   }
+  },
+  "core/pysrc/doctor.py": {
+   "sha256": "d3ebfd7a428d6c0664f2990f8d749ce6f514d4a75b582b5ac6ab6ed469ce18a7",
+   "bytes": 28315,
+   "physical_join": {
+    "kind": "EXACT",
+    "sha256": "d3ebfd7a428d6c0664f2990f8d749ce6f514d4a75b582b5ac6ab6ed469ce18a7"
+   }
+  },
+  "core/pysrc/hostapi.py": {
+   "sha256": "2aea81ad167a458c6053cb52880952521159a367eaa5baa7df6e2e35fea574e4",
+   "bytes": 38083,
+   "physical_join": {
+    "kind": "EXACT",
+    "sha256": "2aea81ad167a458c6053cb52880952521159a367eaa5baa7df6e2e35fea574e4"
+   }
+  },
+  "plugins/ca-pi/hooks/_host.py": {
+   "sha256": "ba885061399fd0fcfd26979ac310ae175a232501346ebae6fd5142db2c302b62",
+   "bytes": 4549,
+   "physical_join": {
+    "kind": "EXACT",
+    "sha256": "ba885061399fd0fcfd26979ac310ae175a232501346ebae6fd5142db2c302b62"
+   }
+  },
+  "core/pysrc/_tribunalinventorylib.py": {
+   "sha256": "974533bbe66808475c0e64e3247ee5baf814f9f0762e731f904b924e696de251",
+   "bytes": 33101,
+   "physical_join": {
+    "kind": "EXACT",
+    "sha256": "974533bbe66808475c0e64e3247ee5baf814f9f0762e731f904b924e696de251"
+   }
+  },
+  "core/pysrc/tribunal.py": {
+   "sha256": "01322be9197fbd2ccaabad56ff7f7fa2dd64abda618d98d6194f528a028a343c",
+   "bytes": 6336,
+   "physical_join": {
+    "kind": "EXACT",
+    "sha256": "01322be9197fbd2ccaabad56ff7f7fa2dd64abda618d98d6194f528a028a343c"
+   }
+  },
+  "core/pysrc/_tribunalrunlib.py": {
+   "sha256": "c0381e0d22a0e25a22d7ac27adaf518724c322c92dd77b11014702d251fd2624",
+   "bytes": 40445,
+   "physical_join": {
+    "kind": "EXACT",
+    "sha256": "c0381e0d22a0e25a22d7ac27adaf518724c322c92dd77b11014702d251fd2624"
+   }
+  },
+  "core/pysrc/_arbiterstatelib.py": {
+   "sha256": "19ebd7d82fa56d2a4535043d3a163cfe9f0475aa5d457d5ad8953980d57f71c1",
+   "bytes": 14372,
+   "physical_join": {
+    "kind": "EXACT",
+    "sha256": "19ebd7d82fa56d2a4535043d3a163cfe9f0475aa5d457d5ad8953980d57f71c1"
+   }
+  },
+  "core/pysrc/_modelib.py": {
+   "sha256": "1988af5a7b374bc796a0d6744a85d50a8b1213a4039bc91b6fa5d434b3464a03",
+   "bytes": 45342,
+   "physical_join": {
+    "kind": "EXACT",
+    "sha256": "1988af5a7b374bc796a0d6744a85d50a8b1213a4039bc91b6fa5d434b3464a03"
+   }
+  },
+  "core/pysrc/_planfilelib.py": {
+   "sha256": "038cf68ad85d022d22aab4da5f218f1ce5fb1bdec3bc60e329c607b806fd6fe0",
+   "bytes": 28296,
+   "physical_join": {
+    "kind": "EXACT",
+    "sha256": "038cf68ad85d022d22aab4da5f218f1ce5fb1bdec3bc60e329c607b806fd6fe0"
+   }
+  },
+  "core/pysrc/_segmentslib.py": {
+   "sha256": "48faefd3a2134195781d821e46d7d7aa2439ef6f6bd950f4de19eff0d416ebe2",
+   "bytes": 14615,
+   "physical_join": {
+    "kind": "EXACT",
+    "sha256": "48faefd3a2134195781d821e46d7d7aa2439ef6f6bd950f4de19eff0d416ebe2"
+   }
+  },
+  "core/pysrc/_workflowrecoverylib.py": {
+   "sha256": "a37291b659cdc1ae94482f7591e50b0e869a87c4a16fdf427bd1373c2e7ade9e",
+   "bytes": 104162,
+   "physical_join": {
+    "kind": "EXACT",
+    "sha256": "a37291b659cdc1ae94482f7591e50b0e869a87c4a16fdf427bd1373c2e7ade9e"
+   }
+  },
+  "plugins/ca-codex/hooks/_host.py": {
+   "sha256": "92b1977ada85436649380fdcf07651f586174efee76a8412beb3ae26bf1e457f",
+   "bytes": 15607,
+   "physical_join": {
+    "kind": "EXACT",
+    "sha256": "92b1977ada85436649380fdcf07651f586174efee76a8412beb3ae26bf1e457f"
+   }
+  },
+  "plugins/ca-codex/hooks/pre-tool-adapter.py": {
+   "sha256": "0eb498bb9d319b029053b1160f9b7c9ea1b74506c97cf20cfed26ee3bb49d7c0",
+   "bytes": 12134,
+   "physical_join": {
+    "kind": "EXACT",
+    "sha256": "0eb498bb9d319b029053b1160f9b7c9ea1b74506c97cf20cfed26ee3bb49d7c0"
+   }
+  },
+  "plugins/ca/hooks/_host.py": {
+   "sha256": "9d04b88683d1deab03850ef1f2a169579f59756d3430079bdc6aa2160994bc1b",
+   "bytes": 1689,
+   "physical_join": {
+    "kind": "EXACT",
+    "sha256": "9d04b88683d1deab03850ef1f2a169579f59756d3430079bdc6aa2160994bc1b"
+   }
+  },
+  "core/pysrc/_taskboardlib.py": {
+   "sha256": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+   "bytes": 69125,
+   "physical_join": {
+    "kind": "EXACT",
+    "sha256": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1"
+   }
+  },
+  "core/pysrc/_worklib.py": {
+   "sha256": "4b08bdfdea85a96e1bde4bd7dc610bc61dd8ef31a42d530fb10437b1145818ce",
+   "bytes": 18760,
+   "physical_join": {
+    "kind": "EXACT",
+    "sha256": "4b08bdfdea85a96e1bde4bd7dc610bc61dd8ef31a42d530fb10437b1145818ce"
+   }
+  },
+  "core/pysrc/taskwrite.py": {
+   "sha256": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25",
+   "bytes": 22686,
+   "physical_join": {
+    "kind": "EXACT",
+    "sha256": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25"
+   }
+  }
+ },
+ "planned": {
+  "findings": 49,
+  "machines": 0,
+  "transitions": 8,
+  "total": 57
+ },
+ "runtime_task_qualification": false
+}

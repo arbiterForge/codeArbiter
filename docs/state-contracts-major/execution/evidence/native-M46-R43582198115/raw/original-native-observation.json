@@ -1,0 +1,1952 @@
+{
+  "format": "codearbiter.major-test-observation/1",
+  "source_commit": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+  "source_tree": "d69fb1c0eb4b16672137e1185eb085339f13727d",
+  "source_stable": true,
+  "ci_run_id": 43582198115,
+  "proof_kind": "native-module",
+  "producer": "go-named-ci20-join",
+  "native_binding": {
+    "binary_sha256": "c36b4ca918f5f7e9568665ba894bc1e564a29183a0c5be7d7ea051f2e5e6f070",
+    "format": "codearbiter.ci-native-candidate/1",
+    "go_sha256": "d3ccdb604eafa6031133aefe1a3db24f0bb7362b857bc2125ac4e4c178b4b490",
+    "manifest_sha256": "b3dbea9eedb2917c07272ab20ec24116f424ee610bbfa3cd2b3eaf75f941417c",
+    "module_sha256": "ea1f9f0c6f15ec8a6971c8dbcd63a51d4257f9d11c9e0d78fceb0f74d8a3f7a8",
+    "platform": "windows/amd64",
+    "producer_job": "artifact-native-build",
+    "run_attempt": "1",
+    "run_id": "43582198115",
+    "source_commit": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+    "toolchain": "go1.27.1",
+    "workflow": ".github/workflows/ci.yml"
+  },
+  "argv": [
+    "C:\\hostedtoolcache\\windows\\Python\\3.14.10\\x64\\python.exe",
+    "D:\\a\\codeArbiter\\codeArbiter\\tools\\go_test_parallel.py",
+    "--module",
+    "D:\\a\\codeArbiter\\codeArbiter\\core\\artifacts",
+    "--timeout",
+    "30m",
+    "--observation",
+    "D:\\a\\_temp\\native-tests.json"
+  ],
+  "exit_code": 0,
+  "tests": [
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/cmd/ca-artifact:TestCLIEmitsJSONFaultAndMatchingExitClass",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/authority:TestObservedEventSchemaRequiresClosedObservationLink",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/canonical:FuzzStrictJSON",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/canonical:TestDigestDomains",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/canonical:TestResourceLimits",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/canonical:TestStrictJSON",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/conformance:TestSpecPlanConformance",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/contextdocument:TestCodeMapCurrentTargets",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/contextdocument:TestConfigOnlyControlsPreservesNestedScopeBlocks",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/contextdocument:TestConfigOnlyControlsRejectsMismatchedScopeBlocks",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/contextdocument:TestContentEvidencePathRejectsSensitiveComponents",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/contextdocument:TestContextBoundedRender",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/contextdocument:TestContextDocumentContract",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/contextdocument:TestContextFinalizationNegativeControls",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/contextdocument:TestContextFinalizationPositiveControls",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/contextdocument:TestContextMarkdownPreservation",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/contextdocument:TestContextMetadataRefreshBindsExactProposedProvenance",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/contextdocument:TestContextMetadataRefreshPreservesDocumentAndReplays",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/contextdocument:TestContextMutationAdmission",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/contextdocument:TestContextRecoveryAndPaths",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/contextdocument:TestContextSelectedMetadataRefreshGuards",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/contextdocument:TestHasContentKeepsTextAfterComments",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/contextdocument:TestHeadingOnlyMarkdownHasContent",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/contextdocument:TestMembershipDigestDoesNotTraverseExcludedBoundaries",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/contextdocument:TestMembershipDigestFileLimitIncludesNonmatchingFiles",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/contextdocument:TestMembershipDigestNestedRegularEntries",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/contextdocument:TestMembershipDigestScopeOrderAndOwnershipBoundaries",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/contextdocument:TestMembershipDigestTracksNamesSeparatelyFromContent",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/contextdocument:TestOrdinaryContextAdoptionRecoveryPreservesHistory",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/contextdocument:TestSectionsDistinguishesGenericTitleFromRuleHeading",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/contextdocument:TestSectionsHandlesEmptyOptionalSource",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/contextdocument:TestStoredPreviewContractAcceptsRetainedPreviews",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/contextdocument:TestStoredPreviewContractRejectsMalformedRecords",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestAnchorsRecheckReusedDirectory",
+      "result": "skipped"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestCompletionAdmitsActualProducerLaunchBindingCounts",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestCompletionGitEnvFiltersInjectedConfig",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestCompletionGitRejectsUnsupportedNoLazyFetchWithoutRetry",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestCompletionLaunchFileBoundMatchesContract",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestCompletionReadFileRejectsBoundsAndIndirection",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestCompletionWorkspaceByteBounds",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestCompletionWorkspaceCanonicalNormalizationIsExact",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestCompletionWorkspaceCanonicalStateUpdatesStayFresh",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestCompletionWorkspaceLargeEvidenceClosure",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestCompletionWorkspaceLaunchFileLinkedParent",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestCompletionWorkspaceLegacyWindowsIdentity",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestCompletionWorkspaceMappedMutationInvalidates",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestCompletionWorkspaceRawMatchesPython",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestCompletionWorkspaceRawMultipleRootsMatchProducerOrder",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestCompletionWorkspaceRawTracksGitTypes",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestCompletionWorkspaceRawWhileNativeLockHeld",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestCompletionWorkspaceRejectsIdentityAndCommandSubstitution",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestCompletionWorkspaceRequiresExplicitGit",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestCompletionWorkspaceSymlinkParityAndEscape",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestPortableSnapshotFarmBindingsAnchorProjectionsOnce",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestPortableSnapshotNormativeArtifactsOpenOnce",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestPortableSnapshotOpensBounded",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestPortableSnapshotOutputReceiptsOpenOnce",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestPortableSnapshotScopedRootsShareAnchoredPrefixes",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestReceiptChainFixtureIsRealAndInspectWithFailsClosed",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestRecognizedOutputsCoverEveryDerivedKind",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestReviewNoZeroTestProofForAlternateRunnerSpelling",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestSnapshotAnchorCacheIsCapped",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestSnapshotCaseMismatchedExplicitRootFailsClosed",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestSnapshotCaseRenamedTrackedFileFailsClosed",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestSnapshotDeletedIndexEntryAbsent",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestSnapshotExcludesNarrowShipSet",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestSnapshotExecutableFromIndexMode",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestSnapshotExplicitRootsCannotReincludeExcludedDirectories",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestSnapshotFakeRootDotGitFailsClosed",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestSnapshotFarmProjectionOpenedOnce",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestSnapshotGateEventsAppendExempt",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestSnapshotGateEventsExemptWithoutGit",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestSnapshotGateEventsExplicitRootExempt",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestSnapshotGitProbeFailureFailsClosed",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestSnapshotGitlinkExplicitRoot",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestSnapshotGitlinkFakeDotGitFailsClosed",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestSnapshotGitlinkNotCheckedOutUsesIndexPointer",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestSnapshotGitlinkPointerOnly",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestSnapshotGitlinkSharingParentGitDirFailsClosed",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestSnapshotHonorsOnlyTheBridgeIgnorePair",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestSnapshotIgnoredExplicitFileRootExcluded",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestSnapshotIgnoresHostRuntimeMarkers",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestSnapshotMarkerExclusionIsExactCase",
+      "result": "skipped"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestSnapshotMarkerJunctionFailsClosed",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestSnapshotMarkerLinkHidesNothing",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestSnapshotMissingExplicitRootExplainsPlannedFiles",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestSnapshotNestedRootFailsClosed",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestSnapshotNestedRootUsesScopedGitMembership",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestSnapshotNonCanonicalRootFailsClosed",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestSnapshotNonGitRootFilesystemMembership",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestSnapshotOverridesAppendCounts",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestSnapshotOversizeDiagnosticsNamePathAndLimit",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestSnapshotPlanCannotExcludeCodearbiter",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestSnapshotProgressOnlyUpdateKeepsIdentity",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestSnapshotRedundantIgnoredExcludeAccepted",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestSnapshotRefusesOversizedReceipt",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestSnapshotRejectsDifferingScans",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestSnapshotRootInsideGitlinkRejected",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestSnapshotScopedRootsNeverReadFarmProjections",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestSnapshotShipSetMembership",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestSnapshotTrackedSymlinkIsUnsafePath",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestSnapshotUnmergedIndexFailsClosed",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestSnapshotUnreadableDotGitFailsClosed",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestSnapshotUntrackedNestedRepoCountsHead",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/fault:TestOperationalFaultExitClasses",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/kind:TestContractsAreClosedOrderedAndKindNeutral",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/model:TestNativeIntUsesPortableBounds",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestClaudeReviewProfile",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestCodexNativeProtocolRejectsUnboundEvidence",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestCodexNativeProtocolReviewProfile",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestCodexNativeV1RejectsHistoricalRelabeling",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestCodexNativeV1ReviewProfile",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestCodexNativeV1ReviewRejectsUnboundEvidence",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestCodexNativeV2RejectsUnboundActivityAndProfileRelabeling",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestCodexNativeV2ReviewProfile",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestCompletionRunnerContractKeepsProfilesSeparate",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestContextAndObservationSchemasAreClosed",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestContractAcceptsLegacyManifestFormat",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestDirectNodeEntrypointIsRequiredAndExactlyBound",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestLegacyObservationIsInspectableButCannotConferAuthority",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestLoadRejectsMutatedContentAddressedObservation",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestQualifiedRunnerContractAcceptsDirectAndNativeNPM",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestQualifiedRunnerContractAcceptsWorkspaceManifestClosure",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestQualifiedRunnerContractRejectsBindingMutations",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestQualifiedRunnerContractRejectsExitOnlyWorkspaceManifestClosure",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestQualifiedRunnerContractRejectsInvalidWorkspaceManifestClosure",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestQualifiedRunnerContractRejectsPrefixHelperWithoutNativeNPM",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestQualifiedRunnerContractSharesLaunchFileBound",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestReviewProducerResultIsSemanticallyBound",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestRunnerProfilesCannotBeRelabelled",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestSMARTSDecisionCriticalUnknownBlocksSelection",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestSMARTSDecisionIndifferentIsUniform",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestSMARTSDecisionStrongRefusedWithCriticalUnknown",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestSMARTSDecisionUnknownCannotShieldDominatedChoice",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestSMARTSDecisionUnknownFieldsForbiddenElsewhere",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestSMARTSDecisionUnknownRequiresFields",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestSMARTSDecisionV2KeepsRetainedRejections",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestSMARTSProfileLegacyAccepted",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestSMARTSProfileLegacyRejectsUnknown",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestValidateLinkRejectsEveryMutatedBinding",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestValidateLinkRejectsVerificationPayloadFromAnotherContext",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestVerificationProducerCannotForgeFrozenExitOrRequiredTests",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestVerificationProducerResultSemanticMutationsAreRejected",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAdoptionBlocksIgnoreScaffoldDocumentation",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAllOperationSchemasClosed",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestApprovalDescriptorsCoverActualEffects",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAssistiveDecisionRemainsAUserChoiceNotAToolResult",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAssistiveDraftBindingPreservesProgressAndEvidence",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAssistiveDraftWorkNeedsNoApprovalOrContextTicket",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAssistiveLegacyReadPreservesBytesAndNewFieldsRequireNewSchema",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAssistivePlanMaintenancePreservesProgressAndCAS",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAssistivePrerequisiteNewFailureAndUnknownReplaceOldSuccess",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAssistivePrerequisiteObservationCASReplayAndClosedShapes",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAssistivePrerequisiteReferencesHistoryAndInertHTML",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAssistiveReconcileKeepsTransitiveDependencyAdviceCurrent",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAssistiveReportedReviewCannotMasqueradeAsReceiptedReview",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAssistiveResumePreservesStopsAndRejectsDuplicateStart",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAssistiveScopeCanFinishWithoutReviewPermissionOrTestClaim",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAssistiveScopedFactsKeepIndependentWorkMoving",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAssistiveSelectionUsesDependenciesNotCheckpointOrder",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAssistiveStaleBindingIsVisibleWithoutBlockingProgress",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAssistiveWorkDoesNotSnapshotUnrelatedSource",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAuthorizedFarmEnrichment",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestBrownfieldCandidatesAreNotPublished",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestBrownfieldDecompositionPreservesInitializedState",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCanaryPreflightBinding",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCanaryPreflightRequiresExactBaseBytes",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCapabilitiesAdvertiseVersionedOperationContract",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCapabilitiesReportActualStorageBackend",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCaptureRequestRequiresBoundAuthoritySource",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCheckConflictsDoNotPromoteUnboundOrTrimmedHistory",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCheckConflictsMatchEveryUnindexedCommandWithoutBindingIt",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCheckConflictsRespectDefinitionAndSourceScope",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCheckReportBoundaryCannotCoverARepeatedLaterReport",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCodexNativeProtocolCaptureAndPublication",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCodexNativeV1CaptureAndPublication",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCodexNativeV2CaptureAndPublication",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCodexNativeV2CompletionCapturePublicationAndScope",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCodexNativeV2CompletionRejectsSelectedEvidenceDrift",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionGitDiagnosticFailureChild",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionGitFailureDiagnostics",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionPublicationClosureRetainsIntegrity",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionRerunCannotReuseReviewAfterItsSubjectChanges",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionRerunReusesTaskReviewWithoutRelabellingItsEvidence",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewCanSupersedeStaleCompletedRun",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewMaterialBoundsAndClosedSchema",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewMaterialCannotBypassCanonicalArtifactAPI",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewNativeCapturePublicationAndScope",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewQualityPreservesExactTaskEvidence",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewRejectsDefinitionOnlyReceipt",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewRejectsSelectedEvidenceDrift",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewRejectsWindowsMaterialAlias",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewReplayRetainsExplicitSelectedReceipt",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewSelectionAndDecisionAreExact",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestConcurrentObservationsShareRepositoryLock",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestConcurrentReadersPreserveAdmission",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestConcurrentReadersPreserveExclusiveOperations",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestConcurrentReadersPreserveWriterRetry",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestContextApplyRequestShapes",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestContextAuthorityExactPreviewFixture",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestContextCapabilityUsesHostOwnedPermission",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestContextFinalizationReceiptOnlyApply",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestContextOrdinaryAdoptsMissingAndLegacyProvenance",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestContextOrdinaryCreateReplayAndIntegrity",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestContextOrdinaryFinalization",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestContextOrdinaryRejectsAmbiguousUnsafeOrForgedRequests",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestContextPreviewComposesWithStrictConsumers",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestContextSelectedProvenanceRefreshReceipt",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestContextWholeDocumentCreateAdoptUpdate",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestContextWholeDocumentLargePreviewIsBounded",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestContextWholeDocumentOnboardingFinalization",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestContextWholeDocumentSelectionPreservesControls",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCorrectedFreshReviewAttemptDoesNotRewriteRejectedSource",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCycleViewGroupsCanonicalWorkWithoutCopyingIt",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCycleViewRejectsOutOfRangeDirectLimit",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestDependencyInvalidationPreservesIndependentStops",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestEligibleBoundedPrerequisites",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestEligibleDisclosesOversizedTaskRows",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestEvidenceObjectsReadOnce",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestEvidenceReuseNeverCachesErrorsOrAbsence",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestEvidenceReuseServesCopiesNotTheMemosBytes",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestFarmAuthorizationRejectsLegacyObservationLaundering",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestFarmAuthorizationRequiresTypedExitField",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestFarmProjectionBinding",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestFarmProjectionBindingIncludesOrderedPendingDependencies",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestFarmProjectionReauthorizationOfCurrentSourceIsDeterministic",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestFarmProjectionRefreshSelectsCurrentBinding",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestFarmSealRejectsMatchingOpenShapeForgery",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestFreshStoreObservationsReportNoLocalStore",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestGeneratedWorkViewIsNotCanonical",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestGreenfieldInitializesWithUnknownsAndKeepsActivation",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestIndexObservationUsesExclusiveEngineLock",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestIndexPageBudgetAndContinuation",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestInitStoreCreatesOnlyLockMetadata",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestInitStoreIsIdempotent",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestInterruptedRetirementRecoversExactly",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestKnowledgeContextBoundsOmissionMetadata",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestKnowledgeContextIsolatesDamagedDocuments",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestKnowledgeCutoverPagesLargeSectionInventory",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestKnowledgeCutoverPreservesSettingsAndScopeBlocks",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestKnowledgeCutoverRefusesUnmappedSections",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestKnowledgeCutoverRefusesUnrecordedContent",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestKnowledgeCutoverRejectsCursorBeyondNativeInt",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestKnowledgeCutoverRequiresCoverageForUninitializedNarrative",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestKnowledgeCutoverRetryKeepsLaterWorkAndStaleApplyFails",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestKnowledgeDraftHoldsUnknownAndProposedWithoutEvidence",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestKnowledgeIDsSurviveRenameAndReorder",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestKnowledgeInitializeBootstrapsPortableProjectBeforeFirstWork",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestKnowledgeInitializeKeepsExistingNativeProjectIdentity",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestKnowledgeInitializeRejectsOrphanAndKeepsLegacyOwner",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestKnowledgeMarkupIsInertAndLinksResolveByIdentity",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestKnowledgeMergeKeepsBothSidesAndRenamesCollidingIDs",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestKnowledgeMergeRefusesTheSameRecordChangedTwice",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestKnowledgeMergeRewritesIncomingEditReferences",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestKnowledgeScopeDoesNotMatchUnrelatedWildcardPath",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestKnowledgeWritersConflictOnlyOnTheSameDocument",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestLegacyBoardLockRefusesExternalHardLink",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestLegacyDetailPageReadsDuplicateHistoricalBlocks",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestMismatchedBytesAreNeverRecorded",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestNT01BaselineOrdinaryWorkKeepsReportedFailuresExplicit",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestNT01JournalOutcomeCodesStayDistinct",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestNT01TaskLabelBasesAreDistinct",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestNT09BlockingDependencyPreservesEveryRecordedProgressLabel",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestNT09LegacyStaleIsUnresolvedAndRetainsRawReason",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestNT09OrdinaryReviewAndDoneDoNotClaimIndependentProof",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestNT09PreservedProgressKeepsDependencyReadinessIndependent",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestNT09TaskBlockPreservesDependentRecordedProgress",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestNoOperationRequestCanSetWorkCheckStatus",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestNonStoreReaderNeverSeedsReuse",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestOperationDescriptorTraitsAreClosedAndHonest",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestOperationDescriptorsPreserveLegacySetsAndAdvertiseRepairApply",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestOperationRegistryReverseClosure",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestPlanVerificationSharedClassification",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestPlanVerificationWriterExclusion",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestProjectViewPresentsBoundedCanonicalWork",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestProjectViewShowsBoundedRecordedArchitecture",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestProtocolDocumentListsEveryOperation",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestRawReadBudgetStopsRecording",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestReadOnlyInitializedStoreObservations",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestReadsNeverMigrate",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestRecordReorderRejectsInvalidCheckpointDependencyOrder",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestRecordReorderRejectsMalformedOrStaleRequestsAtomically",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestRepairIsDiscoverableAppliedAndReplayed",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestReservedPreviewOutputsFailClosed",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestRetirementKindMustNameAnActualCollection",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestRetiringCheckedTaskKeepsTypedHistory",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestRetiringCheckpointKeepsScopeBaseline",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestRetiringCriterionKeepsNestedCollectionKinds",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestSMARTSComposesWithActualPlanEpoch",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestSMARTSIndependentStopRequiresCurrentApprovalEpoch",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestSnapshotChecksUnreferencedEvidenceObjects",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestSnapshotNeverFallsBackToRootRelativeReadForChainObject",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestStaleContextPreviewRemainsRecognizedButCannotApply",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckBoundedRecentViewKeepsHistoryInJournal",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckCASReplaySourceChangesAndPresentationEdits",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckConfigAdditionsAndDirectoryMembershipInvalidateScopedResult",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckConstraintScopeFollowsRelevantBodiesAfterRebinding",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckCriterionScopeDoesNotInvalidateUnrelatedSpecEdits",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckExactAndBatchReadDoNotClaimCurrentWorktree",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckHistoricalRecordIsNotGivenNewSourceIdentity",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckLatestFailureOverridesPriorPassAndSkipsUnknown",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckLegacyCriterionDigestDoesNotGainConstraintCoverage",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckNativeExitBoundsAndOutcomeSemantics",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckNeverExecutesItsSourceAndEscapesHTML",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckOldSchemaCannotSilentlyContainNewObservations",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckOutOfBoundsOrUnsafeInputsRemainUnassessed",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckPreservesNativeFailureExitCodes",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckRecordsCommandOutcomeWithoutNewAuthority",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckRejectsInventedPassesAndMismatchedNamedCommands",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckScopedSourceChangesDoNotRestartUnrelatedWork",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckSubjectPathChangeInvalidatesOnlyReportedCheckApplicability",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckSymlinkInputsAreNotVerified",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskContextAvoidsWholeSourceSnapshots",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskContextBoundsWholePacketWithoutPartialDisclosure",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskContextCapsUnresolvedDetailsAndCarriesOmittedCountToWorkView",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskContextFollowsOnlyOneExplicitHop",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskContextIncludesSelectedCriterionAndApplicableConstraints",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskContextKeepsApplicableFailureBeyondRecentUnrelatedPasses",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskContextNamesKnowledgeThatDoesNotFit",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskContextRejectsStalePlanAndMissingOrWrongSubjects",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskContextReportsFailureAlongsideStopsAndSourceDrift",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskContextReportsSharedDependencyAncestorsOnce",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskContextReturnsBoundedReferencedContextWithoutAuthority",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskContextReturnsRelevantKnowledgeWithoutAuthority",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskContextScopesPrerequisitesAndReportsUnknownLegacyScope",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskContextShowsStopsAndUnfinishedDependencies",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskContextSourceChangesRemainVisibleWithoutReviewCascade",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTrackerCoordinationLegacyPendingCreateWithoutIntentKeepsLocalProgress",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTrackerCoordinationT01FiniteOptInMap",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTrackerCoordinationT02MalformedOptionalMapKeepsLocalProgress",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTrackerCoordinationT02OneTransitionStagesBoundIssue",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTrackerCoordinationT03CoalescesUnclaimedMappedIssue",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTrackerCoordinationT03NullTargetRetiresOnlyUnsentIssue",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTrackerCoordinationT04ProjectObservationAndMergeFence",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTypedRecordReorder",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestUnrelatedMalformedKnowledgeDoesNotVetoTask",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestUntypedTombstoneDoesNotOwnHistory",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestWorkAdoptCoalescesExactArchiveCrashCopy",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestWorkAdoptJournalsBoardCutoverAndReplays",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestWorkAdoptLongTitlePreservesDescriptionAndExplicitID",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestWorkAdoptLongUnicodeTitle",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestWorkAdoptPreservesLegacyParserEdgeCases",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestWorkAdoptRecoveryPreservesLaterBoardEdit",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestWorkAdoptRefusesHiddenMalformedTaskMarker",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestWorkAdoptRefusesStaleBoardAndUncoveredRows",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestWorkAdoptRefusesTamperedSourceMeaning",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestWorkAdoptSafetyRefusalsNameSource",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestWorkAdoptSharedOriginAcrossBoardsRemainsDistinct",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestWorkAdoptSharedOriginDistinctRows",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestWorkCompleteWithUnknownCheck",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestWorkConcurrentCreatesShareProjectButNotIdentity",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestWorkContextRejectsOutOfRangeBudgetBeforeIntConversion",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestWorkContextSelectsScopedKnowledgeAndNamesOmissions",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestWorkContextShowsBlockedPlanTaskAndUnresolvedReportWithoutChangingIt",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestWorkCreateOriginReuseRefusesMixedOwner",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestWorkCreateRefusesLegacyOwner",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestWorkEffectBindingChangeDoesNotSend",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestWorkEffectConcurrentSyncHasOneClaim",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestWorkEffectDeferredClaimRequiresMergeObservation",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestWorkEffectLostCreateResponseRemainsUnknown",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestWorkIdentityStableAcrossRenameAndArchive",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestWorkIssueAdoptionRequiresUnboundIdentityAndExactRepository",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestWorkLifecycleNeverManufacturesCheckStatus",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestWorkListBeforeFirstCreateIsEmptyButOrphansRefuse",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestWorkListBudgetBoundaryMatchesEncodedPage",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestWorkListPagesArchiveAndRejectsChangedMembership",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestWorkMutationsRefuseLegacyOwnerAppearingLater",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestWorkOriginRetryFindsArchivedIdentity",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestWorkOriginRetryRepairsMissingAttachmentAfterArchive",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestWorkOriginsFindsArchivedIdentityInOneBoundedRead",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestWorkPortableIdentitySurvivesFreshLocalStore",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestWorkProjectAcceptsBoundedLegacyGlobalNodeIDs",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestWorkProjectEffectPreservesIssueAndScopesRetry",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestWorkRetryPreservesLaterEdit",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestWorkSelectedReadIsolatedFromKnowledgeButNotSharedJournal",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestWorkStatusEffectPreservesBindingAndRecordsRemoteConflict",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestWorkViewKeepsUnresolvedPlanFailureAfterUnrelatedPasses",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestWorkViewRetainsObservedPullSeparatelyFromChecksAndIssue",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestWorkViewSelectsActualPlanTaskWithoutPromotingChecks",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestWorkViewSeparatesProgressChecksDeliveryAndSync",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestWorkflowStateEventsRequireUserOrSMARTSAuthority",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/read:TestExactBatchPinsContinuationAndKeepsRenderValidation",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/read:TestExactBatchRejectsInvalidWholeSelection",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/read:TestExactBatchRejectsOversizedLaterRecordBeforeDelivery",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/read:TestExactBatchWholeRecordParityAndPages",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/read:TestOutlineDirectPageParity",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/read:TestPlanVerificationEmptyPlan",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/read:TestPlanVerificationPinsContinuationAndRender",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/read:TestPlanVerificationRejectsIncompleteOrOversizedSelection",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/read:TestPlanVerificationRejectsInvalidRequests",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/read:TestPlanVerificationWholeArraysAndPages",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/render:TestAssistiveRenderSeparatesProgressFromVerifiedClaims",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/render:TestRenderDriftNormalRead",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/render:TestRenderRoundTrip",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/render:TestRenderStillRejectsChangedStylesheetIdentity",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/render:TestReviewReadPriorSchemaPreservesBytes",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/render:TestSafeBrand",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/render:TestScriptAndMarkerPayload",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/render:TestWorkViewDoesNotClaimEveryReportedFailureWasAssessed",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/render:TestWorkViewExplainsBoundStatusConflictWithoutClaimingDelivery",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/render:TestWorkViewKeepsBlockedTaskStopAheadOfReportedFailure",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/render:TestWorkViewKeepsConfirmedBlockersAheadOfAdvisoryTaskReports",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/render:TestWorkViewLabelsStoredCheckValuesWithoutClaimingAnEvent",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/render:TestWorkViewLinksOnlyExactGithubWorkURLs",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/render:TestWorkViewNamesFailedChecksAfterLocalCompletion",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/render:TestWorkViewNamesUnknownChecksAsRemainingObstacle",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/render:TestWorkViewPausedMappingDoesNotInventDisabledCause",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/repository:TestCatalogScanBoundsAncestorChecks",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/repository:TestCatalogScanRejectsNonportableName",
+      "result": "skipped"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/repository:TestContextRepresentationBoundary",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/schema:TestEnumRefusalNamesAllowedValues",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/schema:TestInvalidPatternRejectedBeforeValues",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/schema:TestLongAllowedListStaysWithinPublicLimit",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/schema:TestPatternRefusalsKeepErrorBudget",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/schema:TestPatternsCheckPropertyNamesAndValues",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/schema:TestPatternsFollowChangedSchemaBetweenCalls",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/schema:TestPatternsMatchEveryValue",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/schema:TestPatternsRemainIndependentAcrossAlternatives",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/schema:TestUnknownFieldRefusalNamesAllowedFields",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestChangedBeforeImageNamesPathWithoutChangingBytes",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestClosedAnchoredDirectoryHasBoundedPublicDiagnostics",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestClosedParentCurrentHasBoundedPublicDiagnostic",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestClosedStoreIOBoundariesHaveBoundedPublicDiagnostics",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestCreateRaceDoesNotOverwrite",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestDirEntriesIsIdempotent",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestDirEntryTypeSwappedAfterListing",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestDirRejectsNonSingleComponentNames",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestDirScanRefusesLinksAndEscapes",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestInvalidJournalFilenameNamesEntry",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestJournalDigestGrammar",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestJournalPublicationCrash",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestJournalRemovedBetweenListAndReadBlocksWithPath",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestJournalScansBoundAncestorChecks",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestJunctionComponentsAreRefusedExplicitly",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestMissingBeforeImageNamesExpectedPath",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestNativeWindowsOperationalFaultsAreBounded",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestObservationLockClosesEveryPartialOpen",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestObservationLockDetectsPhaseReplacement",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestObservationLockPinsExistingRoot",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestObservationLockPreservesExclusion",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestObservationLockRefusesMissingUnsafeAndSwappedState",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestObservationLockRejectsGenericReparseAttributes",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestObstructedTransactionNamesOffendingEntry",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestOpenDirRegularFileIsUnsafeNotAbsent",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestOrphanHistoryNamesEntryWithoutChangingIt",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestOversizedBeforeImageNamesPathAndPreservesBytes",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestOversizedFinalJournalReportsCorruptionAndBlocksWrites",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestOversizedJournalAfterSizeBlocksReplayAndRecovery",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestPartialJournalStageRequiresManualReconciliation",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestPathEscapeAndSymlink",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestPendingRejectsCorruptCompletedDigest",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestPortableReadDetectsMidReadChange",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestPortableReadRefusesSymlink",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestPreJournalIOFailureHasBoundedPublicDiagnostic",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestPreparedJournalNamesEntryInSnapshotDiagnostic",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestProcessDeathRecovery",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestRecoveryConflictPreservesExternalEdit",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestReplaceRecovery",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestSupportedBackendDeclarationMatchesBuiltBackend",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestTransactionalCAS",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestUnknownIOFailureIsNotReclassified",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestUnparseableFinalJournalNamesPathAndBlocksRecovery",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestUnsupportedPlatformDiagnosticIsTruthful",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestWindowsLockNativeLayouts",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestWriterLock",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/symbol:TestBuildRejectsDuplicateIDAcrossNestedCollections",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate:TestClosedSchema",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate:TestDraftIncompleteRecords",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate:TestPlanGraphAndCoverage",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate:TestPortablePaths",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate:TestReadyRefusesGitDirectoryTaskPaths",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate:TestReadyRefusesRuntimeMarkerInputs",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate:TestReadyRejectsRepositoryRelativeExcludesOutsideRoots",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate:TestReviewNamedTestRequirementAtReadiness",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate:TestReviewRunnerRecognition",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate:TestRoleBoundReferences",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate:TestSchemaSupportsRepeatedArgsAndCells",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate:TestSpecBinding",
+      "result": "passed"
+    },
+    {
+      "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate:TestSpecReadiness",
+      "result": "passed"
+    }
+  ]
+}

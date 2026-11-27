@@ -1,0 +1,55 @@
+{
+  "source_commit": "9a26600f756bb48d26f9fe5a89bc043f73812c31",
+  "command": [
+    "C:\\Python314\\python.exe",
+    "-B",
+    "-X",
+    "utf8",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-closure-9a-ekehuwae\\run_go.py",
+    "actual-native-closure",
+    "^(TestNT09ReceiptedReconcilePreservesProgressAndSelectedEvidence|TestNT09ReceiptedReconcileRejectsWrongBindingsWithoutWrites)$"
+  ],
+  "wrapper_exit": 0,
+  "seconds": 17.08780200000001,
+  "test_command_seconds": 16.769374999999854,
+  "actual_go_argv": [
+    "C:/Program Files/Go/bin/go.exe",
+    "test",
+    "-json",
+    "-buildvcs=false",
+    "-count=1",
+    "-timeout=90s",
+    "-run",
+    "^(TestNT09ReceiptedReconcilePreservesProgressAndSelectedEvidence|TestNT09ReceiptedReconcileRejectsWrongBindingsWithoutWrites)$",
+    "./internal/operations"
+  ],
+  "actual_go_cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-closure-9a-ekehuwae\\candidate\\core\\artifacts",
+  "named_pass_events_including_parents": 13,
+  "parent_tests": 2,
+  "leaf_subcases": 11,
+  "skips": 0,
+  "native_source_and_membership_stable": true,
+  "input_membership": [
+    {
+      "profile": "go-module-v1",
+      "root": "core/artifacts",
+      "path_order": "windows",
+      "sha256": "f79741ca03192962140efae78835b72d09c3eaf6167ea09d8b9fe6904b4495cf"
+    }
+  ],
+  "tool_identities": {
+    "python": {
+      "executable": "C:\\Python314\\python.exe",
+      "version": "3.14.6 (tags/v3.14.6:c63aec6, Jun 10 2026, 10:26:10) [MSC v.1944 64 bit (AMD64)]",
+      "sha256": "03168c01b7b7491423350e82c26fee71f35b43694d1319d3c668bda6903a0c38"
+    },
+    "go": {
+      "executable": "C:\\Program Files\\Go\\bin\\go.exe",
+      "sha256": "d3ccdb604eafa6031133aefe1a3db24f0bb7362b857bc2125ac4e4c178b4b490",
+      "version": "go version go1.27.1 windows/amd64"
+    },
+    "platform": "Windows-11-10.0.26200-SP0",
+    "source_commit": "9a26600f756bb48d26f9fe5a89bc043f73812c31"
+  },
+  "limits": "Fresh Windows/amd64 ordinary native engine characterization. Synthetic fixture authority is not user/host approval. S38 fixtures did not execute. No full suite, numeric coverage, installed artifact or whole-task/program claim."
+}

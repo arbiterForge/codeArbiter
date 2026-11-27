@@ -1,0 +1,136 @@
+{
+  "schema": "hw26-owned-abrupt-case-evidence/1",
+  "at": "2026-11-16T23:32:45.647462+00:00",
+  "scope_verdict": "PASS",
+  "canonical_adoption": "PROPOSAL_ONLY",
+  "task": "HW-26",
+  "criterion": "tests.required_cases[3]",
+  "source_epoch": "ef63f8c306c8e47c111afec12a9d980d0e8927d6",
+  "source_sha256": "768c65b5a03877e16ba9a81f758ccaf8173f28363573aafcd85dab1cc4be6e53",
+  "source_copy_byte_equal": true,
+  "platform": "Windows",
+  "node_version": "v24.22.1",
+  "node": {
+    "path": "D:\\dev\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+    "sha256": "c0b01496cf3da5cceca86eb6e1b2ef5d088cd46ad4e97cf502e2c937fa7f56b9"
+  },
+  "python": {
+    "path": "C:\\Python314\\python.exe",
+    "version": "3.14.6 (tags/v3.14.6:c63aec6, Jun 10 2026, 10:26:10) [MSC v.1944 64 bit (AMD64)]",
+    "sha256": "03168c01b7b7491423350e82c26fee71f35b43694d1319d3c668bda6903a0c38"
+  },
+  "supervisor_sha256": "4e79fe096f590591598f4e1d1182fc58f1139bb8a31da239aa3a9f544d4892aa",
+  "child_observer_sha256": "16816dffc9c5bbcf79c498e75fc28df74a9d07319c31eded3e195cc8c347beda",
+  "actual_case": {
+    "schema": "hw26-owned-abrupt-exit-case/1",
+    "status": "PASS",
+    "case_count": 1,
+    "ready_observed": true,
+    "owned_pid": 64968,
+    "kill_requested_on_owned_handle": true,
+    "termination": "Python Popen.kill on owned Windows process handle",
+    "exit_code": 1,
+    "kernel_wait_returned": true,
+    "seconds": 0.09771,
+    "deadline_seconds": 5.0,
+    "captured_bytes": {
+      "stdout": 3184,
+      "stderr": 0
+    },
+    "reason": null,
+    "residue_preserved": true,
+    "cleanup_attempted": false,
+    "fake_operator_sentinel_unchanged": true,
+    "plan_sha256": "6cf6adee568ce5361d8735d396fb1b7a776b7a360644599cc1cf8dddc5171220",
+    "stdout_sha256": "fe8a21b5f6527f73dfa210fc8eaf0829a6d6abcd618343e967fd48aafe405d74",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "limits": [
+      "One Windows/Node24.22.1 actual setup-module hard-kill case, not M historical runtime or all-platform qualification.",
+      "Actual setup/observer filesystem calls are confined/recorded and spawn/network entry points deny calls; no complete OS/DLL syscall trace claimed.",
+      "No real operator auth store, Pi/provider/model, package install, dependency/global/canonical effects or benchmark replay."
+    ]
+  },
+  "readiness": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hw26-abrupt-owned-iq7azdd0\\ready.json",
+    "bytes": 3647,
+    "sha256": "460666df2497a05de581b2d375b75cbc8a4ff488d94c198764ec79111a50e50e"
+  },
+  "raw_stdout": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hw26-abrupt-owned-iq7azdd0\\stdout.log",
+    "bytes": 3184,
+    "sha256": "fe8a21b5f6527f73dfa210fc8eaf0829a6d6abcd618343e967fd48aafe405d74"
+  },
+  "raw_stderr": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hw26-abrupt-owned-iq7azdd0\\stderr.log",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "tree_before": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hw26-abrupt-owned-iq7azdd0\\tree-before.json",
+    "bytes": 1508,
+    "sha256": "f2dd7d2e836af5c69b58e89aa81327f29a3b74df9746dbe18b1b79582f69f198"
+  },
+  "tree_after": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hw26-abrupt-owned-iq7azdd0\\tree-after.json",
+    "bytes": 2223,
+    "sha256": "619dde71e6e9fb2823e57cf375118e95e9780fec693b525fc1e51de2f139e09b"
+  },
+  "plan": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hw26-abrupt-owned-iq7azdd0\\plan.json",
+    "bytes": 2233,
+    "sha256": "6cf6adee568ce5361d8735d396fb1b7a776b7a360644599cc1cf8dddc5171220"
+  },
+  "recorded_effects": {
+    "owned_pid": 64968,
+    "held_handle_kill_and_wait_confirmed": true,
+    "expected_windows_termination_exit": 1,
+    "home_and_homedir_redirected_before_dummy_read": true,
+    "no_ambient_home_fallback": true,
+    "setup_source_fs_calls_confined": true,
+    "child_spawns": 0,
+    "network_calls": 0,
+    "exact_residual_root": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hw26-abrupt-owned-iq7azdd0\\tmp\\ca-pi-operator-home-NBPq2b",
+    "residual_relative_paths": [
+      ".pi",
+      ".pi/agent",
+      ".pi/agent/auth.json"
+    ],
+    "dummy_auth_bytes": 76,
+    "dummy_auth_sha256": "f4f8713476abb65177a0ca5df5e6e304da4917297f01ff9121c7276bb85c6143",
+    "fake_operator_sentinel_unchanged": true,
+    "fake_operator_sentinel_read_by_child": false,
+    "exit_cleanup_rm_calls_observed": 0,
+    "cleanup_attempted": false,
+    "residue_retained": true
+  },
+  "context": {
+    "packet_sha256": "c1b55de5aaad8fe184b65b75c584706f86fbaf34e1a441512881419ffcf9ba42",
+    "full_input_and_delivery_consumed": true,
+    "input": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\hw26-owned-abrupt-case-input.txt",
+      "bytes": 14733,
+      "sha256": "13f477e6abae3844e6fec1a784e1f9ebb332932102010f74857b73c97d647df4"
+    },
+    "typed_context": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\hw26-owned-abrupt-case-context.json",
+      "bytes": 10480,
+      "sha256": "ec60f751df071cb636e21b7eb1e3b0c6ab4545ccec3a456b520b08493cc6ecd3"
+    }
+  },
+  "unchanged_prior_evidence": {
+    "delivery": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hw26-original-caller-evidence-0ukr0fqv\\delivery.json",
+      "bytes": 7405,
+      "sha256": "5d5fa734b9116e623422828241b7813cf3b7c4e10b07dedc9c1906f44da61251"
+    },
+    "scope": "Original benchmark,80unit fixtures and3installed callers remain separate; only Windows/Node24 abrupt-exit gap gains this actual observation."
+  },
+  "limits": [
+    "One Windows/Node24.22.1 actual setup-module hard-kill case, not M historical runtime or all-platform qualification.",
+    "Actual setup/observer filesystem calls are confined/recorded and spawn/network entry points deny calls; no complete OS/DLL syscall trace claimed.",
+    "No real operator auth store, Pi/provider/model, package install, dependency/global/canonical effects or benchmark replay.",
+    "Observed filesystem calls are the unchanged setup module and owned observer APIs, not a global OS/DLL syscall trace.",
+    "No source/benchmark/provider/Pi/install/dependency/auth-user/global/canonical/main/publication effects or retries.",
+    "Test supervisor/observer were authored by this actor; this is execution evidence, not independent approval of its harness."
+  ]
+}

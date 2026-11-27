@@ -1,0 +1,248 @@
+{
+  "schema": "codearbiter-final-windows-native-client-proof/1",
+  "root": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
+  "head": "b9f183672424b7bdadabd50161e52a940649fe32",
+  "native_source_commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+  "module_sha256": "0cc6bd0afa9b4b373267ef9170b20fd7c107bfdf52f51f6f248062a77b0f6016",
+  "candidate": "C:\\Users\\brenn\\AppData\\Local\\Temp\\msc-major-final-native-86x8qv5o\\payload\\ca-artifact-windows-amd64.exe",
+  "candidate_sha256": "f9749e71484d2fcffd5b69908f288ccea6cab18ceb85667202980e52e75f40c8",
+  "manifest_sha256": "a5e1288533268e5ff8f348cf95cbbd4e4e7d8245fab8406d7624a2364d097ef6",
+  "native_tested": true,
+  "old_clients": {
+    "legacy031": {
+      "path": "C:\\Users\\brenn\\nt-clients\\state-contracts-legacy031-verified.exe",
+      "sha256": "56a696e4f3aca730c1344daea93e6b0f8ba188e8264b646e67bbb6b26266a870"
+    },
+    "baseline032": {
+      "path": "C:\\Users\\brenn\\nt-clients\\basepayload\\ca-artifact-windows-amd64.exe",
+      "sha256": "6b6d9d6f1866b731c7a09b9b53fe03fa0029d8e8617a924622c29ad53565a9d2"
+    },
+    "workold": {
+      "path": "C:\\Users\\brenn\\nt-clients\\state-contracts-workold-verified.exe",
+      "sha256": "48de0c3f436518a364df9ad2b34e07b364285d6846a7700a3962b0d4d2c507f7"
+    }
+  },
+  "source_hashes_before": {
+    "tools/test-artifact-mixed-schema.py": "c9607b6896c24ad4382432ca5b125843933d4723303fbdd1d73902bedf3b6ad5",
+    "tools/test-artifact-work-old-client.py": "83ee139aedc819f324f8c50a5d5c1ab43014a0c6fe7b4f92245c9563a809fb70",
+    ".github/scripts/test_artifact_authoring.py": "abe5d60ab8ddd664b0f887f62a3918ccf4d8977b4e34622372995d3309460bbb",
+    "core/pysrc/_artifactlib.py": "59dbf6c51cbbb824cf553aa38aeb9c543dcada14c6311e9393434d231babe03b",
+    "plugins/ca-codex/hooks/_artifactlib.py": "59dbf6c51cbbb824cf553aa38aeb9c543dcada14c6311e9393434d231babe03b",
+    "plugins/ca-codex/includes/artifacts.md": "e5a4f11eb6c724d0bb9700e35a1a32472b503c5fa37816dfd422ea013e4814f4",
+    "core/artifacts/internal/operations/descriptors.go": "0bcda8cffe06761b871bf1dc28bbeda8a5af269e5deac0904cb179262510d321"
+  },
+  "source_hashes_after": {
+    "tools/test-artifact-mixed-schema.py": "c9607b6896c24ad4382432ca5b125843933d4723303fbdd1d73902bedf3b6ad5",
+    "tools/test-artifact-work-old-client.py": "83ee139aedc819f324f8c50a5d5c1ab43014a0c6fe7b4f92245c9563a809fb70",
+    ".github/scripts/test_artifact_authoring.py": "abe5d60ab8ddd664b0f887f62a3918ccf4d8977b4e34622372995d3309460bbb",
+    "core/pysrc/_artifactlib.py": "59dbf6c51cbbb824cf553aa38aeb9c543dcada14c6311e9393434d231babe03b",
+    "plugins/ca-codex/hooks/_artifactlib.py": "59dbf6c51cbbb824cf553aa38aeb9c543dcada14c6311e9393434d231babe03b",
+    "plugins/ca-codex/includes/artifacts.md": "e5a4f11eb6c724d0bb9700e35a1a32472b503c5fa37816dfd422ea013e4814f4",
+    "core/artifacts/internal/operations/descriptors.go": "0bcda8cffe06761b871bf1dc28bbeda8a5af269e5deac0904cb179262510d321"
+  },
+  "source_drift": false,
+  "artifacts_test_installation": "C:\\Users\\brenn\\AppData\\Local\\Temp\\msc-major-final-native-86x8qv5o\\payload",
+  "results": [
+    {
+      "name": "legacy031",
+      "argv": [
+        "C:/Python314/python.exe",
+        "-B",
+        "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\tools\\test-artifact-mixed-schema.py",
+        "--old",
+        "C:\\Users\\brenn\\nt-clients\\state-contracts-legacy031-verified.exe",
+        "--candidate",
+        "C:\\Users\\brenn\\AppData\\Local\\Temp\\msc-major-final-native-86x8qv5o\\payload\\ca-artifact-windows-amd64.exe"
+      ],
+      "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
+      "started_at": "2026-11-13T19:30:29.661921+00:00",
+      "seconds": 5.631,
+      "exit_code": 0,
+      "stdout": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-final-native-clients-zw5uiqtl\\legacy031.stdout.log",
+      "stdout_sha256": "279f45c21b2f7e43b07e09df5ced72487d18ef4f224dd8ba04c7a0de4ad07722",
+      "stderr": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-final-native-clients-zw5uiqtl\\legacy031.stderr.log",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "outcome": {
+        "actual_journal_before_image_preserved": true,
+        "candidate_schema": "0.3.2",
+        "candidate_sha256": "f9749e71484d2fcffd5b69908f288ccea6cab18ceb85667202980e52e75f40c8",
+        "complete_store_restore_readable_by_old_client": true,
+        "earlier_committed_retry_never_rolls_back_later_work": true,
+        "forward_export_includes_later_edit": true,
+        "historical_read_preserved_bytes": true,
+        "idempotent_upgrade_retry": true,
+        "latest_revision": 4,
+        "new_check_reporting_is_not_verification": true,
+        "old_schema": "0.3.1",
+        "old_sha256": "56a696e4f3aca730c1344daea93e6b0f8ba188e8264b646e67bbb6b26266a870",
+        "older_client_write_rejected": true,
+        "plan_identity_retained": true,
+        "post_upgrade_edits_preserved": true,
+        "progress_upgrade_exercised": false,
+        "recorded_user_stop_preserved": true,
+        "restore_retains_user_stop_and_all_saved_bytes": true,
+        "standalone_export_preserved_canonical_plan": true
+      }
+    },
+    {
+      "name": "baseline032-retirement",
+      "argv": [
+        "C:/Python314/python.exe",
+        "-B",
+        "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\tools\\test-artifact-mixed-schema.py",
+        "--old",
+        "C:\\Users\\brenn\\nt-clients\\basepayload\\ca-artifact-windows-amd64.exe",
+        "--candidate",
+        "C:\\Users\\brenn\\AppData\\Local\\Temp\\msc-major-final-native-86x8qv5o\\payload\\ca-artifact-windows-amd64.exe",
+        "--old-schema",
+        "0.3.2",
+        "--candidate-schema",
+        "0.3.4"
+      ],
+      "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
+      "started_at": "2026-11-13T19:30:29.662150+00:00",
+      "seconds": 1.766,
+      "exit_code": 0,
+      "stdout": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-final-native-clients-zw5uiqtl\\baseline032-retirement.stdout.log",
+      "stdout_sha256": "a456ebe8a4aa255a15b46b67a4c0a30e5d4892939f4d43e9777f9664e6498f36",
+      "stderr": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-final-native-clients-zw5uiqtl\\baseline032-retirement.stderr.log",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "outcome": {
+        "actual_journal_before_image_preserved": true,
+        "candidate_schema": "0.3.4",
+        "candidate_sha256": "f9749e71484d2fcffd5b69908f288ccea6cab18ceb85667202980e52e75f40c8",
+        "complete_store_restore_readable_by_old_client": true,
+        "earlier_committed_retry_never_rolls_back_later_work": true,
+        "forward_export_includes_later_edit": true,
+        "historical_read_preserved_bytes": true,
+        "idempotent_upgrade_retry": true,
+        "latest_revision": 5,
+        "new_check_reporting_is_not_verification": true,
+        "old_schema": "0.3.2",
+        "old_sha256": "6b6d9d6f1866b731c7a09b9b53fe03fa0029d8e8617a924622c29ad53565a9d2",
+        "older_client_write_rejected": true,
+        "plan_identity_retained": true,
+        "post_upgrade_edits_preserved": true,
+        "progress_upgrade_exercised": false,
+        "recorded_user_stop_preserved": true,
+        "restore_retains_user_stop_and_all_saved_bytes": true,
+        "standalone_export_preserved_canonical_plan": true
+      }
+    },
+    {
+      "name": "baseline032-progress",
+      "argv": [
+        "C:/Python314/python.exe",
+        "-B",
+        "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\tools\\test-artifact-mixed-schema.py",
+        "--old",
+        "C:\\Users\\brenn\\nt-clients\\basepayload\\ca-artifact-windows-amd64.exe",
+        "--candidate",
+        "C:\\Users\\brenn\\AppData\\Local\\Temp\\msc-major-final-native-86x8qv5o\\payload\\ca-artifact-windows-amd64.exe",
+        "--old-schema",
+        "0.3.2",
+        "--candidate-schema",
+        "0.3.4",
+        "--progress-upgrade"
+      ],
+      "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
+      "started_at": "2026-11-13T19:30:29.662533+00:00",
+      "seconds": 2.074,
+      "exit_code": 0,
+      "stdout": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-final-native-clients-zw5uiqtl\\baseline032-progress.stdout.log",
+      "stdout_sha256": "fa29fb3f304fcc2613afdd43a2df78debef75afc313da5e08f7bef484dbf80cd",
+      "stderr": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-final-native-clients-zw5uiqtl\\baseline032-progress.stderr.log",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "outcome": {
+        "actual_journal_before_image_preserved": true,
+        "candidate_schema": "0.3.4",
+        "candidate_sha256": "f9749e71484d2fcffd5b69908f288ccea6cab18ceb85667202980e52e75f40c8",
+        "complete_store_restore_readable_by_old_client": true,
+        "earlier_committed_retry_never_rolls_back_later_work": true,
+        "forward_export_includes_later_edit": true,
+        "historical_read_preserved_bytes": true,
+        "idempotent_upgrade_retry": true,
+        "latest_revision": 7,
+        "new_check_reporting_is_not_verification": true,
+        "old_schema": "0.3.2",
+        "old_sha256": "6b6d9d6f1866b731c7a09b9b53fe03fa0029d8e8617a924622c29ad53565a9d2",
+        "older_client_write_rejected": true,
+        "plan_identity_retained": true,
+        "post_upgrade_edits_preserved": true,
+        "progress_upgrade_exercised": true,
+        "recorded_user_stop_preserved": true,
+        "restore_retains_user_stop_and_all_saved_bytes": true,
+        "standalone_export_preserved_canonical_plan": true
+      }
+    },
+    {
+      "name": "workold",
+      "argv": [
+        "C:/Python314/python.exe",
+        "-B",
+        "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\tools\\test-artifact-work-old-client.py",
+        "--old",
+        "C:\\Users\\brenn\\nt-clients\\state-contracts-workold-verified.exe",
+        "--candidate",
+        "C:\\Users\\brenn\\AppData\\Local\\Temp\\msc-major-final-native-86x8qv5o\\payload\\ca-artifact-windows-amd64.exe"
+      ],
+      "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
+      "started_at": "2026-11-13T19:30:31.431752+00:00",
+      "seconds": 2.551,
+      "exit_code": 0,
+      "stdout": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-final-native-clients-zw5uiqtl\\workold.stdout.log",
+      "stdout_sha256": "600b36020159b110b32038a004687be0e8db506e7379192a7cdf34e84e871999",
+      "stderr": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-final-native-clients-zw5uiqtl\\workold.stderr.log",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "outcome": {
+        "candidate_sha256": "f9749e71484d2fcffd5b69908f288ccea6cab18ceb85667202980e52e75f40c8",
+        "current_client_retained_identity_and_later_edit": true,
+        "old_client_preserved_upgraded_and_later_bytes": true,
+        "old_sha256": "48de0c3f436518a364df9ad2b34e07b364285d6846a7700a3962b0d4d2c507f7",
+        "older_read_error": "INVALID_WORK",
+        "older_write_error": "INVALID_WORK"
+      }
+    },
+    {
+      "name": "installed-bridge",
+      "argv": [
+        "C:/Python314/python.exe",
+        "-B",
+        "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\.github\\scripts\\test_artifact_authoring.py",
+        "ArtifactAuthoringTest.test_installed_bridge_preserves_progress_and_separate_dependency_readiness",
+        "ArtifactAuthoringTest.test_installed_bootstrap_example_reads_native_task_context"
+      ],
+      "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
+      "started_at": "2026-11-13T19:30:31.742573+00:00",
+      "seconds": 3.333,
+      "exit_code": 0,
+      "stdout": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-final-native-clients-zw5uiqtl\\installed-bridge.stdout.log",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-final-native-clients-zw5uiqtl\\installed-bridge.stderr.log",
+      "stderr_sha256": "21a4fa94c5c7106a8dcd8be9d98e1908004efd28fa98a823155d9b34c297e4b4"
+    }
+  ],
+  "all_passed": true,
+  "limits": [
+    "Actual local Windows11 amd64 current qualified native payload and installed Python bridge fixture only.",
+    "No hosted six-platform/upstream-host/browser/provider/publication claim.",
+    "No Go module re-run, source/index write or old development manifest modification."
+  ],
+  "native_module_binding": {
+    "actual_source_hash_now": "0cc6bd0afa9b4b373267ef9170b20fd7c107bfdf52f51f6f248062a77b0f6016",
+    "original_named_observation": "C:\\Users\\brenn\\AppData\\Local\\Temp\\msc-major-final-native-86x8qv5o\\native-tests.json",
+    "original_named_observation_sha256": "662e928b8ba8e0b6db50b3ad599acdc8eeee2e16fe3bc6c4d13ae4f040e7cb8e",
+    "selected": 475,
+    "passed": 472,
+    "skipped": 3,
+    "whole243_committed_source_byte_join": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\docs\\state-contracts-major\\execution\\qualification-gaps-native.json",
+    "whole243_commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+    "whole243_current_source_hashes_match": true,
+    "scope": "Joins actual current module bytes to the completed original native build; no module tests reexecuted."
+  },
+  "bridge_named_tests": {
+    "tests": 2,
+    "result": "PASS",
+    "unittest_runtime_seconds": 3.185
+  }
+}

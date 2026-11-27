@@ -113,13 +113,17 @@ def scaffold(root: Path, plugin: Path) -> None:
         sys.exit(f"init-codearbiter failed:\n{init.stdout}\n{init.stderr}")
 
 
-def spec_model(root: Path) -> dict | None:
-    specs = sorted((root / ".codearbiter/specs").glob("*.html"))
-    if not specs:
+def spec_model(root: Path, plugin: Path | None = None) -> dict | None:
+    """Read the selected section through the installed engine, never HTML internals."""
+    plugin = plugin or plugin_root()
+    sys.path.insert(0, str(plugin / 'hooks'))
+    from _artifactlib import ArtifactClient, helper_installation
+    client = ArtifactClient(root, helper_installation(plugin / 'hooks/knowledge.py'))
+    specs = list(client.index('spec'))
+    if len(specs) != 1:
         return None
-    html = specs[0].read_text(encoding="utf-8")
-    match = re.search(r'<script[^>]*application/json[^>]*>(.*?)</script>', html, re.S)
-    return json.loads(match.group(1)) if match else None
+    section = client.call('read', {'artifact_id': specs[0]['artifact_id'], 'symbol': 'SEC-SMARTS', 'mode':'exact'})['record']
+    return {'normative': {'sections': [section]}}
 
 
 def smarts_section(model: dict) -> dict | None:
@@ -130,8 +134,8 @@ def section_text(section: dict) -> str:
     return json.dumps(section.get("blocks", []), ensure_ascii=False)
 
 
-def judge(case: str, root: Path) -> tuple[bool, str]:
-    model = spec_model(root)
+def judge(case: str, root: Path, plugin: Path | None = None) -> tuple[bool, str]:
+    model = spec_model(root, plugin)
     triage = (root / ".codearbiter/triage.log")
     lane = triage.read_text(encoding="utf-8") if triage.exists() else ""
     if model is None:
@@ -146,7 +150,11 @@ def judge(case: str, root: Path) -> tuple[bool, str]:
     has_table = any(b.get("type") == "table" for b in blocks) or "|---" in text
     detail = f"blocks={len(blocks)} lenses={lenses} table={has_table}\nSEC-SMARTS={text[:1500]}"
     if case == "material":
-        return len(lenses) >= 3, detail
+        # Structure rejects keyword-only output; it cannot certify reasoning quality.
+        tables = [block for block in blocks if block.get('type') == 'table']
+        compared = any(len(block.get('rows', [])) >= 2 and len(block.get('columns', block.get('headers', []))) >= 3
+                       and len({json.dumps(row, sort_keys=True) for row in block['rows']}) >= 2 for block in tables)
+        return len(lenses) >= 3 and compared, detail + '\nReasoning quality requires qualitative review; structure alone is not PASS.'
     one_line = len(blocks) == 1 and len(text) < 600
     return one_line and not has_table and len(lenses) <= 1, detail
 
@@ -170,9 +178,11 @@ def main() -> int:
                            "--permission-mode", "acceptEdits",
                            "--allowedTools", "Bash Read Write Edit Glob Grep Skill",
                            "--output-format", "text", *host], root, env=env, timeout=3600)
-            ok, detail = judge(case, root)
-            results[case] = ok
-            print(f"\n=== {case}: {'PASS' if ok else 'FAIL'} (session exit {session.returncode}) ===")
+            ok, detail = judge(case, root, plugin)
+            ok = session.returncode == 0 and ok
+            results[case] = ok and case != 'material'
+            verdict = 'STRUCTURE_ONLY; quality unassessed' if ok and case == 'material' else ('PASS' if ok else 'FAIL')
+            print(f"\n=== {case}: {verdict} (session exit {session.returncode}) ===")
             print(detail)
             print("--- session tail ---")
             print(session.stdout[-1500:])

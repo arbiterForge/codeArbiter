@@ -1,0 +1,51 @@
+{
+  "kind": "RETAINED_PROPER_TARGET_RED_THEN_NEGATIVE_FIXTURE_SETUP_ERROR",
+  "red": {
+    "tests_run": 1,
+    "failures": 1,
+    "errors": 0,
+    "skips": 0,
+    "exit_code": 1,
+    "duration_seconds": 0.005538099998375401
+  },
+  "green": {
+    "tests_run": 2,
+    "failures": 0,
+    "errors": 1,
+    "skips": 0,
+    "exit_code": 1,
+    "duration_seconds": 0.07701060001272708
+  },
+  "source_before_after_equal": true,
+  "private_source_before_after_equal": true,
+  "runtime_before_after_equal": true,
+  "forbidden_effect_attempts": [],
+  "reason": "Missing-parent negative removes raw.selected+observed parent but leaves slash subtests, so unchanged strict admit_go refuses invalid child outcome before tested final-composition boundary. Candidate first exact5-route positive passed; no production bug inferred.",
+  "minimal_proposed_fixture_correction": "Only when omitting a parent, also omit its raw.subtests descendants. Existing child missing/skip cases keep parent PASS. No production or assertion weakening.",
+  "no_repeat_performed": true,
+  "canonical_writes": false,
+  "qualification": false,
+  "files": {
+    "green-actual-command.json": "e283a4c954a8efaa249058925036c3638c9a48c1a4a3dca05ad602f77e2b751a",
+    "green-names.json": "e8abed4aa9d6ea93e044a8f7b7ced2d185bf3f74b39924a362aa379173124dee",
+    "green-private-after.json": "bf7a8fecb0b1336c6623444a43de8017d6aa4af7477c557f2070a45291139cbf",
+    "green-result.json": "410d264b2fcb1c69edb5532b25d2bafe9fced082f8f371cc02b86dbf4612f254",
+    "green-runtime-after.json": "79ad1afff9382ea2c4d734c53757cf05c9d13665c34fe07078b2a9c1cf4e8690",
+    "green-source-after.json": "20f911792f00eaf07a789f1890e304b9d4390943823aec00853cd65a2df50534",
+    "green.stderr": "72c9cb53e00918809904383c5723b58b2bce5e1db03ef61fc86d2e5c25053d70",
+    "green.stdout": "aab9017fa5af044f3ba7bd8cbf7b4d7a2979186130af400dd6c340b7ccb17159",
+    "private-source-before.json": "bf7a8fecb0b1336c6623444a43de8017d6aa4af7477c557f2070a45291139cbf",
+    "red-actual-command.json": "3718da9c76bd57f3dc580ee950738d1b2e3cb246853f048cb39b428dd56ffe9a",
+    "red-classification.json": "c3222b6bbd0d0cf20a83eff3b92b36733693fe6f07bf1287be2b7644f25a3403",
+    "red-names.json": "6dd970863e472bc496a6c4948ed679f2e4a98adf01847af387e57b2d529feeaa",
+    "red-private-after.json": "bf7a8fecb0b1336c6623444a43de8017d6aa4af7477c557f2070a45291139cbf",
+    "red-result.json": "f92a7b23c1c066afea5699de724e747ecd49554e738c3d77db7bf8178c1e1c11",
+    "red-runtime-after.json": "79ad1afff9382ea2c4d734c53757cf05c9d13665c34fe07078b2a9c1cf4e8690",
+    "red-source-after.json": "20f911792f00eaf07a789f1890e304b9d4390943823aec00853cd65a2df50534",
+    "red.stderr": "0cdda51ca8f40ce7e48f592c363aeb1230adfd3cc239adf953eb60b7083c6fe7",
+    "red.stdout": "11679d491510f817ea3eac2ed4fc18c5fdd4ceab08126efda7c354c28e2689bb",
+    "run-owned.py": "00070fbfd78ac0dcdb7880b01e2a408a1687c302c7489ecfd753a0991272d26b",
+    "runtime-before.json": "79ad1afff9382ea2c4d734c53757cf05c9d13665c34fe07078b2a9c1cf4e8690",
+    "source-before.json": "20f911792f00eaf07a789f1890e304b9d4390943823aec00853cd65a2df50534"
+  }
+}

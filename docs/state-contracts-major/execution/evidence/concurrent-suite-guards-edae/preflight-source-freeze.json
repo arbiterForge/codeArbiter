@@ -1,0 +1,67 @@
+{
+  "HEAD": "8d04b33c4e8b6ac56644cbd2517cae2dde228d64",
+  "tested_staged_patch_sha256": "f999d6f30bd5623bced6239458cd66f01814feb648a34e9e297d18b70f6e8c3f",
+  "files": [
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-preflight-test-xozl_sfh\\candidate\\.github\\scripts\\test_run_concurrent_suites.py",
+      "sha256": "6b58d5b2ed97e3daae9ebf33c36176b989ff84b7f0eb3bebe65ec87b21b638be",
+      "bytes": 11451
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-preflight-test-xozl_sfh\\candidate\\.github\\scripts\\run_concurrent_suites.py",
+      "sha256": "e024c72f245f3401f042411a910ee1b1aaabf4e718bcc6f07efd78d7987c61d5",
+      "bytes": 4623
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-preflight-test-xozl_sfh\\original-test.py",
+      "sha256": "eeb5d9dfedf58c8891fd36ad7a9e84ecaa2e6b9a46f60868da0a351281981dca",
+      "bytes": 9935
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-preflight-test-xozl_sfh\\test-only.patch",
+      "sha256": "ba8f87869db26de022e5c655293b46c8050990afccb87e74ad6a34c9de33ac82",
+      "bytes": 1892
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-preflight-test-xozl_sfh\\run-start.json",
+      "sha256": "4d3430a2e4950ad87eed59324fbd25065c1ad36c3716b292d199f617d11a2ce5",
+      "bytes": 2773
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-preflight-test-xozl_sfh\\red-result.json",
+      "sha256": "d43e8cf7657c8980b062bce182aa41b63ee40c7eceff0fcffa9c28739967ce6b",
+      "bytes": 2343
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-preflight-test-xozl_sfh\\original-red.stdout.log",
+      "sha256": "f2705604cc5263bbd5f9e220ca83177c68c436315c36ade5425dde42ac198868",
+      "bytes": 431
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-preflight-test-xozl_sfh\\original-red.stderr.log",
+      "sha256": "954b323ab52c3524277d3ccce21af5498944cfd858d969e7c4dd1234e7baa313",
+      "bytes": 9728
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-preflight-test-xozl_sfh\\definition.json",
+      "sha256": "36efd63274bcd9129272615f9e10e7dde6f75e9e819b3c1bedcba475683234e0",
+      "bytes": 508
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-preflight-test-xozl_sfh\\filemap.json",
+      "sha256": "0592c4bc3be4818a1a8458be4867fa02284118ed09f8badcf6038596c02e631a",
+      "bytes": 602
+    }
+  ],
+  "context": [
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\c05-preflight-test-actor-input.txt",
+      "sha256": "f4e3304a127c5996a5c0c5a3c16d00eb0d8712548a5c4e8074ba0aaa852181b9"
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\c05-preflight-test-actor-context.json",
+      "sha256": "417819df3e8723e99beca543be5bdb1c4bf6b533fefd7bf01b9d3a4283dac767"
+    }
+  ],
+  "unchanged_old_classmethod_ASTs": 14
+}

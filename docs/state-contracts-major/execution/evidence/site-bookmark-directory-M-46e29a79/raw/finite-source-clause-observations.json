@@ -1,0 +1,115 @@
+{
+  "schema": "codearbiter.finite-source-clause-conformance/1",
+  "observer": "/root/packaging_site_tools read-only finite guard/effect/retry inspection",
+  "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "source_commit": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+  "literal_dependency_joins": [
+    {
+      "path": "site/src/components/AcademyBookmark.astro",
+      "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+      "baseline_sha256": "7df832f6754945b2000dce018820eb7385e63858c48be6505924b06d44148c90",
+      "current_commit": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+      "current_sha256": "7df832f6754945b2000dce018820eb7385e63858c48be6505924b06d44148c90",
+      "literal_bytes_equal": true
+    },
+    {
+      "path": "site/src/scripts/academy-bookmark.ts",
+      "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+      "baseline_sha256": "8015708d6686b7efef1186d7a0ebc3fd1b737462308acfd2d25511428636029e",
+      "current_commit": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+      "current_sha256": "8015708d6686b7efef1186d7a0ebc3fd1b737462308acfd2d25511428636029e",
+      "literal_bytes_equal": true
+    },
+    {
+      "path": "site/src/styles/academy-wayfinding.css",
+      "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+      "baseline_sha256": "7af3a3fa26f8f7a848cdbfbf18d4631f74a53a0fbed79d654e3ebb2bb19f3dc2",
+      "current_commit": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+      "current_sha256": "7af3a3fa26f8f7a848cdbfbf18d4631f74a53a0fbed79d654e3ebb2bb19f3dc2",
+      "literal_bytes_equal": true
+    },
+    {
+      "path": "site/src/components/GuideDirectory.astro",
+      "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+      "baseline_sha256": "5df67010d4359d7a5c2f81b4914104812eeba82be063fc3b0f8b795a10bc8160",
+      "current_commit": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+      "current_sha256": "5df67010d4359d7a5c2f81b4914104812eeba82be063fc3b0f8b795a10bc8160",
+      "literal_bytes_equal": true
+    },
+    {
+      "path": "site/src/scripts/guide-filter.ts",
+      "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+      "baseline_sha256": "62dca60757ab9b275280238eb93dcc16ea04dda0c0c5cb9bbd076d538143c91f",
+      "current_commit": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+      "current_sha256": "62dca60757ab9b275280238eb93dcc16ea04dda0c0c5cb9bbd076d538143c91f",
+      "literal_bytes_equal": true
+    },
+    {
+      "path": "site/scripts/guide-directory.ts",
+      "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+      "baseline_sha256": "f3a0fc545056b843265baa854a376226ae71e0f820f0d2e78f5c0e748a968717",
+      "current_commit": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+      "current_sha256": "f3a0fc545056b843265baa854a376226ae71e0f820f0d2e78f5c0e748a968717",
+      "literal_bytes_equal": true
+    }
+  ],
+  "clauses": {
+    "S56:03": {
+      "paths": [
+        "site/src/components/AcademyBookmark.astro",
+        "site/src/scripts/academy-bookmark.ts",
+        "site/src/styles/academy-wayfinding.css"
+      ],
+      "guard_effect_retry": "readBookmark catches acquisition separately as unavailable; null is empty; >1024, malformed/nonobject/array/wrong exact keys/schema/commit/lesson syntax are invalid; release or commit mismatch is stale; unknown current inventory lesson invalid. refresh first hides and removes resume href, maps invalid/stale to explanatory reset/current-track guidance, and makes clear eligible. No stored URL is used. Malformed/unknown browser vectors are not newly executed here.",
+      "inspection_witnesses": [
+        "if (raw.length > 1024) return { state: 'invalid' };",
+        "Object.keys(record).sort().join(',') !== 'commit,lessonId,release,schemaVersion'",
+        "if (record.release !== context.release || record.commit !== context.commit) return { state: 'stale' };",
+        "resume.removeAttribute('href');",
+        "clear.hidden = state.state === 'empty' || state.state === 'unavailable';"
+      ]
+    },
+    "S56:07": {
+      "paths": [
+        "site/src/components/AcademyBookmark.astro",
+        "site/src/scripts/academy-bookmark.ts",
+        "site/src/styles/academy-wayfinding.css"
+      ],
+      "guard_effect_retry": "Both event registrations use the one current AbortSignal. storage refresh runs only for null key or the exact base-scoped bookmarkKey; pageshow refresh is unconditional. Both invoke the same read-only acquire/read/validate/render closure, never saveBookmark. Current generated release/commit/lesson IDs are context parameters and remain validated on every refresh; no claim of real second-tab dispatch.",
+      "inspection_witnesses": [
+        "window.addEventListener('storage', event => {",
+        "if (event.key === null || event.key === bookmarkKey(context.base)) refresh();",
+        "window.addEventListener('pageshow', refresh, { signal });"
+      ]
+    },
+    "S56:08": {
+      "paths": [
+        "site/src/components/AcademyBookmark.astro",
+        "site/src/scripts/academy-bookmark.ts",
+        "site/src/styles/academy-wayfinding.css"
+      ],
+      "guard_effect_retry": "connection aborts any prior lifecycle, installs one new controller and passes its signal to local save/clear and window storage/pageshow listeners. disconnectedCallback aborts that controller. Abort has no storage action and does not change verifier progress; disconnected dispatch cancellation is code conformance only, not browser-observed.",
+      "inspection_witnesses": [
+        "this.lifecycle?.abort();",
+        "this.lifecycle = new AbortController();",
+        "const { signal } = this.lifecycle;",
+        "disconnectedCallback() { this.lifecycle?.abort(); }"
+      ]
+    },
+    "S58:03": {
+      "paths": [
+        "site/src/components/GuideDirectory.astro",
+        "site/src/scripts/guide-filter.ts",
+        "site/scripts/guide-directory.ts"
+      ],
+      "guard_effect_retry": "connection aborts the previous controller, creates one controller, returns if required DOM/cards are absent, and passes its signal to input/change/submit/clear. disconnectedCallback aborts it. update only changes hidden/textContent and clear changes local input/select then focuses; no storage, network or history API is in this finite owner/helper cone. Browser round-trip demonstrates usable reconnect but not dispatch while detached.",
+      "inspection_witnesses": [
+        "this.controller?.abort();",
+        "this.controller = new AbortController();",
+        "const options = { signal: this.controller.signal };",
+        "disconnectedCallback() { this.controller?.abort(); }"
+      ]
+    }
+  },
+  "dependency_boundary": "Academy generated lesson/source metadata and guide content are parameter inputs. These four claims preserve only validation/event/lifecycle clauses; no equality of generated curriculum data, CSS geometry, browser semantics, storage dispatch or installed runtime is inferred. Full current canonical helper and event closure were inspected, not owning-file equality alone."
+}

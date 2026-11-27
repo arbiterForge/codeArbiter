@@ -1,0 +1,30 @@
+{
+  "source_commit": "15c57b73859b00b806d6b027d1504ab0e193a489",
+  "PR": 1116,
+  "event": "pull_request",
+  "run_id": 43983045996,
+  "run_attempt": 1,
+  "job_id": 133704235842,
+  "failed_step": "Test original Python npm binding identities and admission",
+  "method": "ProducerBoundaryTests.test_original_python_producer_exports_opt_in_consumed_identities",
+  "exception_type": "subprocess.TimeoutExpired",
+  "timeout_seconds": 30,
+  "actual_python": "CPython3.15.2",
+  "test_method_count": 18,
+  "ERROR": 1,
+  "unittest_seconds": 33.249,
+  "source_location": {
+    "file": ".github/scripts/test_npm_binding_observation.py",
+    "line": 47
+  },
+  "original_log": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-15c57-watch-owned\\failed-job-133704235842.log",
+    "sha256": "ef8038da3846a9824312812db694015e62eb06fa909a62441350961732adade9",
+    "bytes": 199005
+  },
+  "cause": "UNKNOWN: original parent timeout does not identify the child phase, full runtime population, bytes reached or active import/binding stage",
+  "partial_native_boundary": "All six separate pinned3.14 tested-native builders showPASS in retained watch; no task/whole-run qualification",
+  "next_smallest_discriminator": "Bounded phase/counter timing retained before natural child timeout/cleanup; no raw content, arbitrary argv/env, speculative optimization or automatic deadline change. Root to select scoped repair.",
+  "canonical_writes": false,
+  "qualification": false
+}

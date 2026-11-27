@@ -6,7 +6,7 @@
  * page's "verbatim layer" is this generated metadata + line-pinned source
  * permalinks, never pasted Python.
  */
-import type { HookCallSite } from "./extract-hook-gates";
+import type { HookCallSite, SkippedCallSite } from "./extract-hook-gates";
 import { repositorySourceRef } from "./source-ref";
 
 /** Parsed shape of `plugins/ca/hooks/hooks.json` (only the fields this module reads). */
@@ -106,6 +106,7 @@ export function renderHooksReference(
   eventMap: Map<string, string[]>,
   pluginVersion: string,
   sourceRef: string = repositorySourceRef(),
+  skipped: SkippedCallSite[] = [],
 ): string {
   const tag = `v${pluginVersion}`;
   const byTag = new Map<string, HookCallSite[]>();
@@ -132,7 +133,11 @@ export function renderHooksReference(
     const entries = sites
       .map((site) => {
         const permalink = `https://github.com/arbiterForge/codeArbiter/blob/${sourceRef}/plugins/ca/hooks/${site.file}#L${site.line}`;
-        return `${toBlockquote(site.message)}\n>\n> — [\`${site.file}:${site.line}\`](${permalink})`;
+        const dynamic = site.dynamic ?? [];
+        const dynamicNote = dynamic.length > 0
+          ? `\n>\n> _Static template only: run-time text from ${dynamic.map((d) => `\`${d}\``).join(", ")} is added when the hook fires and is not shown here._`
+          : "";
+        return `${toBlockquote(site.message)}${dynamicNote}\n>\n> — [\`${site.file}:${site.line}\`](${permalink})`;
       })
       .join("\n\n");
 
@@ -150,19 +155,33 @@ export function renderHooksReference(
   const frontmatter = [
     "---",
     "title: Hook Gates",
-    'description: "Every gate ID a codeArbiter hook can print — generated from the block()/remind() call sites in plugins/ca/hooks, never hand-transcribed."',
+    'description: "Gate IDs extracted from the block()/remind() call sites in plugins/ca/hooks by a bounded static scan, with run-time fragments and unattributed calls disclosed."',
     "---",
   ].join("\n");
 
   const intro = [
     "These gate IDs appear in terminal output as `BLOCKED [H-xx]: <message>` (a blocking",
     "hook, exit 2) or `REMINDER [H-xx]: <message>` (an advisory hook, exit 0). This page is",
-    "generated at build time directly from the `block()`/`remind()` call sites in",
-    "`plugins/ca/hooks/*.py`, so it can never drift from what a hook actually prints.",
+    "generated at build time by a bounded static scan of the `block()`/`remind()` call sites in",
+    "`plugins/ca/hooks/*.py`. Each entry shows the message's literal template; where a hook adds",
+    "run-time text (for example a recovery instruction built by a helper), the entry names that",
+    "fragment instead of inventing it. The page is not proof of every message a hook prints:",
+    "follow the source link for exact behavior, and see the extraction coverage note at the end",
+    "for calls the scan could not attribute to a gate.",
     "",
     "A `` `{placeholder}` `` shown in a message is an f-string interpolation — the hook fills",
     "it in with a run-time value (a file path, a branch name, a count) when it actually fires.",
   ].join("\n");
 
-  return `${frontmatter}\n\n${intro}\n\n${sections.join("\n\n---\n\n")}\n`;
+  const coverage = [
+    "## Extraction coverage",
+    "",
+    skipped.length === 0
+      ? "Every `block()`/`remind()` call the scan found was attributed to a gate ID."
+      : `${skipped.length} \`block()\`/\`remind()\` call(s) could not be attributed to a gate ID by the bounded scan and are not listed above:`,
+    ...skipped.map((site) =>
+      `- [\`${site.file}:${site.line}\`](https://github.com/arbiterForge/codeArbiter/blob/${sourceRef}/plugins/ca/hooks/${site.file}#L${site.line})`),
+  ].join("\n");
+
+  return `${frontmatter}\n\n${intro}\n\n${sections.join("\n\n---\n\n")}\n\n---\n\n${coverage}\n`;
 }

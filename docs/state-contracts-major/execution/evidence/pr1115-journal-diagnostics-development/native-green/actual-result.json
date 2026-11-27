@@ -1,0 +1,28 @@
+{
+  "argv": [
+    "C:/Program Files/Go/bin/go.exe",
+    "test",
+    "-x",
+    "-json",
+    "./internal/store",
+    "-run",
+    "^(TestN02CommitAdmissionAndPrepublicationCleanup|TestN02PreparedTargetCASRefusesConcurrentBytes|TestN02AcknowledgementWriteFailureRetainsRecoverableOutcome|TestN03TerminalRecoveryReplayPreservesBytes|TestN03RecoveryPreflightPreservesAllTargetsAndEvidence|TestN03UnreadableFinalJournalNeverBecomesClean)$",
+    "-count=1",
+    "-timeout=90s",
+    "-failfast"
+  ],
+  "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-journal-overlap-fix-0296fc9a\\candidate\\core\\artifacts",
+  "pid": 64728,
+  "returncode": 0,
+  "duration_seconds": 3.687298400007421,
+  "timed_out": false,
+  "output_limit_exceeded": false,
+  "containment": "exited",
+  "spawn_error_type": null,
+  "reader_errors": [],
+  "stdout_sha256": "d3852a3af759e6f33ea6a645cfb358a0e99014b490e3bfb9da1d7c3954214784",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stdout_bytes": 211738,
+  "stderr_bytes": 0,
+  "qualification": false
+}

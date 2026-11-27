@@ -1,0 +1,3854 @@
+{
+  "schema": "codearbiter-original-observation-extract/1",
+  "original_report_sha256": "bce24651170e5b2a9588065a33fa11269f4c161ffcf797a9a6b05f3f5e4bc595",
+  "original_report_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-fixture-alias-75a8f10e\\qualified-coverage-tests.json",
+  "original_startTime": 1794621020975,
+  "observations": [
+    {
+      "id": "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests refuses reused Git resources without discarding prior branches or evidence",
+      "source_byte_start": 72482,
+      "source_byte_end": 72806,
+      "assertion": {
+        "ancestorTitles": [
+          "farm.ts smoke tests"
+        ],
+        "fullName": "farm.ts smoke tests refuses reused Git resources without discarding prior branches or evidence",
+        "status": "passed",
+        "title": "refuses reused Git resources without discarding prior branches or evidence",
+        "duration": 2343.7704000000012,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.test.ts:farm artifact publication (#397 / #387) #397: a run publishes its receipts under a run-scoped directory and still exposes the latest convenience copies",
+      "source_byte_start": 93261,
+      "source_byte_end": 93699,
+      "assertion": {
+        "ancestorTitles": [
+          "farm artifact publication (#397 / #387)"
+        ],
+        "fullName": "farm artifact publication (#397 / #387) #397: a run publishes its receipts under a run-scoped directory and still exposes the latest convenience copies",
+        "status": "passed",
+        "title": "#397: a run publishes its receipts under a run-scoped directory and still exposes the latest convenience copies",
+        "duration": 1707.6526000000013,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.test.ts:farm artifact publication (#397 / #387) #397: two concurrent farm processes on one repo both keep complete, independently parseable receipts",
+      "source_byte_start": 93700,
+      "source_byte_end": 94116,
+      "assertion": {
+        "ancestorTitles": [
+          "farm artifact publication (#397 / #387)"
+        ],
+        "fullName": "farm artifact publication (#397 / #387) #397: two concurrent farm processes on one repo both keep complete, independently parseable receipts",
+        "status": "passed",
+        "title": "#397: two concurrent farm processes on one repo both keep complete, independently parseable receipts",
+        "duration": 1911.8066000000108,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.test.ts:farm artifact publication (#397 / #387) #397: a failed report publication leaves the previous run's complete report intact \u2014 never a truncated one",
+      "source_byte_start": 94117,
+      "source_byte_end": 94548,
+      "assertion": {
+        "ancestorTitles": [
+          "farm artifact publication (#397 / #387)"
+        ],
+        "fullName": "farm artifact publication (#397 / #387) #397: a failed report publication leaves the previous run's complete report intact \u2014 never a truncated one",
+        "status": "passed",
+        "title": "#397: a failed report publication leaves the previous run's complete report intact \u2014 never a truncated one",
+        "duration": 3246.751199999999,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.test.ts:farm artifact publication (#397 / #387) #387: a green run whose farm-report.json cannot be published exits non-zero and never claims a Report path",
+      "source_byte_start": 94919,
+      "source_byte_end": 95347,
+      "assertion": {
+        "ancestorTitles": [
+          "farm artifact publication (#397 / #387)"
+        ],
+        "fullName": "farm artifact publication (#397 / #387) #387: a green run whose farm-report.json cannot be published exits non-zero and never claims a Report path",
+        "status": "passed",
+        "title": "#387: a green run whose farm-report.json cannot be published exits non-zero and never claims a Report path",
+        "duration": 2454.8257999999914,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.test.ts:farm artifact publication (#397 / #387) FARM-R01 journal publication failure drains independent tasks and retains their real outcomes",
+      "source_byte_start": 95348,
+      "source_byte_end": 95749,
+      "assertion": {
+        "ancestorTitles": [
+          "farm artifact publication (#397 / #387)"
+        ],
+        "fullName": "farm artifact publication (#397 / #387) FARM-R01 journal publication failure drains independent tasks and retains their real outcomes",
+        "status": "passed",
+        "title": "FARM-R01 journal publication failure drains independent tasks and retains their real outcomes",
+        "duration": 6573.640299999999,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.test.ts:farm artifact publication (#397 / #387) #387: a failure to publish farm-report.md also fails the run",
+      "source_byte_start": 95750,
+      "source_byte_end": 96086,
+      "assertion": {
+        "ancestorTitles": [
+          "farm artifact publication (#397 / #387)"
+        ],
+        "fullName": "farm artifact publication (#397 / #387) #387: a failure to publish farm-report.md also fails the run",
+        "status": "passed",
+        "title": "#387: a failure to publish farm-report.md also fails the run",
+        "duration": 1627.2936000000045,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.test.ts:farm artifact publication (#397 / #387) #387: an unusable diffs directory marks every task's diff evidence unavailable",
+      "source_byte_start": 96817,
+      "source_byte_end": 97189,
+      "assertion": {
+        "ancestorTitles": [
+          "farm artifact publication (#397 / #387)"
+        ],
+        "fullName": "farm artifact publication (#397 / #387) #387: an unusable diffs directory marks every task's diff evidence unavailable",
+        "status": "passed",
+        "title": "#387: an unusable diffs directory marks every task's diff evidence unavailable",
+        "duration": 1557.5940999999875,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.test.ts:farm artifact publication (#397 / #387) #387: a single failed patch write marks only that task's diff evidence unavailable",
+      "source_byte_start": 97190,
+      "source_byte_end": 97570,
+      "assertion": {
+        "ancestorTitles": [
+          "farm artifact publication (#397 / #387)"
+        ],
+        "fullName": "farm artifact publication (#397 / #387) #387: a single failed patch write marks only that task's diff evidence unavailable",
+        "status": "passed",
+        "title": "#387: a single failed patch write marks only that task's diff evidence unavailable",
+        "duration": 1680.5022999999928,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.test.ts:farm artifact publication (#397 / #387) #387: a failed LATEST report pointer does not fail a run whose authoritative receipt landed",
+      "source_byte_start": 97571,
+      "source_byte_end": 97969,
+      "assertion": {
+        "ancestorTitles": [
+          "farm artifact publication (#397 / #387)"
+        ],
+        "fullName": "farm artifact publication (#397 / #387) #387: a failed LATEST report pointer does not fail a run whose authoritative receipt landed",
+        "status": "passed",
+        "title": "#387: a failed LATEST report pointer does not fail a run whose authoritative receipt landed",
+        "duration": 1714.6688999999897,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:httpWorker secure request boundary rejects a direct external-http call before fetch",
+      "source_byte_start": 136772,
+      "source_byte_end": 137074,
+      "assertion": {
+        "ancestorTitles": [
+          "httpWorker secure request boundary"
+        ],
+        "fullName": "httpWorker secure request boundary rejects a direct external-http call before fetch",
+        "status": "passed",
+        "title": "rejects a direct external-http call before fetch",
+        "duration": 0.9026999999999816,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:httpWorker secure request boundary refuses automatic redirects on the worker request",
+      "source_byte_start": 137075,
+      "source_byte_end": 137379,
+      "assertion": {
+        "ancestorTitles": [
+          "httpWorker secure request boundary"
+        ],
+        "fullName": "httpWorker secure request boundary refuses automatic redirects on the worker request",
+        "status": "passed",
+        "title": "refuses automatic redirects on the worker request",
+        "duration": 14.412799999999947,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:httpWorker secure request boundary does not write an upstream response body to stderr",
+      "source_byte_start": 137380,
+      "source_byte_end": 137686,
+      "assertion": {
+        "ancestorTitles": [
+          "httpWorker secure request boundary"
+        ],
+        "fullName": "httpWorker secure request boundary does not write an upstream response body to stderr",
+        "status": "passed",
+        "title": "does not write an upstream response body to stderr",
+        "duration": 0.5952000000000908,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:farm worktree write containment escalates unsafe mutation write/finally-restore paths without touching or staging the external file",
+      "source_byte_start": 138420,
+      "source_byte_end": 138817,
+      "assertion": {
+        "ancestorTitles": [
+          "farm worktree write containment"
+        ],
+        "fullName": "farm worktree write containment escalates unsafe mutation write/finally-restore paths without touching or staging the external file",
+        "status": "passed",
+        "title": "escalates unsafe mutation write/finally-restore paths without touching or staging the external file",
+        "duration": 5.074299999999994,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:farm worktree write containment escalates when the mutation command swaps an ancestor before immediate and final restore",
+      "source_byte_start": 138818,
+      "source_byte_end": 139194,
+      "assertion": {
+        "ancestorTitles": [
+          "farm worktree write containment"
+        ],
+        "fullName": "farm worktree write containment escalates when the mutation command swaps an ancestor before immediate and final restore",
+        "status": "passed",
+        "title": "escalates when the mutation command swaps an ancestor before immediate and final restore",
+        "duration": 57.563899999999876,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:atomicWriteFile \u2014 publish-or-preserve (#397) writes the full payload to the destination",
+      "source_byte_start": 176265,
+      "source_byte_end": 176578,
+      "assertion": {
+        "ancestorTitles": [
+          "atomicWriteFile \u2014 publish-or-preserve (#397)"
+        ],
+        "fullName": "atomicWriteFile \u2014 publish-or-preserve (#397) writes the full payload to the destination",
+        "status": "passed",
+        "title": "writes the full payload to the destination",
+        "duration": 8.754799999999705,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:atomicWriteFile \u2014 publish-or-preserve (#397) leaves no temporary residue behind on success",
+      "source_byte_start": 176579,
+      "source_byte_end": 176899,
+      "assertion": {
+        "ancestorTitles": [
+          "atomicWriteFile \u2014 publish-or-preserve (#397)"
+        ],
+        "fullName": "atomicWriteFile \u2014 publish-or-preserve (#397) leaves no temporary residue behind on success",
+        "status": "passed",
+        "title": "leaves no temporary residue behind on success",
+        "duration": 3.4675999999999476,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:atomicWriteFile \u2014 publish-or-preserve (#397) preserves the prior complete artifact and cleans up when publication fails",
+      "source_byte_start": 176900,
+      "source_byte_end": 177278,
+      "assertion": {
+        "ancestorTitles": [
+          "atomicWriteFile \u2014 publish-or-preserve (#397)"
+        ],
+        "fullName": "atomicWriteFile \u2014 publish-or-preserve (#397) preserves the prior complete artifact and cleans up when publication fails",
+        "status": "passed",
+        "title": "preserves the prior complete artifact and cleans up when publication fails",
+        "duration": 105.18250000000035,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:atomicWriteFile - mode preservation and write-path cleanup (#439) preserves a hardened destination's mode instead of resetting it to 0644",
+      "source_byte_start": 179184,
+      "source_byte_end": 179594,
+      "assertion": {
+        "ancestorTitles": [
+          "atomicWriteFile - mode preservation and write-path cleanup (#439)"
+        ],
+        "fullName": "atomicWriteFile - mode preservation and write-path cleanup (#439) preserves a hardened destination's mode instead of resetting it to 0644",
+        "status": "passed",
+        "title": "preserves a hardened destination's mode instead of resetting it to 0644",
+        "duration": 0.9624999999996362,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:atomicWriteFile - mode preservation and write-path cleanup (#439) leaves no temp residue when the WRITE fails, not just the rename",
+      "source_byte_start": 179595,
+      "source_byte_end": 179991,
+      "assertion": {
+        "ancestorTitles": [
+          "atomicWriteFile - mode preservation and write-path cleanup (#439)"
+        ],
+        "fullName": "atomicWriteFile - mode preservation and write-path cleanup (#439) leaves no temp residue when the WRITE fails, not just the rename",
+        "status": "passed",
+        "title": "leaves no temp residue when the WRITE fails, not just the rename",
+        "duration": 1.5691000000001623,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:qualified best-of-N alternatives does not penalize a candidate for missing mutation count beyond the existing warning policy",
+      "source_byte_start": 195041,
+      "source_byte_end": 195425,
+      "assertion": {
+        "ancestorTitles": [
+          "qualified best-of-N alternatives"
+        ],
+        "fullName": "qualified best-of-N alternatives does not penalize a candidate for missing mutation count beyond the existing warning policy",
+        "status": "passed",
+        "title": "does not penalize a candidate for missing mutation count beyond the existing warning policy",
+        "duration": 1424.5530999999992,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:qualified best-of-N alternatives retains mutation-hook infrastructure warnings rather than inventing an escalation rule",
+      "source_byte_start": 195426,
+      "source_byte_end": 195799,
+      "assertion": {
+        "ancestorTitles": [
+          "qualified best-of-N alternatives"
+        ],
+        "fullName": "qualified best-of-N alternatives retains mutation-hook infrastructure warnings rather than inventing an escalation rule",
+        "status": "passed",
+        "title": "retains mutation-hook infrastructure warnings rather than inventing an escalation rule",
+        "duration": 1419.519900000003,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:qualified best-of-N alternatives retains the adverse-report count floor without publishing failed scores",
+      "source_byte_start": 195800,
+      "source_byte_end": 196144,
+      "assertion": {
+        "ancestorTitles": [
+          "qualified best-of-N alternatives"
+        ],
+        "fullName": "qualified best-of-N alternatives retains the adverse-report count floor without publishing failed scores",
+        "status": "passed",
+        "title": "retains the adverse-report count floor without publishing failed scores",
+        "duration": 1423.9903999999988,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:qualified best-of-N alternatives does not invent a blocking count from a failed hook (undefined)",
+      "source_byte_start": 196145,
+      "source_byte_end": 196473,
+      "assertion": {
+        "ancestorTitles": [
+          "qualified best-of-N alternatives"
+        ],
+        "fullName": "qualified best-of-N alternatives does not invent a blocking count from a failed hook (undefined)",
+        "status": "passed",
+        "title": "does not invent a blocking count from a failed hook (undefined)",
+        "duration": 1418.4043999999994,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:qualified best-of-N alternatives does not invent a blocking count from a failed hook (0)",
+      "source_byte_start": 196474,
+      "source_byte_end": 196786,
+      "assertion": {
+        "ancestorTitles": [
+          "qualified best-of-N alternatives"
+        ],
+        "fullName": "qualified best-of-N alternatives does not invent a blocking count from a failed hook (0)",
+        "status": "passed",
+        "title": "does not invent a blocking count from a failed hook (0)",
+        "duration": 1420.8754000000008,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:qualified best-of-N alternatives does not invent a blocking count from a failed hook (4)",
+      "source_byte_start": 196787,
+      "source_byte_end": 197099,
+      "assertion": {
+        "ancestorTitles": [
+          "qualified best-of-N alternatives"
+        ],
+        "fullName": "qualified best-of-N alternatives does not invent a blocking count from a failed hook (4)",
+        "status": "passed",
+        "title": "does not invent a blocking count from a failed hook (4)",
+        "duration": 1426.1038000000008,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:qualified best-of-N alternatives stops after mutation containment is unverified with 1 candidate(s)",
+      "source_byte_start": 197100,
+      "source_byte_end": 197433,
+      "assertion": {
+        "ancestorTitles": [
+          "qualified best-of-N alternatives"
+        ],
+        "fullName": "qualified best-of-N alternatives stops after mutation containment is unverified with 1 candidate(s)",
+        "status": "passed",
+        "title": "stops after mutation containment is unverified with 1 candidate(s)",
+        "duration": 4.783500000001368,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:qualified best-of-N alternatives stops after mutation containment is unverified with 2 candidate(s)",
+      "source_byte_start": 197434,
+      "source_byte_end": 197767,
+      "assertion": {
+        "ancestorTitles": [
+          "qualified best-of-N alternatives"
+        ],
+        "fullName": "qualified best-of-N alternatives stops after mutation containment is unverified with 2 candidate(s)",
+        "status": "passed",
+        "title": "stops after mutation containment is unverified with 2 candidate(s)",
+        "duration": 945.7808999999979,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:qualified best-of-N alternatives retains the upper-bound/count policy (0.1, 10) before buying another sample round",
+      "source_byte_start": 198436,
+      "source_byte_end": 198799,
+      "assertion": {
+        "ancestorTitles": [
+          "qualified best-of-N alternatives"
+        ],
+        "fullName": "qualified best-of-N alternatives retains the upper-bound/count policy (0.1, 10) before buying another sample round",
+        "status": "passed",
+        "title": "retains the upper-bound/count policy (0.1, 10) before buying another sample round",
+        "duration": 1413.281500000001,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:qualified best-of-N alternatives retains the upper-bound/count policy (0.2, 5) before buying another sample round",
+      "source_byte_start": 198800,
+      "source_byte_end": 199161,
+      "assertion": {
+        "ancestorTitles": [
+          "qualified best-of-N alternatives"
+        ],
+        "fullName": "qualified best-of-N alternatives retains the upper-bound/count policy (0.2, 5) before buying another sample round",
+        "status": "passed",
+        "title": "retains the upper-bound/count policy (0.2, 5) before buying another sample round",
+        "duration": 1421.234199999999,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:qualified best-of-N alternatives retains the upper-bound/count policy (0, 4) before buying another sample round",
+      "source_byte_start": 199162,
+      "source_byte_end": 199519,
+      "assertion": {
+        "ancestorTitles": [
+          "qualified best-of-N alternatives"
+        ],
+        "fullName": "qualified best-of-N alternatives retains the upper-bound/count policy (0, 4) before buying another sample round",
+        "status": "passed",
+        "title": "retains the upper-bound/count policy (0, 4) before buying another sample round",
+        "duration": 1422.508600000001,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:qualified best-of-N alternatives does not invent an adequate completed count for interrupted built-in screening",
+      "source_byte_start": 200244,
+      "source_byte_end": 200602,
+      "assertion": {
+        "ancestorTitles": [
+          "qualified best-of-N alternatives"
+        ],
+        "fullName": "qualified best-of-N alternatives does not invent an adequate completed count for interrupted built-in screening",
+        "status": "passed",
+        "title": "does not invent an adequate completed count for interrupted built-in screening",
+        "duration": 1426.7325999999957,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:qualified best-of-N alternatives preserves single-worker usage when retry reset fails without inventing cleanup",
+      "source_byte_start": 202639,
+      "source_byte_end": 202996,
+      "assertion": {
+        "ancestorTitles": [
+          "qualified best-of-N alternatives"
+        ],
+        "fullName": "qualified best-of-N alternatives preserves single-worker usage when retry reset fails without inventing cleanup",
+        "status": "passed",
+        "title": "preserves single-worker usage when retry reset fails without inventing cleanup",
+        "duration": 4.987499999995634,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:worker response evidence retains validated counters on missing choices without reflecting the body",
+      "source_byte_start": 203986,
+      "source_byte_end": 204319,
+      "assertion": {
+        "ancestorTitles": [
+          "worker response evidence"
+        ],
+        "fullName": "worker response evidence retains validated counters on missing choices without reflecting the body",
+        "status": "passed",
+        "title": "retains validated counters on missing choices without reflecting the body",
+        "duration": 0.33840000000054715,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:worker response evidence retains validated counters on non-array choices without reflecting the body",
+      "source_byte_start": 204320,
+      "source_byte_end": 204657,
+      "assertion": {
+        "ancestorTitles": [
+          "worker response evidence"
+        ],
+        "fullName": "worker response evidence retains validated counters on non-array choices without reflecting the body",
+        "status": "passed",
+        "title": "retains validated counters on non-array choices without reflecting the body",
+        "duration": 0.09930000000167638,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:worker response evidence retains validated counters on null choice without reflecting the body",
+      "source_byte_start": 204658,
+      "source_byte_end": 204983,
+      "assertion": {
+        "ancestorTitles": [
+          "worker response evidence"
+        ],
+        "fullName": "worker response evidence retains validated counters on null choice without reflecting the body",
+        "status": "passed",
+        "title": "retains validated counters on null choice without reflecting the body",
+        "duration": 0.05399999999644933,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:worker response evidence retains validated counters on missing message without reflecting the body",
+      "source_byte_start": 204984,
+      "source_byte_end": 205317,
+      "assertion": {
+        "ancestorTitles": [
+          "worker response evidence"
+        ],
+        "fullName": "worker response evidence retains validated counters on missing message without reflecting the body",
+        "status": "passed",
+        "title": "retains validated counters on missing message without reflecting the body",
+        "duration": 0.05380000000150176,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:worker response evidence retains validated counters on scalar message without reflecting the body",
+      "source_byte_start": 205318,
+      "source_byte_end": 205649,
+      "assertion": {
+        "ancestorTitles": [
+          "worker response evidence"
+        ],
+        "fullName": "worker response evidence retains validated counters on scalar message without reflecting the body",
+        "status": "passed",
+        "title": "retains validated counters on scalar message without reflecting the body",
+        "duration": 0.03689999999915017,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:worker response evidence retains validated counters on array message without reflecting the body",
+      "source_byte_start": 205650,
+      "source_byte_end": 205980,
+      "assertion": {
+        "ancestorTitles": [
+          "worker response evidence"
+        ],
+        "fullName": "worker response evidence retains validated counters on array message without reflecting the body",
+        "status": "passed",
+        "title": "retains validated counters on array message without reflecting the body",
+        "duration": 0.059900000000197906,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:worker response evidence retains validated counters on object content without reflecting the body",
+      "source_byte_start": 205981,
+      "source_byte_end": 206313,
+      "assertion": {
+        "ancestorTitles": [
+          "worker response evidence"
+        ],
+        "fullName": "worker response evidence retains validated counters on object content without reflecting the body",
+        "status": "passed",
+        "title": "retains validated counters on object content without reflecting the body",
+        "duration": 0.042399999998451676,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:worker response evidence retains validated counters on numeric content without reflecting the body",
+      "source_byte_start": 206314,
+      "source_byte_end": 206647,
+      "assertion": {
+        "ancestorTitles": [
+          "worker response evidence"
+        ],
+        "fullName": "worker response evidence retains validated counters on numeric content without reflecting the body",
+        "status": "passed",
+        "title": "retains validated counters on numeric content without reflecting the body",
+        "duration": 0.03529999999591382,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:worker response evidence retains validated counters on array content without reflecting the body",
+      "source_byte_start": 206648,
+      "source_byte_end": 206977,
+      "assertion": {
+        "ancestorTitles": [
+          "worker response evidence"
+        ],
+        "fullName": "worker response evidence retains validated counters on array content without reflecting the body",
+        "status": "passed",
+        "title": "retains validated counters on array content without reflecting the body",
+        "duration": 0.04579999999987194,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:worker response evidence retains validated counters on boolean content without reflecting the body",
+      "source_byte_start": 206978,
+      "source_byte_end": 207310,
+      "assertion": {
+        "ancestorTitles": [
+          "worker response evidence"
+        ],
+        "fullName": "worker response evidence retains validated counters on boolean content without reflecting the body",
+        "status": "passed",
+        "title": "retains validated counters on boolean content without reflecting the body",
+        "duration": 0.0334999999977299,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:worker response evidence keeps absent or empty text undefined on the no-output path",
+      "source_byte_start": 207311,
+      "source_byte_end": 207613,
+      "assertion": {
+        "ancestorTitles": [
+          "worker response evidence"
+        ],
+        "fullName": "worker response evidence keeps absent or empty text undefined on the no-output path",
+        "status": "passed",
+        "title": "keeps absent or empty text undefined on the no-output path",
+        "duration": 0.0944999999992433,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:worker response evidence keeps absent or empty text null on the no-output path",
+      "source_byte_start": 207614,
+      "source_byte_end": 207908,
+      "assertion": {
+        "ancestorTitles": [
+          "worker response evidence"
+        ],
+        "fullName": "worker response evidence keeps absent or empty text null on the no-output path",
+        "status": "passed",
+        "title": "keeps absent or empty text null on the no-output path",
+        "duration": 0.027900000000954606,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:worker response evidence keeps absent or empty text  on the no-output path",
+      "source_byte_start": 207909,
+      "source_byte_end": 208194,
+      "assertion": {
+        "ancestorTitles": [
+          "worker response evidence"
+        ],
+        "fullName": "worker response evidence keeps absent or empty text  on the no-output path",
+        "status": "passed",
+        "title": "keeps absent or empty text  on the no-output path",
+        "duration": 0.02599999999802094,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:worker response evidence preserves empty-choice and explicit-zero semantics",
+      "source_byte_start": 208195,
+      "source_byte_end": 208483,
+      "assertion": {
+        "ancestorTitles": [
+          "worker response evidence"
+        ],
+        "fullName": "worker response evidence preserves empty-choice and explicit-zero semantics",
+        "status": "passed",
+        "title": "preserves empty-choice and explicit-zero semantics",
+        "duration": 0.045700000002398156,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:worker response evidence does not coerce an invalid reported count -1 or discard its valid sibling",
+      "source_byte_start": 208484,
+      "source_byte_end": 208816,
+      "assertion": {
+        "ancestorTitles": [
+          "worker response evidence"
+        ],
+        "fullName": "worker response evidence does not coerce an invalid reported count -1 or discard its valid sibling",
+        "status": "passed",
+        "title": "does not coerce an invalid reported count -1 or discard its valid sibling",
+        "duration": 0.3643999999985681,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:worker response evidence does not coerce an invalid reported count 1.5 or discard its valid sibling",
+      "source_byte_start": 208817,
+      "source_byte_end": 209152,
+      "assertion": {
+        "ancestorTitles": [
+          "worker response evidence"
+        ],
+        "fullName": "worker response evidence does not coerce an invalid reported count 1.5 or discard its valid sibling",
+        "status": "passed",
+        "title": "does not coerce an invalid reported count 1.5 or discard its valid sibling",
+        "duration": 0.07639999999810243,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:worker response evidence does not coerce an invalid reported count \"3\" or discard its valid sibling",
+      "source_byte_start": 209153,
+      "source_byte_end": 209492,
+      "assertion": {
+        "ancestorTitles": [
+          "worker response evidence"
+        ],
+        "fullName": "worker response evidence does not coerce an invalid reported count \"3\" or discard its valid sibling",
+        "status": "passed",
+        "title": "does not coerce an invalid reported count \"3\" or discard its valid sibling",
+        "duration": 0.04559999999764841,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:worker response evidence does not coerce an invalid reported count true or discard its valid sibling",
+      "source_byte_start": 209493,
+      "source_byte_end": 209830,
+      "assertion": {
+        "ancestorTitles": [
+          "worker response evidence"
+        ],
+        "fullName": "worker response evidence does not coerce an invalid reported count true or discard its valid sibling",
+        "status": "passed",
+        "title": "does not coerce an invalid reported count true or discard its valid sibling",
+        "duration": 0.03730000000359723,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:worker response evidence does not coerce an invalid reported count null or discard its valid sibling",
+      "source_byte_start": 209831,
+      "source_byte_end": 210167,
+      "assertion": {
+        "ancestorTitles": [
+          "worker response evidence"
+        ],
+        "fullName": "worker response evidence does not coerce an invalid reported count null or discard its valid sibling",
+        "status": "passed",
+        "title": "does not coerce an invalid reported count null or discard its valid sibling",
+        "duration": 0.2698999999993248,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:worker response evidence does not coerce an invalid reported count {} or discard its valid sibling",
+      "source_byte_start": 210168,
+      "source_byte_end": 210501,
+      "assertion": {
+        "ancestorTitles": [
+          "worker response evidence"
+        ],
+        "fullName": "worker response evidence does not coerce an invalid reported count {} or discard its valid sibling",
+        "status": "passed",
+        "title": "does not coerce an invalid reported count {} or discard its valid sibling",
+        "duration": 0.05009999999310821,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:worker response evidence does not coerce an invalid reported count [] or discard its valid sibling",
+      "source_byte_start": 210502,
+      "source_byte_end": 210835,
+      "assertion": {
+        "ancestorTitles": [
+          "worker response evidence"
+        ],
+        "fullName": "worker response evidence does not coerce an invalid reported count [] or discard its valid sibling",
+        "status": "passed",
+        "title": "does not coerce an invalid reported count [] or discard its valid sibling",
+        "duration": 0.03930000000400469,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:worker response evidence does not coerce an invalid reported count 9007199254740992 or discard its valid sibling",
+      "source_byte_start": 210836,
+      "source_byte_end": 211197,
+      "assertion": {
+        "ancestorTitles": [
+          "worker response evidence"
+        ],
+        "fullName": "worker response evidence does not coerce an invalid reported count 9007199254740992 or discard its valid sibling",
+        "status": "passed",
+        "title": "does not coerce an invalid reported count 9007199254740992 or discard its valid sibling",
+        "duration": 0.03840000000491273,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:worker response evidence rejects infinite JSON counters independently in both directions",
+      "source_byte_start": 211198,
+      "source_byte_end": 211511,
+      "assertion": {
+        "ancestorTitles": [
+          "worker response evidence"
+        ],
+        "fullName": "worker response evidence rejects infinite JSON counters independently in both directions",
+        "status": "passed",
+        "title": "rejects infinite JSON counters independently in both directions",
+        "duration": 0.07499999999708962,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:worker response evidence leaves absent/malformed usage undefined unknown",
+      "source_byte_start": 211512,
+      "source_byte_end": 211793,
+      "assertion": {
+        "ancestorTitles": [
+          "worker response evidence"
+        ],
+        "fullName": "worker response evidence leaves absent/malformed usage undefined unknown",
+        "status": "passed",
+        "title": "leaves absent/malformed usage undefined unknown",
+        "duration": 0.04499999999825377,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:worker response evidence leaves absent/malformed usage null unknown",
+      "source_byte_start": 211794,
+      "source_byte_end": 212064,
+      "assertion": {
+        "ancestorTitles": [
+          "worker response evidence"
+        ],
+        "fullName": "worker response evidence leaves absent/malformed usage null unknown",
+        "status": "passed",
+        "title": "leaves absent/malformed usage null unknown",
+        "duration": 0.0202999999964959,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:worker response evidence leaves absent/malformed usage [] unknown",
+      "source_byte_start": 212065,
+      "source_byte_end": 212332,
+      "assertion": {
+        "ancestorTitles": [
+          "worker response evidence"
+        ],
+        "fullName": "worker response evidence leaves absent/malformed usage [] unknown",
+        "status": "passed",
+        "title": "leaves absent/malformed usage [] unknown",
+        "duration": 0.01939999999740394,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:worker response evidence leaves absent/malformed usage \"unknown\" unknown",
+      "source_byte_start": 212333,
+      "source_byte_end": 212619,
+      "assertion": {
+        "ancestorTitles": [
+          "worker response evidence"
+        ],
+        "fullName": "worker response evidence leaves absent/malformed usage \"unknown\" unknown",
+        "status": "passed",
+        "title": "leaves absent/malformed usage \"unknown\" unknown",
+        "duration": 0.015599999998812564,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:worker response evidence leaves absent/malformed usage {} unknown",
+      "source_byte_start": 212620,
+      "source_byte_end": 212888,
+      "assertion": {
+        "ancestorTitles": [
+          "worker response evidence"
+        ],
+        "fullName": "worker response evidence leaves absent/malformed usage {} unknown",
+        "status": "passed",
+        "title": "leaves absent/malformed usage {} unknown",
+        "duration": 0.017699999996693805,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:worker response evidence does not infer usage from an undecodable body",
+      "source_byte_start": 212889,
+      "source_byte_end": 213166,
+      "assertion": {
+        "ancestorTitles": [
+          "worker response evidence"
+        ],
+        "fullName": "worker response evidence does not infer usage from an undecodable body",
+        "status": "passed",
+        "title": "does not infer usage from an undecodable body",
+        "duration": 0.08060000000114087,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:worker rejection accounting preserves usage when refusing readonly.txt",
+      "source_byte_start": 213167,
+      "source_byte_end": 213443,
+      "assertion": {
+        "ancestorTitles": [
+          "worker rejection accounting"
+        ],
+        "fullName": "worker rejection accounting preserves usage when refusing readonly.txt",
+        "status": "passed",
+        "title": "preserves usage when refusing readonly.txt",
+        "duration": 1.1775000000052387,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:worker rejection accounting preserves usage when refusing ../outside.txt",
+      "source_byte_start": 213444,
+      "source_byte_end": 213724,
+      "assertion": {
+        "ancestorTitles": [
+          "worker rejection accounting"
+        ],
+        "fullName": "worker rejection accounting preserves usage when refusing ../outside.txt",
+        "status": "passed",
+        "title": "preserves usage when refusing ../outside.txt",
+        "duration": 0.8070999999981723,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:worker rejection accounting preserves usage when refusing /absolute-outside.txt",
+      "source_byte_start": 213725,
+      "source_byte_end": 214019,
+      "assertion": {
+        "ancestorTitles": [
+          "worker rejection accounting"
+        ],
+        "fullName": "worker rejection accounting preserves usage when refusing /absolute-outside.txt",
+        "status": "passed",
+        "title": "preserves usage when refusing /absolute-outside.txt",
+        "duration": 0.8437999999950989,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:worker rejection accounting returns partial-write evidence and usage when a later block is read-only",
+      "source_byte_start": 214020,
+      "source_byte_end": 214355,
+      "assertion": {
+        "ancestorTitles": [
+          "worker rejection accounting"
+        ],
+        "fullName": "worker rejection accounting returns partial-write evidence and usage when a later block is read-only",
+        "status": "passed",
+        "title": "returns partial-write evidence and usage when a later block is read-only",
+        "duration": 7.865000000005239,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:worker rejection accounting returns malformed text as a worker failure instead of throwing away usage",
+      "source_byte_start": 214665,
+      "source_byte_end": 215003,
+      "assertion": {
+        "ancestorTitles": [
+          "worker rejection accounting"
+        ],
+        "fullName": "worker rejection accounting returns malformed text as a worker failure instead of throwing away usage",
+        "status": "passed",
+        "title": "returns malformed text as a worker failure instead of throwing away usage",
+        "duration": 0.9384999999965657,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:worker rejection accounting does not mark unknown usage as measured zero on a successful write",
+      "source_byte_start": 215295,
+      "source_byte_end": 215618,
+      "assertion": {
+        "ancestorTitles": [
+          "worker rejection accounting"
+        ],
+        "fullName": "worker rejection accounting does not mark unknown usage as measured zero on a successful write",
+        "status": "passed",
+        "title": "does not mark unknown usage as measured zero on a successful write",
+        "duration": 2.601600000001781,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP retry delay policy uses bounded local fallback for null at attempt 0",
+      "source_byte_start": 215619,
+      "source_byte_end": 215901,
+      "assertion": {
+        "ancestorTitles": [
+          "HTTP retry delay policy"
+        ],
+        "fullName": "HTTP retry delay policy uses bounded local fallback for null at attempt 0",
+        "status": "passed",
+        "title": "uses bounded local fallback for null at attempt 0",
+        "duration": 0.1570999999967171,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP retry delay policy uses bounded local fallback for  at attempt 1",
+      "source_byte_start": 215902,
+      "source_byte_end": 216178,
+      "assertion": {
+        "ancestorTitles": [
+          "HTTP retry delay policy"
+        ],
+        "fullName": "HTTP retry delay policy uses bounded local fallback for  at attempt 1",
+        "status": "passed",
+        "title": "uses bounded local fallback for  at attempt 1",
+        "duration": 0.027999999998428393,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP retry delay policy uses bounded local fallback for garbage at attempt 2",
+      "source_byte_start": 216179,
+      "source_byte_end": 216467,
+      "assertion": {
+        "ancestorTitles": [
+          "HTTP retry delay policy"
+        ],
+        "fullName": "HTTP retry delay policy uses bounded local fallback for garbage at attempt 2",
+        "status": "passed",
+        "title": "uses bounded local fallback for garbage at attempt 2",
+        "duration": 0.2698999999993248,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP retry delay policy uses bounded local fallback for -1 at attempt 3",
+      "source_byte_start": 216468,
+      "source_byte_end": 216747,
+      "assertion": {
+        "ancestorTitles": [
+          "HTTP retry delay policy"
+        ],
+        "fullName": "HTTP retry delay policy uses bounded local fallback for -1 at attempt 3",
+        "status": "passed",
+        "title": "uses bounded local fallback for -1 at attempt 3",
+        "duration": 0.12039999999979045,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP retry delay policy uses bounded local fallback for 1.5 at attempt 4",
+      "source_byte_start": 216748,
+      "source_byte_end": 217030,
+      "assertion": {
+        "ancestorTitles": [
+          "HTTP retry delay policy"
+        ],
+        "fullName": "HTTP retry delay policy uses bounded local fallback for 1.5 at attempt 4",
+        "status": "passed",
+        "title": "uses bounded local fallback for 1.5 at attempt 4",
+        "duration": 0.019499999994877726,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP retry delay policy uses bounded local fallback for 1e9 at attempt 5",
+      "source_byte_start": 217031,
+      "source_byte_end": 217313,
+      "assertion": {
+        "ancestorTitles": [
+          "HTTP retry delay policy"
+        ],
+        "fullName": "HTTP retry delay policy uses bounded local fallback for 1e9 at attempt 5",
+        "status": "passed",
+        "title": "uses bounded local fallback for 1e9 at attempt 5",
+        "duration": 0.015299999999115244,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP retry delay policy uses bounded local fallback for Infinity at attempt 6",
+      "source_byte_start": 217314,
+      "source_byte_end": 217606,
+      "assertion": {
+        "ancestorTitles": [
+          "HTTP retry delay policy"
+        ],
+        "fullName": "HTTP retry delay policy uses bounded local fallback for Infinity at attempt 6",
+        "status": "passed",
+        "title": "uses bounded local fallback for Infinity at attempt 6",
+        "duration": 0.016700000000128057,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP retry delay policy uses bounded local fallback for 0x10 at attempt 0",
+      "source_byte_start": 217607,
+      "source_byte_end": 217891,
+      "assertion": {
+        "ancestorTitles": [
+          "HTTP retry delay policy"
+        ],
+        "fullName": "HTTP retry delay policy uses bounded local fallback for 0x10 at attempt 0",
+        "status": "passed",
+        "title": "uses bounded local fallback for 0x10 at attempt 0",
+        "duration": 0.015200000001641456,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP retry delay policy uses bounded local fallback for +1 at attempt 0",
+      "source_byte_start": 217892,
+      "source_byte_end": 218171,
+      "assertion": {
+        "ancestorTitles": [
+          "HTTP retry delay policy"
+        ],
+        "fullName": "HTTP retry delay policy uses bounded local fallback for +1 at attempt 0",
+        "status": "passed",
+        "title": "uses bounded local fallback for +1 at attempt 0",
+        "duration": 0.01629999999568099,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP retry delay policy uses bounded local fallback for 1, 2 at attempt 0",
+      "source_byte_start": 218172,
+      "source_byte_end": 218456,
+      "assertion": {
+        "ancestorTitles": [
+          "HTTP retry delay policy"
+        ],
+        "fullName": "HTTP retry delay policy uses bounded local fallback for 1, 2 at attempt 0",
+        "status": "passed",
+        "title": "uses bounded local fallback for 1, 2 at attempt 0",
+        "duration": 0.014999999999417923,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP retry delay policy uses bounded local fallback for 2026-09-24 at attempt 0",
+      "source_byte_start": 218457,
+      "source_byte_end": 218752,
+      "assertion": {
+        "ancestorTitles": [
+          "HTTP retry delay policy"
+        ],
+        "fullName": "HTTP retry delay policy uses bounded local fallback for 2026-09-24 at attempt 0",
+        "status": "passed",
+        "title": "uses bounded local fallback for 2026-09-24 at attempt 0",
+        "duration": 0.01959999999962747,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP retry delay policy uses bounded local fallback for Thu, 31 Sep 2026 12:00:01 GMT at attempt 0",
+      "source_byte_start": 218753,
+      "source_byte_end": 219087,
+      "assertion": {
+        "ancestorTitles": [
+          "HTTP retry delay policy"
+        ],
+        "fullName": "HTTP retry delay policy uses bounded local fallback for Thu, 31 Sep 2026 12:00:01 GMT at attempt 0",
+        "status": "passed",
+        "title": "uses bounded local fallback for Thu, 31 Sep 2026 12:00:01 GMT at attempt 0",
+        "duration": 0.034599999999045394,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP retry delay policy uses bounded local fallback for Thu, 24 Foo 2026 12:00:01 GMT at attempt 0",
+      "source_byte_start": 219088,
+      "source_byte_end": 219422,
+      "assertion": {
+        "ancestorTitles": [
+          "HTTP retry delay policy"
+        ],
+        "fullName": "HTTP retry delay policy uses bounded local fallback for Thu, 24 Foo 2026 12:00:01 GMT at attempt 0",
+        "status": "passed",
+        "title": "uses bounded local fallback for Thu, 24 Foo 2026 12:00:01 GMT at attempt 0",
+        "duration": 0.018000000003667083,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP retry delay policy uses bounded local fallback for Thu, 00 Sep 2026 12:00:01 GMT at attempt 0",
+      "source_byte_start": 219423,
+      "source_byte_end": 219756,
+      "assertion": {
+        "ancestorTitles": [
+          "HTTP retry delay policy"
+        ],
+        "fullName": "HTTP retry delay policy uses bounded local fallback for Thu, 00 Sep 2026 12:00:01 GMT at attempt 0",
+        "status": "passed",
+        "title": "uses bounded local fallback for Thu, 00 Sep 2026 12:00:01 GMT at attempt 0",
+        "duration": 0.01600000000325963,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP retry delay policy uses bounded local fallback for Thu, 24 Sep 2026 24:00:01 GMT at attempt 0",
+      "source_byte_start": 219757,
+      "source_byte_end": 220090,
+      "assertion": {
+        "ancestorTitles": [
+          "HTTP retry delay policy"
+        ],
+        "fullName": "HTTP retry delay policy uses bounded local fallback for Thu, 24 Sep 2026 24:00:01 GMT at attempt 0",
+        "status": "passed",
+        "title": "uses bounded local fallback for Thu, 24 Sep 2026 24:00:01 GMT at attempt 0",
+        "duration": 0.01630000000295695,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP retry delay policy uses bounded local fallback for Thu, 24 Sep 2026 12:60:01 GMT at attempt 0",
+      "source_byte_start": 220091,
+      "source_byte_end": 220424,
+      "assertion": {
+        "ancestorTitles": [
+          "HTTP retry delay policy"
+        ],
+        "fullName": "HTTP retry delay policy uses bounded local fallback for Thu, 24 Sep 2026 12:60:01 GMT at attempt 0",
+        "status": "passed",
+        "title": "uses bounded local fallback for Thu, 24 Sep 2026 12:60:01 GMT at attempt 0",
+        "duration": 0.01569999999628635,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP retry delay policy uses bounded local fallback for Thu, 24 Sep 2026 12:00:61 GMT at attempt 0",
+      "source_byte_start": 220425,
+      "source_byte_end": 220759,
+      "assertion": {
+        "ancestorTitles": [
+          "HTTP retry delay policy"
+        ],
+        "fullName": "HTTP retry delay policy uses bounded local fallback for Thu, 24 Sep 2026 12:00:61 GMT at attempt 0",
+        "status": "passed",
+        "title": "uses bounded local fallback for Thu, 24 Sep 2026 12:00:61 GMT at attempt 0",
+        "duration": 0.016400000000430737,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP retry delay policy uses bounded local fallback for Fri, 24 Sep 2026 12:00:01 GMT at attempt 0",
+      "source_byte_start": 220760,
+      "source_byte_end": 221093,
+      "assertion": {
+        "ancestorTitles": [
+          "HTTP retry delay policy"
+        ],
+        "fullName": "HTTP retry delay policy uses bounded local fallback for Fri, 24 Sep 2026 12:00:01 GMT at attempt 0",
+        "status": "passed",
+        "title": "uses bounded local fallback for Fri, 24 Sep 2026 12:00:01 GMT at attempt 0",
+        "duration": 0.01870000000053551,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP retry delay policy uses bounded local fallback for Thu, 30 Feb 2026 12:00:01 GMT at attempt 0",
+      "source_byte_start": 221094,
+      "source_byte_end": 221427,
+      "assertion": {
+        "ancestorTitles": [
+          "HTTP retry delay policy"
+        ],
+        "fullName": "HTTP retry delay policy uses bounded local fallback for Thu, 30 Feb 2026 12:00:01 GMT at attempt 0",
+        "status": "passed",
+        "title": "uses bounded local fallback for Thu, 30 Feb 2026 12:00:01 GMT at attempt 0",
+        "duration": 0.23809999999502907,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP retry delay policy uses bounded local fallback for Thu Sep 24 12:00:01 2026, 2 at attempt 0",
+      "source_byte_start": 221428,
+      "source_byte_end": 221758,
+      "assertion": {
+        "ancestorTitles": [
+          "HTTP retry delay policy"
+        ],
+        "fullName": "HTTP retry delay policy uses bounded local fallback for Thu Sep 24 12:00:01 2026, 2 at attempt 0",
+        "status": "passed",
+        "title": "uses bounded local fallback for Thu Sep 24 12:00:01 2026, 2 at attempt 0",
+        "duration": 0.025199999996402767,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP retry delay policy honors bounded HTTP delay/date 0",
+      "source_byte_start": 221759,
+      "source_byte_end": 222008,
+      "assertion": {
+        "ancestorTitles": [
+          "HTTP retry delay policy"
+        ],
+        "fullName": "HTTP retry delay policy honors bounded HTTP delay/date 0",
+        "status": "passed",
+        "title": "honors bounded HTTP delay/date 0",
+        "duration": 0.04290000000037253,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP retry delay policy honors bounded HTTP delay/date  2 ",
+      "source_byte_start": 222009,
+      "source_byte_end": 222263,
+      "assertion": {
+        "ancestorTitles": [
+          "HTTP retry delay policy"
+        ],
+        "fullName": "HTTP retry delay policy honors bounded HTTP delay/date  2 ",
+        "status": "passed",
+        "title": "honors bounded HTTP delay/date  2 ",
+        "duration": 0.016700000000128057,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP retry delay policy honors bounded HTTP delay/date 0003",
+      "source_byte_start": 222264,
+      "source_byte_end": 222520,
+      "assertion": {
+        "ancestorTitles": [
+          "HTTP retry delay policy"
+        ],
+        "fullName": "HTTP retry delay policy honors bounded HTTP delay/date 0003",
+        "status": "passed",
+        "title": "honors bounded HTTP delay/date 0003",
+        "duration": 0.017099999997299165,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP retry delay policy honors bounded HTTP delay/date 120",
+      "source_byte_start": 222521,
+      "source_byte_end": 222775,
+      "assertion": {
+        "ancestorTitles": [
+          "HTTP retry delay policy"
+        ],
+        "fullName": "HTTP retry delay policy honors bounded HTTP delay/date 120",
+        "status": "passed",
+        "title": "honors bounded HTTP delay/date 120",
+        "duration": 0.015099999996891711,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP retry delay policy honors bounded HTTP delay/date Thu, 24 Sep 2026 12:00:02 GMT",
+      "source_byte_start": 222776,
+      "source_byte_end": 223082,
+      "assertion": {
+        "ancestorTitles": [
+          "HTTP retry delay policy"
+        ],
+        "fullName": "HTTP retry delay policy honors bounded HTTP delay/date Thu, 24 Sep 2026 12:00:02 GMT",
+        "status": "passed",
+        "title": "honors bounded HTTP delay/date Thu, 24 Sep 2026 12:00:02 GMT",
+        "duration": 0.020300000003771856,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP retry delay policy honors bounded HTTP delay/date Thursday, 24-Sep-26 12:00:02 GMT",
+      "source_byte_start": 223083,
+      "source_byte_end": 223394,
+      "assertion": {
+        "ancestorTitles": [
+          "HTTP retry delay policy"
+        ],
+        "fullName": "HTTP retry delay policy honors bounded HTTP delay/date Thursday, 24-Sep-26 12:00:02 GMT",
+        "status": "passed",
+        "title": "honors bounded HTTP delay/date Thursday, 24-Sep-26 12:00:02 GMT",
+        "duration": 0.02710000000661239,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP retry delay policy honors bounded HTTP delay/date Thu Sep 24 12:00:02 2026",
+      "source_byte_start": 223395,
+      "source_byte_end": 223690,
+      "assertion": {
+        "ancestorTitles": [
+          "HTTP retry delay policy"
+        ],
+        "fullName": "HTTP retry delay policy honors bounded HTTP delay/date Thu Sep 24 12:00:02 2026",
+        "status": "passed",
+        "title": "honors bounded HTTP delay/date Thu Sep 24 12:00:02 2026",
+        "duration": 0.01969999999710126,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP retry delay policy honors bounded HTTP delay/date Sun, 06 Nov 1994 08:49:37 GMT",
+      "source_byte_start": 223691,
+      "source_byte_end": 223997,
+      "assertion": {
+        "ancestorTitles": [
+          "HTTP retry delay policy"
+        ],
+        "fullName": "HTTP retry delay policy honors bounded HTTP delay/date Sun, 06 Nov 1994 08:49:37 GMT",
+        "status": "passed",
+        "title": "honors bounded HTTP delay/date Sun, 06 Nov 1994 08:49:37 GMT",
+        "duration": 0.017599999999220017,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP retry delay policy honors bounded HTTP delay/date Sunday, 06-Nov-94 08:49:37 GMT",
+      "source_byte_start": 223998,
+      "source_byte_end": 224306,
+      "assertion": {
+        "ancestorTitles": [
+          "HTTP retry delay policy"
+        ],
+        "fullName": "HTTP retry delay policy honors bounded HTTP delay/date Sunday, 06-Nov-94 08:49:37 GMT",
+        "status": "passed",
+        "title": "honors bounded HTTP delay/date Sunday, 06-Nov-94 08:49:37 GMT",
+        "duration": 0.017400000004272442,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP retry delay policy honors bounded HTTP delay/date Sun Nov  6 08:49:37 1994",
+      "source_byte_start": 224307,
+      "source_byte_end": 224603,
+      "assertion": {
+        "ancestorTitles": [
+          "HTTP retry delay policy"
+        ],
+        "fullName": "HTTP retry delay policy honors bounded HTTP delay/date Sun Nov  6 08:49:37 1994",
+        "status": "passed",
+        "title": "honors bounded HTTP delay/date Sun Nov  6 08:49:37 1994",
+        "duration": 0.021099999998114072,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP retry delay policy defers an excessive valid wait rather than shortening it: 121",
+      "source_byte_start": 224604,
+      "source_byte_end": 224912,
+      "assertion": {
+        "ancestorTitles": [
+          "HTTP retry delay policy"
+        ],
+        "fullName": "HTTP retry delay policy defers an excessive valid wait rather than shortening it: 121",
+        "status": "passed",
+        "title": "defers an excessive valid wait rather than shortening it: 121",
+        "duration": 0.030400000003282912,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP retry delay policy defers an excessive valid wait rather than shortening it: 2147484",
+      "source_byte_start": 224913,
+      "source_byte_end": 225229,
+      "assertion": {
+        "ancestorTitles": [
+          "HTTP retry delay policy"
+        ],
+        "fullName": "HTTP retry delay policy defers an excessive valid wait rather than shortening it: 2147484",
+        "status": "passed",
+        "title": "defers an excessive valid wait rather than shortening it: 2147484",
+        "duration": 0.016499999997904524,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP retry delay policy defers an excessive valid wait rather than shortening it: 99999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999",
+      "source_byte_start": 225230,
+      "source_byte_end": 226172,
+      "assertion": {
+        "ancestorTitles": [
+          "HTTP retry delay policy"
+        ],
+        "fullName": "HTTP retry delay policy defers an excessive valid wait rather than shortening it: 99999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999",
+        "status": "passed",
+        "title": "defers an excessive valid wait rather than shortening it: 99999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999",
+        "duration": 0.017699999996693805,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP retry delay policy defers an excessive valid wait rather than shortening it: Fri, 25 Sep 2026 12:00:00 GMT",
+      "source_byte_start": 226173,
+      "source_byte_end": 226532,
+      "assertion": {
+        "ancestorTitles": [
+          "HTTP retry delay policy"
+        ],
+        "fullName": "HTTP retry delay policy defers an excessive valid wait rather than shortening it: Fri, 25 Sep 2026 12:00:00 GMT",
+        "status": "passed",
+        "title": "defers an excessive valid wait rather than shortening it: Fri, 25 Sep 2026 12:00:00 GMT",
+        "duration": 0.01840000000083819,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP retry delay policy accepts the HTTP leap-second spelling without normalizing a different calendar day",
+      "source_byte_start": 226533,
+      "source_byte_end": 226883,
+      "assertion": {
+        "ancestorTitles": [
+          "HTTP retry delay policy"
+        ],
+        "fullName": "HTTP retry delay policy accepts the HTTP leap-second spelling without normalizing a different calendar day",
+        "status": "passed",
+        "title": "accepts the HTTP leap-second spelling without normalizing a different calendar day",
+        "duration": 0.028200000000651926,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP retry delay policy prevents timer overflow even when the configured local budget is larger",
+      "source_byte_start": 226884,
+      "source_byte_end": 227211,
+      "assertion": {
+        "ancestorTitles": [
+          "HTTP retry delay policy"
+        ],
+        "fullName": "HTTP retry delay policy prevents timer overflow even when the configured local budget is larger",
+        "status": "passed",
+        "title": "prevents timer overflow even when the configured local budget is larger",
+        "duration": 0.03080000000045402,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP transport retry lifecycle closes the discarded response before sleeping, then preserves final usage",
+      "source_byte_start": 227212,
+      "source_byte_end": 227556,
+      "assertion": {
+        "ancestorTitles": [
+          "HTTP transport retry lifecycle"
+        ],
+        "fullName": "HTTP transport retry lifecycle closes the discarded response before sleeping, then preserves final usage",
+        "status": "passed",
+        "title": "closes the discarded response before sleeping, then preserves final usage",
+        "duration": 2.2151000000012573,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP transport retry lifecycle defers excessive cooldown at HTTP 429 without another request",
+      "source_byte_start": 227557,
+      "source_byte_end": 227878,
+      "assertion": {
+        "ancestorTitles": [
+          "HTTP transport retry lifecycle"
+        ],
+        "fullName": "HTTP transport retry lifecycle defers excessive cooldown at HTTP 429 without another request",
+        "status": "passed",
+        "title": "defers excessive cooldown at HTTP 429 without another request",
+        "duration": 0.44020000000455184,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP transport retry lifecycle defers excessive cooldown at HTTP 503 without another request",
+      "source_byte_start": 227879,
+      "source_byte_end": 228199,
+      "assertion": {
+        "ancestorTitles": [
+          "HTTP transport retry lifecycle"
+        ],
+        "fullName": "HTTP transport retry lifecycle defers excessive cooldown at HTTP 503 without another request",
+        "status": "passed",
+        "title": "defers excessive cooldown at HTTP 503 without another request",
+        "duration": 0.2849999999962165,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP transport retry lifecycle keeps HTTP 429 exhaustion out of the authoring retry loop",
+      "source_byte_start": 228200,
+      "source_byte_end": 228511,
+      "assertion": {
+        "ancestorTitles": [
+          "HTTP transport retry lifecycle"
+        ],
+        "fullName": "HTTP transport retry lifecycle keeps HTTP 429 exhaustion out of the authoring retry loop",
+        "status": "passed",
+        "title": "keeps HTTP 429 exhaustion out of the authoring retry loop",
+        "duration": 0.992500000000291,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP transport retry lifecycle keeps HTTP 500 exhaustion out of the authoring retry loop",
+      "source_byte_start": 228512,
+      "source_byte_end": 228824,
+      "assertion": {
+        "ancestorTitles": [
+          "HTTP transport retry lifecycle"
+        ],
+        "fullName": "HTTP transport retry lifecycle keeps HTTP 500 exhaustion out of the authoring retry loop",
+        "status": "passed",
+        "title": "keeps HTTP 500 exhaustion out of the authoring retry loop",
+        "duration": 0.3864000000030501,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP transport retry lifecycle keeps HTTP 503 exhaustion out of the authoring retry loop",
+      "source_byte_start": 228825,
+      "source_byte_end": 229137,
+      "assertion": {
+        "ancestorTitles": [
+          "HTTP transport retry lifecycle"
+        ],
+        "fullName": "HTTP transport retry lifecycle keeps HTTP 503 exhaustion out of the authoring retry loop",
+        "status": "passed",
+        "title": "keeps HTTP 503 exhaustion out of the authoring retry loop",
+        "duration": 0.3123000000050524,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP transport retry lifecycle preserves the existing exponential fallback for a malformed header",
+      "source_byte_start": 229138,
+      "source_byte_end": 229468,
+      "assertion": {
+        "ancestorTitles": [
+          "HTTP transport retry lifecycle"
+        ],
+        "fullName": "HTTP transport retry lifecycle preserves the existing exponential fallback for a malformed header",
+        "status": "passed",
+        "title": "preserves the existing exponential fallback for a malformed header",
+        "duration": 0.3804000000018277,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP transport retry lifecycle closes a terminal error response without awaiting its unused body",
+      "source_byte_start": 229469,
+      "source_byte_end": 229798,
+      "assertion": {
+        "ancestorTitles": [
+          "HTTP transport retry lifecycle"
+        ],
+        "fullName": "HTTP transport retry lifecycle closes a terminal error response without awaiting its unused body",
+        "status": "passed",
+        "title": "closes a terminal error response without awaiting its unused body",
+        "duration": 0.22999999999592546,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:transport deferral preserves task retry boundaries does not start another authoring round after 1 deferred sample(s)",
+      "source_byte_start": 229799,
+      "source_byte_end": 230167,
+      "assertion": {
+        "ancestorTitles": [
+          "transport deferral preserves task retry boundaries"
+        ],
+        "fullName": "transport deferral preserves task retry boundaries does not start another authoring round after 1 deferred sample(s)",
+        "status": "passed",
+        "title": "does not start another authoring round after 1 deferred sample(s)",
+        "duration": 0.6027000000030966,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:transport deferral preserves task retry boundaries does not start another authoring round after 2 deferred sample(s)",
+      "source_byte_start": 230168,
+      "source_byte_end": 230536,
+      "assertion": {
+        "ancestorTitles": [
+          "transport deferral preserves task retry boundaries"
+        ],
+        "fullName": "transport deferral preserves task retry boundaries does not start another authoring round after 2 deferred sample(s)",
+        "status": "passed",
+        "title": "does not start another authoring round after 2 deferred sample(s)",
+        "duration": 0.7958999999973457,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:transport deferral preserves task retry boundaries retains ordinary custom-worker retries when no disposition was returned",
+      "source_byte_start": 230537,
+      "source_byte_end": 230917,
+      "assertion": {
+        "ancestorTitles": [
+          "transport deferral preserves task retry boundaries"
+        ],
+        "fullName": "transport deferral preserves task retry boundaries retains ordinary custom-worker retries when no disposition was returned",
+        "status": "passed",
+        "title": "retains ordinary custom-worker retries when no disposition was returned",
+        "duration": 0.8510999999998603,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP connection and body failure evidence retries connection errors with identical requests and fresh released signals",
+      "source_byte_start": 230918,
+      "source_byte_end": 231290,
+      "assertion": {
+        "ancestorTitles": [
+          "HTTP connection and body failure evidence"
+        ],
+        "fullName": "HTTP connection and body failure evidence retries connection errors with identical requests and fresh released signals",
+        "status": "passed",
+        "title": "retries connection errors with identical requests and fresh released signals",
+        "duration": 2.9597999999969034,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP connection and body failure evidence keeps exhausted network failures distinct from an HTTP cooldown: Error: fixture connection reset",
+      "source_byte_start": 231291,
+      "source_byte_end": 231703,
+      "assertion": {
+        "ancestorTitles": [
+          "HTTP connection and body failure evidence"
+        ],
+        "fullName": "HTTP connection and body failure evidence keeps exhausted network failures distinct from an HTTP cooldown: Error: fixture connection reset",
+        "status": "passed",
+        "title": "keeps exhausted network failures distinct from an HTTP cooldown: Error: fixture connection reset",
+        "duration": 1.7950999999957276,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP connection and body failure evidence keeps exhausted network failures distinct from an HTTP cooldown: fixture connection reset",
+      "source_byte_start": 231704,
+      "source_byte_end": 232102,
+      "assertion": {
+        "ancestorTitles": [
+          "HTTP connection and body failure evidence"
+        ],
+        "fullName": "HTTP connection and body failure evidence keeps exhausted network failures distinct from an HTTP cooldown: fixture connection reset",
+        "status": "passed",
+        "title": "keeps exhausted network failures distinct from an HTTP cooldown: fixture connection reset",
+        "duration": 1.7714000000050873,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP connection and body failure evidence keeps exhausted network failures distinct from an HTTP cooldown: null",
+      "source_byte_start": 232103,
+      "source_byte_end": 232461,
+      "assertion": {
+        "ancestorTitles": [
+          "HTTP connection and body failure evidence"
+        ],
+        "fullName": "HTTP connection and body failure evidence keeps exhausted network failures distinct from an HTTP cooldown: null",
+        "status": "passed",
+        "title": "keeps exhausted network failures distinct from an HTTP cooldown: null",
+        "duration": 1.6886000000013155,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP connection and body failure evidence keeps exhausted network failures distinct from an HTTP cooldown: undefined",
+      "source_byte_start": 232462,
+      "source_byte_end": 232830,
+      "assertion": {
+        "ancestorTitles": [
+          "HTTP connection and body failure evidence"
+        ],
+        "fullName": "HTTP connection and body failure evidence keeps exhausted network failures distinct from an HTTP cooldown: undefined",
+        "status": "passed",
+        "title": "keeps exhausted network failures distinct from an HTTP cooldown: undefined",
+        "duration": 1.4495999999999185,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP connection and body failure evidence times out stalled headers on each original deadline without leaking timers",
+      "source_byte_start": 232831,
+      "source_byte_end": 233199,
+      "assertion": {
+        "ancestorTitles": [
+          "HTTP connection and body failure evidence"
+        ],
+        "fullName": "HTTP connection and body failure evidence times out stalled headers on each original deadline without leaking timers",
+        "status": "passed",
+        "title": "times out stalled headers on each original deadline without leaking timers",
+        "duration": 1.9059999999954016,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP connection and body failure evidence does not replay a request after response headers when body consumption fails: Error: fixture stream reset",
+      "source_byte_start": 233200,
+      "source_byte_end": 233630,
+      "assertion": {
+        "ancestorTitles": [
+          "HTTP connection and body failure evidence"
+        ],
+        "fullName": "HTTP connection and body failure evidence does not replay a request after response headers when body consumption fails: Error: fixture stream reset",
+        "status": "passed",
+        "title": "does not replay a request after response headers when body consumption fails: Error: fixture stream reset",
+        "duration": 1.7563000000009197,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP connection and body failure evidence does not replay a request after response headers when body consumption fails: fixture stream reset",
+      "source_byte_start": 233631,
+      "source_byte_end": 234047,
+      "assertion": {
+        "ancestorTitles": [
+          "HTTP connection and body failure evidence"
+        ],
+        "fullName": "HTTP connection and body failure evidence does not replay a request after response headers when body consumption fails: fixture stream reset",
+        "status": "passed",
+        "title": "does not replay a request after response headers when body consumption fails: fixture stream reset",
+        "duration": 1.5027000000045518,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP connection and body failure evidence does not replay a request after response headers when body consumption fails: null",
+      "source_byte_start": 234048,
+      "source_byte_end": 234430,
+      "assertion": {
+        "ancestorTitles": [
+          "HTTP connection and body failure evidence"
+        ],
+        "fullName": "HTTP connection and body failure evidence does not replay a request after response headers when body consumption fails: null",
+        "status": "passed",
+        "title": "does not replay a request after response headers when body consumption fails: null",
+        "duration": 2.14429999999993,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP connection and body failure evidence does not replay a request after response headers when body consumption fails: undefined",
+      "source_byte_start": 234431,
+      "source_byte_end": 234825,
+      "assertion": {
+        "ancestorTitles": [
+          "HTTP connection and body failure evidence"
+        ],
+        "fullName": "HTTP connection and body failure evidence does not replay a request after response headers when body consumption fails: undefined",
+        "status": "passed",
+        "title": "does not replay a request after response headers when body consumption fails: undefined",
+        "duration": 1.4686000000001513,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP connection and body failure evidence keeps the body on the original deadline after headers arrive late",
+      "source_byte_start": 234826,
+      "source_byte_end": 235176,
+      "assertion": {
+        "ancestorTitles": [
+          "HTTP connection and body failure evidence"
+        ],
+        "fullName": "HTTP connection and body failure evidence keeps the body on the original deadline after headers arrive late",
+        "status": "passed",
+        "title": "keeps the body on the original deadline after headers arrive late",
+        "duration": 1.8887999999933527,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP connection and body failure evidence redacts and bounds fetch failure diagnostics without inventing usage",
+      "source_byte_start": 235177,
+      "source_byte_end": 235533,
+      "assertion": {
+        "ancestorTitles": [
+          "HTTP connection and body failure evidence"
+        ],
+        "fullName": "HTTP connection and body failure evidence redacts and bounds fetch failure diagnostics without inventing usage",
+        "status": "passed",
+        "title": "redacts and bounds fetch failure diagnostics without inventing usage",
+        "duration": 2.1275000000023283,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP connection and body failure evidence redacts and bounds body failure diagnostics without inventing usage",
+      "source_byte_start": 235534,
+      "source_byte_end": 235888,
+      "assertion": {
+        "ancestorTitles": [
+          "HTTP connection and body failure evidence"
+        ],
+        "fullName": "HTTP connection and body failure evidence redacts and bounds body failure diagnostics without inventing usage",
+        "status": "passed",
+        "title": "redacts and bounds body failure diagnostics without inventing usage",
+        "duration": 1.5291999999972177,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:attributed retry context retains candidate evidence and refuses new author/reset when sample drift observation is unavailable",
+      "source_byte_start": 243053,
+      "source_byte_end": 243438,
+      "assertion": {
+        "ancestorTitles": [
+          "attributed retry context"
+        ],
+        "fullName": "attributed retry context retains candidate evidence and refuses new author/reset when sample drift observation is unavailable",
+        "status": "passed",
+        "title": "retains candidate evidence and refuses new author/reset when sample drift observation is unavailable",
+        "duration": 955.1598000000013,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:antiGamingCheck returns none when the test file cannot be read",
+      "source_byte_start": 253283,
+      "source_byte_end": 253542,
+      "assertion": {
+        "ancestorTitles": [
+          "antiGamingCheck"
+        ],
+        "fullName": "antiGamingCheck returns none when the test file cannot be read",
+        "status": "passed",
+        "title": "returns none when the test file cannot be read",
+        "duration": 5.546299999999974,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:antiGamingCheck returns none when the test asserts no literal worth matching",
+      "source_byte_start": 253543,
+      "source_byte_end": 253830,
+      "assertion": {
+        "ancestorTitles": [
+          "antiGamingCheck"
+        ],
+        "fullName": "antiGamingCheck returns none when the test asserts no literal worth matching",
+        "status": "passed",
+        "title": "returns none when the test asserts no literal worth matching",
+        "duration": 5.203200000000038,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:antiGamingCheck skips the test file itself when it appears in filesInScope",
+      "source_byte_start": 253831,
+      "source_byte_end": 254113,
+      "assertion": {
+        "ancestorTitles": [
+          "antiGamingCheck"
+        ],
+        "fullName": "antiGamingCheck skips the test file itself when it appears in filesInScope",
+        "status": "passed",
+        "title": "skips the test file itself when it appears in filesInScope",
+        "duration": 8.49799999999999,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:antiGamingCheck skips an in-scope file that does not exist yet",
+      "source_byte_start": 254114,
+      "source_byte_end": 254374,
+      "assertion": {
+        "ancestorTitles": [
+          "antiGamingCheck"
+        ],
+        "fullName": "antiGamingCheck skips an in-scope file that does not exist yet",
+        "status": "passed",
+        "title": "skips an in-scope file that does not exist yet",
+        "duration": 3.9559000000000424,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:antiGamingCheck returns none when a real impl does not reproduce the literal",
+      "source_byte_start": 254375,
+      "source_byte_end": 254663,
+      "assertion": {
+        "ancestorTitles": [
+          "antiGamingCheck"
+        ],
+        "fullName": "antiGamingCheck returns none when a real impl does not reproduce the literal",
+        "status": "passed",
+        "title": "returns none when a real impl does not reproduce the literal",
+        "duration": 11.343200000000024,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:antiGamingCheck escalates to high when a TINY impl reproduces the literal verbatim",
+      "source_byte_start": 254664,
+      "source_byte_end": 254963,
+      "assertion": {
+        "ancestorTitles": [
+          "antiGamingCheck"
+        ],
+        "fullName": "antiGamingCheck escalates to high when a TINY impl reproduces the literal verbatim",
+        "status": "passed",
+        "title": "escalates to high when a TINY impl reproduces the literal verbatim",
+        "duration": 4.560600000000022,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:antiGamingCheck puts the trivial/substantial boundary at exactly five code lines",
+      "source_byte_start": 254964,
+      "source_byte_end": 255249,
+      "assertion": {
+        "ancestorTitles": [
+          "antiGamingCheck"
+        ],
+        "fullName": "antiGamingCheck puts the trivial/substantial boundary at exactly five code lines",
+        "status": "passed",
+        "title": "puts the trivial/substantial boundary at exactly five code lines",
+        "duration": 10.9255,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:antiGamingCheck names the FIRST hit in the warn note, not the last",
+      "source_byte_start": 255250,
+      "source_byte_end": 255518,
+      "assertion": {
+        "ancestorTitles": [
+          "antiGamingCheck"
+        ],
+        "fullName": "antiGamingCheck names the FIRST hit in the warn note, not the last",
+        "status": "passed",
+        "title": "names the FIRST hit in the warn note, not the last",
+        "duration": 10.802900000000022,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:antiGamingCheck ignores a single-character literal that ordinary code would trip over",
+      "source_byte_start": 255519,
+      "source_byte_end": 255824,
+      "assertion": {
+        "ancestorTitles": [
+          "antiGamingCheck"
+        ],
+        "fullName": "antiGamingCheck ignores a single-character literal that ordinary code would trip over",
+        "status": "passed",
+        "title": "ignores a single-character literal that ordinary code would trip over",
+        "duration": 8.004599999999982,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:antiGamingCheck counts only CODE lines, so a tiny impl padded with comments still escalates",
+      "source_byte_start": 255825,
+      "source_byte_end": 256143,
+      "assertion": {
+        "ancestorTitles": [
+          "antiGamingCheck"
+        ],
+        "fullName": "antiGamingCheck counts only CODE lines, so a tiny impl padded with comments still escalates",
+        "status": "passed",
+        "title": "counts only CODE lines, so a tiny impl padded with comments still escalates",
+        "duration": 10.958499999999958,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:antiGamingCheck escalates if ANY in-scope file is tiny, not merely the first hit",
+      "source_byte_start": 256144,
+      "source_byte_end": 256439,
+      "assertion": {
+        "ancestorTitles": [
+          "antiGamingCheck"
+        ],
+        "fullName": "antiGamingCheck escalates if ANY in-scope file is tiny, not merely the first hit",
+        "status": "passed",
+        "title": "escalates if ANY in-scope file is tiny, not merely the first hit",
+        "duration": 5.199299999999994,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:literal evidence boundaries does not hard-reject a longer number substring as a complete typed literal",
+      "source_byte_start": 256440,
+      "source_byte_end": 256779,
+      "assertion": {
+        "ancestorTitles": [
+          "literal evidence boundaries"
+        ],
+        "fullName": "literal evidence boundaries does not hard-reject a longer number substring as a complete typed literal",
+        "status": "passed",
+        "title": "does not hard-reject a longer number substring as a complete typed literal",
+        "duration": 3.936999999999955,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:literal evidence boundaries does not hard-reject a numeric suffix substring as a complete typed literal",
+      "source_byte_start": 256780,
+      "source_byte_end": 257121,
+      "assertion": {
+        "ancestorTitles": [
+          "literal evidence boundaries"
+        ],
+        "fullName": "literal evidence boundaries does not hard-reject a numeric suffix substring as a complete typed literal",
+        "status": "passed",
+        "title": "does not hard-reject a numeric suffix substring as a complete typed literal",
+        "duration": 7.592300000000023,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:literal evidence boundaries does not hard-reject a decimal part substring as a complete typed literal",
+      "source_byte_start": 257122,
+      "source_byte_end": 257459,
+      "assertion": {
+        "ancestorTitles": [
+          "literal evidence boundaries"
+        ],
+        "fullName": "literal evidence boundaries does not hard-reject a decimal part substring as a complete typed literal",
+        "status": "passed",
+        "title": "does not hard-reject a decimal part substring as a complete typed literal",
+        "duration": 3.377299999999991,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:literal evidence boundaries does not hard-reject a exponent part substring as a complete typed literal",
+      "source_byte_start": 257460,
+      "source_byte_end": 257800,
+      "assertion": {
+        "ancestorTitles": [
+          "literal evidence boundaries"
+        ],
+        "fullName": "literal evidence boundaries does not hard-reject a exponent part substring as a complete typed literal",
+        "status": "passed",
+        "title": "does not hard-reject a exponent part substring as a complete typed literal",
+        "duration": 2.9132999999999925,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:literal evidence boundaries does not hard-reject a hex digit substring substring as a complete typed literal",
+      "source_byte_start": 257801,
+      "source_byte_end": 258153,
+      "assertion": {
+        "ancestorTitles": [
+          "literal evidence boundaries"
+        ],
+        "fullName": "literal evidence boundaries does not hard-reject a hex digit substring substring as a complete typed literal",
+        "status": "passed",
+        "title": "does not hard-reject a hex digit substring substring as a complete typed literal",
+        "duration": 3.3711999999999875,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:literal evidence boundaries does not hard-reject a identifier suffix substring as a complete typed literal",
+      "source_byte_start": 258154,
+      "source_byte_end": 258501,
+      "assertion": {
+        "ancestorTitles": [
+          "literal evidence boundaries"
+        ],
+        "fullName": "literal evidence boundaries does not hard-reject a identifier suffix substring as a complete typed literal",
+        "status": "passed",
+        "title": "does not hard-reject a identifier suffix substring as a complete typed literal",
+        "duration": 6.217899999999986,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:literal evidence boundaries does not hard-reject a supplementary unicode identifier substring as a complete typed literal",
+      "source_byte_start": 258502,
+      "source_byte_end": 258880,
+      "assertion": {
+        "ancestorTitles": [
+          "literal evidence boundaries"
+        ],
+        "fullName": "literal evidence boundaries does not hard-reject a supplementary unicode identifier substring as a complete typed literal",
+        "status": "passed",
+        "title": "does not hard-reject a supplementary unicode identifier substring as a complete typed literal",
+        "duration": 3.0617000000000303,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:literal evidence boundaries does not hard-reject a unicode identifier substring as a complete typed literal",
+      "source_byte_start": 258881,
+      "source_byte_end": 259231,
+      "assertion": {
+        "ancestorTitles": [
+          "literal evidence boundaries"
+        ],
+        "fullName": "literal evidence boundaries does not hard-reject a unicode identifier substring as a complete typed literal",
+        "status": "passed",
+        "title": "does not hard-reject a unicode identifier substring as a complete typed literal",
+        "duration": 3.2875999999999976,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:literal evidence boundaries does not hard-reject a longer string substring as a complete typed literal",
+      "source_byte_start": 259232,
+      "source_byte_end": 259571,
+      "assertion": {
+        "ancestorTitles": [
+          "literal evidence boundaries"
+        ],
+        "fullName": "literal evidence boundaries does not hard-reject a longer string substring as a complete typed literal",
+        "status": "passed",
+        "title": "does not hard-reject a longer string substring as a complete typed literal",
+        "duration": 3.123199999999997,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:literal evidence boundaries does not hard-reject a number versus string substring as a complete typed literal",
+      "source_byte_start": 259572,
+      "source_byte_end": 259926,
+      "assertion": {
+        "ancestorTitles": [
+          "literal evidence boundaries"
+        ],
+        "fullName": "literal evidence boundaries does not hard-reject a number versus string substring as a complete typed literal",
+        "status": "passed",
+        "title": "does not hard-reject a number versus string substring as a complete typed literal",
+        "duration": 3.2199999999999704,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:literal evidence boundaries does not hard-reject a string versus number substring as a complete typed literal",
+      "source_byte_start": 259927,
+      "source_byte_end": 260281,
+      "assertion": {
+        "ancestorTitles": [
+          "literal evidence boundaries"
+        ],
+        "fullName": "literal evidence boundaries does not hard-reject a string versus number substring as a complete typed literal",
+        "status": "passed",
+        "title": "does not hard-reject a string versus number substring as a complete typed literal",
+        "duration": 2.8770999999999844,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:literal evidence boundaries does not hard-reject a line comment in implementation substring as a complete typed literal",
+      "source_byte_start": 260282,
+      "source_byte_end": 260656,
+      "assertion": {
+        "ancestorTitles": [
+          "literal evidence boundaries"
+        ],
+        "fullName": "literal evidence boundaries does not hard-reject a line comment in implementation substring as a complete typed literal",
+        "status": "passed",
+        "title": "does not hard-reject a line comment in implementation substring as a complete typed literal",
+        "duration": 2.6286999999999807,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:literal evidence boundaries does not hard-reject a block comment in implementation substring as a complete typed literal",
+      "source_byte_start": 260657,
+      "source_byte_end": 261032,
+      "assertion": {
+        "ancestorTitles": [
+          "literal evidence boundaries"
+        ],
+        "fullName": "literal evidence boundaries does not hard-reject a block comment in implementation substring as a complete typed literal",
+        "status": "passed",
+        "title": "does not hard-reject a block comment in implementation substring as a complete typed literal",
+        "duration": 2.718900000000019,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:literal evidence boundaries does not hard-reject a unclosed block comment substring as a complete typed literal",
+      "source_byte_start": 261033,
+      "source_byte_end": 261390,
+      "assertion": {
+        "ancestorTitles": [
+          "literal evidence boundaries"
+        ],
+        "fullName": "literal evidence boundaries does not hard-reject a unclosed block comment substring as a complete typed literal",
+        "status": "passed",
+        "title": "does not hard-reject a unclosed block comment substring as a complete typed literal",
+        "duration": 6.863300000000038,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:literal evidence boundaries does not hard-reject a comment-only test evidence substring as a complete typed literal",
+      "source_byte_start": 261391,
+      "source_byte_end": 261756,
+      "assertion": {
+        "ancestorTitles": [
+          "literal evidence boundaries"
+        ],
+        "fullName": "literal evidence boundaries does not hard-reject a comment-only test evidence substring as a complete typed literal",
+        "status": "passed",
+        "title": "does not hard-reject a comment-only test evidence substring as a complete typed literal",
+        "duration": 3.254700000000014,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:literal evidence boundaries does not hard-reject a inline Python comment substring as a complete typed literal",
+      "source_byte_start": 261757,
+      "source_byte_end": 262111,
+      "assertion": {
+        "ancestorTitles": [
+          "literal evidence boundaries"
+        ],
+        "fullName": "literal evidence boundaries does not hard-reject a inline Python comment substring as a complete typed literal",
+        "status": "passed",
+        "title": "does not hard-reject a inline Python comment substring as a complete typed literal",
+        "duration": 7.50830000000002,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:literal evidence boundaries does not hard-reject a Python floor division is not a comment substring as a complete typed literal",
+      "source_byte_start": 262112,
+      "source_byte_end": 262501,
+      "assertion": {
+        "ancestorTitles": [
+          "literal evidence boundaries"
+        ],
+        "fullName": "literal evidence boundaries does not hard-reject a Python floor division is not a comment substring as a complete typed literal",
+        "status": "passed",
+        "title": "does not hard-reject a Python floor division is not a comment substring as a complete typed literal",
+        "duration": 6.722000000000037,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:literal evidence boundaries does not hard-reject a regexp contents substring as a complete typed literal",
+      "source_byte_start": 262502,
+      "source_byte_end": 262845,
+      "assertion": {
+        "ancestorTitles": [
+          "literal evidence boundaries"
+        ],
+        "fullName": "literal evidence boundaries does not hard-reject a regexp contents substring as a complete typed literal",
+        "status": "passed",
+        "title": "does not hard-reject a regexp contents substring as a complete typed literal",
+        "duration": 6.106200000000001,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:literal evidence boundaries does not hard-reject a interpolated template is not a constant substring as a complete typed literal",
+      "source_byte_start": 262846,
+      "source_byte_end": 263238,
+      "assertion": {
+        "ancestorTitles": [
+          "literal evidence boundaries"
+        ],
+        "fullName": "literal evidence boundaries does not hard-reject a interpolated template is not a constant substring as a complete typed literal",
+        "status": "passed",
+        "title": "does not hard-reject a interpolated template is not a constant substring as a complete typed literal",
+        "duration": 2.7065000000000055,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:literal evidence boundaries preserves high risk for quoted comment markers",
+      "source_byte_start": 263239,
+      "source_byte_end": 263511,
+      "assertion": {
+        "ancestorTitles": [
+          "literal evidence boundaries"
+        ],
+        "fullName": "literal evidence boundaries preserves high risk for quoted comment markers",
+        "status": "passed",
+        "title": "preserves high risk for quoted comment markers",
+        "duration": 7.7226,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:literal evidence boundaries preserves high risk for Python floor division followed by exact value",
+      "source_byte_start": 263512,
+      "source_byte_end": 263841,
+      "assertion": {
+        "ancestorTitles": [
+          "literal evidence boundaries"
+        ],
+        "fullName": "literal evidence boundaries preserves high risk for Python floor division followed by exact value",
+        "status": "passed",
+        "title": "preserves high risk for Python floor division followed by exact value",
+        "duration": 4.095799999999997,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:literal evidence boundaries preserves high risk for closed block comment followed by exact value",
+      "source_byte_start": 263842,
+      "source_byte_end": 264170,
+      "assertion": {
+        "ancestorTitles": [
+          "literal evidence boundaries"
+        ],
+        "fullName": "literal evidence boundaries preserves high risk for closed block comment followed by exact value",
+        "status": "passed",
+        "title": "preserves high risk for closed block comment followed by exact value",
+        "duration": 3.5797000000000025,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:literal evidence boundaries preserves high risk for Python whole triple string",
+      "source_byte_start": 264171,
+      "source_byte_end": 264462,
+      "assertion": {
+        "ancestorTitles": [
+          "literal evidence boundaries"
+        ],
+        "fullName": "literal evidence boundaries preserves high risk for Python whole triple string",
+        "status": "passed",
+        "title": "preserves high risk for Python whole triple string",
+        "duration": 8.470700000000022,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:literal evidence boundaries preserves high risk for escaped quote",
+      "source_byte_start": 264463,
+      "source_byte_end": 264729,
+      "assertion": {
+        "ancestorTitles": [
+          "literal evidence boundaries"
+        ],
+        "fullName": "literal evidence boundaries preserves high risk for escaped quote",
+        "status": "passed",
+        "title": "preserves high risk for escaped quote",
+        "duration": 3.3337999999999965,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:literal evidence boundaries preserves high risk for static template",
+      "source_byte_start": 264730,
+      "source_byte_end": 265000,
+      "assertion": {
+        "ancestorTitles": [
+          "literal evidence boundaries"
+        ],
+        "fullName": "literal evidence boundaries preserves high risk for static template",
+        "status": "passed",
+        "title": "preserves high risk for static template",
+        "duration": 3.4709000000000287,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:mutationCheck \u2014 configuration gates returns null when mutation checking is disabled",
+      "source_byte_start": 265001,
+      "source_byte_end": 265307,
+      "assertion": {
+        "ancestorTitles": [
+          "mutationCheck \u2014 configuration gates"
+        ],
+        "fullName": "mutationCheck \u2014 configuration gates returns null when mutation checking is disabled",
+        "status": "passed",
+        "title": "returns null when mutation checking is disabled",
+        "duration": 2.9990999999999985,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:mutationCheck \u2014 configuration gates returns null when the task declares no gate command",
+      "source_byte_start": 265308,
+      "source_byte_end": 265622,
+      "assertion": {
+        "ancestorTitles": [
+          "mutationCheck \u2014 configuration gates"
+        ],
+        "fullName": "mutationCheck \u2014 configuration gates returns null when the task declares no gate command",
+        "status": "passed",
+        "title": "returns null when the task declares no gate command",
+        "duration": 2.3215999999999894,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:mutationCheck \u2014 pluggable FARM_MUTATION_CMD hook returns the hook's parsed score when it prints a trailing JSON line",
+      "source_byte_start": 265623,
+      "source_byte_end": 265995,
+      "assertion": {
+        "ancestorTitles": [
+          "mutationCheck \u2014 pluggable FARM_MUTATION_CMD hook"
+        ],
+        "fullName": "mutationCheck \u2014 pluggable FARM_MUTATION_CMD hook returns the hook's parsed score when it prints a trailing JSON line",
+        "status": "passed",
+        "title": "returns the hook's parsed score when it prints a trailing JSON line",
+        "duration": 17.609199999999987,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:mutationCheck \u2014 pluggable FARM_MUTATION_CMD hook falls back to `evaluated` when `total` is absent, and reports NOTHING when both are",
+      "source_byte_start": 265996,
+      "source_byte_end": 266400,
+      "assertion": {
+        "ancestorTitles": [
+          "mutationCheck \u2014 pluggable FARM_MUTATION_CMD hook"
+        ],
+        "fullName": "mutationCheck \u2014 pluggable FARM_MUTATION_CMD hook falls back to `evaluated` when `total` is absent, and reports NOTHING when both are",
+        "status": "passed",
+        "title": "falls back to `evaluated` when `total` is absent, and reports NOTHING when both are",
+        "duration": 30.253199999999993,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:mutationCheck \u2014 pluggable FARM_MUTATION_CMD hook reports a CONFIGURED-BUT-FAILED hook distinctly from an unconfigured one",
+      "source_byte_start": 266401,
+      "source_byte_end": 266782,
+      "assertion": {
+        "ancestorTitles": [
+          "mutationCheck \u2014 pluggable FARM_MUTATION_CMD hook"
+        ],
+        "fullName": "mutationCheck \u2014 pluggable FARM_MUTATION_CMD hook reports a CONFIGURED-BUT-FAILED hook distinctly from an unconfigured one",
+        "status": "passed",
+        "title": "reports a CONFIGURED-BUT-FAILED hook distinctly from an unconfigured one",
+        "duration": 30.15840000000003,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:mutationCheck \u2014 pluggable FARM_MUTATION_CMD hook says `(no output)` rather than dangling when a failing hook prints nothing",
+      "source_byte_start": 266783,
+      "source_byte_end": 267168,
+      "assertion": {
+        "ancestorTitles": [
+          "mutationCheck \u2014 pluggable FARM_MUTATION_CMD hook"
+        ],
+        "fullName": "mutationCheck \u2014 pluggable FARM_MUTATION_CMD hook says `(no output)` rather than dangling when a failing hook prints nothing",
+        "status": "passed",
+        "title": "says `(no output)` rather than dangling when a failing hook prints nothing",
+        "duration": 27.43100000000004,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:mutationCheck \u2014 pluggable FARM_MUTATION_CMD hook REDACTS a secret the hook prints before it reaches the task result",
+      "source_byte_start": 267169,
+      "source_byte_end": 267538,
+      "assertion": {
+        "ancestorTitles": [
+          "mutationCheck \u2014 pluggable FARM_MUTATION_CMD hook"
+        ],
+        "fullName": "mutationCheck \u2014 pluggable FARM_MUTATION_CMD hook REDACTS a secret the hook prints before it reaches the task result",
+        "status": "passed",
+        "title": "REDACTS a secret the hook prints before it reaches the task result",
+        "duration": 27.28869999999995,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:mutationCheck \u2014 pluggable FARM_MUTATION_CMD hook does not leak the dispatcher's API key into the hook's environment",
+      "source_byte_start": 267539,
+      "source_byte_end": 267909,
+      "assertion": {
+        "ancestorTitles": [
+          "mutationCheck \u2014 pluggable FARM_MUTATION_CMD hook"
+        ],
+        "fullName": "mutationCheck \u2014 pluggable FARM_MUTATION_CMD hook does not leak the dispatcher's API key into the hook's environment",
+        "status": "passed",
+        "title": "does not leak the dispatcher's API key into the hook's environment",
+        "duration": 104.87180000000001,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:mutationCheck \u2014 pluggable FARM_MUTATION_CMD hook passes the FARM_MUTATION_* contract vars through to the hook",
+      "source_byte_start": 267910,
+      "source_byte_end": 268266,
+      "assertion": {
+        "ancestorTitles": [
+          "mutationCheck \u2014 pluggable FARM_MUTATION_CMD hook"
+        ],
+        "fullName": "mutationCheck \u2014 pluggable FARM_MUTATION_CMD hook passes the FARM_MUTATION_* contract vars through to the hook",
+        "status": "passed",
+        "title": "passes the FARM_MUTATION_* contract vars through to the hook",
+        "duration": 30.8128999999999,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:mutationCheck \u2014 pluggable FARM_MUTATION_CMD hook runs the hook IN the worktree and keeps the TAIL of a long output",
+      "source_byte_start": 268267,
+      "source_byte_end": 268634,
+      "assertion": {
+        "ancestorTitles": [
+          "mutationCheck \u2014 pluggable FARM_MUTATION_CMD hook"
+        ],
+        "fullName": "mutationCheck \u2014 pluggable FARM_MUTATION_CMD hook runs the hook IN the worktree and keeps the TAIL of a long output",
+        "status": "passed",
+        "title": "runs the hook IN the worktree and keeps the TAIL of a long output",
+        "duration": 32.91159999999991,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:mutationCheck \u2014 built-in text mutation puts the trivial-file cutoff at exactly two code lines",
+      "source_byte_start": 268635,
+      "source_byte_end": 268960,
+      "assertion": {
+        "ancestorTitles": [
+          "mutationCheck \u2014 built-in text mutation"
+        ],
+        "fullName": "mutationCheck \u2014 built-in text mutation puts the trivial-file cutoff at exactly two code lines",
+        "status": "passed",
+        "title": "puts the trivial-file cutoff at exactly two code lines",
+        "duration": 295.9945999999999,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:mutationCheck \u2014 built-in text mutation returns null when the in-scope file does not exist",
+      "source_byte_start": 268961,
+      "source_byte_end": 269279,
+      "assertion": {
+        "ancestorTitles": [
+          "mutationCheck \u2014 built-in text mutation"
+        ],
+        "fullName": "mutationCheck \u2014 built-in text mutation returns null when the in-scope file does not exist",
+        "status": "passed",
+        "title": "returns null when the in-scope file does not exist",
+        "duration": 1.3631000000000313,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:mutationCheck \u2014 built-in text mutation keeps all completed rejections unverified rather than claiming every mutant was killed",
+      "source_byte_start": 269280,
+      "source_byte_end": 269660,
+      "assertion": {
+        "ancestorTitles": [
+          "mutationCheck \u2014 built-in text mutation"
+        ],
+        "fullName": "mutationCheck \u2014 built-in text mutation keeps all completed rejections unverified rather than claiming every mutant was killed",
+        "status": "passed",
+        "title": "keeps all completed rejections unverified rather than claiming every mutant was killed",
+        "duration": 575.7428,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:mutationCheck \u2014 built-in text mutation scores 0 and names every survivor when the gate catches none",
+      "source_byte_start": 269661,
+      "source_byte_end": 269999,
+      "assertion": {
+        "ancestorTitles": [
+          "mutationCheck \u2014 built-in text mutation"
+        ],
+        "fullName": "mutationCheck \u2014 built-in text mutation scores 0 and names every survivor when the gate catches none",
+        "status": "passed",
+        "title": "scores 0 and names every survivor when the gate catches none",
+        "duration": 200.17050000000017,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:mutationCheck \u2014 built-in text mutation actually MUTATES the file, re-runs the gate, and classifies by the result",
+      "source_byte_start": 270000,
+      "source_byte_end": 270363,
+      "assertion": {
+        "ancestorTitles": [
+          "mutationCheck \u2014 built-in text mutation"
+        ],
+        "fullName": "mutationCheck \u2014 built-in text mutation actually MUTATES the file, re-runs the gate, and classifies by the result",
+        "status": "passed",
+        "title": "actually MUTATES the file, re-runs the gate, and classifies by the result",
+        "duration": 563.3066999999999,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:mutationCheck \u2014 built-in text mutation restores the original file through BOTH the in-loop and the final path",
+      "source_byte_start": 270364,
+      "source_byte_end": 270721,
+      "assertion": {
+        "ancestorTitles": [
+          "mutationCheck \u2014 built-in text mutation"
+        ],
+        "fullName": "mutationCheck \u2014 built-in text mutation restores the original file through BOTH the in-loop and the final path",
+        "status": "passed",
+        "title": "restores the original file through BOTH the in-loop and the final path",
+        "duration": 413.6516999999999,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:mutationCheck \u2014 built-in text mutation returns null rather than a score when too few mutants were evaluated",
+      "source_byte_start": 270722,
+      "source_byte_end": 271076,
+      "assertion": {
+        "ancestorTitles": [
+          "mutationCheck \u2014 built-in text mutation"
+        ],
+        "fullName": "mutationCheck \u2014 built-in text mutation returns null rather than a score when too few mutants were evaluated",
+        "status": "passed",
+        "title": "returns null rather than a score when too few mutants were evaluated",
+        "duration": 62.834100000000035,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:mutationCheck \u2014 built-in text mutation retains completed rejection evidence when the budget expires between launches",
+      "source_byte_start": 271077,
+      "source_byte_end": 271449,
+      "assertion": {
+        "ancestorTitles": [
+          "mutationCheck \u2014 built-in text mutation"
+        ],
+        "fullName": "mutationCheck \u2014 built-in text mutation retains completed rejection evidence when the budget expires between launches",
+        "status": "passed",
+        "title": "retains completed rejection evidence when the budget expires between launches",
+        "duration": 23.589300000000094,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:mutationCheck \u2014 built-in text mutation stops at the wall-clock budget and reports nothing when it expires first",
+      "source_byte_start": 271450,
+      "source_byte_end": 271811,
+      "assertion": {
+        "ancestorTitles": [
+          "mutationCheck \u2014 built-in text mutation"
+        ],
+        "fullName": "mutationCheck \u2014 built-in text mutation stops at the wall-clock budget and reports nothing when it expires first",
+        "status": "passed",
+        "title": "stops at the wall-clock budget and reports nothing when it expires first",
+        "duration": 6.178600000000188,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:mutation measurement validity rejects a non-normalized hook score 1e309",
+      "source_byte_start": 271812,
+      "source_byte_end": 272089,
+      "assertion": {
+        "ancestorTitles": [
+          "mutation measurement validity"
+        ],
+        "fullName": "mutation measurement validity rejects a non-normalized hook score 1e309",
+        "status": "passed",
+        "title": "rejects a non-normalized hook score 1e309",
+        "duration": 1.373700000000099,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:mutation measurement validity rejects a non-normalized hook score -0.01",
+      "source_byte_start": 272090,
+      "source_byte_end": 272368,
+      "assertion": {
+        "ancestorTitles": [
+          "mutation measurement validity"
+        ],
+        "fullName": "mutation measurement validity rejects a non-normalized hook score -0.01",
+        "status": "passed",
+        "title": "rejects a non-normalized hook score -0.01",
+        "duration": 1.2350999999998749,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:mutation measurement validity rejects a non-normalized hook score 1.01",
+      "source_byte_start": 272369,
+      "source_byte_end": 272645,
+      "assertion": {
+        "ancestorTitles": [
+          "mutation measurement validity"
+        ],
+        "fullName": "mutation measurement validity rejects a non-normalized hook score 1.01",
+        "status": "passed",
+        "title": "rejects a non-normalized hook score 1.01",
+        "duration": 1.2309000000000196,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:mutation measurement validity rejects a failed hook even after stdout reports score 0",
+      "source_byte_start": 272646,
+      "source_byte_end": 272952,
+      "assertion": {
+        "ancestorTitles": [
+          "mutation measurement validity"
+        ],
+        "fullName": "mutation measurement validity rejects a failed hook even after stdout reports score 0",
+        "status": "passed",
+        "title": "rejects a failed hook even after stdout reports score 0",
+        "duration": 52.365800000000036,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:mutation measurement validity rejects a failed hook even after stdout reports score 1",
+      "source_byte_start": 272953,
+      "source_byte_end": 273257,
+      "assertion": {
+        "ancestorTitles": [
+          "mutation measurement validity"
+        ],
+        "fullName": "mutation measurement validity rejects a failed hook even after stdout reports score 1",
+        "status": "passed",
+        "title": "rejects a failed hook even after stdout reports score 1",
+        "duration": 44.2515999999996,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:mutation measurement validity does not treat stderr score text as a measurement",
+      "source_byte_start": 273258,
+      "source_byte_end": 273551,
+      "assertion": {
+        "ancestorTitles": [
+          "mutation measurement validity"
+        ],
+        "fullName": "mutation measurement validity does not treat stderr score text as a measurement",
+        "status": "passed",
+        "title": "does not treat stderr score text as a measurement",
+        "duration": 91.98050000000012,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:mutation measurement validity keeps valid stdout distinct from a misleading later stderr score",
+      "source_byte_start": 273552,
+      "source_byte_end": 273875,
+      "assertion": {
+        "ancestorTitles": [
+          "mutation measurement validity"
+        ],
+        "fullName": "mutation measurement validity keeps valid stdout distinct from a misleading later stderr score",
+        "status": "passed",
+        "title": "keeps valid stdout distinct from a misleading later stderr score",
+        "duration": 47.43679999999995,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:mutation hook terminal evidence never credits a positive score after {\"code\":7}",
+      "source_byte_start": 273876,
+      "source_byte_end": 274174,
+      "assertion": {
+        "ancestorTitles": [
+          "mutation hook terminal evidence"
+        ],
+        "fullName": "mutation hook terminal evidence never credits a positive score after {\"code\":7}",
+        "status": "passed",
+        "title": "never credits a positive score after {\"code\":7}",
+        "duration": 1.4497999999998683,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:mutation hook terminal evidence never credits a positive score after {\"code\":124,\"timedOut\":true}",
+      "source_byte_start": 274175,
+      "source_byte_end": 274513,
+      "assertion": {
+        "ancestorTitles": [
+          "mutation hook terminal evidence"
+        ],
+        "fullName": "mutation hook terminal evidence never credits a positive score after {\"code\":124,\"timedOut\":true}",
+        "status": "passed",
+        "title": "never credits a positive score after {\"code\":124,\"timedOut\":true}",
+        "duration": 1.4868999999998778,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:mutation hook terminal evidence never credits a positive score after {\"code\":125,\"timedOut\":true,\"cleanupFailed\":true}",
+      "source_byte_start": 274514,
+      "source_byte_end": 274898,
+      "assertion": {
+        "ancestorTitles": [
+          "mutation hook terminal evidence"
+        ],
+        "fullName": "mutation hook terminal evidence never credits a positive score after {\"code\":125,\"timedOut\":true,\"cleanupFailed\":true}",
+        "status": "passed",
+        "title": "never credits a positive score after {\"code\":125,\"timedOut\":true,\"cleanupFailed\":true}",
+        "duration": 1.5684999999998581,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:mutation hook terminal evidence never credits a positive score after {\"code\":0,\"timedOut\":true}",
+      "source_byte_start": 274899,
+      "source_byte_end": 275232,
+      "assertion": {
+        "ancestorTitles": [
+          "mutation hook terminal evidence"
+        ],
+        "fullName": "mutation hook terminal evidence never credits a positive score after {\"code\":0,\"timedOut\":true}",
+        "status": "passed",
+        "title": "never credits a positive score after {\"code\":0,\"timedOut\":true}",
+        "duration": 1.499699999999848,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:mutation hook terminal evidence never credits a positive score after {\"code\":0,\"cleanupFailed\":true}",
+      "source_byte_start": 275233,
+      "source_byte_end": 275576,
+      "assertion": {
+        "ancestorTitles": [
+          "mutation hook terminal evidence"
+        ],
+        "fullName": "mutation hook terminal evidence never credits a positive score after {\"code\":0,\"cleanupFailed\":true}",
+        "status": "passed",
+        "title": "never credits a positive score after {\"code\":0,\"cleanupFailed\":true}",
+        "duration": 1.212800000000243,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:mutation hook terminal evidence redacts complete diagnostics before taking a bounded tail",
+      "source_byte_start": 275577,
+      "source_byte_end": 275890,
+      "assertion": {
+        "ancestorTitles": [
+          "mutation hook terminal evidence"
+        ],
+        "fullName": "mutation hook terminal evidence redacts complete diagnostics before taking a bounded tail",
+        "status": "passed",
+        "title": "redacts complete diagnostics before taking a bounded tail",
+        "duration": 1.202600000000075,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:mutation hook terminal evidence keeps genuine completed low score/count and absent count as reported",
+      "source_byte_start": 275891,
+      "source_byte_end": 276227,
+      "assertion": {
+        "ancestorTitles": [
+          "mutation hook terminal evidence"
+        ],
+        "fullName": "mutation hook terminal evidence keeps genuine completed low score/count and absent count as reported",
+        "status": "passed",
+        "title": "keeps genuine completed low score/count and absent count as reported",
+        "duration": 1.1636999999996078,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:built-in mutation deadline and terminal evidence rejects incomplete trial {\"code\":124,\"timedOut\":true} without scoring or another launch",
+      "source_byte_start": 276228,
+      "source_byte_end": 276643,
+      "assertion": {
+        "ancestorTitles": [
+          "built-in mutation deadline and terminal evidence"
+        ],
+        "fullName": "built-in mutation deadline and terminal evidence rejects incomplete trial {\"code\":124,\"timedOut\":true} without scoring or another launch",
+        "status": "passed",
+        "title": "rejects incomplete trial {\"code\":124,\"timedOut\":true} without scoring or another launch",
+        "duration": 15.18939999999975,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:built-in mutation deadline and terminal evidence rejects incomplete trial {\"code\":125,\"timedOut\":true,\"cleanupFailed\":true} without scoring or another launch",
+      "source_byte_start": 276644,
+      "source_byte_end": 277106,
+      "assertion": {
+        "ancestorTitles": [
+          "built-in mutation deadline and terminal evidence"
+        ],
+        "fullName": "built-in mutation deadline and terminal evidence rejects incomplete trial {\"code\":125,\"timedOut\":true,\"cleanupFailed\":true} without scoring or another launch",
+        "status": "passed",
+        "title": "rejects incomplete trial {\"code\":125,\"timedOut\":true,\"cleanupFailed\":true} without scoring or another launch",
+        "duration": 14.838999999999942,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:built-in mutation deadline and terminal evidence rejects incomplete trial {\"code\":0,\"timedOut\":true} without scoring or another launch",
+      "source_byte_start": 277107,
+      "source_byte_end": 277518,
+      "assertion": {
+        "ancestorTitles": [
+          "built-in mutation deadline and terminal evidence"
+        ],
+        "fullName": "built-in mutation deadline and terminal evidence rejects incomplete trial {\"code\":0,\"timedOut\":true} without scoring or another launch",
+        "status": "passed",
+        "title": "rejects incomplete trial {\"code\":0,\"timedOut\":true} without scoring or another launch",
+        "duration": 8.839600000000246,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:built-in mutation deadline and terminal evidence rejects incomplete trial {\"code\":0,\"cleanupFailed\":true} without scoring or another launch",
+      "source_byte_start": 277519,
+      "source_byte_end": 277940,
+      "assertion": {
+        "ancestorTitles": [
+          "built-in mutation deadline and terminal evidence"
+        ],
+        "fullName": "built-in mutation deadline and terminal evidence rejects incomplete trial {\"code\":0,\"cleanupFailed\":true} without scoring or another launch",
+        "status": "passed",
+        "title": "rejects incomplete trial {\"code\":0,\"cleanupFailed\":true} without scoring or another launch",
+        "duration": 9.293699999999717,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:built-in mutation deadline and terminal evidence preserves completed adverse observations without counting the interrupted trial",
+      "source_byte_start": 277941,
+      "source_byte_end": 278332,
+      "assertion": {
+        "ancestorTitles": [
+          "built-in mutation deadline and terminal evidence"
+        ],
+        "fullName": "built-in mutation deadline and terminal evidence preserves completed adverse observations without counting the interrupted trial",
+        "status": "passed",
+        "title": "preserves completed adverse observations without counting the interrupted trial",
+        "duration": 44.93349999999964,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:built-in mutation deadline and terminal evidence redacts terminal diagnostics before bounding the preserved tail",
+      "source_byte_start": 278333,
+      "source_byte_end": 278692,
+      "assertion": {
+        "ancestorTitles": [
+          "built-in mutation deadline and terminal evidence"
+        ],
+        "fullName": "built-in mutation deadline and terminal evidence redacts terminal diagnostics before bounding the preserved tail",
+        "status": "passed",
+        "title": "redacts terminal diagnostics before bounding the preserved tail",
+        "duration": 7.945300000000316,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:built-in mutation deadline and terminal evidence a zero budget launches no mutant and leaves worker output intact",
+      "source_byte_start": 278693,
+      "source_byte_end": 279054,
+      "assertion": {
+        "ancestorTitles": [
+          "built-in mutation deadline and terminal evidence"
+        ],
+        "fullName": "built-in mutation deadline and terminal evidence a zero budget launches no mutant and leaves worker output intact",
+        "status": "passed",
+        "title": "a zero budget launches no mutant and leaves worker output intact",
+        "duration": 6.635600000000068,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:built-in mutation deadline and terminal evidence accounts for writing a mutant before calculating the remaining launch allowance",
+      "source_byte_start": 279055,
+      "source_byte_end": 279446,
+      "assertion": {
+        "ancestorTitles": [
+          "built-in mutation deadline and terminal evidence"
+        ],
+        "fullName": "built-in mutation deadline and terminal evidence accounts for writing a mutant before calculating the remaining launch allowance",
+        "status": "passed",
+        "title": "accounts for writing a mutant before calculating the remaining launch allowance",
+        "duration": 11.36369999999988,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:built-in mutation deadline and terminal evidence restores without running the test when a mutant write consumes the whole budget",
+      "source_byte_start": 279447,
+      "source_byte_end": 279838,
+      "assertion": {
+        "ancestorTitles": [
+          "built-in mutation deadline and terminal evidence"
+        ],
+        "fullName": "built-in mutation deadline and terminal evidence restores without running the test when a mutant write consumes the whole budget",
+        "status": "passed",
+        "title": "restores without running the test when a mutant write consumes the whole budget",
+        "duration": 8.421800000000076,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:built-in mutation deadline and terminal evidence does not reinterpret an ordinary exit code as the runner's timeout flag",
+      "source_byte_start": 279839,
+      "source_byte_end": 280215,
+      "assertion": {
+        "ancestorTitles": [
+          "built-in mutation deadline and terminal evidence"
+        ],
+        "fullName": "built-in mutation deadline and terminal evidence does not reinterpret an ordinary exit code as the runner's timeout flag",
+        "status": "passed",
+        "title": "does not reinterpret an ordinary exit code as the runner's timeout flag",
+        "duration": 20.000299999999697,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:built-in rejection evidence is not a measured kill score redacts a complete synthetic PEM before labeling a rejected mutation",
+      "source_byte_start": 280216,
+      "source_byte_end": 280602,
+      "assertion": {
+        "ancestorTitles": [
+          "built-in rejection evidence is not a measured kill score"
+        ],
+        "fullName": "built-in rejection evidence is not a measured kill score redacts a complete synthetic PEM before labeling a rejected mutation",
+        "status": "passed",
+        "title": "redacts a complete synthetic PEM before labeling a rejected mutation",
+        "duration": 27.926500000000033,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:built-in rejection evidence is not a measured kill score does not infer a killed mutant from exit 1 and diagnostic SyntaxError: invalid mutant",
+      "source_byte_start": 280603,
+      "source_byte_end": 281022,
+      "assertion": {
+        "ancestorTitles": [
+          "built-in rejection evidence is not a measured kill score"
+        ],
+        "fullName": "built-in rejection evidence is not a measured kill score does not infer a killed mutant from exit 1 and diagnostic SyntaxError: invalid mutant",
+        "status": "passed",
+        "title": "does not infer a killed mutant from exit 1 and diagnostic SyntaxError: invalid mutant",
+        "duration": 16.33089999999993,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:built-in rejection evidence is not a measured kill score does not infer a killed mutant from exit 2 and diagnostic error TS2322: invalid type",
+      "source_byte_start": 281023,
+      "source_byte_end": 281441,
+      "assertion": {
+        "ancestorTitles": [
+          "built-in rejection evidence is not a measured kill score"
+        ],
+        "fullName": "built-in rejection evidence is not a measured kill score does not infer a killed mutant from exit 2 and diagnostic error TS2322: invalid type",
+        "status": "passed",
+        "title": "does not infer a killed mutant from exit 2 and diagnostic error TS2322: invalid type",
+        "duration": 14.782700000000204,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:built-in rejection evidence is not a measured kill score does not infer a killed mutant from exit 127 and diagnostic test runner not found",
+      "source_byte_start": 281442,
+      "source_byte_end": 281854,
+      "assertion": {
+        "ancestorTitles": [
+          "built-in rejection evidence is not a measured kill score"
+        ],
+        "fullName": "built-in rejection evidence is not a measured kill score does not infer a killed mutant from exit 127 and diagnostic test runner not found",
+        "status": "passed",
+        "title": "does not infer a killed mutant from exit 127 and diagnostic test runner not found",
+        "duration": 13.871200000000044,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:built-in rejection evidence is not a measured kill score does not infer a killed mutant from exit 1 and diagnostic AssertionError: expected value",
+      "source_byte_start": 281855,
+      "source_byte_end": 282281,
+      "assertion": {
+        "ancestorTitles": [
+          "built-in rejection evidence is not a measured kill score"
+        ],
+        "fullName": "built-in rejection evidence is not a measured kill score does not infer a killed mutant from exit 1 and diagnostic AssertionError: expected value",
+        "status": "passed",
+        "title": "does not infer a killed mutant from exit 1 and diagnostic AssertionError: expected value",
+        "duration": 13.472499999999854,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:built-in rejection evidence is not a measured kill score does not infer a killed mutant from exit 137 and diagnostic killed\n{\"score\":1,\"total\":99}",
+      "source_byte_start": 282282,
+      "source_byte_end": 282720,
+      "assertion": {
+        "ancestorTitles": [
+          "built-in rejection evidence is not a measured kill score"
+        ],
+        "fullName": "built-in rejection evidence is not a measured kill score does not infer a killed mutant from exit 137 and diagnostic killed\n{\"score\":1,\"total\":99}",
+        "status": "passed",
+        "title": "does not infer a killed mutant from exit 137 and diagnostic killed\n{\"score\":1,\"total\":99}",
+        "duration": 15.926500000000033,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:built-in rejection evidence is not a measured kill score records too-few completed rejections without inventing a usable count/score",
+      "source_byte_start": 282721,
+      "source_byte_end": 283121,
+      "assertion": {
+        "ancestorTitles": [
+          "built-in rejection evidence is not a measured kill score"
+        ],
+        "fullName": "built-in rejection evidence is not a measured kill score records too-few completed rejections without inventing a usable count/score",
+        "status": "passed",
+        "title": "records too-few completed rejections without inventing a usable count/score",
+        "duration": 14.740800000000036,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:built-in rejection evidence is not a measured kill score preserves a low completed upper bound and exact successful survivor identities",
+      "source_byte_start": 283122,
+      "source_byte_end": 283527,
+      "assertion": {
+        "ancestorTitles": [
+          "built-in rejection evidence is not a measured kill score"
+        ],
+        "fullName": "built-in rejection evidence is not a measured kill score preserves a low completed upper bound and exact successful survivor identities",
+        "status": "passed",
+        "title": "preserves a low completed upper bound and exact successful survivor identities",
+        "duration": 88.59840000000031,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:built-in rejection evidence is not a measured kill score keeps a timeout's earlier unclassified rejections out of the measured channel",
+      "source_byte_start": 283528,
+      "source_byte_end": 283930,
+      "assertion": {
+        "ancestorTitles": [
+          "built-in rejection evidence is not a measured kill score"
+        ],
+        "fullName": "built-in rejection evidence is not a measured kill score keeps a timeout's earlier unclassified rejections out of the measured channel",
+        "status": "passed",
+        "title": "keeps a timeout's earlier unclassified rejections out of the measured channel",
+        "duration": 37.7153000000003,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:built-in rejection evidence is not a measured kill score redacts the rejected-trial witness before truncation",
+      "source_byte_start": 283931,
+      "source_byte_end": 284285,
+      "assertion": {
+        "ancestorTitles": [
+          "built-in rejection evidence is not a measured kill score"
+        ],
+        "fullName": "built-in rejection evidence is not a measured kill score redacts the rejected-trial witness before truncation",
+        "status": "passed",
+        "title": "redacts the rejected-trial witness before truncation",
+        "duration": 21.192399999999907,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:built-in rejection evidence is not a measured kill score does not turn actual Node syntax failures into a positive built-in score",
+      "source_byte_start": 284286,
+      "source_byte_end": 284680,
+      "assertion": {
+        "ancestorTitles": [
+          "built-in rejection evidence is not a measured kill score"
+        ],
+        "fullName": "built-in rejection evidence is not a measured kill score does not turn actual Node syntax failures into a positive built-in score",
+        "status": "passed",
+        "title": "does not turn actual Node syntax failures into a positive built-in score",
+        "duration": 335.78110000000015,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:built-in rejection evidence is not a measured kill score does not turn actual Node assertion failures into a positive built-in score",
+      "source_byte_start": 284681,
+      "source_byte_end": 285071,
+      "assertion": {
+        "ancestorTitles": [
+          "built-in rejection evidence is not a measured kill score"
+        ],
+        "fullName": "built-in rejection evidence is not a measured kill score does not turn actual Node assertion failures into a positive built-in score",
+        "status": "passed",
+        "title": "does not turn actual Node assertion failures into a positive built-in score",
+        "duration": 317.3932,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R03 refuses unknown Git drift instead of inventing a clean observation",
+      "source_byte_start": 317382,
+      "source_byte_end": 317666,
+      "assertion": {
+        "ancestorTitles": [],
+        "fullName": "FARM-R03 refuses unknown Git drift instead of inventing a clean observation",
+        "status": "passed",
+        "title": "FARM-R03 refuses unknown Git drift instead of inventing a clean observation",
+        "duration": 2.228499999999997,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R02 preserves failed containment and admits no reset or second author",
+      "source_byte_start": 317667,
+      "source_byte_end": 317948,
+      "assertion": {
+        "ancestorTitles": [],
+        "fullName": "FARM-R02 preserves failed containment and admits no reset or second author",
+        "status": "passed",
+        "title": "FARM-R02 preserves failed containment and admits no reset or second author",
+        "duration": 4.37360000000001,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R01 exclusive identities preserve evidence under a same-ID race",
+      "source_byte_start": 317949,
+      "source_byte_end": 318219,
+      "assertion": {
+        "ancestorTitles": [],
+        "fullName": "FARM-R01 exclusive identities preserve evidence under a same-ID race",
+        "status": "passed",
+        "title": "FARM-R01 exclusive identities preserve evidence under a same-ID race",
+        "duration": 6.823000000000036,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R01 reconciles a post-merge crash in real Git without changing a ref or calling an author",
+      "source_byte_start": 318220,
+      "source_byte_end": 318534,
+      "assertion": {
+        "ancestorTitles": [],
+        "fullName": "FARM-R01 reconciles a post-merge crash in real Git without changing a ref or calling an author",
+        "status": "passed",
+        "title": "FARM-R01 reconciles a post-merge crash in real Git without changing a ref or calling an author",
+        "duration": 2354.7374,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R03 bounded read-only retry accepts only a successful current observation",
+      "source_byte_start": 318535,
+      "source_byte_end": 318826,
+      "assertion": {
+        "ancestorTitles": [],
+        "fullName": "FARM-R03 bounded read-only retry accepts only a successful current observation",
+        "status": "passed",
+        "title": "FARM-R03 bounded read-only retry accepts only a successful current observation",
+        "duration": 0.4252999999998792,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R02 gate retains executor outcome instead of flattening code 125 into test failure",
+      "source_byte_start": 318827,
+      "source_byte_end": 319135,
+      "assertion": {
+        "ancestorTitles": [],
+        "fullName": "FARM-R02 gate retains executor outcome instead of flattening code 125 into test failure",
+        "status": "passed",
+        "title": "FARM-R02 gate retains executor outcome instead of flattening code 125 into test failure",
+        "duration": 0.467200000000048,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R02 uncontained sample setup retains scratch resources without authoring or reset",
+      "source_byte_start": 319136,
+      "source_byte_end": 319443,
+      "assertion": {
+        "ancestorTitles": [],
+        "fullName": "FARM-R02 uncontained sample setup retains scratch resources without authoring or reset",
+        "status": "passed",
+        "title": "FARM-R02 uncontained sample setup retains scratch resources without authoring or reset",
+        "duration": 1.6792999999997846,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    }
+  ],
+  "scope": "Exact actual current938-run assertion objects/UTF8 ranges, no rerun, no suite-total or file-overlap inference."
+}

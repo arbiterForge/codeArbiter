@@ -1,0 +1,42 @@
+[
+  {
+    "id": 14109699644,
+    "node_id": "MDg6QXJ0aWZhY3QxNDEwOTY5OTY0NA==",
+    "name": "artifact-host-payloads-46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+    "size_in_bytes": 46289611,
+    "url": "https://api.github.com/repos/arbiterForge/codeArbiter/actions/artifacts/14109699644",
+    "archive_download_url": "https://api.github.com/repos/arbiterForge/codeArbiter/actions/artifacts/14109699644/zip",
+    "expired": false,
+    "digest": "sha256:54cab0cc0f336c89f3a205b1522cb88cd640c88dc6389634daf9c32428191968",
+    "created_at": "2026-11-14T10:47:34Z",
+    "updated_at": "2026-11-14T10:47:34Z",
+    "expires_at": "2026-11-17T10:24:57Z",
+    "workflow_run": {
+      "id": 43582198115,
+      "repository_id": 1233366728,
+      "head_repository_id": 1233366728,
+      "head_branch": "major/state-contracts",
+      "head_sha": "46e29a796e89e0eaa3250cf171e4c9bea97ac437"
+    }
+  },
+  {
+    "id": 14109784562,
+    "node_id": "MDg6QXJ0aWZhY3QxNDEwOTc4NDU2Mg==",
+    "name": "artifact-release-packages-46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+    "size_in_bytes": 50253481,
+    "url": "https://api.github.com/repos/arbiterForge/codeArbiter/actions/artifacts/14109784562",
+    "archive_download_url": "https://api.github.com/repos/arbiterForge/codeArbiter/actions/artifacts/14109784562/zip",
+    "expired": false,
+    "digest": "sha256:d6f4d6a0f6e104c6c387f86ea78a36b6a2ff74d33e1dc4ac2459030a07baf22e",
+    "created_at": "2026-11-14T10:48:08Z",
+    "updated_at": "2026-11-14T10:48:08Z",
+    "expires_at": "2026-11-17T10:24:57Z",
+    "workflow_run": {
+      "id": 43582198115,
+      "repository_id": 1233366728,
+      "head_repository_id": 1233366728,
+      "head_branch": "major/state-contracts",
+      "head_sha": "46e29a796e89e0eaa3250cf171e4c9bea97ac437"
+    }
+  }
+]

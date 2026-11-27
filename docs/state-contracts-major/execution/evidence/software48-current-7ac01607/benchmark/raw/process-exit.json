@@ -1,0 +1,17 @@
+{
+  "argv": [
+    "C:/Python314/python.exe",
+    "-B",
+    "-X",
+    "utf8",
+    ".github/scripts/pi_benchmark.py",
+    "--samples",
+    "100"
+  ],
+  "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
+  "exit_code": 0,
+  "timed_out": false,
+  "seconds": 4.154374099991401,
+  "stdout_sha256": "584b576af7ff63534d79f878ad6956aa7c1a26284be2f50d435113c778043ac9",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

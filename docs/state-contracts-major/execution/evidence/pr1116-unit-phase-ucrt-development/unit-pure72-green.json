@@ -1,0 +1,44 @@
+{
+  "before": {
+    ".github/workflows/ci.yml": "418d34e1a2ece703cd87c812d72149992a014a7910810189e5e69f275d992338",
+    ".github/scripts/test_hook_ci_partition.py": "b8ff350ee2af5f749ee84aa57e74c95846add15405de9ef5d090e9d01dfa49bc",
+    ".github/scripts/test_npm_binding_observation.py": "bea548375447e80b380c015af7589ae399dcf1b96fe086b8a40c8c2547486f0b"
+  },
+  "argv": [
+    "C:\\Python314\\python.exe",
+    "-I",
+    "-S",
+    "-B",
+    "-X",
+    "utf8",
+    "-c",
+    "import sys,unittest;sys.path.insert(0,'C:\\\\Users\\\\brenn\\\\AppData\\\\Local\\\\Temp\\\\ca-npm-producer-progress-test-change-3gdogo2h\\\\candidate\\\\.github\\\\scripts'); suite=unittest.defaultTestLoader.loadTestsFromNames(['test_npm_binding_observation.AdmissionTests', 'test_npm_binding_observation.IdentityLimitTests', 'test_npm_binding_observation.RuntimePortabilityTests', 'test_hook_ci_partition']);r=unittest.TextTestRunner(verbosity=2).run(suite);raise SystemExit(0 if r.wasSuccessful() and not r.skipped else 1)"
+  ],
+  "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-npm-producer-progress-test-change-3gdogo2h\\candidate",
+  "env_keys": [
+    "APPDATA",
+    "COMSPEC",
+    "HOME",
+    "LOCALAPPDATA",
+    "PATH",
+    "PATHEXT",
+    "PYTHONDONTWRITEBYTECODE",
+    "PYTHONNOUSERSITE",
+    "PYTHONPYCACHEPREFIX",
+    "PYTHONUTF8",
+    "SYSTEMROOT",
+    "TEMP",
+    "TMP",
+    "USERPROFILE",
+    "WINDIR"
+  ],
+  "exit_code": 0,
+  "duration_seconds": 10.912734700017609,
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "0448a630ee11c20b0ba5b03b618c17f1382fea77ef01ba0f6334f932a8222741",
+  "subjects": {
+    ".github/workflows/ci.yml": "418d34e1a2ece703cd87c812d72149992a014a7910810189e5e69f275d992338",
+    ".github/scripts/test_hook_ci_partition.py": "b8ff350ee2af5f749ee84aa57e74c95846add15405de9ef5d090e9d01dfa49bc",
+    ".github/scripts/test_npm_binding_observation.py": "bea548375447e80b380c015af7589ae399dcf1b96fe086b8a40c8c2547486f0b"
+  }
+}

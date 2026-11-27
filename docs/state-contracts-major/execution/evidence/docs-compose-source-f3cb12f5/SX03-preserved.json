@@ -1,0 +1,35 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "f3cb12f5095401d5b7e8c32c2861816c7109ce02",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "Major program Docs source assessment"
+  },
+  "inputs": {
+    ".github/workflows/docs.yml": "40d2cc1efab2bf71073973a3ca22477ff20041adefb1beb5326e3e8191fef11c",
+    "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+    "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+    "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+    "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+    "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+    "site/scripts/release-applicability.ts": "272fbf607aa1376f999545d3b7f287438a22dc5f85fed4d9ccaf433d6ad555d9",
+    "site/src/pages/release-applicability.json.ts": "3a126d7972292d19202519fc82646d7a9f9fdf96ff3bca3e18d2fe4d50785d2a",
+    "site/src/release-applicability-presentation.ts": "a94a1f1a1c0b0ea28d00a90e8e49b77ed13e96534ed1dd841644cd5d4d7f4732"
+  },
+  "disposition_ids": [
+    "disposition:machines:SX03",
+    "disposition:transitions:SX03:06"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/docs-compose-source-f3cb12f5/source-assessment.json",
+      "sha256": "f4fd25ca41783e3106cbd04de1c7cc8d2e4d543836456458658f3dc0c6cd5968"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/docs-eight-source-48bf82eb/SX03-preserved.json",
+      "sha256": "f1ddc6dbb76ffb4100224d21b025a64da0d6219f62ed04742bb3a27b0cee4303"
+    }
+  ]
+}

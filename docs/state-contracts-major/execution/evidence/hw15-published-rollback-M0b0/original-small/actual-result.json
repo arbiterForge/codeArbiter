@@ -1,0 +1,9 @@
+{
+  "format": "private.hw15-lifecycle-characterization/1",
+  "tests_run": 1,
+  "failures": 0,
+  "errors": 0,
+  "skips": 0,
+  "scope": "one Windows/Python installed-helper legacy-board lifecycle; no host/UI/provider/native execution",
+  "status": "PASS"
+}

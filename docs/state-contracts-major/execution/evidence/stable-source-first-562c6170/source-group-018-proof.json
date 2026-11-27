@@ -1,0 +1,58 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "562c6170c010eedbef93a4216b4baa971fd6b9a6",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "Exact prepared finite clauses with immutable current witness and namespace join"
+  },
+  "inputs": {
+    "core/pysrc/_artifactauthoritylib.py": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+    "core/pysrc/_artifactlib.py": "db10153f438023ca6eb7e32f77e1898fbd2f806cdc5ef98bdffb078e27e65187",
+    "core/pysrc/_artifactpromptlib.py": "03e0c4b32c806cc054ef34ae7ac58ed093cbe80521a8fea723b7ceb8ac72e1d9",
+    "core/pysrc/_hooklib.py": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+    "core/pysrc/_prerequisitelib.py": "8263651e6f29f987b3cc935827c2f6a4b4745251ecddb87a3a7d51fd3d861479",
+    "core/pysrc/_replylib.py": "127d9bcfd842bcea941f2d61b86963cd3e50fcb34a603e8a834fe18d2cc9bf0d"
+  },
+  "disposition_ids": [
+    "disposition:machines:hooks:prerequisite",
+    "disposition:transitions:hooks:prerequisite:01",
+    "disposition:transitions:hooks:prerequisite:02",
+    "disposition:transitions:hooks:prerequisite:03",
+    "disposition:transitions:hooks:prerequisite:04",
+    "disposition:transitions:hooks:prerequisite:05",
+    "disposition:transitions:hooks:prerequisite:06",
+    "disposition:transitions:hooks:prerequisite:07"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/stable-source-first-562c6170/source-group-018-inspection.json",
+      "sha256": "7967a8da1276f50f90a07a6ccf625b2c9a514d961d4421f0e9459f1e51295b26"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/prerequisite/preserved.json",
+      "sha256": "39789af3b96f33e1c471cb6d1416ea11fa379265663405ff477d557bbc3e0f6c"
+    }
+  ],
+  "retained_prior_proof": {
+    "path": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/prerequisite/preserved.json",
+    "sha256": "39789af3b96f33e1c471cb6d1416ea11fa379265663405ff477d557bbc3e0f6c",
+    "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+    "retained_at": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca"
+  },
+  "semantic_mapping_ref": "docs/state-contracts-major/execution/evidence/stable-source-first-562c6170/source-group-018-inspection.json",
+  "scope": "prerequisite: 7 whole transition clauses and 1 complete constituent machines; Finite source guard/effect/retry conformance at the frozen source commit only. No runtime, host/package qualification, model compliance, task/scenario, provider/authentication, physical consent, endpoint policy, publication or whole-program readiness claim. HOLD rows receive no ledger mutation.",
+  "limits": [
+    "No run, platform, package, task, provider, user or installed evidence was renewed.",
+    "All prior original source epochs and raw evidence remain exact."
+  ],
+  "input_membership": [
+    {
+      "profile": "python-import-directory-v1",
+      "root": "core/pysrc",
+      "path_order": "windows",
+      "sha256": "47866d8dbbe83d269b0c3311e9bb1df44111bd8596c4c9808865eabf6d10ff9d"
+    }
+  ]
+}

@@ -1,0 +1,581 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "kind": "installed-run",
+  "source_commit": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+  "source_tree": "d69fb1c0eb4b16672137e1185eb085339f13727d",
+  "result": "PASSED",
+  "producer": {
+    "class": "local-host",
+    "identity": "Original private Windows AMD64 cold archive observer, exact M/R43582198115 production cohort; local child receipts retained"
+  },
+  "host": [
+    "claude",
+    "codex",
+    "pi"
+  ],
+  "platform": "windows/amd64",
+  "installed_artifacts": {
+    "claude": {
+      "archive": "codearbiter-ca-4.0.0.tar.gz",
+      "archive_sha256": "676c25c2726d4c818c654bcb3e11a4f5302cb42ab710dd6cd92093b05967947a",
+      "native_binary_sha256": "c36b4ca918f5f7e9568665ba894bc1e564a29183a0c5be7d7ea051f2e5e6f070",
+      "release_manifest_sha256": "55ae724da5997f93a255f26c6e0b238f93849cda989338e6b9e35e83f8f7bbdd",
+      "bridge_sha256": "59dbf6c51cbbb824cf553aa38aeb9c543dcada14c6311e9393434d231babe03b",
+      "selected_installed_members": {
+        "plugins/ca/helpers/artifacts/ca-artifact-windows-amd64.exe": {
+          "sha256": "c36b4ca918f5f7e9568665ba894bc1e564a29183a0c5be7d7ea051f2e5e6f070",
+          "bytes": 6860288
+        },
+        "plugins/ca/helpers/artifacts/release.json": {
+          "sha256": "55ae724da5997f93a255f26c6e0b238f93849cda989338e6b9e35e83f8f7bbdd",
+          "bytes": 5655
+        },
+        "plugins/ca/hooks/_artifactlib.py": {
+          "sha256": "59dbf6c51cbbb824cf553aa38aeb9c543dcada14c6311e9393434d231babe03b",
+          "bytes": 64937
+        },
+        "plugins/ca/hooks/_host.py": {
+          "sha256": "9d04b88683d1deab03850ef1f2a169579f59756d3430079bdc6aa2160994bc1b",
+          "bytes": 1689
+        },
+        "plugins/ca/hooks/_workflowrecoverylib.py": {
+          "sha256": "65003d177eb77827c3a9723cf1565ed86e8a9724d22fb19cd3a727471cd71dad",
+          "bytes": 104156
+        },
+        "plugins/ca/hooks/hostapi.py": {
+          "sha256": "2aea81ad167a458c6053cb52880952521159a367eaa5baa7df6e2e35fea574e4",
+          "bytes": 38083
+        }
+      }
+    },
+    "codex": {
+      "archive": "codearbiter-ca-codex-0.30.0.tar.gz",
+      "archive_sha256": "eefdaa4b3c34471dae446d84019b5533d09370cf60d945713e1060898ac437ca",
+      "native_binary_sha256": "c36b4ca918f5f7e9568665ba894bc1e564a29183a0c5be7d7ea051f2e5e6f070",
+      "release_manifest_sha256": "55ae724da5997f93a255f26c6e0b238f93849cda989338e6b9e35e83f8f7bbdd",
+      "bridge_sha256": "59dbf6c51cbbb824cf553aa38aeb9c543dcada14c6311e9393434d231babe03b",
+      "selected_installed_members": {
+        "plugins/ca-codex/helpers/artifacts/ca-artifact-windows-amd64.exe": {
+          "sha256": "c36b4ca918f5f7e9568665ba894bc1e564a29183a0c5be7d7ea051f2e5e6f070",
+          "bytes": 6860288
+        },
+        "plugins/ca-codex/helpers/artifacts/release.json": {
+          "sha256": "55ae724da5997f93a255f26c6e0b238f93849cda989338e6b9e35e83f8f7bbdd",
+          "bytes": 5655
+        },
+        "plugins/ca-codex/hooks/_artifactlib.py": {
+          "sha256": "59dbf6c51cbbb824cf553aa38aeb9c543dcada14c6311e9393434d231babe03b",
+          "bytes": 64937
+        },
+        "plugins/ca-codex/hooks/_host.py": {
+          "sha256": "92b1977ada85436649380fdcf07651f586174efee76a8412beb3ae26bf1e457f",
+          "bytes": 15607
+        },
+        "plugins/ca-codex/hooks/_workflowrecoverylib.py": {
+          "sha256": "65003d177eb77827c3a9723cf1565ed86e8a9724d22fb19cd3a727471cd71dad",
+          "bytes": 104156
+        },
+        "plugins/ca-codex/hooks/hostapi.py": {
+          "sha256": "2aea81ad167a458c6053cb52880952521159a367eaa5baa7df6e2e35fea574e4",
+          "bytes": 38083
+        }
+      }
+    },
+    "pi": {
+      "archive": "arbiterforge-ca-pi-0.30.0.tgz",
+      "archive_sha256": "c52dfd6a2022edc6dfc90eab88ce6a8cd433d1fa61bbb8b31fe81166bfecb553",
+      "native_binary_sha256": "c36b4ca918f5f7e9568665ba894bc1e564a29183a0c5be7d7ea051f2e5e6f070",
+      "release_manifest_sha256": "55ae724da5997f93a255f26c6e0b238f93849cda989338e6b9e35e83f8f7bbdd",
+      "bridge_sha256": "59dbf6c51cbbb824cf553aa38aeb9c543dcada14c6311e9393434d231babe03b",
+      "selected_installed_members": {
+        "package/plugins/ca-pi/helpers/artifacts/ca-artifact-windows-amd64.exe": {
+          "sha256": "c36b4ca918f5f7e9568665ba894bc1e564a29183a0c5be7d7ea051f2e5e6f070",
+          "bytes": 6860288
+        },
+        "package/plugins/ca-pi/helpers/artifacts/release.json": {
+          "sha256": "55ae724da5997f93a255f26c6e0b238f93849cda989338e6b9e35e83f8f7bbdd",
+          "bytes": 5655
+        },
+        "package/plugins/ca-pi/hooks/_artifactlib.py": {
+          "sha256": "59dbf6c51cbbb824cf553aa38aeb9c543dcada14c6311e9393434d231babe03b",
+          "bytes": 64937
+        },
+        "package/plugins/ca-pi/hooks/_host.py": {
+          "sha256": "ba885061399fd0fcfd26979ac310ae175a232501346ebae6fd5142db2c302b62",
+          "bytes": 4549
+        },
+        "package/plugins/ca-pi/hooks/_workflowrecoverylib.py": {
+          "sha256": "65003d177eb77827c3a9723cf1565ed86e8a9724d22fb19cd3a727471cd71dad",
+          "bytes": 104156
+        },
+        "package/plugins/ca-pi/hooks/hostapi.py": {
+          "sha256": "2aea81ad167a458c6053cb52880952521159a367eaa5baa7df6e2e35fea574e4",
+          "bytes": 38083
+        }
+      }
+    }
+  },
+  "disposition_ids": [
+    "disposition:transitions:S71:05",
+    "disposition:transitions:S71:06",
+    "disposition:transitions:S72:01",
+    "disposition:transitions:S72:02",
+    "disposition:transitions:S72:03",
+    "disposition:transitions:S72:04",
+    "disposition:transitions:S72:05",
+    "disposition:transitions:S72:06"
+  ],
+  "inputs": {
+    ".github/fixtures/context-onboarding/installed-cells.json": "40fdb795fc48a8b0d06a86fb0fb3ea497d754ca229d005e008cdb83c9f0789ba",
+    ".github/scripts/_boundedproc.py": "671458a00f178ac690e4d1f4e0458da7b3833353384f9cb7546be711bab15f51",
+    ".github/scripts/_contextverificationlib.py": "361b29a202f8ff3fe4f35c58a42d53cf77c4f8fe05985b1e91b721fc8f2a0707",
+    ".github/scripts/check_codex_skill_resources.py": "d9b66e6f9de71e8dcdf3c001141ac35abc350de1dc85b4d583c483be70b7bfb0",
+    ".github/scripts/check_codex_static_package.py": "7c0e43244ea71edcf8ecbb62dcd83209b152e6e63f796557f08027915d2c5618",
+    ".github/scripts/major_readiness.py": "a636eb4e73d1097735b810f1057cacb65f63e36e146ce36193687d3520ffe6fc",
+    ".github/scripts/qualify_workflow_recovery_cohort.py": "b477e0ac63d1a8717ce76e0de4f63920b9d7c485a13bfb06e8fb1c814a09f20d",
+    ".github/scripts/test_artifact_installed_host.py": "06ee6f3407ed4bc8016804794da9702dbdb7e54c9807d9a142805c34422398b5",
+    ".github/scripts/test_context_installed.py": "563efb67846280e1f33b2ae135ba6616e49cee8df96aa56ca30eb421f653bd19",
+    ".github/scripts/test_workflow_recovery_cli.py": "5e3af20417b589322cf2121be7df1697c4533f4052b40003d964f16a3acca4e7",
+    ".github/scripts/test_workflow_recovery_hosts.py": "c52a377ec888eac1142696be66afe983eb74583aad104d2159e76ae2b4cfff56",
+    "core/hosts.json": "3ea50fd2af1ed359e602210de3f0a9b661a567c45d08a5f947f0f4c2e24a8cd8",
+    "core/pysrc/_activationlib.py": "60c6391b4d8b143c5e59cf2320291a2d31063e8fbebe0fcf337dd83e07f8fd97",
+    "core/pysrc/_adrlifecycle.py": "cb1c3c3e39eb2e21f390026b3c336273660a4218e015621f76a18a60ddeaf4f1",
+    "core/pysrc/_adrlifecyclegit.py": "36877c5b94a11135c0b3a4ceb4776e36a94beba1dbd89c0c01be57235806ab24",
+    "core/pysrc/_adrlifecyclewrite.py": "689c79bebe37d412849de84dc3e2b00ba594298b44815effb66bdafbb1663176",
+    "core/pysrc/_appendonlyconflictlib.py": "8fbf10aeaad62bfb1d7da174d71fe354930d3c8a49224b96953b4b87ace687b0",
+    "core/pysrc/_approvallib.py": "fc71ec67a9c44ebbadd9897244da291b6b50768dbe19e59d576ee3f15505828b",
+    "core/pysrc/_arbiterstatelib.py": "19ebd7d82fa56d2a4535043d3a163cfe9f0475aa5d457d5ad8953980d57f71c1",
+    "core/pysrc/_artifactauthoritylib.py": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+    "core/pysrc/_artifactlib.py": "59dbf6c51cbbb824cf553aa38aeb9c543dcada14c6311e9393434d231babe03b",
+    "core/pysrc/_artifactmanifestlib.py": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054",
+    "core/pysrc/_artifactpromptlib.py": "03e0c4b32c806cc054ef34ae7ac58ed093cbe80521a8fea723b7ceb8ac72e1d9",
+    "core/pysrc/_babysitlib.py": "f52d87fb3497cc43262785a201c3f0ac10d3e28f2f2e037bc6cd4044d7206d94",
+    "core/pysrc/_bashguardlib.py": "28fb7a0875395a284df082722e13caa42c35d02bb77a4567bafbbc0e1c45d101",
+    "core/pysrc/_boxlib.py": "b523b1e6ec6753c05224486a0bc2f5d7a553b6628c91939b8462f6a78fa7be0e",
+    "core/pysrc/_cleanuplib.py": "66f099d21eebe2fd8d0eea472fb0f0b5fd62713d6d687eab88e0b74f42c4e03c",
+    "core/pysrc/_colorlib.py": "ff8d212dfc06de9b442330085162b2186a01336cbdc2f76d2f87a88f35f578df",
+    "core/pysrc/_contextmergelib.py": "8d4b990b58e075f01bd9efcb2efeb08705b7be0949af30f82e20a4a517c4653c",
+    "core/pysrc/_contextreportlib.py": "76669de01a426b83a841d439d92f82532923303097fa051c4d08c1a1d0bfb538",
+    "core/pysrc/_contextselectlib.py": "0609783e758b6d654c05eeda8c40ccf355641eaf51fb0d9e9978ae5bf4304706",
+    "core/pysrc/_contextsnapshotlib.py": "bef9c37c09abc39e6113baa39f51f261103c760db66ec8e4cdc5818a075c1afe",
+    "core/pysrc/_contextwriterlib.py": "1a2c1856a2ba17ac17b947e0823b1dece6f355a2de600f70e0d392b09263607f",
+    "core/pysrc/_debughandofflib.py": "1a25b13304f05054f7b3787068b937269066c7cb8c61ef0098f14dad48d78c5f",
+    "core/pysrc/_durabilitylib.py": "42e9d3ed6f6f43c76bef073e6edad2b8a119dfc154e2a497909422b4e4d28f9b",
+    "core/pysrc/_entrylib.py": "1f4f95d55502d022f60bc9754a629a3fd38f0914ad69903fb5aa4aa8c4da8f5a",
+    "core/pysrc/_fmtlib.py": "b5e55dccad28210a2781c883704a491d081264ca3f23993ecb815f76b82b2a85",
+    "core/pysrc/_gitexec.py": "a5935246028f506ef5ab13ba379b399cb7a754a077866fd39528545f30f4bef3",
+    "core/pysrc/_githooks.py": "450d3204c7895d7649c4bd7b1daf40b498b960df48de00138914559d41008e38",
+    "core/pysrc/_gitlib.py": "7b310f1946f358a77d6a9eab2333adb64ba9648d41c69c564b66fcb6ab4df276",
+    "core/pysrc/_hooklib.py": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+    "core/pysrc/_intentlib.py": "9712bed86854f405475958d07727bf21f58a0faa1bfd03c19d9ada8972007319",
+    "core/pysrc/_knowledgelib.py": "abc1f93667faf5241c52931d33fc992e5627bd2c406298937d587c373659eeb9",
+    "core/pysrc/_ledgerlib.py": "33fdd7e0ec5505e4faea7776c861a123206bb5c2c09315b09965ab4f92dda580",
+    "core/pysrc/_modelib.py": "d97433737654bbcad2051e62495e70ec006dc31d458514fa74e338e49d04a1db",
+    "core/pysrc/_overrideappendlib.py": "592f63ca6a6a5e51f5e315cd60f6d2d8a6565234835e0904bb422b74d20090b0",
+    "core/pysrc/_pathnorm.py": "f6a99cddf6277641316f5e8f9d86fb97691e535ba569aa6cb51c9e4f3ed52906",
+    "core/pysrc/_planfilelib.py": "038cf68ad85d022d22aab4da5f218f1ce5fb1bdec3bc60e329c607b806fd6fe0",
+    "core/pysrc/_prerequisitelib.py": "8263651e6f29f987b3cc935827c2f6a4b4745251ecddb87a3a7d51fd3d861479",
+    "core/pysrc/_protectedlib.py": "3156e9ad47cf577476dfcae27fde1d4ebfd71fe33b5e1976d351b8f833ea53d3",
+    "core/pysrc/_protectedstatelib.py": "9703e5e777ab286df820dd14da8c0118c24335d41007abfa6f536b5b0b3f14e0",
+    "core/pysrc/_provenancelib.py": "3cbd8d241ff6640e824ee2707ca1a3bd3202db83df371822201ceeabdd2657e4",
+    "core/pysrc/_prunelib.py": "f34aceae4140a7ff25dff91888cd3b9d7d2e5ddc2e1f084558218b22d1c1bdc4",
+    "core/pysrc/_prunepolicy.py": "13bc82c138975121c3dbd28379a0bc8dda183f09fa6e47fbe2bab2e9cc0faf35",
+    "core/pysrc/_readinjectlib.py": "a4d689293690beefa28e33834c7aa421145bab6547685f8d25e5c29425b61138",
+    "core/pysrc/_reconciliationlib.py": "7a281f3f4cdf7c29d62185d12ac24ebb26e3f1c01f42004aa99a1f8080ae2691",
+    "core/pysrc/_releaselib.py": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea",
+    "core/pysrc/_replylib.py": "127d9bcfd842bcea941f2d61b86963cd3e50fcb34a603e8a834fe18d2cc9bf0d",
+    "core/pysrc/_scopelib.py": "03d1f066863d08c952ebda8d9b6f1515813f53a4fd3fc0af560a735f63954e0b",
+    "core/pysrc/_segmentslib.py": "48faefd3a2134195781d821e46d7d7aa2439ef6f6bd950f4de19eff0d416ebe2",
+    "core/pysrc/_sensitivelib.py": "a3902997c16d367a3c7e6e7247a42ba35d962e2c885f9ed3e8e1ab0ce98ec506",
+    "core/pysrc/_sessionlib.py": "bc9ff7504329deee9b205a8d5e8abd7797b8e404152a5c0147c91c8dfd4b8fa1",
+    "core/pysrc/_sloplib.py": "568692fdecb4237ae961bdc3cdb0a3f1566f1630ba2f18ac0ea13fa4df40214e",
+    "core/pysrc/_sprintapprovallib.py": "5fe52f17bb36abe2bbdaa124bfb9f5f2e391af7de47d7cc6492e334765a5cac8",
+    "core/pysrc/_standuplib.py": "621d318ca6429c95bc45dadeb7fbebbfdd9bc3a5f94267d87fa692e69ef74169",
+    "core/pysrc/_subagentslib.py": "e2a6aaf737d02180fc5d464f8b28a0c723408a19774696f60ad0e8175e4b6529",
+    "core/pysrc/_taskboardlib.py": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+    "core/pysrc/_taskexcludelib.py": "dbe5ae4cbe72a2cdccfb4bdf78b4adbece144fed74703f2d2f403851ce3c39a0",
+    "core/pysrc/_tribunalinventorylib.py": "974533bbe66808475c0e64e3247ee5baf814f9f0762e731f904b924e696de251",
+    "core/pysrc/_tribunalrunlib.py": "c0381e0d22a0e25a22d7ac27adaf518724c322c92dd77b11014702d251fd2624",
+    "core/pysrc/_updatelib.py": "6a66e7bc681bf5c347529becbe6e5405165d59b336436183e4e7881d4d26d7b4",
+    "core/pysrc/_usagelib.py": "bed9730b7b21b382845e2389eead3458d07360c5c86e91ad3b0b9f17112cfff5",
+    "core/pysrc/_workadopt.py": "2691e5e61824ef58cf2e13463de8aaf44a99a831079595d906ce96f06aa320b7",
+    "core/pysrc/_workflowrecoverylib.py": "65003d177eb77827c3a9723cf1565ed86e8a9724d22fb19cd3a727471cd71dad",
+    "core/pysrc/_workgithub.py": "15bcc28b81e7cb87df912bedfc3688d0ec69866a2171aa2db80ba6fc3a3e2930",
+    "core/pysrc/_worklib.py": "4b08bdfdea85a96e1bde4bd7dc610bc61dd8ef31a42d530fb10437b1145818ce",
+    "core/pysrc/adr-acceptance.py": "0b04065fbb367c9da1e690dc622d478be59838949f80e583d730c55401db4f53",
+    "core/pysrc/adr-merge-method.py": "3dae85fb9b0d89ef9f24b95576ef481784739e667f7030dad79a2acc418d66a4",
+    "core/pysrc/append-override.py": "d6a14fef85401e11222737e02b5188c71143d63c396cdaf0f3aa24736502ad9e",
+    "core/pysrc/artifact-authority-hook.py": "783230e6cc6f27ee697797467cac092b8db0b257b6c408f5f7051f403a8d82d4",
+    "core/pysrc/artifact-authority.py": "0dc4fd27b25ec5ca9f38ab0a52301a480c44c87072b0ec92080738fc0db38010",
+    "core/pysrc/artifact-reconcile.py": "adc01569ed70ca46c4dd6d9201b25a32747b7ad413dd3a68a5676d1fdc1b502b",
+    "core/pysrc/babysit.py": "a7fbcb50898df63718f9705da0b69c7e7658932e859cad90710893603f0ff841",
+    "core/pysrc/boardsync.py": "b6e7b0b7e21bc838929593815a071c1418d35e30f1fa0b64410f5a9c2424023b",
+    "core/pysrc/debug-handoff.py": "c6d77fbd2ca05791b59669ce2685cd733afc2a221ebe1bd95801ddc91c26fff9",
+    "core/pysrc/doctor.py": "d3ebfd7a428d6c0664f2990f8d749ce6f514d4a75b582b5ac6ab6ed469ce18a7",
+    "core/pysrc/git-enforce.py": "41e0d0a2d5a08c55cde71441540d8717eee55914de62d3186d05f3de38ab8142",
+    "core/pysrc/hostapi.py": "2aea81ad167a458c6053cb52880952521159a367eaa5baa7df6e2e35fea574e4",
+    "core/pysrc/init-codearbiter.py": "641f0d04057ea22bff6fc39ce6fd95324901c4cc810617f4a783842cd31086b3",
+    "core/pysrc/knowledge.py": "c986978cae7c6cffcd1ce33b2ecf398ed187c16463d30ee598ba9ff05c758847",
+    "core/pysrc/migration-pass.py": "878db96323fefc73b65b6bff73f54bdffafb98af6f260789e79f9b9d3a954fcd",
+    "core/pysrc/post-write-edit.py": "691d3d3691a49d25c60749153a95488a63b31414db34145a719ed14522e9e7cd",
+    "core/pysrc/pre-bash.py": "b2cf1a875a6ec0aa4c36e59bfdc2c9f64a81a70dcc901a5bbc46465b087e4873",
+    "core/pysrc/pre-edit.py": "baa81cd615c6ef9d0df399f7c5a15e5f5cd7d0bdff84508ae22d62b4b9b047a3",
+    "core/pysrc/pre-read.py": "e8acb8b4901198cac202084b880605d7dd0a702781d650a47dad5d0214c491f3",
+    "core/pysrc/pre-write.py": "8f6cbdb29ecde96ab608fbafdfc0373c664686f89da9f21aa71129e9f72003f8",
+    "core/pysrc/prompt-submit.py": "34eeb237a4484224083e6b8e75f351041c28f5e22c57c8d9ca33ba9a9dc9743b",
+    "core/pysrc/prune-transcript.py": "697c844472240ac0440e4043d17eb7de832d70eadf6e21de0ab0684a07008977",
+    "core/pysrc/releasehash.py": "a9e806767403343937015026d544513985a6fb8d5cf7578f42d038797d9b0614",
+    "core/pysrc/resolve-append-only-conflict.py": "4f9c5e92f7dd3371edaee443997728fd4d86e93394aced542e4c1c934c0eacf0",
+    "core/pysrc/resolve-context-conflict.py": "e2ee12d67b0c4a1c7f786171ecd46d77d202e134b87c72a194a35e86eef483a1",
+    "core/pysrc/security-pass.py": "fc0e0a054cd36fbe3150dceacca2d603d106b36ae49db405d91109f016a211ed",
+    "core/pysrc/session-start.py": "4c3c1e9b8180aa571eda8fcacf24569f1fd16366a12c3aba5f76944cf1ba52cb",
+    "core/pysrc/statusline.py": "3cbe9248df153967c3e22d9d05fbf6ab01e668d8539e1defcf5ac7a55df2881c",
+    "core/pysrc/taskwrite.py": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25",
+    "core/pysrc/tribunal.py": "01322be9197fbd2ccaabad56ff7f7fa2dd64abda618d98d6194f528a028a343c",
+    "core/pysrc/update-refresh.py": "73ef43701475c700a34bd0ac22f18085e0c29fa72157c960232ae1ec8e0b282c",
+    "core/pysrc/wire-statusline.py": "216e3754cf0fb8f9c33d77a18c2ce26f85a1b0b025ef28675bfcd3785bfef1a4",
+    "core/pysrc/work.py": "fe51520ff1faa8d94740fde5a8d73c0a2626841abc7eae5397e6969055b95722",
+    "core/pysrc/workflow-recovery.py": "a9a971371d2be4ece6eebdce24f4e2ebeb1a2a9a23e16d3d6d5e39479ef2b482",
+    "tools/build-host-packages.py": "c2c812bf93e81b69cbf62c133c569a6bce07a56e8fc0edbe501a22f9f60d2225",
+    "tools/host_descriptors.py": "2c98ea82723f60879616469ec399cd81db0fb9cb98f4c943eea1dce852123601",
+    "tools/install-artifact-payload.py": "57d98c6db9a9a24431b42ab5e77907f8c94c10d7dbb4f7a273c9c55c90b5f985",
+    "tools/owned_output.py": "52ee664a00b4f66df8f585047cf38a839428c489762890208a9db1961060b22c"
+  },
+  "absent_inputs": [
+    {
+      "path": "core/pysrc/_host.py",
+      "path_style": "windows"
+    }
+  ],
+  "commands": [
+    {
+      "argv": [
+        "C:/Python314/python.exe",
+        "-B",
+        "C:\\Users\\brenn\\.codex\\worktrees\\state-contracts-merge-acceptance\\codeArbiter\\tools\\build-host-packages.py",
+        "--cold-package-root",
+        "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-cohort-M46e29-R43582198115\\packages",
+        "--cold-host",
+        "claude",
+        "--cold-platform",
+        "windows/amd64",
+        "--cold-receipt",
+        "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-windows-M46e29-R43582198115\\cold-claude.json",
+        "--release-package-stage",
+        "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-cohort-M46e29-R43582198115\\stage",
+        "--source-repo",
+        "C:\\Users\\brenn\\.codex\\worktrees\\state-contracts-merge-acceptance\\codeArbiter",
+        "--trusted-source-commit",
+        "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+        "--trusted-workflow",
+        ".github/workflows/ci.yml",
+        "--trusted-workflow-run",
+        "43582198115",
+        "--cold-promotion-receipt-sha256",
+        "a026e43fb2a74cfa8dcedf022db50f6cb46876a15556b318d3660f39d856d084"
+      ],
+      "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-windows-M46e29-R43582198115\\cold-claude\\work",
+      "exit_code": 0,
+      "timed_out": false,
+      "containment": "exited",
+      "elapsed_seconds": 20.97964839998167,
+      "original_execution": true,
+      "execution_location": "local Windows AMD64"
+    },
+    {
+      "argv": [
+        "C:/Python314/python.exe",
+        "-B",
+        "C:\\Users\\brenn\\.codex\\worktrees\\state-contracts-merge-acceptance\\codeArbiter\\tools\\build-host-packages.py",
+        "--cold-package-root",
+        "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-cohort-M46e29-R43582198115\\packages",
+        "--cold-host",
+        "codex",
+        "--cold-platform",
+        "windows/amd64",
+        "--cold-receipt",
+        "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-windows-M46e29-R43582198115\\cold-codex.json",
+        "--release-package-stage",
+        "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-cohort-M46e29-R43582198115\\stage",
+        "--source-repo",
+        "C:\\Users\\brenn\\.codex\\worktrees\\state-contracts-merge-acceptance\\codeArbiter",
+        "--trusted-source-commit",
+        "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+        "--trusted-workflow",
+        ".github/workflows/ci.yml",
+        "--trusted-workflow-run",
+        "43582198115",
+        "--cold-promotion-receipt-sha256",
+        "a026e43fb2a74cfa8dcedf022db50f6cb46876a15556b318d3660f39d856d084"
+      ],
+      "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-windows-M46e29-R43582198115\\cold-codex\\work",
+      "exit_code": 0,
+      "timed_out": false,
+      "containment": "exited",
+      "elapsed_seconds": 19.382083800039254,
+      "original_execution": true,
+      "execution_location": "local Windows AMD64"
+    },
+    {
+      "argv": [
+        "C:/Python314/python.exe",
+        "-B",
+        "C:\\Users\\brenn\\.codex\\worktrees\\state-contracts-merge-acceptance\\codeArbiter\\tools\\build-host-packages.py",
+        "--cold-package-root",
+        "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-cohort-M46e29-R43582198115\\packages",
+        "--cold-host",
+        "pi",
+        "--cold-platform",
+        "windows/amd64",
+        "--cold-receipt",
+        "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-windows-M46e29-R43582198115\\cold-pi.json",
+        "--release-package-stage",
+        "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-cohort-M46e29-R43582198115\\stage",
+        "--source-repo",
+        "C:\\Users\\brenn\\.codex\\worktrees\\state-contracts-merge-acceptance\\codeArbiter",
+        "--trusted-source-commit",
+        "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+        "--trusted-workflow",
+        ".github/workflows/ci.yml",
+        "--trusted-workflow-run",
+        "43582198115",
+        "--cold-promotion-receipt-sha256",
+        "a026e43fb2a74cfa8dcedf022db50f6cb46876a15556b318d3660f39d856d084"
+      ],
+      "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-windows-M46e29-R43582198115\\cold-pi\\work",
+      "exit_code": 0,
+      "timed_out": false,
+      "containment": "exited",
+      "elapsed_seconds": 18.40452440001536,
+      "original_execution": true,
+      "execution_location": "local Windows AMD64"
+    }
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/cold-claude/result.json",
+      "sha256": "41ed2c7742ff32cfbe073cacb2e208427ab51c483dc3eed61a5bd18f6342bb5f"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/cold-claude/child-exit.json",
+      "sha256": "268e73ca56e8576f44c8fd05ee9625aaede99ce1baa824d7c57e5a2445493c5a"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/cold-claude/command.json",
+      "sha256": "12e326ef8e001be3a5b5e6e8559282304958ec5e0a718d466b8e67fd7c6c0686"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/cold-claude/receipt-observation.json",
+      "sha256": "18ef5bbad6dbfcaedda95fd32d90babd3e08eb38262222a54e34d5dba0fdfd96"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/cold-claude/inputs-before.json",
+      "sha256": "8c47984c36c38b19f9f8745fd042a24c3de5b0a9aa17b09709bfb7410b818781"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/cold-claude/inputs-after.json",
+      "sha256": "8c47984c36c38b19f9f8745fd042a24c3de5b0a9aa17b09709bfb7410b818781"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/cold-claude/original.stdout.log",
+      "sha256": "5a820841c6a549c737c8b6ee9e1b37f735e6aebaf9253293c62ae4c312d3840b"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/cold-claude/original.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/cold-claude.json",
+      "sha256": "70593cbc601237908bbbe1e3eada03647ac2852b82ab9b662538e83f392f9785"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/cold-codex/result.json",
+      "sha256": "03ec3e4c484890a07a9b0d6ec0418dfe469c19e03aaf8748e5ff5388e74baa2e"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/cold-codex/child-exit.json",
+      "sha256": "b72839ad58de91cd6e015e0d5edfebe0076f315b5fb5fa691db1fc85211e0b43"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/cold-codex/command.json",
+      "sha256": "fcb29b9401eebd179e1df52a797876237984a3e5d60af9ce0bee051d884114e7"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/cold-codex/receipt-observation.json",
+      "sha256": "5d8a352b4fc0cbf950b077dd62fda4e05911f1f27daded87190241396418967f"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/cold-codex/inputs-before.json",
+      "sha256": "8c47984c36c38b19f9f8745fd042a24c3de5b0a9aa17b09709bfb7410b818781"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/cold-codex/inputs-after.json",
+      "sha256": "8c47984c36c38b19f9f8745fd042a24c3de5b0a9aa17b09709bfb7410b818781"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/cold-codex/original.stdout.log",
+      "sha256": "5a820841c6a549c737c8b6ee9e1b37f735e6aebaf9253293c62ae4c312d3840b"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/cold-codex/original.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/cold-codex.json",
+      "sha256": "6de480b94510cf315f75446a0cbf2d607d738bb9cabcdb97a07200795f57975e"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/cold-pi/result.json",
+      "sha256": "247a1481d1b2a82e3a2511534021275a3efd6554a2a132f1a9247d8f03636462"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/cold-pi/child-exit.json",
+      "sha256": "b83aa5ff9ce1082fcff32441fd273ac056a1b6224cf1c1241e408dd7deb12501"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/cold-pi/command.json",
+      "sha256": "9291e77421865e61a785586fd65036d038def1a38137ff54317aa2b56fd35dd2"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/cold-pi/receipt-observation.json",
+      "sha256": "9bb4889fc958842cc1e793fe3f3d062926aea2e5224093fbcf502e0d8d04ceac"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/cold-pi/inputs-before.json",
+      "sha256": "8c47984c36c38b19f9f8745fd042a24c3de5b0a9aa17b09709bfb7410b818781"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/cold-pi/inputs-after.json",
+      "sha256": "8c47984c36c38b19f9f8745fd042a24c3de5b0a9aa17b09709bfb7410b818781"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/cold-pi/original.stdout.log",
+      "sha256": "5a820841c6a549c737c8b6ee9e1b37f735e6aebaf9253293c62ae4c312d3840b"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/cold-pi/original.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/cold-pi.json",
+      "sha256": "fd9ab9fbf59c539ca0b2de428884e67d64e930a8244db373bc7d2c27c5e75dc5"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/workflow-recovery/result.json",
+      "sha256": "226c5e420d9266ca08fcc96653377b4587d2122e88978ca278a7f5b5e7de6d85"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/workflow-recovery/child-exit.json",
+      "sha256": "968b8203a3d4b32631cd8796316625884d4aab626514bad0864e7f7eaa23229a"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/workflow-recovery/command.json",
+      "sha256": "d930c8aa13a529798f87c75fb956e35cf116db9ed11911d099827fa8fc8579fa"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/workflow-recovery/receipt-observation.json",
+      "sha256": "75b16237574b04792e6a0001dc07686219fcce52b37b56e4730023ebb737b82f"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/workflow-recovery/inputs-before.json",
+      "sha256": "8c47984c36c38b19f9f8745fd042a24c3de5b0a9aa17b09709bfb7410b818781"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/workflow-recovery/inputs-after.json",
+      "sha256": "8c47984c36c38b19f9f8745fd042a24c3de5b0a9aa17b09709bfb7410b818781"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/workflow-recovery/original.stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/workflow-recovery/original.stderr.log",
+      "sha256": "c5d1ea2e848402a98fcc3d85153c156163749910b8e2873f977070e71ad5e883"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/workflow-recovery-cohort.json",
+      "sha256": "823fc907298aa17572b9688c2f7b3242c07559097e7f1e9729cc08ac7e5c55cf"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/runner-result.json",
+      "sha256": "0c523fff10d31f52b0fc4b6dae021cb2dd071875d48fe367cec45a08ef9a2fe0"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/runner-inputs-before.json",
+      "sha256": "31d4213ae114cd4e7ffaa8c9e98221abc94525d10e246b978b7e0a1a848ffb3d"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/production-admission.json",
+      "sha256": "e3f54c5296dc069ba8313dcb5bb69ec19d08a83c71402d19d18bbe66da4ddc39"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/admission-payload-before.json",
+      "sha256": "2905102cc24520e99e0f4610de641f2d743882938d4c50412c6760a562a27d35"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/original-current-run.json",
+      "sha256": "d8e88add04beb3740177d14cf61346adea27cd370ba780b38778b2313c3496ea"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/current-original-artifact-metadata.json",
+      "sha256": "617a4551c14cea2605785fda32e4312d8b141c404dc54cc2ac9706ac232144f8"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/commands.json",
+      "sha256": "46ed5a5efd83a8426337ff5d5a8e9a8588a44d87874d7993bc1c7c002e575a56"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/python-version.json",
+      "sha256": "2496b5922e227393f92771663dcd02da748d33e7f90dd237c05057599e429bca"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/node-version.json",
+      "sha256": "eace2538f17808027c20f716896b042d648290d238781621d2ed6c437ea83458"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/git-version.json",
+      "sha256": "8896213851a0efbb937993bac0d57f9f66d587dbbaaac4f14034dcd444e9ce65"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/acquisition.json",
+      "sha256": "c4362438de5cc8f0f5b3b5d11d21691be6e37cd1f9e27d82491261421e8f2e0c"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/artifact-package-cohort.json",
+      "sha256": "9a73912786f525c6347539e73fc5f37644482bddefca8c0260ed4dda43f6ef01"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/artifact-promotion.json",
+      "sha256": "a026e43fb2a74cfa8dcedf022db50f6cb46876a15556b318d3660f39d856d084"
+    }
+  ],
+  "clause_observations": {
+    "S71:05": "Recorded require_production=True admission and each successful cold owner re-derive and verify the exact M/R/promotion cohort, packer identity and all three package member inventories.",
+    "S71:06": "Verified production cohort was actually consumed by cold3 and recovery10; no construction or negative-path claim.",
+    "S72:01": "Each exact host archive extracted by owning cold path into TemporaryDirectory on actual windows/amd64; workflow empty PATH and private runner HOME/TEMP; runtime_downloads=false.",
+    "S72:02": "Exact promoted native hash executed capabilities with empty env; owning parser demands exact protocol/operation/ok/result plus platform/repository operations/no-download facts.",
+    "S72:03": "All three installed bridges return exact workflow fields with interruption_reconciled, redispatched, commit_proof, finalization_proof, all_accepted_and_current=true and markdown_shadow_count0.",
+    "S72:04": "Pi receipt specifically reports synthetic-policy-event for both approval and prerequisite evidence. This observation carries no real interactive approval inference.",
+    "S72:05": "Current M intentionally runs three named installed context cases for Claude/Codex/Pi under require_production and platform context_qualification. Pi scope is candidate-preflight/live_qualified=false with authority_evidence_mode none-required-or-created, superseding old unsupported prose only for this fixture preflight.",
+    "S72:06": "New exact original cold receipts bind host/platform/M/workflow/R/package/native/manifest/installed bridge and response digests. Successful cold owner refuses native/workflow nonzero or stderr before writing receipt."
+  },
+  "limits": [
+    "Local original archive execution on Windows AMD64, not a new hosted execution or six-platform runtime union.",
+    "M native/archive evidence remains M. Current Gov F includes the NT06 Go test; M Go membership244 versus F245 is not relabeled or inferred passed.",
+    "114 exact source inputs unchanged before/after each actual child and equal immutable M; same114 equal current Gov F. Prebuilt native bytes are independently bound through original package/promotion identity, not a current-source Go compilation claim.",
+    "Bare core/pysrc/_host.py absence applies only to that canonical source lookup. All three installed hooks/_host.py are positively present and separately hashed.",
+    "Claude/Codex host-observed-prompt means installed bridge fixture events. Pi synthetic-policy-event is fixture evidence. No physical human consent or visible parent TUI/provider qualification.",
+    "Retained recovery10 are finite CLI/hook-event seams, not all22 canonical branches, platform concurrency, migration/downgrade, Pi revoked delegation or whole HW-15 completion.",
+    "Nested cold context/workflow subprocess outputs are retained only as owning cold receipt hashes and asserted outcomes; do not claim their original raw stdout bytes were separately retained.",
+    "No test, native command, build, download, API, install or package verification owner was executed by this proposal author. Only recorded evidence reading, hashing, immutable Git reads and in-memory archive inspection occurred."
+  ],
+  "original_archive_provenance": {
+    "source_commit": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+    "run_id": 43582198115,
+    "run_attempt": 2,
+    "normal_push_run_conclusion": "success",
+    "acquisition_sha256": "c4362438de5cc8f0f5b3b5d11d21691be6e37cd1f9e27d82491261421e8f2e0c",
+    "cohort_sha256": "9a73912786f525c6347539e73fc5f37644482bddefca8c0260ed4dda43f6ef01",
+    "promotion_receipt_sha256": "a026e43fb2a74cfa8dcedf022db50f6cb46876a15556b318d3660f39d856d084"
+  }
+}

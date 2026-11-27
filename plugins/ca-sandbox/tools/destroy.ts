@@ -367,9 +367,15 @@ function boundedRefs(label: string, refs: string[]): string[] {
  */
 export function formatTeardownDiagnostic(verb: string, r: TeardownReport): string {
   if (!teardownIncomplete(r)) return "";
+  // A failed listing contributes no refs, and a truncated failure log can
+  // omit a listing failure. Both leave presence unverified in this report.
+  const observationIncomplete = r.failureCount > r.failures.length ||
+    r.failures.some(f => f.op === "list-containers" || f.op === "list-volumes");
+  const remaining = observationIncomplete
+    ? "Resource observation was incomplete."
+    : `${r.remainingContainers.length} container(s) and ${r.remainingVolumes.length} volume(s) still present.`;
   const lines: string[] = [
-    `sandbox ${verb}: teardown INCOMPLETE — ${r.failureCount} docker operation(s) failed; ` +
-      `${r.remainingContainers.length} container(s) and ${r.remainingVolumes.length} volume(s) still present.`,
+    `sandbox ${verb}: teardown INCOMPLETE — ${r.failureCount} docker operation(s) failed; ${remaining}`,
   ];
   for (const f of r.failures) lines.push(`  ${f.op} ${f.ref}: docker exit ${f.code}: ${f.message}`);
   if (r.failureCount > r.failures.length)

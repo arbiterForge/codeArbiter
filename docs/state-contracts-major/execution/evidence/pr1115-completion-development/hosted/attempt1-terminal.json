@@ -1,0 +1,646 @@
+{
+  "schema": "exact-pr-watch-terminal-v1",
+  "recorded_utc": "2026-11-16T11:21:14.026683+00:00",
+  "pr": 1115,
+  "expected_head": "a980c220ca4d66be552d06b84596dd56e8822eca",
+  "observed_head": "a980c220ca4d66be552d06b84596dd56e8822eca",
+  "head_pin": true,
+  "base": "major/state-contracts",
+  "ci": {
+    "id": 43852022192,
+    "head_sha": "a980c220ca4d66be552d06b84596dd56e8822eca",
+    "event": "pull_request",
+    "run_attempt": 1,
+    "status": "completed",
+    "conclusion": "failure",
+    "path": ".github/workflows/ci.yml",
+    "head_branch": "codex/state-contracts-remaining-qualification"
+  },
+  "docs": {
+    "id": 43852021926,
+    "head_sha": "a980c220ca4d66be552d06b84596dd56e8822eca",
+    "event": "pull_request",
+    "run_attempt": 1,
+    "status": "completed",
+    "conclusion": "success",
+    "path": ".github/workflows/docs.yml",
+    "head_branch": "codex/state-contracts-remaining-qualification"
+  },
+  "watch_exit": 1,
+  "all_checks_terminal": true,
+  "all_checks": [
+    {
+      "bucket": "skipping",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852022192/job/133263610643",
+      "name": "major readiness producer",
+      "state": "SKIPPED"
+    },
+    {
+      "bucket": "fail",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852022192/job/133263577338",
+      "name": "[GATE ] | [REPO] | Merge readiness",
+      "state": "FAILURE"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852022192/job/133260766967",
+      "name": "[CHECK] | [CORE] | Structured artifact cold package  <darwin/amd64>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852022192/job/133260766901",
+      "name": "[CHECK] | [CORE] | Structured artifact cold package  <linux/arm64>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852022192/job/133260766983",
+      "name": "[CHECK] | [CORE] | Structured artifact cold package  <linux/amd64>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852022192/job/133260766976",
+      "name": "[CHECK] | [CORE] | Structured artifact cold package  <darwin/arm64>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852022192/job/133260766927",
+      "name": "[CHECK] | [CORE] | Structured artifact cold package  <windows/arm64>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852022192/job/133260766827",
+      "name": "[CHECK] | [CORE] | Structured artifact cold package  <windows/amd64>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "skipping",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852022192/job/133260770174",
+      "name": "[CHECK] | [CDX ] | Installed retained package <codex: ${{ matrix.codex-version }}>",
+      "state": "SKIPPED"
+    },
+    {
+      "bucket": "skipping",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852022192/job/133260770110",
+      "name": "[CHECK] | [PI  ] | Installed retained package <pi: ${{ matrix.system }} 1.5.0>",
+      "state": "SKIPPED"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852022192/job/133260381911",
+      "name": "[CHECK] | [CORE] | Structured artifact package assembly",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852022192/job/133260381949",
+      "name": "[CHECK] | [CORE] | Structured artifact browser qualification",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852022192/job/133260201402",
+      "name": "[CHECK] | [CORE] | Structured artifact qualification",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "fail",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852022192/job/133260012233",
+      "name": "[CHECK] | [REPO] | Coverage union",
+      "state": "FAILURE"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852022192/job/133251072518",
+      "name": "[CHECK] | [CORE] | Native adapters and conformance <darwin/arm64>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852022192/job/133251072521",
+      "name": "[CHECK] | [CORE] | Native authority <darwin/amd64>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852022192/job/133251072397",
+      "name": "[CHECK] | [CORE] | Native authority <darwin/arm64>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852022192/job/133252427983",
+      "name": "[CHECK] | [CORE] | Native Go statement coverage",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852022192/job/133251072427",
+      "name": "[CHECK] | [CORE] | Native adapters and conformance <darwin/amd64>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "skipping",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852021926/job/133252252221",
+      "name": "Site | [Deploy] - GitHub Pages",
+      "state": "SKIPPED"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852022192/job/133251072563",
+      "name": "[CHECK] | [CORE] | Native adapters and conformance <linux/arm64>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852022192/job/133246847557",
+      "name": "[CHECK] | [CORE] | Hook contract  <os: macos-latest \u00b7 partition: all>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852022192/job/133251072627",
+      "name": "[CHECK] | [CORE] | Native adapters and conformance <linux/amd64>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852022192/job/133251072524",
+      "name": "[CHECK] | [CORE] | Native authority <linux/arm64>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852022192/job/133251072544",
+      "name": "[CHECK] | [CORE] | Native authority <linux/amd64>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852022192/job/133251072446",
+      "name": "[CHECK] | [CORE] | Native adapters and conformance <windows/arm64>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852022192/job/133251072451",
+      "name": "[CHECK] | [CORE] | Native adapters and conformance <windows/amd64>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852022192/job/133251072311",
+      "name": "[CHECK] | [CORE] | Native authority <windows/amd64>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852022192/job/133251072401",
+      "name": "[CHECK] | [CORE] | Native authority <windows/arm64>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852022192/job/133248266092",
+      "name": "[CHECK] | [PI  ] | Coverage union",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852022192/job/133246847299",
+      "name": "[GATE ] | [PI  ] | Payload version",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852022192/job/133246847443",
+      "name": "[GATE ] | [CDX ] | Candidate provenance",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852022192/job/133246847157",
+      "name": "[CHECK] | [REPO] | Program integrity  <os: macos-latest>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852022192/job/133246847261",
+      "name": "[GATE ] | [CA  ] | Payload version",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852022192/job/133246847416",
+      "name": "[CHECK] | [CORE] | Workflow recovery  <os: macos-latest>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852022192/job/133246846944",
+      "name": "[CHECK] | [PI  ] | Security analysis  <language: JavaScript/TypeScript>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852022192/job/133246847780",
+      "name": "[CHECK] | [CDX ] | Reference graph",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852022192/job/133246847730",
+      "name": "[WATCH] | [CDX ] | Upstream compatibility  <runtime: npm latest>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852022192/job/133246847649",
+      "name": "[CHECK] | [PI  ] | Adapter contract  <os: ubuntu-latest \u00b7 runtime: Pi 1.5.0>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "fail",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852022192/job/133246847693",
+      "name": "[CHECK] | [PI  ] | Adapter contract  <os: windows-latest \u00b7 runtime: Pi 1.5.0>",
+      "state": "FAILURE"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852022192/job/133246847896",
+      "name": "[CHECK] | [CDX ] | Real-host install  <codex: 0.143.0>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852022192/job/133246847702",
+      "name": "[CHECK] | [CDX ] | Real-host install  <codex: 0.145.0>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852022192/job/133246847245",
+      "name": "[CHECK] | [CA  ] | Farm dispatcher contract",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "cancel",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852022192/job/133246847676",
+      "name": "Coverage union  <os: windows-latest>",
+      "state": "CANCELLED"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852022192/job/133246847611",
+      "name": "Coverage union  <os: ubuntu-latest>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852022192/job/133246847674",
+      "name": "[CHECK] | [PI  ] | Adapter contract  <os: macos-latest \u00b7 runtime: Pi 1.5.0>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852022192/job/133246847554",
+      "name": "[WATCH] | [PI  ] | Upstream compatibility  <runtime: npm latest>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852022192/job/133246846705",
+      "name": "[CHECK] | [CORE] | Instrumented native coverage <darwin/amd64>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852022192/job/133246847470",
+      "name": "[CHECK] | [CORE] | Hook contract  <os: ubuntu-latest \u00b7 partition: all>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852022192/job/133246847247",
+      "name": "[CHECK] | [CORE] | Workflow recovery  <os: ubuntu-latest>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852022192/job/133246847412",
+      "name": "[CHECK] | [CA  ] | Documentation consistency",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852022192/job/133246847312",
+      "name": "[GATE ] | [SBX ] | Payload version",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852022192/job/133246847347",
+      "name": "[CHECK] | [REPO] | Program integrity  <os: ubuntu-latest>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852022192/job/133246847211",
+      "name": "[CHECK] | [PI  ] | Host-independent adapter contract",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852022192/job/133246847446",
+      "name": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: isolation>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852022192/job/133246847431",
+      "name": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852022192/job/133246846920",
+      "name": "[CHECK] | [CORE] | Tested native candidate build <windows/amd64>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852022192/job/133246847259",
+      "name": "[CHECK] | [SBX ] | Reference graph",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852022192/job/133246847300",
+      "name": "[CHECK] | [REPO] | Manifest contract",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852022192/job/133246847387",
+      "name": "[CHECK] | [CORE] | Workflow recovery  <os: windows-latest>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852022192/job/133246847266",
+      "name": "[GATE ] | [CDX ] | Payload version",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852022192/job/133246847233",
+      "name": "[CHECK] | [REPO] | Program integrity  <os: windows-latest>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852022192/job/133246846856",
+      "name": "[CHECK] | [CORE] | Tested native candidate build <linux/arm64>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852022192/job/133246846975",
+      "name": "[CHECK] | [CORE] | Tested native candidate build <darwin/arm64>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852022192/job/133246846967",
+      "name": "[CHECK] | [CORE] | Default native, storage and context checks <linux/arm64>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852022192/job/133246847051",
+      "name": "[CHECK] | [CORE] | Default native, storage and context checks <darwin/arm64>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852022192/job/133246846843",
+      "name": "[CHECK] | [CORE] | Tested native candidate build <windows/arm64>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852022192/job/133246847132",
+      "name": "[CHECK] | [CA  ] | Reference graph",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852022192/job/133246847001",
+      "name": "[CHECK] | [CORE] | Default native, storage and context checks <darwin/amd64>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852022192/job/133246846998",
+      "name": "[CHECK] | [CORE] | Default native, storage and context checks <linux/amd64>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852022192/job/133246846866",
+      "name": "[CHECK] | [CORE] | Default native, storage and context checks <windows/arm64>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852022192/job/133246846707",
+      "name": "[CHECK] | [CORE] | Instrumented native coverage <darwin/arm64>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852022192/job/133246846448",
+      "name": "Coverage union (Pi)  <os: ubuntu-latest>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852022192/job/133246846790",
+      "name": "[CHECK] | [CORE] | Instrumented native coverage <linux/arm64>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852022192/job/133246846857",
+      "name": "[CHECK] | [CORE] | Tested native candidate build <linux/amd64>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852022192/job/133246846848",
+      "name": "[CHECK] | [CORE] | Tested native candidate build <darwin/amd64>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852022192/job/133246846689",
+      "name": "[CHECK] | [CORE] | Instrumented native coverage <windows/arm64>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852022192/job/133246846914",
+      "name": "[CHECK] | [CORE] | Default native, storage and context checks <windows/amd64>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852022192/job/133246846192",
+      "name": "[CHECK] | [CORE] | Host descriptor contract",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852022192/job/133246846381",
+      "name": "[CHECK] | [REPO] | Impact planner contract",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852022192/job/133246846325",
+      "name": "[CHECK] | [CDX ] | Skill resource evidence contract",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852022192/job/133246846695",
+      "name": "[CHECK] | [CORE] | Instrumented native coverage <windows/amd64>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852022192/job/133246846346",
+      "name": "Coverage union (Pi)  <os: windows-latest>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852022192/job/133246846900",
+      "name": "[CHECK] | [SBX ] | Sandbox driver contract",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852022192/job/133246846671",
+      "name": "[CHECK] | [CORE] | Instrumented native coverage <linux/amd64>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "skipping",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852022192/job/133246849729",
+      "name": "[CHECK] | [SBX ] | Installed shipped bundle <docker>",
+      "state": "SKIPPED"
+    },
+    {
+      "bucket": "skipping",
+      "link": "https://coderabbit.ai?utm_source=cr_app&utm_medium=github",
+      "name": "CodeRabbit",
+      "state": "SKIPPED"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852022192/job/133246708970",
+      "name": "[CHECK] | [REPO] | Control bytes",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852022192/job/133246709031",
+      "name": "[CHECK] | [REPO] | Branch protection",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852022192/job/133246708913",
+      "name": "[CHECK] | [REPO] | Secret scan",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852022192/job/133246708903",
+      "name": "[CHECK] | [REPO] | Published tag immutability",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852022192/job/133246708953",
+      "name": "[CHECK] | [REPO] | Documentation contract",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852022192/job/133246708922",
+      "name": "[GATE ] | [RELEASE] | Candidate readiness",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852022192/job/133246709002",
+      "name": "[CHECK] | [CORE] | Generated surface",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852022192/job/133246708865",
+      "name": "[CHECK] | [REPO] | License consistency",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852021926/job/133246706366",
+      "name": "Site | [Build] - Astro Pages",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852022192/job/133246708428",
+      "name": "[CHECK] | [REPO] | Impact selection",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852021926/job/133246706979",
+      "name": "Site | [Test] - Generator",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "skipping",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852021926/job/133246709763",
+      "name": "Site | [Deploy] - Qualified GitHub Pages",
+      "state": "SKIPPED"
+    },
+    {
+      "bucket": "skipping",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852021926/job/133246708602",
+      "name": "Site | [Prepare] - Qualified Pages",
+      "state": "SKIPPED"
+    }
+  ],
+  "required": [
+    {
+      "bucket": "fail",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43852022192/job/133263577338",
+      "name": "[GATE ] | [REPO] | Merge readiness",
+      "state": "FAILURE"
+    }
+  ],
+  "verdict": "BLOCK",
+  "limits": [
+    "PR checks do not qualify installed/native normal-run evidence.",
+    "No retry/cancel/merge/source/ref writes; parent1098 held from main."
+  ]
+}

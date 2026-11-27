@@ -1,0 +1,409 @@
+{
+  "format": "finite-current-software54-result/1",
+  "owner": "statusline",
+  "source_commit": "7ac016078da0beedc92537334d6c8d849794f2dc",
+  "source_tree": "e604e5c7c7e0673cc0793933f13b8cb0b3a913d7",
+  "exit_code": 0,
+  "timed_out": false,
+  "seconds": 1.2645418000029167,
+  "before_after_all_closure_equal": true,
+  "namespace_projection": {
+    "core/pysrc": {
+      "Git_names_equal_physical_names": false,
+      "legacy_cache_entries_preserved": [
+        "__pycache__",
+        "__pycache__/_activationlib.cpython-314.pyc",
+        "__pycache__/_adrlifecycle.cpython-314.pyc",
+        "__pycache__/_adrlifecyclegit.cpython-314.pyc",
+        "__pycache__/_artifactauthoritylib.cpython-314.pyc",
+        "__pycache__/_artifactlib.cpython-314.pyc",
+        "__pycache__/_artifactmanifestlib.cpython-314.pyc",
+        "__pycache__/_artifactpromptlib.cpython-314.pyc",
+        "__pycache__/_entrylib.cpython-314.pyc",
+        "__pycache__/_gitexec.cpython-314.pyc",
+        "__pycache__/_hooklib.cpython-314.pyc",
+        "__pycache__/_intentlib.cpython-314.pyc",
+        "__pycache__/_knowledgelib.cpython-314.pyc",
+        "__pycache__/_pathnorm.cpython-314.pyc",
+        "__pycache__/_protectedlib.cpython-314.pyc",
+        "__pycache__/_releaselib.cpython-314.pyc",
+        "__pycache__/_replylib.cpython-314.pyc",
+        "__pycache__/_scopelib.cpython-314.pyc",
+        "__pycache__/_sensitivelib.cpython-314.pyc",
+        "__pycache__/hostapi.cpython-314.pyc",
+        "__pycache__/knowledge.cpython-314.pyc",
+        "__pycache__/security-pass.cpython-314.pyc"
+      ],
+      "other_entries_preserved": [],
+      "causal_untracked_shadows": [],
+      "private_prefix_before_import": "Private cache prefix redirects import cache lookup; no legacy entry removed or assumed absent."
+    },
+    "plugins/ca/hooks": {
+      "Git_names_equal_physical_names": false,
+      "legacy_cache_entries_preserved": [
+        "__pycache__",
+        "__pycache__/_activationlib.cpython-314.pyc",
+        "__pycache__/_artifactlib.cpython-314.pyc",
+        "__pycache__/_artifactmanifestlib.cpython-314.pyc",
+        "__pycache__/_bashguardlib.cpython-314.pyc",
+        "__pycache__/_entrylib.cpython-314.pyc",
+        "__pycache__/_gitexec.cpython-314.pyc",
+        "__pycache__/_gitlib.cpython-314.pyc",
+        "__pycache__/_hooklib.cpython-314.pyc",
+        "__pycache__/_host.cpython-314.pyc",
+        "__pycache__/_pathnorm.cpython-314.pyc",
+        "__pycache__/_protectedlib.cpython-314.pyc",
+        "__pycache__/_protectedstatelib.cpython-314.pyc",
+        "__pycache__/_scopelib.cpython-314.pyc",
+        "__pycache__/_sensitivelib.cpython-314.pyc",
+        "__pycache__/hostapi.cpython-314.pyc",
+        "__pycache__/pre-write.cpython-314.pyc"
+      ],
+      "other_entries_preserved": [],
+      "causal_untracked_shadows": [],
+      "private_prefix_before_import": "Private cache prefix redirects import cache lookup; no legacy entry removed or assumed absent."
+    }
+  },
+  "module_resolution": null,
+  "actual_repository_imports": {
+    "plugins/ca/hooks/tests/test_durabilitylib.py": "7aa71ed4072209ab2a685c31559bd8afb51ffd9a336775cb66298e56821ffdb1",
+    "plugins/ca/hooks/_durabilitylib.py": "42e9d3ed6f6f43c76bef073e6edad2b8a119dfc154e2a497909422b4e4d28f9b",
+    "plugins/ca/hooks/tests/test_wire_statusline.py": "979d8d33ac36396a0364500b1e94d418a81c7eacb80644bf2cb5df6f0e4d6ee9",
+    "plugins/ca/hooks/wire-statusline.py": "41c489a88d6a6f1be51806d9269013a124d0f0974830f248615201d2be0d8192",
+    "plugins/ca/hooks/_hooklib.py": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+    "plugins/ca/hooks/hostapi.py": "2aea81ad167a458c6053cb52880952521159a367eaa5baa7df6e2e35fea574e4",
+    "plugins/ca/hooks/_gitexec.py": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5",
+    "plugins/ca/hooks/_pathnorm.py": "f6a99cddf6277641316f5e8f9d86fb97691e535ba569aa6cb51c9e4f3ed52906",
+    "plugins/ca/hooks/_activationlib.py": "60c6391b4d8b143c5e59cf2320291a2d31063e8fbebe0fcf337dd83e07f8fd97",
+    "plugins/ca/hooks/_scopelib.py": "03d1f066863d08c952ebda8d9b6f1515813f53a4fd3fc0af560a735f63954e0b",
+    "plugins/ca/hooks/_protectedlib.py": "3156e9ad47cf577476dfcae27fde1d4ebfd71fe33b5e1976d351b8f833ea53d3",
+    "plugins/ca/hooks/_sensitivelib.py": "a3902997c16d367a3c7e6e7247a42ba35d962e2c885f9ed3e8e1ab0ce98ec506",
+    "plugins/ca/hooks/tests/test_atomic_writes.py": "a858453251f73f033fa6dc50f1275366bee2b50a889262987ee8c481d03f6dff",
+    "plugins/ca/hooks/_githooks.py": "450d3204c7895d7649c4bd7b1daf40b498b960df48de00138914559d41008e38",
+    "plugins/ca/hooks/_prunelib.py": "f34aceae4140a7ff25dff91888cd3b9d7d2e5ddc2e1f084558218b22d1c1bdc4",
+    "plugins/ca/hooks/_modelib.py": "d97433737654bbcad2051e62495e70ec006dc31d458514fa74e338e49d04a1db",
+    "plugins/ca/hooks/_prunepolicy.py": "13bc82c138975121c3dbd28379a0bc8dda183f09fa6e47fbe2bab2e9cc0faf35",
+    "plugins/ca/hooks/tests/_helpers.py": "0c4a113a663dab2b9a5c6dd8025378628007f75e4d681c38d98a517d362c6f42",
+    "plugins/ca/hooks/session-start.py": "4c3c1e9b8180aa571eda8fcacf24569f1fd16366a12c3aba5f76944cf1ba52cb",
+    "plugins/ca/hooks/_standuplib.py": "621d318ca6429c95bc45dadeb7fbebbfdd9bc3a5f94267d87fa692e69ef74169",
+    "plugins/ca/hooks/_taskboardlib.py": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+    "plugins/ca/hooks/_arbiterstatelib.py": "19ebd7d82fa56d2a4535043d3a163cfe9f0475aa5d457d5ad8953980d57f71c1",
+    "plugins/ca/hooks/_provenancelib.py": "3cbd8d241ff6640e824ee2707ca1a3bd3202db83df371822201ceeabdd2657e4",
+    "plugins/ca/hooks/_knowledgelib.py": "abc1f93667faf5241c52931d33fc992e5627bd2c406298937d587c373659eeb9",
+    "plugins/ca/hooks/_updatelib.py": "6a66e7bc681bf5c347529becbe6e5405165d59b336436183e4e7881d4d26d7b4"
+  },
+  "checked_inputs": {
+    "core/pysrc/_durabilitylib.py": "42e9d3ed6f6f43c76bef073e6edad2b8a119dfc154e2a497909422b4e4d28f9b",
+    "core/pysrc/_hooklib.py": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+    "core/pysrc/wire-statusline.py": "41c489a88d6a6f1be51806d9269013a124d0f0974830f248615201d2be0d8192",
+    "plugins/ca/hooks/_activationlib.py": "60c6391b4d8b143c5e59cf2320291a2d31063e8fbebe0fcf337dd83e07f8fd97",
+    "plugins/ca/hooks/_arbiterstatelib.py": "19ebd7d82fa56d2a4535043d3a163cfe9f0475aa5d457d5ad8953980d57f71c1",
+    "plugins/ca/hooks/_durabilitylib.py": "42e9d3ed6f6f43c76bef073e6edad2b8a119dfc154e2a497909422b4e4d28f9b",
+    "plugins/ca/hooks/_gitexec.py": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5",
+    "plugins/ca/hooks/_githooks.py": "450d3204c7895d7649c4bd7b1daf40b498b960df48de00138914559d41008e38",
+    "plugins/ca/hooks/_hooklib.py": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+    "plugins/ca/hooks/_host.py": "9d04b88683d1deab03850ef1f2a169579f59756d3430079bdc6aa2160994bc1b",
+    "plugins/ca/hooks/_knowledgelib.py": "abc1f93667faf5241c52931d33fc992e5627bd2c406298937d587c373659eeb9",
+    "plugins/ca/hooks/_modelib.py": "d97433737654bbcad2051e62495e70ec006dc31d458514fa74e338e49d04a1db",
+    "plugins/ca/hooks/_pathnorm.py": "f6a99cddf6277641316f5e8f9d86fb97691e535ba569aa6cb51c9e4f3ed52906",
+    "plugins/ca/hooks/_protectedlib.py": "3156e9ad47cf577476dfcae27fde1d4ebfd71fe33b5e1976d351b8f833ea53d3",
+    "plugins/ca/hooks/_provenancelib.py": "3cbd8d241ff6640e824ee2707ca1a3bd3202db83df371822201ceeabdd2657e4",
+    "plugins/ca/hooks/_prunelib.py": "f34aceae4140a7ff25dff91888cd3b9d7d2e5ddc2e1f084558218b22d1c1bdc4",
+    "plugins/ca/hooks/_prunepolicy.py": "13bc82c138975121c3dbd28379a0bc8dda183f09fa6e47fbe2bab2e9cc0faf35",
+    "plugins/ca/hooks/_scopelib.py": "03d1f066863d08c952ebda8d9b6f1515813f53a4fd3fc0af560a735f63954e0b",
+    "plugins/ca/hooks/_sensitivelib.py": "a3902997c16d367a3c7e6e7247a42ba35d962e2c885f9ed3e8e1ab0ce98ec506",
+    "plugins/ca/hooks/_standuplib.py": "621d318ca6429c95bc45dadeb7fbebbfdd9bc3a5f94267d87fa692e69ef74169",
+    "plugins/ca/hooks/_taskboardlib.py": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+    "plugins/ca/hooks/_updatelib.py": "6a66e7bc681bf5c347529becbe6e5405165d59b336436183e4e7881d4d26d7b4",
+    "plugins/ca/hooks/hostapi.py": "2aea81ad167a458c6053cb52880952521159a367eaa5baa7df6e2e35fea574e4",
+    "plugins/ca/hooks/session-start.py": "4c3c1e9b8180aa571eda8fcacf24569f1fd16366a12c3aba5f76944cf1ba52cb",
+    "plugins/ca/hooks/tests/_helpers.py": "0c4a113a663dab2b9a5c6dd8025378628007f75e4d681c38d98a517d362c6f42",
+    "plugins/ca/hooks/tests/test_atomic_writes.py": "a858453251f73f033fa6dc50f1275366bee2b50a889262987ee8c481d03f6dff",
+    "plugins/ca/hooks/tests/test_durabilitylib.py": "7aa71ed4072209ab2a685c31559bd8afb51ffd9a336775cb66298e56821ffdb1",
+    "plugins/ca/hooks/tests/test_wire_statusline.py": "979d8d33ac36396a0364500b1e94d418a81c7eacb80644bf2cb5df6f0e4d6ee9",
+    "plugins/ca/hooks/wire-statusline.py": "41c489a88d6a6f1be51806d9269013a124d0f0974830f248615201d2be0d8192"
+  },
+  "named_results": [
+    {
+      "id": "__main__.PrivateDurabilityBoundaries.test_ancestor_limit_excludes_only_marker_just_outside_64",
+      "outcome": "PASS"
+    },
+    {
+      "id": "__main__.PrivateDurabilityBoundaries.test_gitfile_read_caps_at_4096_with_worktree_suffix_beyond_bound",
+      "outcome": "PASS"
+    },
+    {
+      "id": "__main__.PrivateDurabilityBoundaries.test_permission_error_falls_back_durable_without_acl_mutation",
+      "outcome": "PASS"
+    },
+    {
+      "id": "__main__.PrivateInstallJourney.test_install_refusals_preserve_existing_settings",
+      "outcome": "PASS"
+    },
+    {
+      "id": "__main__.PrivateInstallJourney.test_install_reinstall_user_takeover_and_restore_preserves_whole_settings",
+      "outcome": "PASS"
+    },
+    {
+      "id": "__main__.PrivateInstallJourney.test_legacy_source_and_cache_reinstall_preserves_original_backup",
+      "outcome": "PASS"
+    },
+    {
+      "id": "__main__.RefreshWholeRowPreservation.test_refresh_preserves_spinner_backups_and_unrelated_settings",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_atomic_writes.SaveSettingsAtomicTest.test_crash_mid_write_leaves_prior_settings_intact",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_atomic_writes.SaveSettingsAtomicTest.test_does_not_stage_to_the_fixed_sibling_tmp_name",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_durabilitylib.TestHasWorktreeSegment.test_case_insensitive",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_durabilitylib.TestHasWorktreeSegment.test_claude_subagent_worktree_matches",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_durabilitylib.TestHasWorktreeSegment.test_codearbiter_worktrees_layout_matches",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_durabilitylib.TestHasWorktreeSegment.test_junk_input_is_false_never_raises",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_durabilitylib.TestHasWorktreeSegment.test_mixed_separators",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_durabilitylib.TestHasWorktreeSegment.test_plugin_cache_install_does_not_match",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_durabilitylib.TestHasWorktreeSegment.test_source_checkout_does_not_match",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_durabilitylib.TestHasWorktreeSegment.test_substring_is_not_a_segment",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_durabilitylib.TestHotPathCost.test_module_does_not_import_subprocess",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_durabilitylib.TestInLinkedWorktree.test_junk_input_is_false_never_raises",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_durabilitylib.TestInLinkedWorktree.test_linked_worktree_gitfile_is_ephemeral",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_durabilitylib.TestInLinkedWorktree.test_main_checkout_gitdir_is_durable",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_durabilitylib.TestInLinkedWorktree.test_nearest_boundary_wins",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_durabilitylib.TestInLinkedWorktree.test_no_git_anywhere_is_durable",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_durabilitylib.TestInLinkedWorktree.test_signal_survives_a_file_argument",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_durabilitylib.TestInLinkedWorktree.test_submodule_gitfile_is_durable",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_durabilitylib.TestInLinkedWorktree.test_unreadable_or_garbage_gitfile_is_durable",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_durabilitylib.TestIsEphemeralPath.test_git_signal_alone_is_enough",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_durabilitylib.TestIsEphemeralPath.test_junk_input_is_false_never_raises",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_durabilitylib.TestIsEphemeralPath.test_lexical_signal_alone_is_enough",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_durabilitylib.TestIsEphemeralPath.test_plugin_cache_install_is_durable",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestCorruptedJson.test_file_not_overwritten_on_corrupt_json",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestCorruptedJson.test_install_raises_system_exit_on_corrupt_json",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestFreshInstall.test_uninstall_removes_statusline_when_no_prior_existed",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestNonDurableRootIsNeverPinned.test_install_from_durable_root_still_wires",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestNonDurableRootIsNeverPinned.test_install_from_worktree_root_leaves_settings_byte_identical",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestNonDurableRootIsNeverPinned.test_install_from_worktree_root_refuses_loudly",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestNonDurableRootIsNeverPinned.test_refresh_declines_a_linked_worktree_with_no_worktrees_segment",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestNonDurableRootIsNeverPinned.test_refresh_from_durable_root_still_heals",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestNonDurableRootIsNeverPinned.test_refresh_from_worktree_root_leaves_settings_byte_identical",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestNonDurableRootIsNeverPinned.test_refresh_from_worktree_root_never_writes_a_worktree_path",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestNonDurableRootIsNeverPinned.test_refresh_if_stale_declines_an_ephemeral_script_without_mutating",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestNonDurableRootIsNeverPinned.test_status_from_worktree_root_still_reports_and_writes_nothing",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestNonDurableRootIsNeverPinned.test_uninstall_from_worktree_root_is_never_blocked",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestRefreshStalePathOnSessionStart.test_refresh_does_not_rewrite_when_already_current",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestRefreshStalePathOnSessionStart.test_refresh_does_not_wire_when_no_statusline",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestRefreshStalePathOnSessionStart.test_refresh_heals_bare_string_statusline",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestRefreshStalePathOnSessionStart.test_refresh_ignores_stale_owner_marker_after_user_replaces_line",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestRefreshStalePathOnSessionStart.test_refresh_leaves_third_party_line_untouched",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestRefreshStalePathOnSessionStart.test_refresh_leaves_third_party_statusline_py_untouched",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestRefreshStalePathOnSessionStart.test_refresh_migrates_legacy_cache_command_to_owner_marker",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestRefreshStalePathOnSessionStart.test_refresh_noop_when_renderer_missing",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestRefreshStalePathOnSessionStart.test_stale_ours_path_is_refreshed",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestSpinnerOwnershipIsExact.test_install_stamps_the_exact_owned_value",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestSpinnerOwnershipIsExact.test_legacy_backup_without_stamp_is_conservative",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestSpinnerOwnershipIsExact.test_reinstall_after_user_change_does_not_overwrite_silently_then_uninstall_restores_it",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestSpinnerOwnershipIsExact.test_repeated_uninstall_is_a_noop",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestSpinnerOwnershipIsExact.test_spinner_ownership_is_independent_of_statusline_replacement",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestSpinnerOwnershipIsExact.test_still_owned_uninstall_restores_previous_value",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestSpinnerOwnershipIsExact.test_user_custom_spinner_after_install_survives_uninstall",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestSpinnerOwnershipIsExact.test_user_removed_spinner_after_install_is_not_recreated",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestSpinnerReleasedReaderRollback.test_legacy_migration_keeps_foreign_and_ephemeral_refresh_inert",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestSpinnerReleasedReaderRollback.test_literal_legacy_backup_migration_preserves_custom_and_unrelated_values",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestSpinnerReleasedReaderRollback.test_malformed_backup_metadata_never_grants_ownership_of_custom_spinner",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestSpinnerReleasedReaderRollback.test_mixed_backup_formats_refuse_writes_and_leave_refresh_inert",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestSpinnerReleasedReaderRollback.test_owned_refresh_protects_legacy_backup_from_released_reader",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestSpinnerReleasedReaderRollback.test_released_reader_cannot_restore_over_new_user_spinner",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestUninstall.test_restores_exact_third_party_statusline_setting",
+      "outcome": "PASS"
+    }
+  ],
+  "actual_import_observations": [
+    "actual-imports-64288.json"
+  ],
+  "runtime_records": 10795,
+  "observer_errors": [],
+  "closure_errors": [],
+  "private_prefix_no_user_site_observed": true,
+  "benchmark_observation": null,
+  "scope_limits": [
+    "Nine finite software rows only: one machine PLANNED->TESTED and eight existing TESTED successors; no other rows/tasks.",
+    "One capture only; original exit/time/output and aftersnapshot persisted before validation.",
+    "No source/test/Gov/index/ref/marker/provider/network/real-home/SDK/native/build/install effects."
+  ]
+}

@@ -1,0 +1,43 @@
+{
+ "result": "PRIVATE_NATIVE_EIGHT_TESTED_PROPOSAL",
+ "base_source": "304ceff554bf1dc70afd7936898983e0d4fe076f",
+ "original_runtime_source": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+ "cells": 8,
+ "proof": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native8-d482-reconciliation-50yty4x2\\proposal-successor\\native-eight-hosted.json",
+  "sha256": "ec13e6125b7fbcf19c812f0cd42dc876481659112ac5a61dc8de4ab612ccd95d",
+  "bytes": 44719
+ },
+ "cas": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native8-d482-reconciliation-50yty4x2\\proposal-successor\\cas-proposal.json",
+  "sha256": "9eca40c3b3ac8d9bc042de0cbc59207d58f89e798baabd552393ac9af67ff728",
+  "bytes": 5718
+ },
+ "preimages": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native8-d482-reconciliation-50yty4x2\\proposal-successor\\ledger-preimages.json",
+  "sha256": "9d96c542913d44807886d03036549ec6c56bb8498f46774aa28fd918d98f80ff",
+  "bytes": 1696
+ },
+ "successors": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native8-d482-reconciliation-50yty4x2\\proposal-successor\\successor-rows.json",
+  "sha256": "53a7a8abf3a5cbeb5aeaa323276a9bb84caced7f3560fa2e0cefc0b22054ff53",
+  "bytes": 4048
+ },
+ "filemap": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native8-d482-reconciliation-50yty4x2\\proposal-successor\\adoption-filemap.json",
+  "sha256": "45ac624aff981690f0b5517cd0d6918d992907eedb13f46246f3ea679f4e5f72",
+  "bytes": 2815
+ },
+ "readback": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native8-d482-reconciliation-50yty4x2\\proposal-successor\\proposal-readback.json",
+  "sha256": "eb19fd17874f3e7ac04feae983040a27cc3ade4a6e5bcc47596e8db525beb930",
+  "bytes": 437
+ },
+ "authentication": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native8-d482-reconciliation-50yty4x2\\authentication.json",
+  "sha256": "15c457df4113d635ccfa6610ebb0b8a39f5ca90a59ba1b3a1f3b04ee12478316",
+  "bytes": 12684
+ },
+ "external_zip_total_bytes": 15740058,
+ "strict_original_owner_admission": "Root pending; no duplicate network/whole-owner execution by actor"
+}

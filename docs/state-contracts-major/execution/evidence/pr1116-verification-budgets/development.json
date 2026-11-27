@@ -1,0 +1,124 @@
+{
+  "schema": "codearbiter.major.verification-phase-budget-development/1",
+  "recorded_at": "2026-11-17T02:45:47.135778+00:00",
+  "controller_anchor": "f5dff55e71530806c58a5dd6c352935d369ac5ae",
+  "source_only": {
+    "new_cells": 29,
+    "new_machines": 4,
+    "new_transitions": 25,
+    "planned": {
+      "findings": 49,
+      "machines": 149,
+      "transitions": 555,
+      "total": 753
+    },
+    "private_strict89_sha256": "1d99416677383b06ff6ebdcfa5d7d84835833492ce049b2ba91b485760052d73",
+    "independent_private_review_sha256": "9eea0e28e0e6e5e42414ef09e4ba86ee18957b6140aac25bdc3b1417fc57f491",
+    "S03_machine_and_03": "PLANNED; durable edit-state integration remains UNPROVEN"
+  },
+  "test_change": {
+    "unit_verification_seconds": 120,
+    "original_unit_seconds": 30,
+    "rationale": "The verification now hashes two full runtime inventories. Actual Linux last-flushed progress reached required hashing at29.4/30.0seconds. This is a finite verification budget change, not a demonstrated production hash defect or exact syscall diagnosis.",
+    "journal_fixture_hook_seconds": 60,
+    "journal_body_seconds": 5,
+    "journal_rationale": "Move original4097-file preparation to separately bounded beforeEach for its exact existing test title. Retain both original assertions and explicit5second scan body. Original Windows failure did not retain inner phase; setup cause is not claimed.",
+    "local_checks": {
+      "python_full_original_producer_plus_pure": {
+        "passed": 21,
+        "failed": 0,
+        "skipped": 0,
+        "unittest_seconds": 16.19
+      },
+      "unchanged_wiring_owner": {
+        "passed": 3,
+        "failed": 0,
+        "skipped": 0,
+        "unittest_seconds": 0.036
+      },
+      "journal": {
+        "total": 20,
+        "passed": 19,
+        "existing_windows_privilege_skip": 1,
+        "failed": 0,
+        "coverage": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-verification-phase-budgets-ciyjo5ju\\coverage",
+        "json": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-verification-phase-budgets-ciyjo5ju\\journal-results.json"
+      }
+    },
+    "production_RPC_seconds": 30,
+    "parallel_hashing_or_cache": false
+  },
+  "hosted": {
+    "head": "f5dff55e71530806c58a5dd6c352935d369ac5ae",
+    "CI_run": 44002348079,
+    "Docs_run": 44002348145,
+    "known_primary_failures": [
+      "Linuxamd64 original unit30s",
+      "Linuxarm64 original unit30s",
+      "Windows Pi coverage original overfull journal5s"
+    ],
+    "all_three_Pi_adapter_jobs": "PASS",
+    "successful_Windows_diagnostics": "Nine actual closed warmups completed:3 SDK files hashed,409msfirst then56-61ms. One same-PID native sidecar captured11threads. This establishes diagnostic execution only; oldPID7040 cause remainsUNKNOWN.",
+    "complete_exact_head_status": "Sole watcher retains terminal result separately; no whole-qualification claim."
+  },
+  "observations": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pr1116-verification-budgets/test-change-delivery.json",
+      "sha256": "6085c20c8dfe20a3093a90eceea31502a6111ec51fbd6ffd2baad14247f77455",
+      "bytes": 8901,
+      "original": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-verification-phase-budgets-ciyjo5ju\\delivery.json"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pr1116-verification-budgets/test-change-preservation.json",
+      "sha256": "0027dd63cda3f2f83986c9e98ba397ae9759cb6fdac69dda9b5e025c83393ab4",
+      "bytes": 604,
+      "original": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-verification-phase-budgets-ciyjo5ju\\preservation.json"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pr1116-verification-budgets/test-change-results.json",
+      "sha256": "7f0ddfdf497d9b011e70681290bc4f639bf1ce3390ba2652903eaf2d1db8be79",
+      "bytes": 2648,
+      "original": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-verification-phase-budgets-ciyjo5ju\\results.json"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pr1116-verification-budgets/test-change-source-joins.json",
+      "sha256": "3c11a74dc3808b78713d68933eafc7e24a6c657e1449a549c90073193ab8a35f",
+      "bytes": 2157,
+      "original": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-verification-phase-budgets-ciyjo5ju\\source-joins.json"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pr1116-verification-budgets/linux-progress.json",
+      "sha256": "7ba2ebabb2101216ad5f7b7bc833a81823f17819394b0827050c6c09f2f1176b",
+      "bytes": 2054,
+      "original": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-f5dff55e-watch-nfni38lo\\linux-original-producer-progress.json"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pr1116-verification-budgets/windows-journal-failure.json",
+      "sha256": "ad70d425ff4005fbfb32b71bd498b26567123f97ebc45d7e58186385f04d3a36",
+      "bytes": 840,
+      "original": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-f5dff55e-watch-nfni38lo\\failed-job-133769377367-closed.json"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pr1116-verification-budgets/pi-success.json",
+      "sha256": "9fd7601fddc158458cc23875d6be243185d4299c2fba758f9659bd5e59cbdd38",
+      "bytes": 750,
+      "original": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-f5dff55e-watch-nfni38lo\\pi-windows-original-success.json"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pr1116-verification-budgets/pi-archive-authentication.json",
+      "sha256": "25efc575b44749b93047cf5c022f74e65625d19f027d3b01e73d51e1cbe43c32",
+      "bytes": 3950,
+      "original": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-f5-pi-original-diagnostic-18psx70n\\authentication.json"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pr1116-verification-budgets/pi-warmup-projection.json",
+      "sha256": "d908e731d502205a63bb18c486af86cd9cb69d3146850065eb09aea77a51d8f4",
+      "bytes": 6309,
+      "original": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-f5-pi-original-diagnostic-18psx70n\\closed-warmup-projection.json"
+    }
+  ],
+  "task_status_promotion": false,
+  "runtime_epoch_renewal": false,
+  "main_merge": "HELD_FOR_USER_TESTING",
+  "publication": "NOT_AUTHORIZED"
+}

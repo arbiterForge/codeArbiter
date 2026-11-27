@@ -1,0 +1,282 @@
+{
+  "config": {
+    "argv": [
+      "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+      "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-s55-interactions-3bd\\site\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "--config=playwright.components.config.ts",
+      "test/components/search-interactions.spec.ts",
+      "--reporter=json",
+      "--output=C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-s55-interactions-3bd\\playwright-output"
+    ],
+    "configFile": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-s55-interactions-3bd\\site\\playwright.components.config.ts",
+    "rootDir": "C:/Users/brenn/AppData/Local/Temp/ca-s55-interactions-3bd/site/test/components",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "C:/Users/brenn/AppData/Local/Temp/ca-s55-interactions-3bd/playwright-output",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "",
+        "name": "",
+        "testDir": "C:/Users/brenn/AppData/Local/Temp/ca-s55-interactions-3bd/site/test/components",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 10000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "json"
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.63.0",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "search-interactions.spec.ts",
+      "file": "search-interactions.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "concurrent focus and submitted queries await one module initialization",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 10000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 343,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // deep equality\u001b[22m\n\n\u001b[32m- Expected  -  1\u001b[39m\n\u001b[31m+ Received  + 10\u001b[39m\n\n\u001b[32m- Array []\u001b[39m\n\u001b[31m+ Array [\u001b[39m\n\u001b[31m+   Object {\u001b[39m\n\u001b[31m+     \"initialized\": false,\u001b[39m\n\u001b[31m+     \"query\": \"first\",\u001b[39m\n\u001b[31m+   },\u001b[39m\n\u001b[31m+   Object {\u001b[39m\n\u001b[31m+     \"initialized\": false,\u001b[39m\n\u001b[31m+     \"query\": \"newest\",\u001b[39m\n\u001b[31m+   },\u001b[39m\n\u001b[31m+ ]\u001b[39m",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // deep equality\u001b[22m\n\n\u001b[32m- Expected  -  1\u001b[39m\n\u001b[31m+ Received  + 10\u001b[39m\n\n\u001b[32m- Array []\u001b[39m\n\u001b[31m+ Array [\u001b[39m\n\u001b[31m+   Object {\u001b[39m\n\u001b[31m+     \"initialized\": false,\u001b[39m\n\u001b[31m+     \"query\": \"first\",\u001b[39m\n\u001b[31m+   },\u001b[39m\n\u001b[31m+   Object {\u001b[39m\n\u001b[31m+     \"initialized\": false,\u001b[39m\n\u001b[31m+     \"query\": \"newest\",\u001b[39m\n\u001b[31m+   },\u001b[39m\n\u001b[31m+ ]\u001b[39m\n    at C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-s55-interactions-3bd\\site\\test\\components\\search-interactions.spec.ts:71:62",
+                    "location": {
+                      "file": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-s55-interactions-3bd\\site\\test\\components\\search-interactions.spec.ts",
+                      "column": 62,
+                      "line": 71
+                    },
+                    "snippet": "\u001b[0m \u001b[90m 69 |\u001b[39m   \u001b[36mawait\u001b[39m submit(page\u001b[33m,\u001b[39m \u001b[32m'newest'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 70 |\u001b[39m   \u001b[36mawait\u001b[39m drain(page)\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 71 |\u001b[39m   expect(\u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mevaluate(() \u001b[33m=>\u001b[39m (window \u001b[36mas\u001b[39m any)\u001b[33m.\u001b[39mqueries))\u001b[33m.\u001b[39mtoEqual([])\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                                              \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 72 |\u001b[39m   expect(\u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mevaluate(() \u001b[33m=>\u001b[39m (window \u001b[36mas\u001b[39m any)\u001b[33m.\u001b[39moptionsCalls))\u001b[33m.\u001b[39mtoBe(\u001b[35m1\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 73 |\u001b[39m   expect(requests)\u001b[33m.\u001b[39mtoEqual([\u001b[32m'http://component.test/pagefind/pagefind.js'\u001b[39m])\u001b[33m;\u001b[39m\n \u001b[90m 74 |\u001b[39m   \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mevaluate(() \u001b[33m=>\u001b[39m (window \u001b[36mas\u001b[39m any)\u001b[33m.\u001b[39mreleaseOptions())\u001b[33m;\u001b[39m\u001b[0m"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-s55-interactions-3bd\\site\\test\\components\\search-interactions.spec.ts",
+                        "column": 62,
+                        "line": 71
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // deep equality\u001b[22m\n\n\u001b[32m- Expected  -  1\u001b[39m\n\u001b[31m+ Received  + 10\u001b[39m\n\n\u001b[32m- Array []\u001b[39m\n\u001b[31m+ Array [\u001b[39m\n\u001b[31m+   Object {\u001b[39m\n\u001b[31m+     \"initialized\": false,\u001b[39m\n\u001b[31m+     \"query\": \"first\",\u001b[39m\n\u001b[31m+   },\u001b[39m\n\u001b[31m+   Object {\u001b[39m\n\u001b[31m+     \"initialized\": false,\u001b[39m\n\u001b[31m+     \"query\": \"newest\",\u001b[39m\n\u001b[31m+   },\u001b[39m\n\u001b[31m+ ]\u001b[39m\n\n  69 |   await submit(page, 'newest');\n  70 |   await drain(page);\n> 71 |   expect(await page.evaluate(() => (window as any).queries)).toEqual([]);\n     |                                                              ^\n  72 |   expect(await page.evaluate(() => (window as any).optionsCalls)).toBe(1);\n  73 |   expect(requests).toEqual(['http://component.test/pagefind/pagefind.js']);\n  74 |   await page.evaluate(() => (window as any).releaseOptions());\n    at C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-s55-interactions-3bd\\site\\test\\components\\search-interactions.spec.ts:71:62"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-14T08:38:04.692Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-s55-interactions-3bd\\playwright-output\\search-interactions-concur-600b3-t-one-module-initialization\\error-context.md"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-s55-interactions-3bd\\site\\test\\components\\search-interactions.spec.ts",
+                    "column": 62,
+                    "line": 71
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "2cc08c4b17665aa960d7-05039b78fdc5c7db367c",
+          "file": "search-interactions.spec.ts",
+          "line": 64,
+          "column": 1
+        },
+        {
+          "title": "normalized queries debounce for140ms and fetch only the first8 results",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 10000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 258,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-14T08:38:05.632Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "2cc08c4b17665aa960d7-d5ecb0ab2745ec783201",
+          "file": "search-interactions.spec.ts",
+          "line": 83,
+          "column": 1
+        },
+        {
+          "title": "pending expansion disables repeat activation until all data settles",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 10000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 217,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-14T08:38:06.028Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "2cc08c4b17665aa960d7-0efc5b5eb1bf7bc18c8f",
+          "file": "search-interactions.spec.ts",
+          "line": 102,
+          "column": 1
+        },
+        {
+          "title": "empty results, arrow wrapping, submit and activation preserve combobox navigation",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 10000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 292,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-14T08:38:06.251Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "2cc08c4b17665aa960d7-ad7c2f91d1ff249b9a3b",
+          "file": "search-interactions.spec.ts",
+          "line": 121,
+          "column": 1
+        },
+        {
+          "title": "late successful queries cannot replace newer results or empty state",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 10000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 211,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-14T08:38:06.548Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "2cc08c4b17665aa960d7-770b2ffbd8c49646c9b3",
+          "file": "search-interactions.spec.ts",
+          "line": 148,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-11-14T08:38:04.142Z",
+    "duration": 2740.182,
+    "expected": 4,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}

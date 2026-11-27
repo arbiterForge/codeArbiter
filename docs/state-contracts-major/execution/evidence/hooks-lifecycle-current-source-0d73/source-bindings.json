@@ -1,0 +1,1082 @@
+{
+ "schema": "codearbiter.source-bindings/1",
+ "source_commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+ "pinned_source_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+ "declared_full_paths": [
+  "docs/state-contracts-major/PROGRAM.md",
+  "docs/state-contracts-major/contracts/program.json",
+  "docs/state-contracts-major/contracts/tasks.json",
+  "docs/state-contracts-major/contracts/machine-coverage.json",
+  "docs/state-contracts-major/contracts/transition-coverage.json",
+  "docs/state-contracts-major/execution/coverage-ledger.json",
+  "core/pysrc/_activationlib.py",
+  "core/pysrc/_arbiterstatelib.py",
+  "core/pysrc/_artifactauthoritylib.py",
+  "core/pysrc/_bashguardlib.py",
+  "core/pysrc/_modelib.py",
+  "core/pysrc/_overrideappendlib.py",
+  "core/pysrc/_sensitivelib.py",
+  "core/pysrc/_standuplib.py",
+  "core/pysrc/append-override.py",
+  "core/pysrc/artifact-authority-hook.py",
+  "core/pysrc/artifact-authority.py",
+  "core/pysrc/git-enforce.py",
+  "core/pysrc/hostapi.py",
+  "core/pysrc/init-codearbiter.py",
+  "core/pysrc/migration-pass.py",
+  "core/pysrc/prompt-submit.py",
+  "core/pysrc/security-pass.py",
+  "core/pysrc/session-start.py",
+  "plugins/ca-codex/hooks/_host.py",
+  "plugins/ca-pi/hooks/_host.py",
+  "plugins/ca/hooks/_host.py",
+  "core/pysrc/_adrlifecycle.py",
+  "core/pysrc/_adrlifecyclegit.py",
+  "core/pysrc/_cleanuplib.py",
+  "core/pysrc/_intentlib.py",
+  "core/pysrc/_planfilelib.py",
+  "core/pysrc/_scopelib.py",
+  "core/pysrc/_sloplib.py",
+  "core/pysrc/_workadopt.py",
+  "core/pysrc/_worklib.py",
+  "core/pysrc/adr-merge-method.py",
+  "core/pysrc/boardsync.py",
+  "core/pysrc/post-write-edit.py",
+  "core/pysrc/work.py"
+ ],
+ "bindings": {
+  ".codearbiter/decisions/0030-orchestration-mode-plane-with-composed-persona.md": {
+   "git_oid": "566086f3abad0ac540f3bb9779fea70471b709ab",
+   "sha256": "c383c47baac98aa64638795f50d10befa8ad7361e803788229d4f71826ef962b",
+   "bytes": 13541,
+   "physical_sha256": "c383c47baac98aa64638795f50d10befa8ad7361e803788229d4f71826ef962b",
+   "physical_bytes": 13541,
+   "physical_text_equal": true,
+   "prior_source_sha256": "c383c47baac98aa64638795f50d10befa8ad7361e803788229d4f71826ef962b",
+   "equal_prior_source": true
+  },
+  ".codearbiter/decisions/0032-hosted-static-codex-release-evidence.md": {
+   "git_oid": "e720e4153aac4175a0487cad5025c828088b4cc7",
+   "sha256": "96b28b262f0bff474a53383c9823c22fbe06ecc3f63f343d8c6a31993c97e4c9",
+   "bytes": 5347,
+   "physical_sha256": "96b28b262f0bff474a53383c9823c22fbe06ecc3f63f343d8c6a31993c97e4c9",
+   "physical_bytes": 5347,
+   "physical_text_equal": true,
+   "prior_source_sha256": "96b28b262f0bff474a53383c9823c22fbe06ecc3f63f343d8c6a31993c97e4c9",
+   "equal_prior_source": true
+  },
+  ".codearbiter/decisions/0033-bind-accepted-adrs-to-obligation-evidence.md": {
+   "git_oid": "9a16340ac1298d1e18daadbe7c414e5f9c93b1ad",
+   "sha256": "47c8903501b5d2fa3c5c72c9c59a5a0eebddae0c8ffa6f4f153f262068b1c16f",
+   "bytes": 6103,
+   "physical_sha256": "47c8903501b5d2fa3c5c72c9c59a5a0eebddae0c8ffa6f4f153f262068b1c16f",
+   "physical_bytes": 6103,
+   "physical_text_equal": true,
+   "prior_source_sha256": "47c8903501b5d2fa3c5c72c9c59a5a0eebddae0c8ffa6f4f153f262068b1c16f",
+   "equal_prior_source": true
+  },
+  ".codearbiter/decisions/0034-establish-closed-legacy-published-tag-provenance-epoch.md": {
+   "git_oid": "894c4e011e69e0533a572a55bd4d759f8fc83cf1",
+   "sha256": "caec3ca7d29942c143661cab268b49cb57bb1c403c55d1ac476ca02a7059e224",
+   "bytes": 6742,
+   "physical_sha256": "caec3ca7d29942c143661cab268b49cb57bb1c403c55d1ac476ca02a7059e224",
+   "physical_bytes": 6742,
+   "physical_text_equal": true,
+   "prior_source_sha256": "caec3ca7d29942c143661cab268b49cb57bb1c403c55d1ac476ca02a7059e224",
+   "equal_prior_source": true
+  },
+  ".codearbiter/decisions/0040-independent-per-target-release-with-consumer-safety-gates.md": {
+   "git_oid": "9612ed1c41599f28c6effdfc50e746703741b7c8",
+   "sha256": "2dce2651ea067cc7bec25982ce23fdeb1528e9bfb003906c55be7e243a3a8964",
+   "bytes": 5797,
+   "physical_sha256": "2dce2651ea067cc7bec25982ce23fdeb1528e9bfb003906c55be7e243a3a8964",
+   "physical_bytes": 5797,
+   "physical_text_equal": true,
+   "prior_source_sha256": "2dce2651ea067cc7bec25982ce23fdeb1528e9bfb003906c55be7e243a3a8964",
+   "equal_prior_source": true
+  },
+  ".codearbiter/decisions/0043-assistive-state-engine.md": {
+   "git_oid": "71843f6bc73d68f8491f89b95081e6198dfb7e00",
+   "sha256": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+   "bytes": 6365,
+   "physical_sha256": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+   "physical_bytes": 6365,
+   "physical_text_equal": true,
+   "prior_source_sha256": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+   "equal_prior_source": true
+  },
+  ".codearbiter/decisions/0044-trusted-pi-npm-publication.md": {
+   "git_oid": "5065b104dd5056503402967e86a5a544fc454a86",
+   "sha256": "fda3c0194f83d41bcb169fae7c14d1b24bdaf3bace8d41780a88825e10fe30d6",
+   "bytes": 3015,
+   "physical_sha256": "fda3c0194f83d41bcb169fae7c14d1b24bdaf3bace8d41780a88825e10fe30d6",
+   "physical_bytes": 3015,
+   "physical_text_equal": true,
+   "prior_source_sha256": "fda3c0194f83d41bcb169fae7c14d1b24bdaf3bace8d41780a88825e10fe30d6",
+   "equal_prior_source": true
+  },
+  ".codearbiter/decisions/0049-require-https-outside-bounded-loopback.md": {
+   "git_oid": "886b3c4f08dbad58b896b9ad026ece7b29d600f2",
+   "sha256": "c757cef9d5e318b75ff164d270b29a49255449360f0b7cde51e53775e6916ab8",
+   "bytes": 2450,
+   "physical_sha256": "c757cef9d5e318b75ff164d270b29a49255449360f0b7cde51e53775e6916ab8",
+   "physical_bytes": 2450,
+   "physical_text_equal": true,
+   "prior_source_sha256": "c757cef9d5e318b75ff164d270b29a49255449360f0b7cde51e53775e6916ab8",
+   "equal_prior_source": true
+  },
+  "core/artifacts/internal/operations/work.go": {
+   "git_oid": "3614974657c4da9a1d2cc306a0f4432d549702a0",
+   "sha256": "511dabc1b5956ce0729e32b301e7fef98569a3a2ec8d927d28c8c0ce0c5496e3",
+   "bytes": 30899,
+   "physical_sha256": "511dabc1b5956ce0729e32b301e7fef98569a3a2ec8d927d28c8c0ce0c5496e3",
+   "physical_bytes": 30899,
+   "physical_text_equal": true,
+   "prior_source_sha256": "511dabc1b5956ce0729e32b301e7fef98569a3a2ec8d927d28c8c0ce0c5496e3",
+   "equal_prior_source": true,
+   "pinned": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "git_oid": "3614974657c4da9a1d2cc306a0f4432d549702a0",
+    "sha256": "511dabc1b5956ce0729e32b301e7fef98569a3a2ec8d927d28c8c0ce0c5496e3",
+    "bytes": 30899,
+    "equal_current": true
+   }
+  },
+  "core/artifacts/internal/operations/work_adopt.go": {
+   "git_oid": "0e92202254d40f9a89ef6f5aceed9ddf64c5d356",
+   "sha256": "6ef20339ab2bcf9653a2d595e4b14bf807143ffebd9ccf1b82bdcd8ec3dcbcb6",
+   "bytes": 22189,
+   "physical_sha256": "6ef20339ab2bcf9653a2d595e4b14bf807143ffebd9ccf1b82bdcd8ec3dcbcb6",
+   "physical_bytes": 22189,
+   "physical_text_equal": true,
+   "prior_source_sha256": "6ef20339ab2bcf9653a2d595e4b14bf807143ffebd9ccf1b82bdcd8ec3dcbcb6",
+   "equal_prior_source": true,
+   "pinned": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "git_oid": "6906215127454f819faff05612f649a8d72fabac",
+    "sha256": "d8c5f3bdfd72aa6fce084f9c44877d7d1c9fc5dbb901cdfe285e13cc44d2997c",
+    "bytes": 18471,
+    "equal_current": false
+   }
+  },
+  "core/artifacts/internal/store/fs_linux.go": {
+   "git_oid": "e3055105458e5da7623e9771029383f1632de9b1",
+   "sha256": "2b0b6f52d0ce6f4c804b8ab075a07d76e737ed791ceb293f32a9161416e8a3cf",
+   "bytes": 16936,
+   "physical_sha256": "2b0b6f52d0ce6f4c804b8ab075a07d76e737ed791ceb293f32a9161416e8a3cf",
+   "physical_bytes": 16936,
+   "physical_text_equal": true,
+   "prior_source_sha256": "2b0b6f52d0ce6f4c804b8ab075a07d76e737ed791ceb293f32a9161416e8a3cf",
+   "equal_prior_source": true,
+   "pinned": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "git_oid": "e3055105458e5da7623e9771029383f1632de9b1",
+    "sha256": "2b0b6f52d0ce6f4c804b8ab075a07d76e737ed791ceb293f32a9161416e8a3cf",
+    "bytes": 16936,
+    "equal_current": true
+   }
+  },
+  "core/artifacts/internal/store/fs_portable.go": {
+   "git_oid": "1837a8ce37a60e4c4b905c6b483f4d908bf0b8fa",
+   "sha256": "5c0ba079432d6e7c8c422c5145b9f715cc017848fd88dc5f23282a99351e6be9",
+   "bytes": 18446,
+   "physical_sha256": "5c0ba079432d6e7c8c422c5145b9f715cc017848fd88dc5f23282a99351e6be9",
+   "physical_bytes": 18446,
+   "physical_text_equal": true,
+   "prior_source_sha256": "5c0ba079432d6e7c8c422c5145b9f715cc017848fd88dc5f23282a99351e6be9",
+   "equal_prior_source": true,
+   "pinned": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "git_oid": "01cc3bea4bb6f0bb052d1ae5b48112f88b214db3",
+    "sha256": "1ed5f1fa32c5db4c6e3f6fb2901cd6df95005dada0ebc95c74775920b7c9c1b2",
+    "bytes": 18525,
+    "equal_current": false
+   }
+  },
+  "core/artifacts/internal/store/transaction.go": {
+   "git_oid": "1d837fd474b79fc0620c2cfb05a84d5791e26820",
+   "sha256": "ab6ae0757fe7532a43d57d2c2fb92605afc9605d72d3358607611d342d37fd83",
+   "bytes": 20687,
+   "physical_sha256": "ab6ae0757fe7532a43d57d2c2fb92605afc9605d72d3358607611d342d37fd83",
+   "physical_bytes": 20687,
+   "physical_text_equal": true,
+   "prior_source_sha256": "ab6ae0757fe7532a43d57d2c2fb92605afc9605d72d3358607611d342d37fd83",
+   "equal_prior_source": true,
+   "pinned": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "git_oid": "1b741e9528e8b255c54fc7c7ec5cedd877649c1a",
+    "sha256": "24d2865db16d21f6f420336de0745fbed2191c51433c4e6bc19a25fce32bb9ef",
+    "bytes": 20453,
+    "equal_current": false
+   }
+  },
+  "core/pysrc/_activationlib.py": {
+   "git_oid": "3e3875a454941317efb1f172d2861e407b1c6b4c",
+   "sha256": "60c6391b4d8b143c5e59cf2320291a2d31063e8fbebe0fcf337dd83e07f8fd97",
+   "bytes": 13390,
+   "physical_sha256": "60c6391b4d8b143c5e59cf2320291a2d31063e8fbebe0fcf337dd83e07f8fd97",
+   "physical_bytes": 13390,
+   "physical_text_equal": true,
+   "prior_source_sha256": "60c6391b4d8b143c5e59cf2320291a2d31063e8fbebe0fcf337dd83e07f8fd97",
+   "equal_prior_source": true,
+   "pinned": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "git_oid": "3e3875a454941317efb1f172d2861e407b1c6b4c",
+    "sha256": "60c6391b4d8b143c5e59cf2320291a2d31063e8fbebe0fcf337dd83e07f8fd97",
+    "bytes": 13390,
+    "equal_current": true
+   }
+  },
+  "core/pysrc/_adrlifecycle.py": {
+   "git_oid": "ba8cc2bdd08911b501d4e3e97c5ac52788b53bfd",
+   "sha256": "cb1c3c3e39eb2e21f390026b3c336273660a4218e015621f76a18a60ddeaf4f1",
+   "bytes": 31496,
+   "physical_sha256": "cb1c3c3e39eb2e21f390026b3c336273660a4218e015621f76a18a60ddeaf4f1",
+   "physical_bytes": 31496,
+   "physical_text_equal": true,
+   "prior_source_sha256": "cb1c3c3e39eb2e21f390026b3c336273660a4218e015621f76a18a60ddeaf4f1",
+   "equal_prior_source": true,
+   "pinned": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "git_oid": "249bb6ff21a7861c1438db8edb2634f0ba3fc4b1",
+    "sha256": "925e0602c2c1935edc0cdce9d03d5a549fb128b0de6279c7f9595717243609fe",
+    "bytes": 23661,
+    "equal_current": false
+   }
+  },
+  "core/pysrc/_adrlifecyclegit.py": {
+   "git_oid": "c762d9a12103e25d747904b923e2357e19b74004",
+   "sha256": "36877c5b94a11135c0b3a4ceb4776e36a94beba1dbd89c0c01be57235806ab24",
+   "bytes": 9331,
+   "physical_sha256": "36877c5b94a11135c0b3a4ceb4776e36a94beba1dbd89c0c01be57235806ab24",
+   "physical_bytes": 9331,
+   "physical_text_equal": true,
+   "prior_source_sha256": "36877c5b94a11135c0b3a4ceb4776e36a94beba1dbd89c0c01be57235806ab24",
+   "equal_prior_source": true,
+   "pinned": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "git_oid": "19be26cff5c09a7763157070a3ecaab956d9e5fe",
+    "sha256": "e1592f34b3bcc4c7bdc30bbb8a021a4642e73218f9353a501022209c69f9d25b",
+    "bytes": 9333,
+    "equal_current": false
+   }
+  },
+  "core/pysrc/_arbiterstatelib.py": {
+   "git_oid": "be9ed277e3cc84936dd1cc2fbe41e5142c48d06e",
+   "sha256": "19ebd7d82fa56d2a4535043d3a163cfe9f0475aa5d457d5ad8953980d57f71c1",
+   "bytes": 14372,
+   "physical_sha256": "19ebd7d82fa56d2a4535043d3a163cfe9f0475aa5d457d5ad8953980d57f71c1",
+   "physical_bytes": 14372,
+   "physical_text_equal": true,
+   "prior_source_sha256": "19ebd7d82fa56d2a4535043d3a163cfe9f0475aa5d457d5ad8953980d57f71c1",
+   "equal_prior_source": true,
+   "pinned": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "git_oid": "be9ed277e3cc84936dd1cc2fbe41e5142c48d06e",
+    "sha256": "19ebd7d82fa56d2a4535043d3a163cfe9f0475aa5d457d5ad8953980d57f71c1",
+    "bytes": 14372,
+    "equal_current": true
+   }
+  },
+  "core/pysrc/_artifactauthoritylib.py": {
+   "git_oid": "fb3089e12ddb95242a511cb7754f1e744f7bf53d",
+   "sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+   "bytes": 251805,
+   "physical_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+   "physical_bytes": 251805,
+   "physical_text_equal": true,
+   "prior_source_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+   "equal_prior_source": true,
+   "pinned": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "git_oid": "3bd569c1cbc9be1d25da7bff51429c0cd60793af",
+    "sha256": "cd77a9e9870b8a2f10722a958ff9da25ecf5c87aef72687f7f07c29450b84ba8",
+    "bytes": 220469,
+    "equal_current": false
+   }
+  },
+  "core/pysrc/_artifactlib.py": {
+   "git_oid": "0074f23a0a3d3a1994081d0be41c63e7fe06dff3",
+   "sha256": "db10153f438023ca6eb7e32f77e1898fbd2f806cdc5ef98bdffb078e27e65187",
+   "bytes": 64924,
+   "physical_sha256": "db10153f438023ca6eb7e32f77e1898fbd2f806cdc5ef98bdffb078e27e65187",
+   "physical_bytes": 64924,
+   "physical_text_equal": true,
+   "prior_source_sha256": "db10153f438023ca6eb7e32f77e1898fbd2f806cdc5ef98bdffb078e27e65187",
+   "equal_prior_source": true,
+   "pinned": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "git_oid": "d724140df90601c934c8f246906c71a9aba609f3",
+    "sha256": "24424a47249483eefce1f389041892273bd2950cce7213bb76458d953b394ce1",
+    "bytes": 64686,
+    "equal_current": false
+   }
+  },
+  "core/pysrc/_bashguardlib.py": {
+   "git_oid": "85e332e9b7eb3a385e66afcd7052b9d39ec4bce3",
+   "sha256": "34ed8f188b821b4f840f2d9ed5b601edfa502648129de914abb8694c412c244f",
+   "bytes": 156897,
+   "physical_sha256": "34ed8f188b821b4f840f2d9ed5b601edfa502648129de914abb8694c412c244f",
+   "physical_bytes": 156897,
+   "physical_text_equal": true,
+   "prior_source_sha256": "34ed8f188b821b4f840f2d9ed5b601edfa502648129de914abb8694c412c244f",
+   "equal_prior_source": true,
+   "pinned": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "git_oid": "0f899bc13543ac3832e8bc8e488e6a96391a8e24",
+    "sha256": "28fb7a0875395a284df082722e13caa42c35d02bb77a4567bafbbc0e1c45d101",
+    "bytes": 155665,
+    "equal_current": false
+   }
+  },
+  "core/pysrc/_cleanuplib.py": {
+   "git_oid": "4d92635ec4245ad0b9c77bf275f704b909fee9ca",
+   "sha256": "66f099d21eebe2fd8d0eea472fb0f0b5fd62713d6d687eab88e0b74f42c4e03c",
+   "bytes": 75586,
+   "physical_sha256": "66f099d21eebe2fd8d0eea472fb0f0b5fd62713d6d687eab88e0b74f42c4e03c",
+   "physical_bytes": 75586,
+   "physical_text_equal": true,
+   "prior_source_sha256": "66f099d21eebe2fd8d0eea472fb0f0b5fd62713d6d687eab88e0b74f42c4e03c",
+   "equal_prior_source": true,
+   "pinned": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "git_oid": "4d92635ec4245ad0b9c77bf275f704b909fee9ca",
+    "sha256": "66f099d21eebe2fd8d0eea472fb0f0b5fd62713d6d687eab88e0b74f42c4e03c",
+    "bytes": 75586,
+    "equal_current": true
+   }
+  },
+  "core/pysrc/_durabilitylib.py": {
+   "git_oid": "eb0c3815bee5a039b3643ba059a1ccb44ff986a6",
+   "sha256": "42e9d3ed6f6f43c76bef073e6edad2b8a119dfc154e2a497909422b4e4d28f9b",
+   "bytes": 8561,
+   "physical_sha256": "42e9d3ed6f6f43c76bef073e6edad2b8a119dfc154e2a497909422b4e4d28f9b",
+   "physical_bytes": 8561,
+   "physical_text_equal": true,
+   "prior_source_sha256": "42e9d3ed6f6f43c76bef073e6edad2b8a119dfc154e2a497909422b4e4d28f9b",
+   "equal_prior_source": true,
+   "pinned": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "git_oid": "eb0c3815bee5a039b3643ba059a1ccb44ff986a6",
+    "sha256": "42e9d3ed6f6f43c76bef073e6edad2b8a119dfc154e2a497909422b4e4d28f9b",
+    "bytes": 8561,
+    "equal_current": true
+   }
+  },
+  "core/pysrc/_entrylib.py": {
+   "git_oid": "14f5b7f68a60430df9c87a0395be1ca47d9aa70c",
+   "sha256": "1f4f95d55502d022f60bc9754a629a3fd38f0914ad69903fb5aa4aa8c4da8f5a",
+   "bytes": 2418,
+   "physical_sha256": "1f4f95d55502d022f60bc9754a629a3fd38f0914ad69903fb5aa4aa8c4da8f5a",
+   "physical_bytes": 2418,
+   "physical_text_equal": true,
+   "prior_source_sha256": "1f4f95d55502d022f60bc9754a629a3fd38f0914ad69903fb5aa4aa8c4da8f5a",
+   "equal_prior_source": true,
+   "pinned": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "git_oid": "14f5b7f68a60430df9c87a0395be1ca47d9aa70c",
+    "sha256": "1f4f95d55502d022f60bc9754a629a3fd38f0914ad69903fb5aa4aa8c4da8f5a",
+    "bytes": 2418,
+    "equal_current": true
+   }
+  },
+  "core/pysrc/_gitexec.py": {
+   "git_oid": "6f959b77dbe4a1779bb55e7002ddc237c9b0eab1",
+   "sha256": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5",
+   "bytes": 24644,
+   "physical_sha256": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5",
+   "physical_bytes": 24644,
+   "physical_text_equal": true,
+   "prior_source_sha256": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5",
+   "equal_prior_source": true,
+   "pinned": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "git_oid": "492afd199f317dac3624164bc65dae9da6ca8fae",
+    "sha256": "a5935246028f506ef5ab13ba379b399cb7a754a077866fd39528545f30f4bef3",
+    "bytes": 23619,
+    "equal_current": false
+   }
+  },
+  "core/pysrc/_githooks.py": {
+   "git_oid": "c30c2fbebdc49d481126adc2fd3994eb416c9ecf",
+   "sha256": "450d3204c7895d7649c4bd7b1daf40b498b960df48de00138914559d41008e38",
+   "bytes": 64758,
+   "physical_sha256": "450d3204c7895d7649c4bd7b1daf40b498b960df48de00138914559d41008e38",
+   "physical_bytes": 64758,
+   "physical_text_equal": true,
+   "prior_source_sha256": "450d3204c7895d7649c4bd7b1daf40b498b960df48de00138914559d41008e38",
+   "equal_prior_source": true,
+   "pinned": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "git_oid": "c30c2fbebdc49d481126adc2fd3994eb416c9ecf",
+    "sha256": "450d3204c7895d7649c4bd7b1daf40b498b960df48de00138914559d41008e38",
+    "bytes": 64758,
+    "equal_current": true
+   }
+  },
+  "core/pysrc/_hooklib.py": {
+   "git_oid": "ef7b48317f0875ac0dc0189326206f5fef8e3050",
+   "sha256": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+   "bytes": 49147,
+   "physical_sha256": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+   "physical_bytes": 49147,
+   "physical_text_equal": true,
+   "prior_source_sha256": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+   "equal_prior_source": true,
+   "pinned": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "git_oid": "ef7b48317f0875ac0dc0189326206f5fef8e3050",
+    "sha256": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+    "bytes": 49147,
+    "equal_current": true
+   }
+  },
+  "core/pysrc/_intentlib.py": {
+   "git_oid": "5b88d6e66c7f41f251a822d5238a62e2ce991427",
+   "sha256": "9712bed86854f405475958d07727bf21f58a0faa1bfd03c19d9ada8972007319",
+   "bytes": 12928,
+   "physical_sha256": "9712bed86854f405475958d07727bf21f58a0faa1bfd03c19d9ada8972007319",
+   "physical_bytes": 12928,
+   "physical_text_equal": true,
+   "prior_source_sha256": "9712bed86854f405475958d07727bf21f58a0faa1bfd03c19d9ada8972007319",
+   "equal_prior_source": true,
+   "pinned": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "git_oid": "5b88d6e66c7f41f251a822d5238a62e2ce991427",
+    "sha256": "9712bed86854f405475958d07727bf21f58a0faa1bfd03c19d9ada8972007319",
+    "bytes": 12928,
+    "equal_current": true
+   }
+  },
+  "core/pysrc/_modelib.py": {
+   "git_oid": "6d2e162e15cf0b7904ba5d04a0470c604bf474ce",
+   "sha256": "1988af5a7b374bc796a0d6744a85d50a8b1213a4039bc91b6fa5d434b3464a03",
+   "bytes": 45342,
+   "physical_sha256": "1988af5a7b374bc796a0d6744a85d50a8b1213a4039bc91b6fa5d434b3464a03",
+   "physical_bytes": 45342,
+   "physical_text_equal": true,
+   "prior_source_sha256": "d97433737654bbcad2051e62495e70ec006dc31d458514fa74e338e49d04a1db",
+   "equal_prior_source": false,
+   "pinned": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "git_oid": "eecd013470e3d1db430b1686214f3d3aa02f9004",
+    "sha256": "18160bf037e41b9b0f0e720fb3a9c997c08f9a59bfb7ac409716004c30b7a9de",
+    "bytes": 39306,
+    "equal_current": false
+   }
+  },
+  "core/pysrc/_overrideappendlib.py": {
+   "git_oid": "dc3e310b65cf5c0438f7d5441b60d4684a17df3c",
+   "sha256": "592f63ca6a6a5e51f5e315cd60f6d2d8a6565234835e0904bb422b74d20090b0",
+   "bytes": 6815,
+   "physical_sha256": "592f63ca6a6a5e51f5e315cd60f6d2d8a6565234835e0904bb422b74d20090b0",
+   "physical_bytes": 6815,
+   "physical_text_equal": true,
+   "prior_source_sha256": "592f63ca6a6a5e51f5e315cd60f6d2d8a6565234835e0904bb422b74d20090b0",
+   "equal_prior_source": true,
+   "pinned": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "git_oid": "dc3e310b65cf5c0438f7d5441b60d4684a17df3c",
+    "sha256": "592f63ca6a6a5e51f5e315cd60f6d2d8a6565234835e0904bb422b74d20090b0",
+    "bytes": 6815,
+    "equal_current": true
+   }
+  },
+  "core/pysrc/_planfilelib.py": {
+   "git_oid": "e3825a54039985bd4b6f13a4b280445f5a9b3cfd",
+   "sha256": "038cf68ad85d022d22aab4da5f218f1ce5fb1bdec3bc60e329c607b806fd6fe0",
+   "bytes": 28296,
+   "physical_sha256": "038cf68ad85d022d22aab4da5f218f1ce5fb1bdec3bc60e329c607b806fd6fe0",
+   "physical_bytes": 28296,
+   "physical_text_equal": true,
+   "prior_source_sha256": "038cf68ad85d022d22aab4da5f218f1ce5fb1bdec3bc60e329c607b806fd6fe0",
+   "equal_prior_source": true,
+   "pinned": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "git_oid": "e3825a54039985bd4b6f13a4b280445f5a9b3cfd",
+    "sha256": "038cf68ad85d022d22aab4da5f218f1ce5fb1bdec3bc60e329c607b806fd6fe0",
+    "bytes": 28296,
+    "equal_current": true
+   }
+  },
+  "core/pysrc/_readinjectlib.py": {
+   "git_oid": "eb9ac0c2ed4516450ec8607327790e3edaab8252",
+   "sha256": "a4d689293690beefa28e33834c7aa421145bab6547685f8d25e5c29425b61138",
+   "bytes": 62081,
+   "physical_sha256": "a4d689293690beefa28e33834c7aa421145bab6547685f8d25e5c29425b61138",
+   "physical_bytes": 62081,
+   "physical_text_equal": true,
+   "prior_source_sha256": "a4d689293690beefa28e33834c7aa421145bab6547685f8d25e5c29425b61138",
+   "equal_prior_source": true,
+   "pinned": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "git_oid": "eb9ac0c2ed4516450ec8607327790e3edaab8252",
+    "sha256": "a4d689293690beefa28e33834c7aa421145bab6547685f8d25e5c29425b61138",
+    "bytes": 62081,
+    "equal_current": true
+   }
+  },
+  "core/pysrc/_scopelib.py": {
+   "git_oid": "53994a0d077cba7ec461a3b103766c5f077704d1",
+   "sha256": "03d1f066863d08c952ebda8d9b6f1515813f53a4fd3fc0af560a735f63954e0b",
+   "bytes": 10966,
+   "physical_sha256": "03d1f066863d08c952ebda8d9b6f1515813f53a4fd3fc0af560a735f63954e0b",
+   "physical_bytes": 10966,
+   "physical_text_equal": true,
+   "prior_source_sha256": "03d1f066863d08c952ebda8d9b6f1515813f53a4fd3fc0af560a735f63954e0b",
+   "equal_prior_source": true,
+   "pinned": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "git_oid": "53994a0d077cba7ec461a3b103766c5f077704d1",
+    "sha256": "03d1f066863d08c952ebda8d9b6f1515813f53a4fd3fc0af560a735f63954e0b",
+    "bytes": 10966,
+    "equal_current": true
+   }
+  },
+  "core/pysrc/_sensitivelib.py": {
+   "git_oid": "e9671658cc8f2ce1ccb27277848de601641b6f90",
+   "sha256": "a3902997c16d367a3c7e6e7247a42ba35d962e2c885f9ed3e8e1ab0ce98ec506",
+   "bytes": 35303,
+   "physical_sha256": "a3902997c16d367a3c7e6e7247a42ba35d962e2c885f9ed3e8e1ab0ce98ec506",
+   "physical_bytes": 35303,
+   "physical_text_equal": true,
+   "prior_source_sha256": "a3902997c16d367a3c7e6e7247a42ba35d962e2c885f9ed3e8e1ab0ce98ec506",
+   "equal_prior_source": true,
+   "pinned": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "git_oid": "03123d442b780294bc33ef515eecb62c7ed79af4",
+    "sha256": "de8b2255bad1a78f4779406e35114ebc596ee280912d3ba68e559a06da098458",
+    "bytes": 35079,
+    "equal_current": false
+   }
+  },
+  "core/pysrc/_sloplib.py": {
+   "git_oid": "fe429cca7fca219da512faad06dd0bfc15846a52",
+   "sha256": "568692fdecb4237ae961bdc3cdb0a3f1566f1630ba2f18ac0ea13fa4df40214e",
+   "bytes": 11969,
+   "physical_sha256": "568692fdecb4237ae961bdc3cdb0a3f1566f1630ba2f18ac0ea13fa4df40214e",
+   "physical_bytes": 11969,
+   "physical_text_equal": true,
+   "prior_source_sha256": "568692fdecb4237ae961bdc3cdb0a3f1566f1630ba2f18ac0ea13fa4df40214e",
+   "equal_prior_source": true,
+   "pinned": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "git_oid": "fe429cca7fca219da512faad06dd0bfc15846a52",
+    "sha256": "568692fdecb4237ae961bdc3cdb0a3f1566f1630ba2f18ac0ea13fa4df40214e",
+    "bytes": 11969,
+    "equal_current": true
+   }
+  },
+  "core/pysrc/_standuplib.py": {
+   "git_oid": "0906f3eb5087ba0d15182581cbe3d24c319b1ef7",
+   "sha256": "621d318ca6429c95bc45dadeb7fbebbfdd9bc3a5f94267d87fa692e69ef74169",
+   "bytes": 9547,
+   "physical_sha256": "621d318ca6429c95bc45dadeb7fbebbfdd9bc3a5f94267d87fa692e69ef74169",
+   "physical_bytes": 9547,
+   "physical_text_equal": true,
+   "prior_source_sha256": "621d318ca6429c95bc45dadeb7fbebbfdd9bc3a5f94267d87fa692e69ef74169",
+   "equal_prior_source": true,
+   "pinned": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "git_oid": "0906f3eb5087ba0d15182581cbe3d24c319b1ef7",
+    "sha256": "621d318ca6429c95bc45dadeb7fbebbfdd9bc3a5f94267d87fa692e69ef74169",
+    "bytes": 9547,
+    "equal_current": true
+   }
+  },
+  "core/pysrc/_taskboardlib.py": {
+   "git_oid": "85511a724f3de7a8cf84c069814d0605e72f3395",
+   "sha256": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+   "bytes": 69125,
+   "physical_sha256": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+   "physical_bytes": 69125,
+   "physical_text_equal": true,
+   "prior_source_sha256": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+   "equal_prior_source": true,
+   "pinned": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "git_oid": "92f17a33ca8f853e938b11537f9b7f28deaba4f6",
+    "sha256": "1ff827bca68c253f59293cd97708a4d92e4d05fbc1e68228d4c17e111114aa46",
+    "bytes": 59600,
+    "equal_current": false
+   }
+  },
+  "core/pysrc/_taskexcludelib.py": {
+   "git_oid": "df2300611bfc7ca9aa945900d53c7b6c5032eda9",
+   "sha256": "dbe5ae4cbe72a2cdccfb4bdf78b4adbece144fed74703f2d2f403851ce3c39a0",
+   "bytes": 10102,
+   "physical_sha256": "dbe5ae4cbe72a2cdccfb4bdf78b4adbece144fed74703f2d2f403851ce3c39a0",
+   "physical_bytes": 10102,
+   "physical_text_equal": true,
+   "prior_source_sha256": "dbe5ae4cbe72a2cdccfb4bdf78b4adbece144fed74703f2d2f403851ce3c39a0",
+   "equal_prior_source": true,
+   "pinned": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "git_oid": "df2300611bfc7ca9aa945900d53c7b6c5032eda9",
+    "sha256": "dbe5ae4cbe72a2cdccfb4bdf78b4adbece144fed74703f2d2f403851ce3c39a0",
+    "bytes": 10102,
+    "equal_current": true
+   }
+  },
+  "core/pysrc/_workadopt.py": {
+   "git_oid": "a9b4e611b0b6abaf15e46b9d21fd5a0c66d3a601",
+   "sha256": "5931ac77ec7ce695bf35daac6a93a889f5ce65b6fd8df8c150c0f9a3f6564078",
+   "bytes": 11275,
+   "physical_sha256": "5931ac77ec7ce695bf35daac6a93a889f5ce65b6fd8df8c150c0f9a3f6564078",
+   "physical_bytes": 11275,
+   "physical_text_equal": true,
+   "prior_source_sha256": "2691e5e61824ef58cf2e13463de8aaf44a99a831079595d906ce96f06aa320b7",
+   "equal_prior_source": false,
+   "pinned": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "git_oid": "7344b9da99129e6f64ce3ccbb1ed3bb29449ad15",
+    "sha256": "89f4a7eaa38ee10657af1fcdc9b3f2abaf9ddbbe2cc794cfd8fdd1726cca97c8",
+    "bytes": 7379,
+    "equal_current": false
+   }
+  },
+  "core/pysrc/_worklib.py": {
+   "git_oid": "7f118b7ae057b89017e1c1ec7c779c7687740330",
+   "sha256": "4b08bdfdea85a96e1bde4bd7dc610bc61dd8ef31a42d530fb10437b1145818ce",
+   "bytes": 18760,
+   "physical_sha256": "4b08bdfdea85a96e1bde4bd7dc610bc61dd8ef31a42d530fb10437b1145818ce",
+   "physical_bytes": 18760,
+   "physical_text_equal": true,
+   "prior_source_sha256": "4b08bdfdea85a96e1bde4bd7dc610bc61dd8ef31a42d530fb10437b1145818ce",
+   "equal_prior_source": true,
+   "pinned": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "git_oid": "7f118b7ae057b89017e1c1ec7c779c7687740330",
+    "sha256": "4b08bdfdea85a96e1bde4bd7dc610bc61dd8ef31a42d530fb10437b1145818ce",
+    "bytes": 18760,
+    "equal_current": true
+   }
+  },
+  "core/pysrc/adr-merge-method.py": {
+   "git_oid": "183d7739639adfcaff2267c183445c1d311e8503",
+   "sha256": "3dae85fb9b0d89ef9f24b95576ef481784739e667f7030dad79a2acc418d66a4",
+   "bytes": 1140,
+   "physical_sha256": "3dae85fb9b0d89ef9f24b95576ef481784739e667f7030dad79a2acc418d66a4",
+   "physical_bytes": 1140,
+   "physical_text_equal": true,
+   "prior_source_sha256": "3dae85fb9b0d89ef9f24b95576ef481784739e667f7030dad79a2acc418d66a4",
+   "equal_prior_source": true,
+   "pinned": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "git_oid": "183d7739639adfcaff2267c183445c1d311e8503",
+    "sha256": "3dae85fb9b0d89ef9f24b95576ef481784739e667f7030dad79a2acc418d66a4",
+    "bytes": 1140,
+    "equal_current": true
+   }
+  },
+  "core/pysrc/append-override.py": {
+   "git_oid": "0add80319167c6760f43cfc3a7b494f0b0155287",
+   "sha256": "d6a14fef85401e11222737e02b5188c71143d63c396cdaf0f3aa24736502ad9e",
+   "bytes": 188,
+   "physical_sha256": "d6a14fef85401e11222737e02b5188c71143d63c396cdaf0f3aa24736502ad9e",
+   "physical_bytes": 188,
+   "physical_text_equal": true,
+   "prior_source_sha256": "d6a14fef85401e11222737e02b5188c71143d63c396cdaf0f3aa24736502ad9e",
+   "equal_prior_source": true,
+   "pinned": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "git_oid": "0add80319167c6760f43cfc3a7b494f0b0155287",
+    "sha256": "d6a14fef85401e11222737e02b5188c71143d63c396cdaf0f3aa24736502ad9e",
+    "bytes": 188,
+    "equal_current": true
+   }
+  },
+  "core/pysrc/artifact-authority-hook.py": {
+   "git_oid": "a8087a07c199db1a36ee8f59b23c866958abb6a2",
+   "sha256": "783230e6cc6f27ee697797467cac092b8db0b257b6c408f5f7051f403a8d82d4",
+   "bytes": 6076,
+   "physical_sha256": "783230e6cc6f27ee697797467cac092b8db0b257b6c408f5f7051f403a8d82d4",
+   "physical_bytes": 6076,
+   "physical_text_equal": true,
+   "prior_source_sha256": "783230e6cc6f27ee697797467cac092b8db0b257b6c408f5f7051f403a8d82d4",
+   "equal_prior_source": true,
+   "pinned": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "git_oid": "a8087a07c199db1a36ee8f59b23c866958abb6a2",
+    "sha256": "783230e6cc6f27ee697797467cac092b8db0b257b6c408f5f7051f403a8d82d4",
+    "bytes": 6076,
+    "equal_current": true
+   }
+  },
+  "core/pysrc/artifact-authority.py": {
+   "git_oid": "9ecd8bb20f843b9b97069f0289f898747eade725",
+   "sha256": "0dc4fd27b25ec5ca9f38ab0a52301a480c44c87072b0ec92080738fc0db38010",
+   "bytes": 6960,
+   "physical_sha256": "0dc4fd27b25ec5ca9f38ab0a52301a480c44c87072b0ec92080738fc0db38010",
+   "physical_bytes": 6960,
+   "physical_text_equal": true,
+   "prior_source_sha256": "0dc4fd27b25ec5ca9f38ab0a52301a480c44c87072b0ec92080738fc0db38010",
+   "equal_prior_source": true,
+   "pinned": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "git_oid": "19bcb023080747030fb6ff0eb221a8f86d54b6d2",
+    "sha256": "587a8a7646164a8e3aff223d48a95af5a72ac4093b0cc93974fe98b67423b405",
+    "bytes": 5954,
+    "equal_current": false
+   }
+  },
+  "core/pysrc/boardsync.py": {
+   "git_oid": "06290bcb50929cf147c08b47cad276c5f73fe55c",
+   "sha256": "b6e7b0b7e21bc838929593815a071c1418d35e30f1fa0b64410f5a9c2424023b",
+   "bytes": 6077,
+   "physical_sha256": "b6e7b0b7e21bc838929593815a071c1418d35e30f1fa0b64410f5a9c2424023b",
+   "physical_bytes": 6077,
+   "physical_text_equal": true,
+   "prior_source_sha256": "b6e7b0b7e21bc838929593815a071c1418d35e30f1fa0b64410f5a9c2424023b",
+   "equal_prior_source": true,
+   "pinned": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "git_oid": "06290bcb50929cf147c08b47cad276c5f73fe55c",
+    "sha256": "b6e7b0b7e21bc838929593815a071c1418d35e30f1fa0b64410f5a9c2424023b",
+    "bytes": 6077,
+    "equal_current": true
+   }
+  },
+  "core/pysrc/git-enforce.py": {
+   "git_oid": "bf26b26b73f5db048b3e21126a131938c962c06e",
+   "sha256": "41e0d0a2d5a08c55cde71441540d8717eee55914de62d3186d05f3de38ab8142",
+   "bytes": 19608,
+   "physical_sha256": "41e0d0a2d5a08c55cde71441540d8717eee55914de62d3186d05f3de38ab8142",
+   "physical_bytes": 19608,
+   "physical_text_equal": true,
+   "prior_source_sha256": "41e0d0a2d5a08c55cde71441540d8717eee55914de62d3186d05f3de38ab8142",
+   "equal_prior_source": true,
+   "pinned": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "git_oid": "bf26b26b73f5db048b3e21126a131938c962c06e",
+    "sha256": "41e0d0a2d5a08c55cde71441540d8717eee55914de62d3186d05f3de38ab8142",
+    "bytes": 19608,
+    "equal_current": true
+   }
+  },
+  "core/pysrc/hostapi.py": {
+   "git_oid": "1a7db1792ef432615a47a7cf4aed7714b16045dc",
+   "sha256": "2aea81ad167a458c6053cb52880952521159a367eaa5baa7df6e2e35fea574e4",
+   "bytes": 38083,
+   "physical_sha256": "2aea81ad167a458c6053cb52880952521159a367eaa5baa7df6e2e35fea574e4",
+   "physical_bytes": 38083,
+   "physical_text_equal": true,
+   "prior_source_sha256": "2aea81ad167a458c6053cb52880952521159a367eaa5baa7df6e2e35fea574e4",
+   "equal_prior_source": true,
+   "pinned": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "git_oid": "207e3f257f993265bf8984cd4f5a8bdd5e47db23",
+    "sha256": "3dbeeb6bfdfde3f082a773090ca47133f55fab1c1e30e17a59547e781c5eca18",
+    "bytes": 38083,
+    "equal_current": false
+   }
+  },
+  "core/pysrc/init-codearbiter.py": {
+   "git_oid": "f10d1d619733dbf1e7bf8fe9bbdae21e613e38c4",
+   "sha256": "641f0d04057ea22bff6fc39ce6fd95324901c4cc810617f4a783842cd31086b3",
+   "bytes": 27811,
+   "physical_sha256": "641f0d04057ea22bff6fc39ce6fd95324901c4cc810617f4a783842cd31086b3",
+   "physical_bytes": 27811,
+   "physical_text_equal": true,
+   "prior_source_sha256": "641f0d04057ea22bff6fc39ce6fd95324901c4cc810617f4a783842cd31086b3",
+   "equal_prior_source": true,
+   "pinned": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "git_oid": "40a841ce804efc29ace2abe75fe4c2989b9131b8",
+    "sha256": "faaeaf09ccfcaa893ec6d2b9f966a86e58aea8a5eb8daec4f4760c0587cddc0b",
+    "bytes": 25697,
+    "equal_current": false
+   }
+  },
+  "core/pysrc/migration-pass.py": {
+   "git_oid": "aca17a32b2f311164db80e44dda76bb8b736d869",
+   "sha256": "878db96323fefc73b65b6bff73f54bdffafb98af6f260789e79f9b9d3a954fcd",
+   "bytes": 6375,
+   "physical_sha256": "878db96323fefc73b65b6bff73f54bdffafb98af6f260789e79f9b9d3a954fcd",
+   "physical_bytes": 6375,
+   "physical_text_equal": true,
+   "prior_source_sha256": "878db96323fefc73b65b6bff73f54bdffafb98af6f260789e79f9b9d3a954fcd",
+   "equal_prior_source": true,
+   "pinned": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "git_oid": "aca17a32b2f311164db80e44dda76bb8b736d869",
+    "sha256": "878db96323fefc73b65b6bff73f54bdffafb98af6f260789e79f9b9d3a954fcd",
+    "bytes": 6375,
+    "equal_current": true
+   }
+  },
+  "core/pysrc/post-write-edit.py": {
+   "git_oid": "797cbe9b01a976fc8740534bc837be49ea128f06",
+   "sha256": "691d3d3691a49d25c60749153a95488a63b31414db34145a719ed14522e9e7cd",
+   "bytes": 11232,
+   "physical_sha256": "691d3d3691a49d25c60749153a95488a63b31414db34145a719ed14522e9e7cd",
+   "physical_bytes": 11232,
+   "physical_text_equal": true,
+   "prior_source_sha256": "691d3d3691a49d25c60749153a95488a63b31414db34145a719ed14522e9e7cd",
+   "equal_prior_source": true,
+   "pinned": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "git_oid": "797cbe9b01a976fc8740534bc837be49ea128f06",
+    "sha256": "691d3d3691a49d25c60749153a95488a63b31414db34145a719ed14522e9e7cd",
+    "bytes": 11232,
+    "equal_current": true
+   }
+  },
+  "core/pysrc/prompt-submit.py": {
+   "git_oid": "5fcb6c3e41b051b530887c702a3fe33d078e7448",
+   "sha256": "db4218a203d1078e7aecc887c8b522fc313a7c0cc29aa353f1065ed97a8adddf",
+   "bytes": 30296,
+   "physical_sha256": "db4218a203d1078e7aecc887c8b522fc313a7c0cc29aa353f1065ed97a8adddf",
+   "physical_bytes": 30296,
+   "physical_text_equal": true,
+   "prior_source_sha256": "db4218a203d1078e7aecc887c8b522fc313a7c0cc29aa353f1065ed97a8adddf",
+   "equal_prior_source": true,
+   "pinned": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "git_oid": "88a7e1ba69cdb14ace45424188c2b0d175d72dc0",
+    "sha256": "1eaf3b2c464727e1af297cdf5f7c857547734eab7172c1daa03d75fe752ae171",
+    "bytes": 25087,
+    "equal_current": false
+   }
+  },
+  "core/pysrc/security-pass.py": {
+   "git_oid": "6cd472e73368b9e0609b18ebc3f805f231570b59",
+   "sha256": "fc0e0a054cd36fbe3150dceacca2d603d106b36ae49db405d91109f016a211ed",
+   "bytes": 9466,
+   "physical_sha256": "fc0e0a054cd36fbe3150dceacca2d603d106b36ae49db405d91109f016a211ed",
+   "physical_bytes": 9466,
+   "physical_text_equal": true,
+   "prior_source_sha256": "fc0e0a054cd36fbe3150dceacca2d603d106b36ae49db405d91109f016a211ed",
+   "equal_prior_source": true,
+   "pinned": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "git_oid": "8364a198d0abcfa48ee54623023868089b34d25b",
+    "sha256": "4d8171ce2d3f3c09ec2f3b9eb0da8221fc5611fa832eaa216670a52ec88d82d6",
+    "bytes": 9438,
+    "equal_current": false
+   }
+  },
+  "core/pysrc/session-start.py": {
+   "git_oid": "f7c09b4505b787811cca20c7600843cd18ecbf6a",
+   "sha256": "cc79397431af3a0bf2ce28b2131a861b6a50e6e9f47c33fa9e3ef114a70816c2",
+   "bytes": 71649,
+   "physical_sha256": "cc79397431af3a0bf2ce28b2131a861b6a50e6e9f47c33fa9e3ef114a70816c2",
+   "physical_bytes": 71649,
+   "physical_text_equal": true,
+   "prior_source_sha256": "cc79397431af3a0bf2ce28b2131a861b6a50e6e9f47c33fa9e3ef114a70816c2",
+   "equal_prior_source": true,
+   "pinned": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "git_oid": "54b2d5023d55f2734d0c065b35ccad38037e919e",
+    "sha256": "89a78459a87ef9ec45594fc8ba8783535c628889e38ed21d4c49f86a21c467e5",
+    "bytes": 70730,
+    "equal_current": false
+   }
+  },
+  "core/pysrc/taskwrite.py": {
+   "git_oid": "2243e3bfed634f496c70f815c54d5208ed321032",
+   "sha256": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25",
+   "bytes": 22686,
+   "physical_sha256": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25",
+   "physical_bytes": 22686,
+   "physical_text_equal": true,
+   "prior_source_sha256": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25",
+   "equal_prior_source": true,
+   "pinned": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "git_oid": "2243e3bfed634f496c70f815c54d5208ed321032",
+    "sha256": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25",
+    "bytes": 22686,
+    "equal_current": true
+   }
+  },
+  "core/pysrc/wire-statusline.py": {
+   "git_oid": "872016d0512e321067361abffa02e74e7cddc200",
+   "sha256": "aaed6ec530fd58778e77f30d81c9a8eb27d7dbd70068bb154ae825a385315a87",
+   "bytes": 22680,
+   "physical_sha256": "aaed6ec530fd58778e77f30d81c9a8eb27d7dbd70068bb154ae825a385315a87",
+   "physical_bytes": 22680,
+   "physical_text_equal": true,
+   "prior_source_sha256": "aaed6ec530fd58778e77f30d81c9a8eb27d7dbd70068bb154ae825a385315a87",
+   "equal_prior_source": true,
+   "pinned": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "git_oid": "d3824afca4e547c6af307fa57d2cfbbb07dd7a10",
+    "sha256": "3ca9de6944a7911a126e1ae486c88a4c029b2684a7a24a3fa152f726f6cced92",
+    "bytes": 19097,
+    "equal_current": false
+   }
+  },
+  "core/pysrc/work.py": {
+   "git_oid": "fce39a305e86c19675af0e1f664b886949a86c53",
+   "sha256": "fe51520ff1faa8d94740fde5a8d73c0a2626841abc7eae5397e6969055b95722",
+   "bytes": 30378,
+   "physical_sha256": "fe51520ff1faa8d94740fde5a8d73c0a2626841abc7eae5397e6969055b95722",
+   "physical_bytes": 30378,
+   "physical_text_equal": true,
+   "prior_source_sha256": "fe51520ff1faa8d94740fde5a8d73c0a2626841abc7eae5397e6969055b95722",
+   "equal_prior_source": true,
+   "pinned": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "git_oid": "fce39a305e86c19675af0e1f664b886949a86c53",
+    "sha256": "fe51520ff1faa8d94740fde5a8d73c0a2626841abc7eae5397e6969055b95722",
+    "bytes": 30378,
+    "equal_current": true
+   }
+  },
+  "docs/state-contracts-major/PROGRAM.md": {
+   "git_oid": "b07288b0a1f090e722caa571fbd5d97ed78def92",
+   "sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+   "bytes": 7910,
+   "physical_sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+   "physical_bytes": 7910,
+   "physical_text_equal": true,
+   "prior_source_sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+   "equal_prior_source": true
+  },
+  "docs/state-contracts-major/contracts/decisions.json": {
+   "git_oid": "8c9522af8de9935fd512c0777fe0941cddb2375a",
+   "sha256": "5e27a869b569224df3b516a6f64a84aac662b8819607ae6c75b5847be23770a9",
+   "bytes": 5339,
+   "physical_sha256": "5e27a869b569224df3b516a6f64a84aac662b8819607ae6c75b5847be23770a9",
+   "physical_bytes": 5339,
+   "physical_text_equal": true,
+   "prior_source_sha256": "5e27a869b569224df3b516a6f64a84aac662b8819607ae6c75b5847be23770a9",
+   "equal_prior_source": true
+  },
+  "docs/state-contracts-major/contracts/machine-coverage.json": {
+   "git_oid": "e8454acad91b8a9f3931826a2db4bd8893ae2dfb",
+   "sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+   "bytes": 385316,
+   "physical_sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+   "physical_bytes": 385316,
+   "physical_text_equal": true,
+   "prior_source_sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+   "equal_prior_source": true
+  },
+  "docs/state-contracts-major/contracts/program.json": {
+   "git_oid": "5977547ed52a1414358d4e3adba0e0435b4c50fb",
+   "sha256": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+   "bytes": 6403,
+   "physical_sha256": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+   "physical_bytes": 6403,
+   "physical_text_equal": true,
+   "prior_source_sha256": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+   "equal_prior_source": true
+  },
+  "docs/state-contracts-major/contracts/tasks.json": {
+   "git_oid": "3f52ff13e833b002a9759706dd6f5f48e499cc63",
+   "sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+   "bytes": 331224,
+   "physical_sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+   "physical_bytes": 331224,
+   "physical_text_equal": true,
+   "prior_source_sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+   "equal_prior_source": true
+  },
+  "docs/state-contracts-major/contracts/transition-coverage.json": {
+   "git_oid": "cf092ff8ef7776f81a23377eb8946f941a6cd1a9",
+   "sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+   "bytes": 3185278,
+   "physical_sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+   "physical_bytes": 3185278,
+   "physical_text_equal": true,
+   "prior_source_sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+   "equal_prior_source": true
+  },
+  "docs/state-contracts-major/execution/coverage-ledger.json": {
+   "git_oid": "26d8eeb28c2288b390b2375a5fd0046bc079d8d5",
+   "sha256": "6446c5dff504a83e6d94a6a368d509c609b62f9998a2820965124a734a76896e",
+   "bytes": 2035209,
+   "physical_sha256": "6446c5dff504a83e6d94a6a368d509c609b62f9998a2820965124a734a76896e",
+   "physical_bytes": 2035209,
+   "physical_text_equal": true,
+   "prior_source_sha256": "6446c5dff504a83e6d94a6a368d509c609b62f9998a2820965124a734a76896e",
+   "equal_prior_source": true
+  },
+  "docs/state-contracts-major/hooks-workflow-tasks.json": {
+   "git_oid": "3b4a6acfeca8fad93f9a236c14cb502a298e4459",
+   "sha256": "05a2b15eb968b7fa25bb2af6c11c862eef599757f66404b6abcf5b0f519c3e30",
+   "bytes": 176108,
+   "physical_sha256": "05a2b15eb968b7fa25bb2af6c11c862eef599757f66404b6abcf5b0f519c3e30",
+   "physical_bytes": 176108,
+   "physical_text_equal": true,
+   "prior_source_sha256": "05a2b15eb968b7fa25bb2af6c11c862eef599757f66404b6abcf5b0f519c3e30",
+   "equal_prior_source": true
+  },
+  "plugins/ca-codex/hooks/_host.py": {
+   "git_oid": "3ea30ec3e05e1523218fbd999e8e0634cd0a8de2",
+   "sha256": "92b1977ada85436649380fdcf07651f586174efee76a8412beb3ae26bf1e457f",
+   "bytes": 15607,
+   "physical_sha256": "92b1977ada85436649380fdcf07651f586174efee76a8412beb3ae26bf1e457f",
+   "physical_bytes": 15607,
+   "physical_text_equal": true,
+   "prior_source_sha256": "92b1977ada85436649380fdcf07651f586174efee76a8412beb3ae26bf1e457f",
+   "equal_prior_source": true,
+   "pinned": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "git_oid": "ac77f39e07408c3d8dc0f34139a89db02dc91bbf",
+    "sha256": "30fbef97ea3d72c30825b7ad43b589164b7cf587a8954d188344535f7f1c425d",
+    "bytes": 15607,
+    "equal_current": false
+   }
+  },
+  "plugins/ca-pi/hooks/_host.py": {
+   "git_oid": "c2992d5c434636749e00c37dee8a1982963ff4c3",
+   "sha256": "ba885061399fd0fcfd26979ac310ae175a232501346ebae6fd5142db2c302b62",
+   "bytes": 4549,
+   "physical_sha256": "ba885061399fd0fcfd26979ac310ae175a232501346ebae6fd5142db2c302b62",
+   "physical_bytes": 4549,
+   "physical_text_equal": true,
+   "prior_source_sha256": "ba885061399fd0fcfd26979ac310ae175a232501346ebae6fd5142db2c302b62",
+   "equal_prior_source": true,
+   "pinned": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "git_oid": "46200d7accb5aba2db3aef0015dea2593de0fe5f",
+    "sha256": "d1946b8f366ca40b2fd84012e946239e172dc6486a3afb2d7280c716b72a959c",
+    "bytes": 4549,
+    "equal_current": false
+   }
+  },
+  "plugins/ca-pi/hooks/pi-bridge.py": {
+   "git_oid": "cacd5ef75ad180648ae03515e175fbd8c649b15f",
+   "sha256": "ac922e71900aabcd43fc73a4e8c6c5479b309da8af7c7658512fcfd12514b6d4",
+   "bytes": 23604,
+   "physical_sha256": "ac922e71900aabcd43fc73a4e8c6c5479b309da8af7c7658512fcfd12514b6d4",
+   "physical_bytes": 23604,
+   "physical_text_equal": true,
+   "prior_source_sha256": "ac922e71900aabcd43fc73a4e8c6c5479b309da8af7c7658512fcfd12514b6d4",
+   "equal_prior_source": true,
+   "pinned": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "git_oid": "686983bab2b8f62bd64071018b4d4fcc9af6c70b",
+    "sha256": "19e2512a091bfca5c51e4e1701c091f6b6033052394adb11d98697e2d0705197",
+    "bytes": 22958,
+    "equal_current": false
+   }
+  },
+  "plugins/ca/hooks/_host.py": {
+   "git_oid": "8503a10cec96334795cc7b4e40812d11c12e5e57",
+   "sha256": "9d04b88683d1deab03850ef1f2a169579f59756d3430079bdc6aa2160994bc1b",
+   "bytes": 1689,
+   "physical_sha256": "9d04b88683d1deab03850ef1f2a169579f59756d3430079bdc6aa2160994bc1b",
+   "physical_bytes": 1689,
+   "physical_text_equal": true,
+   "prior_source_sha256": "9d04b88683d1deab03850ef1f2a169579f59756d3430079bdc6aa2160994bc1b",
+   "equal_prior_source": true,
+   "pinned": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "git_oid": "80f6cdcc220477d8faf09a887c97b5f2998c743d",
+    "sha256": "e7225f47e7bbc3626f6ae247d6776432dad6712f4249248d9a5d794555424ad1",
+    "bytes": 1689,
+    "equal_current": false
+   }
+  }
+ },
+ "changed_positive_owners": [
+  "core/pysrc/_modelib.py",
+  "core/pysrc/_workadopt.py"
+ ],
+ "mutable_ledger_role": "CAS preimage only; excluded from every positive proof inputs map",
+ "limits": "Reasoned finite source-conformance at actual committed0d73 only. No tests, original-owner/native/API/provider/model execution, actual work/effect/cleanup permission, runtime/installed/human/scenario/task acceptance, CI or publication qualification. Historical checks remain bound to their exact source and observation epochs. No global atomicity, storage-denial durability, unconditional replay, ancestor confinement or universal OS race/nofollow guarantee. Source author is not independent self-review; Root owns review, admission and canonical writes."
+}

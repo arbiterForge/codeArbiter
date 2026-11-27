@@ -1,0 +1,70 @@
+{
+ "schema": "codearbiter.source-conformance-findings/1",
+ "source_commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+ "findings": [
+  {
+   "id": "SITE-LINK-CONTAINMENT-01",
+   "severity": "MEDIUM",
+   "disposition": "SOURCE_CONFIRMED_CONTROL_FLOW_GAP_NOT_EXECUTED",
+   "path": "site/scripts/link-audit/lib.ts",
+   "line": 106,
+   "end": 142,
+   "observed": "Root-absolute branch assigns normalizedPath=urlPath and checks raw base prefix, unlike normalized relative branch; final join can collapse dot segments outside dist.",
+   "example_inputs": [
+    {
+     "base": "/codeArbiter",
+     "target": "/codeArbiter/../outside.html"
+    },
+    {
+     "base": "",
+     "target": "/../outside.html"
+    }
+   ],
+   "impact": "Gate can inspect an existing sibling file and accept an internal link whose normalized browser destination differs, or read outside its intended dist inventory. This is not a public remote exploit or observed filesystem access claim.",
+   "desired": "Normalize root-absolute URL paths before checking base and/or ensure resolved filesystem target remains beneath dist. Preserve apex/subpath semantics, fragments/external skips, zero-page/assets, redirect and missing-target guards. Named focused regression needed before any scoped fix.",
+   "pending_cells": [
+    "disposition:machines:SX06",
+    "disposition:transitions:SX06:06"
+   ],
+   "witnesses": [
+    {
+     "path": "site/scripts/link-audit/lib.ts",
+     "start": 96,
+     "end": 143,
+     "file_sha256": "5dc9948b5dba59154368db94e6a75206401d25265e1e153092f34977320c57a9",
+     "span_sha256": "871152c935bbd9dc8eedf4491d620aa6fa0d48ffd4f126d80fb017c33965f01c"
+    },
+    {
+     "path": "site/scripts/link-audit/lib.ts",
+     "start": 164,
+     "end": 211,
+     "file_sha256": "5dc9948b5dba59154368db94e6a75206401d25265e1e153092f34977320c57a9",
+     "span_sha256": "7acba07aef65299f554d3eeba805fd5066f57f362b31e881a7bb917cb293a09a"
+    },
+    {
+     "path": "site/scripts/link-audit.ts",
+     "start": 17,
+     "end": 44,
+     "file_sha256": "ae26407ea0f8adb88302a0965635659384d340a588831ccbe73ad96b03bfc46f",
+     "span_sha256": "30f0508e72b6e3c2f4b970045ac4f9c43b8cdabe35e58fa2cb261ac99a847851"
+    },
+    {
+     "path": "site/base.mjs",
+     "start": 20,
+     "end": 64,
+     "file_sha256": "16dffd9508277355c801e56cff1d8c49bbb26f809b6b279d799aaae5c7e78931",
+     "span_sha256": "7167fef64c0e991a95d577712991818c8641b543d40429c9d73952d0dc9d9fc4"
+    }
+   ],
+   "accepted_scope": "Frozen SX06:06 contained resolution and Q-01 preserves actual source guard/effect/retry boundaries; no new product feature is required.",
+   "verification": "No reproduction or test executed; exact source/control-flow reasoning only. Existing tests inspected cover page-relative normalization but omit the root-absolute dot-segment branch."
+  }
+ ],
+ "limits": [
+  "Reasoned source-only inspection; no tests, capture, screenshot, browser, site build, owner validator, network/API, provider, install or native execution. No runtime epoch renewed.",
+  "Only18 PLANNED cells in six healthy families are proposed. SX06 machine and SX06:06 remain PLANNED for reported containment gap; all28 already advanced edge objects/evidence remain exact.",
+  "Conditional source procedures do not prove current generated data/pin satisfaction, renderer or helper output, distribution/publication, installed host discovery, browser behavior, task acceptance or whole-program completion.",
+  "Current/pinned owners and named accepted R-08, selected-work and dependency-scoped guidance are distinguished from frozen historical claims. No source hash confers user authority or authenticates an executing principal.",
+  "Root owns independent review, strict original-owner admission and canonical adoption; packet data joins are not executed behavior or owner validation. Changed source epochs need scoped semantic reinspection, not mechanical restamping."
+ ]
+}

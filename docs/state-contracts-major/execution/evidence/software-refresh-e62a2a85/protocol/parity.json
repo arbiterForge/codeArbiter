@@ -1,0 +1,23 @@
+{
+  "argv": [
+    "C:/Python314/python.exe",
+    "-B",
+    "-X",
+    "utf8",
+    "tools/sync-core.py",
+    "--check"
+  ],
+  "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
+  "exit_code": 0,
+  "seconds": 1.7259478999912972,
+  "source_commit": "e62a2a85a6a804bd14a80ad6faec5cb61aff8b20",
+  "before_after_identity_equal": true,
+  "exact_helper_copies": {
+    "core/pysrc/_workflowrecoverylib.py": "a37291b659cdc1ae94482f7591e50b0e869a87c4a16fdf427bd1373c2e7ade9e",
+    "plugins/ca/hooks/_workflowrecoverylib.py": "a37291b659cdc1ae94482f7591e50b0e869a87c4a16fdf427bd1373c2e7ade9e",
+    "plugins/ca-codex/hooks/_workflowrecoverylib.py": "a37291b659cdc1ae94482f7591e50b0e869a87c4a16fdf427bd1373c2e7ade9e",
+    "plugins/ca-pi/hooks/_workflowrecoverylib.py": "a37291b659cdc1ae94482f7591e50b0e869a87c4a16fdf427bd1373c2e7ade9e"
+  },
+  "stdout_sha256": "866bc5844a00445de827a65eb2291f8bb9336567b282cdce3950b7d8f66b0c6f",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

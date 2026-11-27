@@ -1,0 +1,67 @@
+{
+  "schema": "codearbiter.independent-review-admission-projection/1",
+  "verdict": "PASS",
+  "original_review": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-darwin-reader-security-9d459771\\review.json",
+    "sha256": "f51e4ecfff28a5d8fdeaa5694eca0a4c270403fec4584c63e06a0c06483fd10e",
+    "bytes": 10873
+  },
+  "reviewer": "/root/crypto_evidence_review",
+  "full_subjects": {
+    ".github/workflows/ci.yml": {
+      "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-darwin-pi-optional-fix-yomrna2g\\repo\\.github\\workflows\\ci.yml",
+      "sha256": "a5b6e922ae90e6b47095f9a1f8986b781e1a12866315d7513fda5daeb6672dcb",
+      "bytes": 277146,
+      "preimage_sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f",
+      "index_oid": null,
+      "binding_kind": "PRIVATE_CANDIDATE",
+      "review_lens": "mandatory CI/security source review"
+    },
+    ".github/scripts/test_pi_parent_tui_observation.py": {
+      "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-darwin-pi-optional-fix-yomrna2g\\repo\\.github\\scripts\\test_pi_parent_tui_observation.py",
+      "sha256": "8b62bc24b9b872c162139905c816da549fa3e14377ded2e7e3ab58205149c067",
+      "bytes": 25160,
+      "preimage_sha256": "ddbc5f3df3043e6055aa12349eda8db271a9aba0c1faded5d98183653fa87ed5",
+      "index_oid": null,
+      "binding_kind": "PRIVATE_CANDIDATE",
+      "review_lens": "mandatory CI/security source review"
+    },
+    ".github/scripts/_immutable_git_blobs.py": {
+      "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-immutable-positive-reuse-fix-tvdmghdo\\repo\\.github\\scripts\\_immutable_git_blobs.py",
+      "sha256": "7cd642fe54f77d6c046403d1829cbc2484244dab3e656a2a21282fdce71655c6",
+      "bytes": 9589,
+      "preimage_sha256": "00f6a25401e514ae22cb6f18198913ab1eb1bb8816775c27b3cab25d9bf72ada",
+      "index_oid": null,
+      "binding_kind": "PRIVATE_CANDIDATE",
+      "review_lens": "affected auth/crypto classification; existing independent functional review reused"
+    },
+    ".github/scripts/test_immutable_git_blobs.py": {
+      "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-immutable-positive-reuse-fix-tvdmghdo\\repo\\.github\\scripts\\test_immutable_git_blobs.py",
+      "sha256": "53dc16422c59b0811798c9b240e5b29e86c6bbe5f6ea45f40145115fe6a0a6d9",
+      "bytes": 20221,
+      "preimage_sha256": "461a322ee324bd94bb48694f627217227135f97bfeab844f888db32cf4128258",
+      "index_oid": null,
+      "binding_kind": "PRIVATE_CANDIDATE",
+      "review_lens": "affected auth/crypto classification; existing independent functional review reused"
+    },
+    "docs/state-contracts-major/execution/evidence/immutable-positive-blob-reuse/author-delivery.json": {
+      "candidate_path": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\docs\\state-contracts-major\\execution\\evidence\\immutable-positive-blob-reuse\\author-delivery.json",
+      "sha256": "f5ae95260a3b381bcfa0766a76c0e5c454a97e6753221b44a39d4a39eacbfda3",
+      "bytes": 15106,
+      "index_oid": "9abbc989f49ea051481ba919139e5a2a57c20635",
+      "binding_kind": "STAGED_BLOB_EQUALS_PHYSICAL",
+      "review_lens": "actual passive crypto wording classification"
+    },
+    "docs/state-contracts-major/execution/evidence/immutable-positive-blob-reuse/independent-review.json": {
+      "candidate_path": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\docs\\state-contracts-major\\execution\\evidence\\immutable-positive-blob-reuse\\independent-review.json",
+      "sha256": "c252e2690ed652e9cf88d71b88fa372a6853cf937920a2e02cec86a5c94fe537",
+      "bytes": 14692,
+      "index_oid": "f003391c9a14620e01e033a81eda4bf7644600d6",
+      "binding_kind": "STAGED_BLOB_EQUALS_PHYSICAL",
+      "review_lens": "actual passive crypto wording classification"
+    }
+  },
+  "findings": [],
+  "scope": "EXACT_PRIVATE_DARWIN_CANDIDATES_PLUS_READER_CRYPTO_CLASSIFICATION",
+  "limits": "Projection of the real retained independent review, not a new review. Exact private original remains retained. Other-author source scopes only; no runtime or whole program acceptance."
+}

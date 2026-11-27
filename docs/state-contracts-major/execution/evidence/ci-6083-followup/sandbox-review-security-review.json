@@ -1,0 +1,53 @@
+{
+  "role": "Security",
+  "gate_status": "PASS",
+  "findings": {
+    "CRITICAL": [],
+    "HIGH": [],
+    "MEDIUM": [],
+    "LOW": []
+  },
+  "scope": "Exact Temp two-file Sandbox original-result transport only; no Gov changes or tests executed by reviewer.",
+  "source_base": "6083dd63b651cb13a45fb37d6f5ffb4fdc32d47a",
+  "source_joins": {
+    ".github/workflows/ci.yml": {
+      "base_sha256": "119a7708523aa65253387091fb85f41a272bf90632d8da096e10c15d3fb59358",
+      "base_expected": "119a7708523aa65253387091fb85f41a272bf90632d8da096e10c15d3fb59358",
+      "proposed_sha256": "a9c3465ac76712a5d78392acecd496ed722ffb01e6c9ee90f85a3aeb78e5d535",
+      "proposed_expected": "a9c3465ac76712a5d78392acecd496ed722ffb01e6c9ee90f85a3aeb78e5d535"
+    },
+    ".github/scripts/test_ci_impact.py": {
+      "base_sha256": "3c423ef6b79d0f8c2041ec7baf3a73f0a58c965ed9798d40522198a91abd8ce6",
+      "base_expected": "3c423ef6b79d0f8c2041ec7baf3a73f0a58c965ed9798d40522198a91abd8ce6",
+      "proposed_sha256": "0aef797e1aa8bd841c7dbf0721422514c4d861540254f4eab0da8fdb706164e8",
+      "proposed_expected": "0aef797e1aa8bd841c7dbf0721422514c4d861540254f4eab0da8fdb706164e8"
+    }
+  },
+  "patch_sha256": "e5d7297521a68c581c2dfbe9914f8f609d9028a3fe34feb3bedc90a5dc72d518",
+  "policy": {
+    "full_current_projection_sha256": "aa0d5b702065d74d8b18677be63fb0a798dc813ece2a19b8203394ad5f979981",
+    "current_projection_equals_fully_read_retained_policy": true,
+    "sections": [
+      "Network and untrusted execution",
+      "Dependency policy",
+      "Secret store and access method",
+      "Audit trail",
+      "Native artifacts and recovery",
+      "Hosted publication and distribution"
+    ],
+    "operative_scope_file": ".codearbiter/security-controls.md; read fully, configuration heading only"
+  },
+  "observations": [
+    "Immutable6083 original two preimages and both proposed physical hashes match author freeze. Only Sandbox job changes; every other job and workflow top-level permission/event prefix remains byte-identical.",
+    "Existing reviewed pinned upload-artifact action reused; no new dependency/acquisition, write token, event, environment or third-party origin. Single runner.temp JSON file only; no glob/home/config/hidden-file upload, overwrite false,14-day retention.",
+    "One npm test invocation remains unfiltered and unchanged in population; default console and github-actions annotations preserved while adding JSON. No continue-on-error, selection, rerun, reader modification or verdict replacement.",
+    "Docker-required env, daemon preflight, actual-layer sentinel, reviewed Nixpacks acquisition, typecheck/audits and rebuilt-bundle stale gates remain unchanged. if:always preserves failed runs diagnostically and cannot convert them to pass; missing JSON is upload error.",
+    "Author retained actual2RED/6GREEN wiring guards with five deliberate mutants, plus1 existing pure-unit lockedCLI smoke with all3 reporters and path containing spaces. Reviewer inspected raw results and exact smoke argv; no Docker/full395/hosted upload claimed.",
+    "Current evidence owner still separately authenticates successful original run/job/artifact/source, so reporter transport is no new approval/authenticity bypass."
+  ],
+  "limits": [
+    "This is a Temp-only reviewed proposal; parent is sole applier and must bind final staged candidate.",
+    "Actual hosted report upload remains pending CI; no source/runtime qualification inferred from this review.",
+    "No broad suite, native build, provider/authentication execution or marker write occurred."
+  ]
+}

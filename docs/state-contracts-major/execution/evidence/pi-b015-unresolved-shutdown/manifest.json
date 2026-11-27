@@ -1,0 +1,72 @@
+{
+  "schema": "codearbiter.unresolved-diagnosis-history/1",
+  "source_commit": "b015b25b442f0587ed2892e9567cbee65bbdfb0f",
+  "run_id": 43635526022,
+  "job_id": 132571421707,
+  "artifact_id": 14130605424,
+  "disposition": "UNRESOLVED",
+  "qualification_claim": false,
+  "facts": "Completed RPC work; observed same-PID JSexitcallbackentry then parentdidnotobserveOSexitwithin30s. LaterJSlisteners/observerIO/nativeAtExit/cache/worker/platformcuts notobserved, nocauseclosed.",
+  "files": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pi-b015-unresolved-shutdown/debug-handoff.json",
+      "sha256": "e3042345e06e97650b874e64d77ae36505c89827544fb4f238daba1fa368540b",
+      "bytes": 18081,
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-b015-exit-diagnosis-tc0i5mrv\\debug-handoff.json"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pi-b015-unresolved-shutdown/facts.json",
+      "sha256": "cc82fba19439daf92e700bba2c96fd3c6430d236801184824d71f228aba540c2",
+      "bytes": 7498,
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-b015-exit-diagnosis-tc0i5mrv\\facts.json"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pi-b015-unresolved-shutdown/handoff-validation.stdout",
+      "sha256": "25591fd511f86fd0a39f1f5104ed21f2a790ae52258c77f3bb7646accf35473c",
+      "bytes": 93,
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-b015-exit-diagnosis-tc0i5mrv\\handoff-validation.stdout"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pi-b015-unresolved-shutdown/run.json",
+      "sha256": "0fedaa694cf5876a532db2796d6b9c233a318680229e506b0c8295f305721101",
+      "bytes": 13777,
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-b015-exit-diagnosis-tc0i5mrv\\run.json"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pi-b015-unresolved-shutdown/job.json",
+      "sha256": "658d6fff1a9a44523714c3e7e16dda9f424324351f8d21cc3b9c136cee2ba9ed",
+      "bytes": 4544,
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-b015-exit-diagnosis-tc0i5mrv\\job.json"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pi-b015-unresolved-shutdown/artifact.json",
+      "sha256": "b887b1cc66af53b3bba4de87d10c2e1994bc05487bb6aa5c97eec03e5f8fd720",
+      "bytes": 745,
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-b015-exit-diagnosis-tc0i5mrv\\artifact.json"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pi-b015-unresolved-shutdown/rpc-shutdown-govdd5nz.json",
+      "sha256": "7b67df6e44250ec502b27f5394c4423d41d697f1b360b9963d8022b795448727",
+      "bytes": 1260,
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-b015-exit-diagnosis-tc0i5mrv\\rpc-shutdown-govdd5nz.json"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pi-b015-unresolved-shutdown/original-job-log.json",
+      "sha256": "0aa941ae05e76800befc2d97016b35de2067467db6cce1918fd3ceed82c066d5",
+      "decoded_sha256": "f95bb714a90dc8b8842998cba2bb10aea5f99e9b6e5e0b98a8dfa6d62d3f1edb",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-b015-exit-diagnosis-tc0i5mrv\\original-job.log"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pi-b015-unresolved-shutdown/archive-members.json",
+      "sha256": "f3c70b0155a0ac090401b03f870271b3ced42a0ed2281e609a120b5a96c21787",
+      "original_archive_sha256": "57c8db56ef59b99df5ad41980e7db9a7741c896cbfe3272e6419b5cfe613f1ba",
+      "original_archive_preserved": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-b015-exit-diagnosis-tc0i5mrv\\diagnostics.zip",
+      "scope": "ExactreadableUTF8memberswithindividualrawbytehashes; originalZIPnotcommitted"
+    }
+  ],
+  "original_one_shot_validation": "validtrue/noerrors; originalpacketpreserved, no resubmission",
+  "limits": [
+    "Diagnostic history only; no task/status/runtime/installed/publication qualification.",
+    "No newlocalreplay, CIretry, deadlinechange, compilecacheflag or forced-success alteration."
+  ]
+}

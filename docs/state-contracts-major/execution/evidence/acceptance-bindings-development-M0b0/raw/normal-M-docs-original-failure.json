@@ -1,0 +1,37 @@
+{
+  "source_commit": "0b0ae193496335c0d87337e5993f032a9385fffb",
+  "docs_run_id": 43960617323,
+  "attempt": 1,
+  "job_id": 133626715454,
+  "failed_step": "Emit Docs qualification report",
+  "artifact_id": 14273518524,
+  "artifact_name": "site-qualification-diagnostics",
+  "archive_sha256": "a268c339f1588c863d268f8af28a890f424dd2b5ae9aa5f6c3dd34c4a9428b30",
+  "archive_bytes": 30699,
+  "uploader": "Retain Docs qualification diagnostics",
+  "original_log_sha256": "e35b665744463e66444b46a3530da630924890acb76d698e62e30654adc7a5a9",
+  "members": [
+    {
+      "path": "docs-browser-observation.json",
+      "sha256": "66884fa6893bf6417d15b9424ac5aec773a389b4fbd1b73b8f83fe709a5efab9"
+    },
+    {
+      "path": "docs-qualification.json.refusal.json",
+      "sha256": "457cb3bdf224847b281f8c2c394a13b1df84c6a64a6b2690bfad540359b48234"
+    }
+  ],
+  "refusal": {
+    "format": "codearbiter-docs-refusal/1",
+    "qualified": false,
+    "phase": "report-validation",
+    "location": {
+      "module": "site_playwright_observation.py",
+      "line": 385
+    }
+  },
+  "qualification": false,
+  "limits": [
+    "Original data-only refusal; no archived code or runtime replay.",
+    "Whole normal M is BLOCK; source predicate must be inspected before a causal claim."
+  ]
+}

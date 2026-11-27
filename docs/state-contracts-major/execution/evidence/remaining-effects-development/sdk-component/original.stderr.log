@@ -1,0 +1,7 @@
+test_real_sdk_footer_owner_disposal_restores_native_without_clobbering_replacement (footer_candidate_owner.PiPackageTests.test_real_sdk_footer_owner_disposal_restores_native_without_clobbering_replacement)
+Actual cached SDK owner/render integration; no agent, model or CLI turn. ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.944s
+
+OK

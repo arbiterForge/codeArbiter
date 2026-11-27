@@ -1,0 +1,8 @@
+{
+ "schema": "codearbiter.exact-raw-utf8-projection/1",
+ "original_local_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-mode-exit-guidance-successor-io_429p6\\restart-recover.stdout",
+ "original_sha256": "dc47d27f198257918b08b093637970e5e99dd4c1ba1bb4f5ca31b8c3a0157b23",
+ "original_bytes": 322,
+ "utf8_text": "{\"phase\": \"recover\", \"pid\": 57936, \"outcome\": {\"requested\": \"ops\", \"result\": \"noop\", \"raw_before\": \"ops\", \"raw_after\": \"ops\", \"raw_changed\": false, \"raw_diagnostic\": null, \"effective_before\": \"ops\", \"effective_after\": \"ops\", \"audit\": \"not-required\", \"owed_rows\": 0, \"next_action\": null}, \"same_second_distinct_exits\": 2}\r\n",
+ "scope": "Reversible JSON transport of exact original UTF8 output; original Temp bytes retained unchanged. This projection is not the original raw file."
+}

@@ -1,0 +1,207 @@
+{
+ "schema": "codearbiter.retained-source-evidence/1",
+ "retained_rows": [
+  {
+   "section": "transitions",
+   "id": "WF-22:01",
+   "row": {
+    "owner": "hooks-workflows",
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "task_ids": [
+     "HW-14",
+     "HW-27"
+    ],
+    "status": "PRESERVED",
+    "evidence": [
+     {
+      "kind": "conformance-check",
+      "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
+      "ref": "docs/state-contracts-major/execution/evidence/hooks-wf21-22-source-clauses/preserved.json",
+      "sha256": "8c74f66f42c1d48741f0ac31c410d21ca666882f7368cb752713b1fe8c358e9f"
+     }
+    ]
+   },
+   "row_sha256": "525a885e1b290774609e7ab07634075ad38638f1548cc7a0ed58cc302275eb79",
+   "state": "RETAINED_UNMODIFIED_NO_RUNTIME_OR_EPOCH_RENEWAL"
+  },
+  {
+   "section": "transitions",
+   "id": "WF-22:02",
+   "row": {
+    "owner": "hooks-workflows",
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "task_ids": [
+     "HW-14",
+     "HW-27"
+    ],
+    "status": "PRESERVED",
+    "evidence": [
+     {
+      "kind": "conformance-check",
+      "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
+      "ref": "docs/state-contracts-major/execution/evidence/hooks-wf21-22-source-clauses/preserved.json",
+      "sha256": "8c74f66f42c1d48741f0ac31c410d21ca666882f7368cb752713b1fe8c358e9f"
+     }
+    ]
+   },
+   "row_sha256": "525a885e1b290774609e7ab07634075ad38638f1548cc7a0ed58cc302275eb79",
+   "state": "RETAINED_UNMODIFIED_NO_RUNTIME_OR_EPOCH_RENEWAL"
+  },
+  {
+   "section": "transitions",
+   "id": "WF-22:03",
+   "row": {
+    "owner": "hooks-workflows",
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "task_ids": [
+     "HW-14",
+     "HW-27"
+    ],
+    "status": "PRESERVED",
+    "evidence": [
+     {
+      "kind": "conformance-check",
+      "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
+      "ref": "docs/state-contracts-major/execution/evidence/hooks-wf21-22-source-clauses/preserved.json",
+      "sha256": "8c74f66f42c1d48741f0ac31c410d21ca666882f7368cb752713b1fe8c358e9f"
+     }
+    ]
+   },
+   "row_sha256": "525a885e1b290774609e7ab07634075ad38638f1548cc7a0ed58cc302275eb79",
+   "state": "RETAINED_UNMODIFIED_NO_RUNTIME_OR_EPOCH_RENEWAL"
+  },
+  {
+   "section": "transitions",
+   "id": "WF-22:04",
+   "row": {
+    "owner": "hooks-workflows",
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "task_ids": [
+     "HW-14",
+     "HW-27"
+    ],
+    "status": "PRESERVED",
+    "evidence": [
+     {
+      "kind": "conformance-check",
+      "commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
+      "ref": "docs/state-contracts-major/execution/evidence/hooks-wf21-22-source-clauses/preserved.json",
+      "sha256": "8c74f66f42c1d48741f0ac31c410d21ca666882f7368cb752713b1fe8c358e9f"
+     }
+    ]
+   },
+   "row_sha256": "525a885e1b290774609e7ab07634075ad38638f1548cc7a0ed58cc302275eb79",
+   "state": "RETAINED_UNMODIFIED_NO_RUNTIME_OR_EPOCH_RENEWAL"
+  }
+ ],
+ "proof": {
+  "ref": "docs/state-contracts-major/execution/evidence/hooks-wf21-22-source-clauses/preserved.json",
+  "sha256": "8c74f66f42c1d48741f0ac31c410d21ca666882f7368cb752713b1fe8c358e9f",
+  "source_commit": "b7a75fcab005d9ab3c29618d59559da2edee3283"
+ },
+ "input_current_comparisons": [
+  {
+   "path": "core/surface/commands/standup.md",
+   "inherited_sha256": "7e509ae3354c4c8db7365812991806efe467420844cbdb35635b283d686a96cb",
+   "current_sha256": "7e509ae3354c4c8db7365812991806efe467420844cbdb35635b283d686a96cb",
+   "equal": true
+  },
+  {
+   "path": "core/surface/skills/post-merge-cleanup/SKILL.md",
+   "inherited_sha256": "350a64b693b0d344ae85f53c410c0574448a0bfe8733d94672e3ac2b1b48dea7",
+   "current_sha256": "350a64b693b0d344ae85f53c410c0574448a0bfe8733d94672e3ac2b1b48dea7",
+   "equal": true
+  },
+  {
+   "path": "core/surface/skills/using-git-worktrees/SKILL.md",
+   "inherited_sha256": "766b46a2b3eb6ccab1692324f153c8a168c3568c1f42b00a8ed9614395caea38",
+   "current_sha256": "766b46a2b3eb6ccab1692324f153c8a168c3568c1f42b00a8ed9614395caea38",
+   "equal": true
+  },
+  {
+   "path": "core/surface/includes/safety-core.md",
+   "inherited_sha256": "a3356c9c306c2624b737f425565afa748d093015c0e968a421092b40bb8f9347",
+   "current_sha256": "a3356c9c306c2624b737f425565afa748d093015c0e968a421092b40bb8f9347",
+   "equal": true
+  },
+  {
+   "path": "core/surface/arbiter.md",
+   "inherited_sha256": "1d6573386db5443a7d905e792ee72608d39569ff470c8bf6635b7d0c691b94a4",
+   "current_sha256": "1d6573386db5443a7d905e792ee72608d39569ff470c8bf6635b7d0c691b94a4",
+   "equal": true
+  },
+  {
+   "path": "core/surface/includes/routing-table.md",
+   "inherited_sha256": "279eeb8174ac6831904c2852cb14ab60c23fdef68849afe155d32451176d796b",
+   "current_sha256": "279eeb8174ac6831904c2852cb14ab60c23fdef68849afe155d32451176d796b",
+   "equal": true
+  },
+  {
+   "path": "core/surface/commands/conflict.md",
+   "inherited_sha256": "7a609162219b2404e7c530a6afeefc40e325ed8cdc34d15fc40c6b3b6e4b3736",
+   "current_sha256": "7a609162219b2404e7c530a6afeefc40e325ed8cdc34d15fc40c6b3b6e4b3736",
+   "equal": true
+  },
+  {
+   "path": "core/surface/includes/helper-invocation.md",
+   "inherited_sha256": "6e5f3da6727dc91ea2838bf414f2f626301ebe75ddeae91aeefede57712ebe33",
+   "current_sha256": "6e5f3da6727dc91ea2838bf414f2f626301ebe75ddeae91aeefede57712ebe33",
+   "equal": true
+  },
+  {
+   "path": "core/surface/includes/artifacts.md",
+   "inherited_sha256": "be4fb60919830f128adc5bf7a5120d4151132b24efdf7de8e960e2e7a2cd3776",
+   "current_sha256": "be4fb60919830f128adc5bf7a5120d4151132b24efdf7de8e960e2e7a2cd3776",
+   "equal": true
+  },
+  {
+   "path": "core/surface/includes/knowledge.md",
+   "inherited_sha256": "269e1830434801736d32753c955683048ac7b6b8c84040c551f8e4068220505c",
+   "current_sha256": "269e1830434801736d32753c955683048ac7b6b8c84040c551f8e4068220505c",
+   "equal": true
+  },
+  {
+   "path": "core/surface/includes/command-compatibility.md",
+   "inherited_sha256": "bf5dd28ce57d6798bb56d4911b50dfe9d2709674169553a5e41b4656a554725b",
+   "current_sha256": "bf5dd28ce57d6798bb56d4911b50dfe9d2709674169553a5e41b4656a554725b",
+   "equal": true
+  },
+  {
+   "path": "core/pysrc/_standuplib.py",
+   "inherited_sha256": "621d318ca6429c95bc45dadeb7fbebbfdd9bc3a5f94267d87fa692e69ef74169",
+   "current_sha256": "621d318ca6429c95bc45dadeb7fbebbfdd9bc3a5f94267d87fa692e69ef74169",
+   "equal": true
+  },
+  {
+   "path": "core/pysrc/work.py",
+   "inherited_sha256": "fe51520ff1faa8d94740fde5a8d73c0a2626841abc7eae5397e6969055b95722",
+   "current_sha256": "fe51520ff1faa8d94740fde5a8d73c0a2626841abc7eae5397e6969055b95722",
+   "equal": true
+  },
+  {
+   "path": "core/pysrc/taskwrite.py",
+   "inherited_sha256": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25",
+   "current_sha256": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25",
+   "equal": true
+  },
+  {
+   "path": "core/pysrc/_taskboardlib.py",
+   "inherited_sha256": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+   "current_sha256": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+   "equal": true
+  },
+  {
+   "path": ".codearbiter/context/security-controls.html",
+   "inherited_sha256": "8630d1cad36de7b06a0a9360beea27a48b1642cc05a4547362a25ec8c9ec491e",
+   "current_sha256": "8630d1cad36de7b06a0a9360beea27a48b1642cc05a4547362a25ec8c9ec491e",
+   "equal": true
+  },
+  {
+   "path": ".codearbiter/security-controls.md",
+   "inherited_sha256": "3d1d12735222b1457be07ebd5378e073391284836e24db527c9f279a70e018ca",
+   "current_sha256": "3d1d12735222b1457be07ebd5378e073391284836e24db527c9f279a70e018ca",
+   "equal": true
+  }
+ ],
+ "note": "Historical four WF22 edges and their source-only evidence remain exactly unchanged. Current six-family machine proof reads all their literal clauses again for machine assessment; it does not append to/relabel/re-date those edges or claim old input epochs fresh."
+}

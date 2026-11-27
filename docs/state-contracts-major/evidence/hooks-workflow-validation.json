@@ -1,0 +1,19 @@
+{
+  "artifact": "hooks-workflow-tasks.json",
+  "json_valid": true,
+  "internal_dependency_graph_acyclic": true,
+  "task_count": 27,
+  "original_finding_count": 22,
+  "all_original_findings_mapped": true,
+  "baseline_machine_count": 72,
+  "existing_path_checks": 131,
+  "missing_existing_paths": [],
+  "new_paths_explicitly_labeled": true,
+  "source_head": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "repo_status_porcelain": "",
+  "runtime_tests_run_for_handoff": [],
+  "new_external_changes": false,
+  "full_reread_manifest": "handoff-work/hooks-workflow-read-files.txt",
+  "read_boundary": "Implementation evidence reuses commit-bound full source audits. Current handoff rereads policy owners listed in the manifest; test filenames were inventoried and verified but their entire bodies were not newly reread or executed. command-routes.json current partial output is not counted as a full reread.",
+  "external_dependency_note": "NT-04/NT-11 and DIST-M01/PI-Dxx coordinated with owning agents. Root placeholder task IDs remain explicitly marked for parent resolution."
+}

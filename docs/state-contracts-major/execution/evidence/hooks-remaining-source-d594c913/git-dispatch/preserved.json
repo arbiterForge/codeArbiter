@@ -1,0 +1,43 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+  "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "/root/qualification_review: bounded source-clause inspection; no runtime execution"
+  },
+  "inputs": {
+    "core/pysrc/_durabilitylib.py": "42e9d3ed6f6f43c76bef073e6edad2b8a119dfc154e2a497909422b4e4d28f9b",
+    "core/pysrc/_gitexec.py": "a5935246028f506ef5ab13ba379b399cb7a754a077866fd39528545f30f4bef3",
+    "core/pysrc/_githooks.py": "450d3204c7895d7649c4bd7b1daf40b498b960df48de00138914559d41008e38",
+    "core/pysrc/_hooklib.py": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895"
+  },
+  "disposition_ids": [
+    "disposition:transitions:hooks:git-install:01",
+    "disposition:transitions:hooks:git-install:02",
+    "disposition:transitions:hooks:git-install:03",
+    "disposition:transitions:hooks:git-install:04",
+    "disposition:transitions:hooks:git-install:05",
+    "disposition:transitions:hooks:git-install:06",
+    "disposition:transitions:hooks:git-dispatch:01",
+    "disposition:transitions:hooks:git-dispatch:02",
+    "disposition:transitions:hooks:git-dispatch:03",
+    "disposition:transitions:hooks:git-dispatch:04",
+    "disposition:transitions:hooks:git-dispatch:05",
+    "disposition:transitions:hooks:git-dispatch:06",
+    "disposition:transitions:hooks:git-dispatch:07",
+    "disposition:machines:hooks:git-dispatch",
+    "disposition:machines:hooks:git-install"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/git-dispatch/source-inspection.json",
+      "sha256": "333e811dfe30825c46aa0bd7dbf3170eb666c45c851437f130bdc42e3be1945a"
+    }
+  ],
+  "scope": "git-dispatch: 13 whole transition clauses and 2 complete constituent machines; Finite source guard/effect/retry conformance at the frozen source commit only. No runtime, host/package qualification, model compliance, task/scenario, provider/authentication, physical consent, endpoint policy, publication or whole-program readiness claim. HOLD rows receive no ledger mutation.",
+  "semantic_mapping_ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/git-dispatch/source-inspection.json",
+  "dependency_boundary": "Inputs pin actual current dependencies at named caller boundaries; equality applies to cited owners, not blanket equivalence of changed dependency behavior. Each raw row states exact mapping and explicit HOLDs."
+}

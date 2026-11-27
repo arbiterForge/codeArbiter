@@ -11,7 +11,10 @@ import argparse
 import fnmatch
 import importlib.util
 import json
+import os
+import re
 import shlex
+import subprocess
 import sys
 from dataclasses import dataclass
 from pathlib import Path, PurePosixPath
@@ -415,12 +418,124 @@ def _unique(values: Iterable[str]) -> list[str]:
     return output
 
 
+
+def _git_paths(repository: Path, *arguments: str) -> bytes:
+    """Keep filenames in NUL-delimited stdout, never in a shell or exec string."""
+    result = subprocess.run(
+        ["git", "--no-lazy-fetch", "-C", str(repository), *arguments],
+        stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False,
+    )
+    if result.returncode:
+        raise ImpactMapError("changed-path Git input is unavailable")
+    return result.stdout
+
+
+def _event_changed_paths(event_path: Path, event_name: str, ref: str,
+                         sha: str, repository: Path) -> list[str]:
+    """Match the pinned paths-filter default ranges, without exporting its list.
+
+    PRs compare merge base to PR head; default-branch pushes use before..head;
+    other pushes use the default branch's merge base. Explicit merge-group SHAs
+    compare directly. Missing history is advisory broad fallback, never a fetch.
+    """
+    event = json.loads(event_path.read_text(encoding="utf-8"))
+    if not isinstance(event, dict):
+        raise ImpactMapError("GitHub event must be an object")
+
+    def commit(value: Any) -> str:
+        if not isinstance(value, str) or not re.fullmatch(r"[0-9a-f]{40}", value):
+            raise ImpactMapError("invalid changed-path commit identity")
+        # Resolve and verify objects, not arbitrary revision expressions/options.
+        resolved = _git_paths(repository, "rev-parse", "--verify", "--end-of-options",
+                              value + "^{commit}").decode("ascii").strip()
+        if resolved != value:
+            raise ImpactMapError("changed-path commit identity mismatch")
+        return resolved
+
+    def merge_base(base: str, head: str) -> str:
+        result = subprocess.run(
+            ["git", "--no-lazy-fetch", "-C", str(repository), "merge-base", base, head],
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False,
+        )
+        if result.returncode == 1:
+            return base  # Pinned filter falls back to direct diff for unrelated histories.
+        if result.returncode:
+            raise ImpactMapError("changed-path merge base is unavailable")
+        return commit(result.stdout.decode("ascii").strip())
+
+    if event_name == "pull_request":
+        pr = event.get("pull_request")
+        if not isinstance(pr, dict):
+            raise ImpactMapError("missing pull request range")
+        base_record, head_record = pr.get("base"), pr.get("head")
+        if not isinstance(base_record, dict) or not isinstance(head_record, dict):
+            raise ImpactMapError("missing pull request commit identities")
+        base = commit(base_record.get("sha"))
+        head = commit(head_record.get("sha"))
+        base = merge_base(base, head)
+    elif event_name == "merge_group":
+        group = event.get("merge_group")
+        if not isinstance(group, dict):
+            raise ImpactMapError("missing merge group range")
+        base, head = commit(group.get("base_sha")), commit(group.get("head_sha"))
+    elif event_name == "push":
+        repo = event.get("repository")
+        default = repo.get("default_branch") if isinstance(repo, dict) else None
+        if (not isinstance(default, str) or not default or len(default) > 1024
+                or default.startswith("-") or any(ord(c) < 32 for c in default)):
+            raise ImpactMapError("invalid default branch")
+        _git_paths(repository, "check-ref-format", "refs/heads/" + default)
+        head = commit(sha)
+        short_ref = ref.removeprefix("refs/heads/").removeprefix("refs/tags/")
+        if short_ref == default:
+            before = event.get("before")
+            if before == "0" * 40:
+                raw = _git_paths(repository, "ls-tree", "--name-only", "-r", "-z", head)
+                return raw.decode("utf-8").split("\0")[:-1]
+            if before is None or before == "":
+                raw = _git_paths(repository, "log", "--format=", "--no-renames",
+                                 "--name-only", "-z", "-n", "1", head, "--")
+                return [path for path in raw.decode("utf-8").split("\0") if path]
+            base = commit(before)
+        else:
+            # checkout fetch-depth: 0 makes the same origin default ref available.
+            base = _git_paths(repository, "rev-parse", "--verify", "--end-of-options",
+                              "refs/remotes/origin/" + default + "^{commit}")
+            base = merge_base(commit(base.decode("ascii").strip()), head)
+    else:
+        raise ImpactMapError("unsupported changed-path event")
+    raw = _git_paths(repository, "diff", "--no-ext-diff", "--no-textconv",
+                     "--no-renames", "--name-only", "-z", base, head, "--")
+    # Disabling rename detection includes BOTH the deleted old and added new path.
+    return [path for path in raw.decode("utf-8").split("\0") if path]
+
+
+def _changed_paths(arguments: argparse.Namespace) -> list[str]:
+    if arguments.changed_files is not None:
+        return shlex.split(arguments.changed_files)
+    if arguments.changed_files_file is not None:
+        paths = json.loads(arguments.changed_files_file.read_text(encoding="utf-8"))
+        if (not isinstance(paths, list)
+                or any(not isinstance(path, str) or "\0" in path for path in paths)):
+            raise ImpactMapError("changed-path file must contain a JSON string array")
+        return paths
+    return _event_changed_paths(arguments.github_event, arguments.event_name,
+                                arguments.ref, arguments.sha, arguments.repository)
+
+
 def main(argv: list[str] | None = None) -> int:
     """Write a planner receipt without granting it authority to fail or skip CI."""
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--map", type=Path, required=True, dest="map_path")
     parser.add_argument("--hosts", type=Path, required=True, dest="hosts_path")
-    parser.add_argument("--changed-files", required=True)
+    inputs = parser.add_mutually_exclusive_group(required=True)
+    inputs.add_argument("--changed-files", help="legacy shell-quoted path list")
+    inputs.add_argument("--changed-files-file", type=Path, help="JSON path array")
+    inputs.add_argument("--github-event", type=Path, help="GitHub event JSON file")
+    parser.add_argument("--event-name", default=os.environ.get("GITHUB_EVENT_NAME", ""))
+    parser.add_argument("--ref", default=os.environ.get("GITHUB_REF", ""))
+    parser.add_argument("--sha", default=os.environ.get("GITHUB_SHA", ""))
+    parser.add_argument("--repository", type=Path, default=Path.cwd())
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--summary", type=Path, required=True)
     arguments = parser.parse_args(argv)
@@ -428,8 +543,8 @@ def main(argv: list[str] | None = None) -> int:
     try:
         map_ = load_map(arguments.map_path)
         hosts = _load_hosts(arguments.hosts_path)
-        result = evaluate(map_, shlex.split(arguments.changed_files), hosts)
-    except (ImpactMapError, OSError, ValueError) as error:
+        result = evaluate(map_, _changed_paths(arguments), hosts)
+    except (ImpactMapError, OSError, ValueError, RecursionError) as error:
         result = ImpactResult(
             selected=(
                 Check(

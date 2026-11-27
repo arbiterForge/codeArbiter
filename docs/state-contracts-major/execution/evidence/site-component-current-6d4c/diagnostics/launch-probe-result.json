@@ -1,0 +1,27 @@
+{
+  "argv": [
+    "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-component-6d4c-6w5gdqqn\\launch-probe.cjs"
+  ],
+  "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-component-6d4c-6w5gdqqn",
+  "created_private_dirs": [
+    {
+      "key": "APPDATA",
+      "existed_before": false
+    },
+    {
+      "key": "LOCALAPPDATA",
+      "existed_before": false
+    },
+    {
+      "key": "XDG_CONFIG_HOME",
+      "existed_before": false
+    },
+    {
+      "key": "XDG_CACHE_HOME",
+      "existed_before": false
+    }
+  ],
+  "exit_code": 0,
+  "seconds": 0.37360119819641113
+}

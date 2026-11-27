@@ -1,0 +1,133 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+  "kind": "test",
+  "result": "PASSED",
+  "producer": {
+    "class": "local-host",
+    "identity": "Actual Windowsamd64 authorcurrentNode24.22.1 localtests beforecommit; all72capturedtestedbytes literallyboundtoef40afterrootcommit. Originalbase+dirtfacts retained."
+  },
+  "platform": "windows/amd64",
+  "inputs": {
+    "plugins/ca-sandbox/tools/build.ts": "14f0bada473d9fab480ab56ad7527e12a8dde2f8ce02cb985c2755a20d774ea2",
+    "plugins/ca-sandbox/tools/builder-observation.test.ts": "109d50e185da073a98b858ce57f9419686f3bd32af5d50e0ec58c93ff4d60c7c",
+    "plugins/ca-sandbox/tools/docker.ts": "ac2127a49446d7794bb7b8b2b20cf786c56f8d4a318ade2e56b354fc7a068fc0",
+    "plugins/ca-sandbox/tools/package-lock.json": "815b4523f446b39c6eb078a2e7249601432240582a444d0c48e2aff02179ef67",
+    "plugins/ca-sandbox/tools/package.json": "cf3b87fea39148d3b3bee0db60c84b8fcbf353f4b0565d513141fd2937ae3138",
+    "plugins/ca-sandbox/tools/tsconfig.json": "006a5145157df0bf27f79f2bb00dee8cf9df85720b01d88675510e13770deab7",
+    "plugins/ca-sandbox/tools/vitest.config.ts": "bb1c82a13ca1af089ef3db4af843da2bfef3def0733b812ccd5fb36f6460dd5e"
+  },
+  "execution_context": {
+    "candidate_commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+    "actual_execution_base_commit": "dde429b98eb16622cf4ed211386783342fc9d48a",
+    "captured_inputs": 72,
+    "candidate_input_mismatches": [],
+    "recorded_execution_state": "Author run was HEADdde429 plus modifiedbuild.ts/sandbox.js and newuntrackedbuilder-observation.test.ts; unrelated .codearbiter/.artifacts preserved. Rootcommittedidentical72inputbytes after execution. This is byteidentitybinding, not a claimednewrun at ef40."
+  },
+  "disposition_ids": [
+    "disposition:added_transitions:SBX-BUILD-OBSERVATION:01",
+    "disposition:added_transitions:SBX-BUILD-OBSERVATION:02",
+    "disposition:added_transitions:SBX-BUILD-OBSERVATION:03"
+  ],
+  "commands": [
+    {
+      "argv": [
+        "C:/Users/brenn/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node.exe",
+        "node_modules/vitest/vitest.mjs",
+        "run",
+        "builder-observation.test.ts",
+        "build.test.ts",
+        "state-contracts.test.ts",
+        "build-pinned-base.test.ts",
+        "native-build-inputs.test.ts",
+        "--reporter=json",
+        "--outputFile=C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sbx-builder-admission-w_0306cr\\final-tests.json"
+      ],
+      "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\plugins\\ca-sandbox\\tools",
+      "exit_code": 0,
+      "seconds": 3.662914276123047,
+      "selected_named_population": 102,
+      "skipped": 1
+    }
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/sandbox-builder-ef40/raw/red-results.json",
+      "sha256": "10c39da7f91ef6d1525877392a7e2d7465d8356f56c0596d6ee85b154ce661d8"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/sandbox-builder-ef40/raw/red-command.json",
+      "sha256": "dd77a7d3f33cdd4d7e80b8b1f59ff1d62d0ba9de5e49ad54a1218b467ff4a866"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/sandbox-builder-ef40/raw/final-tests.json",
+      "sha256": "fb9c6c4423fcbc0e04ad14267e27a72e64fc8d8b16e3df443a4e9c15fb21f145"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/sandbox-builder-ef40/raw/final-result.json",
+      "sha256": "12c8028ab9fa3cb2bbee0e727f4ed81ec7c43eff93fd0869988f0295b0f6b03a"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/sandbox-builder-ef40/raw/final-inputs-before.json",
+      "sha256": "4f3febb2bd0abdac8376934b3d46c6d9142d0d9266708b7f6cdb6a17caa9cc20"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/sandbox-builder-ef40/raw/final-inputs-after.json",
+      "sha256": "4f3febb2bd0abdac8376934b3d46c6d9142d0d9266708b7f6cdb6a17caa9cc20"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/sandbox-builder-ef40/raw/candidate-input-join.json",
+      "sha256": "58183d0feec5f398600a9a07d788e3b404677865848686154044aa76921724c1"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/sandbox-cone-review.json",
+      "sha256": "c32ffe9ea371dc8e2cef72009e423e5449beb9a23e9769d301da45a44f7507f9"
+    }
+  ],
+  "semantic_groups": [
+    {
+      "id": "prebuild-currentidentityadmission",
+      "transition_cells": [
+        "disposition:added_transitions:SBX-BUILD-OBSERVATION:01",
+        "disposition:added_transitions:SBX-BUILD-OBSERVATION:02"
+      ],
+      "named_tests": [
+        "SBX-D01 refuses version changed after cache observation before a build effect",
+        "SBX-D01 refuses builder disappeared after cache observation before a build effect",
+        "SBX-D01 refuses version became malformed after cache observation before a build effect",
+        "SBX-D01 refuses invocation changed after cache observation before a build effect",
+        "SBX-D01 refuses preferred builder appeared after cache observation before a build effect",
+        "SBX-D01 refuses WSL binary changed after cache observation before a build effect",
+        "SBX-D01 refuses WSL distro changed after cache observation before a build effect",
+        "SBX-D01 stable reobservation admits one build under the observed identity",
+        "SBX-C01 verified cache reuse needs no build-time capability after the initial observation",
+        "SBX-C01 a weaker profile2 provenance label is a non-destructive cache miss",
+        "SBX-D01 legacy version resolver is freshly observed before the build",
+        "SBX-D01 cancellation during reobservation admits no build"
+      ],
+      "claim": "Changedavailability/version/malformedversion/host-or-WSLbin+distro neveradmitsbuild underoldkey; stableidentity admitsonebuild; legacyversionresolverrefreshes; cancellationduringprobeadmitsnone. Verifiedcachehitpreserved.",
+      "limits": "Injecteddriverboundaryeffects, notrealDocker/nativebuilderprocesscontainment oratomicexecutableraceproof."
+    },
+    {
+      "id": "weakerprofilecachemiss",
+      "transition_cells": [
+        "disposition:added_transitions:SBX-BUILD-OBSERVATION:03"
+      ],
+      "claim": "Legacyprofile2identitymissesnewprofile3 withoutdeletion/retag; verifiedcurrentprofilecachehitremainsreusable.",
+      "limits": "Purecacheadmissioncontrol; realtwo-createDockerbuilderpaths remainrequiredhostedcells."
+    }
+  ],
+  "proposal_state": "PROPOSED_ROOT_CARRY_REVIEW_REQUIRED",
+  "tested_input_relation": "Original RED/GREEN and102-pass focused run retained exactly. Only the12 builder-observation.test.ts assertions substantiate these three introduced edges; their complete7-file dependency cone literally equals the original captured72 and current candidate. The other90 passing assertions are execution context, not newly admitted claims.",
+  "scope": "Three introduced builder-admission edges only;12 actual selected passing observations, seven verified source/package/lock/config inputs.",
+  "dependency_scope": {
+    "selected_assertions": 12,
+    "original_command_passes": 102,
+    "captured_original_inputs": 72,
+    "complete_selected_dependency_inputs": 7,
+    "review_ref": {
+      "path": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/sandbox-cone-review.json",
+      "sha256": "c32ffe9ea371dc8e2cef72009e423e5449beb9a23e9769d301da45a44f7507f9"
+    }
+  }
+}

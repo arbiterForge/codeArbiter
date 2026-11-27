@@ -1,0 +1,57 @@
+{
+ "setup-import-red.json": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-sandbox-finding-routes-jw9kezze\\setup-import-red.json",
+  "sha256": "7c81799d1c635d848772e748026c68ebe3bc2215c14c968a74de485cb289b659",
+  "bytes": 1293
+ },
+ "setup-import-red.stderr": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-sandbox-finding-routes-jw9kezze\\setup-import-red.stderr",
+  "sha256": "449e6274f2ada010aaf0bf36d69192f6fe76c085f0504039f54beb35500d5198",
+  "bytes": 916
+ },
+ "red.json": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-sandbox-finding-routes-jw9kezze\\red.json",
+  "sha256": "b1158415f3de9fc70cc5a20cd53a8c387c11823869d57c0eeb8950dda57def40",
+  "bytes": 1126
+ },
+ "red.stderr": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-sandbox-finding-routes-jw9kezze\\red.stderr",
+  "sha256": "3512c318180ef25c94f3f28c83dc4fed15abfe705a01fcee219b2b94517c1a51",
+  "bytes": 6114
+ },
+ "green.json": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-sandbox-finding-routes-jw9kezze\\green.json",
+  "sha256": "a6d79acf4416dee4e109baab3c2b1076d408113042dbd3039f290fb05ffebebd",
+  "bytes": 1050
+ },
+ "green.stderr": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-sandbox-finding-routes-jw9kezze\\green.stderr",
+  "sha256": "7253801326ce727f62467f7ccfc7bf7977368a809b69ede919afc5553434a764",
+  "bytes": 1047
+ },
+ "legacy.json": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-sandbox-finding-routes-jw9kezze\\legacy.json",
+  "sha256": "484f99919df5e418127d4765f9d6d44955cbe1fbfdeca11ac65af0902aaef934",
+  "bytes": 1260
+ },
+ "legacy.stderr": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-sandbox-finding-routes-jw9kezze\\legacy.stderr",
+  "sha256": "9ced4febbf66ab7cdfaaad11d386e479cdf33946ce5e746f807d7739a9f7af06",
+  "bytes": 989
+ },
+ "candidate.patch": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-sandbox-finding-routes-jw9kezze\\candidate.patch",
+  "sha256": "df0bf2c2770f467da856f8372bd51f595b64221f1eb1a8a66f5ea7246202a8a1",
+  "bytes": 47404
+ },
+ "source-joins.json": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-sandbox-finding-routes-jw9kezze\\source-joins.json",
+  "sha256": "33f291667747ba01f76b4fd30923e7bb30ba7aefa1895233c5c76a365cc31440",
+  "bytes": 9465
+ },
+ "preservation.json": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-sandbox-finding-routes-jw9kezze\\preservation.json",
+  "sha256": "eee598e695ca8d9bdb5a1d0aff284263479673ce732ae55fc19f6bc12f2b6cae",
+  "bytes": 1391
+ }
+}

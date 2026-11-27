@@ -1,0 +1,16 @@
+test_install_stamps_the_exact_owned_value (test_wire_statusline.TestSpinnerOwnershipIsExact.test_install_stamps_the_exact_owned_value) ... ok
+test_still_owned_uninstall_restores_previous_value (test_wire_statusline.TestSpinnerOwnershipIsExact.test_still_owned_uninstall_restores_previous_value) ... ok
+test_user_custom_spinner_after_install_survives_uninstall (test_wire_statusline.TestSpinnerOwnershipIsExact.test_user_custom_spinner_after_install_survives_uninstall)
+The audit clobber reproduction. ... ok
+test_user_removed_spinner_after_install_is_not_recreated (test_wire_statusline.TestSpinnerOwnershipIsExact.test_user_removed_spinner_after_install_is_not_recreated) ... ok
+test_reinstall_after_user_change_does_not_overwrite_silently_then_uninstall_restores_it (test_wire_statusline.TestSpinnerOwnershipIsExact.test_reinstall_after_user_change_does_not_overwrite_silently_then_uninstall_restores_it) ... ok
+test_legacy_backup_without_stamp_is_conservative (test_wire_statusline.TestSpinnerOwnershipIsExact.test_legacy_backup_without_stamp_is_conservative) ... ok
+test_repeated_uninstall_is_a_noop (test_wire_statusline.TestSpinnerOwnershipIsExact.test_repeated_uninstall_is_a_noop) ... ok
+test_spinner_ownership_is_independent_of_statusline_replacement (test_wire_statusline.TestSpinnerOwnershipIsExact.test_spinner_ownership_is_independent_of_statusline_replacement) ... ok
+test_restores_exact_third_party_statusline_setting (test_wire_statusline.TestUninstall.test_restores_exact_third_party_statusline_setting) ... ok
+test_uninstall_removes_statusline_when_no_prior_existed (test_wire_statusline.TestFreshInstall.test_uninstall_removes_statusline_when_no_prior_existed) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 0.154s
+
+OK

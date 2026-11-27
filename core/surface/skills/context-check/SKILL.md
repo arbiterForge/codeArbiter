@@ -146,6 +146,12 @@ current task; referencing those instructions unchanged does not create a new
 normative rule or require a new approval. Keep observed upstream conventions
 and accepted ADR references source-scoped when they do not already govern this
 project. Surface a real conflict without silently displacing either source.
+Use `{{CMD:conflict}}` to retain both exact sources and record the affected scope
+and its authority, data or decision dependencies. Pause that scope and actual
+dependents, including affected child delegations. Continue independent authorized
+work and mutations. Shared security/authority dependencies can expand the pause;
+unknown dependencies need inspection, not an invented graph or chosen rule.
+An explicit global user or host stop remains global.
 
 If the requested change would adopt or replace normative instructions, route
 the proposal to its actual owner and obtain that owner's actual approval before

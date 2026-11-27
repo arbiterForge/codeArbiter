@@ -19,6 +19,14 @@ type Record struct {
 	Value   map[string]any
 	Retired bool
 }
+
+// IsUntypedRetirement identifies a recorded tombstone without an original
+// collection. Its ID and retained data cannot establish that collection.
+func (r Record) IsUntypedRetirement() bool {
+	_, typed := r.Value["original_kind"]
+	return r.Retired && r.Kind == "retired_symbols" && !typed
+}
+
 type Index struct {
 	ByID  map[string]Record
 	Order []string

@@ -58,7 +58,7 @@ loads only when that route is invoked. Never bulk-read the directory.
 |---|---|---|
 | `$ca-commit` | _(none)_ | Run the full commit gate and stage only the reviewed paths. |
 | `$ca-pr` | `["title"] \| --watch [PR] \| --cleanup` | Open or finish a pull request; watch hosted CI; or clean a proven merged branch. Never write directly to the default branch. |
-| `$ca-release` | `[--dry-run]` | Prepare a target-aware SemVer bump, changelog, and annotated tag when release authority is explicit. |
+| `$ca-release` | `[target] \| --dry-run` | Prepare a target-aware SemVer bump, changelog, and annotated tag when release authority is explicit. |
 
 ### Operate
 
@@ -84,7 +84,7 @@ loads only when that route is invoked. Never bulk-read the directory.
 |---|---|---|
 | `$ca-checkpoint` | `[focus]` | Run a periodic whole-codebase reviewer sweep and return a triaged report. |
 | `$ca-threat-model` | `"scope"` | Run an opt-in lightweight STRIDE pass for a sensitive feature. |
-| `$ca-tribunal` | `[scope-path] [--tag <label>]` | Run a deep, resumable eleven-lens audit. It is expensive and never a routine gate. |
+| `$ca-tribunal` | `[scope-path] [--tag <label>]` | Run a deep, resumable thirteen-lens audit. It is expensive and never a routine gate. |
 
 ### Decide
 
@@ -123,7 +123,7 @@ canonical form; each legacy route continues to execute its original workflow.
 
 | Status | Command | Argument | Purpose |
 |---|---|---|---|
-| Internal protocol | `$ca-conflict` | `"description"` | Stop work when governing rules contradict and surface both sides for the user. |
+| Internal protocol | `$ca-conflict` | `"description"` | Pause affected work and actual dependents when rules contradict; surface both sources and continue independent authorized work. |
 
 </details>
 

@@ -1,0 +1,66 @@
+{
+  "state": "FROZEN_TEMP_PROPOSAL_ONLY",
+  "proposal": "proposal.json",
+  "counts": {
+    "TESTED": 40,
+    "PRESERVED": 48,
+    "NOT_APPLICABLE": 3,
+    "hosted_observed_pending": 10,
+    "still_open": 17
+  },
+  "basis": "283 exact originally passed assertion selectors with unique callback/declaration hashes and literal captured whole-file dependency joins; no new tests/runs. Software retains0d7/ef40/6a original producer/source epochs; source review binds actualae237d catalog/current bytes.",
+  "apply": "Parent checks full-row CAS and carries exactly the retained proof/raw files plus proposed91 row replacements. All prior recorded rows/refs/history remain untouched. Parent must authenticate actual committed Git retention; Temp91/91 projection is a separate draft-shape/source-join check, not that final result.",
+  "minimal_remaining_execution_actions": [
+    {
+      "boundary": "Typed installed Farm admission S22:02..07",
+      "owner": "existing native/Farm installed bridge qualification",
+      "existing_runner": "python .github/scripts/test_artifact_farm.py",
+      "required_resource": "normal manifest-qualified ARTIFACT_TEST_INSTALLATION through owning fixture helper, not PATH/build fallback",
+      "action": "Reuse genuinely matching installed observations from native owner before adding any run. Local TS tests cannot establish every actual platform pin/bridge boundary."
+    },
+    {
+      "boundary": "Pi farm adapter S21:01..04",
+      "owner": "Pi owner",
+      "action": "Use actual managed child authority/revoke/cleanup fixture outcomes for this path; no Farm941 inference or paid provider needed."
+    },
+    {
+      "boundary": "FARM-R01 real interruption/races",
+      "owner_files": [
+        "plugins/ca/tools/farm.test.ts",
+        "plugins/ca/tools/state-contracts.test.ts"
+      ],
+      "existing_owning_runner": "node node_modules/vitest/vitest.mjs run farm.test.ts state-contracts.test.ts",
+      "action": "Only missing actual before/after commit/merge/report process-death and simultaneous recoverer/ref-advance cases need bounded new fixtures; existing constructed journal/report failures are retained and must not be rerun broadly."
+    },
+    {
+      "boundary": "SBX-C03 actual default partial compensation and caller cleanup",
+      "owner_files": [
+        "plugins/ca-sandbox/tools/state-contracts.test.ts",
+        "plugins/ca-sandbox/tools/create-failure-diagnostics.test.ts",
+        "plugins/ca-sandbox/tools/claude-inside.test.ts"
+      ],
+      "existing_owning_runner": "node node_modules/vitest/vitest.mjs run state-contracts.test.ts create-failure-diagnostics.test.ts claude-inside.test.ts",
+      "action": "Existing injected helper assertions establish software guards; remaining real default clone/build/firewall partial-state/cleanup boundaries need narrowly scoped real-Docker fixtures or authentic existing matching runtime proof. No live reusable credential or paid inference is required."
+    },
+    {
+      "boundary": "Hosted positive Sandbox acceptance",
+      "existing_owner_job": "[CHECK] | [SBX ] | Sandbox driver contract",
+      "action": "Original6a successful395 job is diagnostic log evidence only. New source-bound original named JSON transport must actually finish on an eligible successful hosted run/artifact; do not relabel old job log as local proof or invent an artifact."
+    },
+    {
+      "boundary": "Actual SIGINT/interactive detach",
+      "owner_files": [
+        "plugins/ca-sandbox/tools/cli.ts",
+        "plugins/ca-sandbox/tools/deadline.test.ts"
+      ],
+      "action": "Current instruction/direct-entry source clauses are preserved; actual first/second signal and TTY detach journeys remain separate where required by acceptance. Do not claim they executed because imported runCli cases passed."
+    }
+  ],
+  "genuine_implementation_gap_fixed": "Omitted COMMANDS.md catalog contradictions were corrected separately and committed ae237d147b8076b3cee8d626535eb7fa0b9eb945. This mapping establishes no additional product bug.",
+  "nonclaims": [
+    "No whole task/machine/finding/installed/publication status promotion.",
+    "No Docker/provider/nonroot/OS-crash skip was recast NOT_APPLICABLE. Three N/A proposals retire only contradictory mandatory instruction requirements explicitly superseded by SBX-D02/D04.",
+    "Current source-conformance instruction text is not phase execution, token-store provenance or authenticated session proof.",
+    "No Gov source/index/progress/ledger or marker writes by this agent."
+  ]
+}

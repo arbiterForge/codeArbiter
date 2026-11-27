@@ -1405,7 +1405,7 @@ describe("farm.ts smoke tests", () => {
     }
   }
 
-  it("is safe to run twice in a row (stale branches cleaned)", async () => {
+  it("refuses reused Git resources without discarding prior branches or evidence", async () => {
     ({ server: mockServer, port } = await startMockServer((body) => {
       const content = (body as { messages?: Array<{ content?: string }> }).messages?.[0]?.content ?? "";
       const file = content.includes("src/hello.ts") ? "src/hello.ts" : "src/world.ts";
@@ -1419,16 +1419,17 @@ describe("farm.ts smoke tests", () => {
 
     const first = await runFarm(tmpDir, planPath, { FARM_API_KEY: "test-key" });
     expect(first.code).toBe(0);
-    // Second run against the same repo must not fail on stale farm/* branches.
+    const firstRefs=execSync("git show-ref",{cwd:tmpDir,encoding:"utf8"});
+    const original=readFileSync(join(tmpDir,".farm/farm-results.jsonl"),"utf8");
     const second = await runFarm(tmpDir, planPath, { FARM_API_KEY: "test-key" });
-    expect(second.code).toBe(0);
-    expect(second.out).toContain("green=2");
+    expect(second.code).not.toBe(0);
+    expect(second.out).toMatch(/integration branch/);
+    expect(execSync("git show-ref",{cwd:tmpDir,encoding:"utf8"})).toBe(firstRefs);
+    // The first run's authoritative stream survives even though latest pointers
+    // can describe a later refused attempt.
+    const runs=readdirSync(join(tmpDir,".farm/runs"));
+    expect(runs.some(id=>readFileSync(join(tmpDir,".farm/runs",id,"farm-results.jsonl"),"utf8")===original)).toBe(true);
 
-    // The streaming rail is truncated at run start, so a re-run does not
-    // accumulate stale lines (the "safe to run twice" invariant covers it too).
-    const raw = readFileSync(join(tmpDir, ".farm/farm-results.jsonl"), "utf8");
-    const lines = raw.split("\n").filter((l) => l.trim().length > 0);
-    expect(lines).toHaveLength(2);
   });
 
 
@@ -1680,7 +1681,9 @@ describe("farm.ts smoke tests", () => {
     expect(withCrashingHook.code).toBe(0);
     expect(withCrashingHook.out).toMatch(/mutation hook failed for task task-a/);
 
-    const withoutHook = await runFarm(tmpDir, planPath, { FARM_API_KEY: "test-key" });
+    plan.tasks[0].id="task-b";
+    writeFileSync(planPath,JSON.stringify(plan));
+    const withoutHook = await runFarm(tmpDir, planPath, { FARM_API_KEY: "test-key", FARM_INTEGRATION_BRANCH:"farm/integration-nohook" });
     expect(withoutHook.code).toBe(0);
     expect(withoutHook.out).not.toMatch(/mutation hook failed/);
   });
@@ -2264,8 +2267,10 @@ describe("farm artifact publication (#397 / #387)", () => {
 
   // Every task in these plans owns exactly one `src/<id>.ts`; the worker echoes
   // back whichever in-scope file the prompt names.
+  let artifactFault: (()=>void) | undefined;
   function greenHandler(): MockHandler {
     return (body) => {
+      const fault=artifactFault;artifactFault=undefined;fault?.();
       const content = (body as { messages?: Array<{ content?: string }> }).messages?.[0]?.content ?? "";
       const m = /\bsrc\/([A-Za-z0-9_-]+)\.ts\b/.exec(content);
       const file = m ? `src/${m[1]}.ts` : "src/fallback.ts";
@@ -2303,6 +2308,7 @@ describe("farm artifact publication (#397 / #387)", () => {
   beforeEach(async () => {
     tmpDir = join(tmpdir(), `farm-artifacts-${Date.now()}-${Math.random().toString(36).slice(2)}`);
     createTempRepo(tmpDir);
+    artifactFault=undefined;
   });
 
   afterEach(async () => {
@@ -2402,9 +2408,11 @@ describe("farm artifact publication (#397 / #387)", () => {
 
     // Make the second run's authoritative JSON unwritable (a directory sits at
     // the destination path) so publication fails mid-run.
-    mkdirSync(join(tmpDir, ".farm/runs/badrun/farm-report.json"), { recursive: true });
-    const second = await runFarm(tmpDir, planPath, { FARM_API_KEY: "test-key", FARM_RUN_ID: "badrun" });
-    expect(second.code).not.toBe(0);
+    artifactFault=()=>mkdirSync(join(tmpDir,".farm/runs/badrun/farm-report.json"));
+    writePlan("plan.json",planFor("second",["next-a","next-b"],port));
+    const second = await runFarm(tmpDir, planPath, { FARM_API_KEY: "test-key", FARM_RUN_ID: "badrun",FARM_INTEGRATION_BRANCH:"farm/integration-second" });
+    expect(second.code,diagnose(second)).toBe(3);
+    expect(second.out).toContain("green=2");
 
     const after = readFileSync(join(tmpDir, ".farm/farm-report.json"), "utf8");
     expect(() => JSON.parse(after)).not.toThrow();
@@ -2428,7 +2436,7 @@ describe("farm artifact publication (#397 / #387)", () => {
   it("#387: a green run whose farm-report.json cannot be published exits non-zero and never claims a Report path", async () => {
     ({ server: mockServer, port } = await startMockServer(greenHandler()));
     const planPath = writePlan("plan.json", planFor("json-fail", ["task-a", "task-b"], port));
-    mkdirSync(join(tmpDir, ".farm/runs/jsonbad/farm-report.json"), { recursive: true });
+    artifactFault=()=>mkdirSync(join(tmpDir, ".farm/runs/jsonbad/farm-report.json"), { recursive: true });
 
     const result = await runFarm(tmpDir, planPath, { FARM_API_KEY: "test-key", FARM_RUN_ID: "jsonbad" });
 
@@ -2438,12 +2446,50 @@ describe("farm artifact publication (#397 / #387)", () => {
     expect(result.code, diagnose(result)).toBe(3);
     expect(result.out).toMatch(/receipt/i);
     expect(result.out).not.toMatch(/^Report: /m);
+    const refs=execSync("git show-ref",{cwd:tmpDir,encoding:"utf8"});
+    for(const entry of ["source","bundle"] as const) {
+      const recovered=await runFarmWithArgs(tmpDir,["--recover-receipt","jsonbad"],planPath,{},["FARM_API_KEY"],entry);
+      expect(recovered.code,recovered.out).toBe(0);
+      const receipt=JSON.parse(recovered.out);
+      expect(receipt.results).toHaveLength(2);
+      expect(receipt.results.every((r:{status:string;author:string})=>r.status==="green" && r.author==="not-invoked")).toBe(true);
+      expect(execSync("git show-ref",{cwd:tmpDir,encoding:"utf8"})).toBe(refs);
+    }
+
   });
+
+  it("FARM-R01 journal publication failure drains independent tasks and retains their real outcomes", async()=>{
+    let authors=0;
+    ({server:mockServer,port}=await startMockServer(async body=>{
+      authors++;
+      const prompt=(body as {messages:{content:string}[]}).messages[0].content;
+      const id=prompt.includes("src/task-a.ts")?"task-a":"task-b";
+      if(id==="task-a") {
+        const record=join(tmpDir,".farm/runs/journalbad/effects/task-a.json");
+        rmSync(record,{force:true});mkdirSync(record);
+      } else await new Promise(resolve=>setTimeout(resolve,5000));
+      return ["```typescript",`// path: src/${id}.ts`,"export const x = 1;","```"].join("\n");
+    }));
+    const declared=planFor("journal-failure",["task-a","task-b"],port);
+    const tasks=declared.tasks.map(t=>({...t,maxRetries:0}));
+    tasks[0].gate.commands=['node -e "process.exit(1)"'];
+    const planPath=writePlan("plan.json",{...declared,tasks});
+    const result=await runFarm(tmpDir,planPath,{FARM_API_KEY:"test-key",FARM_RUN_ID:"journalbad",FARM_CONCURRENCY:"2",FARM_ABORT_MIN_TASKS:"99"});
+    expect(result.code,diagnose(result)).toBe(3);
+    const report=JSON.parse(readFileSync(join(tmpDir,".farm/runs/journalbad/farm-report.json"),"utf8"));
+    expect(report.results).toHaveLength(2);
+    expect(report.artifacts.effects.complete).toBe(false);
+    expect(report.artifacts.stream.complete).toBe(true);
+    expect(report.results.find((r:{id:string})=>r.id==="task-a").status).toBe("escalate");
+    expect(report.results.find((r:{id:string})=>r.id==="task-b").status).toBe("green");
+    expect(authors).toBe(2);
+    expect(execSync("git show farm/integration:src/task-b.ts",{cwd:tmpDir,encoding:"utf8"})).toContain("export const x = 1");
+  },30_000);
 
   it("#387: a failure to publish farm-report.md also fails the run", async () => {
     ({ server: mockServer, port } = await startMockServer(greenHandler()));
     const planPath = writePlan("plan.json", planFor("md-fail", ["task-a"], port));
-    mkdirSync(join(tmpDir, ".farm/runs/mdbad/farm-report.md"), { recursive: true });
+    artifactFault=()=>mkdirSync(join(tmpDir, ".farm/runs/mdbad/farm-report.md"), { recursive: true });
 
     const result = await runFarm(tmpDir, planPath, { FARM_API_KEY: "test-key", FARM_RUN_ID: "mdbad" });
     expect(result.code, diagnose(result)).toBe(3);
@@ -2453,7 +2499,10 @@ describe("farm artifact publication (#397 / #387)", () => {
   it("#387: a broken streaming rail is recorded as incomplete in the published report", async () => {
     ({ server: mockServer, port } = await startMockServer(greenHandler()));
     const planPath = writePlan("plan.json", planFor("stream-fail", ["task-a", "task-b"], port));
-    mkdirSync(join(tmpDir, ".farm/runs/streambad/farm-results.jsonl"), { recursive: true });
+    artifactFault=()=>{
+      rmSync(join(tmpDir,".farm/runs/streambad/farm-results.jsonl"),{force:true});
+      mkdirSync(join(tmpDir,".farm/runs/streambad/farm-results.jsonl"));
+    };
 
     const result = await runFarm(tmpDir, planPath, { FARM_API_KEY: "test-key", FARM_RUN_ID: "streambad" });
     // The rail is best-effort — the run still settles on task outcome...
@@ -2484,9 +2533,9 @@ describe("farm artifact publication (#397 / #387)", () => {
   it("#387: an unusable diffs directory marks every task's diff evidence unavailable", async () => {
     ({ server: mockServer, port } = await startMockServer(greenHandler()));
     const planPath = writePlan("plan.json", planFor("diffdir-fail", ["task-a", "task-b"], port));
-    mkdirSync(join(tmpDir, ".farm/runs/diffdirbad"), { recursive: true });
+
     // A regular FILE where the diffs directory belongs.
-    writeFileSync(join(tmpDir, ".farm/runs/diffdirbad/diffs"), "not a directory");
+    artifactFault=()=>writeFileSync(join(tmpDir, ".farm/runs/diffdirbad/diffs"), "not a directory");
 
     const result = await runFarm(tmpDir, planPath, { FARM_API_KEY: "test-key", FARM_RUN_ID: "diffdirbad" });
     expect(result.code, diagnose(result)).toBe(0);
@@ -2503,7 +2552,7 @@ describe("farm artifact publication (#397 / #387)", () => {
   it("#387: a single failed patch write marks only that task's diff evidence unavailable", async () => {
     ({ server: mockServer, port } = await startMockServer(greenHandler()));
     const planPath = writePlan("plan.json", planFor("patch-fail", ["task-a", "task-b"], port));
-    mkdirSync(join(tmpDir, ".farm/runs/patchbad/diffs/task-a.patch"), { recursive: true });
+    artifactFault=()=>mkdirSync(join(tmpDir, ".farm/runs/patchbad/diffs/task-a.patch"), { recursive: true });
 
     const result = await runFarm(tmpDir, planPath, { FARM_API_KEY: "test-key", FARM_RUN_ID: "patchbad" });
     expect(result.code, diagnose(result)).toBe(0);
@@ -2542,7 +2591,7 @@ describe("farm artifact publication (#397 / #387)", () => {
     ({ server: mockServer, port } = await startMockServer(greenHandler()));
     const planPath = writePlan("plan.json", planFor("md-only-fail", ["task-a"], port));
     // The Markdown receipt cannot be published; the JSON one still can.
-    mkdirSync(join(tmpDir, ".farm/runs/mdonly/farm-report.md"), { recursive: true });
+    artifactFault=()=>mkdirSync(join(tmpDir, ".farm/runs/mdonly/farm-report.md"), { recursive: true });
 
     const result = await runFarm(tmpDir, planPath, { FARM_API_KEY: "test-key", FARM_RUN_ID: "mdonly" });
     expect(result.code, diagnose(result)).toBe(3);
@@ -2563,10 +2612,10 @@ describe("farm artifact publication (#397 / #387)", () => {
     ({ server: mockServer, port } = await startMockServer(greenHandler()));
     const ids = Array.from({ length: 12 }, (_, i) => `bulk${i}`);
     const planPath = writePlan("plan.json", planFor("bounded", ids, port));
-    mkdirSync(join(tmpDir, ".farm/runs/bounded"), { recursive: true });
+
     // A regular FILE where the diffs directory belongs → every task's diff
     // evidence is unavailable for the same single reason.
-    writeFileSync(join(tmpDir, ".farm/runs/bounded/diffs"), "not a directory");
+    artifactFault=()=>writeFileSync(join(tmpDir, ".farm/runs/bounded/diffs"), "not a directory");
 
     const result = await runFarm(tmpDir, planPath, {
       FARM_API_KEY: "test-key",

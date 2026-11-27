@@ -71,23 +71,37 @@ CODEX_HOME = REPO / ".codex-host-check"
 SCHEMA = "codearbiter-codex-host-v1"
 
 
-def _run(args: list[str], home: Path) -> subprocess.CompletedProcess:
+# R-07 / C-F08: every host command (marketplace add, plugin add/list, an npm
+# marketplace install) gets a deadline. A hang becomes a recorded failure that
+# keeps partial output and states what cleanup proved about the child tree;
+# a timeout is never read as "the child is quiescent".
+COMMAND_TIMEOUT_SECONDS = 300.0
+
+
+def _run(args: list[str], home: Path, *,
+         timeout: float = COMMAND_TIMEOUT_SECONDS) -> subprocess.CompletedProcess:
+    import _boundedproc
     env = dict(os.environ)
     env["CODEX_HOME"] = str(home)
-    return subprocess.run(args, capture_output=True, text=True,
-                          encoding="utf-8", errors="replace", env=env, cwd=str(REPO))
+    result = _boundedproc.run(args, timeout=timeout, env=env, cwd=str(REPO))
+    if result.timed_out:
+        label = " ".join([Path(args[0]).name, *args[1:4]])
+        return subprocess.CompletedProcess(
+            args, 124, result.stdout,
+            (result.stderr + "\n" if result.stderr else "") + result.diagnostic(label, timeout))
+    return subprocess.CompletedProcess(args, result.returncode, result.stdout, result.stderr)
 
 
 def codex_version() -> str | None:
     """The runtime's version, or None when no usable `codex` is on PATH."""
     if shutil.which("codex") is None:
         return None
+    import _boundedproc
     try:
-        proc = subprocess.run(["codex", "--version"], capture_output=True, text=True,
-                              encoding="utf-8", errors="replace", timeout=120)
+        proc = _boundedproc.run(["codex", "--version"], timeout=120)
     except (OSError, subprocess.SubprocessError):
         return None
-    if proc.returncode != 0:
+    if proc.timed_out or proc.returncode != 0:
         return None
     return proc.stdout.strip() or None
 
@@ -154,7 +168,10 @@ def _installed_member_errors(plugin_root: Path, metadata_path: Path) -> list[str
 
 def check_install(home: Path, *, marketplace_source: Path = REPO,
                   require_artifact_capability: bool = False,
-                  qualified_npm_metadata: Path | None = None) -> list[dict]:
+                  qualified_npm_metadata: Path | None = None,
+                  expected_plugin_root: Path | None = None,
+                  artifact_exchange_observer=None,
+                  capability_observer=None) -> list[dict]:
     """Install the CHECKED-OUT plugin through the real host and read it back."""
     results: list[dict] = []
 
@@ -203,7 +220,8 @@ def check_install(home: Path, *, marketplace_source: Path = REPO,
     # reports no version at all, or resolves a DIFFERENT one - which a stale
     # marketplace snapshot can genuinely cause, since `plugin marketplace
     # upgrade` exists precisely because a snapshot can lag its source.
-    want = expected_version()
+    want = (expected_version() if expected_plugin_root is None else
+            json.loads((expected_plugin_root / ".codex-plugin/plugin.json").read_text(encoding="utf-8"))["version"])
     record("CODEX-HOST-VERSION", bool(want) and fields[3:4] == [want],
            f"expected version {want!r} in {row.strip()!r}")
 
@@ -223,7 +241,8 @@ def check_install(home: Path, *, marketplace_source: Path = REPO,
     if cached:
         try:
             declared = json.loads(cached[0].read_text(encoding="utf-8"))["hooks"]
-            source = json.loads(HOOKS_JSON.read_text(encoding="utf-8"))["hooks"]
+            expected_hooks = HOOKS_JSON if expected_plugin_root is None else expected_plugin_root / "hooks/hooks.json"
+            source = json.loads(expected_hooks.read_text(encoding="utf-8"))["hooks"]
             record("CODEX-HOST-HOOKS-MATCH", set(declared) == set(source),
                    f"installed {sorted(declared)} vs source {sorted(source)}")
         except (ValueError, KeyError) as error:
@@ -278,7 +297,7 @@ def check_install(home: Path, *, marketplace_source: Path = REPO,
         # copy, not the source checkout, so a dropped agents/ subtree or an
         # index/resource mismatch cannot pass through a successful install.
         expected_stats, expected_errors = expected_route_stats(
-            REPO / "plugins" / "ca-codex"
+            REPO / "plugins" / "ca-codex" if expected_plugin_root is None else expected_plugin_root
         )
         route_errors, route_stats = validate_agent_routes(plugin_root, expected_stats)
         route_errors = expected_errors + route_errors
@@ -321,11 +340,51 @@ def check_install(home: Path, *, marketplace_source: Path = REPO,
             if spec is None or spec.loader is None:
                 raise RuntimeError("installed artifact bridge is unavailable")
             bridge = importlib.util.module_from_spec(spec)
-            spec.loader.exec_module(bridge)
+            if expected_plugin_root is None:
+                spec.loader.exec_module(bridge)
+            else:
+                # Retained mode must not satisfy an installed dependency from
+                # a coordinator's already-imported source helper. Restore the
+                # caller's module after binding the installed function globals.
+                parser_path = plugin_root / "hooks" / "_artifactmanifestlib.py"
+                if parser_path.is_symlink() or not parser_path.is_file():
+                    raise RuntimeError("installed manifest parser is unavailable")
+                parser_spec = importlib.util.spec_from_file_location("_artifactmanifestlib", parser_path)
+                if parser_spec is None or parser_spec.loader is None:
+                    raise RuntimeError("installed manifest parser is unavailable")
+                parser = importlib.util.module_from_spec(parser_spec)
+                previous_parser = sys.modules.get("_artifactmanifestlib")
+                try:
+                    sys.modules["_artifactmanifestlib"] = parser
+                    parser_spec.loader.exec_module(parser)
+                    spec.loader.exec_module(bridge)
+                finally:
+                    if previous_parser is None:
+                        sys.modules.pop("_artifactmanifestlib", None)
+                    else:
+                        sys.modules["_artifactmanifestlib"] = previous_parser
+            if artifact_exchange_observer is not None:
+                original_exchange = bridge._bounded_child
+                exchange_depth = 0
+                def observed_exchange(*args, **kwargs):
+                    nonlocal exchange_depth
+                    # Resolving the native child's environment can make a nested
+                    # Git lookup through this same bridge. Observe the outer
+                    # capability transaction while preserving that lookup's API.
+                    if exchange_depth:
+                        return original_exchange(*args, **kwargs)
+                    exchange_depth += 1
+                    try:
+                        return artifact_exchange_observer(original_exchange, *args, **kwargs)
+                    finally:
+                        exchange_depth -= 1
+                bridge._bounded_child = observed_exchange
             client = bridge.ArtifactClient(
                 home, bridge.helper_installation(str(bridge_path))
             )
             capabilities = client.call("capabilities")
+            if capability_observer is not None:
+                capability_observer(capabilities)
             capable = (
                 isinstance(capabilities, dict)
                 and capabilities.get("repository_operations_available") is True
@@ -359,7 +418,21 @@ def main(argv=None) -> int:
         "--qualified-npm-metadata", type=Path,
         help="exact trusted npm member receipt to compare with the installed cache",
     )
+    parser.add_argument("--verdict-output",
+                        help="append one typed qualification observation (JSON line) here")
     arguments = parser.parse_args(argv)
+
+    def done(code: int, outcome: str, reason: str) -> int:
+        # R-06: an optional absent host exits 0 but is `skipped`, never verified.
+        if arguments.verdict_output:
+            import _verdictlib
+            _verdictlib.write(_verdictlib.observation(
+                "codex-host-install", outcome, reason,
+                scope=("npm marketplace " + arguments.npm_marketplace_version
+                       if arguments.npm_marketplace_version else "checked-out ca-codex"),
+                source=_verdictlib.source_identity(root=REPO), exit_code=code),
+                arguments.verdict_output)
+        return code
 
     if arguments.npm_marketplace_version is not None:
         if arguments.npm_marketplace_version != expected_version():
@@ -380,11 +453,11 @@ def main(argv=None) -> int:
         if required:
             print("::error::CA_REQUIRE_CODEX=1 but no usable `codex` runtime is on PATH; "
                   "a missing host must not read as a passing gate (#408)", file=sys.stderr)
-            return 1
+            return done(1, "unavailable", "required codex runtime is absent or unusable")
         if not arguments.json:
             print("codex host: no runtime on PATH - SKIPPED "
                   "(set CA_REQUIRE_CODEX=1 to make this a failure)", file=sys.stderr)
-        return 0
+        return done(0, "skipped", "optional codex runtime is absent")
 
     # A disposable home, rebuilt every run: a leftover marketplace or a cached
     # plugin from a previous run would let a BROKEN checkout pass on stale state.
@@ -430,11 +503,11 @@ def main(argv=None) -> int:
     if failed:
         for r in failed:
             print(f"::error::{r['code']}: {r.get('detail', 'failed')}", file=sys.stderr)
-        return 1
+        return done(1, "rejected", ", ".join(r["code"] for r in failed))
     if not arguments.json:
         print(f"codex host: {version} installed the checked-out ca-codex "
               f"{expected_version()} and read it back enabled", file=sys.stderr)
-    return 0
+    return done(0, "verified", f"{version} installed and read back {len(results)} check(s)")
 
 
 if __name__ == "__main__":

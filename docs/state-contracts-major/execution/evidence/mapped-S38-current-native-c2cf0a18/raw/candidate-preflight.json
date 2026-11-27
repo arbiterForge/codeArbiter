@@ -1,0 +1,17 @@
+{
+  "identity": {
+    "manifest_sha256": "b3dbea9eedb2917c07272ab20ec24116f424ee610bbfa3cd2b3eaf75f941417c",
+    "binary_sha256": "c36b4ca918f5f7e9568665ba894bc1e564a29183a0c5be7d7ea051f2e5e6f070"
+  },
+  "artifact_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-S38-current-native-08y3_j82\\extracted\\artifact-candidate",
+  "supplied_only": true,
+  "original_transport_sha256": "689c8ff7879760459e0d923eceb1e2d49091ee305c198082d1d2a54b52fbd4b6",
+  "root_authenticated_run_job_scope": "Inputjob132619714103success;overallrunfailure retained. Original3d37source/treeexactC2; f797 module. No fakeCIenvironment orlocalauthenticationofGitHubinvented.",
+  "native_results": {
+    "selected": 482,
+    "observed": 482,
+    "passed": 479,
+    "skipped": 3,
+    "failed": 0
+  }
+}

@@ -1,0 +1,42 @@
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+    import sys,unittest;sys.path.insert(0,'C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-npm-runtime-portability-fix-b_7qg4fc\\candidate\\.github\\scripts');s=unittest.TestSuite(unittest.defaultTestLoader.loadTestsFromName(n) for n in ['test_npm_binding_observation', 'test_state_contracts_integration.IntegrationWorkflowWiringTest.test_hosted_proof_token_is_step_local_and_job_permissions_are_read_only']);r=unittest.TextTestRunner(verbosity=2).run(s);sys.exit(not r.wasSuccessful())
+                                                                                                                                                            ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python314\Lib\unittest\suite.py", line 24, in __init__
+    self.addTests(tests)
+    ~~~~~~~~~~~~~^^^^^^^
+  File "C:\Python314\Lib\unittest\suite.py", line 57, in addTests
+    for test in tests:
+                ^^^^^
+  File "<string>", line 1, in <genexpr>
+    import sys,unittest;sys.path.insert(0,'C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-npm-runtime-portability-fix-b_7qg4fc\\candidate\\.github\\scripts');s=unittest.TestSuite(unittest.defaultTestLoader.loadTestsFromName(n) for n in ['test_npm_binding_observation', 'test_state_contracts_integration.IntegrationWorkflowWiringTest.test_hosted_proof_token_is_step_local_and_job_permissions_are_read_only']);r=unittest.TextTestRunner(verbosity=2).run(s);sys.exit(not r.wasSuccessful())
+                                                                                                                                                                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^
+  File "C:\Python314\Lib\unittest\loader.py", line 137, in loadTestsFromName
+    module = __import__(module_name)
+  File "C:\Users\brenn\AppData\Local\Temp\ca-npm-runtime-portability-fix-b_7qg4fc\candidate\.github\scripts\test_state_contracts_integration.py", line 17, in <module>
+    SOURCE = subprocess.run(["git", "--no-lazy-fetch", "rev-parse", "HEAD"], cwd=REPO, capture_output=True, check=True).stdout.decode().strip()
+             ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python314\Lib\subprocess.py", line 555, in run
+    with Popen(*popenargs, **kwargs) as process:
+         ~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python314\Lib\subprocess.py", line 1039, in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                        pass_fds, cwd, env,
+                        ^^^^^^^^^^^^^^^^^^^
+    ...<5 lines>...
+                        gid, gids, uid, umask,
+                        ^^^^^^^^^^^^^^^^^^^^^^
+                        start_new_session, process_group)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python314\Lib\subprocess.py", line 1553, in _execute_child
+    hp, ht, pid, tid = _winapi.CreateProcess(executable, args,
+                       ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+                             # no special security
+                             ^^^^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+                             cwd,
+                             ^^^^
+                             startupinfo)
+                             ^^^^^^^^^^^^
+FileNotFoundError: [WinError 2] The system cannot find the file specified

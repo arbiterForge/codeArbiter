@@ -428,6 +428,206 @@ class TestFlip(unittest.TestCase):
         log = self._read_log_bytes().decode("utf-8")
         self.assertEqual(log.count("MODE: dangerous enter"), 1)
 
+    def test_transition_exits_prior_mode_exactly_once(self):
+        self.assertEqual(_modelib.flip("s1", "dangerous", root=self.root),
+                         _modelib.FLIP_FLIPPED)
+        out = _modelib.flip_outcome("s1", "ops", root=self.root,
+                                    host_name="claude")
+        self.assertEqual(out["result"], _modelib.FLIP_FLIPPED)
+        rows = self._read_log_bytes().decode("utf-8")
+        self.assertEqual(rows.count("MODE: dangerous exit"), 1,
+                         "committed dangerous-to-ops transition lost prior exit")
+        self.assertEqual(rows.count("MODE: ops enter"), 1)
+        self.assertLess(rows.index("MODE: dangerous exit"),
+                        rows.index("MODE: ops enter"))
+        self.assertEqual(_modelib.flip("s1", "ops", root=self.root),
+                         _modelib.FLIP_NOOP)
+        self.assertEqual(self._read_log_bytes().decode("utf-8"), rows)
+
+    def test_implicit_arbiter_and_unbacked_raw_modes_have_no_invented_exit(self):
+        self.assertEqual(_modelib.flip("implicit", "dangerous", root=self.root),
+                         _modelib.FLIP_FLIPPED)
+        self.assertTrue(_modelib.write_mode("unbacked", "dangerous", root=self.root))
+        self.assertEqual(_modelib.effective_mode("unbacked", root=self.root)[0],
+                         "arbiter")
+        self.assertEqual(_modelib.flip("unbacked", "ops", root=self.root),
+                         _modelib.FLIP_FLIPPED)
+        rows = self._read_log_bytes().decode("utf-8")
+        self.assertNotIn("MODE: arbiter exit", rows)
+        self.assertNotIn("MODE: dangerous exit", rows)
+
+    def test_explicitly_entered_arbiter_is_exited_on_its_next_transition(self):
+        for mode in ("dangerous", "arbiter", "ops"):
+            self.assertEqual(_modelib.flip("s1", mode, root=self.root),
+                             _modelib.FLIP_FLIPPED)
+        rows = self._read_log_bytes().decode("utf-8")
+        self.assertEqual(rows.count("MODE: dangerous exit"), 1)
+        self.assertEqual(rows.count("MODE: arbiter enter"), 1)
+        self.assertEqual(rows.count("MODE: arbiter exit"), 1)
+        self.assertLess(rows.index("MODE: arbiter exit"), rows.index("MODE: ops enter"))
+
+    def test_marker_failure_leaves_prior_audit_and_mode_unchanged(self):
+        self.assertEqual(_modelib.flip("s1", "dangerous", root=self.root),
+                         _modelib.FLIP_FLIPPED)
+        before = self._read_log_bytes()
+        with mock.patch.object(_modelib, "write_mode", return_value=False):
+            out = _modelib.flip_outcome("s1", "ops", root=self.root)
+        self.assertEqual(out["result"], _modelib.FLIP_FAILED)
+        self.assertEqual(out["audit"], _modelib.AUDIT_NOT_ATTEMPTED)
+        self.assertEqual(out["raw_after"], "dangerous")
+        self.assertEqual(self._read_log_bytes(), before)
+        self.assertEqual(_modelib.owed_audit_rows(self.root), 0)
+
+    def test_partial_pair_retries_even_with_old_requested_mode_backing(self):
+        for mode in ("dangerous", "ops", "dangerous"):
+            self.assertEqual(_modelib.flip("s1", mode, root=self.root),
+                             _modelib.FLIP_FLIPPED)
+        before = self._read_log_bytes().decode("utf-8")
+        append = _modelib._append_override_line
+        def refuse_requested_enter(root, line):
+            return False if "MODE: ops enter" in line else append(root, line)
+        with mock.patch.object(_modelib, "_append_override_line",
+                               side_effect=refuse_requested_enter):
+            first = _modelib.flip_outcome("s1", "ops", root=self.root)
+            retry = _modelib.flip_outcome("s1", "ops", root=self.root)
+        self.assertEqual(first["result"], _modelib.FLIP_FAILED)
+        self.assertEqual(retry["result"], _modelib.FLIP_FAILED)
+        self.assertEqual(first["owed_rows"], 1)
+        self.assertEqual(retry["audit"], _modelib.AUDIT_OWED)
+        partial = self._read_log_bytes().decode("utf-8")
+        self.assertEqual(partial.count("MODE: dangerous exit"),
+                         before.count("MODE: dangerous exit") + 1)
+        self.assertEqual(partial.count("MODE: ops enter"), before.count("MODE: ops enter"))
+        settled = _modelib.flip_outcome("s1", "ops", root=self.root)
+        self.assertEqual(settled["result"], _modelib.FLIP_FLIPPED)
+        self.assertEqual(settled["owed_rows"], 0)
+        after = self._read_log_bytes()
+        self.assertEqual(_modelib.flip("s1", "ops", root=self.root), _modelib.FLIP_NOOP)
+        self.assertEqual(self._read_log_bytes(), after)
+        self.assertEqual(after.decode("utf-8").count("MODE: dangerous exit"),
+                         partial.count("MODE: dangerous exit"))
+
+    def test_same_second_cycle_debt_is_not_satisfied_by_older_rows(self):
+        def flip(mode):
+            return _modelib.flip_outcome("s1", mode, root=self.root,
+                                        host_name="claude", now=1735689600)
+        for mode in ("dangerous", "ops", "dangerous"):
+            self.assertEqual(flip(mode)["result"], _modelib.FLIP_FLIPPED)
+        before = self._read_log_bytes()
+        with mock.patch.object(_modelib, "_append_override_line", return_value=False):
+            out = flip("ops")
+            again = flip("ops")
+        self.assertEqual(out["result"], _modelib.FLIP_FAILED)
+        self.assertEqual(again["result"], _modelib.FLIP_FAILED)
+        self.assertEqual(out["owed_rows"], 2)
+        self.assertEqual(self._read_log_bytes(), before)
+        self.assertEqual(_modelib._settle_dev_close(self.root), 2)
+        rows = self._read_log_bytes().decode("utf-8")
+        exits = [line for line in rows.splitlines() if "MODE: dangerous exit" in line]
+        self.assertEqual(len(exits), 2)
+        self.assertEqual(len(set(exits)), 2, "fresh same-second transitions need distinct replay identity")
+        self.assertEqual(rows.count("MODE: ops enter"), 2)
+        self.assertEqual(flip("ops")["result"], _modelib.FLIP_NOOP)
+        self.assertEqual(_modelib._settle_dev_close(self.root), 0)
+
+    def test_failed_queue_and_trail_do_not_claim_persisted_debt(self):
+        self.assertEqual(_modelib.flip("s1", "dangerous", root=self.root),
+                         _modelib.FLIP_FLIPPED)
+        write = _modelib.write_text_atomic
+        def refuse_pending(path, *args, **kwargs):
+            if str(path).endswith("dev-close-pending.json"):
+                raise OSError("owned pending fixture denied")
+            return write(path, *args, **kwargs)
+        with mock.patch.object(_modelib, "write_text_atomic", side_effect=refuse_pending), \
+                mock.patch.object(_modelib, "_append_override_line", return_value=False):
+            out = _modelib.flip_outcome("s1", "ops", root=self.root)
+        self.assertEqual(out["result"], _modelib.FLIP_FAILED)
+        self.assertEqual(out["audit"], _modelib.AUDIT_OWED)
+        self.assertEqual(out["raw_after"], "ops")
+        self.assertEqual(out["owed_rows"], 0, "both stores denied, so no durable debt is proved")
+        self.assertIsNone(_modelib._read_dev_pending_close(self.root))
+        self.assertIn("not durably recorded", out["next_action"])
+        self.assertNotIn("MODE: dangerous exit", self._read_log_bytes().decode("utf-8"))
+
+    def test_transition_exit_is_attributed_only_to_its_session(self):
+        for session in ("s1", "s2"):
+            self.assertEqual(_modelib.flip(session, "dangerous", root=self.root),
+                             _modelib.FLIP_FLIPPED)
+        self.assertEqual(_modelib.flip("s1", "ops", root=self.root), _modelib.FLIP_FLIPPED)
+        rows = self._read_log_bytes().decode("utf-8").splitlines()
+        exits = [line for line in rows if "MODE: dangerous exit" in line]
+        self.assertEqual(len(exits), 1)
+        self.assertIn("| SESSION: s1 |", exits[0])
+        self.assertEqual(_modelib.effective_mode("s2", root=self.root)[0], "dangerous")
+
+    def test_legacy_backed_dangerous_transition_keeps_history_and_records_exit(self):
+        legacy = "[2026-01-01T00:00:00Z] | BY: dev | DEV: enter | NOTE: legacy\n"
+        os.makedirs(os.path.dirname(self.log_path))
+        with open(self.log_path, "w", encoding="utf-8") as stream:
+            stream.write(legacy)
+        before = self._read_log_bytes()
+        self.assertTrue(_modelib.write_mode("legacy", "dangerous", root=self.root))
+        self.assertEqual(_modelib.effective_mode("legacy", root=self.root)[0], "dangerous")
+        self.assertEqual(_modelib.flip("legacy", "ops", root=self.root), _modelib.FLIP_FLIPPED)
+        rows = self._read_log_bytes().decode("utf-8")
+        self.assertTrue(self._read_log_bytes().startswith(before))
+        self.assertEqual(rows.count("MODE: dangerous exit"), 1)
+        self.assertEqual(rows.count("MODE: ops enter"), 1)
+
+    def test_fallback_arbiter_with_old_enter_has_no_invented_exit(self):
+        for kind in ("absent", "corrupt"):
+            with self.subTest(kind=kind):
+                session = "fallback-" + kind
+                for mode in ("dangerous", "arbiter"):
+                    self.assertEqual(_modelib.flip(session, mode, root=self.root),
+                                     _modelib.FLIP_FLIPPED)
+                path = _modelib.mode_entry_path(session, root=self.root)
+                if kind == "absent":
+                    os.remove(path)
+                else:
+                    with open(path, "w", encoding="utf-8") as stream:
+                        stream.write("not a mode record")
+                before = self._read_log_bytes()
+                self.assertEqual(_modelib.current_mode(session, root=self.root)[0], "arbiter")
+                self.assertEqual(_modelib.flip(session, "ops", root=self.root),
+                                 _modelib.FLIP_FLIPPED)
+                added = self._read_log_bytes()[len(before):].decode("utf-8")
+                self.assertNotIn("MODE: arbiter exit", added,
+                                 "fallback is not an attributable current arbiter entry")
+                self.assertIn("MODE: ops enter", added)
+
+    def test_existing_debt_does_not_prove_new_transition_was_recorded(self):
+        for alias in ("foreign-session", "same-session-and-mode"):
+            with self.subTest(debt=alias):
+                session = "guidance-" + alias
+                self.assertEqual(_modelib.flip(session, "dangerous", root=self.root),
+                                 _modelib.FLIP_FLIPPED)
+                older_session = "foreign" if alias == "foreign-session" else session
+                older = _modelib._mode_audit_line("enter", "ops", session_id=older_session,
+                                                 now=1735689600)
+                with mock.patch.object(_modelib, "_append_override_line", return_value=False):
+                    _modelib._settle_dev_close(self.root, new_line=older)
+                pending_before = _modelib._read_dev_pending_close(self.root)
+                write = _modelib.write_text_atomic
+                def refuse_pending(path, *args, **kwargs):
+                    if str(path).endswith("dev-close-pending.json"):
+                        raise OSError("owned new-pair journal denied")
+                    return write(path, *args, **kwargs)
+                with mock.patch.object(_modelib, "write_text_atomic", side_effect=refuse_pending), \
+                        mock.patch.object(_modelib, "_append_override_line", return_value=False):
+                    out = _modelib.flip_outcome(session, "ops", root=self.root)
+                self.assertEqual(out["result"], _modelib.FLIP_FAILED)
+                self.assertEqual(out["audit"], _modelib.AUDIT_OWED)
+                self.assertGreater(out["owed_rows"], 0, "older repository debt survived")
+                self.assertEqual(_modelib._read_dev_pending_close(self.root), pending_before)
+                self.assertIn("not durably recorded", out["next_action"])
+                self.assertIn("inspect", out["next_action"])
+                self.assertNotIn("the owed rows replay", out["next_action"],
+                                 "unrelated or aliased old debt cannot prove this pair persisted")
+                self.assertNotIn("MODE: dangerous exit", self._read_log_bytes().decode("utf-8"))
+                # Retire only this owned fixture debt before the next subcase.
+                _modelib._discard_dev_pending_close(self.root)
+
     def test_double_flip_to_the_same_mode_is_a_noop_with_byte_identical_log(self):
         first = _modelib.flip("sess-1", "dangerous", root=self.root)
         self.assertEqual(first, _modelib.FLIP_FLIPPED)
@@ -725,8 +925,8 @@ class TestPersonaSentinel(unittest.TestCase):
 # ---------------------------------------------------------------------------
 class TestContextDomainVocabulary(unittest.TestCase):
     def _context_text(self):
-        root = pathlib.Path(__file__).resolve().parents[2]
-        return (root / ".codearbiter" / "CONTEXT.md").read_text(encoding="utf-8")
+        from project_knowledge import context_text
+        return context_text("project")
 
     def test_context_defines_the_term_mode(self):
         text = self._context_text()
@@ -1038,6 +1238,127 @@ class TestEnterRowIsLedgerBacked(unittest.TestCase):
         self.assertEqual(_modelib.flip("s1", "dangerous", root=self.root),
                          _modelib.FLIP_FLIPPED)
         self.assertEqual(self._trail_text().count("MODE: dangerous enter"), 1)
+
+
+# ---------------------------------------------------------------------------
+# HW-02 (HOOK-F02) — the flip reports its actual commit point: requested,
+# raw marker before/after, ledger-backed effective mode, owed audit debt, and
+# the next recovery action. hooks:mode:03/04/05, hooks:mode-audit:01..03.
+# ---------------------------------------------------------------------------
+class TestFlipOutcome(unittest.TestCase):
+    def setUp(self):
+        self._tmp = tempfile.TemporaryDirectory()
+        self.root = self._tmp.name
+        os.makedirs(os.path.join(self.root, ".git"))
+        os.makedirs(os.path.join(self.root, ".codearbiter", ".markers"))
+        self.log = os.path.join(self.root, ".codearbiter", "overrides.log")
+
+    def tearDown(self):
+        self._tmp.cleanup()
+
+    def _trail(self):
+        try:
+            with open(self.log, encoding="utf-8") as f:
+                return f.read()
+        except FileNotFoundError:
+            return ""
+
+    def _flip(self, mode, session="s1"):
+        return _modelib.flip_outcome(session, mode, root=self.root, host_name="claude")
+
+    def test_clean_flip_outcome_is_fully_settled(self):
+        out = self._flip("ops")
+        self.assertEqual(out["result"], _modelib.FLIP_FLIPPED)
+        self.assertEqual((out["raw_before"], out["raw_after"]), ("arbiter", "ops"))
+        self.assertEqual((out["effective_before"], out["effective_after"]), ("arbiter", "ops"))
+        self.assertEqual(out["audit"], "settled")
+        self.assertEqual(out["owed_rows"], 0)
+        self.assertIsNone(out["next_action"])
+
+    def test_failure_before_marker_commit_reports_nothing_changed(self):
+        with mock.patch("_modelib.write_text_atomic", side_effect=OSError("disk")):
+            out = self._flip("ops")
+        self.assertEqual(out["result"], _modelib.FLIP_FAILED)
+        self.assertFalse(out["raw_changed"])
+        self.assertEqual(out["raw_after"], "arbiter")
+        self.assertEqual(out["effective_after"], "arbiter")
+        self.assertEqual(out["audit"], "not-attempted")
+        self.assertEqual(self._trail(), "")
+
+    def test_marker_committed_audit_owed_is_raw_ops_effective_arbiter(self):
+        """The audit probe's observed partial: raw ops, effective arbiter."""
+        with mock.patch.object(_modelib, "_append_override_line", return_value=False):
+            out = self._flip("ops")
+        self.assertEqual(out["result"], _modelib.FLIP_FAILED)
+        self.assertTrue(out["raw_changed"])
+        self.assertEqual(out["raw_after"], "ops")
+        self.assertEqual(out["effective_after"], "arbiter")
+        self.assertEqual(out["audit"], "owed")
+        self.assertEqual(out["owed_rows"], 1)
+        self.assertIn("mode --ops", out["next_action"])
+        self.assertNotIn("MODE: ops enter", self._trail())
+
+    def test_owed_row_settles_at_restart_without_duplicate_history(self):
+        with mock.patch.object(_modelib, "_append_override_line", return_value=False):
+            self._flip("ops")
+        # A later SessionStart (restart/compaction) is a pure replay.
+        self.assertEqual(_modelib._settle_dev_close(self.root), 1)
+        self.assertEqual(_modelib.effective_mode("s1", root=self.root)[0], "ops")
+        again = self._flip("ops")   # the response to the user was lost; exact retry
+        self.assertEqual(again["result"], _modelib.FLIP_NOOP)
+        self.assertEqual(self._trail().count("MODE: ops enter"), 1)
+        self.assertEqual(_modelib.owed_audit_rows(self.root), 0)
+
+    def test_retry_of_same_token_settles_owed_row_once(self):
+        with mock.patch.object(_modelib, "_append_override_line", return_value=False):
+            self._flip("ops")
+        out = self._flip("ops")
+        self.assertEqual(out["result"], _modelib.FLIP_FLIPPED)
+        self.assertEqual((out["raw_before"], out["raw_after"]), ("ops", "ops"))
+        self.assertEqual((out["effective_before"], out["effective_after"]), ("arbiter", "ops"))
+        self.assertEqual(out["audit"], "settled")
+        self.assertEqual(self._trail().count("MODE: ops enter"), 1)
+
+    def test_failure_during_owed_row_replay_keeps_order_and_counts_all_debt(self):
+        older = _modelib._mode_audit_line("exit", "dangerous", host_name="claude",
+                                          now=1735689600, session_id="s0")
+        with mock.patch.object(_modelib, "_append_override_line", return_value=False):
+            _modelib._settle_dev_close(self.root, new_line=older)
+            out = self._flip("ops")
+        self.assertEqual(out["audit"], "owed")
+        self.assertEqual(out["owed_rows"], 2)
+        self.assertEqual(self._flip("ops")["result"], _modelib.FLIP_FLIPPED)
+        trail = self._trail()
+        self.assertEqual(trail.count("MODE: dangerous exit"), 1)
+        self.assertEqual(trail.count("MODE: ops enter"), 1)
+        self.assertLess(trail.index("MODE: dangerous exit"), trail.index("MODE: ops enter"))
+
+    def test_return_to_arbiter_with_owed_row_reports_effective_arbiter(self):
+        """The worst lie of the old blanket message: the marker DID change to
+        arbiter and arbiter IS effective, while the row is owed."""
+        self._flip("dangerous")
+        with mock.patch.object(_modelib, "_append_override_line", return_value=False):
+            out = self._flip("arbiter")
+        self.assertEqual(out["result"], _modelib.FLIP_FAILED)
+        self.assertEqual((out["raw_before"], out["raw_after"]), ("dangerous", "arbiter"))
+        self.assertEqual(out["effective_after"], "arbiter")
+        self.assertEqual(out["audit"], "owed")
+
+    def test_unbacked_raw_with_no_owed_row_can_still_be_settled(self):
+        """A marker whose enter row is owed nowhere (written directly, or its
+        owed row was discarded by the cap) must not wedge the token: the
+        explicit request stages a fresh enter row exactly once."""
+        _modelib.write_mode("s1", "ops", root=self.root)
+        out = self._flip("ops")
+        self.assertEqual(out["result"], _modelib.FLIP_FLIPPED)
+        self.assertEqual(out["effective_after"], "ops")
+        self.assertEqual(self._trail().count("MODE: ops enter"), 1)
+        self.assertEqual(self._flip("ops")["result"], _modelib.FLIP_NOOP)
+        self.assertEqual(self._trail().count("MODE: ops enter"), 1)
+
+    def test_flip_wrapper_keeps_the_legacy_sentinels(self):
+        self.assertEqual(_modelib.flip("s1", "ops", root=self.root), _modelib.FLIP_FLIPPED)
+        self.assertEqual(_modelib.flip("s1", "ops", root=self.root), _modelib.FLIP_NOOP)
 
 
 if __name__ == "__main__":

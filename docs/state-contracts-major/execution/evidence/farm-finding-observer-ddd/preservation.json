@@ -1,0 +1,22 @@
+{
+ "all_old_reporter_functions_classes_AST_unchanged": 44,
+ "all_old_reporter_assignment_AST_unchanged": 48,
+ "all_old_test_owners_including_Pi7_AST_unchanged": 28,
+ "new_class": "FarmFiniteFindingObservationPrerequisiteTests",
+ "new_methods": 5,
+ "old_CI_reader_assertion_ASTs_unchanged": true,
+ "CI_reader_changes": "Only reviewed_vitest_source_event_guards adds exact Farm tuple and WorkflowContractTest reachability adds tools to its exact reviewed-owner set. No other assertion changed.",
+ "old_selection_groups_retained_in_order": 63,
+ "new_groups": 4,
+ "old_policy_bindings_retained": 63,
+ "new_bindings": 4,
+ "only_changed_workflow_job": "tools",
+ "all_old_attribute_bytes_preserved": true,
+ "new_literal_attribute_rules": [
+  "/.github/fixtures/artifact-release-manifest.json text eol=lf",
+  "/core/artifact-release-manifest.json text eol=lf",
+  "/plugins/ca/tools/.env.example text eol=lf"
+ ],
+ "criterion_fixture_correction": "Only new fixture PATHS argument sorted; every assertion preserved. Initial inert manifest-order ERROR retained.",
+ "old_full_scope": "Pi7/W-F03/Q02/native40/installed13/profile paths/selector unions and all other jobs unchanged; new Farm source binding adds no native authority."
+}

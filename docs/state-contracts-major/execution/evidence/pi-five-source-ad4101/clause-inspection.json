@@ -1,0 +1,2480 @@
+{
+ "schema": "codearbiter.pi-five-clause-inspection/1",
+ "actor": "/root/crypto_evidence_review",
+ "source_commit": "ad4101ab36c30e9b46b69e32455911d3311f8bd6",
+ "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+ "clause_count": 50,
+ "families": [
+  "S01",
+  "S02",
+  "S03",
+  "S04",
+  "S05"
+ ],
+ "source_bindings_sha256": "104c1235e3632122d6dfcb6b2f7bf75b1d4ccd8105b4f56d2c96bb7c108650aa",
+ "rows": [
+  {
+   "cell": "disposition:transitions:S01:01",
+   "frozen_row_sha256": "dcc7ae1ce41c06865edbf0a434a4892c6f3a58d9253be392da087fa80d9c6857",
+   "frozen_baseline": {
+    "event": "session_start",
+    "guard": "new lifecycle sequence",
+    "to": "activation pending",
+    "effects": "Invalidate prior lease; stop background jobs for session switch; dispose sidebar/activity; deactivate wrappers; reset bridge/session state; create activity/lease; start footer; read activation marker.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/extension.ts",
+      "symbol": "codeArbiterExtension and session handlers",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/extension.ts",
+      "lines": "1-1130"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/activation.ts",
+      "symbol": "activation ownership",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/activation.ts",
+      "lines": "1-81"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/session-identity.ts",
+      "symbol": "session identity",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/session-identity.ts",
+      "lines": "1-33"
+     }
+    ],
+    "from": "any session",
+    "transition_id": "S01:01"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "On session_start retire active/ready leases before awaiting previous background stop; dispose UI/activity, deactivate/begin activation, reset bridge/session, mint current lifecycle, start/refresh footer, read activation. After each asynchronous activation boundary check object identity; stale continuation returns. Existing side effects of a failing prior-stop callback are not invented as rolled back.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/extension.ts",
+     "start": 641,
+     "end": 672,
+     "file_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/extension.ts",
+     "start": 531,
+     "end": 549,
+     "file_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+     "start": 780,
+     "end": 820,
+     "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/status.ts",
+     "start": 103,
+     "end": 137,
+     "file_sha256": "959aa8a98865b7a2b1ecdb276de3df2cee4d442545504716d1f5a5747c656403"
+    }
+   ],
+   "limits": "Reasoned source conformance only. No execution, human confirmation, disk/process/network/installed success, test result, task/host qualification, or evidence-epoch renewal is asserted."
+  },
+  {
+   "cell": "disposition:transitions:S01:02",
+   "frozen_row_sha256": "5d3ec9836209fb191b56f8e4ecd5578a9211889d193ff725c36b8c8e989cf75f",
+   "frozen_baseline": {
+    "event": "activation marker absent/false",
+    "guard": "marker is readable and not enabled",
+    "to": "dormant",
+    "effects": "Clear active lease and return after footer/sidebar setup; native Pi remains the owner.",
+    "failure_retry": "Marker read errors are handled by activation path; no author mutation authority is granted.",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/extension.ts",
+      "symbol": "codeArbiterExtension and session handlers",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/extension.ts",
+      "lines": "1-1130"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/activation.ts",
+      "symbol": "activation ownership",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/activation.ts",
+      "lines": "1-81"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/session-identity.ts",
+      "symbol": "session identity",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/session-identity.ts",
+      "lines": "1-33"
+     }
+    ],
+    "from": "activation pending",
+    "transition_id": "S01:02"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Default marker reader requires opening/closing frontmatter and enabled marker; read error returns false. Footer/sidebar setup precedes disabled early return, which clears active lease and deactivates enforcement. No mutation authority follows from marker error/absence; native fallback remains the inactive behavior.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/activation.ts",
+     "start": 9,
+     "end": 24,
+     "file_sha256": "3ca7a691fe05ca96dee7a8e26a005a84baa0b03ba58e9b1f3f6c1102b3d1bb31"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/extension.ts",
+     "start": 659,
+     "end": 677,
+     "file_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532"
+    }
+   ],
+   "limits": "Reasoned source conformance only. No execution, human confirmation, disk/process/network/installed success, test result, task/host qualification, or evidence-epoch renewal is asserted."
+  },
+  {
+   "cell": "disposition:transitions:S01:03",
+   "frozen_row_sha256": "38e3aa5134887265d1efd31907d625ef7ec91011734f3e039f0b3cd88a800c1c",
+   "frozen_baseline": {
+    "event": "enabled marker read",
+    "guard": "context untrusted",
+    "to": "waiting for trust",
+    "effects": "Keep final mutation gate blocked and show waiting status.",
+    "failure_retry": "Trust restoration requires an eligible new lifecycle; a stale lease cannot reactivate it.",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/extension.ts",
+      "symbol": "codeArbiterExtension and session handlers",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/extension.ts",
+      "lines": "1-1130"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/activation.ts",
+      "symbol": "activation ownership",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/activation.ts",
+      "lines": "1-81"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/session-identity.ts",
+      "symbol": "session identity",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/session-identity.ts",
+      "lines": "1-33"
+     }
+    ],
+    "from": "activation pending",
+    "transition_id": "S01:03"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Enabled marker with nonaffirmative/throwing project trust returns waiting status before enabling/registering/installing. BeginActivation already selected blocked generation; merely changing trust later does not complete the retired activation. A new eligible session lifecycle is required.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/extension.ts",
+     "start": 245,
+     "end": 252,
+     "file_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/extension.ts",
+     "start": 678,
+     "end": 686,
+     "file_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+     "start": 766,
+     "end": 811,
+     "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+    }
+   ],
+   "limits": "Reasoned source conformance only. No execution, human confirmation, disk/process/network/installed success, test result, task/host qualification, or evidence-epoch renewal is asserted."
+  },
+  {
+   "cell": "disposition:transitions:S01:04",
+   "frozen_row_sha256": "85ae6ea38af8a05edb58611865990c501a660edacf2bf30c3c223134376937d1",
+   "frozen_baseline": {
+    "event": "enabled marker + trusted context",
+    "guard": "valid session lease",
+    "to": "bootstrapping",
+    "effects": "Enable adapter; register plan/jobs; begin enforcement bootstrap; resolve command ownership; prepare bridge; install owned wrappers.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/extension.ts",
+      "symbol": "codeArbiterExtension and session handlers",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/extension.ts",
+      "lines": "1-1130"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/activation.ts",
+      "symbol": "activation ownership",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/activation.ts",
+      "lines": "1-81"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/session-identity.ts",
+      "symbol": "session identity",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/session-identity.ts",
+      "lines": "1-33"
+     }
+    ],
+    "from": "activation pending",
+    "transition_id": "S01:04"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Current trusted lifecycle enables adapter, registers native plan/jobs, begins blocked bootstrap, records command ownership state, prepares bridge then installs owned native/custom wrappers using compiled policy and live trust. PrepareBridge is before installation try; readiness is not marked here. Dependency callbacks/runtime factories retain their own effect contracts.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/extension.ts",
+     "start": 683,
+     "end": 697,
+     "file_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/extension.ts",
+     "start": 1261,
+     "end": 1314,
+     "file_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+     "start": 766,
+     "end": 843,
+     "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+    }
+   ],
+   "limits": "Reasoned source conformance only. No execution, human confirmation, disk/process/network/installed success, test result, task/host qualification, or evidence-epoch renewal is asserted."
+  },
+  {
+   "cell": "disposition:transitions:S01:05",
+   "frozen_row_sha256": "9d5392a1680bd9cd839c9463c5855fbf5e9e644ef1701b7780db685d718284ee",
+   "frozen_baseline": {
+    "event": "wrapper installation succeeds",
+    "guard": "same active lifecycle",
+    "to": "ready",
+    "effects": "markReady; activate background controller; restore plan state; then load persona and call session-start bridge.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/extension.ts",
+      "symbol": "codeArbiterExtension and session handlers",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/extension.ts",
+      "lines": "1-1130"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/activation.ts",
+      "symbol": "activation ownership",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/activation.ts",
+      "lines": "1-81"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/session-identity.ts",
+      "symbol": "session identity",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/session-identity.ts",
+      "lines": "1-33"
+     }
+    ],
+    "from": "bootstrapping",
+    "transition_id": "S01:05"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "After successful same-lifecycle wrapper install set readyLifecycle/markReady, activate registered background manager and restore plan. Then independently load persona and call session_start bridge. A later stale lifecycle suppresses use. Full persona/dispatch readiness is separately truthful under accepted PI-L01 rather than inferred from markReady alone.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/extension.ts",
+     "start": 691,
+     "end": 705,
+     "file_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/extension.ts",
+     "start": 717,
+     "end": 752,
+     "file_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532"
+    }
+   ],
+   "limits": "Reasoned source conformance only. No execution, human confirmation, disk/process/network/installed success, test result, task/host qualification, or evidence-epoch renewal is asserted."
+  },
+  {
+   "cell": "disposition:transitions:S01:06",
+   "frozen_row_sha256": "cb0b132ae2905906a3283ec3f9157045f67cb5c7a8f5ba4349f317fb3eaaab8b",
+   "frozen_baseline": {
+    "event": "wrapper installation throws",
+    "guard": "installation attempted",
+    "to": "invalidated",
+    "effects": "Invalidate lease, stop jobs with fatal reason, disable adapter, report error and throw.",
+    "failure_retry": "Bridge preparation is before the installation try block; not all failures share the same recovery path.",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/extension.ts",
+      "symbol": "codeArbiterExtension and session handlers",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/extension.ts",
+      "lines": "1-1130"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/activation.ts",
+      "symbol": "activation ownership",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/activation.ts",
+      "lines": "1-81"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/session-identity.ts",
+      "symbol": "session identity",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/session-identity.ts",
+      "lines": "1-33"
+     }
+    ],
+    "from": "bootstrapping",
+    "transition_id": "S01:06"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Installation/activation/restore exceptions inside try clear both lease fields, stop jobs with fatal, disable adapter and report/throw fixed unhealthy status with cause. PrepareBridge failures remain outside this catch. Source review does not claim every partial wrapper/native-side effect is rolled back or that enforcement.deactivate runs in this catch.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/extension.ts",
+     "start": 689,
+     "end": 715,
+     "file_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532"
+    }
+   ],
+   "limits": "Reasoned source conformance only. No execution, human confirmation, disk/process/network/installed success, test result, task/host qualification, or evidence-epoch renewal is asserted."
+  },
+  {
+   "cell": "disposition:transitions:S01:07",
+   "frozen_row_sha256": "ec8532fb0e69f9aa8a3b70d73e6fced5a59674c33b39fcc1f3ccafda7815e219",
+   "frozen_baseline": {
+    "event": "persona read OR session-start bridge throws",
+    "guard": "readiness was already marked",
+    "to": "ready but degraded",
+    "effects": "Catch marks bridge degradation and leaves enabled/ready true.",
+    "failure_retry": "Persona load has no independent retry state. Later bridge refresh can clear degradation without restoring missing persona.",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/extension.ts",
+      "symbol": "codeArbiterExtension and session handlers",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/extension.ts",
+      "lines": "1-1130"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/activation.ts",
+      "symbol": "activation ownership",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/activation.ts",
+      "lines": "1-81"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/session-identity.ts",
+      "symbol": "session identity",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/session-identity.ts",
+      "lines": "1-33"
+     }
+    ],
+    "from": "ready",
+    "transition_id": "S01:07"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Accepted PI-L01 replaces historical persona-loss defect: persona failure has independent failed/ready/load state and fixed unavailable prompt/status; author dispatch receives no lifecycle until personaReady. Bridge failure separately degrades while enabled/ready remain. This preserves the accepted changed contract, not the obsolete no-retry/misreported-persona limitation.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/extension.ts",
+     "start": 464,
+     "end": 470,
+     "file_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/extension.ts",
+     "start": 574,
+     "end": 603,
+     "file_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/extension.ts",
+     "start": 717,
+     "end": 752,
+     "file_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/extension.ts",
+     "start": 522,
+     "end": 526,
+     "file_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532"
+    }
+   ],
+   "limits": "Reasoned source conformance only. No execution, human confirmation, disk/process/network/installed success, test result, task/host qualification, or evidence-epoch renewal is asserted."
+  },
+  {
+   "cell": "disposition:transitions:S01:08",
+   "frozen_row_sha256": "a8b7d6a0a0e2f8549a99853e90cfda567660a41a4f8a6967e32111b4c059e4bb",
+   "frozen_baseline": {
+    "event": "before_agent_start",
+    "guard": "current trusted lease",
+    "to": "ready or degraded",
+    "effects": "Refresh bridge; append persona/state to prompt; apply notices; successful bridge read clears bridge degradation.",
+    "failure_retry": "Stale lease suppresses result; bridge failure degrades, not automatic disable.",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/extension.ts",
+      "symbol": "codeArbiterExtension and session handlers",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/extension.ts",
+      "lines": "1-1130"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/activation.ts",
+      "symbol": "activation ownership",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/activation.ts",
+      "lines": "1-81"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/session-identity.ts",
+      "symbol": "session identity",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/session-identity.ts",
+      "lines": "1-33"
+     }
+    ],
+    "from": "ready or degraded",
+    "transition_id": "S01:08"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Before-agent-start current enabled ready lease observes recovery, checks trust/abort, retries persona for current lifecycle, refreshes bridge, and finally appends actual persona or explicit unavailable sentinel plus state/notices. Bridge success clears only bridge degradation, never persona failure. Repeated workflow notices are deduplicated per sink and stale results return.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/extension.ts",
+     "start": 550,
+     "end": 603,
+     "file_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/extension.ts",
+     "start": 755,
+     "end": 795,
+     "file_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532"
+    }
+   ],
+   "limits": "Reasoned source conformance only. No execution, human confirmation, disk/process/network/installed success, test result, task/host qualification, or evidence-epoch renewal is asserted."
+  },
+  {
+   "cell": "disposition:transitions:S01:09",
+   "frozen_row_sha256": "04b1c73790a41f70158e407348999385d8b091fadbaab17a38340e35250af97d",
+   "frozen_baseline": {
+    "event": "agent_start / agent_end / turn_end",
+    "guard": "current lifecycle",
+    "to": "same lifecycle",
+    "effects": "Set governed/degraded status; refresh footer and sidebar with lifecycle guards.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/extension.ts",
+      "symbol": "codeArbiterExtension and session handlers",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/extension.ts",
+      "lines": "1-1130"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/activation.ts",
+      "symbol": "activation ownership",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/activation.ts",
+      "lines": "1-81"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/session-identity.ts",
+      "symbol": "session identity",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/session-identity.ts",
+      "lines": "1-33"
+     }
+    ],
+    "from": "ready or degraded",
+    "transition_id": "S01:09"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Current supported registration uses agent_start and agent_settled for the frozen end/turn abstraction: publish governed/degraded state and refresh footer, then retry sidebar only if lifecycle sequence unchanged. No extra agent_end/turn_end handlers are claimed. Footer owns separate generation checks across awaits; UI status never supplies mutation authority.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/extension.ts",
+     "start": 798,
+     "end": 809,
+     "file_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/status.ts",
+     "start": 222,
+     "end": 265,
+     "file_sha256": "959aa8a98865b7a2b1ecdb276de3df2cee4d442545504716d1f5a5747c656403"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/sidebar-manager.ts",
+     "start": 96,
+     "end": 107,
+     "file_sha256": "bcdc241808ed6b1faf778292702e374408afe1175e3b2768a84c3c1103e5be58"
+    }
+   ],
+   "limits": "Reasoned source conformance only. No execution, human confirmation, disk/process/network/installed success, test result, task/host qualification, or evidence-epoch renewal is asserted."
+  },
+  {
+   "cell": "disposition:transitions:S01:10",
+   "frozen_row_sha256": "8d683d2f75ad1a15416f3990258b2efc2fd4ee96be1aab773b7ce25c47910a89",
+   "frozen_baseline": {
+    "event": "shutdown/new/resume/fork/reload",
+    "guard": "event-specific reason",
+    "to": "invalidated then shut down",
+    "effects": "Invalidate first; stop jobs; dispose UI; clear state; deactivate enforcement.",
+    "failure_retry": "Outstanding UI work needs its own generation check; sidebar has a separate stale-install defect.",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/extension.ts",
+      "symbol": "codeArbiterExtension and session handlers",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/extension.ts",
+      "lines": "1-1130"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/activation.ts",
+      "symbol": "activation ownership",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/activation.ts",
+      "lines": "1-81"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/session-identity.ts",
+      "symbol": "session identity",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/session-identity.ts",
+      "lines": "1-33"
+     }
+    ],
+    "from": "any active",
+    "transition_id": "S01:10"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Shutdown reasons map new/resume/fork to session-switch, reload to unload, otherwise shutdown; invalidate lease fields first, await background stop then dispose/reset UI/session/enforcement. Accepted PI-L02 adds sidebar generation invalidation and post-metrics-await guard, superseding historical stale-install defect. No whole UI/runtime cancellation qualification is asserted.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/extension.ts",
+     "start": 811,
+     "end": 828,
+     "file_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/sidebar-manager.ts",
+     "start": 110,
+     "end": 120,
+     "file_sha256": "bcdc241808ed6b1faf778292702e374408afe1175e3b2768a84c3c1103e5be58"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/sidebar-manager.ts",
+     "start": 133,
+     "end": 175,
+     "file_sha256": "bcdc241808ed6b1faf778292702e374408afe1175e3b2768a84c3c1103e5be58"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/status.ts",
+     "start": 267,
+     "end": 277,
+     "file_sha256": "959aa8a98865b7a2b1ecdb276de3df2cee4d442545504716d1f5a5747c656403"
+    }
+   ],
+   "limits": "Reasoned source conformance only. No execution, human confirmation, disk/process/network/installed success, test result, task/host qualification, or evidence-epoch renewal is asserted."
+  },
+  {
+   "cell": "disposition:transitions:S02:01",
+   "frozen_row_sha256": "514846ea61799bf9c726909296b9347fa32763b5a771bff43be31d3d6d0373f5",
+   "frozen_baseline": {
+    "event": "native read or ordinary built-in call",
+    "guard": "adapter inactive",
+    "to": "dormant",
+    "effects": "Delegate native built-ins; custom mutators without native fallback remain unavailable.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+      "symbol": "createToolEnforcement, confirmationUi, wrapper execute",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/tool-guard.ts",
+      "lines": "1-963"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/policy.ts",
+      "symbol": "permission decision",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/policy.ts",
+      "lines": "1-319"
+     }
+    ],
+    "from": "dormant",
+    "transition_id": "S02:01"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Inactive built-in wrapper selects nativeFactory at current execution cwd; READ can fall back during blocked/stale lifecycle. Custom tool uses allowNativeFallback=false and refuses if governance unavailable. Inactive known built-ins preserve native Pi ownership rather than minting synthetic adapter approval.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+     "start": 510,
+     "end": 540,
+     "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+     "start": 813,
+     "end": 820,
+     "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+     "start": 899,
+     "end": 940,
+     "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+    }
+   ],
+   "limits": "Reasoned source conformance only. No execution, human confirmation, disk/process/network/installed success, test result, task/host qualification, or evidence-epoch renewal is asserted."
+  },
+  {
+   "cell": "disposition:transitions:S02:02",
+   "frozen_row_sha256": "d37143ad7e44605693819c47eb61619ce5a05e7166e28c3f5d3c79d8b767b4bf",
+   "frozen_baseline": {
+    "event": "beginActivation / beginBootstrap",
+    "guard": "new lifecycle",
+    "to": "bootstrap blocked",
+    "effects": "Advance generation; install/read final gate; permit native read fallback; prevent mutators until ready.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+      "symbol": "createToolEnforcement, confirmationUi, wrapper execute",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/tool-guard.ts",
+      "lines": "1-963"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/policy.ts",
+      "symbol": "permission decision",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/policy.ts",
+      "lines": "1-319"
+     }
+    ],
+    "from": "any",
+    "transition_id": "S02:02"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Install bootstrap hook once; active-but-not-ready generation permits descriptor READ only and blocks other tool calls. beginActivation/beginBootstrap make fresh generation, clear ready and trust revocation, and mint informational fallback sessionID. No mutator proceeds until readiness.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+     "start": 766,
+     "end": 807,
+     "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+    }
+   ],
+   "limits": "Reasoned source conformance only. No execution, human confirmation, disk/process/network/installed success, test result, task/host qualification, or evidence-epoch renewal is asserted."
+  },
+  {
+   "cell": "disposition:transitions:S02:03",
+   "frozen_row_sha256": "d45089b34e754dc72ec7b33cd7c981bee03befdc99e427f1832efc5477ff99ac",
+   "frozen_baseline": {
+    "event": "markReady",
+    "guard": "current generation and trust not revoked",
+    "to": "ready",
+    "effects": "Allow wrapped calls to reach authorization evaluation.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+      "symbol": "createToolEnforcement, confirmationUi, wrapper execute",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/tool-guard.ts",
+      "lines": "1-963"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/policy.ts",
+      "symbol": "permission decision",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/policy.ts",
+      "lines": "1-319"
+     }
+    ],
+    "from": "bootstrap blocked",
+    "transition_id": "S02:03"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "markReady is effective only while bootstrap active and no latched trust revocation. Wrappers still require their bound generation to match current generation, current trust and ready before bridge/policy evaluation; markReady alone cannot revive old wrapper authority.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+     "start": 809,
+     "end": 811,
+     "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+     "start": 531,
+     "end": 545,
+     "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+    }
+   ],
+   "limits": "Reasoned source conformance only. No execution, human confirmation, disk/process/network/installed success, test result, task/host qualification, or evidence-epoch renewal is asserted."
+  },
+  {
+   "cell": "disposition:transitions:S02:04",
+   "frozen_row_sha256": "c771c7d649d17d2b7a93065f0e2c85b8515cbd9c0d082de8f2ac3817d072af08",
+   "frozen_baseline": {
+    "event": "trust becomes false",
+    "guard": "observed at gate or revalidation",
+    "to": "trust revoked",
+    "effects": "Latch revocation, clear readiness, advance generation, block mutation.",
+    "failure_retry": "Trust becoming true alone does not revive old authority; require new lifecycle.",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+      "symbol": "createToolEnforcement, confirmationUi, wrapper execute",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/tool-guard.ts",
+      "lines": "1-963"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/policy.ts",
+      "symbol": "permission decision",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/policy.ts",
+      "lines": "1-319"
+     }
+    ],
+    "from": "ready",
+    "transition_id": "S02:04"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Nonaffirmative trust retires generation once and clears ready; mutators refuse and reads select untrusted native fallback where allowed. Later true trust does not reset trustRevoked or bind old wrappers to the replacement generation. New blocked generation is required for recovery.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+     "start": 204,
+     "end": 219,
+     "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+     "start": 524,
+     "end": 540,
+     "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+     "start": 608,
+     "end": 620,
+     "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+     "start": 788,
+     "end": 799,
+     "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+    }
+   ],
+   "limits": "Reasoned source conformance only. No execution, human confirmation, disk/process/network/installed success, test result, task/host qualification, or evidence-epoch renewal is asserted."
+  },
+  {
+   "cell": "disposition:transitions:S02:05",
+   "frozen_row_sha256": "6c32fbf5b29f9b04dd8eeea8ce04f07801d0cfe65a5ba7a5a9ef801002cbeb0c",
+   "frozen_baseline": {
+    "event": "unknown OTHER tool invocation",
+    "guard": "no owned known mutator wrapper",
+    "to": "blocked",
+    "effects": "Reject rather than allow an unclassified side-effecting sink.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+      "symbol": "createToolEnforcement, confirmationUi, wrapper execute",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/tool-guard.ts",
+      "lines": "1-963"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/policy.ts",
+      "symbol": "permission decision",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/policy.ts",
+      "lines": "1-319"
+     }
+    ],
+    "from": "ready",
+    "transition_id": "S02:05"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Active unknown/OTHER tool returns block, and known nonread tool also requires active owned wrapper source. Canonical classifier has no OTHER allowance; undeclared/unclassifiable effects deny. No unclassified sink becomes authorized through a same-looking name.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+     "start": 954,
+     "end": 974,
+     "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+     "start": 145,
+     "end": 175,
+     "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+    }
+   ],
+   "limits": "Reasoned source conformance only. No execution, human confirmation, disk/process/network/installed success, test result, task/host qualification, or evidence-epoch renewal is asserted."
+  },
+  {
+   "cell": "disposition:transitions:S02:06",
+   "frozen_row_sha256": "4847c231df2ba171d27ccd3d4261c4086021d2a19c539245541f47435a0cf2d7",
+   "frozen_baseline": {
+    "event": "known tool invocation",
+    "guard": "owned wrapper, live lease, bounded canonical params",
+    "to": "ready",
+    "effects": "Freeze/canonicalize params; bridge hard-block decision first; then mode-specific permission policy.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+      "symbol": "createToolEnforcement, confirmationUi, wrapper execute",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/tool-guard.ts",
+      "lines": "1-963"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/policy.ts",
+      "symbol": "permission decision",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/policy.ts",
+      "lines": "1-319"
+     }
+    ],
+    "from": "ready",
+    "transition_id": "S02:06"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Copy/freeze acyclic plain canonical JSON parameters, reject proxies/accessors/decorated arrays/unsafe keys/nonfinite values/depth>32, then call bridge hard blocks first; only known nonblock verdict reaches closed action/mode policy. Descriptor/action ownership and bounded labels constrain classification; no general semantic shell safety claim.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+     "start": 335,
+     "end": 410,
+     "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+     "start": 541,
+     "end": 581,
+     "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/policy.ts",
+     "start": 145,
+     "end": 202,
+     "file_sha256": "87950047f3d721b15a08bae83b1212d368367f3c332488611073050c0bc77676"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/policy.ts",
+     "start": 280,
+     "end": 318,
+     "file_sha256": "87950047f3d721b15a08bae83b1212d368367f3c332488611073050c0bc77676"
+    }
+   ],
+   "limits": "Reasoned source conformance only. No execution, human confirmation, disk/process/network/installed success, test result, task/host qualification, or evidence-epoch renewal is asserted."
+  },
+  {
+   "cell": "disposition:transitions:S02:07",
+   "frozen_row_sha256": "a271b4a238e88d7ea67c240d50307fb3aa1f2530660692a7645bf5eadc599450",
+   "frozen_baseline": {
+    "event": "bridge decision denies / policy denies / invalid params",
+    "guard": "any deny",
+    "to": "blocked",
+    "effects": "Throw refusal; best-effort audit.",
+    "failure_retry": "Read/lifecycle bridge failures may degrade elsewhere; mutator bridge failures refuse.",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+      "symbol": "createToolEnforcement, confirmationUi, wrapper execute",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/tool-guard.ts",
+      "lines": "1-963"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/policy.ts",
+      "symbol": "permission decision",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/policy.ts",
+      "lines": "1-319"
+     }
+    ],
+    "from": "ready",
+    "transition_id": "S02:07"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Invalid parameters, bridge block/unknown verdict or deny/unknownmode/unclassified action throw refusal. Fixed closed denied/unclassified audits are best effort; bridge exception on same trusted current lifecycle propagates (mutator never executes), while read fallback is available only after trust/lifecycle retirement. Audit does not turn failure into authorization.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+     "start": 541,
+     "end": 575,
+     "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+     "start": 601,
+     "end": 605,
+     "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+     "start": 325,
+     "end": 327,
+     "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+    }
+   ],
+   "limits": "Reasoned source conformance only. No execution, human confirmation, disk/process/network/installed success, test result, task/host qualification, or evidence-epoch renewal is asserted."
+  },
+  {
+   "cell": "disposition:transitions:S02:08",
+   "frozen_row_sha256": "f4579bc56491b983c7cca87abe9aad74a5260b993ca51aa0b98db52432ae4fa6",
+   "frozen_baseline": {
+    "event": "policy allows",
+    "guard": "e.g. native read, inspection, eligible plan edit",
+    "to": "executing",
+    "effects": "Best-effort audit and execute through canonical owned native tool; generation/trust checks remain authoritative.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+      "symbol": "createToolEnforcement, confirmationUi, wrapper execute",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/tool-guard.ts",
+      "lines": "1-963"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/policy.ts",
+      "symbol": "permission decision",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/policy.ts",
+      "lines": "1-319"
+     }
+    ],
+    "from": "ready",
+    "transition_id": "S02:08"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Allowed read/inspection/eligible planning classes use best-effort allow audit, then revalidate raw parameters/mode/ownership/executor/abort/trust/generation before invoking exact captured native executor once. Stale READ may choose native fallback; mutators block. Returned warnings/notices cannot authorize another effect.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/policy.ts",
+     "start": 30,
+     "end": 63,
+     "file_sha256": "87950047f3d721b15a08bae83b1212d368367f3c332488611073050c0bc77676"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+     "start": 607,
+     "end": 620,
+     "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+     "start": 659,
+     "end": 679,
+     "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+    }
+   ],
+   "limits": "Reasoned source conformance only. No execution, human confirmation, disk/process/network/installed success, test result, task/host qualification, or evidence-epoch renewal is asserted."
+  },
+  {
+   "cell": "disposition:transitions:S02:09",
+   "frozen_row_sha256": "b8e2efa0c577cf04e4d921fa87791a76b3408884b37e2b70423f99a08a88c178",
+   "frozen_baseline": {
+    "event": "policy asks",
+    "guard": "execute-mode mutator",
+    "to": "permission pending",
+    "effects": "Open confirmation only in trusted TUI with confirm API; 60-second bound.",
+    "failure_retry": "RPC/no UI refuses immediately; dialog timeout/cancel/refusal audit best effort then block.",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+      "symbol": "createToolEnforcement, confirmationUi, wrapper execute",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/tool-guard.ts",
+      "lines": "1-963"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/policy.ts",
+      "symbol": "permission decision",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/policy.ts",
+      "lines": "1-319"
+     }
+    ],
+    "from": "ready",
+    "transition_id": "S02:09"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Ask policy requires original trusted parent TUI context with actual confirm API; no UI/RPC refuses. Ownership checked before dialog; confirm receives configured60000ms timeout+AbortSignal and only literal true succeeds. Catch/cancel/refusal audits best effort then block. This is a real host-operation permission gate, not ADR0043 artifact bookkeeping.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+     "start": 444,
+     "end": 455,
+     "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+     "start": 622,
+     "end": 647,
+     "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+    }
+   ],
+   "limits": "Reasoned source conformance only. No execution, human confirmation, disk/process/network/installed success, test result, task/host qualification, or evidence-epoch renewal is asserted."
+  },
+  {
+   "cell": "disposition:transitions:S02:10",
+   "frozen_row_sha256": "22e9b02e4830a01f3f51ddf040138a4d3ba722f0042f631603688848e647ca03",
+   "frozen_baseline": {
+    "event": "user approves",
+    "guard": "lease/trust/mode/generation/ownership/params unchanged and not aborted",
+    "to": "approved audit pending",
+    "effects": "Require approved permission audit to succeed before any native mutation.",
+    "failure_retry": "Audit failure blocks mutation even if user confirmed; user approval alone is insufficient.",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+      "symbol": "createToolEnforcement, confirmationUi, wrapper execute",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/tool-guard.ts",
+      "lines": "1-963"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/policy.ts",
+      "symbol": "permission decision",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/policy.ts",
+      "lines": "1-319"
+     }
+    ],
+    "from": "permission pending",
+    "transition_id": "S02:10"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "True UI answer is insufficient: revalidate all current authority, then approved audit must resolve true; only append/sync/file+directory identity checks return durable sink success. Failure blocks before executor. Mapping asserts conditional source ordering, not that any user actually approved or disk persistence was observed.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+     "start": 608,
+     "end": 620,
+     "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+     "start": 649,
+     "end": 657,
+     "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+     "start": 250,
+     "end": 280,
+     "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/audit-sink.ts",
+     "start": 156,
+     "end": 198,
+     "file_sha256": "118e24ae1be2ad4807801860dbb9fb7b953e0404d198124d4393cd575e49ed27"
+    }
+   ],
+   "limits": "Reasoned source conformance only. No execution, human confirmation, disk/process/network/installed success, test result, task/host qualification, or evidence-epoch renewal is asserted."
+  },
+  {
+   "cell": "disposition:transitions:S02:11",
+   "frozen_row_sha256": "bab3711166c737333eed89acf88feed9bf6b7b2354938da1f350a8d041910f21",
+   "frozen_baseline": {
+    "event": "audit persisted",
+    "guard": "all authority revalidated again",
+    "to": "executing",
+    "effects": "Invoke exact native mutator once with frozen parameters.",
+    "failure_retry": "No blind mutation retry on execute failure; caller receives tool error.",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+      "symbol": "createToolEnforcement, confirmationUi, wrapper execute",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/tool-guard.ts",
+      "lines": "1-963"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/policy.ts",
+      "symbol": "permission decision",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/policy.ts",
+      "lines": "1-319"
+     }
+    ],
+    "from": "approved audit pending",
+    "transition_id": "S02:11"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "After approved audit succeeds perform second full revalidation and call captured originalExecute once with frozen canonical approved parameters. No catch auto-retries the mutator; execution errors propagate to caller. No approval receipt from the assistive state engine is demanded.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+     "start": 607,
+     "end": 620,
+     "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+     "start": 653,
+     "end": 670,
+     "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+    }
+   ],
+   "limits": "Reasoned source conformance only. No execution, human confirmation, disk/process/network/installed success, test result, task/host qualification, or evidence-epoch renewal is asserted."
+  },
+  {
+   "cell": "disposition:transitions:S02:12",
+   "frozen_row_sha256": "3c533ee8693a179521d126b0225fde8f51e3c70748ec53fbac62714bd8a08738",
+   "frozen_baseline": {
+    "event": "abort or authority drift",
+    "guard": "any revalidation fails",
+    "to": "blocked",
+    "effects": "Discard approval; never execute stale call.",
+    "failure_retry": "Fresh invocation may request new approval under current authority.",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+      "symbol": "createToolEnforcement, confirmationUi, wrapper execute",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/tool-guard.ts",
+      "lines": "1-963"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/policy.ts",
+      "symbol": "permission decision",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/policy.ts",
+      "lines": "1-319"
+     }
+    ],
+    "from": "permission pending or approved audit pending",
+    "transition_id": "S02:12"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Abort, request/mode/registry/executor drift, withdrawn trust or generation/readiness drift invalidates prior permission; no stale effect invocation. A fresh call can seek current permission rather than reusing this confirmation. New delegated gate reuses these checks, not a weaker synthetic context.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+     "start": 608,
+     "end": 620,
+     "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+     "start": 628,
+     "end": 657,
+     "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+    }
+   ],
+   "limits": "Reasoned source conformance only. No execution, human confirmation, disk/process/network/installed success, test result, task/host qualification, or evidence-epoch renewal is asserted."
+  },
+  {
+   "cell": "disposition:transitions:S02:13",
+   "frozen_row_sha256": "903be549fe79cc55022f41a3c33777b5508eafc5dc1313de05a1df0a2c25e6f7",
+   "frozen_baseline": {
+    "event": "late tool_result",
+    "guard": "result generation differs",
+    "to": "same state",
+    "effects": "Ignore stale final-result hook; do not credit current lifecycle.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+      "symbol": "createToolEnforcement, confirmationUi, wrapper execute",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/tool-guard.ts",
+      "lines": "1-963"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/policy.ts",
+      "symbol": "permission decision",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/policy.ts",
+      "lines": "1-319"
+     }
+    ],
+    "from": "any",
+    "transition_id": "S02:13"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Result hook captures active generation, handles WRITE/EDIT only, sends correlation when present, then suppresses stale success or caught failure after await. A late result cannot notify/patch current lifecycle; missing correlation remains bridge-owned, never fabricated approval.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+     "start": 977,
+     "end": 1014,
+     "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+    }
+   ],
+   "limits": "Reasoned source conformance only. No execution, human confirmation, disk/process/network/installed success, test result, task/host qualification, or evidence-epoch renewal is asserted."
+  },
+  {
+   "cell": "disposition:transitions:S02:14",
+   "frozen_row_sha256": "5aee30162e7b58a892969a05e364b0f0b5dcd6e0212cb173a64cba96d3d62e52",
+   "frozen_baseline": {
+    "event": "deactivate",
+    "guard": "lifecycle ending",
+    "to": "dormant",
+    "effects": "Invalidate owned generation and restore supported native fallback behavior.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+      "symbol": "createToolEnforcement, confirmationUi, wrapper execute",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/tool-guard.ts",
+      "lines": "1-963"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/policy.ts",
+      "symbol": "permission decision",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/policy.ts",
+      "lines": "1-319"
+     }
+    ],
+    "from": "any",
+    "transition_id": "S02:14"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Deactivate clears bootstrap/ready/trustrevocation/generation/delegated binding; global unknown-tool guard inactive, existing built-in wrappers use native inactive fallback; custom mutators remain unavailable. This changes supported ownership behavior without claiming removal of every registered callback.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+     "start": 813,
+     "end": 820,
+     "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+     "start": 531,
+     "end": 540,
+     "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+     "start": 954,
+     "end": 965,
+     "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+    }
+   ],
+   "limits": "Reasoned source conformance only. No execution, human confirmation, disk/process/network/installed success, test result, task/host qualification, or evidence-epoch renewal is asserted."
+  },
+  {
+   "cell": "disposition:transitions:S03:01",
+   "frozen_row_sha256": "b036cf560afbbdc47dd8e9bf3261d837868be271c71b28ff73a85ac8d2bb3b2e",
+   "frozen_baseline": {
+    "event": "enter plan",
+    "guard": "trusted live lease; safe canonical path; valid tasks/hash",
+    "to": "plan draft",
+    "effects": "Read plan, acquire ownership, persist revision 1 with mode=plan and disposition=draft.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/plan-mode.ts",
+      "symbol": "PlanModeController",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/plan-mode.ts",
+      "lines": "1-546"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/native-plan.ts",
+      "symbol": "native plan adapter",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/native-plan.ts",
+      "lines": "1-365"
+     }
+    ],
+    "from": "unowned execute",
+    "transition_id": "S03:01"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Trusted interactive parent with live lease/session/cwd and owned ca-plan reads canonical slug through bridge, verifies returned hash, parses same task identities, persists revision1 plan/draft entry before setting owned memory. No installed caller or runtime result renewed.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/native-plan.ts",
+     "start": 176,
+     "end": 257,
+     "file_sha256": "b638b19da6078d9f86281d900a05b53602e6b034cc8890fa221229655c6fdce8"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/plan-mode.ts",
+     "start": 268,
+     "end": 278,
+     "file_sha256": "1b7df3d367cc185484b3072329d9b6dbac162070e2f31dc52d5944dd2db0c754"
+    }
+   ],
+   "limits": "Reasoned source conformance only. No execution, human confirmation, disk/process/network/installed success, test result, task/host qualification, or evidence-epoch renewal is asserted."
+  },
+  {
+   "cell": "disposition:transitions:S03:02",
+   "frozen_row_sha256": "befab231d97a20da620e34b2aff3b6b94195deb67639d04ad1aafd7bc17a3d82",
+   "frozen_baseline": {
+    "event": "edit task state",
+    "guard": "same expected hash; legal task move",
+    "to": "plan edit pending",
+    "effects": "Permit PENDING\u2192IN_PROGRESS/ACCEPTED; IN_PROGRESS\u2192ACCEPTED; retain ACCEPTED; native edit is restricted to owned plan semantics.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/plan-mode.ts",
+      "symbol": "PlanModeController",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/plan-mode.ts",
+      "lines": "1-546"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/native-plan.ts",
+      "symbol": "native plan adapter",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/native-plan.ts",
+      "lines": "1-365"
+     }
+    ],
+    "from": "plan draft",
+    "transition_id": "S03:02"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Pure task transition supports forward PENDING->IN_PROGRESS/ACCEPTED and IN_PROGRESS->ACCEPTED; accepted retains itself. File operation restricts canonical owned spec/plan paths, reads/hash-reconciles and sends expectedHash CAS. This maps helper semantics, not an unobserved host-native edit integration.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/plan-mode.ts",
+     "start": 281,
+     "end": 352,
+     "file_sha256": "1b7df3d367cc185484b3072329d9b6dbac162070e2f31dc52d5944dd2db0c754"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/plan-mode.ts",
+     "start": 461,
+     "end": 514,
+     "file_sha256": "1b7df3d367cc185484b3072329d9b6dbac162070e2f31dc52d5944dd2db0c754"
+    }
+   ],
+   "limits": "Reasoned source conformance only. No execution, human confirmation, disk/process/network/installed success, test result, task/host qualification, or evidence-epoch renewal is asserted."
+  },
+  {
+   "cell": "disposition:transitions:S03:03",
+   "frozen_row_sha256": "fe672f97380435b56f51c3728ffae9ddf42aa117a6d1154fa72755eac6e3f0ed",
+   "frozen_baseline": {
+    "event": "file write + observation succeed",
+    "guard": "unchanged lease and task IDs",
+    "to": "plan draft",
+    "effects": "Record new hash/revision and persisted state.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/plan-mode.ts",
+      "symbol": "PlanModeController",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/plan-mode.ts",
+      "lines": "1-546"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/native-plan.ts",
+      "symbol": "native plan adapter",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/native-plan.ts",
+      "lines": "1-365"
+     }
+    ],
+    "from": "plan edit pending",
+    "transition_id": "S03:03"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PENDING_UNPROVEN_COMPLETE_EFFECT",
+   "assessment": "UNPROVEN COMPLETE EFFECT: operatePlanFile validates committed/readback bytes and returns nextState (including changed revision for transition), but does not itself append durable session entry or own a live lease. Current native controller persists enter/approve/cancel, not this edit return; source grep finds no production call to operatePlanFile in Pi src. Do not derive persisted session state from ok:true. This is a bounded missing join/ambiguous frozen summary, not a proven missing product feature without tracing all public owners.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/plan-mode.ts",
+     "start": 516,
+     "end": 545,
+     "file_sha256": "1b7df3d367cc185484b3072329d9b6dbac162070e2f31dc52d5944dd2db0c754"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/native-plan.ts",
+     "start": 212,
+     "end": 220,
+     "file_sha256": "b638b19da6078d9f86281d900a05b53602e6b034cc8890fa221229655c6fdce8"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/native-plan.ts",
+     "start": 223,
+     "end": 328,
+     "file_sha256": "b638b19da6078d9f86281d900a05b53602e6b034cc8890fa221229655c6fdce8"
+    }
+   ],
+   "limits": "Reasoned source conformance only. No execution, human confirmation, disk/process/network/installed success, test result, task/host qualification, or evidence-epoch renewal is asserted."
+  },
+  {
+   "cell": "disposition:transitions:S03:04",
+   "frozen_row_sha256": "7d5e285624c5df751d0c23f35003a273b5850ffd2923241f893f7e755935ae91",
+   "frozen_baseline": {
+    "event": "write committed but response/readback lost",
+    "guard": "commit may have happened",
+    "to": "plan draft or unresolved edit",
+    "effects": "Return ok=false with committed=true; re-observe before retry; reconcile same task identities if post-commit file changed.",
+    "failure_retry": "Blind repeating an edit is not the implemented safe recovery.",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/plan-mode.ts",
+      "symbol": "PlanModeController",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/plan-mode.ts",
+      "lines": "1-546"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/native-plan.ts",
+      "symbol": "native plan adapter",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/native-plan.ts",
+      "lines": "1-365"
+     }
+    ],
+    "from": "plan edit pending",
+    "transition_id": "S03:04"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "After bridge reports committed with unobserved/invalid/different content, return ok:false+committed:true and available observed state only when exact task identities reconcile. No automatic second replace; observation precedes any safe retry. Conditional source recovery only; no actual effect reobserved.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/plan-mode.ts",
+     "start": 516,
+     "end": 545,
+     "file_sha256": "1b7df3d367cc185484b3072329d9b6dbac162070e2f31dc52d5944dd2db0c754"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/bridge.ts",
+     "start": 501,
+     "end": 525,
+     "file_sha256": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899"
+    }
+   ],
+   "limits": "Reasoned source conformance only. No execution, human confirmation, disk/process/network/installed success, test result, task/host qualification, or evidence-epoch renewal is asserted."
+  },
+  {
+   "cell": "disposition:transitions:S03:05",
+   "frozen_row_sha256": "1b873bda98b30e509ca4be69b894c2000e7cdc81ab247d0e7be183a18c4ece92",
+   "frozen_baseline": {
+    "event": "approve",
+    "guard": "first read reconciles; interactive confirmation eligible",
+    "to": "plan draft awaiting confirmation",
+    "effects": "Prompt with 60-second bound.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/plan-mode.ts",
+      "symbol": "PlanModeController",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/plan-mode.ts",
+      "lines": "1-546"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/native-plan.ts",
+      "symbol": "native plan adapter",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/native-plan.ts",
+      "lines": "1-365"
+     }
+    ],
+    "from": "plan draft",
+    "transition_id": "S03:05"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Owned plan approval first reads/reconciles disk, checks ownership/session/trust and then bounded interactive confirmation with explicit timer/abort Promise.race no more than60000ms. Refusal/timeout does not approve or rewrite plan.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/native-plan.ts",
+     "start": 126,
+     "end": 154,
+     "file_sha256": "b638b19da6078d9f86281d900a05b53602e6b034cc8890fa221229655c6fdce8"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/native-plan.ts",
+     "start": 276,
+     "end": 302,
+     "file_sha256": "b638b19da6078d9f86281d900a05b53602e6b034cc8890fa221229655c6fdce8"
+    }
+   ],
+   "limits": "Reasoned source conformance only. No execution, human confirmation, disk/process/network/installed success, test result, task/host qualification, or evidence-epoch renewal is asserted."
+  },
+  {
+   "cell": "disposition:transitions:S03:06",
+   "frozen_row_sha256": "5140efde45a51b988dc97da61c3f4e3868ff6b7b6eeab47a02618e5efd34f31a",
+   "frozen_baseline": {
+    "event": "approval confirmed",
+    "guard": "live lease; second read same hash",
+    "to": "approved execute",
+    "effects": "Persist approved revision with execute mode before updating owned in-memory state.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/plan-mode.ts",
+      "symbol": "PlanModeController",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/plan-mode.ts",
+      "lines": "1-546"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/native-plan.ts",
+      "symbol": "native plan adapter",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/native-plan.ts",
+      "lines": "1-365"
+     }
+    ],
+    "from": "plan draft awaiting confirmation",
+    "transition_id": "S03:06"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Second read must have identical hash and content; ownership and lease remain current. Construct approved/execute next revision; append encoded session entry successfully and revalidate owner before installing memory. No machine approval is inferred from unrelated recorded progress.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/native-plan.ts",
+     "start": 303,
+     "end": 324,
+     "file_sha256": "b638b19da6078d9f86281d900a05b53602e6b034cc8890fa221229655c6fdce8"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/plan-mode.ts",
+     "start": 355,
+     "end": 369,
+     "file_sha256": "1b7df3d367cc185484b3072329d9b6dbac162070e2f31dc52d5944dd2db0c754"
+    }
+   ],
+   "limits": "Reasoned source conformance only. No execution, human confirmation, disk/process/network/installed success, test result, task/host qualification, or evidence-epoch renewal is asserted."
+  },
+  {
+   "cell": "disposition:transitions:S03:07",
+   "frozen_row_sha256": "299d09c8a6df6e634fc4b6fdbcc3c2cafaf8126e5d2ed5b5041a6f3376a6d033",
+   "frozen_baseline": {
+    "event": "cancel/timeout/stale/file drift",
+    "guard": "any guard fails",
+    "to": "plan draft",
+    "effects": "Return refusal, preserve plan file and restrictions; re-read and ask again if needed.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/plan-mode.ts",
+      "symbol": "PlanModeController",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/plan-mode.ts",
+      "lines": "1-546"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/native-plan.ts",
+      "symbol": "native plan adapter",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/native-plan.ts",
+      "lines": "1-365"
+     }
+    ],
+    "from": "plan draft awaiting confirmation",
+    "transition_id": "S03:07"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Cancelled/timedout dialog, stale lease/session/trust/ownership or differing second hash/content returns refusal before approve/persist/owned replacement. Approval path only reads plan, so refused attempt preserves file/restrictions. Caller must reread/reconfirm; no silent approval/fallback from this branch.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/native-plan.ts",
+     "start": 276,
+     "end": 321,
+     "file_sha256": "b638b19da6078d9f86281d900a05b53602e6b034cc8890fa221229655c6fdce8"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/native-plan.ts",
+     "start": 126,
+     "end": 154,
+     "file_sha256": "b638b19da6078d9f86281d900a05b53602e6b034cc8890fa221229655c6fdce8"
+    }
+   ],
+   "limits": "Reasoned source conformance only. No execution, human confirmation, disk/process/network/installed success, test result, task/host qualification, or evidence-epoch renewal is asserted."
+  },
+  {
+   "cell": "disposition:transitions:S03:08",
+   "frozen_row_sha256": "f957d3c046888228efd77522494d8ec32c8641e67b518e690daa6542e90cb7e3",
+   "frozen_baseline": {
+    "event": "cancel plan",
+    "guard": "current owner",
+    "to": "cancelled execute",
+    "effects": "Persist execute/draft revision; preserve plan file.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/plan-mode.ts",
+      "symbol": "PlanModeController",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/plan-mode.ts",
+      "lines": "1-546"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/native-plan.ts",
+      "symbol": "native plan adapter",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/native-plan.ts",
+      "lines": "1-365"
+     }
+    ],
+    "from": "plan draft",
+    "transition_id": "S03:08"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Current owner cancel creates execute/draft next revision, persists custom entry before replacing owned state; does not delete or rewrite plan markdown. Cancel is distinct from approved disposition.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/native-plan.ts",
+     "start": 276,
+     "end": 324,
+     "file_sha256": "b638b19da6078d9f86281d900a05b53602e6b034cc8890fa221229655c6fdce8"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/plan-mode.ts",
+     "start": 355,
+     "end": 372,
+     "file_sha256": "1b7df3d367cc185484b3072329d9b6dbac162070e2f31dc52d5944dd2db0c754"
+    }
+   ],
+   "limits": "Reasoned source conformance only. No execution, human confirmation, disk/process/network/installed success, test result, task/host qualification, or evidence-epoch renewal is asserted."
+  },
+  {
+   "cell": "disposition:transitions:S03:09",
+   "frozen_row_sha256": "5f7875d418b942cb3cf514107c21a19f83535956ae5ca8990087985e7d3011d8",
+   "frozen_baseline": {
+    "event": "status/restore cannot validate file or owner",
+    "guard": "read failure, session mismatch, malformed state",
+    "to": "ownership lost then unowned execute",
+    "effects": "Clear owned plan and fall back to execute mode.",
+    "failure_retry": "This is a loss-of-restriction fallback, not proof that a plan was approved; preserve an explicit unavailable state in a future change.",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/plan-mode.ts",
+      "symbol": "PlanModeController",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/plan-mode.ts",
+      "lines": "1-546"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/native-plan.ts",
+      "symbol": "native plan adapter",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/native-plan.ts",
+      "lines": "1-365"
+     }
+    ],
+    "from": "plan draft or approved execute",
+    "transition_id": "S03:09"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Status with invalid read/owner clears owned state; restore starts clear and accepts only latest valid matching durable entry plus current disk identities. mode() then falls back execute; this historical loss-of-restriction behavior remains explicit, not represented as user plan approval or unavailable-state fix.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/native-plan.ts",
+     "start": 259,
+     "end": 274,
+     "file_sha256": "b638b19da6078d9f86281d900a05b53602e6b034cc8890fa221229655c6fdce8"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/native-plan.ts",
+     "start": 346,
+     "end": 363,
+     "file_sha256": "b638b19da6078d9f86281d900a05b53602e6b034cc8890fa221229655c6fdce8"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/plan-mode.ts",
+     "start": 412,
+     "end": 428,
+     "file_sha256": "1b7df3d367cc185484b3072329d9b6dbac162070e2f31dc52d5944dd2db0c754"
+    }
+   ],
+   "limits": "Reasoned source conformance only. No execution, human confirmation, disk/process/network/installed success, test result, task/host qualification, or evidence-epoch renewal is asserted."
+  },
+  {
+   "cell": "disposition:transitions:S04:01",
+   "frozen_row_sha256": "975c184731eb5f9b9641eda16859269f8a722e7f2c549a92ee9d34f4e299c08f",
+   "frozen_baseline": {
+    "event": "reserve job",
+    "guard": "not disposed; fewer than four nonterminal jobs",
+    "to": "queued",
+    "effects": "Allocate ID and bounded output/metadata record; capacity counts queued jobs.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/background-jobs.ts",
+      "symbol": "background job manager and runtime",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/background-jobs.ts",
+      "lines": "1-923"
+     }
+    ],
+    "from": "none",
+    "transition_id": "S04:01"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Not-disposed valid create reserves monotonic safe ID and queued metadata before any asynchronous spawn. MAX_ACTIVE_JOBS4 counts queued+active and rejects exhaustion; metadata/label/timeout validation refuses malformed inputs. Memory reservation is not process existence.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/background-jobs.ts",
+     "start": 14,
+     "end": 23,
+     "file_sha256": "12d9b9d5e4dd2c71d5f5c9fe2a2009da49fc275fb8df3d4020b854493636ebb9"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/background-jobs.ts",
+     "start": 355,
+     "end": 390,
+     "file_sha256": "12d9b9d5e4dd2c71d5f5c9fe2a2009da49fc275fb8df3d4020b854493636ebb9"
+    }
+   ],
+   "limits": "Reasoned source conformance only. No execution, human confirmation, disk/process/network/installed success, test result, task/host qualification, or evidence-epoch renewal is asserted."
+  },
+  {
+   "cell": "disposition:transitions:S04:02",
+   "frozen_row_sha256": "f39d3e5020478572453aae80e5b698e25cc4ff5279e4d75786a1dd11010ddb5c",
+   "frozen_baseline": {
+    "event": "managed child readiness + handshake",
+    "guard": "current job and lease",
+    "to": "active",
+    "effects": "Send launch input; close stdin; arm per-job timeout; append bounded output tail (65,536 bytes).",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/background-jobs.ts",
+      "symbol": "background job manager and runtime",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/background-jobs.ts",
+      "lines": "1-923"
+     }
+    ],
+    "from": "queued",
+    "transition_id": "S04:02"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "After cleanup.ready handshake and still-current authorization, end stdin, transition queued->active, arm perjob timer and retain sanitized UTF8 tail at65536bytes across streams. Output handlers exist before ready. Fast terminal/raced stop follows settling branch rather than falsely active.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/background-jobs.ts",
+     "start": 769,
+     "end": 849,
+     "file_sha256": "12d9b9d5e4dd2c71d5f5c9fe2a2009da49fc275fb8df3d4020b854493636ebb9"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/background-jobs.ts",
+     "start": 286,
+     "end": 314,
+     "file_sha256": "12d9b9d5e4dd2c71d5f5c9fe2a2009da49fc275fb8df3d4020b854493636ebb9"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/background-jobs.ts",
+     "start": 423,
+     "end": 439,
+     "file_sha256": "12d9b9d5e4dd2c71d5f5c9fe2a2009da49fc275fb8df3d4020b854493636ebb9"
+    }
+   ],
+   "limits": "Reasoned source conformance only. No execution, human confirmation, disk/process/network/installed success, test result, task/host qualification, or evidence-epoch renewal is asserted."
+  },
+  {
+   "cell": "disposition:transitions:S04:03",
+   "frozen_row_sha256": "2d2060cadec2a56e2e472b3e0aa436e910687e27f02870f60852d2db481a3589",
+   "frozen_baseline": {
+    "event": "child closes zero",
+    "guard": "containment cleanup verified",
+    "to": "completed",
+    "effects": "Freeze terminal record, finish waiter and release capacity; keep bounded recent results.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/background-jobs.ts",
+      "symbol": "background job manager and runtime",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/background-jobs.ts",
+      "lines": "1-923"
+     }
+    ],
+    "from": "queued or active",
+    "transition_id": "S04:03"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Zero child close selects completed only through one settling promise after cleanup.terminate returns verified true; manager freezes snapshot/releases active count, slot deleted, waiter finishes. Claimed verification is conditional on owner result; no actual kernel death proven here.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/background-jobs.ts",
+     "start": 393,
+     "end": 417,
+     "file_sha256": "12d9b9d5e4dd2c71d5f5c9fe2a2009da49fc275fb8df3d4020b854493636ebb9"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/background-jobs.ts",
+     "start": 814,
+     "end": 827,
+     "file_sha256": "12d9b9d5e4dd2c71d5f5c9fe2a2009da49fc275fb8df3d4020b854493636ebb9"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/background-jobs.ts",
+     "start": 885,
+     "end": 905,
+     "file_sha256": "12d9b9d5e4dd2c71d5f5c9fe2a2009da49fc275fb8df3d4020b854493636ebb9"
+    }
+   ],
+   "limits": "Reasoned source conformance only. No execution, human confirmation, disk/process/network/installed success, test result, task/host qualification, or evidence-epoch renewal is asserted."
+  },
+  {
+   "cell": "disposition:transitions:S04:04",
+   "frozen_row_sha256": "6b3500f5390a458b3169276fd4584ae09645aef7ab0fb32b1b2548f859277bfa",
+   "frozen_baseline": {
+    "event": "child error/nonzero",
+    "guard": "cleanup verified",
+    "to": "failed",
+    "effects": "Store sanitized failure and bounded output; release capacity.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/background-jobs.ts",
+      "symbol": "background job manager and runtime",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/background-jobs.ts",
+      "lines": "1-923"
+     }
+    ],
+    "from": "queued or active",
+    "transition_id": "S04:04"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Spawn/error/nonzero close selects failed, bounded sanitized diagnosis/output retained, manager terminal published only after verified cleanup for admitted slot. Pre-admission spawn throw reports fixed safe refusal after state update; no raw exception leaks or runtime proof inferred.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/background-jobs.ts",
+     "start": 795,
+     "end": 815,
+     "file_sha256": "12d9b9d5e4dd2c71d5f5c9fe2a2009da49fc275fb8df3d4020b854493636ebb9"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/background-jobs.ts",
+     "start": 885,
+     "end": 905,
+     "file_sha256": "12d9b9d5e4dd2c71d5f5c9fe2a2009da49fc275fb8df3d4020b854493636ebb9"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/background-jobs.ts",
+     "start": 640,
+     "end": 659,
+     "file_sha256": "12d9b9d5e4dd2c71d5f5c9fe2a2009da49fc275fb8df3d4020b854493636ebb9"
+    }
+   ],
+   "limits": "Reasoned source conformance only. No execution, human confirmation, disk/process/network/installed success, test result, task/host qualification, or evidence-epoch renewal is asserted."
+  },
+  {
+   "cell": "disposition:transitions:S04:05",
+   "frozen_row_sha256": "87aafd01121f8ef8eb936c26865d9ca01a9f6f1bb9bfe831ef767b5b2857e6ef",
+   "frozen_baseline": {
+    "event": "user cancels / timer fires",
+    "guard": "current nonterminal job",
+    "to": "cancelled or timed-out",
+    "effects": "Terminate tree and verify cleanup before recording terminal state.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/background-jobs.ts",
+      "symbol": "background job manager and runtime",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/background-jobs.ts",
+      "lines": "1-923"
+     }
+    ],
+    "from": "queued or active",
+    "transition_id": "S04:05"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Timeout/cancel finds exact owned nonterminal slot and calls shared settling with timed-out/cancelled; process-tree termination result must be verified before manager terminal/slot release. Ordinary deadline value is unchanged; failure leaves unhealthy/unresolved rather than successful cancellation.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/background-jobs.ts",
+     "start": 845,
+     "end": 868,
+     "file_sha256": "12d9b9d5e4dd2c71d5f5c9fe2a2009da49fc275fb8df3d4020b854493636ebb9"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/background-jobs.ts",
+     "start": 885,
+     "end": 905,
+     "file_sha256": "12d9b9d5e4dd2c71d5f5c9fe2a2009da49fc275fb8df3d4020b854493636ebb9"
+    }
+   ],
+   "limits": "Reasoned source conformance only. No execution, human confirmation, disk/process/network/installed success, test result, task/host qualification, or evidence-epoch renewal is asserted."
+  },
+  {
+   "cell": "disposition:transitions:S04:06",
+   "frozen_row_sha256": "69d91c635ad4565db08cf032663dc68969332c7108b06490379643cb8044b6e8",
+   "frozen_baseline": {
+    "event": "duplicate settle/cancel",
+    "guard": "same terminal record",
+    "to": "same terminal",
+    "effects": "Idempotent terminal result; do not relaunch or change completed result.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/background-jobs.ts",
+      "symbol": "background job manager and runtime",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/background-jobs.ts",
+      "lines": "1-923"
+     }
+    ],
+    "from": "terminal",
+    "transition_id": "S04:06"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Repeated same terminal manager transition returns frozen current snapshot if status matches and refuses other terminal rewrite; runtime reuses existing slot.settling promise and never relaunches. Duplicate cancel after removed slot returns false, not a new effect.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/background-jobs.ts",
+     "start": 393,
+     "end": 417,
+     "file_sha256": "12d9b9d5e4dd2c71d5f5c9fe2a2009da49fc275fb8df3d4020b854493636ebb9"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/background-jobs.ts",
+     "start": 885,
+     "end": 905,
+     "file_sha256": "12d9b9d5e4dd2c71d5f5c9fe2a2009da49fc275fb8df3d4020b854493636ebb9"
+    }
+   ],
+   "limits": "Reasoned source conformance only. No execution, human confirmation, disk/process/network/installed success, test result, task/host qualification, or evidence-epoch renewal is asserted."
+  },
+  {
+   "cell": "disposition:transitions:S04:07",
+   "frozen_row_sha256": "0674d3fd57b2c5b09f921f897e76892cf727d89b597d8b019f97388e1a50aa6b",
+   "frozen_baseline": {
+    "event": "retention exceeded",
+    "guard": "default 32, bounded configurable maximum 64",
+    "to": "terminal collection pruned",
+    "effects": "Drop oldest retained terminal records; nonterminal jobs stay.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/background-jobs.ts",
+      "symbol": "background job manager and runtime",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/background-jobs.ts",
+      "lines": "1-923"
+     }
+    ],
+    "from": "terminal collection",
+    "transition_id": "S04:07"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Default recent-terminal limit32 and configurable positive max64; prune oldest terminal IDs, zero their output then delete; nonterminal records untouched. Capacity accounting is distinct from bounded terminal retention.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/background-jobs.ts",
+     "start": 197,
+     "end": 216,
+     "file_sha256": "12d9b9d5e4dd2c71d5f5c9fe2a2009da49fc275fb8df3d4020b854493636ebb9"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/background-jobs.ts",
+     "start": 558,
+     "end": 567,
+     "file_sha256": "12d9b9d5e4dd2c71d5f5c9fe2a2009da49fc275fb8df3d4020b854493636ebb9"
+    }
+   ],
+   "limits": "Reasoned source conformance only. No execution, human confirmation, disk/process/network/installed success, test result, task/host qualification, or evidence-epoch renewal is asserted."
+  },
+  {
+   "cell": "disposition:transitions:S04:08",
+   "frozen_row_sha256": "005e58fe1ec19e1fde7b7286c274f2d8a3e41666399e8f43d76c093692d584ba",
+   "frozen_baseline": {
+    "event": "dispose",
+    "guard": "lifecycle ended",
+    "to": "disposed",
+    "effects": "Clear manager state; reject new jobs.",
+    "failure_retry": "Process ownership cleanup belongs to runtime, not deleting this map.",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/background-jobs.ts",
+      "symbol": "background job manager and runtime",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/background-jobs.ts",
+      "lines": "1-923"
+     }
+    ],
+    "from": "manager",
+    "transition_id": "S04:08"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Manager disposal idempotently marksdisposed, wipes tails/pendingUTF8, clears map/order/count and rejects future jobs. Runtime calls it only after successful stop/healthy cleanup; deleting map itself is no process cleanup proof.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/background-jobs.ts",
+     "start": 482,
+     "end": 492,
+     "file_sha256": "12d9b9d5e4dd2c71d5f5c9fe2a2009da49fc275fb8df3d4020b854493636ebb9"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/background-jobs.ts",
+     "start": 876,
+     "end": 882,
+     "file_sha256": "12d9b9d5e4dd2c71d5f5c9fe2a2009da49fc275fb8df3d4020b854493636ebb9"
+    }
+   ],
+   "limits": "Reasoned source conformance only. No execution, human confirmation, disk/process/network/installed success, test result, task/host qualification, or evidence-epoch renewal is asserted."
+  },
+  {
+   "cell": "disposition:transitions:S05:01",
+   "frozen_row_sha256": "c0f9c0a944a6dec0740b37f894495d26ca0e618d76a9dc1cb6e05f4863ede460",
+   "frozen_baseline": {
+    "event": "launch request",
+    "guard": "trusted lease and four-slot reservation available",
+    "to": "launch pending",
+    "effects": "Reserve before awaiting spawn; record pending ownership; start managed process tree.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/background-jobs.ts",
+      "symbol": "managed background runtime",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/background-jobs.ts",
+      "lines": "1-923"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/native-background.ts",
+      "symbol": "native controller",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/native-background.ts",
+      "lines": "1-413"
+     }
+    ],
+    "from": "healthy",
+    "transition_id": "S05:01"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Parent controller validates live trusted owner, reserves one of4 capacity tokens before awaiting resolveLaunch/runtime spawn; runtime separately reserves manager slot and pendingownership before openProcessTree. Samelease rechecked around each relevant await; no unbounded fifth admission from queued races.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/native-background.ts",
+     "start": 118,
+     "end": 158,
+     "file_sha256": "7108750536f09a7924950ba934c2c88deb239b52e18216e8967cc8f1398d3bad"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/native-background.ts",
+     "start": 305,
+     "end": 341,
+     "file_sha256": "7108750536f09a7924950ba934c2c88deb239b52e18216e8967cc8f1398d3bad"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/background-jobs.ts",
+     "start": 769,
+     "end": 809,
+     "file_sha256": "12d9b9d5e4dd2c71d5f5c9fe2a2009da49fc275fb8df3d4020b854493636ebb9"
+    }
+   ],
+   "limits": "Reasoned source conformance only. No execution, human confirmation, disk/process/network/installed success, test result, task/host qualification, or evidence-epoch renewal is asserted."
+  },
+  {
+   "cell": "disposition:transitions:S05:02",
+   "frozen_row_sha256": "3c0e6fefb2ffda832360aecf82a2d34883e5698abd8613d253a50084824f2017",
+   "frozen_baseline": {
+    "event": "process admitted",
+    "guard": "readiness/handshake and lease valid",
+    "to": "running",
+    "effects": "Mark job active; close stdin; install deadline and terminal observer.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/background-jobs.ts",
+      "symbol": "managed background runtime",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/background-jobs.ts",
+      "lines": "1-923"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/native-background.ts",
+      "symbol": "native controller",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/native-background.ts",
+      "lines": "1-413"
+     }
+    ],
+    "from": "launch pending",
+    "transition_id": "S05:02"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Admitted managedtree has cleanup handle, output/error/close observers before ready; ready/current authority closes stdin, marks active, arms timeout. Native controller retains exact audit correlation and launch identity. Source only, not installed-process handshake qualification.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/background-jobs.ts",
+     "start": 810,
+     "end": 849,
+     "file_sha256": "12d9b9d5e4dd2c71d5f5c9fe2a2009da49fc275fb8df3d4020b854493636ebb9"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/native-background.ts",
+     "start": 329,
+     "end": 357,
+     "file_sha256": "7108750536f09a7924950ba934c2c88deb239b52e18216e8967cc8f1398d3bad"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/process-tree.ts",
+     "start": 916,
+     "end": 924,
+     "file_sha256": "c95c41d55cf73de5f4c4426228a42633d759203fc6ca0f590cfe884b33640f51"
+    }
+   ],
+   "limits": "Reasoned source conformance only. No execution, human confirmation, disk/process/network/installed success, test result, task/host qualification, or evidence-epoch renewal is asserted."
+  },
+  {
+   "cell": "disposition:transitions:S05:03",
+   "frozen_row_sha256": "848d36f8697884ee076f0c4a04d83a5207b32dbba7857262e410c075d6f3cf1a",
+   "frozen_baseline": {
+    "event": "audit launch fails",
+    "guard": "process may already exist",
+    "to": "settling then unhealthy",
+    "effects": "Cancel child; latch controller unhealthy; suppress success.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/background-jobs.ts",
+      "symbol": "managed background runtime",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/background-jobs.ts",
+      "lines": "1-923"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/native-background.ts",
+      "symbol": "native controller",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/native-background.ts",
+      "lines": "1-413"
+     }
+    ],
+    "from": "launch pending",
+    "transition_id": "S05:03"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "If post-launch audit fails, cancel exact child, delete its audit join, latch controller degraded and return failure instead of successful launch. Reservation finally releases if not transferred; verified cleanup remains separately runtime-owned and failed containment is not masked.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/native-background.ts",
+     "start": 358,
+     "end": 388,
+     "file_sha256": "7108750536f09a7924950ba934c2c88deb239b52e18216e8967cc8f1398d3bad"
+    }
+   ],
+   "limits": "Reasoned source conformance only. No execution, human confirmation, disk/process/network/installed success, test result, task/host qualification, or evidence-epoch renewal is asserted."
+  },
+  {
+   "cell": "disposition:transitions:S05:04",
+   "frozen_row_sha256": "dff77730aafff154f3395a3b9e0ec9eabed347c237bd6829b252e860e71c66f7",
+   "frozen_baseline": {
+    "event": "finish/cancel/timeout/stop",
+    "guard": "job not already settling",
+    "to": "settling",
+    "effects": "Cache one settling promise; terminate and verify tree; wait for in-flight spawn ownership before disposal.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/background-jobs.ts",
+      "symbol": "managed background runtime",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/background-jobs.ts",
+      "lines": "1-923"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/native-background.ts",
+      "symbol": "native controller",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/native-background.ts",
+      "lines": "1-413"
+     }
+    ],
+    "from": "running or launch pending",
+    "transition_id": "S05:04"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Each slot caches one settling promise and process cleanup caches its terminate promise; wait pending spawn ownership before stopping current slots. Native stop awaits runtime, pending launch audits, watchers and reservations before disposal. No second independent cleanup retry is invented.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/background-jobs.ts",
+     "start": 859,
+     "end": 905,
+     "file_sha256": "12d9b9d5e4dd2c71d5f5c9fe2a2009da49fc275fb8df3d4020b854493636ebb9"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/native-background.ts",
+     "start": 393,
+     "end": 409,
+     "file_sha256": "7108750536f09a7924950ba934c2c88deb239b52e18216e8967cc8f1398d3bad"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/process-tree.ts",
+     "start": 990,
+     "end": 1004,
+     "file_sha256": "c95c41d55cf73de5f4c4426228a42633d759203fc6ca0f590cfe884b33640f51"
+    }
+   ],
+   "limits": "Reasoned source conformance only. No execution, human confirmation, disk/process/network/installed success, test result, task/host qualification, or evidence-epoch renewal is asserted."
+  },
+  {
+   "cell": "disposition:transitions:S05:05",
+   "frozen_row_sha256": "0c1bfd811d3c159fd9b1b7b3aaec225e2fe4ece4f981703a797fa4f672d5e489",
+   "frozen_baseline": {
+    "event": "verified containment",
+    "guard": "cleanup result clean",
+    "to": "healthy or stopping",
+    "effects": "Publish terminal job state; audit terminal result; notify host; release slot.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/background-jobs.ts",
+      "symbol": "managed background runtime",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/background-jobs.ts",
+      "lines": "1-923"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/native-background.ts",
+      "symbol": "native controller",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/native-background.ts",
+      "lines": "1-413"
+     }
+    ],
+    "from": "settling",
+    "transition_id": "S05:05"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Only verified tree termination publishes terminal manager result/releases runtime slot. Controller watcher verifies terminal+healthy state, appends terminal audit and only current stable owned session notifies completion, then releases reservation in finally. Process result and audit success remain separate.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/background-jobs.ts",
+     "start": 885,
+     "end": 914,
+     "file_sha256": "12d9b9d5e4dd2c71d5f5c9fe2a2009da49fc275fb8df3d4020b854493636ebb9"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/native-background.ts",
+     "start": 159,
+     "end": 201,
+     "file_sha256": "7108750536f09a7924950ba934c2c88deb239b52e18216e8967cc8f1398d3bad"
+    }
+   ],
+   "limits": "Reasoned source conformance only. No execution, human confirmation, disk/process/network/installed success, test result, task/host qualification, or evidence-epoch renewal is asserted."
+  },
+  {
+   "cell": "disposition:transitions:S05:06",
+   "frozen_row_sha256": "910f8a3e913adb0ca288796bc8f9631d471e6fc2367d8c4ac18d5ae30c1c8bc5",
+   "frozen_baseline": {
+    "event": "cleanup cannot be verified",
+    "guard": "refused/failed cleanup",
+    "to": "unhealthy",
+    "effects": "Latch unhealthy and retain unresolved/nonterminal evidence.",
+    "failure_retry": "Cached settling promise prevents an independent cleanup retry; recovery is reload/new runtime, not another ordinary job action.",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/background-jobs.ts",
+      "symbol": "managed background runtime",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/background-jobs.ts",
+      "lines": "1-923"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/native-background.ts",
+      "symbol": "native controller",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/native-background.ts",
+      "lines": "1-413"
+     }
+    ],
+    "from": "settling",
+    "transition_id": "S05:06"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Unverified/throwing cleanup sets runtime unhealthy and leaves slot/job unresolved, while settling promise stays cached; future launch refuses. Repeated ordinary cancel cannot create an independent retry. Reload/new owner recovery is separate; no actual residual-process absence inferred.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/background-jobs.ts",
+     "start": 885,
+     "end": 905,
+     "file_sha256": "12d9b9d5e4dd2c71d5f5c9fe2a2009da49fc275fb8df3d4020b854493636ebb9"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/native-background.ts",
+     "start": 125,
+     "end": 136,
+     "file_sha256": "7108750536f09a7924950ba934c2c88deb239b52e18216e8967cc8f1398d3bad"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/process-tree.ts",
+     "start": 990,
+     "end": 1004,
+     "file_sha256": "c95c41d55cf73de5f4c4426228a42633d759203fc6ca0f590cfe884b33640f51"
+    }
+   ],
+   "limits": "Reasoned source conformance only. No execution, human confirmation, disk/process/network/installed success, test result, task/host qualification, or evidence-epoch renewal is asserted."
+  },
+  {
+   "cell": "disposition:transitions:S05:07",
+   "frozen_row_sha256": "a2d5bb423d0de7461ac3029a63cd1a435001101cb6fb210674b4f2e66ef1c184",
+   "frozen_baseline": {
+    "event": "terminal audit fails",
+    "guard": "outcome exists but audit failed",
+    "to": "unhealthy",
+    "effects": "Keep failure separate from process outcome; block further controller actions.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/background-jobs.ts",
+      "symbol": "managed background runtime",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/background-jobs.ts",
+      "lines": "1-923"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/native-background.ts",
+      "symbol": "native controller",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/native-background.ts",
+      "lines": "1-413"
+     }
+    ],
+    "from": "terminal watcher",
+    "transition_id": "S05:07"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Terminal watcher audit failure is recorded as auditHealthy=false and globalhealthy=false; do not mutate terminal process outcome to pretend success or use it as admission. Further controller actions require stablehealthy and are blocked.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/native-background.ts",
+     "start": 159,
+     "end": 198,
+     "file_sha256": "7108750536f09a7924950ba934c2c88deb239b52e18216e8967cc8f1398d3bad"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/native-background.ts",
+     "start": 128,
+     "end": 136,
+     "file_sha256": "7108750536f09a7924950ba934c2c88deb239b52e18216e8967cc8f1398d3bad"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/native-background.ts",
+     "start": 393,
+     "end": 411,
+     "file_sha256": "7108750536f09a7924950ba934c2c88deb239b52e18216e8967cc8f1398d3bad"
+    }
+   ],
+   "limits": "Reasoned source conformance only. No execution, human confirmation, disk/process/network/installed success, test result, task/host qualification, or evidence-epoch renewal is asserted."
+  },
+  {
+   "cell": "disposition:transitions:S05:08",
+   "frozen_row_sha256": "9f0d172420e9d755f4a05c0df1ca70f58a78de468098b0f64cf4d292fb393b8b",
+   "frozen_baseline": {
+    "event": "stop lifecycle",
+    "guard": "invalidate lease first",
+    "to": "stopping",
+    "effects": "Await pending admissions and settle all owned processes.",
+    "failure_retry": "Dispose manager only after verified cleanup; unresolved containment is not silently cleared.",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/background-jobs.ts",
+      "symbol": "managed background runtime",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/background-jobs.ts",
+      "lines": "1-923"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/native-background.ts",
+      "symbol": "native controller",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/native-background.ts",
+      "lines": "1-413"
+     }
+    ],
+    "from": "healthy or unhealthy",
+    "transition_id": "S05:08"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Owning lifecycle invalidates ready/active fields before background.stop; controller clears owned access then awaits all admitted/pending resources, audits, watchers and reservations. Unverified cleanup prevents disposal/healthy return; no silent map clear constitutes cleanup.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/extension.ts",
+     "start": 811,
+     "end": 821,
+     "file_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/background-jobs.ts",
+     "start": 859,
+     "end": 882,
+     "file_sha256": "12d9b9d5e4dd2c71d5f5c9fe2a2009da49fc275fb8df3d4020b854493636ebb9"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/native-background.ts",
+     "start": 393,
+     "end": 409,
+     "file_sha256": "7108750536f09a7924950ba934c2c88deb239b52e18216e8967cc8f1398d3bad"
+    }
+   ],
+   "limits": "Reasoned source conformance only. No execution, human confirmation, disk/process/network/installed success, test result, task/host qualification, or evidence-epoch renewal is asserted."
+  },
+  {
+   "cell": "disposition:transitions:S05:09",
+   "frozen_row_sha256": "2fd08d1dc07ce69948f0e54edb8847dfd8aee41a61ffbbf0e010a3862b7fc5bd",
+   "frozen_baseline": {
+    "event": "all owned processes clean",
+    "guard": "no pending ownership",
+    "to": "disposed",
+    "effects": "Release runtime/controller resources; next session builds a fresh controller.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "plugins/ca-pi/tools/src/background-jobs.ts",
+      "symbol": "managed background runtime",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/background-jobs.ts",
+      "lines": "1-923"
+     },
+     {
+      "path": "plugins/ca-pi/tools/src/native-background.ts",
+      "symbol": "native controller",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/native-background.ts",
+      "lines": "1-413"
+     }
+    ],
+    "from": "stopping",
+    "transition_id": "S05:09"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Only stopped+disposed+healthy runtime/audit permits healthy resource retirement. Runtime disposer clears manager after verified stop; later eligible activation creates fresh runtime. Existing unhealthy controller remains latched until recreated, so ordinary newaction cannot clear unresolved containment.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/native-background.ts",
+     "start": 267,
+     "end": 288,
+     "file_sha256": "7108750536f09a7924950ba934c2c88deb239b52e18216e8967cc8f1398d3bad"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/native-background.ts",
+     "start": 393,
+     "end": 411,
+     "file_sha256": "7108750536f09a7924950ba934c2c88deb239b52e18216e8967cc8f1398d3bad"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/background-jobs.ts",
+     "start": 876,
+     "end": 882,
+     "file_sha256": "12d9b9d5e4dd2c71d5f5c9fe2a2009da49fc275fb8df3d4020b854493636ebb9"
+    }
+   ],
+   "limits": "Reasoned source conformance only. No execution, human confirmation, disk/process/network/installed success, test result, task/host qualification, or evidence-epoch renewal is asserted."
+  }
+ ],
+ "pending_cells": [
+  {
+   "cell": "disposition:transitions:S03:03",
+   "reason": "UNPROVEN COMPLETE EFFECT: operatePlanFile validates committed/readback bytes and returns nextState (including changed revision for transition), but does not itself append durable session entry or own a live lease. Current native controller persists enter/approve/cancel, not this edit return; source grep finds no production call to operatePlanFile in Pi src. Do not derive persisted session state from ok:true. This is a bounded missing join/ambiguous frozen summary, not a proven missing product feature without tracing all public owners.",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/plan-mode.ts",
+     "start": 516,
+     "end": 545,
+     "file_sha256": "1b7df3d367cc185484b3072329d9b6dbac162070e2f31dc52d5944dd2db0c754"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/native-plan.ts",
+     "start": 212,
+     "end": 220,
+     "file_sha256": "b638b19da6078d9f86281d900a05b53602e6b034cc8890fa221229655c6fdce8"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/native-plan.ts",
+     "start": 223,
+     "end": 328,
+     "file_sha256": "b638b19da6078d9f86281d900a05b53602e6b034cc8890fa221229655c6fdce8"
+    }
+   ]
+  },
+  {
+   "cell": "disposition:machines:S03",
+   "reason": "The full machine includes pending S03:03 durable edit-state join; existing reviewed edges do not establish the missing compound effect. No complete machine preservation proposed."
+  }
+ ],
+ "known_boundary_notes": [
+  "Only4complete machines and25PLANNEDtransitions are proposed,29cells total; S03 machine/S03:03 stayPLANNED.",
+  "All24existingPRESERVEDtransition objects/evidence/history are retained exactly; no runtime proof refreshed.",
+  "PI-L01 persona retry and PI-L02 sidebar generation are named accepted task changes; historical defects are not represented as still current.",
+  "ADR0043 removes artifact authorization ceremony, not actual host operation permissions. PI-D02 explicitly reuses parent bridge/policy/confirmation/audit gate. No fabricated human consent or old artifact receipt is supplied.",
+  "ADR0049 changes external endpoint plain-HTTP allowance only; no provider transport/credential flow is tested or qualified here.",
+  "Conditional process-tree verified result/cached cleanup is source behavior, not evidence of actual OS process containment.",
+  "S03:03 is a bounded unproven durable-session-state join/ambiguous summary. Exact-symbol lookup is not a complete public-owner trace and does not establish a missing product feature."
+ ]
+}

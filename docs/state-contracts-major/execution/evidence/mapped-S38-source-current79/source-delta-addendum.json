@@ -1,0 +1,15 @@
+{
+  "schema": "codearbiter.S38-independent-source-delta-join/1",
+  "source_epoch": "31e200feffac4179cf6782b70a5c683a436b345d",
+  "source_test_literal_git_matches_physical": {
+    "core/pysrc/_workgithub.py": "79a1ce36cc360eb1eb095b45ab08ecc50c50fe10670dc10e2d9c5cd21be8ca1f",
+    ".github/scripts/test_work_github.py": "9365e6ab869b9eb1131940da1851769f3cc4f804bb9b168512420b5d9add7752"
+  },
+  "whole_c3_source_AST_restored_by_only_removing_remote_json_and_reverting_two_parse_calls": true,
+  "meaning": "Every other original c3 AST path, including token destination checks before parsing and mapped source handlers, is structurally unchanged. Prior seven remain old executed outcomes plus current unchanged-path facts, not new79 execution.",
+  "independent_parser_review": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-mapped-json-independent-review-ihbx1012\\review.json",
+    "sha256": "66a16b5cf862ebaa0f218bb1b35ce2a31d518fd783943e0e41da4fb36e042a31"
+  },
+  "row04_machine_hold_unchanged": true
+}

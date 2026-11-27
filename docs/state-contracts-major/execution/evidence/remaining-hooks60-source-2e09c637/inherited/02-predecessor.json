@@ -1,0 +1,41 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+  "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "/root/qualification_review: bounded source-clause inspection; no runtime execution"
+  },
+  "inputs": {
+    "core/pysrc/_hooklib.py": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+    "core/pysrc/_modelib.py": "d97433737654bbcad2051e62495e70ec006dc31d458514fa74e338e49d04a1db",
+    "core/pysrc/_prunelib.py": "f34aceae4140a7ff25dff91888cd3b9d7d2e5ddc2e1f084558218b22d1c1bdc4",
+    "core/pysrc/_prunepolicy.py": "13bc82c138975121c3dbd28379a0bc8dda183f09fa6e47fbe2bab2e9cc0faf35",
+    "core/pysrc/hostapi.py": "2aea81ad167a458c6053cb52880952521159a367eaa5baa7df6e2e35fea574e4",
+    "core/pysrc/prune-transcript.py": "697c844472240ac0440e4043d17eb7de832d70eadf6e21de0ab0684a07008977"
+  },
+  "disposition_ids": [
+    "disposition:transitions:hooks:prune-plan:01",
+    "disposition:transitions:hooks:prune-plan:03",
+    "disposition:transitions:hooks:prune-plan:04",
+    "disposition:transitions:hooks:prune-plan:06",
+    "disposition:transitions:hooks:prune-execute:01",
+    "disposition:transitions:hooks:prune-execute:02",
+    "disposition:transitions:hooks:prune-execute:03",
+    "disposition:transitions:hooks:prune-execute:05",
+    "disposition:transitions:hooks:prune-execute:06",
+    "disposition:transitions:hooks:prune-execute:07",
+    "disposition:transitions:hooks:prune-execute:08"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/prune/source-inspection.json",
+      "sha256": "3c484fe935dee336a0a2add5e981e61170befa4e99c5ebe38c242ea70d3ffab5"
+    }
+  ],
+  "scope": "prune: 11 whole transition clauses and 0 complete constituent machines; Finite source guard/effect/retry conformance at the frozen source commit only. No runtime, host/package qualification, model compliance, task/scenario, provider/authentication, physical consent, endpoint policy, publication or whole-program readiness claim. HOLD rows receive no ledger mutation.",
+  "semantic_mapping_ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/prune/source-inspection.json",
+  "dependency_boundary": "Inputs pin actual current dependencies at named caller boundaries; equality applies to cited owners, not blanket equivalence of changed dependency behavior. Each raw row states exact mapping and explicit HOLDs."
+}

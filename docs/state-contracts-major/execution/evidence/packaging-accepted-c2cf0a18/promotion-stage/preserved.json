@@ -1,0 +1,53 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "c2cf0a18b020ef426d7df94f70fe9770fa102c32",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "/root/packaging_site_tools finite current promotion-stage owner/caller inspection"
+  },
+  "inputs": {
+    ".github/scripts/_contextverificationlib.py": "361b29a202f8ff3fe4f35c58a42d53cf77c4f8fe05985b1e91b721fc8f2a0707",
+    ".github/scripts/_releaselib.py": "59ffb55276bf3a0b873861be71c6d286ddf25b035db35715e34c8929bccc6c21",
+    ".github/scripts/test_context_native.py": "8fa405405398bed4d39dd6b6a7f445b65c6e89b7c29c59aff9a6322fae64595b",
+    "core/artifact-release-manifest.json": "3ae933456e1275040f1c36ef4a0eaefac7f49fbff2c36a47867066527f3cb23e",
+    "core/hosts.json": "3ea50fd2af1ed359e602210de3f0a9b661a567c45d08a5f947f0f4c2e24a8cd8",
+    "core/pysrc/_artifactmanifestlib.py": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054",
+    "core/pysrc/_gitexec.py": "a5935246028f506ef5ab13ba379b399cb7a754a077866fd39528545f30f4bef3",
+    "core/pysrc/_releaselib.py": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea",
+    "docs/state-contracts-major/IMPLEMENTATION-TASKS.md": "90bd8baf41fcc21f7c670358a996de2eaf110d9e7f89133b248e38a74d286b28",
+    "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+    "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+    "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+    "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+    "tools/build-host-packages.py": "c2c812bf93e81b69cbf62c133c569a6bce07a56e8fc0edbe501a22f9f60d2225",
+    "tools/host_descriptors.py": "2c98ea82723f60879616469ec399cd81db0fb9cb98f4c943eea1dce852123601",
+    "tools/install-artifact-payload.py": "57d98c6db9a9a24431b42ab5e77907f8c94c10d7dbb4f7a273c9c55c90b5f985",
+    "tools/owned_output.py": "52ee664a00b4f66df8f585047cf38a839428c489762890208a9db1961060b22c"
+  },
+  "disposition_ids": [
+    "disposition:transitions:S69:01",
+    "disposition:transitions:S69:02",
+    "disposition:transitions:S69:03",
+    "disposition:transitions:S69:04",
+    "disposition:transitions:S69:05",
+    "disposition:transitions:S69:06",
+    "disposition:machines:S69"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/packaging-accepted-c2cf0a18/promotion-stage/inspection.json",
+      "sha256": "66f688fd4a5b997123f38ff119a1d712268566b4398e3f01b4f5d831be5f6653"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/packaging-accepted-c2cf0a18/source-joins.json",
+      "sha256": "1274118805250def90fdb6ca162cdf60a071887635e8c452c419d6a67c407a08"
+    }
+  ],
+  "scope": "All six finite conditional source clauses and source machine. Candidate/trusted receipt validity remains a checked condition, not an authentic artifact observation.",
+  "limits": [
+    "No test/build/installed/native/platform/API/publication effects for this cone.",
+    "No current genuine artifact, runtime/module membership/absence, whole-task or installed qualification."
+  ]
+}

@@ -85,7 +85,7 @@ escape hatch only for gates that permit bypass; H-18 deliberately does not.
 | **H-20** | `--no-verify` and its supported short forms cannot bypass the repository's pre-commit or pre-push backstop. |
 | **H-21** | A write or edit envelope the host adapter cannot decompose into guardable per-file operations is refused instead of being allowed through uninspected. Retry as a plain supported patch or split the operation. |
 
-H-09b/H-10b is digest-bound: a recorded pass covers only the exact sensitive lines it approved, which closes a time-of-check / time-of-use gap between approval and commit. ADR-0008 co-locates selected work state with its commit: the legacy writer owns `open-tasks.md` until explicit adoption, then native work records own progress. For the design rationale, see [Selected Hardening Notes](/concepts/hardening-history/).
+H-09b/H-10b is digest-bound: a recorded pass covers only the exact worktree and complete staged candidate it was recorded for, plus every sensitive row in it, so any later staged change (even an unrelated one) invalidates it. That closes a time-of-check / time-of-use gap between approval and commit. ADR-0008 co-locates selected work state with its commit: the legacy writer owns `open-tasks.md` until explicit adoption, then native work records own progress. For the design rationale, see [Selected Hardening Notes](/concepts/hardening-history/).
 
 ## Advisory, Non-Blocking Reminders
 
@@ -132,6 +132,11 @@ in, stays inert: nothing repository-aware runs.
 process spawned to do author or reviewer work cannot escalate itself into repository-aware dispatch
 or farm access. Ordinary child/subagent environments never receive `FARM_API_KEY` or other
 governance secrets; that key is scoped to the trusted parent only.
+
+Dispatched children require HTTPS for provider and model endpoints. HTTP is allowed only for
+literal `127.0.0.1`; `localhost`, private network addresses and alternate numeric host forms do
+not qualify. Update an external HTTP `baseUrl` to HTTPS before dispatch. Redirects to HTTP
+outside that loopback exception are refused too.
 
 Run `/ca-doctor` to verify this is actually live: it inspects the active package path, command
 ownership, Python/core/bridge health, child fingerprint, and the H-03 wrapper self-test. Its

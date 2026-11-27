@@ -1,0 +1,101 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "/root/acceptance_security_review: finite accepted normative text and actual owner assessment; private author proposal"
+  },
+  "inputs": {
+    "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+    "docs/state-contracts-major/contracts/finding-dispositions.json": "de8506e391821b5658d41aff80ff53e985e755d60efd5769c53f41bf05962237",
+    "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+    "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+    "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md": "67064779a9c2079db862fdf162b9c38bef6254147bf8a06e1a259d9ea8edab01",
+    "plugins/ca-sandbox/tools/claude-inside-cli.ts": "06b3b1c5b1955007d9e2cc3ed1ecb2cce4b91d7c2444f63b56b4bcd61c5a4a94",
+    "plugins/ca-sandbox/tools/claude-inside.ts": "7c75389558766cf58fe32473909dd8627faafce5161ea0d54c69355dd577a0da"
+  },
+  "disposition_ids": [
+    "disposition:findings:SW-F08"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/source65-sw9-2ed65753/sw9-clause-assessment.json",
+      "sha256": "c893cd7fc0de73642e06fe2b3c7e9d8ce610cef875372bfbbf420068f41f3d01"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/source65-sw9-2ed65753/source-bindings.json",
+      "sha256": "7d5438daf15ececf16de433cdfa69a7ce00b310d4940b6a085f4966e23f54a41"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/source65-sw9-2ed65753/sw9-baseline-current-joins.json",
+      "sha256": "cb225ccdf9601fa6599f05889add061750b06de9739f6488d10bf69e7792b235"
+    }
+  ],
+  "semantic_mapping": [
+    {
+      "cell": "disposition:findings:SW-F08",
+      "frozen_row_sha256": "d8d8bec16d2122c5419da8bac5439357529831adb8af744c87ab9e5efe897d35",
+      "clause_ids": [
+        "SW-F08:1",
+        "SW-F08:2",
+        "SW-F08:3"
+      ],
+      "witnesses": [
+        {
+          "path": "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md",
+          "start": 15,
+          "end": 28,
+          "file_sha256": "67064779a9c2079db862fdf162b9c38bef6254147bf8a06e1a259d9ea8edab01",
+          "span_sha256": "3cdb6ac432dffe6d9fbf6845c6a6c0a8b5ee4035ce7042474f460c2d4667f08d"
+        },
+        {
+          "path": "plugins/ca-sandbox/tools/claude-inside-cli.ts",
+          "start": 1,
+          "end": 17,
+          "file_sha256": "06b3b1c5b1955007d9e2cc3ed1ecb2cce4b91d7c2444f63b56b4bcd61c5a4a94",
+          "span_sha256": "51bcf3e5f9c27b5ac7ab622d06a7eb04eb35980b8cba02be2e7f4bca0aa0a2dc"
+        },
+        {
+          "path": "plugins/ca-sandbox/tools/claude-inside-cli.ts",
+          "start": 59,
+          "end": 109,
+          "file_sha256": "06b3b1c5b1955007d9e2cc3ed1ecb2cce4b91d7c2444f63b56b4bcd61c5a4a94",
+          "span_sha256": "0b8fb555e19c0a3b747300812210bb074af953aee1af3346327e41d1082be9f5"
+        },
+        {
+          "path": "plugins/ca-sandbox/tools/claude-inside-cli.ts",
+          "start": 113,
+          "end": 175,
+          "file_sha256": "06b3b1c5b1955007d9e2cc3ed1ecb2cce4b91d7c2444f63b56b4bcd61c5a4a94",
+          "span_sha256": "424228fe413756848210fcb716713584aa2663be3f56fa993276d1f6fe222d7a"
+        },
+        {
+          "path": "plugins/ca-sandbox/tools/claude-inside.ts",
+          "start": 263,
+          "end": 335,
+          "file_sha256": "7c75389558766cf58fe32473909dd8627faafce5161ea0d54c69355dd577a0da",
+          "span_sha256": "b7132ee1b675eb87b2180258382013d5b751631ea1441227b081015c79dcfc2e"
+        },
+        {
+          "path": "plugins/ca-sandbox/tools/claude-inside.ts",
+          "start": 385,
+          "end": 437,
+          "file_sha256": "7c75389558766cf58fe32473909dd8627faafce5161ea0d54c69355dd577a0da",
+          "span_sha256": "e21565e71635b930d7b6ba2d9986f60ea6bb13bc9557423a54a8972f32748185"
+        }
+      ],
+      "semantic_assessment": "A separate executable enforces its actual argv/token/co-mount/policy/hardening guards; five workflow phases are agent guidance rather than mechanically proved review or consent."
+    }
+  ],
+  "scope": "Only this finite normative finding at actual source; the frozen diagnosis is corrected by the explicitly narrowed accepted contract.",
+  "accepted_contract_note": "A separate executable enforces its actual argv/token/co-mount/policy/hardening guards; five workflow phases are agent guidance rather than mechanically proved review or consent.",
+  "limits": [
+    "Reasoned source guard/effect/retry or finite normative-text conformance only, not observed execution.",
+    "No tests, native/SDK/Pi/Docker/browser/provider/API/network/install or original-owner replay was performed.",
+    "No TESTED/runtime epoch, whole linked task, installed package, model behavior, human acceptance, final-main or publication qualification.",
+    "Existing storage denial, cooperative concurrency, per-resource acquisition, unsupported grammar and platform limits remain; no global atomicity, durability or adversarial attestation.",
+    "Private proposal only. Root owns adoption, original strict authentication, independent review and canonical/index/ref/marker writes."
+  ]
+}

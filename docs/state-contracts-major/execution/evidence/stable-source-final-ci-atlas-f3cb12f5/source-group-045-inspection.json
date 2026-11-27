@@ -1,0 +1,1150 @@
+{
+  "schema": "codearbiter.current-finite-source-inspection/1",
+  "source_commit": "f3cb12f5095401d5b7e8c32c2861816c7109ce02",
+  "original_semantic_inspection_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+  "group": "source-group-045",
+  "positive_input_join": {
+    "docs/state-contracts-major/PROGRAM.md": {
+      "sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+      "previous_sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+      "bytes": 7910,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+        "bytes": 7910
+      }
+    },
+    "docs/state-contracts-major/contracts/machine-coverage.json": {
+      "sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+      "previous_sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+      "bytes": 385316,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+        "bytes": 385316
+      }
+    },
+    "docs/state-contracts-major/contracts/program.json": {
+      "sha256": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+      "previous_sha256": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+      "bytes": 6403,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+        "bytes": 6403
+      }
+    },
+    "docs/state-contracts-major/contracts/tasks.json": {
+      "sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+      "previous_sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+      "bytes": 331224,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+        "bytes": 331224
+      }
+    },
+    "docs/state-contracts-major/contracts/transition-coverage.json": {
+      "sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+      "previous_sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+      "bytes": 3185278,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+        "bytes": 3185278
+      }
+    },
+    "site/scripts/execution-maps/atlas-command.ts": {
+      "sha256": "3d1cd6e531497e69397bc44e6facb4dc6a68981cac98429e01708fbc9d94993e",
+      "previous_sha256": "3d1cd6e531497e69397bc44e6facb4dc6a68981cac98429e01708fbc9d94993e",
+      "bytes": 1043,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "3d1cd6e531497e69397bc44e6facb4dc6a68981cac98429e01708fbc9d94993e",
+        "bytes": 1043
+      }
+    },
+    "site/scripts/execution-maps/atlas-model.ts": {
+      "sha256": "79d5c4e0ef690a7bb1b1ccaf11a79d412a0b91106c78c2d0db4fcdf8e2ada05a",
+      "previous_sha256": "79d5c4e0ef690a7bb1b1ccaf11a79d412a0b91106c78c2d0db4fcdf8e2ada05a",
+      "bytes": 10780,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "79d5c4e0ef690a7bb1b1ccaf11a79d412a0b91106c78c2d0db4fcdf8e2ada05a",
+        "bytes": 10780
+      }
+    },
+    "site/scripts/execution-maps/atlas-render.ts": {
+      "sha256": "363afecc6eb88d96cd5101789ae593b5887c516ea8bde230e718102714c82e00",
+      "previous_sha256": "363afecc6eb88d96cd5101789ae593b5887c516ea8bde230e718102714c82e00",
+      "bytes": 14581,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "363afecc6eb88d96cd5101789ae593b5887c516ea8bde230e718102714c82e00",
+        "bytes": 14581
+      }
+    },
+    "site/scripts/execution-maps/atlas-theme.ts": {
+      "sha256": "dc6d4a624d0872a5466460598a5209daaa9a15b181a5110bb217af9f37d697b0",
+      "previous_sha256": "dc6d4a624d0872a5466460598a5209daaa9a15b181a5110bb217af9f37d697b0",
+      "bytes": 1559,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "dc6d4a624d0872a5466460598a5209daaa9a15b181a5110bb217af9f37d697b0",
+        "bytes": 1559
+      }
+    },
+    "site/scripts/execution-maps/atlas.ts": {
+      "sha256": "f97f98230aac423bc2c6c7a381c31d2ef330d8a4a640951860d7c08dd676d573",
+      "previous_sha256": "f97f98230aac423bc2c6c7a381c31d2ef330d8a4a640951860d7c08dd676d573",
+      "bytes": 39677,
+      "physical_join": {
+        "kind": "GIT_CLEAN_CRLF_TEXT",
+        "sha256": "cd7c6fd358e734a61ce4b23ff2d4de8d3625cecadd802d030f3b1f0595ab2c62",
+        "bytes": 40202
+      }
+    },
+    "site/scripts/generate-atlas.ts": {
+      "sha256": "d4f474a61e0071dd261a6833595d219c459deb68d4fb03ed27ce93c57d235a68",
+      "previous_sha256": "d4f474a61e0071dd261a6833595d219c459deb68d4fb03ed27ce93c57d235a68",
+      "bytes": 3259,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "d4f474a61e0071dd261a6833595d219c459deb68d4fb03ed27ce93c57d235a68",
+        "bytes": 3259
+      }
+    },
+    "site/scripts/execution-maps/atlas-data/major-state-contracts-update.json": {
+      "sha256": "67a57e321d2101d1f283309dd96b2efedadac20e577b1a7d197f363cb1f22baf",
+      "previous_sha256": "62b14434c430453951747519def5a7c3a0efe11d137ce3b809b280654f28fbeb",
+      "bytes": 22280,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "67a57e321d2101d1f283309dd96b2efedadac20e577b1a7d197f363cb1f22baf",
+        "bytes": 22280
+      }
+    },
+    "site/scripts/execution-maps/atlas-assistive.test.ts": {
+      "sha256": "9ecce3fb4a8a48510acfd8cc8f5ce99dfd7496414510fd1e70ed56926a786318",
+      "previous_sha256": "d6f067000f04a07c63a517b6842be41eadd1e73af73f860baf3b097d13788273",
+      "bytes": 14986,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "9ecce3fb4a8a48510acfd8cc8f5ce99dfd7496414510fd1e70ed56926a786318",
+        "bytes": 14986
+      }
+    }
+  },
+  "current_input_membership": [],
+  "closed_namespace_review": null,
+  "current_owner_delta_review": {
+    "scope": "Historical model, exact source-file comparator and projection are unchanged; the source-update inventory keeps identical members and graph nodes. The two revised pins match their actual reviewed and current Git blobs and produce checked source-link fields. Sequential emission remains a source contract.",
+    "atlas_leaf_review": {
+      "core/surface/commands/init.md": {
+        "path": "core/surface/commands/init.md",
+        "revision": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "blob": "74749ae037e276cda66cc6f90addf2d0ad88e914",
+        "historical_nodes_unchanged": [
+          "o-init",
+          "o-runtime",
+          "c-live"
+        ],
+        "reviewed_summary": "Repository activation gates governance and per-turn persona delivery; startup can settle mode or repair an owned global statusline earlier. The task-board writer retains its lock sidecar; initialization adds its exact Git-common info/exclude rule under an exclusive lock. Existing permissions, foreign hooks and user configuration remain preserved."
+      },
+      "core/pysrc/_bashguardlib.py": {
+        "path": "core/pysrc/_bashguardlib.py",
+        "revision": "ddd98dc1ab7a5ceb9a13ffdb4a84c7d2131d094c",
+        "blob": "383ad7d3ead2cb2cd924b2ce815cdcfd79b8317f",
+        "historical_nodes_unchanged": [
+          "f-recovery",
+          "c-read",
+          "c-proof"
+        ],
+        "reviewed_summary": "Simple quote-balanced top-level statements keep interpreter write scanning within each invocation. Binary overrides bind the actual staged candidate. Visible literal PowerShell here-string interpreter bodies reach protected-write guards; dynamic or nested stdin remains outside that finite projection. Conservative checks and existing authority gates remain in place."
+      }
+    },
+    "exact_atlas_payload_deltas": {
+      "site/scripts/execution-maps/atlas-data/major-state-contracts-update.json": {
+        "previous_sha256": "62b14434c430453951747519def5a7c3a0efe11d137ce3b809b280654f28fbeb",
+        "current_sha256": "67a57e321d2101d1f283309dd96b2efedadac20e577b1a7d197f363cb1f22baf"
+      },
+      "site/scripts/execution-maps/atlas-assistive.test.ts": {
+        "previous_sha256": "d6f067000f04a07c63a517b6842be41eadd1e73af73f860baf3b097d13788273",
+        "current_sha256": "9ecce3fb4a8a48510acfd8cc8f5ce99dfd7496414510fd1e70ed56926a786318"
+      }
+    },
+    "docs_scope": "Original Docs coverage is still selected once. The reporting mode surrounds that same source owner with a bounded static observer, with the exact original coverage command on the fallback path. No publish or generated-site execution is claimed."
+  },
+  "semantic_rows": [
+    {
+      "cell": "disposition:machines:SX05",
+      "frozen_record": {
+        "machine_id": "SX05",
+        "name": "Historical atlas source binding and generated projection",
+        "domain": "Site evidence and build projections",
+        "kind": "implemented",
+        "owner": "site-and-release",
+        "closure_task": "Q-01",
+        "task_ids": [
+          "Q-01"
+        ],
+        "explicit_machine_task_ids": [],
+        "source_intersection_task_ids": [],
+        "mapping_basis": "Owner assignment uses the inspected audit domain and explicit owner ledger; source intersections flag review impact, not a claim every edge changes.",
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "status": "NOT_RUN",
+        "transition_count": 6,
+        "source_refs": [
+          "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/execution-maps/atlas-command.ts",
+          "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/execution-maps/atlas-model.ts",
+          "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/execution-maps/atlas-render.ts",
+          "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/execution-maps/atlas-theme.ts",
+          "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/execution-maps/atlas.ts",
+          "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generate-atlas.ts"
+        ],
+        "proposed_composed_scenario_ids": [],
+        "required_disposition": "Read the pinned/current owner, preserve each existing guard/effect/retry boundary except a named authorized change, map meaningful executed tests or reasoned conformance review to the row IDs, and add new rows for introduced events.",
+        "evidence": []
+      },
+      "frozen_record_sha256": "c31d16aa6a6b2b210a079bb45b60f65470d18f6d0cfdfc6c826a44925982cb90",
+      "group": "source-group-045",
+      "literal_inspection": "74-new-full-frozen-machine-or-finding-records",
+      "assessment": "Conditional finite source composition of Historical atlas source binding and generated projection. Constituent guard/effect/retry source scopes and named accepted changes retained; neither task_ids nor model-guided instructions prove executed runtime/installed/model behavior.",
+      "changed_helper_interpretation_ids": [
+        "atlas-per-leaf-revisions"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/proofs/SX05-preserved.json",
+          "sha256": "a4480b3a43609472b7915257a09796d245985dbf174fbc2821ca4bf7d6ffeb7f",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:SX05:01",
+      "frozen_record": {
+        "transition_id": "SX05:01",
+        "machine_id": "SX05",
+        "owner": "site-and-release",
+        "baseline": {
+          "from": "Atlas requested",
+          "event": "Load historical graph",
+          "guard": "Declared repository/revision and complete internally consistent references/geometry",
+          "to": "Historical atlas",
+          "effects": "Clone saved graph, validate IDs, sources, command routes, edges, layouts and source update membership.",
+          "failure_retry": "The graph describes routes; geometry and gate labels are not executable authorization.",
+          "source": [
+            {
+              "path": "site/scripts/execution-maps/atlas.ts",
+              "symbol": "Complete module",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/execution-maps/atlas.ts"
+            },
+            {
+              "path": "site/scripts/execution-maps/atlas-model.ts",
+              "symbol": "Complete module",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/execution-maps/atlas-model.ts"
+            },
+            {
+              "path": "site/scripts/execution-maps/atlas-command.ts",
+              "symbol": "Complete module",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/execution-maps/atlas-command.ts"
+            },
+            {
+              "path": "site/scripts/execution-maps/atlas-theme.ts",
+              "symbol": "Complete module",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/execution-maps/atlas-theme.ts"
+            },
+            {
+              "path": "site/scripts/execution-maps/atlas-render.ts",
+              "symbol": "Complete module",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/execution-maps/atlas-render.ts"
+            },
+            {
+              "path": "site/scripts/generate-atlas.ts",
+              "symbol": "Complete module",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generate-atlas.ts"
+            }
+          ],
+          "transition_id": "SX05:01"
+        },
+        "task_ids": [
+          "Q-01"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "f5f026d9814d521b43e525ca84a63499c5ca572eb2f2ce8a6d5654fe93de1546",
+      "group": "source-group-045",
+      "assessment": "Per-owner optional revision is exact validated data with legacy update-level fallback; sourceHref retains string/path escaping. Historical geometry/global base and retired labels remain historical, not runtime authorization. Literal Git source is distinct from physical Git-clean CRLF transport; no executable/runtime normalization claimed.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "atlas-per-leaf-revisions"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/proofs/SX05-preserved.json",
+          "sha256": "a4480b3a43609472b7915257a09796d245985dbf174fbc2821ca4bf7d6ffeb7f",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:SX05:02",
+      "frozen_record": {
+        "transition_id": "SX05:02",
+        "machine_id": "SX05",
+        "owner": "site-and-release",
+        "baseline": {
+          "from": "Historical atlas",
+          "event": "Revalidate source inventory",
+          "guard": "Exact selected blob or pinned historical commit; safe real source paths",
+          "to": "Bound current source view / rejection",
+          "effects": "Batch-read offline Git objects with environment repository selectors removed; compare current normalized bytes with reviewed bytes.",
+          "failure_retry": "Missing objects or drift stops build. Only root changelog may gain notes above intact reviewed history under its explicit rule.",
+          "source": [
+            {
+              "path": "site/scripts/execution-maps/atlas.ts",
+              "symbol": "Complete module",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/execution-maps/atlas.ts"
+            },
+            {
+              "path": "site/scripts/execution-maps/atlas-model.ts",
+              "symbol": "Complete module",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/execution-maps/atlas-model.ts"
+            },
+            {
+              "path": "site/scripts/execution-maps/atlas-command.ts",
+              "symbol": "Complete module",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/execution-maps/atlas-command.ts"
+            },
+            {
+              "path": "site/scripts/execution-maps/atlas-theme.ts",
+              "symbol": "Complete module",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/execution-maps/atlas-theme.ts"
+            },
+            {
+              "path": "site/scripts/execution-maps/atlas-render.ts",
+              "symbol": "Complete module",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/execution-maps/atlas-render.ts"
+            },
+            {
+              "path": "site/scripts/generate-atlas.ts",
+              "symbol": "Complete module",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generate-atlas.ts"
+            }
+          ],
+          "transition_id": "SX05:02"
+        },
+        "task_ids": [
+          "Q-01"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "70447a0f218705e33a4add99cf6fb232c979e8b3019ec05d295a755bd78d2c1c",
+      "group": "source-group-045",
+      "assessment": "Per-owner optional revision is exact validated data with legacy update-level fallback; sourceHref retains string/path escaping. Historical geometry/global base and retired labels remain historical, not runtime authorization. Literal Git source is distinct from physical Git-clean CRLF transport; no executable/runtime normalization claimed.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "atlas-per-leaf-revisions"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/proofs/SX05-preserved.json",
+          "sha256": "a4480b3a43609472b7915257a09796d245985dbf174fbc2821ca4bf7d6ffeb7f",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:SX05:03",
+      "frozen_record": {
+        "transition_id": "SX05:03",
+        "machine_id": "SX05",
+        "owner": "site-and-release",
+        "baseline": {
+          "from": "Bound source view",
+          "event": "Resolve command owner",
+          "guard": "Literal whole-file SKILL_ENTRY may redirect once",
+          "to": "Canonical description",
+          "effects": "Read description from exact command/skill source; project host exclusions and form.",
+          "failure_retry": "No recursive template/filename guessing; malformed or multiline unsupported description rejects.",
+          "source": [
+            {
+              "path": "site/scripts/execution-maps/atlas.ts",
+              "symbol": "Complete module",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/execution-maps/atlas.ts"
+            },
+            {
+              "path": "site/scripts/execution-maps/atlas-model.ts",
+              "symbol": "Complete module",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/execution-maps/atlas-model.ts"
+            },
+            {
+              "path": "site/scripts/execution-maps/atlas-command.ts",
+              "symbol": "Complete module",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/execution-maps/atlas-command.ts"
+            },
+            {
+              "path": "site/scripts/execution-maps/atlas-theme.ts",
+              "symbol": "Complete module",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/execution-maps/atlas-theme.ts"
+            },
+            {
+              "path": "site/scripts/execution-maps/atlas-render.ts",
+              "symbol": "Complete module",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/execution-maps/atlas-render.ts"
+            },
+            {
+              "path": "site/scripts/generate-atlas.ts",
+              "symbol": "Complete module",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generate-atlas.ts"
+            }
+          ],
+          "transition_id": "SX05:03"
+        },
+        "task_ids": [
+          "Q-01"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "b79b6d938053298f4a6c438d55ee3751c92b999f3bc79914a5cd4e6afb775436",
+      "group": "source-group-045",
+      "assessment": "Per-owner optional revision is exact validated data with legacy update-level fallback; sourceHref retains string/path escaping. Historical geometry/global base and retired labels remain historical, not runtime authorization. Literal Git source is distinct from physical Git-clean CRLF transport; no executable/runtime normalization claimed.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "atlas-per-leaf-revisions"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/proofs/SX05-preserved.json",
+          "sha256": "a4480b3a43609472b7915257a09796d245985dbf174fbc2821ca4bf7d6ffeb7f",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:SX05:04",
+      "frozen_record": {
+        "transition_id": "SX05:04",
+        "machine_id": "SX05",
+        "owner": "site-and-release",
+        "baseline": {
+          "from": "Bound source view",
+          "event": "Reconcile roster and retired routes",
+          "guard": "Registry plus explicitly retired routes equals historical catalog; lens roster unchanged",
+          "to": "Current labels on historical geometry",
+          "effects": "Hide invocations for retired routes, use pinned historical metadata for them; project selected-work labels and attach source-update boundary.",
+          "failure_retry": "An unchanged shape is not proof of current release/host behavior; retired commands remain historical boxes.",
+          "source": [
+            {
+              "path": "site/scripts/execution-maps/atlas.ts",
+              "symbol": "Complete module",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/execution-maps/atlas.ts"
+            },
+            {
+              "path": "site/scripts/execution-maps/atlas-model.ts",
+              "symbol": "Complete module",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/execution-maps/atlas-model.ts"
+            },
+            {
+              "path": "site/scripts/execution-maps/atlas-command.ts",
+              "symbol": "Complete module",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/execution-maps/atlas-command.ts"
+            },
+            {
+              "path": "site/scripts/execution-maps/atlas-theme.ts",
+              "symbol": "Complete module",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/execution-maps/atlas-theme.ts"
+            },
+            {
+              "path": "site/scripts/execution-maps/atlas-render.ts",
+              "symbol": "Complete module",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/execution-maps/atlas-render.ts"
+            },
+            {
+              "path": "site/scripts/generate-atlas.ts",
+              "symbol": "Complete module",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generate-atlas.ts"
+            }
+          ],
+          "transition_id": "SX05:04"
+        },
+        "task_ids": [
+          "Q-01"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "370ed2af6014b2792f6e3ea58fc62e24065851623e7bcf1a157f6359696d1e24",
+      "group": "source-group-045",
+      "assessment": "Per-owner optional revision is exact validated data with legacy update-level fallback; sourceHref retains string/path escaping. Historical geometry/global base and retired labels remain historical, not runtime authorization. Literal Git source is distinct from physical Git-clean CRLF transport; no executable/runtime normalization claimed.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "atlas-per-leaf-revisions"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/proofs/SX05-preserved.json",
+          "sha256": "a4480b3a43609472b7915257a09796d245985dbf174fbc2821ca4bf7d6ffeb7f",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:SX05:05",
+      "frozen_record": {
+        "transition_id": "SX05:05",
+        "machine_id": "SX05",
+        "owner": "site-and-release",
+        "baseline": {
+          "from": "Validated atlas",
+          "event": "Resolve theme",
+          "guard": "Safe noncyclic named site design tokens",
+          "to": "Renderable atlas",
+          "effects": "Resolve one CSS token source; escape authored labels and generate SVG/HTML/reading views.",
+          "failure_retry": "Missing/cyclic or unsafe token values throw.",
+          "source": [
+            {
+              "path": "site/scripts/execution-maps/atlas.ts",
+              "symbol": "Complete module",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/execution-maps/atlas.ts"
+            },
+            {
+              "path": "site/scripts/execution-maps/atlas-model.ts",
+              "symbol": "Complete module",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/execution-maps/atlas-model.ts"
+            },
+            {
+              "path": "site/scripts/execution-maps/atlas-command.ts",
+              "symbol": "Complete module",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/execution-maps/atlas-command.ts"
+            },
+            {
+              "path": "site/scripts/execution-maps/atlas-theme.ts",
+              "symbol": "Complete module",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/execution-maps/atlas-theme.ts"
+            },
+            {
+              "path": "site/scripts/execution-maps/atlas-render.ts",
+              "symbol": "Complete module",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/execution-maps/atlas-render.ts"
+            },
+            {
+              "path": "site/scripts/generate-atlas.ts",
+              "symbol": "Complete module",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generate-atlas.ts"
+            }
+          ],
+          "transition_id": "SX05:05"
+        },
+        "task_ids": [
+          "Q-01"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "ec0de192222c7891e3b85c16f02d34a27706962fe3cd910f405efe03f9c4348c",
+      "group": "source-group-045",
+      "assessment": "Per-owner optional revision is exact validated data with legacy update-level fallback; sourceHref retains string/path escaping. Historical geometry/global base and retired labels remain historical, not runtime authorization. Literal Git source is distinct from physical Git-clean CRLF transport; no executable/runtime normalization claimed.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "atlas-per-leaf-revisions"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/proofs/SX05-preserved.json",
+          "sha256": "a4480b3a43609472b7915257a09796d245985dbf174fbc2821ca4bf7d6ffeb7f",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:SX05:06",
+      "frozen_record": {
+        "transition_id": "SX05:06",
+        "machine_id": "SX05",
+        "owner": "site-and-release",
+        "baseline": {
+          "from": "Renderable atlas",
+          "event": "Generate portable edition",
+          "guard": "Browser transpilation succeeds",
+          "to": "Generated files",
+          "effects": "Write interactive HTML, script-free reading guide, each view SVG and source ledger beneath atlas commit directory.",
+          "failure_retry": "Outputs are sequential writes; interrupted export can be partial and needs regeneration/read-back.",
+          "source": [
+            {
+              "path": "site/scripts/execution-maps/atlas.ts",
+              "symbol": "Complete module",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/execution-maps/atlas.ts"
+            },
+            {
+              "path": "site/scripts/execution-maps/atlas-model.ts",
+              "symbol": "Complete module",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/execution-maps/atlas-model.ts"
+            },
+            {
+              "path": "site/scripts/execution-maps/atlas-command.ts",
+              "symbol": "Complete module",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/execution-maps/atlas-command.ts"
+            },
+            {
+              "path": "site/scripts/execution-maps/atlas-theme.ts",
+              "symbol": "Complete module",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/execution-maps/atlas-theme.ts"
+            },
+            {
+              "path": "site/scripts/execution-maps/atlas-render.ts",
+              "symbol": "Complete module",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/execution-maps/atlas-render.ts"
+            },
+            {
+              "path": "site/scripts/generate-atlas.ts",
+              "symbol": "Complete module",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generate-atlas.ts"
+            }
+          ],
+          "transition_id": "SX05:06"
+        },
+        "task_ids": [
+          "Q-01"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "a3ee114895d384caa159ef59cf278637f9272792f8674a17b6d4652bc5797ecb",
+      "group": "source-group-045",
+      "assessment": "Per-owner optional revision is exact validated data with legacy update-level fallback; sourceHref retains string/path escaping. Historical geometry/global base and retired labels remain historical, not runtime authorization. Literal Git source is distinct from physical Git-clean CRLF transport; no executable/runtime normalization claimed.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "atlas-per-leaf-revisions"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/proofs/SX05-preserved.json",
+          "sha256": "a4480b3a43609472b7915257a09796d245985dbf174fbc2821ca4bf7d6ffeb7f",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18"
+        }
+      ]
+    }
+  ],
+  "verified_literal_witnesses": [
+    {
+      "path": "site/scripts/execution-maps/atlas.ts",
+      "old_span": [
+        401,
+        407
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/proofs/SX05-preserved.json",
+      "block_sha256_LF": "6b5895a187e4d663e3386dd1fad8c416d12682158f2d30cad5117243905e0109",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          401,
+          407
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/proofs/SX05-preserved.json",
+      "actual0ef_spans": [
+        [
+          401,
+          407
+        ]
+      ],
+      "actual0ef_file_sha256": "f97f98230aac423bc2c6c7a381c31d2ef330d8a4a640951860d7c08dd676d573",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION",
+      "current_f3_spans": [
+        [
+          401,
+          407
+        ]
+      ],
+      "current_f3_sha256": "f97f98230aac423bc2c6c7a381c31d2ef330d8a4a640951860d7c08dd676d573"
+    },
+    {
+      "path": "site/scripts/execution-maps/atlas.ts",
+      "old_span": [
+        452,
+        519
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/proofs/SX05-preserved.json",
+      "block_sha256_LF": "5610d9c9aeb4ad471cebb654dabced3c7709d70f523fee5bc58e4a2a38406735",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          452,
+          519
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/proofs/SX05-preserved.json",
+      "actual0ef_spans": [
+        [
+          452,
+          519
+        ]
+      ],
+      "actual0ef_file_sha256": "f97f98230aac423bc2c6c7a381c31d2ef330d8a4a640951860d7c08dd676d573",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION",
+      "current_f3_spans": [
+        [
+          452,
+          519
+        ]
+      ],
+      "current_f3_sha256": "f97f98230aac423bc2c6c7a381c31d2ef330d8a4a640951860d7c08dd676d573"
+    },
+    {
+      "path": "site/scripts/execution-maps/atlas.ts",
+      "old_span": [
+        321,
+        400
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/proofs/SX05-preserved.json",
+      "block_sha256_LF": "35274c9d0076b23d4c0c76c8d5008cc7e81097ac0857a254bc324a93c1833771",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          321,
+          400
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/proofs/SX05-preserved.json",
+      "actual0ef_spans": [
+        [
+          321,
+          400
+        ]
+      ],
+      "actual0ef_file_sha256": "f97f98230aac423bc2c6c7a381c31d2ef330d8a4a640951860d7c08dd676d573",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION",
+      "current_f3_spans": [
+        [
+          321,
+          400
+        ]
+      ],
+      "current_f3_sha256": "f97f98230aac423bc2c6c7a381c31d2ef330d8a4a640951860d7c08dd676d573"
+    },
+    {
+      "path": "site/scripts/execution-maps/atlas-command.ts",
+      "old_span": [
+        1,
+        17
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/proofs/SX05-preserved.json",
+      "block_sha256_LF": "3d1cd6e531497e69397bc44e6facb4dc6a68981cac98429e01708fbc9d94993e",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          1,
+          17
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/proofs/SX05-preserved.json",
+      "actual0ef_spans": [
+        [
+          1,
+          17
+        ]
+      ],
+      "actual0ef_file_sha256": "3d1cd6e531497e69397bc44e6facb4dc6a68981cac98429e01708fbc9d94993e",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION",
+      "current_f3_spans": [
+        [
+          1,
+          17
+        ]
+      ],
+      "current_f3_sha256": "3d1cd6e531497e69397bc44e6facb4dc6a68981cac98429e01708fbc9d94993e"
+    },
+    {
+      "path": "site/scripts/execution-maps/atlas-model.ts",
+      "old_span": [
+        42,
+        49
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/proofs/SX05-preserved.json",
+      "block_sha256_LF": "29a65c7a75f8ff5b58e86f61113fc878ca3775779c6f7f6ba208d164cf4ae392",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          42,
+          49
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/proofs/SX05-preserved.json",
+      "actual0ef_spans": [
+        [
+          42,
+          49
+        ]
+      ],
+      "actual0ef_file_sha256": "79d5c4e0ef690a7bb1b1ccaf11a79d412a0b91106c78c2d0db4fcdf8e2ada05a",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION",
+      "current_f3_spans": [
+        [
+          42,
+          49
+        ]
+      ],
+      "current_f3_sha256": "79d5c4e0ef690a7bb1b1ccaf11a79d412a0b91106c78c2d0db4fcdf8e2ada05a"
+    },
+    {
+      "path": "site/scripts/execution-maps/atlas.ts",
+      "old_span": [
+        20,
+        40
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/proofs/SX05-preserved.json",
+      "block_sha256_LF": "c990bd6d50b7e14ec997bce10593083f03c0e3826ef3db32670bb8dd64fd29c5",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          20,
+          40
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/proofs/SX05-preserved.json",
+      "actual0ef_spans": [
+        [
+          20,
+          40
+        ]
+      ],
+      "actual0ef_file_sha256": "f97f98230aac423bc2c6c7a381c31d2ef330d8a4a640951860d7c08dd676d573",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION",
+      "current_f3_spans": [
+        [
+          20,
+          40
+        ]
+      ],
+      "current_f3_sha256": "f97f98230aac423bc2c6c7a381c31d2ef330d8a4a640951860d7c08dd676d573"
+    },
+    {
+      "path": "site/scripts/execution-maps/atlas.ts",
+      "old_span": [
+        298,
+        319
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/proofs/SX05-preserved.json",
+      "block_sha256_LF": "dd4a496c27d4236f37367c49366d477006b43f9b9914563e785938f6c77277bf",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          298,
+          319
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/proofs/SX05-preserved.json",
+      "actual0ef_spans": [
+        [
+          298,
+          319
+        ]
+      ],
+      "actual0ef_file_sha256": "f97f98230aac423bc2c6c7a381c31d2ef330d8a4a640951860d7c08dd676d573",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION",
+      "current_f3_spans": [
+        [
+          298,
+          319
+        ]
+      ],
+      "current_f3_sha256": "f97f98230aac423bc2c6c7a381c31d2ef330d8a4a640951860d7c08dd676d573"
+    },
+    {
+      "path": "site/scripts/execution-maps/atlas.ts",
+      "old_span": [
+        409,
+        519
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/proofs/SX05-preserved.json",
+      "block_sha256_LF": "b4cbdf103d286a6f055f2ce854f23cca522a4d8bd2c2fb34a41a3692050cb489",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          409,
+          519
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/proofs/SX05-preserved.json",
+      "actual0ef_spans": [
+        [
+          409,
+          519
+        ]
+      ],
+      "actual0ef_file_sha256": "f97f98230aac423bc2c6c7a381c31d2ef330d8a4a640951860d7c08dd676d573",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION",
+      "current_f3_spans": [
+        [
+          409,
+          519
+        ]
+      ],
+      "current_f3_sha256": "f97f98230aac423bc2c6c7a381c31d2ef330d8a4a640951860d7c08dd676d573"
+    },
+    {
+      "path": "site/scripts/execution-maps/atlas-theme.ts",
+      "old_span": [
+        1,
+        14
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/proofs/SX05-preserved.json",
+      "block_sha256_LF": "dc6d4a624d0872a5466460598a5209daaa9a15b181a5110bb217af9f37d697b0",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          1,
+          14
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/proofs/SX05-preserved.json",
+      "actual0ef_spans": [
+        [
+          1,
+          14
+        ]
+      ],
+      "actual0ef_file_sha256": "dc6d4a624d0872a5466460598a5209daaa9a15b181a5110bb217af9f37d697b0",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION",
+      "current_f3_spans": [
+        [
+          1,
+          14
+        ]
+      ],
+      "current_f3_sha256": "dc6d4a624d0872a5466460598a5209daaa9a15b181a5110bb217af9f37d697b0"
+    },
+    {
+      "path": "site/scripts/generate-atlas.ts",
+      "old_span": [
+        1,
+        24
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/proofs/SX05-preserved.json",
+      "block_sha256_LF": "d4f474a61e0071dd261a6833595d219c459deb68d4fb03ed27ce93c57d235a68",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          1,
+          24
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/proofs/SX05-preserved.json",
+      "actual0ef_spans": [
+        [
+          1,
+          24
+        ]
+      ],
+      "actual0ef_file_sha256": "d4f474a61e0071dd261a6833595d219c459deb68d4fb03ed27ce93c57d235a68",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION",
+      "current_f3_spans": [
+        [
+          1,
+          24
+        ]
+      ],
+      "current_f3_sha256": "d4f474a61e0071dd261a6833595d219c459deb68d4fb03ed27ce93c57d235a68"
+    },
+    {
+      "path": "site/scripts/execution-maps/atlas-render.ts",
+      "old_span": [
+        40,
+        50
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/proofs/SX05-preserved.json",
+      "block_sha256_LF": "8201f61c73640986ef2e261fcf2e233544b1aba1963cce48599f0137664567b6",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          40,
+          50
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/proofs/SX05-preserved.json",
+      "actual0ef_spans": [
+        [
+          40,
+          50
+        ]
+      ],
+      "actual0ef_file_sha256": "363afecc6eb88d96cd5101789ae593b5887c516ea8bde230e718102714c82e00",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION",
+      "current_f3_spans": [
+        [
+          40,
+          50
+        ]
+      ],
+      "current_f3_sha256": "363afecc6eb88d96cd5101789ae593b5887c516ea8bde230e718102714c82e00"
+    }
+  ],
+  "changed_old_literals": [
+    {
+      "path": "site/scripts/execution-maps/atlas-model.ts",
+      "older_witness": {
+        "path": "site/scripts/execution-maps/atlas-model.ts",
+        "old_span": [
+          1,
+          123
+        ],
+        "origin": "docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/proofs/SX05-preserved.json",
+        "block_sha256_LF": "d115a011e2fcf583cc84635a1f7ade1e10c9d55c388a6e6b9b743bf5250e8909",
+        "result": "CHANGED_OR_REMOVED",
+        "current_spans": [],
+        "prior_proof": "docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/proofs/SX05-preserved.json",
+        "actual0ef_spans": [],
+        "actual0ef_file_sha256": "79d5c4e0ef690a7bb1b1ccaf11a79d412a0b91106c78c2d0db4fcdf8e2ada05a",
+        "actual0ef_literal_state": "CHANGED_HELPER_INTERPRETATION_REQUIRED"
+      },
+      "prepared_current_interpretations": [
+        {
+          "id": "atlas-per-leaf-revisions",
+          "paths": [
+            "site/scripts/execution-maps/atlas-model.ts",
+            "site/scripts/execution-maps/atlas-render.ts"
+          ],
+          "assessment": "Optional per-change revision is validated as an exact string revision and used for that leaf, with update-level fallback only when absent. sourceHref gains an explicit string check. Escaping, source-path bounds and fixed GitHub URL remain; no hosted navigation or screenshot truth is inferred."
+        }
+      ]
+    },
+    {
+      "path": "site/scripts/execution-maps/atlas-render.ts",
+      "older_witness": {
+        "path": "site/scripts/execution-maps/atlas-render.ts",
+        "old_span": [
+          1,
+          50
+        ],
+        "origin": "docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/proofs/SX05-preserved.json",
+        "block_sha256_LF": "fd35a1c59c8ae5b5e6e25523c946b315dc30dc212be4542ce516bee66b3e7438",
+        "result": "CHANGED_OR_REMOVED",
+        "current_spans": [],
+        "prior_proof": "docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/proofs/SX05-preserved.json",
+        "actual0ef_spans": [],
+        "actual0ef_file_sha256": "363afecc6eb88d96cd5101789ae593b5887c516ea8bde230e718102714c82e00",
+        "actual0ef_literal_state": "CHANGED_HELPER_INTERPRETATION_REQUIRED"
+      },
+      "prepared_current_interpretations": [
+        {
+          "id": "atlas-per-leaf-revisions",
+          "paths": [
+            "site/scripts/execution-maps/atlas-model.ts",
+            "site/scripts/execution-maps/atlas-render.ts"
+          ],
+          "assessment": "Optional per-change revision is validated as an exact string revision and used for that leaf, with update-level fallback only when absent. sourceHref gains an explicit string check. Escaping, source-path bounds and fixed GitHub URL remain; no hosted navigation or screenshot truth is inferred."
+        }
+      ]
+    },
+    {
+      "path": "site/scripts/execution-maps/atlas-model.ts",
+      "older_witness": {
+        "path": "site/scripts/execution-maps/atlas-model.ts",
+        "old_span": [
+          29,
+          45
+        ],
+        "origin": "docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/proofs/SX05-preserved.json",
+        "block_sha256_LF": "e8409820a0bc28f08535c319eb003089cdedea9d5c48227964ba6f55c854c283",
+        "result": "CHANGED_OR_REMOVED",
+        "current_spans": [],
+        "prior_proof": "docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/proofs/SX05-preserved.json",
+        "actual0ef_spans": [],
+        "actual0ef_file_sha256": "79d5c4e0ef690a7bb1b1ccaf11a79d412a0b91106c78c2d0db4fcdf8e2ada05a",
+        "actual0ef_literal_state": "CHANGED_HELPER_INTERPRETATION_REQUIRED"
+      },
+      "prepared_current_interpretations": [
+        {
+          "id": "atlas-per-leaf-revisions",
+          "paths": [
+            "site/scripts/execution-maps/atlas-model.ts",
+            "site/scripts/execution-maps/atlas-render.ts"
+          ],
+          "assessment": "Optional per-change revision is validated as an exact string revision and used for that leaf, with update-level fallback only when absent. sourceHref gains an explicit string check. Escaping, source-path bounds and fixed GitHub URL remain; no hosted navigation or screenshot truth is inferred."
+        }
+      ]
+    }
+  ],
+  "reused_helper_assessments": [
+    {
+      "id": "atlas-per-leaf-revisions",
+      "paths": [
+        "site/scripts/execution-maps/atlas-model.ts",
+        "site/scripts/execution-maps/atlas-render.ts"
+      ],
+      "assessment": "Optional per-change revision is validated as an exact string revision and used for that leaf, with update-level fallback only when absent. sourceHref gains an explicit string check. Escaping, source-path bounds and fixed GitHub URL remain; no hosted navigation or screenshot truth is inferred."
+    }
+  ],
+  "negative_scope": "Static finite guarded claims only, with inherited scope/limits. No execution, qualification or unchecked new source claim."
+}

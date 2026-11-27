@@ -1,0 +1,63 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "33529946a2dd18c7a4ea5cd75140227ec7bb5650",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "Bound recovery root, independent cold setup, unchanged prior source scopes"
+  },
+  "inputs": {
+    ".codearbiter/decisions/0043-assistive-state-engine.md": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+    "core/pysrc/_workflowrecoverylib.py": "5ead32108da14310794f2b45795f23435fb6faf3cec173ebc20652c82740d51f",
+    "core/pysrc/workflow-recovery.py": "7a8ccd6d5a21a2c3720a8fef9f73406a49e89d5ad4f0cf718e9160956f7c52a8",
+    "core/surface/SPRINT.md": "d3d469e9f741985493a1a391d1d9239a59f6995acd1c2b45463a2978c5146aa6",
+    "core/surface/commands/standup.md": "7e509ae3354c4c8db7365812991806efe467420844cbdb35635b283d686a96cb",
+    "core/surface/includes/harvest.md": "a3798c8362d1ee3b0f699503022f91a49a88daa2d9ccda44b1eaf7620f719388",
+    "core/surface/skills/brainstorming/SKILL.md": "77f658b30ac9842b0f052ff16563075142d0ab25ac5a0bf895072c40dcd64c2b",
+    "core/surface/skills/tdd/SKILL.md": "c430cc5f6f20ab36f4fe1efc5ab52ec14f752abd49d6eb3d79f074f4c378ecc7",
+    "core/surface/skills/writing-plans/SKILL.md": "7284798238e8f98fdd47b8e9ef4a7d9b6dc0e88f36e21e26a27606287df60bf7",
+    "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+    "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+    "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+    "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+    "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e"
+  },
+  "disposition_ids": [
+    "disposition:machines:WF-14",
+    "disposition:transitions:WF-14:01",
+    "disposition:transitions:WF-14:02",
+    "disposition:transitions:WF-14:03",
+    "disposition:transitions:WF-14:04"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/recovery-intent-source-33529946/source-delta-review.json",
+      "sha256": "e2d9524a82f02903493339d64c4d1c4c6afe67a4c02f4b5eb1f3b3e97cbe6bae"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/workflow-ten-source-384/proofs/WF-14-preserved.json",
+      "sha256": "3686c3881d229642fb99f95599f6a715aabccb1dce9d35fc39c92e0ffafba0d9"
+    }
+  ],
+  "prior_source_fingerprint": {
+    "path": "docs/state-contracts-major/execution/evidence/workflow-ten-source-384/proofs/WF-14-preserved.json",
+    "sha256": "3686c3881d229642fb99f95599f6a715aabccb1dce9d35fc39c92e0ffafba0d9",
+    "original_code": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+    "stored_at": "05e73c5c2501c71d069304c1a6b1b8cd5ae9a706"
+  },
+  "scope": "Source-only actualguidanceconformance withnamedacceptedchanges; notagent/tool/runtime/taskqualification.",
+  "changed_paths": [
+    "core/pysrc/_workflowrecoverylib.py",
+    "core/pysrc/workflow-recovery.py"
+  ],
+  "limits": [
+    "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification.",
+    "CurrentPROGRAM/ADR43 acceptedassistive direction and scopedHW07/HW09/HW11-14/HW18 changes are explicit; no artifactcode/reviewerfleet/secondpermissionbarrier invented.",
+    "Real userstops/hostpermissions/security/source-store integrity/CAS/journal failures remain binding; source guidance or a validproof never grantsauthority.",
+    "Exactly54 currentPLANNED rowproposals;9advancededges untouched withfullhistory, allunrelated/WF02/WF03 records preserved.",
+    "Sourceepoch384269 isliteralinspectionbasis. Per-rowCAS bindsactualselectedrows, wholeledgerhashadvisoryonly. Rootalone owns strictprospectiveauthentication/adoption.",
+    "Current source refinement preserves all prior finite owner and guard clauses; no new runtime claims are part of this proof.",
+    "Source-only assessment. All execution and prior evidence retain their original epochs."
+  ]
+}

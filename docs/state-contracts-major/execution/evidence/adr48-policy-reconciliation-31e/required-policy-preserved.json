@@ -1,0 +1,60 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "31e200feffac4179cf6782b70a5c683a436b345d",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "/root/packaging_site_tools: read-only authenticated ADR48 and finite current required-pre-tag guard reconciliation"
+  },
+  "inputs": {
+    ".codearbiter/decisions/0048-required-declared-pre-tag-checks.md": "05b807a2e7e3bcd6e95f9ef7009d83fc7ab0354a2ab5fd0bdb3c0fd3ceac26bf",
+    ".codearbiter/decisions/0040-independent-per-target-release-with-consumer-safety-gates.md": "2dce2651ea067cc7bec25982ce23fdeb1528e9bfb003906c55be7e243a3a8964",
+    ".codearbiter/decisions/0044-trusted-pi-npm-publication.md": "fda3c0194f83d41bcb169fae7c14d1b24bdaf3bace8d41780a88825e10fe30d6",
+    ".codearbiter/decisions/decision-log.md": "1ca2da03c1c471920ee5de2cc863f233aa9370d113e058f55d6a17ed3c41f363",
+    ".codearbiter/decisions/adr-lifecycle.jsonl": "d3181bda046513723b0315d3c53efa328177d1c1ce403bdaa7fefa61a324ea79",
+    ".github/scripts/check_auto_release_candidate.py": "b00914befa56089cf633d0327f35e88166bdfcb05b45aff36c1ae4786c9f5d07",
+    ".github/workflows/ci.yml": "2d1bbf7ed1932ca7efbdb64b45b63c1376b6a94798afa4567583ee0aa1970473",
+    ".github/workflows/release.yml": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126",
+    ".github/actions/publish-target/action.yml": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+    "core/pysrc/_releaselib.py": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea",
+    ".github/scripts/_releaselib.py": "59ffb55276bf3a0b873861be71c6d286ddf25b035db35715e34c8929bccc6c21",
+    "core/surface/skills/release/SKILL.md": "24503b6688fa9b3f390d246fb5cafc2955336dcf504fd0c400662fd30d23a19d",
+    ".codearbiter/release-targets.md": "62d1bcd7b153fafa6488a4b75f53abc1f726fb53ca69f2110b0a528c6142f96d",
+    "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+    "docs/state-contracts-major/contracts/finding-dispositions.json": "de8506e391821b5658d41aff80ff53e985e755d60efd5769c53f41bf05962237",
+    "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e"
+  },
+  "disposition_ids": [
+    "disposition:findings:C-F03",
+    "disposition:transitions:C15:04"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/adr48-policy-reconciliation-31e/status-owner-result.json",
+      "sha256": "cd083c4f5643a38278f96b4e1d76c14db0aebf5b6d3e8c361113172230a5803b"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/adr48-policy-reconciliation-31e/source-decision-reconciliation.json",
+      "sha256": "0771e674c70da32b660ed704e9c3f679f16d3b677cbd9ecbf69ba818c10c4128"
+    }
+  ],
+  "scope": "Only accepted policy/source agreement and conditional current required pre-tag execution/CI rejection contract; not runtime qualification or sealed ADR delivery.",
+  "semantic_mapping": [
+    {
+      "cell": "disposition:findings:C-F03",
+      "assessment": "C-F03 is a source-vs-accepted-policy conflict. The accepted successor and inspected current source now agree. This is source/decision conformance, not a new failing-check execution or full release qualification."
+    },
+    {
+      "cell": "disposition:transitions:C15:04",
+      "assessment": "Current required candidate gate invokes declared pre-tag runner with600s deadline, restricted environment and nonzero refusal; exact CI aggregate requires success. Source-clause-only, no new command execution/result."
+    }
+  ],
+  "limits": [
+    "No ADR/status/acceptance/lifecycle/index/marker or Gov write.",
+    "No ADR Implemented/Verified promotion: lifecycle export lists missing current implementation evidence for all10sealed obligations.",
+    "No taskG01/R03, whole38associated baseline rows, actual CI/pre-tag command/publication/host delivery closure.",
+    "Pi HTTP ADR0018/0019 pending choice remains separate and untouched.",
+    "Source-only conformance; generated host guidance parity and old raw test counts are not represented as executed current evidence."
+  ]
+}

@@ -1,0 +1,876 @@
+{
+ "schema": "codearbiter.private-independent-code-review/1",
+ "reviewer": "acceptance_security_review",
+ "role": "security-reviewer; code correctness; meaningful coverage",
+ "author": "ci_repair_review",
+ "independent_of_authorship": true,
+ "verdict": "PASS",
+ "gate_status": "PASS",
+ "findings": [],
+ "severity_counts": {
+  "CRITICAL": 0,
+  "HIGH": 0,
+  "MEDIUM": 0,
+  "LOW": 0
+ },
+ "source_commit": "ddd98dc1ab7a5ceb9a13ffdb4a84c7d2131d094c",
+ "author_source_commit": "d5f41252f4610d614eb51d709357ec511730313d",
+ "delivery": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-findings-implementation-60oxsduv\\delivery.json",
+  "sha256": "8db6868897ab4804e25b62a7aebfdd930916f6da302311a852cd14fafda212e4",
+  "bytes": 8867
+ },
+ "patch_sha256": "9d6ac39fcde1384a5d62e587e4d3bc1fc11de4dceffc920d429529d80f240689",
+ "patch": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-findings-implementation-60oxsduv\\candidate.patch",
+  "sha256": "9d6ac39fcde1384a5d62e587e4d3bc1fc11de4dceffc920d429529d80f240689",
+  "bytes": 54981
+ },
+ "full_subjects": {
+  ".gitattributes": {
+   "preimage": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-findings-implementation-60oxsduv\\preimages\\.gitattributes",
+    "sha256": "9effc001130117ea7c03d31d2496b5de8fc7428e589cd5695991dc01c8b8f6c8",
+    "bytes": 8876
+   },
+   "candidate": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-findings-implementation-60oxsduv\\candidate\\.gitattributes",
+    "sha256": "c28f0804b91ac7314f03286bd7edf04fcb51b69bd2ada64784c1f334aabfe845",
+    "bytes": 9108
+   },
+   "source_epoch_git_oid": "2c353ab1c30abb6bc8d4e0cd2596345a4ab3aabc",
+   "observed_HEAD_git_oid": "2c353ab1c30abb6bc8d4e0cd2596345a4ab3aabc",
+   "physical_preimage_sha256": "9effc001130117ea7c03d31d2496b5de8fc7428e589cd5695991dc01c8b8f6c8",
+   "physical_matches_preimage": true,
+   "candidate_is_private_not_staged": true
+  },
+  ".github/major-qualification-policy.json": {
+   "preimage": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-findings-implementation-60oxsduv\\preimages\\.github\\major-qualification-policy.json",
+    "sha256": "cd30bfc62d2545a714e9e8d05fca58d048d988f9eeb910aa4bf6de9eb9babe66",
+    "bytes": 8656
+   },
+   "candidate": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-findings-implementation-60oxsduv\\candidate\\.github\\major-qualification-policy.json",
+    "sha256": "39cb01e27cf4d104ea09ff221f826b63c338265842dbe469dce68c65e9efeb97",
+    "bytes": 8976
+   },
+   "source_epoch_git_oid": "a4196bdb9fe8c835129bb0fb0fadfb40b943fbe0",
+   "observed_HEAD_git_oid": "a4196bdb9fe8c835129bb0fb0fadfb40b943fbe0",
+   "physical_preimage_sha256": "cd30bfc62d2545a714e9e8d05fca58d048d988f9eeb910aa4bf6de9eb9babe66",
+   "physical_matches_preimage": true,
+   "candidate_is_private_not_staged": true
+  },
+  ".github/major-test-selections.json": {
+   "preimage": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-findings-implementation-60oxsduv\\preimages\\.github\\major-test-selections.json",
+    "sha256": "7291e89ee5f035aceedd77b4f7567611b92769d6b41f0ab323c4f914160336e7",
+    "bytes": 86958
+   },
+   "candidate": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-findings-implementation-60oxsduv\\candidate\\.github\\major-test-selections.json",
+    "sha256": "e5218117ca2d1304443accb6aa4b14b2d46c32d1cde7e5ea3db42854c034a856",
+    "bytes": 94203
+   },
+   "source_epoch_git_oid": "f6b11103f1caca4f852adf167a0dafd36f7bb368",
+   "observed_HEAD_git_oid": "f6b11103f1caca4f852adf167a0dafd36f7bb368",
+   "physical_preimage_sha256": "7291e89ee5f035aceedd77b4f7567611b92769d6b41f0ab323c4f914160336e7",
+   "physical_matches_preimage": true,
+   "candidate_is_private_not_staged": true
+  },
+  ".github/scripts/major_qualification_report.py": {
+   "preimage": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-findings-implementation-60oxsduv\\preimages\\.github\\scripts\\major_qualification_report.py",
+    "sha256": "808864be72c140cd415034e52b07ccc28377cec28807738194372e0edbdd6919",
+    "bytes": 156946
+   },
+   "candidate": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-findings-implementation-60oxsduv\\candidate\\.github\\scripts\\major_qualification_report.py",
+    "sha256": "64c975bdbfddc61aa208bae81d53e3c71ed144e7843333a0469d7a1301a4af99",
+    "bytes": 163910
+   },
+   "source_epoch_git_oid": "e65745cf57d9d50a09d0a293d887104c5d47c2b5",
+   "observed_HEAD_git_oid": "e65745cf57d9d50a09d0a293d887104c5d47c2b5",
+   "physical_preimage_sha256": "808864be72c140cd415034e52b07ccc28377cec28807738194372e0edbdd6919",
+   "physical_matches_preimage": true,
+   "candidate_is_private_not_staged": true
+  },
+  ".github/scripts/major_readiness.py": {
+   "preimage": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-findings-implementation-60oxsduv\\preimages\\.github\\scripts\\major_readiness.py",
+    "sha256": "553e982cd23048aceec9d13573a74c99386e7da3583ebe7f7d20d9921ddff374",
+    "bytes": 83347
+   },
+   "candidate": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-findings-implementation-60oxsduv\\candidate\\.github\\scripts\\major_readiness.py",
+    "sha256": "458aef171ca0d13e2613d112a23ca253d8ec34d7a53dad4c0e8779cc54bb10af",
+    "bytes": 83536
+   },
+   "source_epoch_git_oid": "b594a13c6b575ce1941e6d3d349ac61ad155e91e",
+   "observed_HEAD_git_oid": "b594a13c6b575ce1941e6d3d349ac61ad155e91e",
+   "physical_preimage_sha256": "553e982cd23048aceec9d13573a74c99386e7da3583ebe7f7d20d9921ddff374",
+   "physical_matches_preimage": true,
+   "candidate_is_private_not_staged": true
+  },
+  ".github/scripts/test_ci_impact.py": {
+   "preimage": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-findings-implementation-60oxsduv\\preimages\\.github\\scripts\\test_ci_impact.py",
+    "sha256": "47787578ca763283e20f4f7ca29e217045967d85f79fd4bafe98ffbf35b3c553",
+    "bytes": 330454
+   },
+   "candidate": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-findings-implementation-60oxsduv\\candidate\\.github\\scripts\\test_ci_impact.py",
+    "sha256": "c2c3818cd55d1c9a9e1f60452e741c73023896114a6c22f46285686d43f344cc",
+    "bytes": 330504
+   },
+   "source_epoch_git_oid": "18edc5164c46e138e8479838b124acae1f662a11",
+   "observed_HEAD_git_oid": "18edc5164c46e138e8479838b124acae1f662a11",
+   "physical_preimage_sha256": "47787578ca763283e20f4f7ca29e217045967d85f79fd4bafe98ffbf35b3c553",
+   "physical_matches_preimage": true,
+   "candidate_is_private_not_staged": true
+  },
+  ".github/scripts/test_major_qualification_report.py": {
+   "preimage": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-findings-implementation-60oxsduv\\preimages\\.github\\scripts\\test_major_qualification_report.py",
+    "sha256": "b173063f620b9da69bce5b44b0684ad813542392a92a5f2f76296c07f1fb4b21",
+    "bytes": 299815
+   },
+   "candidate": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-findings-implementation-60oxsduv\\candidate\\.github\\scripts\\test_major_qualification_report.py",
+    "sha256": "864189f1f909eb3fa67897fa9fa84b39c18e89fa6fe262d60e9eae095c395a87",
+    "bytes": 328574
+   },
+   "source_epoch_git_oid": "e60c9c80ed0fc35322f10c1f713bc5fa33fd0645",
+   "observed_HEAD_git_oid": "e60c9c80ed0fc35322f10c1f713bc5fa33fd0645",
+   "physical_preimage_sha256": "b173063f620b9da69bce5b44b0684ad813542392a92a5f2f76296c07f1fb4b21",
+   "physical_matches_preimage": true,
+   "candidate_is_private_not_staged": true
+  },
+  ".github/workflows/ci.yml": {
+   "preimage": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-findings-implementation-60oxsduv\\preimages\\.github\\workflows\\ci.yml",
+    "sha256": "ca1b8a78a1a2fcb370e02b89a30c5fdc15089d0b98a273382ea17373d4fb2ddb",
+    "bytes": 279842
+   },
+   "candidate": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-findings-implementation-60oxsduv\\candidate\\.github\\workflows\\ci.yml",
+    "sha256": "c0e8e0f0480ffb0f660c894347f26df49da423a300158a1566da702e5a0d8102",
+    "bytes": 284338
+   },
+   "source_epoch_git_oid": "c1cee1b58ed4f6964a84aca419d5e2a1f5c9e56e",
+   "observed_HEAD_git_oid": "c1cee1b58ed4f6964a84aca419d5e2a1f5c9e56e",
+   "physical_preimage_sha256": "ca1b8a78a1a2fcb370e02b89a30c5fdc15089d0b98a273382ea17373d4fb2ddb",
+   "physical_matches_preimage": true,
+   "candidate_is_private_not_staged": true
+  }
+ },
+ "metadata": {
+  "source_bindings": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-findings-implementation-60oxsduv\\source-bindings.json",
+   "sha256": "7e128fc84f17e872bd9a4b20100f5f40ab8d5f1a9bc4afc1108156be4ea8ad7c",
+   "bytes": 25538
+  },
+  "preservation": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-findings-implementation-60oxsduv\\preservation.json",
+   "sha256": "e0afdc0f85582affe14ae67a60db28bfcde56bdd3459444e2772495da56937dc",
+   "bytes": 1220
+  },
+  "finite_matrix": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-findings-implementation-60oxsduv\\finite-matrix-link.json",
+   "sha256": "07871ebe28fed0f9467337df4cfcf0ec14ba24a5ae52920b442e959196353c37",
+   "bytes": 855
+  },
+  "checks": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-findings-implementation-60oxsduv\\checks.json",
+   "sha256": "07e6c1474aa0dcb0ab74729e22560a6fc5104117bbe4fddbdd1bde40971803a1",
+   "bytes": 3460
+  },
+  "original_RED_reuse": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-findings-implementation-60oxsduv\\red-reuse.json",
+   "sha256": "72f8acb1b4c677d845eac8e99a835d321c057151a7a65f6cf83b932c58d73297",
+   "bytes": 588
+  }
+ },
+ "input_proof": [
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\farm-eight-independent-peer-input.txt",
+   "sha256": "e81532c946bd1665da2b88ad9c561edd272b4e6a93357a9f676b22f30f2627a8",
+   "bytes": 10942
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\farm-eight-independent-peer-context.json",
+   "sha256": "69dd7f3e6f529a9dfca521ad6b0fb6b6e0f17b44898a1a9b7b56e4d0e5e23fba",
+   "bytes": 14156
+  }
+ ],
+ "policy": {
+  "complete_prior_typed_policy_read_reused_after_actual_unchanged_source_verification": true,
+  "typed_export": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\source205-security-policy-read.json",
+   "sha256": "02e5e721b039df9a54686cc9ec82b8b6baedacff8f78cbfac4da2caec7b382ec",
+   "bytes": 54891
+  },
+  "exact_records": [
+   "CON-001",
+   "CON-002",
+   "CON-003",
+   "CON-004",
+   "CON-005",
+   "CON-006",
+   "CON-007",
+   "CON-008",
+   "CON-009",
+   "CON-010",
+   "CON-011",
+   "CON-012",
+   "CON-013",
+   "CON-014",
+   "CON-015",
+   "CON-016",
+   "NOTE-001",
+   "NOTE-002",
+   "NOTE-003",
+   "NOTE-004",
+   "NOTE-005",
+   "NOTE-006",
+   "NOTE-007",
+   "NOTE-008",
+   "NOTE-009",
+   "NOTE-010",
+   "NOTE-011",
+   "NOTE-012",
+   "NOTE-013",
+   "NOTE-014",
+   "NOTE-015",
+   "NOTE-016"
+  ],
+  "all16_notes_exact_duplicates_rechecked": true,
+  "active_source_identities": {
+   ".codearbiter/CONTEXT.md": {
+    "head_oid": "1dc9cf5ea4c616aca50232fd86a8dfce52a27210",
+    "index_oid": "1dc9cf5ea4c616aca50232fd86a8dfce52a27210",
+    "sha256": "cbf34ee75a9497ca368ddbeb6936dfc4b343603f08b7da9849cf1c299cc413e7",
+    "bytes": 181,
+    "unchanged_head_index_physical": true
+   },
+   ".codearbiter/context/security-controls.html": {
+    "head_oid": "864cbe7f61189de01f5e1a00245c937eaadeb391",
+    "index_oid": "864cbe7f61189de01f5e1a00245c937eaadeb391",
+    "sha256": "8630d1cad36de7b06a0a9360beea27a48b1642cc05a4547362a25ec8c9ec491e",
+    "bytes": 146424,
+    "unchanged_head_index_physical": true
+   },
+   ".codearbiter/security-controls.md": {
+    "head_oid": "0bbfddb9fa14a2467cbe8db05f61489114fec61c",
+    "index_oid": "0bbfddb9fa14a2467cbe8db05f61489114fec61c",
+    "sha256": "3d1d12735222b1457be07ebd5378e073391284836e24db527c9f279a70e018ca",
+    "bytes": 133,
+    "unchanged_head_index_physical": true
+   }
+  },
+  "applicable_controls": [
+   "CON-001",
+   "CON-007",
+   "CON-008",
+   "CON-009",
+   "CON-013",
+   "CON-015",
+   "CON-016"
+  ],
+  "installed_contracts": [
+   {
+    "path": "C:\\Users\\brenn\\.codex\\plugins\\cache\\codearbiter\\ca-codex\\0.26.9\\agents\\security-reviewer.md",
+    "sha256": "5003edbba7aed8dcc57652826d62c2d61fd5f8f82218c49db0dfd86b70b36a34",
+    "bytes": 3931,
+    "reread_this_review": true
+   },
+   {
+    "path": "C:\\Users\\brenn\\.codex\\plugins\\cache\\codearbiter\\ca-codex\\0.26.9\\includes\\reviewer-contract.md",
+    "sha256": "e986abea38c0ea1495c53653142e3467eec744c71746019d7142df4439fa89b8",
+    "bytes": 2281,
+    "reread_this_review": true
+   }
+  ],
+  "complete_policy_reread_this_Farm_review": true
+ },
+ "preservation": {
+  "AST": {
+   ".github/scripts/major_qualification_report.py": {
+    "all_old_top_level_AST_nodes_preserved_in_order": 116,
+    "old_function_or_class_owners": 44
+   },
+   ".github/scripts/test_major_qualification_report.py": {
+    "all_old_top_level_AST_nodes_preserved_in_order": 52,
+    "old_function_or_class_owners": 28
+   }
+  },
+  "old63_groups_exact_prefix": true,
+  "old_policy_fields_and_all_bindings_preserved": true,
+  "four_additive_finding_bindings": true,
+  "only_tools_workflow_job_changed": true,
+  "old_attributes_exact_prefix": true,
+  "three_exact_LF_pins_only": [
+   ".github/fixtures/artifact-release-manifest.json",
+   "core/artifact-release-manifest.json",
+   "plugins/ca/tools/.env.example"
+  ],
+  "unchanged_Pi_Sandbox_peer": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-sandbox-seven-independent-gf80utf8\\review.json",
+   "sha256": "4503e426c06e7e5e42d706e1b6286cadf2d7319801bcd3e94c430fc6dd1cf5e1",
+   "bytes": 21791
+  },
+  "test_ci_impact_changes": "One Farm role added to existing exact event guard map and owner tuple; old checks remain.",
+  "major_readiness_changes": "Farm payload appended to the existing TS branch and exact original job/upload map; all final reader guards remain."
+ },
+ "substantive_review": {
+  "finding_routes": {
+   "disposition:findings:SF04": {
+    "selectors": 12,
+    "all_literal_source_and_assertion_spans_verified": true,
+    "finite_scope": "Finite shared Farm parser acceptance of the optional sixth context_qualification declaration and all original malformed/unknown/duplicate/bounded input refusals. Fixtures are synthetic schema declarations, never native runtime or context qualification."
+   },
+   "disposition:findings:SF05": {
+    "selectors": 13,
+    "all_literal_source_and_assertion_spans_verified": true,
+    "finite_scope": "Finite JSON/Markdown/effect-journal receipt failure remains explicit, previous complete report survives and independently running tasks drain; receipt-only recovery through actual source/bundle interruptions never calls an author or changes recorded refs/registry/original evidence. Deterministic local HTTP replies substitute model/provider; no real provider, installed approval or global process-containment qualification."
+   },
+   "disposition:findings:SF06": {
+    "selectors": 3,
+    "all_literal_source_and_assertion_spans_verified": true,
+    "finite_scope": "Finite preservation of failed containment through actual gate/runTask/setup consumers: no reset, mutation or second author; retained outcome and scratch resources remain unknown. Executor observations are injected, not OS containment proof."
+   },
+   "disposition:findings:SF07": {
+    "selectors": 5,
+    "all_literal_source_and_assertion_spans_verified": true,
+    "finite_scope": "Finite failed/malformed Git observation refusal, bounded read-only retry and fresh pre-stage dirty/unavailable/clean mutation decisions; fixture observations do not qualify arbitrary repository/concurrency or installed host state."
+   }
+  },
+  "total_literal_selectors_checked": 33,
+  "profile_positive_paths": 47,
+  "source_preimage_joins_verified": 50,
+  "closed_recipe_checks": "All four production recipes equal exact singleton finding groups and the actual 12/13/3/5 selector matrix. No tasks, installed cells, machines or foreign findings admitted by Farm empty legacy-cell profile.",
+  "source_and_callees": "Read all33 named assertion bodies and their actual guard/effect/recovery boundaries. Read selected source manifest declarations, source namespace acquisition, selected-launch executable binding, observer, build_report, final reader and CLI/map consumers. All47 positive paths are contained in the verified50 bindings.",
+  "once_only_command": "Existing unfiltered npm test runs once after rebuild and bundle staleness check, with default and JSON reporters. No test selector/filter, test-step skip condition, error suppression or second suite run introduced. Generic observer argv validation is cooperative rather than an arbitrary-command authenticity guarantee.",
+  "success_and_attribution": "Exact original source-upload job/step and report-upload attribution remain mandatory. Each selected test must occur exactly once passed; source/run/manifest/profile/job mismatches refuse. Source producer in-progress admission remains distinct from final successful original job and whole trusted successful main run.",
+  "security": "Farm job explicitly grants contents:read and actions:read, with no write/OIDC/publication grant. Explicit GH_TOKEN environment binding occurs only on trusted main/program push emitter, after successful observer and source upload. Existing untrusted-code/cooperative same-user runner limits remain. No new credentials, dependency install performed, active cryptographic primitive, TLS bypass or canonical marker writer.",
+  "additive_interactions": "All44 prior reporter function/class owners and all28 prior report-test owners are AST-exact; original Pi/Sandbox groups, closed recipes and final authority predicates are retained. Source profiles, CLI choices, report admission, final source-upload attribution and merge-group wiring all consume the additive Farm role.",
+  "budgets": "Per-test populations and budgets are unchanged. The newly applied existing observer adds its fixed 1200-second outer process wait to this CI invocation; this is not a claim that every execution envelope is unchanged.",
+  "fixtures": "Synthetic context_qualification declarations test parser schema only. Injected code125/timeout/containment observations test consumer decisions only. Owned interruption/provider-double cases remain named future original-CI outcomes, not present reviewer runtime proof."
+ },
+ "evidence": {
+  "original_proper_RED": {
+   "receipt": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-finding-prerequisite-b_o1vbd2\\final-target-red.json",
+    "sha256": "a63c37b97363c21e0b0f7216771462a8685f11ab5abd1b8051456b0ac22f3f9d",
+    "bytes": 1385
+   },
+   "exit_code": 1,
+   "raw_logs": {
+    "stdout": {
+     "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-finding-prerequisite-b_o1vbd2\\final-target-red.stdout",
+     "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+     "bytes": 0
+    },
+    "stderr": {
+     "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-finding-prerequisite-b_o1vbd2\\final-target-red.stderr",
+     "sha256": "856c56c637cbe1a2598e8672b6fd2c426e02a2e4b7e01106c74905b7f109a68f",
+     "bytes": 2322
+    }
+   },
+   "seconds": 0.20526379998773336
+  },
+  "criterion-green": {
+   "receipt": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-findings-implementation-60oxsduv\\criterion-green.json",
+    "sha256": "36bfb6ff403d96afcf009b7eda103df80933f590abed1029bbfcb63b3e10859b",
+    "bytes": 1797
+   },
+   "exit_code": 1,
+   "raw_logs": {
+    "stdout": {
+     "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-findings-implementation-60oxsduv\\criterion-green.stdout",
+     "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+     "bytes": 0
+    },
+    "stderr": {
+     "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-findings-implementation-60oxsduv\\criterion-green.stderr",
+     "sha256": "6fdafa06388a01771f07518d6f552229d654be6bfeda45c8a07a4e3f8f26200b",
+     "bytes": 2512
+    }
+   },
+   "seconds": 0.9952907999977469
+  },
+  "criterion-fixture-green": {
+   "receipt": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-findings-implementation-60oxsduv\\criterion-fixture-green.json",
+    "sha256": "7c6a6a8b5968d172131ccfd95c90266199035e7224aead749a67ffcaf9049557",
+    "bytes": 1797
+   },
+   "exit_code": 0,
+   "raw_logs": {
+    "stdout": {
+     "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-findings-implementation-60oxsduv\\criterion-fixture-green.stdout",
+     "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+     "bytes": 0
+    },
+    "stderr": {
+     "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-findings-implementation-60oxsduv\\criterion-fixture-green.stderr",
+     "sha256": "d93a07a2c5fba106be22308a52507db6813fe1b017cdde25b2b43384c79daf96",
+     "bytes": 360
+    }
+   },
+   "seconds": 1.2649712999991607
+  },
+  "farm-controls": {
+   "receipt": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-findings-implementation-60oxsduv\\farm-controls.json",
+    "sha256": "d9f9804474346b3b53ffb7b499d537b78659aeaacd13dd1e847e853c42722930",
+    "bytes": 1712
+   },
+   "exit_code": 0,
+   "raw_logs": {
+    "stdout": {
+     "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-findings-implementation-60oxsduv\\farm-controls.stdout",
+     "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+     "bytes": 0
+    },
+    "stderr": {
+     "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-findings-implementation-60oxsduv\\farm-controls.stderr",
+     "sha256": "2d29f7d76ffab533b4c7f4079920c089333cc6dbb885c8c4e272544b3104a475",
+     "bytes": 1301
+    }
+   },
+   "seconds": 4.8279658000101335
+  },
+  "affected-legacy": {
+   "receipt": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-findings-implementation-60oxsduv\\affected-legacy.json",
+    "sha256": "450a09859500bdb03d318c2ef21bae5a2bbd4655df92827c52d6ae10b49e06f3",
+    "bytes": 2175
+   },
+   "exit_code": 1,
+   "raw_logs": {
+    "stdout": {
+     "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-findings-implementation-60oxsduv\\affected-legacy.stdout",
+     "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+     "bytes": 0
+    },
+    "stderr": {
+     "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-findings-implementation-60oxsduv\\affected-legacy.stderr",
+     "sha256": "90ea7c3b3116f39653589354aa4d39fd6bb469a04ef638e60504e7635b9d140a",
+     "bytes": 6273
+    }
+   },
+   "seconds": 10.873622299986891
+  },
+  "affected-fixture-successor": {
+   "receipt": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-findings-implementation-60oxsduv\\affected-fixture-successor.json",
+    "sha256": "7bd314edaa698735af70cfe102dd67ca30064b4a17435e2b557b2f4ae03ab8d1",
+    "bytes": 1892
+   },
+   "exit_code": 0,
+   "raw_logs": {
+    "stdout": {
+     "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-findings-implementation-60oxsduv\\affected-fixture-successor.stdout",
+     "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+     "bytes": 0
+    },
+    "stderr": {
+     "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-findings-implementation-60oxsduv\\affected-fixture-successor.stderr",
+     "sha256": "a2b05af8c861847661e5e5046f8954d31e3b00127a7772807788df42fbe4aa81",
+     "bytes": 570
+    }
+   },
+   "seconds": 5.550108199997339
+  },
+  "farm-source-byte-policy": {
+   "receipt": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-findings-implementation-60oxsduv\\farm-source-byte-policy.json",
+    "sha256": "843040677ecd6232f2aedb4c0ae1eb2379ace649e19184ad9ab7e5ef43f89b01",
+    "bytes": 1780
+   },
+   "exit_code": 1,
+   "raw_logs": {
+    "stdout": {
+     "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-findings-implementation-60oxsduv\\farm-source-byte-policy.stdout",
+     "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+     "bytes": 0
+    },
+    "stderr": {
+     "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-findings-implementation-60oxsduv\\farm-source-byte-policy.stderr",
+     "sha256": "ecc0df6ae61620a1543d425f14897f546ec2c67d3fabb92d8d5fc51defc6080c",
+     "bytes": 3387
+    }
+   },
+   "seconds": 3.185844299994642
+  },
+  "farm-source-byte-policy-green": {
+   "receipt": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-findings-implementation-60oxsduv\\farm-source-byte-policy-green.json",
+    "sha256": "e0b9ed29c28e4aeb43dd3f4705340f08d65f09e4d2916a79b382df38a8273c63",
+    "bytes": 1870
+   },
+   "exit_code": 1,
+   "raw_logs": {
+    "stdout": {
+     "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-findings-implementation-60oxsduv\\farm-source-byte-policy-green.stdout",
+     "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+     "bytes": 0
+    },
+    "stderr": {
+     "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-findings-implementation-60oxsduv\\farm-source-byte-policy-green.stderr",
+     "sha256": "da4c868adf740a079b0f56d1e09fdcc54d780159f94fed2d107b8ee10b4b3d90",
+     "bytes": 3379
+    }
+   },
+   "seconds": 2.7920440000016242
+  },
+  "farm-source-byte-policy-final-green": {
+   "receipt": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-findings-implementation-60oxsduv\\farm-source-byte-policy-final-green.json",
+    "sha256": "ff00323029c17f1f9eae971852e0652ac3815bdd61b1f6446a9a3a0d43beb9cf",
+    "bytes": 1869
+   },
+   "exit_code": 0,
+   "raw_logs": {
+    "stdout": {
+     "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-findings-implementation-60oxsduv\\farm-source-byte-policy-final-green.stdout",
+     "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+     "bytes": 0
+    },
+    "stderr": {
+     "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-findings-implementation-60oxsduv\\farm-source-byte-policy-final-green.stderr",
+     "sha256": "a6269d128002928053a1a77c4d56ee2b8bf90a35ab713d9c3ce5bf3ddfe06832",
+     "bytes": 447
+    }
+   },
+   "seconds": 6.488448899996001
+  },
+  "attribute-readback": {
+   "receipt": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-findings-implementation-60oxsduv\\attribute-readback.json",
+    "sha256": "56a6e69771fc4fb70c1658cf034a17095c07d0e740c4fad610a17a306fca39eb",
+    "bytes": 2411
+   },
+   "exit_code": 0,
+   "raw_logs": {},
+   "seconds": null
+  }
+ },
+ "evidence_limits": [
+  "Original missing-profile assertion RED retained and reused across unchanged source_profile AST. Initial manifest-order fixture ERROR retained, then corrected fixture and five new controls PASS.",
+  "First14 affected purposes include12PASS and two missing-source fixture ERRORs; corrected same two PASS are retained separately. Fourteen distinct purposes are covered without calling the first run all green.",
+  "Original unchanged byte-policy owner exposes actual autoCRLF failures before the three exact LF pins; final same owner passes. The final byte-only attributes change does not retroactively make the earlier failures green.",
+  "Reviewer performed static/source/hash/AST inspection only, with no subject tests, native, Node/npm/Vitest/Farm/provider/API or full-owner replay.",
+  "Five new pure controls and14 affected old purposes are author-executed evidence. Actual original hosted Farm job, whole CI run, native/installed/human/model qualification remain pending."
+ ],
+ "passive_source_joins": {
+  ".gitattributes": {
+   "sha256": "9effc001130117ea7c03d31d2496b5de8fc7428e589cd5695991dc01c8b8f6c8",
+   "bytes": 8876,
+   "observed_HEAD_git_oid": "2c353ab1c30abb6bc8d4e0cd2596345a4ab3aabc",
+   "physical_matches_preimage": true
+  },
+  ".github/fixtures/artifact-release-manifest.json": {
+   "sha256": "cd070ffff06083c25a79829ae71595199b0ffa907c45b1fb7188721a186b9927",
+   "bytes": 12225,
+   "observed_HEAD_git_oid": "3ea58c828949b0e285e698bbd32fb19a4d6b5161",
+   "physical_matches_preimage": true
+  },
+  ".github/major-qualification-policy.json": {
+   "sha256": "cd30bfc62d2545a714e9e8d05fca58d048d988f9eeb910aa4bf6de9eb9babe66",
+   "bytes": 8656,
+   "observed_HEAD_git_oid": "a4196bdb9fe8c835129bb0fb0fadfb40b943fbe0",
+   "physical_matches_preimage": true
+  },
+  ".github/major-test-selections.json": {
+   "sha256": "7291e89ee5f035aceedd77b4f7567611b92769d6b41f0ab323c4f914160336e7",
+   "bytes": 86958,
+   "observed_HEAD_git_oid": "f6b11103f1caca4f852adf167a0dafd36f7bb368",
+   "physical_matches_preimage": true
+  },
+  ".github/scripts/_boundedproc.py": {
+   "sha256": "671458a00f178ac690e4d1f4e0458da7b3833353384f9cb7546be711bab15f51",
+   "bytes": 12673,
+   "observed_HEAD_git_oid": "7c8db0a1a2a1e6b714f9657cdf09eaf8a62f5061",
+   "physical_matches_preimage": true
+  },
+  ".github/scripts/_contextverificationlib.py": {
+   "sha256": "361b29a202f8ff3fe4f35c58a42d53cf77c4f8fe05985b1e91b721fc8f2a0707",
+   "bytes": 23733,
+   "observed_HEAD_git_oid": "1e99a2395fab11115d95108b6766d88fdf30eed8",
+   "physical_matches_preimage": true
+  },
+  ".github/scripts/_immutable_git_blobs.py": {
+   "sha256": "7cd642fe54f77d6c046403d1829cbc2484244dab3e656a2a21282fdce71655c6",
+   "bytes": 9589,
+   "observed_HEAD_git_oid": "c57d637c5fa98bbc8c3e0577e2e488e4dd43e439",
+   "physical_matches_preimage": true
+  },
+  ".github/scripts/ci20_native_binding.py": {
+   "sha256": "8a927974424c7c18d3e2e28db0173de07c65e2f1bb068e08dd11e14614284c3f",
+   "bytes": 15795,
+   "observed_HEAD_git_oid": "0507a59e8087f92265191d3d33f783d41ea8325d",
+   "physical_matches_preimage": true
+  },
+  ".github/scripts/major_qualification_report.py": {
+   "sha256": "808864be72c140cd415034e52b07ccc28377cec28807738194372e0edbdd6919",
+   "bytes": 156946,
+   "observed_HEAD_git_oid": "e65745cf57d9d50a09d0a293d887104c5d47c2b5",
+   "physical_matches_preimage": true
+  },
+  ".github/scripts/major_readiness.py": {
+   "sha256": "553e982cd23048aceec9d13573a74c99386e7da3583ebe7f7d20d9921ddff374",
+   "bytes": 83347,
+   "observed_HEAD_git_oid": "b594a13c6b575ce1941e6d3d349ac61ad155e91e",
+   "physical_matches_preimage": true
+  },
+  ".github/scripts/test_ci_impact.py": {
+   "sha256": "47787578ca763283e20f4f7ca29e217045967d85f79fd4bafe98ffbf35b3c553",
+   "bytes": 330454,
+   "observed_HEAD_git_oid": "18edc5164c46e138e8479838b124acae1f662a11",
+   "physical_matches_preimage": true
+  },
+  ".github/scripts/test_major_qualification_report.py": {
+   "sha256": "b173063f620b9da69bce5b44b0684ad813542392a92a5f2f76296c07f1fb4b21",
+   "bytes": 299815,
+   "observed_HEAD_git_oid": "e60c9c80ed0fc35322f10c1f713bc5fa33fd0645",
+   "physical_matches_preimage": true
+  },
+  ".github/workflows/ci.yml": {
+   "sha256": "ca1b8a78a1a2fcb370e02b89a30c5fdc15089d0b98a273382ea17373d4fb2ddb",
+   "bytes": 279842,
+   "observed_HEAD_git_oid": "c1cee1b58ed4f6964a84aca419d5e2a1f5c9e56e",
+   "physical_matches_preimage": true
+  },
+  "core/artifact-release-manifest.json": {
+   "sha256": "3ae933456e1275040f1c36ef4a0eaefac7f49fbff2c36a47867066527f3cb23e",
+   "bytes": 864,
+   "observed_HEAD_git_oid": "ca170c2b363301e75c28b39976c92218e5ac624c",
+   "physical_matches_preimage": true
+  },
+  "core/pysrc/_artifactauthoritylib.py": {
+   "sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+   "bytes": 251805,
+   "observed_HEAD_git_oid": "fb3089e12ddb95242a511cb7754f1e744f7bf53d",
+   "physical_matches_preimage": true
+  },
+  "core/pysrc/_artifactlib.py": {
+   "sha256": "db10153f438023ca6eb7e32f77e1898fbd2f806cdc5ef98bdffb078e27e65187",
+   "bytes": 64924,
+   "observed_HEAD_git_oid": "0074f23a0a3d3a1994081d0be41c63e7fe06dff3",
+   "physical_matches_preimage": true
+  },
+  "core/pysrc/_artifactmanifestlib.py": {
+   "sha256": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054",
+   "bytes": 4249,
+   "observed_HEAD_git_oid": "1e84d812031a969be1decaa73ee8ea0bf8c613cb",
+   "physical_matches_preimage": true
+  },
+  "core/pysrc/_artifactpromptlib.py": {
+   "sha256": "03e0c4b32c806cc054ef34ae7ac58ed093cbe80521a8fea723b7ceb8ac72e1d9",
+   "bytes": 12221,
+   "observed_HEAD_git_oid": "e9f2faeef57008fc202ef05f1693f9afdaaed099",
+   "physical_matches_preimage": true
+  },
+  "core/pysrc/_gitexec.py": {
+   "sha256": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5",
+   "bytes": 24644,
+   "observed_HEAD_git_oid": "6f959b77dbe4a1779bb55e7002ddc237c9b0eab1",
+   "physical_matches_preimage": true
+  },
+  "core/pysrc/_replylib.py": {
+   "sha256": "127d9bcfd842bcea941f2d61b86963cd3e50fcb34a603e8a834fe18d2cc9bf0d",
+   "bytes": 25320,
+   "observed_HEAD_git_oid": "01091fb370347018a2b38a2e2e1176d9ba266f51",
+   "physical_matches_preimage": true
+  },
+  "plugins/ca/tools/.env.example": {
+   "sha256": "753100c15653ae97e5971f72cce14be88ebdc56b62b5286998d748da26024d11",
+   "bytes": 3321,
+   "observed_HEAD_git_oid": "2e31527589490e33fad068051071cef707bef08b",
+   "physical_matches_preimage": true
+  },
+  "plugins/ca/tools/__fixtures__/simple.plan.json": {
+   "sha256": "b5ed11c42bb99a3cc0105f4788e814e59077814cc9f4430e60aa65962102bd82",
+   "bytes": 643,
+   "observed_HEAD_git_oid": "7f7ffed39091dc01dfdac9a4b5ff3ae156d44dfd",
+   "physical_matches_preimage": true
+  },
+  "plugins/ca/tools/artifact-manifest.test.ts": {
+   "sha256": "5f0d5807cc1f1ea8e171981934435ad097cb29db53922474e499038d7f3f7cbd",
+   "bytes": 1047,
+   "observed_HEAD_git_oid": "28fc2d2640d4f75fba5621c969fa9effe7373330",
+   "physical_matches_preimage": true
+  },
+  "plugins/ca/tools/artifact-manifest.ts": {
+   "sha256": "c52753ad9aa137876622281652641e67d94e5904f64d1f6d8565e64c2f2c88c0",
+   "bytes": 3879,
+   "observed_HEAD_git_oid": "2d729abdfa631587d2665ee1834571eb976db7ea",
+   "physical_matches_preimage": true
+  },
+  "plugins/ca/tools/exec.test.ts": {
+   "sha256": "0ddced741cce3c642e5106fc7da5e7447f213c5d8b28607d2798706e10a41a8d",
+   "bytes": 21259,
+   "observed_HEAD_git_oid": "2588ad79121d7c4802a5ed7de6c03eb8ec4a0d19",
+   "physical_matches_preimage": true
+  },
+  "plugins/ca/tools/exec.ts": {
+   "sha256": "1a2fe067280c570d3d0c296f6795e642901bf546e873123b2d125da13444fc73",
+   "bytes": 16986,
+   "observed_HEAD_git_oid": "db85f1c889b80839d0fff8fcc1d13311f1f09214",
+   "physical_matches_preimage": true
+  },
+  "plugins/ca/tools/farm-cleanup-observation.test.ts": {
+   "sha256": "a2a26811ea0b6890065a285772df8f92969ec12b7ec659ca285b9ec6ce86f164",
+   "bytes": 11282,
+   "observed_HEAD_git_oid": "d48b975cb3e45045f3de4be1cf886fef089723aa",
+   "physical_matches_preimage": true
+  },
+  "plugins/ca/tools/farm-dist.test.ts": {
+   "sha256": "6aa430ff36c3e68cea975dd5321dc445219c06c61e49cf858189c4ef5fa2c257",
+   "bytes": 14030,
+   "observed_HEAD_git_oid": "bcf35beaa8632a8477d4d3e638a94bcb95451ed9",
+   "physical_matches_preimage": true
+  },
+  "plugins/ca/tools/farm-interruption.test.ts": {
+   "sha256": "e6b2346fd4bfdbadf58512421e455f65c35f7c1f7d0285cf820886da90dd56ef",
+   "bytes": 25190,
+   "observed_HEAD_git_oid": "459ccc5549d4299421c4d9a69cf7bd66ef55998c",
+   "physical_matches_preimage": true
+  },
+  "plugins/ca/tools/farm-recovery.test.ts": {
+   "sha256": "9b0350923cb56e10d98db848df37e9bf5fb6798e22f4a92d07a860c7306d9ead",
+   "bytes": 6130,
+   "observed_HEAD_git_oid": "da5380af783cc23d4d75d8b46605d3e6882c6f38",
+   "physical_matches_preimage": true
+  },
+  "plugins/ca/tools/farm-recovery.ts": {
+   "sha256": "1dbbbce56e7cda24d6016c7205f60b5bf758e24aed2a5a8132ff4ff336e49885",
+   "bytes": 8863,
+   "observed_HEAD_git_oid": "a967762c4acf905d5ed93c963efc0f1366400a51",
+   "physical_matches_preimage": true
+  },
+  "plugins/ca/tools/farm-registry-lock.test.ts": {
+   "sha256": "c8da7ba5ed87d0276869e7d61cd446c9ffe5e89a96e99e37e8c908d8eaabd9a8",
+   "bytes": 16784,
+   "observed_HEAD_git_oid": "16c1f28f8519d0a12a27e57210e4c4c914a25aff",
+   "physical_matches_preimage": true
+  },
+  "plugins/ca/tools/farm-surface.test.ts": {
+   "sha256": "75c654b5afedc1d10abe0a97402bad72d921745eb614b6bb9a80ce924b24ec00",
+   "bytes": 57838,
+   "observed_HEAD_git_oid": "fe8bfc257b76c1a2363451eeb91fc86448bf1bee",
+   "physical_matches_preimage": true
+  },
+  "plugins/ca/tools/farm.js": {
+   "sha256": "c91dc288df9efe5a2ccb29cc1f0a767a2962f33772150e727241cb3914866069",
+   "bytes": 152821,
+   "observed_HEAD_git_oid": "ddbf66f8d810ec7ca967e482cadb124dd369a5eb",
+   "physical_matches_preimage": true
+  },
+  "plugins/ca/tools/farm.test.ts": {
+   "sha256": "395ec94484631ee6ffdb66b57b6b8241201592db3b081b218128ddee9758a15e",
+   "bytes": 151633,
+   "observed_HEAD_git_oid": "22ce18a83c033f4c52a44f08d796b46eb63e99ed",
+   "physical_matches_preimage": true
+  },
+  "plugins/ca/tools/farm.ts": {
+   "sha256": "a3beba3ce291ca9908f679ee00a190b66b0c44a961296640fc13366ae9aceacc",
+   "bytes": 204519,
+   "observed_HEAD_git_oid": "e1bef569ef858b9733a881f191d113e87104f3fc",
+   "physical_matches_preimage": true
+  },
+  "plugins/ca/tools/farm.unit.test.ts": {
+   "sha256": "23ba125efe2493fe0839ec23120805b04866d472cc5705b78568788d7d2f151f",
+   "bytes": 213351,
+   "observed_HEAD_git_oid": "929a20df0f979a1abc126fe6e7158587ca20f1fe",
+   "physical_matches_preimage": true
+  },
+  "plugins/ca/tools/mutation.test.ts": {
+   "sha256": "5985942832195d81674ed6604208756643282d4c040cd7a7c2f6f2b7547fe28e",
+   "bytes": 52228,
+   "observed_HEAD_git_oid": "f69af2dd6d95cfd855c38be6abcef4574d472cb6",
+   "physical_matches_preimage": true
+  },
+  "plugins/ca/tools/mutation.ts": {
+   "sha256": "27e5548419430e94ce9b892f478c5cb32da84791c5a07dac01e4393dce01e90d",
+   "bytes": 27098,
+   "observed_HEAD_git_oid": "6ce489508ac8a2799e86fcf7473b7ff7c9bf79d5",
+   "physical_matches_preimage": true
+  },
+  "plugins/ca/tools/package-lock.json": {
+   "sha256": "81ac5a03620575fa6e1ccbe2343d59092a7d998aa0ed0419147ecc1353f5ab05",
+   "bytes": 64167,
+   "observed_HEAD_git_oid": "cc5c479d863abc631101fbc4af2b58f238bec2f0",
+   "physical_matches_preimage": true
+  },
+  "plugins/ca/tools/package.json": {
+   "sha256": "e36527e252fe0b559c93c8b0501eccf93d168297f4a5c2da4f2ce2aa709c9972",
+   "bytes": 1024,
+   "observed_HEAD_git_oid": "b208782f80b12d1f19275f77646c0bc00cef3fdb",
+   "physical_matches_preimage": true
+  },
+  "plugins/ca/tools/plan-contract.test.ts": {
+   "sha256": "45fd70c361ad9d9d73903eaa2ebf5fe053133e505f07a796da85e81d6950128a",
+   "bytes": 19000,
+   "observed_HEAD_git_oid": "64b6526ea04e1130c8bd0a842b5ea4df3c41949b",
+   "physical_matches_preimage": true
+  },
+  "plugins/ca/tools/plan.schema.json": {
+   "sha256": "a3895346ec5344049bc77ff92765640aa3ec2362bf30a7cb8f41a408b4b7c0a2",
+   "bytes": 6506,
+   "observed_HEAD_git_oid": "85ac835ac9d8bb25f1fd03b7330aaff61c3f322d",
+   "physical_matches_preimage": true
+  },
+  "plugins/ca/tools/redactor.test.ts": {
+   "sha256": "29fe4c9011694308fb2ee0944b40482d78d31149bee604b39ba69db4924eb46d",
+   "bytes": 16947,
+   "observed_HEAD_git_oid": "0f88b1d8b2493b1066dbc5f2213acd2c98781376",
+   "physical_matches_preimage": true
+  },
+  "plugins/ca/tools/redactor.ts": {
+   "sha256": "ef6344cdbb5578e525173852e08e2b410a02238a622e548488daff48b9e30f03",
+   "bytes": 6993,
+   "observed_HEAD_git_oid": "8554a5b1686fbf37424c6c090ad5cf82692e42e1",
+   "physical_matches_preimage": true
+  },
+  "plugins/ca/tools/state-contracts.test.ts": {
+   "sha256": "01e536885cc3d51c97fa378c0e8368cdf8454c73e1c1ea24af325b2eaeeace69",
+   "bytes": 10411,
+   "observed_HEAD_git_oid": "3ca4f5835f15b8c074efdd36e18e612a91296c5d",
+   "physical_matches_preimage": true
+  },
+  "plugins/ca/tools/tsconfig.json": {
+   "sha256": "8930059661c9e911148eb53c7b96506313ef87c66239856d8ec6500cf6a8aa2e",
+   "bytes": 421,
+   "observed_HEAD_git_oid": "5ad20627219e354fc791cad9f06536f5df58fa83",
+   "physical_matches_preimage": true
+  },
+  "plugins/ca/tools/vitest.config.ts": {
+   "sha256": "830ac6df0919d2caae0c7cdda948d931fa2d2bc7c6c270704d5bd43ce495edf0",
+   "bytes": 1152,
+   "observed_HEAD_git_oid": "369bd6e393940acce71bc50dc21058e22e0c0a22",
+   "physical_matches_preimage": true
+  },
+  "plugins/ca/tools/worktree-fs.test.ts": {
+   "sha256": "11379a2c4661f38320c4a6f7e41f152d038d8dbdbb09d1c008506be4d6f53dda",
+   "bytes": 24259,
+   "observed_HEAD_git_oid": "7fc3d94b35ffb1e3ecf268c8013f9b2c8878be00",
+   "physical_matches_preimage": true
+  },
+  "plugins/ca/tools/worktree-fs.ts": {
+   "sha256": "0b0f2af98c0f48cbbe4d3a53f5365c87c597d2fc0e702ca15a6af0e2ce618277",
+   "bytes": 8279,
+   "observed_HEAD_git_oid": "4911563fed16616b2b5251b5b062d76e5ebb4205",
+   "physical_matches_preimage": true
+  }
+ },
+ "limits": [
+  "Private source candidates are not staged or indexed; no invented candidate index OIDs, security marker, source epoch, CAS, task or ledger disposition.",
+  "Read-only review at observed ddd98dc1; all eight author preimages and all50 source-binding inputs remain exact despite disjoint guard commit.",
+  "Root alone may adopt, generate/stage, scan, run original gates, commit/push, or record security producer evidence. No main/publication/user-acceptance hold is released."
+ ],
+ "sealed_at_utc": "2026-11-17T12:13:14.039352+00:00"
+}

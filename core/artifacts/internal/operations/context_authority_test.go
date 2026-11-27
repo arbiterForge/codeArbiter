@@ -16,7 +16,13 @@ import (
 
 func contextFixture(t *testing.T) (string, object) {
 	t.Helper()
-	root := testutil.Root(t)
+	return contextFixtureAt(t, testutil.Root(t))
+}
+
+// contextFixtureAt builds the same ordinary CONTEXT request inside an existing
+// repository root, so composed tests can preview context next to a plan pair.
+func contextFixtureAt(t *testing.T, root string) (string, object) {
+	t.Helper()
 	if err := os.MkdirAll(filepath.Join(root, ".codearbiter"), 0755); err != nil {
 		t.Fatal(err)
 	}

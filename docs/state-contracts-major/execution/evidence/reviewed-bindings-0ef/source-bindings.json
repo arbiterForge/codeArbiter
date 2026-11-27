@@ -1,0 +1,82 @@
+[
+ {
+  "path": "site/scripts/execution-maps/atlas.ts",
+  "source_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+  "git_blob_oid": "4e0e5d5f108f03c4ac891f7692089e3b8cad22a6",
+  "git_sha256": "f97f98230aac423bc2c6c7a381c31d2ef330d8a4a640951860d7c08dd676d573",
+  "physical_sha256": "cd7c6fd358e734a61ce4b23ff2d4de8d3625cecadd802d030f3b1f0595ab2c62",
+  "physical_LF_normalized_equals_literal": true
+ },
+ {
+  "path": "site/scripts/execution-maps/atlas-model.ts",
+  "source_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+  "git_blob_oid": "b196c094223db9d46068447f1e1ea37ddd53ace4",
+  "git_sha256": "79d5c4e0ef690a7bb1b1ccaf11a79d412a0b91106c78c2d0db4fcdf8e2ada05a",
+  "physical_sha256": "79d5c4e0ef690a7bb1b1ccaf11a79d412a0b91106c78c2d0db4fcdf8e2ada05a",
+  "physical_LF_normalized_equals_literal": true
+ },
+ {
+  "path": "site/scripts/execution-maps/atlas-render.ts",
+  "source_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+  "git_blob_oid": "44b3c37236adb80fe42c7ee8e544ed1274d8bddc",
+  "git_sha256": "363afecc6eb88d96cd5101789ae593b5887c516ea8bde230e718102714c82e00",
+  "physical_sha256": "363afecc6eb88d96cd5101789ae593b5887c516ea8bde230e718102714c82e00",
+  "physical_LF_normalized_equals_literal": true
+ },
+ {
+  "path": "site/scripts/execution-maps/atlas-revalidation.test.ts",
+  "source_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+  "git_blob_oid": "de4126bf1d64ddbc0634fe9a723e35fc49eedbff",
+  "git_sha256": "ca614655adcf29116f1dac3953ce6d65fa06134a5e848fb6ef6c1084624ba7ba",
+  "physical_sha256": "4cdbc24af0fbc5726555984cc1fe43ce05c6a0b1e07c1666589e50ba5d22b9ec",
+  "physical_LF_normalized_equals_literal": true
+ },
+ {
+  "path": "core/surface/commands/init.md",
+  "source_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+  "git_blob_oid": "74749ae037e276cda66cc6f90addf2d0ad88e914",
+  "git_sha256": "2f7f9e13e5e7e69e7fa59c49c58ca6f590abf7bebc38e52ccc14b6aa46960a66",
+  "physical_sha256": "2f7f9e13e5e7e69e7fa59c49c58ca6f590abf7bebc38e52ccc14b6aa46960a66",
+  "physical_LF_normalized_equals_literal": true
+ },
+ {
+  "path": "core/pysrc/init-codearbiter.py",
+  "source_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+  "git_blob_oid": "f10d1d619733dbf1e7bf8fe9bbdae21e613e38c4",
+  "git_sha256": "641f0d04057ea22bff6fc39ce6fd95324901c4cc810617f4a783842cd31086b3",
+  "physical_sha256": "641f0d04057ea22bff6fc39ce6fd95324901c4cc810617f4a783842cd31086b3",
+  "physical_LF_normalized_equals_literal": true
+ },
+ {
+  "path": "core/pysrc/_taskboardlib.py",
+  "source_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+  "git_blob_oid": "85511a724f3de7a8cf84c069814d0605e72f3395",
+  "git_sha256": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+  "physical_sha256": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+  "physical_LF_normalized_equals_literal": true
+ },
+ {
+  "path": "core/pysrc/_taskexcludelib.py",
+  "source_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+  "git_blob_oid": "df2300611bfc7ca9aa945900d53c7b6c5032eda9",
+  "git_sha256": "dbe5ae4cbe72a2cdccfb4bdf78b4adbece144fed74703f2d2f403851ce3c39a0",
+  "physical_sha256": "dbe5ae4cbe72a2cdccfb4bdf78b4adbece144fed74703f2d2f403851ce3c39a0",
+  "physical_LF_normalized_equals_literal": true
+ },
+ {
+  "path": "core/pysrc/_bashguardlib.py",
+  "source_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+  "git_blob_oid": "383ad7d3ead2cb2cd924b2ce815cdcfd79b8317f",
+  "git_sha256": "972d23f99eb3603b871ac81261e8bb8a11ca4e5e7edc43942e58c077ad69bf52",
+  "physical_sha256": "972d23f99eb3603b871ac81261e8bb8a11ca4e5e7edc43942e58c077ad69bf52",
+  "physical_LF_normalized_equals_literal": true
+ },
+ {
+  "path": ".github/workflows/ci.yml",
+  "source_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+  "git_blob_oid": "72fc9901ebf5daf49460daea5b2b746b0ee3d652",
+  "git_sha256": "c0e8e0f0480ffb0f660c894347f26df49da423a300158a1566da702e5a0d8102",
+  "physical_sha256": "c0e8e0f0480ffb0f660c894347f26df49da423a300158a1566da702e5a0d8102",
+  "physical_LF_normalized_equals_literal": true
+ }
+]

@@ -1,0 +1,45 @@
+{
+  "argv": [
+    "C:\\Python314\\python.exe",
+    "-I",
+    "-S",
+    "-B",
+    "-X",
+    "utf8",
+    "-c",
+    "import sys,unittest;sys.path.insert(0,'C:\\\\Users\\\\brenn\\\\AppData\\\\Local\\\\Temp\\\\ca-pi-d07-owned-group-successor-espo5h8v\\\\candidate\\\\.github\\\\scripts');suite=unittest.defaultTestLoader.loadTestsFromNames(['test_pi_parent_tui_observation.OwnedProcessCleanupTests.test_exited_leader_open_pipe_still_cleans_its_owned_group']);r=unittest.TextTestRunner(verbosity=2).run(suite);raise SystemExit(0 if r.wasSuccessful() and not r.skipped else 1)"
+  ],
+  "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-d07-owned-group-successor-espo5h8v\\candidate",
+  "exit_code": 1,
+  "duration_seconds": 0.10890779999317601,
+  "env_keys": [
+    "APPDATA",
+    "COMSPEC",
+    "HOME",
+    "LOCALAPPDATA",
+    "PATH",
+    "PATHEXT",
+    "PYTHONDONTWRITEBYTECODE",
+    "PYTHONNOUSERSITE",
+    "PYTHONPYCACHEPREFIX",
+    "PYTHONUTF8",
+    "SYSTEMROOT",
+    "TEMP",
+    "TMP",
+    "USERPROFILE",
+    "WINDIR"
+  ],
+  "before": {
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-d07-owned-group-successor-espo5h8v\\candidate\\.github\\scripts\\pi_parent_tui_observation.py": "f50cc65ced586fb5b0c3eddc2c6fc78a637533a651d4515b027951e1c0b8dc02",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-d07-owned-group-successor-espo5h8v\\candidate\\.github\\scripts\\test_pi_parent_tui_observation.py": "9c8002b92b6855660b9d5fe6e66d088989e72b2a87278297cf3589d673b11f03",
+    "C:\\Python314\\python.exe": "03168c01b7b7491423350e82c26fee71f35b43694d1319d3c668bda6903a0c38"
+  },
+  "after": {
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-d07-owned-group-successor-espo5h8v\\candidate\\.github\\scripts\\pi_parent_tui_observation.py": "f50cc65ced586fb5b0c3eddc2c6fc78a637533a651d4515b027951e1c0b8dc02",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-d07-owned-group-successor-espo5h8v\\candidate\\.github\\scripts\\test_pi_parent_tui_observation.py": "9c8002b92b6855660b9d5fe6e66d088989e72b2a87278297cf3589d673b11f03",
+    "C:\\Python314\\python.exe": "03168c01b7b7491423350e82c26fee71f35b43694d1319d3c668bda6903a0c38"
+  },
+  "source_tool_stable": true,
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "f402cc1e6ee9e0d26cdcceb8567f6f6cd40c640ba1ce2fd9f898b5d12a7af4c6"
+}

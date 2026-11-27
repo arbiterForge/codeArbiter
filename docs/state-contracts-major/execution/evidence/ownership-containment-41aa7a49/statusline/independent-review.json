@@ -1,0 +1,225 @@
+{
+ "schema": "codearbiter.private-independent-review/1",
+ "verdict": "PASS",
+ "findings": [],
+ "reviewer": "/root/ci_repair_review",
+ "task_id": "WORK-2A68C3051D5A477EAC131493FF8A85AF",
+ "scope": "Five sealed private subjects only; no canonical/staged/host qualification verdict.",
+ "source_commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+ "observed_head": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+ "candidate": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\delivery.json",
+  "sha256": "ee832c0738f2e829d73429ead4ff396be13cffac8fd54f5dc18679daf4f786d0"
+ },
+ "patch_sha256": "106c82f922b607f7ecec30dd2e541e498abcee1bdaf2b5948919fe606a2a4284",
+ "full_subjects": [
+  {
+   "path": "core/pysrc/wire-statusline.py",
+   "preimage_sha256": "41c489a88d6a6f1be51806d9269013a124d0f0974830f248615201d2be0d8192",
+   "sha256": "aaed6ec530fd58778e77f30d81c9a8eb27d7dbd70068bb154ae825a385315a87",
+   "bytes": 22680,
+   "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\core\\pysrc\\wire-statusline.py",
+   "physical_preimage_sha256": "41c489a88d6a6f1be51806d9269013a124d0f0974830f248615201d2be0d8192",
+   "git_index_oid": null,
+   "binding": "SEALED_PRIVATE_CANDIDATE_NOT_STAGED"
+  },
+  {
+   "path": "plugins/ca/hooks/tests/test_wire_statusline.py",
+   "preimage_sha256": "979d8d33ac36396a0364500b1e94d418a81c7eacb80644bf2cb5df6f0e4d6ee9",
+   "sha256": "942dd9546ebdf77b1a0352b6adac9eed7f6e1e99d87c5e648bc839835a1cc72b",
+   "bytes": 61907,
+   "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\tests\\test_wire_statusline.py",
+   "physical_preimage_sha256": "979d8d33ac36396a0364500b1e94d418a81c7eacb80644bf2cb5df6f0e4d6ee9",
+   "git_index_oid": null,
+   "binding": "SEALED_PRIVATE_CANDIDATE_NOT_STAGED"
+  },
+  {
+   "path": "plugins/ca/hooks/wire-statusline.py",
+   "preimage_sha256": "41c489a88d6a6f1be51806d9269013a124d0f0974830f248615201d2be0d8192",
+   "sha256": "aaed6ec530fd58778e77f30d81c9a8eb27d7dbd70068bb154ae825a385315a87",
+   "bytes": 22680,
+   "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\wire-statusline.py",
+   "physical_preimage_sha256": "41c489a88d6a6f1be51806d9269013a124d0f0974830f248615201d2be0d8192",
+   "git_index_oid": null,
+   "binding": "SEALED_PRIVATE_CANDIDATE_NOT_STAGED"
+  },
+  {
+   "path": "plugins/ca-codex/hooks/wire-statusline.py",
+   "preimage_sha256": "41c489a88d6a6f1be51806d9269013a124d0f0974830f248615201d2be0d8192",
+   "sha256": "aaed6ec530fd58778e77f30d81c9a8eb27d7dbd70068bb154ae825a385315a87",
+   "bytes": 22680,
+   "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca-codex\\hooks\\wire-statusline.py",
+   "physical_preimage_sha256": "41c489a88d6a6f1be51806d9269013a124d0f0974830f248615201d2be0d8192",
+   "git_index_oid": null,
+   "binding": "SEALED_PRIVATE_CANDIDATE_NOT_STAGED"
+  },
+  {
+   "path": "plugins/ca-pi/hooks/wire-statusline.py",
+   "preimage_sha256": "41c489a88d6a6f1be51806d9269013a124d0f0974830f248615201d2be0d8192",
+   "sha256": "aaed6ec530fd58778e77f30d81c9a8eb27d7dbd70068bb154ae825a385315a87",
+   "bytes": 22680,
+   "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca-pi\\hooks\\wire-statusline.py",
+   "physical_preimage_sha256": "41c489a88d6a6f1be51806d9269013a124d0f0974830f248615201d2be0d8192",
+   "git_index_oid": null,
+   "binding": "SEALED_PRIVATE_CANDIDATE_NOT_STAGED"
+  }
+ ],
+ "checks": {
+  "sealed_records_verified": 23,
+  "all_four_production_copies_exact": true,
+  "changed_production_functions": [
+   "cmd_uninstall"
+  ],
+  "original_test_method_asts_preserved": 125,
+  "new_method_asts_equal_original_red": [
+   "TestUninstall.test_legacy_backup_without_owner_preserves_later_third_party_statusline",
+   "TestUninstall.test_legacy_owned_statusline_without_stamp_still_restores_backup",
+   "TestUninstall.test_stamped_owner_mismatch_preserves_recognizable_legacy_replacement"
+  ],
+  "retained_red": {
+   "tests_run": 3,
+   "failures": 12,
+   "errors": 0,
+   "skips": 0,
+   "successful": false,
+   "seconds": 0.11726040000212379
+  },
+  "retained_green": {
+   "tests_run": 49,
+   "failures": 0,
+   "errors": 0,
+   "skips": 0,
+   "successful": true,
+   "seconds": 0.6819016000081319
+  },
+  "no_test_replay": true
+ },
+ "assessment": [
+  "Explicit stamped-owner mismatch still takes precedence over legacy recognizers; current user replacements and removals cannot be restored over from stale backup.",
+  "Without current statusline ownership only stale private bookkeeping is removed; dict/string/null/absent user values and unrelated nested keys remain intact. Recognizable unstamped legacy source/cache commands retain existing restore behavior.",
+  "Spinner settlement remains independent and uses unchanged exact ownership/migration rules; the regression covers absent, still-owned and later-replaced spinners plus byte-idempotent repeated uninstall.",
+  "Narrow source delta adds no execution authority, runtime/library/host behavior, new persistence destination or secret transport. Existing save/rollback and conflicting spinner-format refusal semantics remain unchanged."
+ ],
+ "limits": [
+  "Read-only review and metadata/AST/hash verification only; no test/runtime/install/uninstall/config/provider/API/network execution.",
+  "Author actual49 focused controls and12-subcase RED reused; no claim of whole-module or real user-host lifecycle qualification.",
+  "Complete current32 security policy reused unchanged; Root owns canonical adoption, generators, staged gates and CI."
+ ],
+ "verified_records": [
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\original\\core\\pysrc\\wire-statusline.py",
+   "sha256": "41c489a88d6a6f1be51806d9269013a124d0f0974830f248615201d2be0d8192",
+   "bytes": 22421
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\core\\pysrc\\wire-statusline.py",
+   "sha256": "aaed6ec530fd58778e77f30d81c9a8eb27d7dbd70068bb154ae825a385315a87",
+   "bytes": 22680
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\original\\plugins\\ca\\hooks\\tests\\test_wire_statusline.py",
+   "sha256": "979d8d33ac36396a0364500b1e94d418a81c7eacb80644bf2cb5df6f0e4d6ee9",
+   "bytes": 58377
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\tests\\test_wire_statusline.py",
+   "sha256": "942dd9546ebdf77b1a0352b6adac9eed7f6e1e99d87c5e648bc839835a1cc72b",
+   "bytes": 61907
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\original\\plugins\\ca\\hooks\\wire-statusline.py",
+   "sha256": "41c489a88d6a6f1be51806d9269013a124d0f0974830f248615201d2be0d8192",
+   "bytes": 22421
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\wire-statusline.py",
+   "sha256": "aaed6ec530fd58778e77f30d81c9a8eb27d7dbd70068bb154ae825a385315a87",
+   "bytes": 22680
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\original\\plugins\\ca-codex\\hooks\\wire-statusline.py",
+   "sha256": "41c489a88d6a6f1be51806d9269013a124d0f0974830f248615201d2be0d8192",
+   "bytes": 22421
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca-codex\\hooks\\wire-statusline.py",
+   "sha256": "aaed6ec530fd58778e77f30d81c9a8eb27d7dbd70068bb154ae825a385315a87",
+   "bytes": 22680
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\original\\plugins\\ca-pi\\hooks\\wire-statusline.py",
+   "sha256": "41c489a88d6a6f1be51806d9269013a124d0f0974830f248615201d2be0d8192",
+   "bytes": 22421
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca-pi\\hooks\\wire-statusline.py",
+   "sha256": "aaed6ec530fd58778e77f30d81c9a8eb27d7dbd70068bb154ae825a385315a87",
+   "bytes": 22680
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\changes.patch",
+   "sha256": "106c82f922b607f7ecec30dd2e541e498abcee1bdaf2b5948919fe606a2a4284",
+   "bytes": 9422
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\preservation.json",
+   "sha256": "2191be4f134dae2fcf1cfd9340caf26aef9dad85a98b1afc0d6175278ad844e3",
+   "bytes": 26420
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\red-command.json",
+   "sha256": "86d70234395491b24f9e7b6a7cf61925c3e7352aa3730a6ddca42da6ece7d753",
+   "bytes": 1259
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\red-result.json",
+   "sha256": "2d9aea15386c624bfd4829300ff67800e3ae489fdb40f7f7a96d67ba754e5d64",
+   "bytes": 127
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\red.stderr",
+   "sha256": "d56ad7c9a0c0eee48d69b159e4b07307992c86f57f52415abf8ef3fcda1696eb",
+   "bytes": 20284
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\red.stdout",
+   "sha256": "8be678461c58a157987734f3937622457523e3f4204b19f26f69a56e83be92db",
+   "bytes": 1731
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\green-command.json",
+   "sha256": "cc9f8e16a75d0ceb8f9074f398d38407f362fd4b1f52eec993a82e5cad75325c",
+   "bytes": 1273
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\green-result.json",
+   "sha256": "5ce414cd54dcf9c648d5480be1718d356995be4798197d6f0bac772aeb54533f",
+   "bytes": 125
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\green.stderr",
+   "sha256": "dbe522fec59b24d37973dd1783837df68820661d57b840dab7ee125ba8da83f8",
+   "bytes": 7942
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\green.stdout",
+   "sha256": "12d7718e5f337b15522b3649474e58d566bc059972af4e3b5d7230fecb047065",
+   "bytes": 11646
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\source-input.txt",
+   "sha256": "05e52b43ec213658bffe424dfadb30b8acf2a80c4c92c70542f34b9d7000d92c",
+   "bytes": 9233
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\source-context.json",
+   "sha256": "46647faa91239b0289cc3194cd8401ba8e8b5ce3d9157de92decc6ec6c8ec197",
+   "bytes": 15198
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\source-config.json",
+   "sha256": "7b67429381c1966f8c0c90668a9dd788cd6060d6d0131aabe5ec60683b848455",
+   "bytes": 2937
+  }
+ ]
+}

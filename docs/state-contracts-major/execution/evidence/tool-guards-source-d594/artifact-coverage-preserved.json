@@ -1,0 +1,142 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "/root/packaging_site_tools: finite guard/effect/retry immutable source inspection"
+  },
+  "inputs": {
+    "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+    "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+    "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+    "tools/artifact-coverage.py": "d3a4168bee2f23c60721304d787ea73425b31ae9e819cdfb1d01993a8e799287"
+  },
+  "disposition_ids": [
+    "disposition:transitions:T02:01",
+    "disposition:transitions:T02:03",
+    "disposition:transitions:T02:04",
+    "disposition:transitions:T02:05",
+    "disposition:transitions:T02:06",
+    "disposition:transitions:T02:07",
+    "disposition:transitions:T02:08",
+    "disposition:transitions:T02:09"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/tool-guards-source-d594/inspection.json",
+      "sha256": "fd288169463c568339689052c03f8edb17aac28bae27f80fc82cb02ac3d41687"
+    }
+  ],
+  "scope": "Source-only bounded coverage collector/summarizer control flow. Source identity is a physical whole-module map, not an immutable Git or authenticated execution proof. No Go command, integration exercise, native/hosted qualification, achieved percentage or platform coverage is observed; caller supplies threshold.",
+  "semantic_mapping": [
+    {
+      "cell": "disposition:transitions:T02:01",
+      "witnesses": [
+        {
+          "path": "tools/artifact-coverage.py",
+          "start": 94,
+          "end": 139,
+          "file_sha256": "d3a4168bee2f23c60721304d787ea73425b31ae9e819cdfb1d01993a8e799287"
+        }
+      ],
+      "semantic_assessment": "Collect checks target equals supported local Go/host platform and expected platform, refuses output inside module or an existing output, hashes bounded regular module bytes excluding .git and discovers package inventory before creating output. Offline Go environment and fixed atomic coverpkg command are constructed; no run is made by this inspection.",
+      "limits": "Source-only bounded coverage collector/summarizer control flow. Source identity is a physical whole-module map, not an immutable Git or authenticated execution proof. No Go command, integration exercise, native/hosted qualification, achieved percentage or platform coverage is observed; caller supplies threshold."
+    },
+    {
+      "cell": "disposition:transitions:T02:03",
+      "witnesses": [
+        {
+          "path": "tools/artifact-coverage.py",
+          "start": 197,
+          "end": 240,
+          "file_sha256": "d3a4168bee2f23c60721304d787ea73425b31ae9e819cdfb1d01993a8e799287"
+        }
+      ],
+      "semantic_assessment": "Successful unit output must validate atomic profile/source bounds. Optional integration profiles require exact sidecar shape, source/platform/toolchain/profile digest, and all source bytes are rehashed before exclusive metadata.json is written last. Foreign/malformed/stale data or source drift raises; earlier partial owned output can remain without completed metadata.",
+      "limits": "Source-only bounded coverage collector/summarizer control flow. Source identity is a physical whole-module map, not an immutable Git or authenticated execution proof. No Go command, integration exercise, native/hosted qualification, achieved percentage or platform coverage is observed; caller supplies threshold."
+    },
+    {
+      "cell": "disposition:transitions:T02:04",
+      "witnesses": [
+        {
+          "path": "tools/artifact-coverage.py",
+          "start": 184,
+          "end": 194,
+          "file_sha256": "d3a4168bee2f23c60721304d787ea73425b31ae9e819cdfb1d01993a8e799287"
+        }
+      ],
+      "semantic_assessment": "Integration sidecar creation compares original source identity to current whole module, local native platform/toolchain and valid atomic profile, then returns bound profile SHA and identity. Digests are unkeyed consistency checks; actual prior binary exercise is caller responsibility.",
+      "limits": "Source-only bounded coverage collector/summarizer control flow. Source identity is a physical whole-module map, not an immutable Git or authenticated execution proof. No Go command, integration exercise, native/hosted qualification, achieved percentage or platform coverage is observed; caller supplies threshold."
+    },
+    {
+      "cell": "disposition:transitions:T02:05",
+      "witnesses": [
+        {
+          "path": "tools/artifact-coverage.py",
+          "start": 250,
+          "end": 326,
+          "file_sha256": "d3a4168bee2f23c60721304d787ea73425b31ae9e819cdfb1d01993a8e799287"
+        }
+      ],
+      "semantic_assessment": "Summarize requires unique supported expected platforms, finite threshold, exact source/toolchain/packages/unit command, exact unit/integration file inventory and digest, valid bounded profiles and shared instrumentation layouts. Statement-count conflicts and final source drift refuse. Covered blocks are unioned by hit, not suite totals.",
+      "limits": "Source-only bounded coverage collector/summarizer control flow. Source identity is a physical whole-module map, not an immutable Git or authenticated execution proof. No Go command, integration exercise, native/hosted qualification, achieved percentage or platform coverage is observed; caller supplies threshold."
+    },
+    {
+      "cell": "disposition:transitions:T02:06",
+      "witnesses": [
+        {
+          "path": "tools/artifact-coverage.py",
+          "start": 250,
+          "end": 326,
+          "file_sha256": "d3a4168bee2f23c60721304d787ea73425b31ae9e819cdfb1d01993a8e799287"
+        }
+      ],
+      "semantic_assessment": "After profile/identity validation, missing expected platform yields PARTIAL with exact present/missing lists; CLI accepts only COLLECTED or COMPLETE and therefore returns nonzero. Absent platform contributes no claimed execution.",
+      "limits": "Source-only bounded coverage collector/summarizer control flow. Source identity is a physical whole-module map, not an immutable Git or authenticated execution proof. No Go command, integration exercise, native/hosted qualification, achieved percentage or platform coverage is observed; caller supplies threshold."
+    },
+    {
+      "cell": "disposition:transitions:T02:07",
+      "witnesses": [
+        {
+          "path": "tools/artifact-coverage.py",
+          "start": 250,
+          "end": 326,
+          "file_sha256": "d3a4168bee2f23c60721304d787ea73425b31ae9e819cdfb1d01993a8e799287"
+        }
+      ],
+      "semantic_assessment": "With platform population complete, require-integration checks each executable package has a covered integration block and emits MISSING_INTEGRATION plus missing platform details; unit-only data cannot satisfy this branch and CLI returns nonzero.",
+      "limits": "Source-only bounded coverage collector/summarizer control flow. Source identity is a physical whole-module map, not an immutable Git or authenticated execution proof. No Go command, integration exercise, native/hosted qualification, achieved percentage or platform coverage is observed; caller supplies threshold."
+    },
+    {
+      "cell": "disposition:transitions:T02:08",
+      "witnesses": [
+        {
+          "path": "tools/artifact-coverage.py",
+          "start": 250,
+          "end": 326,
+          "file_sha256": "d3a4168bee2f23c60721304d787ea73425b31ae9e819cdfb1d01993a8e799287"
+        }
+      ],
+      "semantic_assessment": "Only after required populations complete, achieved statement percentage is compared to the caller finite minimum; lower value yields BELOW_MINIMUM and nonzero CLI. No built-in workflow threshold or execution is asserted.",
+      "limits": "Source-only bounded coverage collector/summarizer control flow. Source identity is a physical whole-module map, not an immutable Git or authenticated execution proof. No Go command, integration exercise, native/hosted qualification, achieved percentage or platform coverage is observed; caller supplies threshold."
+    },
+    {
+      "cell": "disposition:transitions:T02:09",
+      "witnesses": [
+        {
+          "path": "tools/artifact-coverage.py",
+          "start": 250,
+          "end": 358,
+          "file_sha256": "d3a4168bee2f23c60721304d787ea73425b31ae9e819cdfb1d01993a8e799287"
+        }
+      ],
+      "semantic_assessment": "Complete requested populations and absent/met threshold yield COMPLETE with statement totals/coverage and explicit lines/branches not_measured. CLI returns zero only this/collect success. Report format is a metric, not a native qualification receipt.",
+      "limits": "Source-only bounded coverage collector/summarizer control flow. Source identity is a physical whole-module map, not an immutable Git or authenticated execution proof. No Go command, integration exercise, native/hosted qualification, achieved percentage or platform coverage is observed; caller supplies threshold."
+    }
+  ],
+  "excluded_cells": [
+    "T02:02"
+  ]
+}

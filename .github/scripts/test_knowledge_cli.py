@@ -7,6 +7,7 @@ unknowns, relevant lookup, explicit Markdown conversion, and idempotent promotio
 """
 
 import json
+import importlib.util
 import os
 from pathlib import Path
 import subprocess
@@ -15,11 +16,204 @@ import tempfile
 import unittest
 
 from test_artifact_authoring import build_installation
+from unittest import mock
 
 CONTEXT = ".codearbiter/" + "CONTEXT.md"
 
 
+class KnowledgeFreshnessScope(unittest.TestCase):
+    """Real Git changes through the advisory owner; native records are inert."""
+
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory(prefix="ca-knowledge-scope-")
+        self.addCleanup(self.temp.cleanup)
+        self.root = Path(self.temp.name).resolve()
+        self.source = self.root / "src/pkg/service.py"
+        self.source.parent.mkdir(parents=True)
+        self.source.write_text("version = 1\n", encoding="utf-8")
+        self.git("init", "-q")
+        self.git("add", "--", "src/pkg/service.py")
+        self.git("commit", "-qm", "baseline")
+        self.baseline = self.git("rev-parse", "HEAD").strip()
+        spec = importlib.util.spec_from_file_location(
+            "knowledge_freshness_under_test", Path(__file__).resolve().parents[2] / "core/pysrc/knowledge.py")
+        self.reader = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(self.reader)
+        self.records = [
+            {"id": identity, "title": identity, "scope": {"paths": paths}, "source_refs": refs}
+            for identity, paths, refs in [
+                ("DIRECTORY", ["src/pkg"], []),
+                ("EXACT", ["src/pkg/service.py"], []),
+                ("GLOB", ["src/pkg/*.py"], []),
+                ("RECURSIVE", ["src/pkg/**"], []),
+                ("SIBLING", ["src/pkg-extra"], []),
+                ("UNSCOPED", [], []),
+                ("CITED", [], ["SRC-SERVICE"]),
+            ]
+        ]
+
+    def git(self, *args):
+        result = subprocess.run([
+            "git", "-c", "core.hooksPath=" + os.devnull,
+            "-c", "commit.gpgsign=false", "-c", "core.fsmonitor=false",
+            "-c", "core.autocrlf=false", "-c", "user.name=Owned fixture",
+            "-c", "user.email=fixture@example.invalid", *args,
+        ], cwd=self.root, capture_output=True, encoding="utf-8", timeout=15)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        return result.stdout
+
+    def report(self):
+        def records(_client, _doc, collection="records"):
+            if collection == "sources":
+                return [{"id": "SRC-SERVICE", "locator": "src/pkg/service.py"}]
+            return self.records
+        with mock.patch.object(self.reader, "_identity", return_value={"revision": 1}), \
+                mock.patch.object(self.reader, "_baseline", return_value=self.baseline), \
+                mock.patch.object(self.reader, "_records", side_effect=records):
+            report = self.reader._stale(object(), str(self.root), ["code-map"])
+        return report["documents"][0]
+
+    def hits(self):
+        return {row["record"]: row["changed_paths"] for row in self.report()["stale"]}
+
+    def test_directory_scope_detects_committed_descendant_without_rebaseline(self):
+        self.source.write_text("version = 2\n", encoding="utf-8")
+        self.git("add", "--", "src/pkg/service.py")
+        self.git("commit", "-qm", "source changed")
+        self.assertEqual(self.hits(), {key: ["src/pkg/service.py"] for key in
+            ("DIRECTORY", "EXACT", "GLOB", "RECURSIVE", "CITED")})
+        self.assertEqual(self.report()["baseline"], self.baseline)
+
+    def test_directory_scope_detects_unstaged_and_staged_descendant(self):
+        self.source.write_text("version = 2\n", encoding="utf-8")
+        for staged in (False, True):
+            with self.subTest(staged=staged):
+                if staged:
+                    self.git("add", "--", "src/pkg/service.py")
+                self.assertEqual(self.hits()["DIRECTORY"], ["src/pkg/service.py"])
+
+    def test_untracked_and_added_nested_member_respect_glob_depth(self):
+        added = self.root / "src/pkg/deep/new.py"
+        added.parent.mkdir()
+        added.write_text("new = True\n", encoding="utf-8")
+        for staged in (False, True):
+            with self.subTest(staged=staged):
+                if staged:
+                    self.git("add", "--", "src/pkg/deep/new.py")
+                self.assertEqual(self.hits(), {key: ["src/pkg/deep/new.py"] for key in
+                    ("DIRECTORY", "RECURSIVE")})
+
+    def test_deleted_descendant_still_matches_directory(self):
+        self.source.unlink()
+        self.assertEqual(self.hits()["DIRECTORY"], ["src/pkg/service.py"])
+        self.assertEqual(self.hits()["CITED"], ["src/pkg/service.py"])
+
+    def test_rename_outside_scope_retains_old_directory_path(self):
+        (self.root / "elsewhere").mkdir()
+        self.git("mv", "src/pkg/service.py", "elsewhere/new.py")
+        self.assertEqual(self.hits()["DIRECTORY"], ["src/pkg/service.py"])
+        self.assertEqual(self.hits()["EXACT"], ["src/pkg/service.py"])
+
+    def test_sibling_prefix_does_not_match_directory(self):
+        other = self.root / "src/pkg-extra/new.py"
+        other.parent.mkdir()
+        other.write_text("unrelated = True\n", encoding="utf-8")
+        self.assertEqual(self.hits(), {"SIBLING": ["src/pkg-extra/new.py"]})
+
+    def test_unchanged_sources_leave_all_records_unlisted(self):
+        self.assertEqual(self.hits(), {})
+
+    def test_missing_baseline_remains_unknown_without_source_enumeration(self):
+        self.baseline = None
+        report = self.report()
+        self.assertIsNone(report["baseline"])
+        self.assertNotIn("stale", report)
+        self.assertIn("no baseline", report["note"])
+
+
 class KnowledgeCli(unittest.TestCase):
+    def test_current_reader_refuses_a_real_native_edit_during_record_enumeration(self):
+        from test_artifact_authoring import ArtifactClient
+        self.scaffold()
+        self.knowledge("create-missing")
+        record = {"type": "constraint", "title": "First policy", "statement": "first policy",
+                  "basis": "proposed", "scope": {"paths": []}, "related_refs": [], "source_refs": []}
+        self.knowledge("add", "security-controls", "--record", json.dumps(record))
+        spec = importlib.util.spec_from_file_location("installed_knowledge_reader", self.plugin / "hooks/knowledge.py")
+        reader = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(reader)
+        actual = ArtifactClient(self.root, self.installation)
+        owner = self
+        class ConcurrentEdit:
+            def call(self, *args, **kwargs):
+                return actual.call(*args, **kwargs)
+            def outline(self, artifact):
+                observed = list(actual.outline(artifact))
+                added = dict(record, title="Concurrent policy", statement="concurrent policy")
+                owner.knowledge("add", "security-controls", "--record", json.dumps(added))
+                return iter(observed)
+        with self.assertRaisesRegex(ValueError, "changed while enumerating"):
+            reader.current_records(self.root, "security-controls", client=ConcurrentEdit())
+        self.assertEqual({r["statement"] for r in reader.current_records(
+            self.root, "security-controls", client=actual)}, {"first policy", "concurrent policy"})
+
+    def test_current_text_reader_uses_active_native_records_and_preserves_legacy_reads(self):
+        self.scaffold()
+        self.knowledge("create-missing")
+        note = {"title": "Retained history", "text": "old policy must not revive",
+                "basis": "source-observed", "origin": None}
+        self.knowledge("add", "security-controls", "--collection", "notes", "--record", json.dumps(note))
+        constraint = {"type": "constraint", "title": "Current policy", "statement": "current policy",
+                      "basis": "proposed", "scope": {"paths": []}, "related_refs": [], "source_refs": []}
+        added = self.knowledge("add", "security-controls", "--record", json.dumps(constraint))
+        result = self.knowledge("read", "security-controls", "--text")
+        self.assertEqual((result["format"], result["text"]), ("html", "current policy"))
+        self.knowledge("retire", "security-controls", added["record"], "--reason", "Withdrawn")
+        refused = self.knowledge("read", "security-controls", "--text", success=False)
+        self.assertFalse(refused["ok"])
+        self.assertIn("no readable current records", refused["error"])
+        state = self.root / ".codearbiter"
+        (state / "CONTEXT.md").write_text("---\narbiter: enabled\n---\nLegacy project\n", encoding="utf-8")
+        (state / "security-controls.md").write_text("Legacy policy\n", encoding="utf-8")
+        result = self.knowledge("read", "security-controls", "--text")
+        self.assertEqual((result["format"], result["text"]), ("markdown", "Legacy policy\n"))
+
+    def test_command_checks_cannot_use_narrative_examples_after_retirement(self):
+        from project_knowledge import context_text
+        from test_artifact_authoring import ArtifactClient
+        self.scaffold()
+        self.knowledge("create-missing")
+        fact = {"type": "fact", "title": "Narrative example", "statement": "python prior-test.py",
+                "basis": "proposed", "scope": {"paths": []}, "related_refs": [], "source_refs": []}
+        self.knowledge("add", "tech-stack", "--record", json.dumps(fact))
+        command = {**fact, "type": "command", "title": "Current test", "statement": "Declared test",
+                   "command": {"argv": ["python", "current-test.py"], "cwd": ".",
+                               "purpose": "test", "run_state": "unrun"}}
+        added = self.knowledge("add", "tech-stack", "--record", json.dumps(command))
+        client = ArtifactClient(self.root, self.installation)
+        self.assertEqual(context_text("tech-stack", root=self.root, client=client, commands_only=True),
+                         "python current-test.py")
+        self.knowledge("retire", "tech-stack", added["record"], "--reason", "Command withdrawn")
+        self.assertEqual(context_text("tech-stack", root=self.root, client=client, commands_only=True), "")
+
+    def test_conformance_reads_current_records_without_reviving_historical_notes(self):
+        from project_knowledge import context_text
+        from test_artifact_authoring import ArtifactClient
+        self.scaffold()
+        self.knowledge("create-missing")
+        note = {"title": "Prior policy", "text": "old immutable policy",
+                "basis": "source-observed", "origin": None}
+        self.knowledge("add", "security-controls", "--collection", "notes", "--record", json.dumps(note))
+        constraint = {"type": "constraint", "title": "Current policy", "statement": "current policy",
+                      "basis": "proposed", "scope": {"paths": []},
+                      "related_refs": [], "source_refs": []}
+        added = self.knowledge("add", "security-controls", "--record", json.dumps(constraint))
+        client = ArtifactClient(self.root, self.installation)
+        self.assertEqual(context_text("security-controls", root=self.root, client=client), "current policy")
+        self.knowledge("retire", "security-controls", added["record"], "--reason", "Policy withdrawn")
+        with self.assertRaisesRegex(ValueError, "no readable current records"):
+            context_text("security-controls", root=self.root, client=client)
+
     @classmethod
     def setUpClass(cls):
         cls.owner, cls.installation = build_installation()

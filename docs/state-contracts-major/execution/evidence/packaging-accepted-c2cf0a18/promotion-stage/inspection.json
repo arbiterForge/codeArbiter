@@ -1,0 +1,106 @@
+{
+  "schema": "codearbiter.finite-packaging-source-inspection/1",
+  "source_commit": "c2cf0a18b020ef426d7df94f70fe9770fa102c32",
+  "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "records": [
+    {
+      "transition_id": "S69:01",
+      "frozen_row_sha256": "1b5282f3ead8cab093e9ea4c17de3281818a8b8b94e216ea87ee442288f6a895",
+      "assessment": "Source/workflow/run shape and exact independent receipt count precede collection. Shared payload verifier checks supported identity/native_tested/magic/hash; architecture parser checks ELF/PE/MachO machine. Receipt real path and independence/closed shape precede exact source/run/job/platform/version/protocol/schema/native-test equality. Trusted context is supplied by authenticated caller, not authenticated by these labels alone."
+    },
+    {
+      "transition_id": "S69:02",
+      "frozen_row_sha256": "33396b48092bbf40db1b28f914b9675b50355015e4571120b864347badb7a36b",
+      "assessment": "Duplicate platforms refuse; exact required set rejects missing/extra. Immutable binary and receipt bytes/digests collected before output. Optional finite context checks module/tool/source/subtest/exit0/hash identities. No candidate or receipt is actually admitted in this inspection."
+    },
+    {
+      "transition_id": "S69:03",
+      "frozen_row_sha256": "4cd0a61523a2aca172bb79e61ae73688d59d89fd6094b120a9c50866e090a951",
+      "assessment": "Common version/protocol/schema identity precedes deterministic five-key manifest; optional sixth context_qualification only from validated context. Shared canonical decoder validates final shape before serialization."
+    },
+    {
+      "transition_id": "S69:04",
+      "frozen_row_sha256": "8b8bae09ff82c365d27c8e9b4aaf45a295e3f2b5f6cd1b7d739279b30ccb081a",
+      "assessment": "Canonical descriptors derive exact host plugin paths. Pinned create-only stage validates real parent/path identity; identical release byte string and binary dict supplied to every host writer. POSIX directory descriptors and Windows real-directory/reparse/final-handle checks preserve staging boundary. No actual OS write proof here."
+    },
+    {
+      "transition_id": "S69:05",
+      "frozen_row_sha256": "c5c17d491b26cd4c50080cc23b2bf29da0af20c14608bb16a96f1f6c06605dbc",
+      "assessment": "Promotion record binds source/workflow/run/version/protocol/schema, host map, payload digests and receipt/context hashes. All host payload writes precede artifact-promotion.json last, then final pinned-stage verification. No multi-file atomic overlay asserted."
+    },
+    {
+      "transition_id": "S69:06",
+      "frozen_row_sha256": "96647d12aba302c58f08c5e20865d93012ea0986ccdd540afdf2c9f51dfb0eb8",
+      "assessment": "Existing/linked output refuses; write/fsync/path/identity errors escape. POSIX finally closes owned fds, Windows finally closes acquired handles. Failed partial create-only directory can remain and cannot be silently reused. Fresh owned output after inspection, no automatic rollback/retry/source-checkout activation/PATH/network fallback."
+    }
+  ],
+  "source_spans": {
+    "tools/build-host-packages.py": {
+      "_artifact_candidate": [
+        131,
+        154
+      ],
+      "_artifact_qualification": [
+        157,
+        173
+      ],
+      "_context_qualification": [
+        176,
+        233
+      ],
+      "_binary_matches_platform": [
+        236,
+        259
+      ],
+      "_UnixArtifactStage": [
+        271,
+        333
+      ],
+      "_WindowsArtifactStage": [
+        336,
+        380
+      ],
+      "_verify_windows_handle_path": [
+        392,
+        405
+      ],
+      "_pin_windows_directory": [
+        408,
+        432
+      ],
+      "_pinned_artifact_stage": [
+        440,
+        483
+      ],
+      "stage_artifact_host_payloads": [
+        486,
+        645
+      ]
+    },
+    "tools/install-artifact-payload.py": {
+      "read_regular": [
+        42,
+        52
+      ],
+      "load_payload": [
+        71,
+        115
+      ]
+    }
+  },
+  "machine_coverage": {
+    "S69": {
+      "all_frozen_edges": [
+        "S69:01",
+        "S69:02",
+        "S69:03",
+        "S69:04",
+        "S69:05",
+        "S69:06"
+      ],
+      "all_six_guard_effect_retry_clauses_inspected": true,
+      "scope": "Whole finite conditional source machine only."
+    }
+  },
+  "dependency_review": "Current immutable payload/manifest readers, descriptor owner, finite context/source/module hash owner and pinned staging inspected. No supplied candidate/tool/module/receipt facts inferred authentic. host_default_enabled result is release metadata: no checkout/plugin enable effect is performed."
+}

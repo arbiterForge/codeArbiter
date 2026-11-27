@@ -1,0 +1,345 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "Bounded current instruction/function-clause conformance review; no runtime/provider/host-session result inferred."
+  },
+  "inputs": {
+    "plugins/ca-sandbox/skills/INDEX.md": "c1479a36e6c897874dbc1c0991b33226664154545a2108d10111a57d269e7739",
+    "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md": "0601714006da08b047514a1e76c83507f34a80c688b2afa615a1be84866133f4",
+    "plugins/ca-sandbox/commands/sandbox.md": "0da6140363fad993f69641d3d83571c5a64ecf8ac17cab9d4d2f4b6165e8fa02",
+    "plugins/ca-sandbox/commands/sandbox-shell.md": "e604105b72360e21271342ce2cfafa6c0c242291fe1eb87a92147b6b77e36d77",
+    "plugins/ca-sandbox/commands/sandbox-exec.md": "343d5f2f0bb4458e4eec6e0cfe0ebc36354174166f5c3aa2ac378c6acafcbbd9",
+    "plugins/ca-sandbox/commands/sandbox-cp.md": "5e1d09903a97fa7905bd23f34122a15ac7c65998301dcdc85ffd5d0734580df4",
+    "plugins/ca-sandbox/commands/sandbox-destroy.md": "1bbfb59fdfdc63881552f64ea4e1227a82349ddc99818b71ed37af2c9e8e1eb4"
+  },
+  "disposition_ids": [
+    "disposition:transitions:SW01:01",
+    "disposition:transitions:SW01:02",
+    "disposition:transitions:SW01:03",
+    "disposition:transitions:SW01:04",
+    "disposition:transitions:SW01:05",
+    "disposition:transitions:SW01:06",
+    "disposition:transitions:SW01:07",
+    "disposition:transitions:SW01:08",
+    "disposition:transitions:SW01:09",
+    "disposition:transitions:SW01:10",
+    "disposition:transitions:SW01:11",
+    "disposition:transitions:SW01:12",
+    "disposition:transitions:SW01:13",
+    "disposition:transitions:SW01:14",
+    "disposition:transitions:SW01:15",
+    "disposition:transitions:SW01:17",
+    "disposition:transitions:SW01:18",
+    "disposition:transitions:SW01:19",
+    "disposition:transitions:SW01:20",
+    "disposition:transitions:SW01:21",
+    "disposition:transitions:SW01:22",
+    "disposition:transitions:SW01:23",
+    "disposition:transitions:SW01:24"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/raw/selected-named-observations.json",
+      "sha256": "9ba86136b2d49dc599cacb783f37420d0a40c97d65c9b4d71750db10c62095d4"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/execution-origins.json",
+      "sha256": "c9b9e4e096ebaf6d203a34af09fa4dc4cdfa5f7e52fdc96fe3b048e46af66ac3"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/source-clause-catalog.json",
+      "sha256": "444ae0dd6cc088826de5802d552220b80bb40c2ea3be1953910a5390451d1a8a"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/input-cones.json",
+      "sha256": "ae0a3897b943158cca7b3079573e24559ab4d17c1422235968335c1704c51c0e"
+    }
+  ],
+  "semantic_mapping": [
+    {
+      "cell": "disposition:transitions:SW01:01",
+      "frozen_contract_sha256": "a7efafe893e74a0c6ef6bf5b6a390588f7403f4a2597dd9f860f2bbbe8d6cd9a",
+      "event": "load command and lifecycle owner",
+      "guard": "one of five namespaced sandbox commands invoked",
+      "current_contract_review": "Lazy catalog routing to the invoked command/lifecycle owner is preserved. The omitted catalog claims were corrected in exact proposed41273c bytes, later literally committed ae237d; no consumer phase execution is inferred.",
+      "assertion_refs": [],
+      "source_paths": [
+        "plugins/ca-sandbox/skills/INDEX.md"
+      ],
+      "classification": "REVIEWED_SOURCE_CONFORMANCE_ONLY"
+    },
+    {
+      "cell": "disposition:transitions:SW01:02",
+      "frozen_contract_sha256": "a69ac7e714a0a6e838e7c94069903a1398622eb25450f2fdfb3e6a1ffbc3d370",
+      "event": "inspect required driver sources",
+      "guard": "mount/run/network source files accessible at plugin root",
+      "current_contract_review": "REMAPPED D04: packaged prerequisites replace mandatory consumer-readable maintainer sources; do not manufacture consumer ADRs or require source checkout. Driver guard definitions remain source-backed.",
+      "assertion_refs": [],
+      "source_paths": [
+        "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md"
+      ],
+      "classification": "REVIEWED_SOURCE_CONFORMANCE_ONLY"
+    },
+    {
+      "cell": "disposition:transitions:SW01:03",
+      "frozen_contract_sha256": "33259e92401374cb15c1b3e7012415d5b4451329c57df68e03355577ecc1d04d",
+      "event": "Docker admission",
+      "guard": "docker info returns nonzero",
+      "current_contract_review": "A reachable Docker daemon is an actual prerequisite; unavailable observation is not an empty/available registry.",
+      "assertion_refs": [],
+      "source_paths": [
+        "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md"
+      ],
+      "classification": "REVIEWED_SOURCE_CONFORMANCE_ONLY"
+    },
+    {
+      "cell": "disposition:transitions:SW01:04",
+      "frozen_contract_sha256": "d2de3f5393279f1cef5fd5d3b38926e660cb3c7bc2059899f6ab2622f0c4b4c9",
+      "event": "nixpacks prerequisite evaluation",
+      "guard": "nixpacks absent",
+      "current_contract_review": "REMAPPED D01: absent already-installed Nixpacks selects supported Node/Python fallback, with effective builder reported; no runtime installer or unavailable Go/Rust fallback is implied.",
+      "assertion_refs": [],
+      "source_paths": [
+        "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md"
+      ],
+      "classification": "REVIEWED_SOURCE_CONFORMANCE_ONLY"
+    },
+    {
+      "cell": "disposition:transitions:SW01:05",
+      "frozen_contract_sha256": "6f5c9bb66ebc3d3eab5045a63f1b65891498651cff6aab1352a82db08fbf35c5",
+      "event": "missing source",
+      "guard": "create request has no URL/local path",
+      "current_contract_review": "Create requires the explicitly supplied network repository URL; current grammar has no URL-guessing/default source. Catalog argument preserves that prerequisite, not an observed dialogue.",
+      "assertion_refs": [],
+      "source_paths": [
+        "plugins/ca-sandbox/commands/sandbox.md"
+      ],
+      "classification": "REVIEWED_SOURCE_CONFORMANCE_ONLY"
+    },
+    {
+      "cell": "disposition:transitions:SW01:06",
+      "frozen_contract_sha256": "d3aee6b77ddbcb855f30a06ec7c2a3bca0317d1939da1764637cde25d5faca90",
+      "event": "select ordinary policy",
+      "guard": "named source and reachable Docker; no user policy selected",
+      "current_contract_review": "REMAPPED D03: ordinary requested policy names are reported separately from effective offline runtime; clone/build may fetch remotely.",
+      "assertion_refs": [],
+      "source_paths": [
+        "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md"
+      ],
+      "classification": "REVIEWED_SOURCE_CONFORMANCE_ONLY"
+    },
+    {
+      "cell": "disposition:transitions:SW01:07",
+      "frozen_contract_sha256": "713eb06be909b887953f3d6c206743bfb73be5b132ab4b1e0eb0a0d425e9b271",
+      "event": "select allowlist",
+      "guard": "explicit selection and user acknowledges experimental status",
+      "current_contract_review": "REMAPPED D03: helper allowlist is experimental and not integrated into ordinary create; no new acknowledgement ceremony can manufacture runtime support.",
+      "assertion_refs": [],
+      "source_paths": [
+        "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md"
+      ],
+      "classification": "REVIEWED_SOURCE_CONFORMANCE_ONLY"
+    },
+    {
+      "cell": "disposition:transitions:SW01:08",
+      "frozen_contract_sha256": "ef179e46bda063d0bb52966ea764366435ef1c09d3d7c85b6049bf3c48b31073",
+      "event": "--with-claude requested",
+      "guard": "explicit option; never ordinary default",
+      "current_contract_review": "Historical with-Claude intent routes to separate supported token-only skill/entrypoint; ordinary create has no --with-claude flag and no implicit token launch.",
+      "assertion_refs": [],
+      "source_paths": [
+        "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md"
+      ],
+      "classification": "REVIEWED_SOURCE_CONFORMANCE_ONLY"
+    },
+    {
+      "cell": "disposition:transitions:SW01:09",
+      "frozen_contract_sha256": "fa82718a9b6e03dec5d61cc27169248edf8618e59baf7f5d7fc008b27067b44a",
+      "event": "clone/build instruction",
+      "guard": "phase 1 gates passed; no credential path bypass",
+      "current_contract_review": "Source named volume/workspace and out-of-tree deps are prescribed through packaged create/build; host staging lifetime is now explicit, no hand-rolled runtime/mount bypass.",
+      "assertion_refs": [],
+      "source_paths": [
+        "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md"
+      ],
+      "classification": "REVIEWED_SOURCE_CONFORMANCE_ONLY"
+    },
+    {
+      "cell": "disposition:transitions:SW01:10",
+      "frozen_contract_sha256": "8d70c32976d1d8c693846a7109ce4b21f26403900b1807b83f94a164cc814d40",
+      "event": "unchanged dependency hash",
+      "guard": "skill presumes stable repo/hash tag and existing image",
+      "current_contract_review": "REMAPPED C01: V2 cache identity is independent of checkout basename and requires builder/platform/material identity, provenance and immutable image observation; equal dependency hash/tag existence alone is insufficient.",
+      "assertion_refs": [],
+      "source_paths": [
+        "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md"
+      ],
+      "classification": "REVIEWED_SOURCE_CONFORMANCE_ONLY"
+    },
+    {
+      "cell": "disposition:transitions:SW01:11",
+      "frozen_contract_sha256": "289ca86a761ad9bb8e648799bc93ae9e4704c4cb7ab428ca198d6f21e85ae593",
+      "event": "start isolated run",
+      "guard": "driver runContainer and mount builder used; declared isolation set retained",
+      "current_contract_review": "Named-volume/tmpfs, no host bind/socket/privileged, non-root/read-only/no-new-privileges/resource guards remain machine-enforced; prose is not an independently observed container inspect.",
+      "assertion_refs": [],
+      "source_paths": [
+        "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md"
+      ],
+      "classification": "REVIEWED_SOURCE_CONFORMANCE_ONLY"
+    },
+    {
+      "cell": "disposition:transitions:SW01:12",
+      "frozen_contract_sha256": "f5964e2ae856d98725fc900d1e8463d9dc87b4587bd4cf89c3b088b9663792d0",
+      "event": "docker inspect",
+      "guard": "no bind mount/socket and Privileged is false",
+      "current_contract_review": "REMAPPED D03: exact returned IDs and effective policy are reported from the driver; construction/inspection invariants are distinct from a model-guided phase receipt. No new mandatory operator inspection is invented.",
+      "assertion_refs": [],
+      "source_paths": [
+        "plugins/ca-sandbox/commands/sandbox.md"
+      ],
+      "classification": "REVIEWED_SOURCE_CONFORMANCE_ONLY"
+    },
+    {
+      "cell": "disposition:transitions:SW01:13",
+      "frozen_contract_sha256": "445f3025e635226c8a6b321c551d7440573d84729c71c5711ea844fd16e03f8d",
+      "event": "shell/exec/copy target resolution",
+      "guard": "running ca.sandbox=1 container matching supplied ID exists",
+      "current_contract_review": "Shell instructions require an existing running plugin-labeled target and introduce no creation/mount/privilege.",
+      "assertion_refs": [],
+      "source_paths": [
+        "plugins/ca-sandbox/commands/sandbox-shell.md"
+      ],
+      "classification": "REVIEWED_SOURCE_CONFORMANCE_ONLY"
+    },
+    {
+      "cell": "disposition:transitions:SW01:14",
+      "frozen_contract_sha256": "820dd30ddc644f705314fe9ebb6b017537b2da9bc5f10e8d0a2c5647bb7804a5",
+      "event": "shell",
+      "guard": "non-root interactive shell at /work/repo",
+      "current_contract_review": "Interactive shell retains existing non-root read-only-root posture/workspace. This preservation is instruction conformance, not an executed TTY qualification.",
+      "assertion_refs": [],
+      "source_paths": [
+        "plugins/ca-sandbox/commands/sandbox-shell.md"
+      ],
+      "classification": "REVIEWED_SOURCE_CONFORMANCE_ONLY"
+    },
+    {
+      "cell": "disposition:transitions:SW01:15",
+      "frozen_contract_sha256": "8271b738a1c9900f16be962713c8fe43f07a549317a32daffe61826bbdc138ec",
+      "event": "shell exit under command body",
+      "guard": "normal shell session closes",
+      "current_contract_review": "D02 selects persistent box lifetime: shell exit detaches and leaves container/volume until explicit destroy.",
+      "assertion_refs": [],
+      "source_paths": [
+        "plugins/ca-sandbox/commands/sandbox-shell.md"
+      ],
+      "classification": "REVIEWED_SOURCE_CONFORMANCE_ONLY"
+    },
+    {
+      "cell": "disposition:transitions:SW01:17",
+      "frozen_contract_sha256": "5da4688c6dd32dd83628b6c1525fc37843ba9b9bbb75b38d365e7eb6f432b238",
+      "event": "exec request",
+      "guard": "argv after --; existing running labeled box",
+      "current_contract_review": "Exec preserves real exit, separated output, truncation and independent containment; no nonzero-to-success translation or automatic broad teardown.",
+      "assertion_refs": [],
+      "source_paths": [
+        "plugins/ca-sandbox/commands/sandbox-exec.md"
+      ],
+      "classification": "REVIEWED_SOURCE_CONFORMANCE_ONLY"
+    },
+    {
+      "cell": "disposition:transitions:SW01:18",
+      "frozen_contract_sha256": "e4ac106c988472ad294c8e3ef7ffbf8f6f6178164ed923d083fac6861dbd3f0e",
+      "event": "copy-out request",
+      "guard": "container source and explicit host destination",
+      "current_contract_review": "Copy is host-requested outward to explicit destination with no host-inbound bind/writable host grant; partial output/rollback is not hidden.",
+      "assertion_refs": [],
+      "source_paths": [
+        "plugins/ca-sandbox/commands/sandbox-cp.md"
+      ],
+      "classification": "REVIEWED_SOURCE_CONFORMANCE_ONLY"
+    },
+    {
+      "cell": "disposition:transitions:SW01:19",
+      "frozen_contract_sha256": "e649c2b900a26d5440b67e0be359bfc550b761452ed9019e022d0538c58abdd6",
+      "event": "request elevation, host bind/socket or token/source co-mount",
+      "guard": "request would violate structural boundary",
+      "current_contract_review": "Refuse host bind/socket/privileged/elevation or token/source co-mount rather than weakening structural controls.",
+      "assertion_refs": [],
+      "source_paths": [
+        "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md"
+      ],
+      "classification": "REVIEWED_SOURCE_CONFORMANCE_ONLY"
+    },
+    {
+      "cell": "disposition:transitions:SW01:20",
+      "frozen_contract_sha256": "35a773dc21ce09c57d32fe832212ed9559218cac76125453fa190b8b25f6c575",
+      "event": "destroy specific ID",
+      "guard": "explicit single-box request",
+      "current_contract_review": "REMAPPED D02: named destroy targets exact instance only and never follows with automatic prune.",
+      "assertion_refs": [],
+      "source_paths": [
+        "plugins/ca-sandbox/commands/sandbox-destroy.md"
+      ],
+      "classification": "REVIEWED_SOURCE_CONFORMANCE_ONLY"
+    },
+    {
+      "cell": "disposition:transitions:SW01:21",
+      "frozen_contract_sha256": "64e7deeb3ab3f26b47f3dd8ac15ca3bf4ead7c354654d5620463a587f67789c3",
+      "event": "explicit --prune or no-ID invocation",
+      "guard": "sweep operation selected",
+      "current_contract_review": "REMAPPED D02: explicit broad prune takes its initial labeled snapshot; no-ID destroy is an error and newly created/unrelated objects are not adopted.",
+      "assertion_refs": [],
+      "source_paths": [
+        "plugins/ca-sandbox/commands/sandbox-destroy.md"
+      ],
+      "classification": "REVIEWED_SOURCE_CONFORMANCE_ONLY"
+    },
+    {
+      "cell": "disposition:transitions:SW01:22",
+      "frozen_contract_sha256": "0d25953c69cae28480fea064fe91f1e639024e4311bfdff123d683279b5ff1ef",
+      "event": "--keep-volume",
+      "guard": "explicit retention requested",
+      "current_contract_review": "Explicit keep-volume retains selected volume and cached images; unrelated leftovers remain separate.",
+      "assertion_refs": [],
+      "source_paths": [
+        "plugins/ca-sandbox/commands/sandbox-destroy.md"
+      ],
+      "classification": "REVIEWED_SOURCE_CONFORMANCE_ONLY"
+    },
+    {
+      "cell": "disposition:transitions:SW01:23",
+      "frozen_contract_sha256": "a43e1602f827e18707b393f764eb8c9cabf4ab46c70ce670648d8e73c6b05e17",
+      "event": "removal/discovery/final verification failure",
+      "guard": "driver failure/remaining targeted object returned",
+      "current_contract_review": "Failed discovery/removal/verification is incomplete nonzero cleanup with retained identities, independently reported remaining/unknown resources.",
+      "assertion_refs": [],
+      "source_paths": [
+        "plugins/ca-sandbox/commands/sandbox-destroy.md"
+      ],
+      "classification": "REVIEWED_SOURCE_CONFORMANCE_ONLY"
+    },
+    {
+      "cell": "disposition:transitions:SW01:24",
+      "frozen_contract_sha256": "cc0305aff846134dabe1cdf1c93c865da9f78847bd0399377bc79340ade471bb",
+      "event": "observed absence and no removal errors",
+      "guard": "scope empty excluding explicit kept volumes/images",
+      "current_contract_review": "REMAPPED D02/D03: absence is selected-scope only; retained cache images/explicit kept volume and unrelated active boxes are not a global-zero violation.",
+      "assertion_refs": [],
+      "source_paths": [
+        "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md"
+      ],
+      "classification": "REVIEWED_SOURCE_CONFORMANCE_ONLY"
+    }
+  ],
+  "limits": [
+    "Finite named software/source contracts only. No whole-task/whole-program promotion, paid provider, all-crash/partial-compensation, unexecuted platform or new installed runtime claim.",
+    "Actual old execution epochs/raw producer classes remain unchanged. Retaining an extract/current source hash is not another execution.",
+    "Exact callback/declaration hashes and line anchors are in selected-named-observations; full source files are captured inputs, never replaced by AST/function equality."
+  ]
+}

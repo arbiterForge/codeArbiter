@@ -1,0 +1,51 @@
+{
+  "schema": "codearbiter.accepted-packaging-change-basis/1",
+  "source_commit": "c2cf0a18b020ef426d7df94f70fe9770fa102c32",
+  "governing_precedence": "PROGRAM preserves frozen audit history and appends named accepted changes; no new user decision inferred.",
+  "baseline_public_policy": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "path": "core/surface/includes/command-compatibility.md",
+    "sha256": "0c13e07bf6bad350fe0efc6a2e7b0e7f666e130a6ff18ed8fcc9c588afdc62fa",
+    "git_blob": "c61e56b9b6c1fa91b01176597667f7c0fc5f044f",
+    "span": [
+      13,
+      17
+    ],
+    "excerpt": "contain the compatibility metadata. ca retains these routes through every 2.x release, with no removal\nbefore a separately approved 3.0.0. ca-codex and ca-pi retain them through every later 0.x release,\nwith no removal before a separately approved 1.0.0. Passing a version floor never authorizes removal:\nremoval needs a new governed decision and fresh compatibility evidence.\n## Explicitly retired capability: skill authoring"
+  },
+  "S75:02": {
+    "old_clause_sha256": "9cf6400d799fbfbffcd2e62f49e062cbd51cd42cc83462ad21f66698b02fb34d",
+    "old_effect": "Require minor-release-with-changelog-notice literal.",
+    "accepted_tasks": [
+      "HW-21",
+      "BUILD-G02"
+    ],
+    "authority": "HW21 explicitly replaces this contradictory vocabulary with the actual public major/1.0 rule; BUILDG02 shares that owner and separates declaration validation from removal eligibility.",
+    "accepted_candidate": {
+      "event": "compatibility metadata",
+      "guard": "Exact clockStarts/removalRequires/targets shape, supported floors, separately-approved-named-removal and fresh-exact-confirmed-non-draft-release.",
+      "to": "validated metadata",
+      "effect": "Reject old literal, missing/extra policy fields or changed floor; generate the same policy wording from the shared owner.",
+      "failure_retry": "No release observation or route-removal authorization follows from shape validation; uncertain eligibility retains routes."
+    },
+    "policy_is_not_new": "The original fd7 public include already requires through2.x/separately approved3.0, throughlater0.x/separately approved1.0 and new governed decision/fresh evidence.",
+    "ADR_scope": "ADR0031section4 addresses the legacy Codex plugin-root alias as corroborating input. It is not used to invent a command-route removal decision or ADR supersession."
+  },
+  "S75:07": {
+    "old_clause_sha256": "3ccdd19ae038b0835426796b424cfb71550f652558951cced9cd65ac83e6b423",
+    "old_effect": "Earlier host writes can already exist on late source validation failure.",
+    "accepted_task": "BUILD-G01",
+    "authority": "The accepted task requires complete staging/render validation before replacement, with owned mixed-tree publication and explicit unusable barriers on failed promotion.",
+    "accepted_candidate": {
+      "event": "source/descriptor invalid",
+      "guard": "Any selected host render/validation fails before publication.",
+      "to": "invalid source exit2",
+      "effect": "Stop before any selected host output replacement; preserve previous complete generated output.",
+      "failure_retry": "I/O failure during later publication is separate: rollback or explicit pending/unusable journal; never partial output advertised ready."
+    }
+  },
+  "limits": [
+    "No new policy/removal/publication decision, no ADR write/status/delivery promotion.",
+    "Frozen intake remains immutable. These two original literals are not claimed unchanged."
+  ]
+}

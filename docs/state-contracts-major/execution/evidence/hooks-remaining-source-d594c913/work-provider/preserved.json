@@ -1,0 +1,64 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+  "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "/root/qualification_review: bounded source-clause inspection; no runtime execution"
+  },
+  "inputs": {
+    "core/pysrc/_artifactlib.py": "59dbf6c51cbbb824cf553aa38aeb9c543dcada14c6311e9393434d231babe03b",
+    "core/pysrc/_gitexec.py": "a5935246028f506ef5ab13ba379b399cb7a754a077866fd39528545f30f4bef3",
+    "core/pysrc/_workgithub.py": "15bcc28b81e7cb87df912bedfc3688d0ec69866a2171aa2db80ba6fc3a3e2930"
+  },
+  "disposition_ids": [
+    "disposition:transitions:S34:01",
+    "disposition:transitions:S34:02",
+    "disposition:transitions:S34:03",
+    "disposition:transitions:S34:04",
+    "disposition:transitions:S34:05",
+    "disposition:transitions:S34:06",
+    "disposition:transitions:S34:07",
+    "disposition:transitions:S35:01",
+    "disposition:transitions:S35:02",
+    "disposition:transitions:S35:03",
+    "disposition:transitions:S35:04",
+    "disposition:transitions:S35:05",
+    "disposition:transitions:S36:01",
+    "disposition:transitions:S36:02",
+    "disposition:transitions:S36:03",
+    "disposition:transitions:S36:04",
+    "disposition:transitions:S36:05",
+    "disposition:transitions:S36:06",
+    "disposition:transitions:S36:07",
+    "disposition:transitions:S37:01",
+    "disposition:transitions:S37:02",
+    "disposition:transitions:S37:03",
+    "disposition:transitions:S37:04",
+    "disposition:transitions:S37:05",
+    "disposition:transitions:S37:06",
+    "disposition:transitions:S37:07",
+    "disposition:transitions:S37:08",
+    "disposition:transitions:S37:09",
+    "disposition:transitions:S38:01",
+    "disposition:transitions:S38:02",
+    "disposition:transitions:S38:03",
+    "disposition:transitions:S38:05",
+    "disposition:transitions:S38:06",
+    "disposition:machines:S34",
+    "disposition:machines:S35",
+    "disposition:machines:S36",
+    "disposition:machines:S37"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/work-provider/source-inspection.json",
+      "sha256": "64161ad13771fa44f4e03baa179b8666debc920cc6b621af558e0c56977877cd"
+    }
+  ],
+  "scope": "work-provider: 33 whole transition clauses and 4 complete constituent machines; Finite source guard/effect/retry conformance at the frozen source commit only. No runtime, host/package qualification, model compliance, task/scenario, provider/authentication, physical consent, endpoint policy, publication or whole-program readiness claim. HOLD rows receive no ledger mutation.",
+  "semantic_mapping_ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/work-provider/source-inspection.json",
+  "dependency_boundary": "Inputs pin actual current dependencies at named caller boundaries; equality applies to cited owners, not blanket equivalence of changed dependency behavior. Each raw row states exact mapping and explicit HOLDs."
+}

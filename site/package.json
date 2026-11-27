@@ -22,6 +22,7 @@
     "test:release-applicability-rendered": "astro build && tsx test/release-applicability/rendered.ts",
     "test:academy-source": "vitest run scripts/academy-source.test.ts",
     "test:browser": "playwright test",
+    "test:components": "playwright test --config=playwright.components.config.ts",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
     "link-audit": "tsx scripts/link-audit.ts",

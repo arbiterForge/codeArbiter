@@ -1,0 +1,418 @@
+{
+  "schema": "codearbiter-program-lane-evidence/1",
+  "owner": "hooks-workflows-recovery",
+  "recorded_at": "2026-11-13T16:44:51.816283+00:00",
+  "branch": "codex/program-hooks-state-contracts",
+  "source_head": "38c8b8e75d47d5502a487fb7af6e303ae651a5ad",
+  "subject": "Uncommitted named recovery owner sources plus parent-owned synchronized derivatives; source-fixture evidence, not final retained-package or release qualification",
+  "authority": "Implementation and child integration only; no staging/commit/push/merge by this actor. Umbrella PR1098 held for user testing; no publication.",
+  "environment": {
+    "os": "Windows",
+    "machine": "AMD64",
+    "python": "3.14.6",
+    "native_source_fixture": "C:/Users/brenn/nt-clients/state-contracts-native-20261113-smarts-qualified",
+    "host_fixture": "Actual installed source copies of all3 host packages in disposable roots; recovery source byte equality asserted. Native payload comes from fixed qualified path. No retained cohort claim.",
+    "home_boundary": "Credential-free environment and disposable HOME/USERPROFILE established before native/auth-aware fixture imports. Generated dummy credential values are used only in explicit no-inheritance test."
+  },
+  "source_files_sha256": {
+    "core/pysrc/_workflowrecoverylib.py": "25002d8edf3973331400d3d7b358e60a8bee9c847111b29380a2f18534bf687b",
+    "core/pysrc/workflow-recovery.py": "a9a971371d2be4ece6eebdce24f4e2ebeb1a2a9a23e16d3d6d5e39479ef2b482",
+    "core/pysrc/session-start.py": "4c3c1e9b8180aa571eda8fcacf24569f1fd16366a12c3aba5f76944cf1ba52cb",
+    "core/pysrc/prompt-submit.py": "34eeb237a4484224083e6b8e75f351041c28f5e22c57c8d9ca33ba9a9dc9743b",
+    "plugins/ca-codex/hooks/pre-tool-adapter.py": "0eb498bb9d319b029053b1160f9b7c9ea1b74506c97cf20cfed26ee3bb49d7c0",
+    "plugins/ca-pi/hooks/pi-bridge.py": "ac922e71900aabcd43fc73a4e8c6c5479b309da8af7c7658512fcfd12514b6d4",
+    "core/surface/includes/harvest.md": "a3798c8362d1ee3b0f699503022f91a49a88daa2d9ccda44b1eaf7620f719388",
+    "core/surface/skills/tdd/SKILL.md": "c430cc5f6f20ab36f4fe1efc5ab52ec14f752abd49d6eb3d79f074f4c378ecc7",
+    "core/surface/skills/brainstorming/SKILL.md": "77f658b30ac9842b0f052ff16563075142d0ab25ac5a0bf895072c40dcd64c2b",
+    "core/surface/skills/writing-plans/SKILL.md": "7284798238e8f98fdd47b8e9ef4a7d9b6dc0e88f36e21e26a27606287df60bf7",
+    "core/surface/skills/commit-gate/SKILL.md": "c167e7050f771fedb8db56f9840866c35c64d5a4e387e347c34cfa1bcc6d5bef",
+    "core/surface/commands/checkpoint.md": "2b3212fe1e5e38af3dc135e32f700af2ef91600ce9d90802c2c8ac80d766f31e",
+    "core/surface/SPRINT.md": "d3d469e9f741985493a1a391d1d9239a59f6995acd1c2b45463a2978c5146aa6",
+    "core/surface/commands/status.md": "1355e635239bfc50130fdcf23d1fba4eac42d57a2a6100676aae3dc10d424dcf",
+    "core/surface/commands/standup.md": "7e509ae3354c4c8db7365812991806efe467420844cbdb35635b283d686a96cb",
+    ".github/scripts/test_workflow_recovery.py": "32c99fb128fe4d536a6194398e247de228e8af794f7ce6012e047450ff812deb",
+    ".github/scripts/test_workflow_recovery_cli.py": "5e3af20417b589322cf2121be7df1697c4533f4052b40003d964f16a3acca4e7",
+    ".github/scripts/test_workflow_recovery_hosts.py": "c52a377ec888eac1142696be66afe983eb74583aad104d2159e76ae2b4cfff56",
+    ".github/scripts/qualify_workflow_recovery_cohort.py": "9af6df68f607a5897634412bf4005d647088bac46a12bf986d034aaae7bd2f14",
+    "tools/build-workflow-recovery-contract.py": "ac1790ecfecd62128f1804ec3ddf593d40a243264d8c028f71088ede283243a9",
+    ".github/scripts/test_workflow_recovery_generator.py": "56cbd4ff1542417772e311d5517c44411b97d0480ed4735d0552cb16f7cbe4bd"
+  },
+  "preserved_selected_owner_sources": {
+    "core/pysrc/_worklib.py": {
+      "sha256": "4b08bdfdea85a96e1bde4bd7dc610bc61dd8ef31a42d530fb10437b1145818ce",
+      "equals_actor_baseline": true
+    },
+    "core/pysrc/work.py": {
+      "sha256": "fe51520ff1faa8d94740fde5a8d73c0a2626841abc7eae5397e6969055b95722",
+      "equals_actor_baseline": true
+    },
+    "core/pysrc/taskwrite.py": {
+      "sha256": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25",
+      "equals_actor_baseline": true
+    },
+    "core/pysrc/_taskboardlib.py": {
+      "sha256": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+      "equals_actor_baseline": true
+    }
+  },
+  "generated_copy_parity": {
+    "plugins/ca/hooks/_workflowrecoverylib.py": true,
+    "plugins/ca/hooks/workflow-recovery.py": true,
+    "plugins/ca/hooks/session-start.py": true,
+    "plugins/ca/hooks/prompt-submit.py": true,
+    "plugins/ca-codex/hooks/_workflowrecoverylib.py": true,
+    "plugins/ca-codex/hooks/workflow-recovery.py": true,
+    "plugins/ca-codex/hooks/session-start.py": true,
+    "plugins/ca-codex/hooks/prompt-submit.py": true,
+    "plugins/ca-pi/hooks/_workflowrecoverylib.py": true,
+    "plugins/ca-pi/hooks/workflow-recovery.py": true,
+    "plugins/ca-pi/hooks/session-start.py": true,
+    "plugins/ca-pi/hooks/prompt-submit.py": true
+  },
+  "task_scope": {
+    "HW-11": "Versioned Git-common bounded index/journal/CAS/OS locks and closed installed helper; no generic executable handler.",
+    "HW-12": "Selected native/legacy origin/readback adapters and fixed decision/decline append; no work owner source fork.",
+    "HW-13": "All6 canonical producer discovery/terminal contracts and real extractor-to-registration-to-resume fixtures. Model compliance beyond published workflow actor outputs is not claimed.",
+    "HW-14": "Claude/Codex enabled startup and ordinary reentry plus Codex non-permission context; Pi closed Python projection. Pi TS lifecycle/current-lease/dedup evidence belongs to Pi owner.",
+    "HW-15": "Local Windows crash/response-loss/race/bounds/rollback source-fixture observations; exact retained packages and other platform cells remain pending.",
+    "HW-16": "Parent-delegated session-start top comment corrected only; parent owns other documentation."
+  },
+  "checks": [
+    {
+      "command": "python -B .github/scripts/test_workflow_recovery.py",
+      "result": "35 PASS,82.057s after independently found concurrent decision/decline lost-update repair",
+      "task_ids": [
+        "HW-11",
+        "HW-12",
+        "HW-13",
+        "HW-15"
+      ]
+    },
+    {
+      "command": "ARTIFACT_TEST_INSTALLATION=<fixed qualified native> python -B .github/scripts/test_workflow_recovery_cli.py",
+      "result": "7 PASS,31.286s after CAS repair",
+      "task_ids": [
+        "HW-11",
+        "HW-12",
+        "HW-15"
+      ]
+    },
+    {
+      "command": "ARTIFACT_TEST_INSTALLATION=<fixed qualified native> python -B .github/scripts/test_workflow_recovery_hosts.py",
+      "result": "5 PASS",
+      "task_ids": [
+        "HW-14",
+        "HW-15"
+      ]
+    },
+    {
+      "command": "python -B .github/scripts/test_workflow_recovery_contract.py",
+      "result": "29 PASS",
+      "task_ids": [
+        "HW-10",
+        "HW-11"
+      ]
+    },
+    {
+      "command": "python -B .github/scripts/test_prompt_submit.py",
+      "result": "50 PASS",
+      "task_ids": [
+        "HW-14"
+      ]
+    },
+    {
+      "command": "python -B plugins/ca/hooks/tests/test_session_start.py",
+      "result": "81 PASS",
+      "task_ids": [
+        "HW-14"
+      ]
+    },
+    {
+      "command": "python -B .github/scripts/test_codex_adapter.py",
+      "result": "88 PASS",
+      "task_ids": [
+        "HW-14"
+      ]
+    },
+    {
+      "command": "python -B .github/scripts/test_taskwriter.py",
+      "result": "92 PASS",
+      "task_ids": [
+        "HW-12"
+      ]
+    },
+    {
+      "command": "python -B .github/scripts/test_taskboardlib.py",
+      "result": "125 PASS",
+      "task_ids": [
+        "HW-12"
+      ]
+    },
+    {
+      "command": "ARTIFACT_TEST_INSTALLATION=<fixed qualified native> python -B .github/scripts/test_artifact_work_cli.py",
+      "result": "49 PASS",
+      "task_ids": [
+        "HW-12"
+      ]
+    },
+    {
+      "command": "python -B tools/build-workflow-recovery-contract.py --check",
+      "result": "PASS",
+      "task_ids": [
+        "HW-11"
+      ]
+    },
+    {
+      "command": "git diff --check -- <19 named recovery owner sources>",
+      "result": "PASS",
+      "task_ids": [
+        "HW-11",
+        "HW-12",
+        "HW-13",
+        "HW-14",
+        "HW-15"
+      ]
+    },
+    {
+      "command": "python -B tools/sync-core.py --check",
+      "result": "FAIL only three _artifactmanifestlib.py copies being actively authored by packaging owner; recovery own12 generated copies checked equal separately",
+      "task_ids": [
+        "HW-15"
+      ]
+    },
+    {
+      "command": "python -B .github/scripts/test_workflow_recovery_generator.py",
+      "result": "3 target RED before correction, same3 GREEN after atomic publication and AST barrier",
+      "task_ids": [
+        "HW-11",
+        "HW-15"
+      ],
+      "scope": "Temporary source owner actual partial write fault; current production runtime bytes unchanged"
+    },
+    {
+      "command": "python -B tools/sync-core.py",
+      "result": "PASS;12 updated,276 current after CAS fix and packaging freeze",
+      "task_ids": [
+        "HW-11",
+        "HW-14",
+        "HW-15"
+      ]
+    }
+  ],
+  "red_green": {
+    "initial_red": "4 feature assertions FAIL before runtime existed; not import-only. Preserved %TEMP%/ca-recovery-runtime-red.txt.",
+    "green": "Same core assertions unchanged passed; expanded runtime suite34 PASS.",
+    "negative_control": "Isolated temporary copy forced reconciliation blocked=False. Existing denial-preservation test failed pending != unavailable as intended; canonical source never mutated.",
+    "retained_failures": "Intermediate fixture expectation errors (promoted vs created, storage-unavailable vs material-unavailable, host count) were corrected to actual owning contract; no runtime assertion weakened to bypass a defect.",
+    "generator_regression": "3 genuine RED before fix: actual temporary owner truncated to16bytes after injected partial write; invalid Python was published; pending generator marker ignored. Same3 GREEN after shared owned publication + pre-publication AST validation.",
+    "concurrent_append_regression": "4 genuine RED cases lost a real subprocess independent append (decision/decline \u00d7 absent/preexisting). Same4 GREEN after passing caller exact expected bytes/absence into atomic initial+final CAS; held effect reconciles absence then retry settles once preserving independent content."
+  },
+  "interruption_matrix": [
+    {
+      "row": "before registration",
+      "observed_tests": "test_empty_registration_and_dormant_scan_do_not_create_storage; test_invalid_unknown_and_oversize_input_leave_no_registered_store"
+    },
+    {
+      "row": "record/index incomplete",
+      "observed_tests": "test_process_crash_at_each_registration_commit_boundary; test_crash_after_record_cannot_look_empty_and_explicit_repair_recovers"
+    },
+    {
+      "row": "registration response lost",
+      "observed_tests": "test_post_commit_failure_reports_observed_record_without_false_no_effect; test_scan_is_physically_readonly_and_registration_replay_is_exact"
+    },
+    {
+      "row": "claim before target",
+      "observed_tests": "test_crash_after_history_keeps_old_version_and_recoverable_claim; test_multiprocess_claim_correct_and_settle_races_preserve_one_winner"
+    },
+    {
+      "row": "target response lost",
+      "observed_tests": "test_real_legacy_target_response_loss_reconciles_without_duplicate; test_real_native_work_effect_is_reconciled_after_actual_process_death; test_deferred_decision_and_decline_commit_once_after_response_loss"
+    },
+    {
+      "row": "settlement interrupted",
+      "observed_tests": "test_process_crash_after_target_and_during_settlement_never_duplicates"
+    },
+    {
+      "row": "two process contention",
+      "observed_tests": "test_multiprocess_claim_correct_and_settle_races_preserve_one_winner; test_live_os_lock_is_not_stolen_and_stale_cas_cannot_overwrite"
+    },
+    {
+      "row": "source or branch changed",
+      "observed_tests": "test_changed_source_is_held_without_touching_target; test_same_title_different_origin_is_not_reused_and_branch_change_holds"
+    },
+    {
+      "row": "owner/project changed",
+      "observed_tests": "test_changed_native_project_and_dual_owner_hold_only_affected_obligation"
+    },
+    {
+      "row": "dead or live claimant",
+      "observed_tests": "test_process_crash_after_target_and_during_settlement_never_duplicates; test_live_os_lock_is_not_stolen_and_stale_cas_cannot_overwrite"
+    },
+    {
+      "row": "denial or revocation",
+      "observed_tests": "test_denial_and_explicit_stop_are_not_cleared_by_correction; test_new_grant_cannot_clear_unknown_effect_or_reconciliation_clear_denial; test_direct_child_mutation_needs_parent_and_creates_no_shared_state. Actual Pi grant revocation belongs to Pi owner, not proved by this cooperative Python child fixture."
+    },
+    {
+      "row": "malformed version or stale cursor",
+      "observed_tests": "test_corrupt_record_and_future_store_are_unavailable_without_repair_write; test_pages_and_stale_cursor_never_claim_a_complete_empty_scan; test_corrupt_inventory_notice_never_repairs_or_blocks_real_host_entry"
+    },
+    {
+      "row": "partial batch and scan budget",
+      "observed_tests": "test_partial_registration_retains_exact_completed_and_remaining_ids; test_larger_records_continue_mid_page_without_history_enumeration"
+    },
+    {
+      "row": "compaction rollback reinstall",
+      "observed_tests": "test_compacted_terminal_record_preserves_exact_dedup_and_old_history; test_old_install_read_preserves_pending_recovery_and_targets. Retained final archive reinstall remains pending."
+    }
+  ],
+  "machine_transition_coverage": [
+    {
+      "machine_id": "WF-14",
+      "transition_ids": [
+        "WF-14:01",
+        "WF-14:04"
+      ],
+      "treatment": "CHANGED_AT_DISCOVERY",
+      "task_ids": [
+        "HW-11",
+        "HW-13"
+      ],
+      "finding_ids": [
+        "W-F04",
+        "HOOK-B04"
+      ],
+      "evidence": "All6 existing extractors register exact origin/source before terminal, process can terminate, fresh resume consumes durable candidate. Model-guided producer instruction source is reviewed separately; no universal capture claim."
+    },
+    {
+      "machine_id": "S41",
+      "transition_ids": [
+        "S41:03",
+        "S41:04"
+      ],
+      "treatment": "PRESERVED_ADAPTER_BOUNDARY",
+      "task_ids": [
+        "HW-12"
+      ],
+      "finding_ids": [
+        "W-F04",
+        "HOOK-B04"
+      ],
+      "evidence": "Blocking decision held without CONFIRM/retag; exact-origin archive/current reuse does not duplicate. Same-title different origin creates distinct target."
+    },
+    {
+      "machine_id": "hooks:codex-pretool",
+      "transition_ids": [
+        "hooks:codex-pretool:01",
+        "hooks:codex-pretool:04"
+      ],
+      "treatment": "ADDITIVE_PRESENTATION_WITH_VERDICT_PRESERVED",
+      "task_ids": [
+        "HW-14"
+      ],
+      "finding_ids": [
+        "W-F04",
+        "HOOK-B04"
+      ],
+      "evidence": "Real installed source PreToolUse permits readonly status context without decision allow; actual guarded main commit remains block unchanged."
+    },
+    {
+      "machine_id": "hooks:pi-python-bridge",
+      "transition_ids": [
+        "hooks:pi-python-bridge:01",
+        "hooks:pi-python-bridge:04"
+      ],
+      "treatment": "NEW_CLOSED_NOTICE_EVENT",
+      "task_ids": [
+        "HW-14"
+      ],
+      "finding_ids": [
+        "W-F04",
+        "HOOK-B04"
+      ],
+      "evidence": "Actual installed Python request/response codec snapshots shared pending/corrupt ledger readonly; TS current lifecycle/grant handling is Pi-owned."
+    }
+  ],
+  "new_runtime_transition_groups": [
+    {
+      "transitions": [
+        "WR-01",
+        "WR-02",
+        "WR-03",
+        "WR-04",
+        "WR-05",
+        "WR-15",
+        "WR-17",
+        "WR-20",
+        "WR-22"
+      ],
+      "tests": [
+        "test_scan_is_physically_readonly_and_registration_replay_is_exact",
+        "test_invalid_unknown_and_oversize_input_leave_no_registered_store",
+        "test_corrected_candidate_cas_preserves_original_and_unknown_effect",
+        "test_corrupt_record_and_future_store_are_unavailable_without_repair_write",
+        "test_compacted_terminal_record_preserves_exact_dedup_and_old_history",
+        "test_post_commit_failure_reports_observed_record_without_false_no_effect"
+      ],
+      "scope": "registration/correction/readonly/terminal replay/uncertain write contracts; not untested baseline transitions"
+    },
+    {
+      "transitions": [
+        "WR-06",
+        "WR-07",
+        "WR-08",
+        "WR-09",
+        "WR-10",
+        "WR-11",
+        "WR-12",
+        "WR-13",
+        "WR-14"
+      ],
+      "tests": [
+        "test_multiprocess_claim_correct_and_settle_races_preserve_one_winner",
+        "test_live_os_lock_is_not_stolen_and_stale_cas_cannot_overwrite",
+        "test_changed_source_is_held_without_touching_target",
+        "test_deferred_decision_and_decline_commit_once_after_response_loss",
+        "test_real_native_work_effect_is_reconciled_after_actual_process_death",
+        "test_blocking_decision_is_not_demoted_or_confirmed"
+      ],
+      "scope": "closed local adapters; actual live host authority/grant handling remains host-owned"
+    },
+    {
+      "transitions": [
+        "WR-16",
+        "WR-18",
+        "WR-19"
+      ],
+      "tests": [
+        "test_actual_owner_lift_is_explicit_bookkeeping_and_never_a_target_effect",
+        "test_new_grant_cannot_clear_unknown_effect_or_reconciliation_clear_denial",
+        "test_cancel_and_linked_supersession_are_explicit_and_never_touch_target"
+      ],
+      "scope": "explicit scoped bookkeeping, does not authenticate user/host context reference"
+    }
+  ],
+  "implementation_limits": [
+    "No real visible Claude/Codex/Pi parent UI or model consumption proof; Python event seams and source fixtures only.",
+    "Generic ca_dispatch lacks authoritative producer/work/origin and correctly remains durable:false,parent-context-unavailable. Parent workflow actor registers actual published known follow-up. Unshared child thoughts/unregistered conversation are outside guarantee.",
+    "restore-authority records bounded actual same-owner lift context only; it does not authenticate or mint a grant. Actor/host still checks live authority. Unknown previous effects remain held.",
+    "Cooperative CODEARBITER_SUBAGENT mutation refusal is not OS confinement.",
+    "No arbitrary mounted-filesystem hard deadline guarantee. Heavy Claude/Codex scan child has1s deadline; absent topology probe and host hook have separate existing budgets. Pi outer BridgeClient owns its deadline.",
+    "OS fsync/MoveFileEx write-through are used; absolute sudden power-loss behavior across every filesystem is not established.",
+    "No automatic remote issue, task promotion, staging, completion, archive or cleanup. No TTL lock steal. No independent target edits overwritten.",
+    "No numeric Python coverage claim; project Python baseline has no coverage tool.",
+    "256KiB bounds recovery ledger and tracked Git-topology bytes per scan. Existing activation owner reads CONTEXT.md independently, and other host startup reads are outside this per-ledger budget; no total startup-I/O bound is claimed."
+  ],
+  "remaining_qualification": [
+    "Parent-owned final generated surface/runtime parity after packaging manifest author freeze.",
+    "Run qualify_workflow_recovery_cohort.py --cohort <final retained artifact-package-cohort.json> --output <new receipt.json> on required hosted platform/host cells; runner has10 actual journeys and fails missing/unqualified/modified inputs rather than skip. Current local runner help/admission source inspected only; no real retained cohort run yet.",
+    "Pi owner final typed snapshot/UI/prompt delivery/revocation evidence and supported runtime matrix.",
+    "Parent final source commit, hosted CI and root acceptance record. No promotion/publication claimed."
+  ],
+  "independent_review": {
+    "verdict": "PASS_WITH_LIMITS",
+    "unresolved": 0,
+    "packet": "C:/Users/brenn/AppData/Local/Temp/ca-recovery-independent-security-coverage-review.json",
+    "reviewer": "packaging_site_tools",
+    "finding": "Decision/decline prepared-byte lost update reproduced and fixed; reviewer reran original repro,4 target subcases and3 generator regressions GREEN."
+  }
+}

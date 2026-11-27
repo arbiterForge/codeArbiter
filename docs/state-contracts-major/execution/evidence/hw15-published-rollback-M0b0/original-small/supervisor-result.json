@@ -1,0 +1,48 @@
+{
+  "status": "PASS",
+  "returncode": 0,
+  "stop_reason": null,
+  "containment": "exited",
+  "seconds": 19.359,
+  "captured_pipe_bytes": 290,
+  "argv": [
+    "C:\\Python314\\python.exe",
+    "-I",
+    "-S",
+    "-B",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-run-hw15-retained-lifecycle.py",
+    "--config",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hw15-M0b0-root-input-oah5rd64\\config.M.json",
+    "--package-authority",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-normal-M0b0-watch-2h4aggb0\\authenticated-M-package-inputs.json",
+    "--package-authority-sha256",
+    "3177c3c9bd5bd155777eeddb5d55b4b06392297085d576df579c862dc50d0b04",
+    "--child-output",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hw15-actual-akezabox"
+  ],
+  "environment_keys": [
+    "HOME",
+    "PATH",
+    "PYTHONDONTWRITEBYTECODE",
+    "PYTHONNOUSERSITE",
+    "PYTHONPYCACHEPREFIX",
+    "PYTHONUTF8",
+    "SystemRoot",
+    "TEMP",
+    "TMP",
+    "USERPROFILE",
+    "WINDIR"
+  ],
+  "package_authority": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-normal-M0b0-watch-2h4aggb0\\authenticated-M-package-inputs.json",
+    "sha256": "3177c3c9bd5bd155777eeddb5d55b4b06392297085d576df579c862dc50d0b04",
+    "ci": "SUCCESS",
+    "docs": "FAILURE",
+    "whole_normal_verdict": "BLOCK"
+  },
+  "controller_inputs": "16 physical sources unchanged; workflow declaration authenticated from immutable M Git blob",
+  "driver_sha256": "c3ae7032227549156235a3709825e908abf8d52efb0782f5cce63f6384189698",
+  "config_sha256": "a71c7c7d22dff835e667d6a8edd730fc8e73f4b99520299ca37576f0b4926cdd",
+  "task_program_qualification": false,
+  "scope": "one literal published-package legacy-board downgrade/reinstall characterization"
+}

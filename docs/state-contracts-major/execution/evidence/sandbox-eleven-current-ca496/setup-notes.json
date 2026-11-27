@@ -1,0 +1,1 @@
+{"state":"pre-test observer setup failure","error":"NameError old_argv","tests_executed":0,"runtime_or_source_failure":false,"correction":"remove obsolete four setup lines only; preserve original observer and private copies; recapture before/after for first actual40-case execution"}

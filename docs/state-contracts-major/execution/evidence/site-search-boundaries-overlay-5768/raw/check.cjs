@@ -1,0 +1,23 @@
+const fs=require('node:fs');
+const crypto=require('node:crypto');
+const cp=require('node:child_process');
+const path=require('node:path');
+const root=__dirname;
+const modules='C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter/site/node_modules';
+const ts=require(modules+'/typescript');
+const hash=b=>crypto.createHash('sha256').update(b).digest('hex');
+const old=fs.readFileSync(path.join(root,'observed-browser-source.ts'),'utf8');
+const current=fs.readFileSync(path.join(root,'site/test/components/search-boundaries.spec.ts'),'utf8');
+if(current!=='/// <reference lib="dom" />\n'+old)throw Error('Unexpected source change');
+// TypeScript preserves comments by default; remove comments only for this equivalence check.
+const compile=s=>ts.transpileModule(s,{compilerOptions:{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.ESNext,removeComments:true}}).outputText;
+if(compile(old)!==compile(current))throw Error('Executable JS drift');
+const args=[modules+'/typescript/bin/tsc','--noEmit','--target','ES2022','--module','ESNext','--moduleResolution','Bundler','--lib','ES2022','--types','node','--strict','--esModuleInterop','--skipLibCheck','--forceConsistentCasingInFileNames','--resolveJsonModule','test/components/search-boundaries.spec.ts'];
+const start=Date.now();
+const result=cp.spawnSync(process.execPath,args,{cwd:path.join(root,'site'),encoding:'utf8',timeout:30000});
+fs.writeFileSync(path.join(root,'typecheck.stdout.log'),result.stdout||'');
+fs.writeFileSync(path.join(root,'typecheck.stderr.log'),result.stderr||'');
+const evidence={argv:[process.execPath,...args],cwd:path.join(root,'site'),exit_code:result.status,seconds:(Date.now()-start)/1000,observed_test_sha256:hash(old),final_test_sha256:hash(current),executable_JS_sha256:hash(compile(old)),declaration_only_change:true,scope:'Site exact compiler options, only new file; not whole-site typecheck. No declared lint script.'};
+fs.writeFileSync(path.join(root,'typecheck.json'),JSON.stringify(evidence,null,2)+'\n');
+console.log(JSON.stringify(evidence));
+process.exitCode=result.status||0;

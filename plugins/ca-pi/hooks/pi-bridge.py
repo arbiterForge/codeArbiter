@@ -35,6 +35,7 @@ CORRELATION_RE = re.compile(r"\A[0-9a-f]{64}\Z")
 EVENT_KEYS = {
     "session_start": (frozenset({"version", "event", "cwd"}), frozenset({"version", "event", "cwd", "sessionId"})),
     "before_agent_start": (frozenset({"version", "event", "cwd"}), frozenset({"version", "event", "cwd", "sessionId"})),
+    "workflow_recovery_snapshot": (frozenset({"version", "event", "cwd"}), frozenset({"version", "event", "cwd", "sessionId"})),
     "tool_call": (frozenset({"version", "event", "cwd", "tool", "input"}), frozenset({"version", "event", "cwd", "sessionId", "tool", "input", "correlation"})),
     "tool_result": (frozenset({"version", "event", "cwd", "tool", "input", "result"}), frozenset({"version", "event", "cwd", "sessionId", "tool", "input", "result", "correlation"})),
     "prune_plan": (frozenset({"version", "event", "cwd", "input"}), frozenset({"version", "event", "cwd", "input"})),
@@ -475,6 +476,14 @@ def _plan_file_response(result):
 
 
 def dispatch(request):
+    if request["event"] == "workflow_recovery_snapshot":
+        # The Pi caller owns project trust/current-lease admission. This child
+        # codec reads one bounded page and never executes or repairs a target.
+        import _workflowrecoverylib
+        _hooklib.set_host(PiHost(request["cwd"]))
+        observed = _workflowrecoverylib.snapshot(request["cwd"])
+        return {"version": 1, "outcome": "notice", "auditCode": "PI_WORKFLOW_RECOVERY",
+                "resultPatch": {"workflowRecovery": observed}}
     if request["event"] == "plan_file":
         result = _planfilelib.plan_file_operation(
             request["cwd"],

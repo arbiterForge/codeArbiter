@@ -15,29 +15,15 @@ with untrusted code), never left to operator discipline.
 
 ## Pre-flight
 
-Read these, or STOP and surface the gap — never guess the token source, the egress
-posture, or the persistence mechanism:
+Use the packaged driver documentation and this skill. Consumer repositories do not need the maintainer's spike notes or decision files; do not invent consumer ADRs to satisfy missing maintainer references. Check Docker availability and the pinned image/token/volume prerequisites below.
 
-- `${CLAUDE_PROJECT_DIR}/.codearbiter/spikes/ca-sandbox-claude-auth.md` — the
-  proven auth path (env token → real `401` on a dummy), the named-volume HOME
-  persistence mechanism, and the load-bearing caveat that fixes the hard default.
-- `${CLAUDE_PROJECT_DIR}/.codearbiter/spikes/ca-sandbox-egress.md` — why the
-  egress allowlist is EXPERIMENTAL (CDN drift + DNS-exfil hole), so `offline` is
-  the only GUARANTEED posture for a token-bearing box.
-- `${CLAUDE_PROJECT_DIR}/.codearbiter/decisions/0007-second-plugin-ca-sandbox.md`
-  — the governing decision; ca-sandbox is infrastructure, sibling to `ca`.
-
-The shipped driver is `plugins/ca-sandbox/tools/claude-inside.js`, its OWN
-binary rather than a `sandbox` subcommand (#377):
+The shipped driver is `${CLAUDE_PLUGIN_ROOT}/tools/claude-inside.js`, a separate binary:
 
 ```
 node <plugin>/tools/claude-inside.js --image <tag> --home-volume <name> [--net offline|anthropic-only]
 ```
 
-That separation IS the gate. A `sandbox with-claude` subcommand would let anyone
-start a token-bearing box with one ungated command, which would turn the five
-BLOCK phases below from enforcement into advice. This routine is the only
-sanctioned caller.
+The binary enforces accepted policy names, secret-free argv, token/source-volume co-mount rejection, runtime hardening and firewall-failure compensation. The phases below guide an agent's authorized workflow; using a separate executable does not mechanically enforce that the agent read those phases or performed a new approval ceremony. Preserve existing user authorization.
 
 The token MUST come from the approved store as `CLAUDE_CODE_OAUTH_TOKEN`, in the
 ENVIRONMENT. The entry point refuses a `--token` flag outright: an argument list
@@ -124,10 +110,7 @@ guarantees by construction — do not hand-roll a `docker run`.
   The token volume is NEVER co-mounted with an untrusted-code run. This is the
   load-bearing Spike B caveat made structural — it is not optional.
 
-Gate: the run argv was produced by the builder (not hand-rolled), the co-mount
-guard was not bypassed, the posture matches Phase 1, and a dummy token reaches AUTH
-(a real `401 Invalid bearer token`) — proving the env token is the auth path before
-any real credential is used.
+Gate: the run argv was produced by the builder, the co-mount guard was not bypassed, and the effective posture matches Phase 1. Offline cannot perform an authentication request. A dummy-token `401` is optional, separately authorized maintainer qualification of the auth boundary on a suitable networked fixture; it is not a consumer prerequisite or authority to weaken offline isolation or acquire a real token.
 
 ## Phase 5 — Teardown · gate: BLOCK
 
@@ -138,11 +121,11 @@ Tear down per the lifecycle rules, deciding the fate of the credential volume.
   explicit, recorded `--keep-volume` decision.
 - Every object created carries the `ca.sandbox=1` label (plus a build marker in
   tests); the lifecycle/registry surfaces (`destroy`, `prune`) reclaim them.
-- Confirm zero leaked labeled containers/volumes after teardown (cached images
+- Confirm absence of the exact targeted container and selected credential volume after teardown (cached images
   excepted).
 
 Gate: container removed; the credential volume removed unless `--keep-volume` was
-explicitly chosen and recorded; no leaked `ca.sandbox=1` objects remain.
+explicitly chosen and recorded; targeted resources are verified absent; unrelated active sandboxes remain untouched. Never widen named teardown to global prune.
 
 ## Hard rules
 
@@ -165,3 +148,6 @@ explicitly chosen and recorded; no leaked `ca.sandbox=1` objects remain.
   explicit, recorded decision.
 - MUST treat the egress allowlist as EXPERIMENTAL (Spike C): for a token-bearing
   box, `offline` is the only GUARANTEED posture.
+
+
+Firewall failure and cleanup have separate outcomes. Cleanup drops the cancelled ordinary signal, removes the exact token container and independently observes absence. If observation fails, report unknown containment and retain the exact id; never claim the token box was destroyed solely because `docker rm` was issued.

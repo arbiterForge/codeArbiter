@@ -1,0 +1,16 @@
+{
+  "exit_code": 0,
+  "duration_seconds": 2.622760800004471,
+  "outer_timeout": false,
+  "source_unchanged": true,
+  "top_level": [
+    {
+      "Action": "pass",
+      "Test": "TestN09OrdinaryScopeGuardsAndRepeatedDoneOperation",
+      "Elapsed": 0.56
+    }
+  ],
+  "terminal_subtests": 5,
+  "failures": [],
+  "skips": []
+}

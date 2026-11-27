@@ -1,0 +1,241 @@
+{
+  "format": "finite-reader14-six-current-result/1",
+  "source_commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447",
+  "exit_code": 0,
+  "seconds": 7.585700199997518,
+  "argv": [
+    "C:/Python314/python.exe",
+    "-B",
+    "-X",
+    "utf8",
+    "-m",
+    "unittest",
+    "-v",
+    "test_boundedproc.ReadinessWaitTest.test_binary_readiness_preserves_completion_from_one_write",
+    "test_boundedproc.ReadinessWaitTest.test_binary_early_eof_reports_closed_and_finishes_empty",
+    "test_boundedproc.ReadinessWaitTest.test_communicate_without_input_closes_stdin_after_readiness",
+    "test_boundedproc.ReadinessWaitTest.test_communicate_sends_text_or_binary_input_after_readiness",
+    "test_boundedproc.ReadinessWaitTest.test_communicate_timeout_retry_sends_the_original_payload_once",
+    "test_boundedproc.ReadinessWaitTest.test_unread_stdin_stays_bounded_and_cleanup_settles_writer",
+    "test_boundedproc.CodexHostCommandDeadlineTest.test_hanging_codex_command_fails_with_timeout_and_containment",
+    "test_boundedproc.CodexHostCommandDeadlineTest.test_a_timed_out_marketplace_add_is_a_recorded_failure",
+    "test_boundedproc.PiBenchmarkReadinessDeadlineTest.test_no_ready_line_is_a_bounded_failure_with_containment",
+    "test_boundedproc.PiBenchmarkReadinessDeadlineTest.test_partial_ready_line_is_refused",
+    "test_boundedproc.PiBenchmarkReadinessDeadlineTest.test_immediate_exit_is_refused",
+    "test_boundedproc.PiBenchmarkReadinessDeadlineTest.test_hang_after_ready_is_bounded",
+    "test_boundedproc.PiBenchmarkReadinessDeadlineTest.test_well_behaved_boundary_completes",
+    "test_boundedproc.PiBenchmarkReadinessDeadlineTest.test_partial_early_exit_retains_readiness_failure_when_group_signal_is_denied"
+  ],
+  "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\.github\\scripts",
+  "selected_named_population": 14,
+  "named_results": [
+    {
+      "id": "test_boundedproc.ReadinessWaitTest.test_binary_readiness_preserves_completion_from_one_write",
+      "outcomes": [
+        "ok"
+      ]
+    },
+    {
+      "id": "test_boundedproc.ReadinessWaitTest.test_binary_early_eof_reports_closed_and_finishes_empty",
+      "outcomes": [
+        "ok"
+      ]
+    },
+    {
+      "id": "test_boundedproc.ReadinessWaitTest.test_communicate_without_input_closes_stdin_after_readiness",
+      "outcomes": [
+        "ok"
+      ]
+    },
+    {
+      "id": "test_boundedproc.ReadinessWaitTest.test_communicate_sends_text_or_binary_input_after_readiness",
+      "outcomes": [
+        "ok"
+      ]
+    },
+    {
+      "id": "test_boundedproc.ReadinessWaitTest.test_communicate_timeout_retry_sends_the_original_payload_once",
+      "outcomes": [
+        "ok"
+      ]
+    },
+    {
+      "id": "test_boundedproc.ReadinessWaitTest.test_unread_stdin_stays_bounded_and_cleanup_settles_writer",
+      "outcomes": [
+        "ok"
+      ]
+    },
+    {
+      "id": "test_boundedproc.CodexHostCommandDeadlineTest.test_hanging_codex_command_fails_with_timeout_and_containment",
+      "outcomes": [
+        "ok"
+      ]
+    },
+    {
+      "id": "test_boundedproc.CodexHostCommandDeadlineTest.test_a_timed_out_marketplace_add_is_a_recorded_failure",
+      "outcomes": [
+        "ok"
+      ]
+    },
+    {
+      "id": "test_boundedproc.PiBenchmarkReadinessDeadlineTest.test_no_ready_line_is_a_bounded_failure_with_containment",
+      "outcomes": [
+        "ok"
+      ]
+    },
+    {
+      "id": "test_boundedproc.PiBenchmarkReadinessDeadlineTest.test_partial_ready_line_is_refused",
+      "outcomes": [
+        "ok"
+      ]
+    },
+    {
+      "id": "test_boundedproc.PiBenchmarkReadinessDeadlineTest.test_immediate_exit_is_refused",
+      "outcomes": [
+        "ok"
+      ]
+    },
+    {
+      "id": "test_boundedproc.PiBenchmarkReadinessDeadlineTest.test_hang_after_ready_is_bounded",
+      "outcomes": [
+        "ok"
+      ]
+    },
+    {
+      "id": "test_boundedproc.PiBenchmarkReadinessDeadlineTest.test_well_behaved_boundary_completes",
+      "outcomes": [
+        "ok"
+      ]
+    },
+    {
+      "id": "test_boundedproc.PiBenchmarkReadinessDeadlineTest.test_partial_early_exit_retains_readiness_failure_when_group_signal_is_denied",
+      "outcomes": [
+        "ok"
+      ]
+    }
+  ],
+  "before_after_all_closure_equal": true,
+  "namespace_projection": {
+    ".github/scripts": {
+      "Git_names_equal_physical_names": false,
+      "legacy_cache_entries_preserved": [
+        "__pycache__",
+        "__pycache__/_boundedproc.cpython-314.pyc",
+        "__pycache__/_codex_cli_profile.cpython-314.pyc",
+        "__pycache__/_contextverificationlib.cpython-314.pyc",
+        "__pycache__/_immutable_git_blobs.cpython-314.pyc",
+        "__pycache__/_releaselib.cpython-314.pyc",
+        "__pycache__/adr_lifecycle.cpython-314.pyc",
+        "__pycache__/check-plugin-refs.cpython-314.pyc",
+        "__pycache__/check_adr_lifecycle.cpython-314.pyc",
+        "__pycache__/check_codex_host.cpython-314.pyc",
+        "__pycache__/check_codex_skill_resources.cpython-314.pyc",
+        "__pycache__/check_codex_static_package.cpython-314.pyc",
+        "__pycache__/check_control_bytes.cpython-314.pyc",
+        "__pycache__/check_sandbox_docker_layers.cpython-314.pyc",
+        "__pycache__/check_skill_portability.cpython-314.pyc",
+        "__pycache__/check_state_contracts_integration.cpython-314.pyc",
+        "__pycache__/ci20_native_binding.cpython-314.pyc",
+        "__pycache__/codex_agent_routes.cpython-314.pyc",
+        "__pycache__/major_qualification_report.cpython-314.pyc",
+        "__pycache__/major_readiness.cpython-314.pyc",
+        "__pycache__/observe_codex_installed_cli.cpython-314.pyc",
+        "__pycache__/observe_pi_installed_rpc.cpython-314.pyc",
+        "__pycache__/payload_scope.cpython-314.pyc",
+        "__pycache__/pi_benchmark.cpython-314.pyc",
+        "__pycache__/pi_cli_resolver.cpython-314.pyc",
+        "__pycache__/pi_host_locks.cpython-314.pyc",
+        "__pycache__/prepare_adr_acceptance.cpython-314.pyc",
+        "__pycache__/project_knowledge.cpython-314.pyc",
+        "__pycache__/retained_archive_cli_observation.cpython-314.pyc",
+        "__pycache__/run_artifact_authority_shard.cpython-314.pyc",
+        "__pycache__/run_concurrent_suites.cpython-314.pyc",
+        "__pycache__/test_artifact_authoring.cpython-314.pyc",
+        "__pycache__/test_artifact_authority_adapter.cpython-314.pyc",
+        "__pycache__/test_artifact_authority_retention.cpython-314.pyc",
+        "__pycache__/test_artifact_consumers.cpython-314.pyc",
+        "__pycache__/test_artifact_git_excludes.cpython-314.pyc",
+        "__pycache__/test_artifact_installed_host.cpython-314.pyc",
+        "__pycache__/test_artifact_npm_nested_launch.cpython-314.pyc",
+        "__pycache__/test_build_surface.cpython-314.pyc",
+        "__pycache__/test_ci20_native_pipeline.cpython-314.pyc",
+        "__pycache__/test_ci_impact.cpython-314.pyc",
+        "__pycache__/test_context_native.cpython-314.pyc",
+        "__pycache__/test_generated_output.cpython-314.pyc",
+        "__pycache__/test_hook_ci_partition.cpython-314.pyc",
+        "__pycache__/test_major_qualification_report.cpython-314.pyc",
+        "__pycache__/test_pi_child_live.cpython-314.pyc",
+        "__pycache__/test_pi_package.cpython-314.pyc",
+        "__pycache__/test_review_resubmission.cpython-314.pyc",
+        "__pycache__/test_sync_core.cpython-314.pyc",
+        "__pycache__/test_workflow_recovery_cli.cpython-314.pyc",
+        "__pycache__/test_workflow_recovery_hosts.cpython-314.pyc",
+        "__pycache__/verify_pi_support.cpython-314.pyc"
+      ],
+      "other_entries_preserved": [],
+      "causal_untracked_shadows": [],
+      "limits": "All entries and byte hashes retained; Git/Windows physical modes are distinct. Legacy cache content is not deleted or called absent."
+    },
+    "core/pysrc": {
+      "Git_names_equal_physical_names": false,
+      "legacy_cache_entries_preserved": [
+        "__pycache__",
+        "__pycache__/_activationlib.cpython-314.pyc",
+        "__pycache__/_adrlifecycle.cpython-314.pyc",
+        "__pycache__/_adrlifecyclegit.cpython-314.pyc",
+        "__pycache__/_artifactauthoritylib.cpython-314.pyc",
+        "__pycache__/_artifactlib.cpython-314.pyc",
+        "__pycache__/_artifactmanifestlib.cpython-314.pyc",
+        "__pycache__/_artifactpromptlib.cpython-314.pyc",
+        "__pycache__/_entrylib.cpython-314.pyc",
+        "__pycache__/_gitexec.cpython-314.pyc",
+        "__pycache__/_hooklib.cpython-314.pyc",
+        "__pycache__/_intentlib.cpython-314.pyc",
+        "__pycache__/_knowledgelib.cpython-314.pyc",
+        "__pycache__/_pathnorm.cpython-314.pyc",
+        "__pycache__/_protectedlib.cpython-314.pyc",
+        "__pycache__/_releaselib.cpython-314.pyc",
+        "__pycache__/_replylib.cpython-314.pyc",
+        "__pycache__/_scopelib.cpython-314.pyc",
+        "__pycache__/_sensitivelib.cpython-314.pyc",
+        "__pycache__/hostapi.cpython-314.pyc",
+        "__pycache__/knowledge.cpython-314.pyc",
+        "__pycache__/security-pass.cpython-314.pyc"
+      ],
+      "other_entries_preserved": [],
+      "causal_untracked_shadows": [],
+      "limits": "All entries and byte hashes retained; Git/Windows physical modes are distinct. Legacy cache content is not deleted or called absent."
+    }
+  },
+  "module_resolution": {},
+  "actual_repository_imports": {
+    ".github/scripts/test_boundedproc.py": "95238b422b62a6b154effe3d919c9f86f8927babbcf240ea40ab919f6828b87e",
+    ".github/scripts/_boundedproc.py": "671458a00f178ac690e4d1f4e0458da7b3833353384f9cb7546be711bab15f51",
+    ".github/scripts/check_codex_host.py": "ced71d6b20fe30c25ec7b5cb8cde191cd8ef7e72008b904bfa8dcbd3c4adc6b4",
+    ".github/scripts/codex_agent_routes.py": "756a4a53059853fe85bbb846dd0bf87acf8c556506f4f5b0f7476897b2471092",
+    ".github/scripts/pi_benchmark.py": "1a224fc7625b00586e453d9f3cac878d5d2db1d68ac26b37c54b5002b1b8ee77"
+  },
+  "actual_import_observations": [
+    "actual-imports-10356.json",
+    "actual-imports-19876.json",
+    "actual-imports-32016.json",
+    "actual-imports-40712.json",
+    "actual-imports-42904.json",
+    "actual-imports-44056.json",
+    "actual-imports-45080.json",
+    "actual-imports-55292.json",
+    "actual-imports-57076.json",
+    "actual-imports-68868.json",
+    "actual-imports-71260.json",
+    "actual-imports-73484.json"
+  ],
+  "actual_fixture_child_observations": [],
+  "limits": "Exactly14 existing bounded-reader Python fixture methods; no benchmark100/CLI/SDK/provider/native/installed/publication claim.",
+  "checked_inputs": {
+    ".github/scripts/_boundedproc.py": "671458a00f178ac690e4d1f4e0458da7b3833353384f9cb7546be711bab15f51",
+    ".github/scripts/check_codex_host.py": "ced71d6b20fe30c25ec7b5cb8cde191cd8ef7e72008b904bfa8dcbd3c4adc6b4",
+    ".github/scripts/codex_agent_routes.py": "756a4a53059853fe85bbb846dd0bf87acf8c556506f4f5b0f7476897b2471092",
+    ".github/scripts/pi_benchmark.py": "1a224fc7625b00586e453d9f3cac878d5d2db1d68ac26b37c54b5002b1b8ee77",
+    ".github/scripts/test_boundedproc.py": "95238b422b62a6b154effe3d919c9f86f8927babbcf240ea40ab919f6828b87e"
+  }
+}

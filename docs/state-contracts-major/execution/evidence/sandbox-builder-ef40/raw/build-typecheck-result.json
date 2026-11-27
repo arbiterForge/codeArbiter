@@ -1,0 +1,52 @@
+{
+  "results": [
+    {
+      "kind": "typecheck",
+      "argv": [
+        "C:/Users/brenn/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node.exe",
+        "node_modules/typescript/bin/tsc",
+        "--noEmit"
+      ],
+      "exit_code": 0,
+      "seconds": 0.9319665431976318
+    },
+    {
+      "kind": "sandbox_bundle",
+      "argv": [
+        "C:/Users/brenn/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node.exe",
+        "node_modules/esbuild/bin/esbuild",
+        "cli.ts",
+        "--bundle",
+        "--platform=node",
+        "--format=esm",
+        "--outfile=sandbox.js",
+        "--banner:js=#!/usr/bin/env node"
+      ],
+      "exit_code": 0,
+      "seconds": 0.05833625793457031
+    },
+    {
+      "kind": "claude_bundle",
+      "argv": [
+        "C:/Users/brenn/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node.exe",
+        "node_modules/esbuild/bin/esbuild",
+        "claude-inside-cli.ts",
+        "--bundle",
+        "--platform=node",
+        "--format=esm",
+        "--outfile=claude-inside.js",
+        "--banner:js=#!/usr/bin/env node"
+      ],
+      "exit_code": 0,
+      "seconds": 0.05548095703125
+    }
+  ],
+  "generated_before": {
+    "sandbox.js": "6c873ef61f7fcb144a00f017ea617339d7edc326179eb1478326f6acb3f9877b",
+    "claude-inside.js": "3c7db1ab1c01c7e6d28565f3361d5eaf605d5af10e8fc6bb5c4b60ffb2d4877f"
+  },
+  "generated_after": {
+    "sandbox.js": "6b3dd773814fa9db455a63ada4d9a2d202dad51dbdd2dcf72174f2322291fcbd",
+    "claude-inside.js": "3c7db1ab1c01c7e6d28565f3361d5eaf605d5af10e8fc6bb5c4b60ffb2d4877f"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "scope": "Pure AST source/membership check only; no test module setup/import, native process or claimed suite execution. Original hosted actual conformance omission retained separately.",
+  "expected_count": 60,
+  "declared_case_count": 60,
+  "duplicates": false,
+  "missing": [],
+  "extra": [],
+  "inputs": {
+    ".github\\scripts\\test_artifact_conformance.py": "dbe6b5dedf7266b2c59f39aca6aca6aa35705b5831ab87e4f930c55a70811af0",
+    ".github\\scripts\\test_artifact_package.py": "c6267d3ed0d9f4b473f88b444dc7688c5c46e9798b3f13063939776c08cef389"
+  },
+  "result": "PASSED"
+}

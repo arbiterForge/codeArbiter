@@ -1,0 +1,25 @@
+{
+ "argv": [
+  "C:/Python314/python.exe",
+  "-I",
+  "-S",
+  "-B",
+  "-X",
+  "utf8",
+  "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-sandbox-finding-routes-jw9kezze\\controller.py",
+  "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-sandbox-finding-routes-jw9kezze\\candidate",
+  "SandboxOwnedEffectsRoutingTests",
+  "VitestSourceProducerTests.test_closed_profiles_stage_exact_consumed_members_and_admit_only_four_cells",
+  "VitestSourceProducerTests.test_final_ts_reports_authenticate_the_original_source_upload_and_owner"
+ ],
+ "exit_code": 0,
+ "seconds": 9.777228599996306,
+ "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+ "stderr_sha256": "9ced4febbf66ab7cdfaaad11d386e479cdf33946ce5e746f807d7739a9f7af06",
+ "subjects": {
+  ".github\\scripts\\major_qualification_report.py": "b8bac108d45ef0103ced20a89e4c1da743985719f6fa4d4cab4f48725c35e721",
+  ".github\\scripts\\test_major_qualification_report.py": "db0139f4dab7a8fac5fcf321fbcbe90c57cd088808ec4dcfea462de35108bfc3",
+  ".github\\major-test-selections.json": "33b9475456b022120f017983d788229d31cd4ff719227021a4c286d947bc75f9",
+  ".github\\major-qualification-policy.json": "c13fa1d390436638f32a5b1a2c709c4396b76c2b147916605a1f3ab2818439c4"
+ }
+}

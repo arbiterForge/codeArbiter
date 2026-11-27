@@ -1,0 +1,37 @@
+{
+  "count": 67,
+  "exact_ID_definitions": true,
+  "old61_unchanged": true,
+  "new6_ids": [
+    "test_wire_statusline.TestSpinnerReleasedReaderRollback.test_released_reader_cannot_restore_over_new_user_spinner",
+    "test_wire_statusline.TestSpinnerReleasedReaderRollback.test_literal_legacy_backup_migration_preserves_custom_and_unrelated_values",
+    "test_wire_statusline.TestSpinnerReleasedReaderRollback.test_malformed_backup_metadata_never_grants_ownership_of_custom_spinner",
+    "test_wire_statusline.TestSpinnerReleasedReaderRollback.test_owned_refresh_protects_legacy_backup_from_released_reader",
+    "test_wire_statusline.TestSpinnerReleasedReaderRollback.test_mixed_backup_formats_refuse_writes_and_leave_refresh_inert",
+    "test_wire_statusline.TestSpinnerReleasedReaderRollback.test_legacy_migration_keeps_foreign_and_ephemeral_refresh_inert"
+  ],
+  "private_class_ASTs": {
+    "PrivateDurabilityBoundaries": "3b60741e659df4c8daab13a71a7af9a007aaedce708af7b0f4aa24dd9ac44294",
+    "PrivateInstallJourney": "869c86572e97028bfc5d366b122ff8126023c1565e09d88ad7190fff288d3eb5",
+    "RefreshWholeRowPreservation": "9daa9893fd3e05a2b8ce31117379c286a7854edb8030f26e782ee54c76432193"
+  },
+  "prior_HOOKF05_inputs": [
+    "core/pysrc/_durabilitylib.py",
+    "core/pysrc/wire-statusline.py",
+    "plugins/ca/hooks/_activationlib.py",
+    "plugins/ca/hooks/_durabilitylib.py",
+    "plugins/ca/hooks/_gitexec.py",
+    "plugins/ca/hooks/_hooklib.py",
+    "plugins/ca/hooks/_host.py",
+    "plugins/ca/hooks/_pathnorm.py",
+    "plugins/ca/hooks/_protectedlib.py",
+    "plugins/ca/hooks/_scopelib.py",
+    "plugins/ca/hooks/_sensitivelib.py",
+    "plugins/ca/hooks/hostapi.py",
+    "plugins/ca/hooks/tests/test_wire_statusline.py",
+    "plugins/ca/hooks/wire-statusline.py"
+  ],
+  "extra_positive_inputs_beyond_old29": [],
+  "prior_capture": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-machine61-9c1a-qs7lh6wx",
+  "assertions_replaced": false
+}

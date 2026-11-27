@@ -1,0 +1,248 @@
+{
+  "M": "0b0ae193496335c0d87337e5993f032a9385fffb",
+  "current": "ef63f8c306c8e47c111afec12a9d980d0e8927d6",
+  "subjects": {
+    "plugins/ca-pi/tools/test/benchmark-boundary.ts": {
+      "M": {
+        "sha256": "d4a8a0573a0710119f9e4ff1bc55bde7f0e2ce44c10dfcc44a63c5f259677aab",
+        "bytes": 2699
+      },
+      "current": {
+        "sha256": "d4a8a0573a0710119f9e4ff1bc55bde7f0e2ce44c10dfcc44a63c5f259677aab",
+        "bytes": 2699
+      },
+      "byte_equal": true
+    },
+    "plugins/ca-pi/tools/test/live-pi-host.ts": {
+      "M": {
+        "sha256": "f7a18740703b17afc33423561a63c08958473a17b1b2443e1a4c0d414e4e3d7b",
+        "bytes": 3266
+      },
+      "current": {
+        "sha256": "f7a18740703b17afc33423561a63c08958473a17b1b2443e1a4c0d414e4e3d7b",
+        "bytes": 3266
+      },
+      "byte_equal": true
+    },
+    "plugins/ca-pi/tools/test/setup-disposable-home.ts": {
+      "M": {
+        "sha256": "768c65b5a03877e16ba9a81f758ccaf8173f28363573aafcd85dab1cc4be6e53",
+        "bytes": 2729
+      },
+      "current": {
+        "sha256": "768c65b5a03877e16ba9a81f758ccaf8173f28363573aafcd85dab1cc4be6e53",
+        "bytes": 2729
+      },
+      "byte_equal": true
+    },
+    "plugins/ca-pi/tools/test/runner-isolation.test.ts": {
+      "M": {
+        "sha256": "15b25b33f928184493e2bb47f4af7a9576540e26b59e81fc7dfe7972f5f1faac",
+        "bytes": 100540
+      },
+      "current": {
+        "sha256": "15b25b33f928184493e2bb47f4af7a9576540e26b59e81fc7dfe7972f5f1faac",
+        "bytes": 100540
+      },
+      "byte_equal": true
+    },
+    "plugins/ca-pi/tools/test/security.test.ts": {
+      "M": {
+        "sha256": "1b532cf9e318d207eba294cab4aa66431d25170f71dce50bda2200c62acc36ec",
+        "bytes": 30138
+      },
+      "current": {
+        "sha256": "1b532cf9e318d207eba294cab4aa66431d25170f71dce50bda2200c62acc36ec",
+        "bytes": 30138
+      },
+      "byte_equal": true
+    },
+    ".github/scripts/pi_benchmark.py": {
+      "M": {
+        "sha256": "1a224fc7625b00586e453d9f3cac878d5d2db1d68ac26b37c54b5002b1b8ee77",
+        "bytes": 16181
+      },
+      "current": {
+        "sha256": "1a224fc7625b00586e453d9f3cac878d5d2db1d68ac26b37c54b5002b1b8ee77",
+        "bytes": 16181
+      },
+      "byte_equal": true
+    },
+    ".github/scripts/test_pi_benchmark.py": {
+      "M": {
+        "sha256": "be4264e341133e7c197ff2059d7311eab83033ab8f3bf760ad590629785db32c",
+        "bytes": 6271
+      },
+      "current": {
+        "sha256": "be4264e341133e7c197ff2059d7311eab83033ab8f3bf760ad590629785db32c",
+        "bytes": 6271
+      },
+      "byte_equal": true
+    },
+    ".github/scripts/observe_pi_installed_rpc.py": {
+      "M": {
+        "sha256": "f6c607187eb4a7701c712613695637ba9ccfb8b4f1069b75a926ef6a8dc63352",
+        "bytes": 25934
+      },
+      "current": {
+        "sha256": "f6c607187eb4a7701c712613695637ba9ccfb8b4f1069b75a926ef6a8dc63352",
+        "bytes": 25934
+      },
+      "byte_equal": true
+    },
+    "plugins/ca-pi/tools/vitest.config.ts": {
+      "M": {
+        "sha256": "bea41c8f465ce1a6f78de62b8a85e560ee03214c6ede6ee5309f1600f8222e9d",
+        "bytes": 2558
+      },
+      "current": {
+        "sha256": "bea41c8f465ce1a6f78de62b8a85e560ee03214c6ede6ee5309f1600f8222e9d",
+        "bytes": 2558
+      },
+      "byte_equal": true
+    },
+    "plugins/ca-pi/tools/package.json": {
+      "M": {
+        "sha256": "083e139a7a805f183e63e8be50e8ce7908d0c4748fe1ed474ee198734efaf560",
+        "bytes": 505
+      },
+      "current": {
+        "sha256": "083e139a7a805f183e63e8be50e8ce7908d0c4748fe1ed474ee198734efaf560",
+        "bytes": 505
+      },
+      "byte_equal": true
+    },
+    "plugins/ca-pi/tools/package-lock.json": {
+      "M": {
+        "sha256": "16185d807538d2ba97eb57ef098512f667faeb879e7585950adbf013e5b2b5d8",
+        "bytes": 63619
+      },
+      "current": {
+        "sha256": "16185d807538d2ba97eb57ef098512f667faeb879e7585950adbf013e5b2b5d8",
+        "bytes": 63619
+      },
+      "byte_equal": true
+    },
+    ".github/workflows/ci.yml": {
+      "M": {
+        "sha256": "88b8154ad664c670f2111f045c14ffba259b50f5ec589062047f90695ab2dbf6",
+        "bytes": 272037
+      },
+      "current": {
+        "sha256": "99b0d1acef9996b68e0259dfaacd9a9ea4be91d8f98b108e230e71baeeb704d0",
+        "bytes": 275520
+      },
+      "byte_equal": false
+    },
+    "plugins/ca/hooks/_host.py": {
+      "M": {
+        "sha256": "9d04b88683d1deab03850ef1f2a169579f59756d3430079bdc6aa2160994bc1b",
+        "bytes": 1689
+      },
+      "current": {
+        "sha256": "9d04b88683d1deab03850ef1f2a169579f59756d3430079bdc6aa2160994bc1b",
+        "bytes": 1689
+      },
+      "byte_equal": true
+    },
+    "plugins/ca-codex/hooks/_host.py": {
+      "M": {
+        "sha256": "92b1977ada85436649380fdcf07651f586174efee76a8412beb3ae26bf1e457f",
+        "bytes": 15607
+      },
+      "current": {
+        "sha256": "92b1977ada85436649380fdcf07651f586174efee76a8412beb3ae26bf1e457f",
+        "bytes": 15607
+      },
+      "byte_equal": true
+    },
+    "core/pysrc/_hooklib.py": {
+      "M": {
+        "sha256": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+        "bytes": 49147
+      },
+      "current": {
+        "sha256": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+        "bytes": 49147
+      },
+      "byte_equal": true
+    },
+    "plugins/ca-pi/tools/src/tool-guard.ts": {
+      "M": {
+        "sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141",
+        "bytes": 46425
+      },
+      "current": {
+        "sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141",
+        "bytes": 46425
+      },
+      "byte_equal": true
+    },
+    "plugins/ca-pi/tools/src/contracts.ts": {
+      "M": {
+        "sha256": "6e1e8b96c95fc9d7dc392817795c7fdbc1d1400c3a2837fb1fd4476cbd8ce928",
+        "bytes": 7509
+      },
+      "current": {
+        "sha256": "6e1e8b96c95fc9d7dc392817795c7fdbc1d1400c3a2837fb1fd4476cbd8ce928",
+        "bytes": 7509
+      },
+      "byte_equal": true
+    },
+    "plugins/ca-pi/tools/src/audit-sink.ts": {
+      "M": {
+        "sha256": "118e24ae1be2ad4807801860dbb9fb7b953e0404d198124d4393cd575e49ed27",
+        "bytes": 9787
+      },
+      "current": {
+        "sha256": "118e24ae1be2ad4807801860dbb9fb7b953e0404d198124d4393cd575e49ed27",
+        "bytes": 9787
+      },
+      "byte_equal": true
+    },
+    "plugins/ca-pi/tools/src/redaction.ts": {
+      "M": {
+        "sha256": "661a80a80cf818ddc7e8c088d7ede3ccd4e5e1a572c9b799e2e5aa3e61ab6742",
+        "bytes": 4571
+      },
+      "current": {
+        "sha256": "661a80a80cf818ddc7e8c088d7ede3ccd4e5e1a572c9b799e2e5aa3e61ab6742",
+        "bytes": 4571
+      },
+      "byte_equal": true
+    },
+    "plugins/ca-pi/tools/src/notices.ts": {
+      "M": {
+        "sha256": "48fa54e675837ad0b06ea68e053d72cce734294131eb72b144de608d5f4e697c",
+        "bytes": 2690
+      },
+      "current": {
+        "sha256": "48fa54e675837ad0b06ea68e053d72cce734294131eb72b144de608d5f4e697c",
+        "bytes": 2690
+      },
+      "byte_equal": true
+    },
+    "plugins/ca-pi/tools/src/policy.ts": {
+      "M": {
+        "sha256": "87950047f3d721b15a08bae83b1212d368367f3c332488611073050c0bc77676",
+        "bytes": 12721
+      },
+      "current": {
+        "sha256": "87950047f3d721b15a08bae83b1212d368367f3c332488611073050c0bc77676",
+        "bytes": 12721
+      },
+      "byte_equal": true
+    },
+    ".github/scripts/test_observe_pi_installed_rpc.py": {
+      "M": {
+        "sha256": "f08563e915b4f94c9077816ca65670202570aac1911e3feb5a595ecdeb05c302",
+        "bytes": 27791
+      },
+      "current": {
+        "sha256": "f08563e915b4f94c9077816ca65670202570aac1911e3feb5a595ecdeb05c302",
+        "bytes": 27791
+      },
+      "byte_equal": true
+    }
+  }
+}

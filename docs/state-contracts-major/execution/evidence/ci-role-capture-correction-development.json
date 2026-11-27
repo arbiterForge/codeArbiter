@@ -1,0 +1,160 @@
+{
+  "schema": "codearbiter-development-observations/1",
+  "source_anchor": "7ac016078da0beedc92537334d6c8d849794f2dc",
+  "recorded_at": "2026-11-16T01:48:47.008804+00:00",
+  "qualification": false,
+  "original_provider_runs": {
+    "ci": 43786223415,
+    "docs": 43786223209,
+    "result": "TERMINAL_FAILURE_NO_QUALIFICATION",
+    "ci_jobs": {
+      "skipped": 7,
+      "failure": 17,
+      "success": 65
+    },
+    "all_checks": {
+      "skipping": 9,
+      "pass": 65,
+      "fail": 19
+    }
+  },
+  "closed_causes": [
+    {
+      "owner": ".github/scripts/test_hook_ci_partition.py",
+      "cause": "New finite source-test prepare/observe/upload/emit roles were not modeled. Simple folded command scalars were incorrectly returned with literal newlines. The 100-character diagnostic preview was not expression truncation."
+    },
+    {
+      "owner": ".github/scripts/test_ci_impact.py",
+      "cause": "The merge-group reachability scan treated the trusted-normal-push metadata emitter as an ordinary enforced test."
+    },
+    {
+      "owner": ".github/scripts/test_state_contracts_integration.py",
+      "cause": "An old blanket no-GH_TOKEN-in-hooks assertion contradicted the new reviewed step-local metadata role."
+    },
+    {
+      "owner": ".github/scripts/test_artifact_conformance.py",
+      "cause": "Strict package suite inventory omitted exactly three added, reviewed audit methods. Observed package subprocesses returned0 before membership refusal."
+    },
+    {
+      "owner": "site/src/assets/captures/",
+      "cause": "Four maintained guide captures had stale shared Git dependency hashes; actual tool executions reproduced identical displayed output/arguments."
+    },
+    {
+      "owner": "plugins/ca/tools/farm.ts",
+      "cause": "Exclusive lock acquisition propagated EPERM immediately. Bounded handling gap repaired; original Windows kernel trigger and transientness remain UNKNOWN."
+    }
+  ],
+  "actual_local_checks": {
+    "classifier_owning_contracts": {
+      "PASS": 116,
+      "skips": 0,
+      "seconds": 0.9009698000008939,
+      "scope": "Full Hook partition module, WorkflowContractTest, cold/source event guard classes; text/JSON/stdlib controls"
+    },
+    "carried_Gov_hook_validator": {
+      "PASS": 47,
+      "skips": 0,
+      "live_hooks_inventory": "74contracts/1isolation/1guard/3setup/1native_setup",
+      "live_recovery_contract": "5commands/1native_setup/3cells"
+    },
+    "original_P02_fourteen_private_candidate": {
+      "PASS": 14,
+      "skips": 0,
+      "seconds": 6.590986099996371,
+      "extra_in_method_security_mutants": 5,
+      "test_overlay_sha256": "a33f259a12710cc39dd3ebc29aa20c87c06992af618b530f95ffd47cb8804319"
+    },
+    "conformance_membership": {
+      "before_expected": 56,
+      "actual_original_methods": 59,
+      "after_expected": 59,
+      "added_names_only": 3,
+      "method_execution": false,
+      "scope": "AST-only complete exact membership comparison; unchanged three pure audit owning methods already passed"
+    },
+    "actual_guide_captures": {
+      "targets": 4,
+      "seconds": 1.888358199998038,
+      "unchanged_output_and_arguments": true,
+      "changed_dependency_only": "plugins/ca/hooks/_gitexec.py",
+      "freshness": "PASS"
+    },
+    "farm_registry": {
+      "actual_target_RED": 6,
+      "actual_owning_GREEN": 13,
+      "original_controls_preserved": 7,
+      "skips": 0,
+      "seconds": 6.038,
+      "owning_typecheck": "PASS",
+      "built_bundle": "Exact pinned existing esbuild, one acquisition hunk only",
+      "source_and_bundle": "Both actual existing entrypoints; only exact owned fs.open failure injected; successful handles/owner proof/release use real OS files",
+      "limits": "No provider/dispatcher/mockHTTP/fullFarm replay or original kernel reproduction."
+    },
+    "source_witness_git_join": {
+      "result": "PASS",
+      "source": "7ac016078da0beedc92537334d6c8d849794f2dc",
+      "witnesses": 288,
+      "unique_blobs": 62,
+      "git_object_ids": "Observed from Git ls-tree and read with Git cat-file; no direct SHA1 calculation",
+      "file_and_span_hash": "SHA256",
+      "canonical_files_mutated": false
+    }
+  },
+  "preservation": [
+    "Existing original75-command inventory/order/digest and native/whole-suite guards retained.",
+    "No workflow/job filter/token permission/timeout/action pin changed by this correction.",
+    "Original P02 RED and wrong-module selection attempt retained separately; correctly pinned private candidate GREEN is distinct.",
+    "Classifier raw-string/comment refinements retained as failed candidate refinements, not test passes.",
+    "Original WR29 passed assertions but insufficient launch instrumentation retained; corrected original Popen-entry observation captured all22 launches.",
+    "Original statuses/history/raw epochs remain; source-only inspection is not runtime testing.",
+    "No repeat interim source sweep: current applicability is measured by the original owner, and newly stale bindings remain reported."
+  ],
+  "limits": [
+    "No final program/task/scenario completion, installed/native cohort qualification, human/model/parent acceptance or publication follows from these local observations.",
+    "Whole exact-head child CI and later successful trusted integration push are separate required boundaries.",
+    "P02six remains awaiting a stable committed-source capture; failed original14 cannot admit it.",
+    "Parent1098 remains OPEN/DRAFT held from main; pending Pi HTTP policy is unchanged.",
+    "The source246 private producer had calculated legacy Git object IDs directly; Root independently joined all288 IDs/file/span witnesses to Git-owned ls-tree/cat-file and SHA256. No direct SHA1 implementation is added to canonical code."
+  ],
+  "finite_renewals": {
+    "source_rows": 246,
+    "software_rows": 48,
+    "all_statuses_unchanged": true,
+    "software_owning_commands": {
+      "statusline": 67,
+      "channel": 16,
+      "workflow_recovery": 29,
+      "benchmark_samples": 100
+    },
+    "runtime_records": 10795,
+    "recovery_actual_child_launches": 22,
+    "benchmark": "105 stub bridge/factory calls; no real-spawn or performance-improvement claim",
+    "failed_P02_six": "EXCLUDED",
+    "historical_scope_prose": "WR raw original_scope retains historical1905 wording; current structured runtime binding is10795. Old scope remains history, not a new runtime-count claim.",
+    "current_applicability": {
+      "whole_owner": "PASSED_105_FROZEN_1318_ADVANCED_833_APPLICABLE_485_STALE_0_UNKNOWN",
+      "source246": {
+        "APPLICABLE": 43,
+        "STALE": 203
+      },
+      "software48": {
+        "APPLICABLE": 48
+      },
+      "source_stale_causes": {
+        "test_artifact_conformance.py": 143,
+        "test_ci_impact.py": 60
+      },
+      "no_interim_recapture": true
+    }
+  },
+  "staged_integrity_observation": {
+    "result": "PASSED_105_FROZEN_1318_ADVANCED_833_APPLICABLE_485_STALE_0_UNKNOWN",
+    "verification_fixture_commit": "c18ffc84761573207e0611a2e125ddcacbdf1b85",
+    "actual_branch_head": "7ac016078da0beedc92537334d6c8d849794f2dc",
+    "seconds": 40.55,
+    "source_ref_moved": false,
+    "qualification": false,
+    "controller_correction": "Earlier staging controller served index bytes under immutable7ac and failed authenticity. A private bare Git fixture now gives the staged tree its own real unreferenced commit with7ac parent. Original owner and historical input hashes are unchanged; original Git objects remain authoritative. No source/branch ref moved.",
+    "final_metadata_note": "Only measured counters/prose are updated after this observation; original proof/CAS/input bytes and statuses are unchanged."
+  }
+}

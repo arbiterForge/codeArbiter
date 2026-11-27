@@ -1,0 +1,51 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "4c785732b25f372c36cd75306703029b072a0a70",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "Exact prepared finite clauses with immutable current witness and namespace join"
+  },
+  "inputs": {
+    "plugins/ca-sandbox/tools/deadline.test.ts": "d2b55475e25a3f1f51230c7dcd2b3fe6d03492c1e6d47ba7477d6091b412c65c",
+    "plugins/ca-sandbox/tools/docker-gate.ts": "0f4929feb9b5e41224cd1a276fb0a1aa3b2b6fb064dd0a7c7c28309e35f70e5b",
+    "plugins/ca-sandbox/tools/docker.ts": "ac2127a49446d7794bb7b8b2b20cf786c56f8d4a318ade2e56b354fc7a068fc0",
+    "plugins/ca-sandbox/tools/exec.ts": "31b0297d6bf0288c4d16bfd6c8604b31141ddf887cd8103c63b2e9ac0343458e",
+    "plugins/ca-sandbox/tools/package-lock.json": "815b4523f446b39c6eb078a2e7249601432240582a444d0c48e2aff02179ef67",
+    "plugins/ca-sandbox/tools/package.json": "cf3b87fea39148d3b3bee0db60c84b8fcbf353f4b0565d513141fd2937ae3138",
+    "plugins/ca-sandbox/tools/tsconfig.json": "006a5145157df0bf27f79f2bb00dee8cf9df85720b01d88675510e13770deab7",
+    "plugins/ca-sandbox/tools/vitest.config.ts": "bb1c82a13ca1af089ef3db4af843da2bfef3def0733b812ccd5fb36f6460dd5e",
+    "plugins/ca-sandbox/tools/cli.ts": "f5a004a68aa2ab6da7432ee6d6b5a216ae22d0c79a993b4ca3587e5bd5de209c",
+    "plugins/ca-sandbox/tools/claude-inside-cli.ts": "06b3b1c5b1955007d9e2cc3ed1ecb2cce4b91d7c2444f63b56b4bcd61c5a4a94"
+  },
+  "disposition_ids": [
+    "disposition:transitions:S54:06"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/stable-source-build-tool-scope-4c785732/source-group-009-inspection.json",
+      "sha256": "e4a90153c93ff81a7879efededb773f95f366957bf34728b1b9e4462c0a6b60e"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sandbox-client-and-required-gate-preserved.json",
+      "sha256": "bd03c03c3c413f0e562fd0481271f41896493533abbf4c823305e44018d968f8"
+    }
+  ],
+  "retained_prior_proof": {
+    "path": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sandbox-client-and-required-gate-preserved.json",
+    "sha256": "bd03c03c3c413f0e562fd0481271f41896493533abbf4c823305e44018d968f8",
+    "source_commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+    "retained_at": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca"
+  },
+  "semantic_mapping_ref": "docs/state-contracts-major/execution/evidence/stable-source-build-tool-scope-4c785732/source-group-009-inspection.json",
+  "scope": "Finite declared guard, effect and retry source conformance with inherited limits.",
+  "limits": [
+    "Finite named software/source contracts only. No whole-task/whole-program promotion, paid provider, all-crash/partial-compensation, unexecuted platform or new installed runtime claim.",
+    "Actual old execution epochs/raw producer classes remain unchanged. Retaining an extract/current source hash is not another execution.",
+    "Exact callback/declaration hashes and line anchors are in selected-named-observations; full source files are captured inputs, never replaced by AST/function equality.",
+    "No run, platform, package, task, provider, user or installed evidence was renewed.",
+    "All prior original source epochs and raw evidence remain exact.",
+    "This preservation supplies no npm advisory mitigation or acceptance."
+  ]
+}

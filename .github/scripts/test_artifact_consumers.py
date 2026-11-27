@@ -333,7 +333,8 @@ class ArtifactConsumerClosureTest(unittest.TestCase):
         workflow = workflow_path.read_text(encoding="utf-8")
         self.assertGreaterEqual(workflow.count('- "plugins/ca/**"'), 2)
         self.assertIn("run: npm run gen", workflow)
-        self.assertIn("run: npm run coverage", workflow)
+        from test_ci_impact import docs_coverage_step_index, workflow_jobs
+        self.assertGreaterEqual(docs_coverage_step_index(workflow_jobs(workflow)["site-check"]), 0)
         self.assertIn("run: npm run build", workflow)
 
     def test_default_rollout_is_enabled_but_farm_remains_disabled(self) -> None:

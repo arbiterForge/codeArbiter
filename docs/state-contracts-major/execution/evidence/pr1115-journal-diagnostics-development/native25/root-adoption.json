@@ -1,0 +1,33 @@
+{
+  "source_epoch": "bb66e3fca9fa0b87b5a983ccd1e930b691f22861",
+  "subjects": [
+    {
+      "path": ".github/scripts/major_native_observation.py",
+      "preimage_sha256": "843fcbed655c36ff5b474d6a48bdf1d70568fe6fa149bb8a135b5f345d81a76f",
+      "candidate_sha256": "8cdecc9b0e72de52aa0973a5448b4d8c8fc6f343920aa87f48c28d7ae14dafe9",
+      "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native25-parent-fixture-successor-pxq69796\\green\\.github\\scripts\\major_native_observation.py"
+    },
+    {
+      "path": ".github/scripts/test_major_native_observation.py",
+      "preimage_sha256": "344d8154740ec9095f77a108e6c4f2874390c5956180e443f1fdcfedc2becb83",
+      "candidate_sha256": "bc190cb58bb72bd1462aa0d8e54566988f0ac92c2bf78bfab23a9c3d16f2dc3b",
+      "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native25-parent-fixture-successor-pxq69796\\green\\.github\\scripts\\test_major_native_observation.py"
+    },
+    {
+      "path": ".github/major-qualification-policy.json",
+      "preimage_sha256": "2c3789ccd3f9441ae9be4c87ae12735d34a35a873d788505f68022395a849f7f",
+      "candidate_sha256": "2edadf1f1ceb41f25df5e2abd8bf2b0ebcd836aa558eba35dc3dcdb1d5258568",
+      "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native25-parent-fixture-successor-pxq69796\\green\\.github\\major-qualification-policy.json"
+    }
+  ],
+  "actual_green": {
+    "exit_code": 0,
+    "duration_seconds": 4.822624799999176,
+    "tests": 8,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0,
+    "subtests": 339
+  },
+  "qualification": false
+}

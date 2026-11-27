@@ -58,18 +58,41 @@ still finds no store is not retried again. A client constructed with
 `initialize_store=False` never initializes and surfaces `NO_LOCAL_STORE` directly.
 
 Lock initialization does not restore receipts referenced by committed plans.
+
+Observation locking has platform-specific metadata effects:
+
+| Platform | Shared observation lock | Metadata effects |
+|---|---|---|
+| Linux | Repository directory `flock` | No lock file or artifact-store initialization. |
+| Darwin | Shared `flock` on `store.lock` | The ordinary lock-file path may create `.artifacts` and `store.lock`; this is local lock metadata, not a canonical document change. |
+| Windows | Existing-store observation handle | Missing metadata returns `NO_LOCAL_STORE`; the observation itself creates nothing. A packaged client may explicitly call `init-store` before its one retry. |
+
+Contextual reads are a separate mode: they write derived context-token receipts
+under an exclusive lock. Exact and batch reads do not produce those receipts and
+do not claim current source applicability merely because their model identity
+matches.
 Missing local evidence remains missing; copying tracked artifacts into a fresh
 worktree does not establish their referenced verification or approval history.
 
 ## Operation families
+
+`capabilities` returns `operations` (every implemented name) and a versioned
+`operation_contract` (`codearbiter.operation-descriptors/0.1.0`) with one row per
+operation: its effect class, whether `Run` gives it operation-ID replay, the
+repository lock it takes (`read` is shared only in `exact` mode), the reserved
+directories or file classes it can write, and whether it is ordinary,
+explicit-evidence or decided by its request fields. These traits describe actual
+effects; none is a permission, and `journaled: false` does not mean the
+operation writes nothing.
 
 | Family | Operations |
 |---|---|
 | Discovery | `capabilities`, `schema`, `index`, `outline`, `identity`, `task-context` |
 | Content | `create`, `apply`, `plan-bind`, `diff`, `read`, `read-batch`, `plan-verification`, `validate`, `rebrand`, `export` |
 | Integrity/recovery | `repair-preview`, `repair-apply`, `recover`, `init-store` |
-| Explicit attestation | `capture`, `approve`, `sprint-approval-context`, `sprint-approve`, `smarts-apply` |
+| Explicit attestation | `capture`, `capture-observation`, `evidence-context`, `approve`, `sprint-approval-context`, `sprint-approve`, `smarts-apply` |
 | Execution ledger | `prerequisite`, `snapshot`, `eligible`, `verification-status`, `task-start`, `task-check`, `task-review`, `task-block`, `task-reconcile`, `scope-reconcile`, `accept-scope` |
+| Repository context documents | `context-preview`, `context-finalize-preview`, `context-evidence-context`, `context-finalize-evidence-context`, `context-apply` |
 | Derived farm | `farm-project`, `farm-seal`, `farm-verify` |
 | Legacy transition | `migration-preview`, `migration-apply`, `migration-rollback` |
 | Repository knowledge | `knowledge-context`, `knowledge-initialize`, `knowledge-cutover`, `knowledge-merge` |
@@ -82,7 +105,7 @@ per section, mapping every meaningful section to active record or note
 references in its matching knowledge document. `apply` also requires the
 preview's input identities and commits the cutover in one journaled transaction.
 
-`capture` **writes** immutable events and receipts even though it does not increment an artifact revision. Locks, journals and a contextual-pagination key are engine-managed metadata; “read operation” does not mean the filesystem can never acquire such metadata. Host permission classification must distinguish content writes and event writes from ordinary reads. No generic content mutation can set approval or task acceptance.
+`capture-observation` **writes** immutable events and receipts without incrementing an artifact revision. The compatibility operation `capture` refuses evidence writes. The engine manages lock metadata, journals and the contextual-pagination key. Hosts classify ordinary reads, content writes and event writes separately. Approval and task acceptance use their dedicated operations.
 
 ## Identity domains
 
@@ -216,8 +239,15 @@ visible and needs source reconciliation. A changed plan hash returns
 without fabricated content. A packet too large for its requested budget
 fails `RECORD_TOO_LARGE` without partially returning a record.
 
-No source snapshot, authority receipt, reviewer, context ticket, test
-execution, workspace scan, or persisted cache is created by this read.
+When retained check reports exist, `task-context` reads their declared task and
+shared paths plus known build-control inputs through the bounded scoped-input
+assessor. It reports changed, unchanged or unassessed applicability for that
+declared scope; it does not infer complete import dependencies. Bounds are 256
+files, depth 12, 2 MiB per file and 12 MiB total. Unsafe paths or exceeded bounds
+remain unassessed. An unrelated path is outside this assessment.
+
+No verification snapshot, authority receipt, reviewer, context ticket, test
+execution, unbounded workspace scan, or persisted cache is created by this read.
 The engine's normal transaction/pending-record checks still apply before
 informational reads. It is not a permission-granting or verified-acceptance
 operation and does not claim model comprehension or independent test proof.
@@ -397,6 +427,23 @@ it with null without copying requirements or tasks. Exact spec and plan
 IDs are checked when attached; the work HTML links to their canonical pages.
 Completion records local progress and leaves `check_status: unknown`. This
 slice has no operation to assert a passing check, merge, release or deployment.
+The work schema also accepts stored `passed` and `failed` check values so a
+record written by another tool stays readable, but no native operation sets
+them. `capabilities` lists them under `operation_contract.schema_only_values`,
+and the work view labels a stored `passed` or `failed` as not being a
+verification event.
+
+Retiring a record (`record.retire`, or removing a nested record with a reason)
+now writes `original_kind` on its tombstone, copied from the record's collection
+in the pre-change model. A retired task keeps its reported command checks and a
+retired checkpoint keeps its scope baseline as typed history; neither drives
+scheduling or counts as current proof. A spec, plan, knowledge or decomposition
+document that holds such a tombstone is labeled schema `0.3.4`
+(`capabilities.retirement_schema_version`); unchanged documents keep their
+label, and later writes never lower it. A 0.3.2 binary refuses a 0.3.4 document
+with `UNSUPPORTED_VERSION` before it can write. An older tombstone without
+`original_kind` stays readable but owns no history: its kind is unresolved and
+is never guessed from the ID prefix.
 
 An older binary can read a work item that still uses its known fields. Once a
 newer binary adds a cycle or other newer work field, that older binary rejects
@@ -695,9 +742,68 @@ an explicitly supplied receipt is still checked. Callers must inspect actual
 work and honor user stop/deny instructions before reconciling or redispatching.
 
 Historical evidence and unrelated progress are preserved. `REVIEW` alone means
-neither tests passed nor an independent review occurred. Subject-scoped evidence applicability and active host instruction conversion
-remain subsequent work in this same PR. The next section describes the implemented
-prerequisite and implementation-completion operations, not installed-host qualification.
+neither tests passed nor an independent review occurred. Subject-scoped report
+applicability is exposed through the bounded task-context assessment; installed
+host qualification remains separate from these native operations.
+
+### Recorded progress and dependency readiness
+
+The state-contract epoch `0.3.4` preserves a dependent task's recorded progress
+when `task-block` stops its prerequisite. The stopped task keeps its explicit
+`BLOCKED` reason; dependency traversal reports `waiting_on` independently.
+An unrelated task's state and evidence are unchanged. A later upstream recovery
+does not clear a separately recorded stop. The same rule applies to receipt-bearing
+reconciliation that previously propagated `STALE`. These changed writes raise
+the schema label so an older client refuses before overwriting the new semantics.
+Ordinary start and reported-ready updates retain their existing normative identity.
+
+`eligible` and `task-context` expose `progress` with
+`projection_version: recorded-progress/1`, the raw `recorded_state` and
+`recorded_reason`, and a separate interpreted `state` and `basis`.
+Historical `STALE` has `state: null` and `basis: legacy_unresolved`: no prior
+progress is guessed from an ID, a later pass or a dependency becoming available.
+`REVIEW` without receipt references and `DONE` are caller-reported progress.
+Receipt references and historical `ACCEPTED` remain explicitly unassessed.
+Every projection sets `evidence_assessed: false`; current evidence is assessed
+by its existing owner against actual inputs. The raw response `state` remains
+available for older API consumers. Existing schema `0.3.0` through `0.3.2` HTML
+keeps its historical rendering; explicit new-epoch writes use the new labels.
+
+New SMARTS method observations use the closed `smarts-plan-method/0.3.0`
+profile. Its record binds the actual before/after schema versions and both
+normative hashes; validation recomputes those identities and refuses unknown,
+feature-incompatible or downgraded epochs. This permits method revisions on a
+progress-only `0.3.4` plan without inventing a tombstone or relabeling it `0.3.2`.
+The `0.1.0` and `0.2.0` profiles retain their historical closed record formats
+and decision rules. The new profile retains the `0.2.0` decision vocabulary;
+it adds identity binding without expanding delegated method scope.
+
+### Corrected review attempts and Pi effect bookkeeping
+
+Rejected, malformed and changes-requested host attempts are retained by their
+host workflow. They are not valid successful native observation objects and
+must not be inserted into the native success-only observation namespace.
+A corrected attempt uses a fresh request and actual launch correlation with
+current frozen target and contract bindings. Native capture supports that fresh
+successful attempt and exact transport replay without rewriting the rejected
+host record. Native conformance fixtures do not establish actual host execution.
+
+Pi delegated-effect bookkeeping is owned by the parent host under
+`<git-common>/codearbiter/pi-delegation/v1`, outside the artifact store.
+Its versioned claim/outcome records bind operation identity, repository/action
+scope, before-state and observed execution/containment. An exclusive durable
+claim precedes any visible effect; a durable observation precedes acknowledgement.
+A closed `codearbiter.pi-delegation-storage/1` envelope binds each record to
+the canonical Git-common directory and worktree identities. Sibling worktree
+records remain owned by their original worktree. A separate `started` record
+captures a command's observed launch after managed spawn and before stdin is
+released; its PID is observation, never permission to signal or reuse a process.
+A claim without an observation means outcome unknown. Pi's decoder, executor
+and reconciliation tests own this contract. These host records grant no native
+authority and add no artifact reserved namespace or arbitrary source-effect API.
+Native canonical transactions retain their existing CAS, before-images,
+pending-journal integrity barriers and exact operation replay. Source tool calls
+do not promise atomic filesystem CAS or an OS sandbox.
 
 ## Ordinary command-level check observations
 
@@ -882,7 +988,7 @@ legacy proof path; normal orchestration is being converted separately in T05.
 
 ## Cooperative approval and evidence
 
-`capture` persists a **host-supplied actual workflow event**, naming the artifact ID, normative digest, record subject, actor, origin, source text, authority kind, verdict and kind-specific payload. It creates a content-addressed receipt and does not approve the artifact. `approve` separately checks the matching receipt and readiness.
+`capture-observation` persists a **host-supplied observed workflow event**, naming the artifact ID, normative digest, record subject, actor, origin, source text, authority kind, verdict and kind-specific payload. It validates the bound source, observation and current context before issuing a content-addressed receipt. With a valid ordinary bound event, the compatibility operation `capture` returns `OBSERVATION_REQUIRED`. `approve` separately checks the matching receipt and readiness.
 
 The test suite's synthetic user/reviewer events are test fixtures only. Production callers must not construct invented reviewer identities or successful results just to clear these gates. The existing codeArbiter cooperative-attestation threat model remains explicit; unrestricted same-user tampering is outside the claimed boundary.
 
@@ -1017,9 +1123,22 @@ Process-death tests exercise actual subprocess exits at stage/journal/replacemen
 
 ## Legacy conversion
 
-Legacy Markdown remains with the original workflow until explicit conversion. `migration-preview` requires both spec and plan mappings for the same slug in one request, with reviewed typed normative content and a complete nonoverlapping line mapping for each source. Every line is mapped, historical or explicitly out of scope; a disposition requires its reason and target. It does not ask a model to infer omitted obligations.
+Legacy Markdown remains with the original workflow until explicit conversion. A Markdown `migration-preview` requires both spec and plan mappings for the same slug in one request, with reviewed typed normative content and a complete nonoverlapping line mapping for each source. Every line is mapped, historical or explicitly out of scope; a disposition requires its reason and target. It does not ask a model to infer omitted obligations.
 
 `migration-apply` requires the same pair, the exact preview identity, and a recorded review. The new documents start as drafts. Old approval and acceptance prose is not transferred as authority. A pair cutover journals HTML creation and Markdown retirement together. Original bytes remain in history. `recover` handles an uncertain cutover; `migration-rollback` also accepts historical completed two-edit cutovers while canonical endpoints still match them. Intervening edits block rollback.
+
+For an existing native specification or plan, `migration-preview` accepts a
+separate `native_retirement` request with `artifact_id` and
+`expected_bytes_sha256`. It verifies the canonical HTML and binds the preview
+to the selected path, byte digest, revision and model identities. The manifest
+lists unclassified tombstones with counts of their retained check rows and
+the presence of a retained scope baseline. The preview creates no artifact,
+journal or receipt. The native request is exclusive to preview.
+
+An exact read of an untyped tombstone reports `history_classification:
+unclassified`. Its retained rows stay historical and preserve their original
+bytes and model values. Live task and checkpoint operations require the active
+records, so an unresolved kind stays out of scheduling and current proof.
 
 ## Derived farm projection
 

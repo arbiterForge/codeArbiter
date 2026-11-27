@@ -1,0 +1,30 @@
+{
+  "state": "FAILED_RETAINED_STOPPED",
+  "elapsed_seconds": 52.663750100007746,
+  "phases": [],
+  "primary_failure": {
+    "type": "AssertionError",
+    "message": ""
+  },
+  "source_tools_stable": true,
+  "cleanup": {
+    "containers": [
+      {
+        "Id": "1a1be17bf2d6f46257810c21fb85db61cfc1e3d62b4e9b3b6ca1a617dd505558",
+        "Created": "2026-11-16T13:14:31.876329495Z",
+        "absent": true
+      }
+    ],
+    "volume": {
+      "name": "ca-sbx-vol-59083fc7-0b64-4017-9059-dec8cc696839",
+      "absent": true
+    },
+    "errors": [],
+    "seconds": 0.5797028000233695
+  },
+  "scope": [
+    "Source/shippedbundle realPTYownedDocker fixture only; notclone/build/create/installed/wholelifecyclequalification.",
+    "Root receives complete toolchunks<=4096tokens each and total<=64KiB, outputcap is toolreturneddata not provenkernelbufferceiling.",
+    "Windows processgroup/taskkill cleanup bound10s+3s; noJobObject/fulltreeclaim. No credentials/provider/source/hostbind/socket, pull/build orfallbackPTY."
+  ]
+}

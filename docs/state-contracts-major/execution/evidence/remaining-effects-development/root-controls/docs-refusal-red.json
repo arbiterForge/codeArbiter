@@ -1,0 +1,31 @@
+{
+  "argv": [
+    "C:\\Python314\\python.exe",
+    "-B",
+    "-X",
+    "utf8",
+    "-m",
+    "unittest",
+    "test_site_playwright_observation.DocsAuthorityTests.test_emit_refusal_retains_safe_location_without_exception_contents",
+    "test_site_playwright_observation.DocsAuthorityTests.test_emit_refusal_never_overwrites_existing_diagnostic_or_masks_failure"
+  ],
+  "exit_code": 1,
+  "seconds": 0.1603400000021793,
+  "before": {
+    "head": "27d38a2ddc0f6fbf77671a86cad04cd1a02e43dd",
+    "index": "0e5b15f5cdd62703f0928bf750a85e5daf43b557a4d975dcd58ada9491479b5f",
+    "files": {
+      ".github/scripts/test_site_playwright_observation.py": "bfa3b347d4139a4852cecde3da66de70f62ba03c3e19904ea13a4ff6122aae4f"
+    }
+  },
+  "after": {
+    "head": "27d38a2ddc0f6fbf77671a86cad04cd1a02e43dd",
+    "index": "0e5b15f5cdd62703f0928bf750a85e5daf43b557a4d975dcd58ada9491479b5f",
+    "files": {
+      ".github/scripts/test_site_playwright_observation.py": "bfa3b347d4139a4852cecde3da66de70f62ba03c3e19904ea13a4ff6122aae4f"
+    }
+  },
+  "source_and_index_stable": true,
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "599161f6892a49ce9336e0882309f84ec45828a61e5b89ddacd088f52ee49f74"
+}

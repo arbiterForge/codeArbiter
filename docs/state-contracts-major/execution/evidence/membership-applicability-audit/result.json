@@ -1,0 +1,49 @@
+{
+  "result": "CONFIRMED_POSITIVE_INPUT_MEMBERSHIP_BLIND_SPOT",
+  "source_checkout_commit": "32e46e45cf632deb0acc5f0231632684f8d75f87",
+  "fixture_repo": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-integration-ledger-fixture-tyvtm6lp",
+  "fixture_only_no_product_test_claim": true,
+  "original_module_members": 243,
+  "original_positive_inputs": 244,
+  "all_positive_inputs_unchanged": true,
+  "module_owner_before": "1eeecfbe6c591b3b33c5caa1dbf5348e48706c611c5c99ce8466c50ab3b6b0b3",
+  "module_owner_after_go_addition": "b4c6e5093b2f80ce43338ad0a4992fa58167c475d3bcde9d4efc372b0d4e9a04",
+  "module_owner_detected_addition": true,
+  "new_go_path": "core/artifacts/internal/operations/membership_audit_added.go",
+  "formerly_absent_host_path": "core/pysrc/_host.py",
+  "observations": {
+    "baseline": {
+      "commit": "02bc85b71f0e1c0dfa9d9df0a5e7d9e79e5e626c",
+      "integration": {
+        "status": "APPLICABLE",
+        "changed_inputs": [],
+        "unavailable_inputs": []
+      },
+      "strict_disposition_authentication": "PASSED"
+    },
+    "new_go_member": {
+      "commit": "bbdfac7b248fed991d08f55baaf2a930b4c58960",
+      "integration": {
+        "status": "APPLICABLE",
+        "changed_inputs": [],
+        "unavailable_inputs": []
+      },
+      "strict_disposition_authentication": "PASSED"
+    },
+    "formerly_absent_host": {
+      "commit": "e0615fb785935a1c8c4641762f142710298b5a55",
+      "integration": {
+        "status": "APPLICABLE",
+        "changed_inputs": [],
+        "unavailable_inputs": []
+      },
+      "strict_disposition_authentication": "PASSED"
+    }
+  },
+  "limits": [
+    "No Go build/test or source execution occurred. The new init panic is a source-level counterexample, not a measured native result.",
+    "The host addition is relevant to hostapi.load_host consumers, not to pure-Go assertions; it separately demonstrates missing negative-path tracking.",
+    "Fixture proof is explicitly synthetic validator input and must never enter product ledgers.",
+    "Other build/package gates fingerprint current native membership, but this applicability owner does not join that identity to historical disposition proof."
+  ]
+}

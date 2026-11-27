@@ -1,0 +1,2093 @@
+{
+  "format": "finite-pi39-clause-source-inspection/1",
+  "source_commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447",
+  "observed_by": "/root/ci_repair_review",
+  "method": "Read all39 maintained frozen clauses and original semantic mappings; inspect current owner/bridge source witnesses and canonical dependencies. Reassess changed launch argument against each guard/effect/retry. Literal input equality supports reuse of unaffected source witnesses; it is not the semantic oracle or a runtime result.",
+  "rows": [
+    {
+      "cell": "disposition:transitions:S03:01",
+      "status": "PRESERVED",
+      "frozen_clause": {
+        "from": "unowned execute",
+        "event": "enter plan",
+        "guard": "trusted live lease; safe canonical path; valid tasks/hash",
+        "to": "plan draft",
+        "effects": "Read plan, acquire ownership, persist revision 1 with mode=plan and disposition=draft.",
+        "failure_retry": ""
+      },
+      "contract_ref": "docs\\state-contracts-major\\contracts\\transition-coverage.json",
+      "old_proof_ref": "docs/state-contracts-major/execution/evidence/pi-plan-source-preservation/source-conformance.json",
+      "old_proof_sha256": "b072280665e5c15878747aa92fe9432fda77f3ba951a4992e593314736f7492d",
+      "original_scope_group": "plan",
+      "original_mapping": {
+        "trace_ref": "docs/state-contracts-major/execution/evidence/pi-plan-source-preservation/source-traces.json",
+        "trace_ids": [
+          "identity",
+          "command-owner",
+          "constructor",
+          "owner-and-persist",
+          "S03:01",
+          "state-construction",
+          "plan-bridge",
+          "production-caller",
+          "bridge-dispatch",
+          "canonical-admission",
+          "shared-read"
+        ],
+        "reviewed_clauses": [
+          "Trusted interactive parent and bounded session identity; exceptions fail closed.",
+          "One exact package extension ca-plan owner; foreign, duplicate, generated or suffixed entries refuse.",
+          "Exact planning-write descriptor; no skill fallback; confirmation timeout maximum 60000 ms.",
+          "Lease, cwd, session, trusted TUI and abort state checked; encoded state append must succeed.",
+          "Canonical safe slug; bridge read and hash, stable owner revalidated before and after entry persistence; owned draft updated afterward.",
+          "Valid bounded task parse; revision1 plan/draft and canonical spec/plan path construction.",
+          "Closed path-free plan request/response codec unchanged byte-for-byte from baseline; no workflowRecovery patch admitted as plan result.",
+          "Actual production controller receives readyLifecycle, bridge and appendPlanEntry only when descriptor/append seam is available.",
+          "Actual fixed event delegates to shared plan owner with require_legacy_pair=True; does not forward an arbitrary pathname.",
+          "Canonical physical root and safe slug/kind; exact legacy Markdown pair, no HTML authority, alias/link/reparse/hardlink entries refused.",
+          "One cooperating-writer lock and held path precede read; unchanged snapshot returns content/hash; no write performed for native approval reads."
+        ],
+        "runtime_selectors_required": []
+      },
+      "current_clause_assessment": "Current plan controller still checks exact command owner, trusted live session/cwd/lease and abort state, reads the canonical bounded legacy pair through the closed planFile codec, validates content/hash and persists before changing owned memory. Approval retains first read, bounded confirmation, second exact read and post-await ownership checks; cancel preserves the file. Legacy exported task edits retain forward-only CAS and uncertain postcommit readback; failed status/restore retains the frozen execute fallback. The new -B option is before the fixed script and changes bytecode-write policy only; no request field, canonical pair gate, revision/CAS, lease or confirmation predicate changed. S03:07 is excluded.",
+      "current_witnesses": "raw/current-source-excerpts.json binds exact current owning spans; all29 inputs joined to literalfb6124 and stable before/after.",
+      "new_runtime_observation": false,
+      "limits": [
+        "Source-conformance only. No new tests, host launch, native build, installed UI or release qualification.",
+        "S03:07 preserves refusal/no approved successor and the stored owning draft; if lease retires, mode() returns execute through baseline ownership-loss behavior. This packet does not prove new-session plan restrictions or close S03:09.",
+        "Canonical native plan admission is currently legacy-Markdown-only and stricter than baseline: HTML/ambiguous/missing legacy pairs refuse; no HTML plan-authoring claim.",
+        "Input cone binds exact owning controllers, runtime predicates/callers, type/policy interface and canonical Python plan-file admission. It is not global Pi lifecycle or native filesystem backend qualification.",
+        "Original3688 hosted component observations are kept separately; their PR event and failed aggregate run cannot satisfy the final successful integration-push hosted evidence gate.",
+        "Root admission excludes S03:07 entirely: the frozen effect also requires preserved restrictions for stale/cancelled confirmation, beyond preserved stored draft. Its original trace remains a source observation, not qualification of that row."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S03:02",
+      "status": "PRESERVED",
+      "frozen_clause": {
+        "from": "plan draft",
+        "event": "edit task state",
+        "guard": "same expected hash; legal task move",
+        "to": "plan edit pending",
+        "effects": "Permit PENDING→IN_PROGRESS/ACCEPTED; IN_PROGRESS→ACCEPTED; retain ACCEPTED; native edit is restricted to owned plan semantics.",
+        "failure_retry": ""
+      },
+      "contract_ref": "docs\\state-contracts-major\\contracts\\transition-coverage.json",
+      "old_proof_ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-conformance.json",
+      "old_proof_sha256": "cf7e52784b9952014394cd2db3c696ee61514b5662edb47d67fbfb17ada97949",
+      "original_scope_group": "finite",
+      "original_mapping": {
+        "trace_ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-inspection.json",
+        "source_mapping": {
+          "guard": "Normalized plan-mode state, exact existing task ID and FORWARD status table; fixed slug/kind bridge and expectedHash CAS.",
+          "effect": "Only the matching status cell advances; accepted stays accepted. Canonical Python operation locks and rechecks selected snapshot before publish.",
+          "failure_retry": "Illegal/backward/unknown moves refuse. This is exported legacy-plan operation semantics, not a new public parent edit route or HTML authoring qualification."
+        },
+        "witnesses": [
+          {
+            "path": "plugins/ca-pi/tools/src/plan-mode.ts",
+            "lines": [
+              281,
+              354
+            ]
+          },
+          {
+            "path": "plugins/ca-pi/tools/src/plan-mode.ts",
+            "lines": [
+              472,
+              523
+            ]
+          },
+          {
+            "path": "plugins/ca-pi/hooks/_planfilelib.py",
+            "lines": [
+              607,
+              668
+            ]
+          }
+        ],
+        "runtime_selectors_required": []
+      },
+      "current_clause_assessment": "Current plan controller still checks exact command owner, trusted live session/cwd/lease and abort state, reads the canonical bounded legacy pair through the closed planFile codec, validates content/hash and persists before changing owned memory. Approval retains first read, bounded confirmation, second exact read and post-await ownership checks; cancel preserves the file. Legacy exported task edits retain forward-only CAS and uncertain postcommit readback; failed status/restore retains the frozen execute fallback. The new -B option is before the fixed script and changes bytecode-write policy only; no request field, canonical pair gate, revision/CAS, lease or confirmation predicate changed. S03:07 is excluded.",
+      "current_witnesses": "raw/current-source-excerpts.json binds exact current owning spans; all29 inputs joined to literalfb6124 and stable before/after.",
+      "new_runtime_observation": false,
+      "limits": [
+        "Manual finite source conformance only. No tests, APIs, network, npm, Pi, native build, artifact acquisition or ZIP extraction.",
+        "Whole cited owner-file equality is a checked input join, not the semantic oracle or runtime/model evidence.",
+        "No whole-machine, task, finding, composed scenario, program completion, host author/provider or physical-consent disposition.",
+        "No child runtime/transport/endpoint qualification. All S10/S11 held; historical raw EOF failure remains unresolved.",
+        "Exported legacy plan-file semantics are not a newly qualified public parent edit route or HTML plan authoring path."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S03:04",
+      "status": "PRESERVED",
+      "frozen_clause": {
+        "from": "plan edit pending",
+        "event": "write committed but response/readback lost",
+        "guard": "commit may have happened",
+        "to": "plan draft or unresolved edit",
+        "effects": "Return ok=false with committed=true; re-observe before retry; reconcile same task identities if post-commit file changed.",
+        "failure_retry": "Blind repeating an edit is not the implemented safe recovery."
+      },
+      "contract_ref": "docs\\state-contracts-major\\contracts\\transition-coverage.json",
+      "old_proof_ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-conformance.json",
+      "old_proof_sha256": "cf7e52784b9952014394cd2db3c696ee61514b5662edb47d67fbfb17ada97949",
+      "original_scope_group": "finite",
+      "original_mapping": {
+        "trace_ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-inspection.json",
+        "source_mapping": {
+          "guard": "A returned committed status is distinguished from observed content/readback validity.",
+          "effect": "Lost observation returns ok:false,committed:true; changed postcommit content reconciles only exact task identities when possible.",
+          "failure_retry": "No blind write replay is asserted; failed observation remains uncertain and the caller must re-observe."
+        },
+        "witnesses": [
+          {
+            "path": "plugins/ca-pi/tools/src/plan-mode.ts",
+            "lines": [
+              523,
+              542
+            ]
+          },
+          {
+            "path": "plugins/ca-pi/tools/src/plan-mode.ts",
+            "lines": [
+              375,
+              384
+            ]
+          }
+        ],
+        "runtime_selectors_required": []
+      },
+      "current_clause_assessment": "Current plan controller still checks exact command owner, trusted live session/cwd/lease and abort state, reads the canonical bounded legacy pair through the closed planFile codec, validates content/hash and persists before changing owned memory. Approval retains first read, bounded confirmation, second exact read and post-await ownership checks; cancel preserves the file. Legacy exported task edits retain forward-only CAS and uncertain postcommit readback; failed status/restore retains the frozen execute fallback. The new -B option is before the fixed script and changes bytecode-write policy only; no request field, canonical pair gate, revision/CAS, lease or confirmation predicate changed. S03:07 is excluded.",
+      "current_witnesses": "raw/current-source-excerpts.json binds exact current owning spans; all29 inputs joined to literalfb6124 and stable before/after.",
+      "new_runtime_observation": false,
+      "limits": [
+        "Manual finite source conformance only. No tests, APIs, network, npm, Pi, native build, artifact acquisition or ZIP extraction.",
+        "Whole cited owner-file equality is a checked input join, not the semantic oracle or runtime/model evidence.",
+        "No whole-machine, task, finding, composed scenario, program completion, host author/provider or physical-consent disposition.",
+        "No child runtime/transport/endpoint qualification. All S10/S11 held; historical raw EOF failure remains unresolved.",
+        "Exported legacy plan-file semantics are not a newly qualified public parent edit route or HTML plan authoring path."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S03:05",
+      "status": "PRESERVED",
+      "frozen_clause": {
+        "from": "plan draft",
+        "event": "approve",
+        "guard": "first read reconciles; interactive confirmation eligible",
+        "to": "plan draft awaiting confirmation",
+        "effects": "Prompt with 60-second bound.",
+        "failure_retry": ""
+      },
+      "contract_ref": "docs\\state-contracts-major\\contracts\\transition-coverage.json",
+      "old_proof_ref": "docs/state-contracts-major/execution/evidence/pi-plan-source-preservation/source-conformance.json",
+      "old_proof_sha256": "b072280665e5c15878747aa92fe9432fda77f3ba951a4992e593314736f7492d",
+      "original_scope_group": "plan",
+      "original_mapping": {
+        "trace_ref": "docs/state-contracts-major/execution/evidence/pi-plan-source-preservation/source-traces.json",
+        "trace_ids": [
+          "identity",
+          "constructor",
+          "owner-and-persist",
+          "S03:05..07",
+          "confirmation",
+          "plan-bridge",
+          "production-caller"
+        ],
+        "reviewed_clauses": [
+          "Trusted interactive parent and bounded session identity; exceptions fail closed.",
+          "Exact planning-write descriptor; no skill fallback; confirmation timeout maximum 60000 ms.",
+          "Lease, cwd, session, trusted TUI and abort state checked; encoded state append must succeed.",
+          "Current plan owner; reconcile first read, bounded actual UI confirm, recheck owner, reread exact content and hash, persist successor before owned memory. Refusal never appends an approved entry.",
+          "Promise race on real confirm, timer and abort; failure false, timer/listener cleaned.",
+          "Closed path-free plan request/response codec unchanged byte-for-byte from baseline; no workflowRecovery patch admitted as plan result.",
+          "Actual production controller receives readyLifecycle, bridge and appendPlanEntry only when descriptor/append seam is available."
+        ],
+        "runtime_selectors_required": []
+      },
+      "current_clause_assessment": "Current plan controller still checks exact command owner, trusted live session/cwd/lease and abort state, reads the canonical bounded legacy pair through the closed planFile codec, validates content/hash and persists before changing owned memory. Approval retains first read, bounded confirmation, second exact read and post-await ownership checks; cancel preserves the file. Legacy exported task edits retain forward-only CAS and uncertain postcommit readback; failed status/restore retains the frozen execute fallback. The new -B option is before the fixed script and changes bytecode-write policy only; no request field, canonical pair gate, revision/CAS, lease or confirmation predicate changed. S03:07 is excluded.",
+      "current_witnesses": "raw/current-source-excerpts.json binds exact current owning spans; all29 inputs joined to literalfb6124 and stable before/after.",
+      "new_runtime_observation": false,
+      "limits": [
+        "Source-conformance only. No new tests, host launch, native build, installed UI or release qualification.",
+        "S03:07 preserves refusal/no approved successor and the stored owning draft; if lease retires, mode() returns execute through baseline ownership-loss behavior. This packet does not prove new-session plan restrictions or close S03:09.",
+        "Canonical native plan admission is currently legacy-Markdown-only and stricter than baseline: HTML/ambiguous/missing legacy pairs refuse; no HTML plan-authoring claim.",
+        "Input cone binds exact owning controllers, runtime predicates/callers, type/policy interface and canonical Python plan-file admission. It is not global Pi lifecycle or native filesystem backend qualification.",
+        "Original3688 hosted component observations are kept separately; their PR event and failed aggregate run cannot satisfy the final successful integration-push hosted evidence gate.",
+        "Root admission excludes S03:07 entirely: the frozen effect also requires preserved restrictions for stale/cancelled confirmation, beyond preserved stored draft. Its original trace remains a source observation, not qualification of that row."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S03:06",
+      "status": "PRESERVED",
+      "frozen_clause": {
+        "from": "plan draft awaiting confirmation",
+        "event": "approval confirmed",
+        "guard": "live lease; second read same hash",
+        "to": "approved execute",
+        "effects": "Persist approved revision with execute mode before updating owned in-memory state.",
+        "failure_retry": ""
+      },
+      "contract_ref": "docs\\state-contracts-major\\contracts\\transition-coverage.json",
+      "old_proof_ref": "docs/state-contracts-major/execution/evidence/pi-plan-source-preservation/source-conformance.json",
+      "old_proof_sha256": "b072280665e5c15878747aa92fe9432fda77f3ba951a4992e593314736f7492d",
+      "original_scope_group": "plan",
+      "original_mapping": {
+        "trace_ref": "docs/state-contracts-major/execution/evidence/pi-plan-source-preservation/source-traces.json",
+        "trace_ids": [
+          "owner-and-persist",
+          "S03:05..07",
+          "leave-plan",
+          "plan-bridge",
+          "production-caller"
+        ],
+        "reviewed_clauses": [
+          "Lease, cwd, session, trusted TUI and abort state checked; encoded state append must succeed.",
+          "Current plan owner; reconcile first read, bounded actual UI confirm, recheck owner, reread exact content and hash, persist successor before owned memory. Refusal never appends an approved entry.",
+          "Normalized current plan and bounded revision; increment and execute with approved or draft disposition.",
+          "Closed path-free plan request/response codec unchanged byte-for-byte from baseline; no workflowRecovery patch admitted as plan result.",
+          "Actual production controller receives readyLifecycle, bridge and appendPlanEntry only when descriptor/append seam is available."
+        ],
+        "runtime_selectors_required": []
+      },
+      "current_clause_assessment": "Current plan controller still checks exact command owner, trusted live session/cwd/lease and abort state, reads the canonical bounded legacy pair through the closed planFile codec, validates content/hash and persists before changing owned memory. Approval retains first read, bounded confirmation, second exact read and post-await ownership checks; cancel preserves the file. Legacy exported task edits retain forward-only CAS and uncertain postcommit readback; failed status/restore retains the frozen execute fallback. The new -B option is before the fixed script and changes bytecode-write policy only; no request field, canonical pair gate, revision/CAS, lease or confirmation predicate changed. S03:07 is excluded.",
+      "current_witnesses": "raw/current-source-excerpts.json binds exact current owning spans; all29 inputs joined to literalfb6124 and stable before/after.",
+      "new_runtime_observation": false,
+      "limits": [
+        "Source-conformance only. No new tests, host launch, native build, installed UI or release qualification.",
+        "S03:07 preserves refusal/no approved successor and the stored owning draft; if lease retires, mode() returns execute through baseline ownership-loss behavior. This packet does not prove new-session plan restrictions or close S03:09.",
+        "Canonical native plan admission is currently legacy-Markdown-only and stricter than baseline: HTML/ambiguous/missing legacy pairs refuse; no HTML plan-authoring claim.",
+        "Input cone binds exact owning controllers, runtime predicates/callers, type/policy interface and canonical Python plan-file admission. It is not global Pi lifecycle or native filesystem backend qualification.",
+        "Original3688 hosted component observations are kept separately; their PR event and failed aggregate run cannot satisfy the final successful integration-push hosted evidence gate.",
+        "Root admission excludes S03:07 entirely: the frozen effect also requires preserved restrictions for stale/cancelled confirmation, beyond preserved stored draft. Its original trace remains a source observation, not qualification of that row."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S03:08",
+      "status": "PRESERVED",
+      "frozen_clause": {
+        "from": "plan draft",
+        "event": "cancel plan",
+        "guard": "current owner",
+        "to": "cancelled execute",
+        "effects": "Persist execute/draft revision; preserve plan file.",
+        "failure_retry": ""
+      },
+      "contract_ref": "docs\\state-contracts-major\\contracts\\transition-coverage.json",
+      "old_proof_ref": "docs/state-contracts-major/execution/evidence/pi-plan-source-preservation/source-conformance.json",
+      "old_proof_sha256": "b072280665e5c15878747aa92fe9432fda77f3ba951a4992e593314736f7492d",
+      "original_scope_group": "plan",
+      "original_mapping": {
+        "trace_ref": "docs/state-contracts-major/execution/evidence/pi-plan-source-preservation/source-traces.json",
+        "trace_ids": [
+          "owner-and-persist",
+          "S03:08",
+          "leave-plan",
+          "production-caller"
+        ],
+        "reviewed_clauses": [
+          "Lease, cwd, session, trusted TUI and abort state checked; encoded state append must succeed.",
+          "Cancel requires current plan owner and persists execute/draft before in-memory update; path is read-only on cancel.",
+          "Normalized current plan and bounded revision; increment and execute with approved or draft disposition.",
+          "Actual production controller receives readyLifecycle, bridge and appendPlanEntry only when descriptor/append seam is available."
+        ],
+        "runtime_selectors_required": []
+      },
+      "current_clause_assessment": "Current plan controller still checks exact command owner, trusted live session/cwd/lease and abort state, reads the canonical bounded legacy pair through the closed planFile codec, validates content/hash and persists before changing owned memory. Approval retains first read, bounded confirmation, second exact read and post-await ownership checks; cancel preserves the file. Legacy exported task edits retain forward-only CAS and uncertain postcommit readback; failed status/restore retains the frozen execute fallback. The new -B option is before the fixed script and changes bytecode-write policy only; no request field, canonical pair gate, revision/CAS, lease or confirmation predicate changed. S03:07 is excluded.",
+      "current_witnesses": "raw/current-source-excerpts.json binds exact current owning spans; all29 inputs joined to literalfb6124 and stable before/after.",
+      "new_runtime_observation": false,
+      "limits": [
+        "Source-conformance only. No new tests, host launch, native build, installed UI or release qualification.",
+        "S03:07 preserves refusal/no approved successor and the stored owning draft; if lease retires, mode() returns execute through baseline ownership-loss behavior. This packet does not prove new-session plan restrictions or close S03:09.",
+        "Canonical native plan admission is currently legacy-Markdown-only and stricter than baseline: HTML/ambiguous/missing legacy pairs refuse; no HTML plan-authoring claim.",
+        "Input cone binds exact owning controllers, runtime predicates/callers, type/policy interface and canonical Python plan-file admission. It is not global Pi lifecycle or native filesystem backend qualification.",
+        "Original3688 hosted component observations are kept separately; their PR event and failed aggregate run cannot satisfy the final successful integration-push hosted evidence gate.",
+        "Root admission excludes S03:07 entirely: the frozen effect also requires preserved restrictions for stale/cancelled confirmation, beyond preserved stored draft. Its original trace remains a source observation, not qualification of that row."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S03:09",
+      "status": "PRESERVED",
+      "frozen_clause": {
+        "from": "plan draft or approved execute",
+        "event": "status/restore cannot validate file or owner",
+        "guard": "read failure, session mismatch, malformed state",
+        "to": "ownership lost then unowned execute",
+        "effects": "Clear owned plan and fall back to execute mode.",
+        "failure_retry": "This is a loss-of-restriction fallback, not proof that a plan was approved; preserve an explicit unavailable state in a future change."
+      },
+      "contract_ref": "docs\\state-contracts-major\\contracts\\transition-coverage.json",
+      "old_proof_ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-conformance.json",
+      "old_proof_sha256": "cf7e52784b9952014394cd2db3c696ee61514b5662edb47d67fbfb17ada97949",
+      "original_scope_group": "finite",
+      "original_mapping": {
+        "trace_ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-inspection.json",
+        "source_mapping": {
+          "guard": "Status cannot reconcile a current owned file or restore cannot validate the same owner/session/file.",
+          "effect": "Status clears owned state on failed read; restore clears before validating and only reattaches a validated state. Unowned mode is execute.",
+          "failure_retry": "This preserves the explicitly frozen loss-of-restriction fallback; it does not imply approval or repair the separate S03:07 restriction gap."
+        },
+        "witnesses": [
+          {
+            "path": "plugins/ca-pi/tools/src/native-plan.ts",
+            "lines": [
+              255,
+              272
+            ]
+          },
+          {
+            "path": "plugins/ca-pi/tools/src/native-plan.ts",
+            "lines": [
+              345,
+              365
+            ]
+          }
+        ],
+        "runtime_selectors_required": []
+      },
+      "current_clause_assessment": "Current plan controller still checks exact command owner, trusted live session/cwd/lease and abort state, reads the canonical bounded legacy pair through the closed planFile codec, validates content/hash and persists before changing owned memory. Approval retains first read, bounded confirmation, second exact read and post-await ownership checks; cancel preserves the file. Legacy exported task edits retain forward-only CAS and uncertain postcommit readback; failed status/restore retains the frozen execute fallback. The new -B option is before the fixed script and changes bytecode-write policy only; no request field, canonical pair gate, revision/CAS, lease or confirmation predicate changed. S03:07 is excluded.",
+      "current_witnesses": "raw/current-source-excerpts.json binds exact current owning spans; all29 inputs joined to literalfb6124 and stable before/after.",
+      "new_runtime_observation": false,
+      "limits": [
+        "Manual finite source conformance only. No tests, APIs, network, npm, Pi, native build, artifact acquisition or ZIP extraction.",
+        "Whole cited owner-file equality is a checked input join, not the semantic oracle or runtime/model evidence.",
+        "No whole-machine, task, finding, composed scenario, program completion, host author/provider or physical-consent disposition.",
+        "No child runtime/transport/endpoint qualification. All S10/S11 held; historical raw EOF failure remains unresolved.",
+        "Exported legacy plan-file semantics are not a newly qualified public parent edit route or HTML plan authoring path."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S04:02",
+      "status": "PRESERVED",
+      "frozen_clause": {
+        "from": "queued",
+        "event": "managed child readiness + handshake",
+        "guard": "current job and lease",
+        "to": "active",
+        "effects": "Send launch input; close stdin; arm per-job timeout; append bounded output tail (65,536 bytes).",
+        "failure_retry": ""
+      },
+      "contract_ref": "docs\\state-contracts-major\\contracts\\transition-coverage.json",
+      "old_proof_ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-conformance.json",
+      "old_proof_sha256": "cf7e52784b9952014394cd2db3c696ee61514b5662edb47d67fbfb17ada97949",
+      "original_scope_group": "finite",
+      "original_mapping": {
+        "trace_ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-inspection.json",
+        "source_mapping": {
+          "guard": "Current authorization is checked before spawn and again after awaited cleanup readiness before stdin release.",
+          "effect": "Owned streams append through bounded tail logic; stdin ends with launch input; active transition arms the per-job timer.",
+          "failure_retry": "Readiness/stale authorization/startup failure settles through verified cleanup instead of admitting active work."
+        },
+        "witnesses": [
+          {
+            "path": "plugins/ca-pi/tools/src/background-jobs.ts",
+            "lines": [
+              769,
+              849
+            ]
+          },
+          {
+            "path": "plugins/ca-pi/tools/src/background-jobs.ts",
+            "lines": [
+              223,
+              305
+            ]
+          }
+        ],
+        "runtime_selectors_required": []
+      },
+      "current_clause_assessment": "Current manager records pending ownership before openTree, installs stream/terminal observers and rechecks readiness/current authorization before stdin release. Capacity, bounded tails and terminal pruning remain separate. Runtime settlement requires verified cleanup before terminal transition; nonzero/error/cancel/timeout and repeated settle retain their existing direction and one promise. Explicit-B affects the Python bridge launch only; manager/runtime source and process tree contracts are unchanged. No actual OS cleanup or installed host outcome is inferred.",
+      "current_witnesses": "raw/current-source-excerpts.json binds exact current owning spans; all29 inputs joined to literalfb6124 and stable before/after.",
+      "new_runtime_observation": false,
+      "limits": [
+        "Manual finite source conformance only. No tests, APIs, network, npm, Pi, native build, artifact acquisition or ZIP extraction.",
+        "Whole cited owner-file equality is a checked input join, not the semantic oracle or runtime/model evidence.",
+        "No whole-machine, task, finding, composed scenario, program completion, host author/provider or physical-consent disposition.",
+        "No child runtime/transport/endpoint qualification. All S10/S11 held; historical raw EOF failure remains unresolved.",
+        "Exported legacy plan-file semantics are not a newly qualified public parent edit route or HTML plan authoring path."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S04:03",
+      "status": "PRESERVED",
+      "frozen_clause": {
+        "from": "queued or active",
+        "event": "child closes zero",
+        "guard": "containment cleanup verified",
+        "to": "completed",
+        "effects": "Freeze terminal record, finish waiter and release capacity; keep bounded recent results.",
+        "failure_retry": ""
+      },
+      "contract_ref": "docs\\state-contracts-major\\contracts\\transition-coverage.json",
+      "old_proof_ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-conformance.json",
+      "old_proof_sha256": "cf7e52784b9952014394cd2db3c696ee61514b5662edb47d67fbfb17ada97949",
+      "original_scope_group": "finite",
+      "original_mapping": {
+        "trace_ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-inspection.json",
+        "source_mapping": {
+          "guard": "The close callback chooses completed only for code0; settle requires verified cleanup.",
+          "effect": "Terminal transition freezes snapshots, decrements nonterminal capacity and retains/prunes terminal results.",
+          "failure_retry": "Duplicate settling reuses one promise; unverified cleanup cannot publish completed."
+        },
+        "witnesses": [
+          {
+            "path": "plugins/ca-pi/tools/src/background-jobs.ts",
+            "lines": [
+              806,
+              815
+            ]
+          },
+          {
+            "path": "plugins/ca-pi/tools/src/background-jobs.ts",
+            "lines": [
+              886,
+              905
+            ]
+          },
+          {
+            "path": "plugins/ca-pi/tools/src/background-jobs.ts",
+            "lines": [
+              390,
+              421
+            ]
+          }
+        ],
+        "runtime_selectors_required": []
+      },
+      "current_clause_assessment": "Current manager records pending ownership before openTree, installs stream/terminal observers and rechecks readiness/current authorization before stdin release. Capacity, bounded tails and terminal pruning remain separate. Runtime settlement requires verified cleanup before terminal transition; nonzero/error/cancel/timeout and repeated settle retain their existing direction and one promise. Explicit-B affects the Python bridge launch only; manager/runtime source and process tree contracts are unchanged. No actual OS cleanup or installed host outcome is inferred.",
+      "current_witnesses": "raw/current-source-excerpts.json binds exact current owning spans; all29 inputs joined to literalfb6124 and stable before/after.",
+      "new_runtime_observation": false,
+      "limits": [
+        "Manual finite source conformance only. No tests, APIs, network, npm, Pi, native build, artifact acquisition or ZIP extraction.",
+        "Whole cited owner-file equality is a checked input join, not the semantic oracle or runtime/model evidence.",
+        "No whole-machine, task, finding, composed scenario, program completion, host author/provider or physical-consent disposition.",
+        "No child runtime/transport/endpoint qualification. All S10/S11 held; historical raw EOF failure remains unresolved.",
+        "Exported legacy plan-file semantics are not a newly qualified public parent edit route or HTML plan authoring path."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S04:04",
+      "status": "PRESERVED",
+      "frozen_clause": {
+        "from": "queued or active",
+        "event": "child error/nonzero",
+        "guard": "cleanup verified",
+        "to": "failed",
+        "effects": "Store sanitized failure and bounded output; release capacity.",
+        "failure_retry": ""
+      },
+      "contract_ref": "docs\\state-contracts-major\\contracts\\transition-coverage.json",
+      "old_proof_ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-conformance.json",
+      "old_proof_sha256": "cf7e52784b9952014394cd2db3c696ee61514b5662edb47d67fbfb17ada97949",
+      "original_scope_group": "finite",
+      "original_mapping": {
+        "trace_ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-inspection.json",
+        "source_mapping": {
+          "guard": "Error/nonzero routes choose failed and settle still requires cleanup verification.",
+          "effect": "Fixed failure state and sanitized bounded output are retained; terminal transition releases manager capacity.",
+          "failure_retry": "Unknown containment latches unhealthy without a false terminal success. No complete-secret-filter or process-host qualification is asserted."
+        },
+        "witnesses": [
+          {
+            "path": "plugins/ca-pi/tools/src/background-jobs.ts",
+            "lines": [
+              806,
+              815
+            ]
+          },
+          {
+            "path": "plugins/ca-pi/tools/src/background-jobs.ts",
+            "lines": [
+              886,
+              905
+            ]
+          },
+          {
+            "path": "plugins/ca-pi/tools/src/background-jobs.ts",
+            "lines": [
+              223,
+              233
+            ]
+          }
+        ],
+        "runtime_selectors_required": []
+      },
+      "current_clause_assessment": "Current manager records pending ownership before openTree, installs stream/terminal observers and rechecks readiness/current authorization before stdin release. Capacity, bounded tails and terminal pruning remain separate. Runtime settlement requires verified cleanup before terminal transition; nonzero/error/cancel/timeout and repeated settle retain their existing direction and one promise. Explicit-B affects the Python bridge launch only; manager/runtime source and process tree contracts are unchanged. No actual OS cleanup or installed host outcome is inferred.",
+      "current_witnesses": "raw/current-source-excerpts.json binds exact current owning spans; all29 inputs joined to literalfb6124 and stable before/after.",
+      "new_runtime_observation": false,
+      "limits": [
+        "Manual finite source conformance only. No tests, APIs, network, npm, Pi, native build, artifact acquisition or ZIP extraction.",
+        "Whole cited owner-file equality is a checked input join, not the semantic oracle or runtime/model evidence.",
+        "No whole-machine, task, finding, composed scenario, program completion, host author/provider or physical-consent disposition.",
+        "No child runtime/transport/endpoint qualification. All S10/S11 held; historical raw EOF failure remains unresolved.",
+        "Exported legacy plan-file semantics are not a newly qualified public parent edit route or HTML plan authoring path."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S04:05",
+      "status": "PRESERVED",
+      "frozen_clause": {
+        "from": "queued or active",
+        "event": "user cancels / timer fires",
+        "guard": "current nonterminal job",
+        "to": "cancelled or timed-out",
+        "effects": "Terminate tree and verify cleanup before recording terminal state.",
+        "failure_retry": ""
+      },
+      "contract_ref": "docs\\state-contracts-major\\contracts\\transition-coverage.json",
+      "old_proof_ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-conformance.json",
+      "old_proof_sha256": "cf7e52784b9952014394cd2db3c696ee61514b5662edb47d67fbfb17ada97949",
+      "original_scope_group": "finite",
+      "original_mapping": {
+        "trace_ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-inspection.json",
+        "source_mapping": {
+          "guard": "Cancel requires an existing owned slot; timeout is armed only for an admitted job.",
+          "effect": "Both call the same settle path, terminate the owned tree and transition terminal state only after verified cleanup.",
+          "failure_retry": "Repeated cancellation/close shares settling; missing or failed ownership does not become clean."
+        },
+        "witnesses": [
+          {
+            "path": "plugins/ca-pi/tools/src/background-jobs.ts",
+            "lines": [
+              840,
+              867
+            ]
+          },
+          {
+            "path": "plugins/ca-pi/tools/src/background-jobs.ts",
+            "lines": [
+              886,
+              905
+            ]
+          }
+        ],
+        "runtime_selectors_required": []
+      },
+      "current_clause_assessment": "Current manager records pending ownership before openTree, installs stream/terminal observers and rechecks readiness/current authorization before stdin release. Capacity, bounded tails and terminal pruning remain separate. Runtime settlement requires verified cleanup before terminal transition; nonzero/error/cancel/timeout and repeated settle retain their existing direction and one promise. Explicit-B affects the Python bridge launch only; manager/runtime source and process tree contracts are unchanged. No actual OS cleanup or installed host outcome is inferred.",
+      "current_witnesses": "raw/current-source-excerpts.json binds exact current owning spans; all29 inputs joined to literalfb6124 and stable before/after.",
+      "new_runtime_observation": false,
+      "limits": [
+        "Manual finite source conformance only. No tests, APIs, network, npm, Pi, native build, artifact acquisition or ZIP extraction.",
+        "Whole cited owner-file equality is a checked input join, not the semantic oracle or runtime/model evidence.",
+        "No whole-machine, task, finding, composed scenario, program completion, host author/provider or physical-consent disposition.",
+        "No child runtime/transport/endpoint qualification. All S10/S11 held; historical raw EOF failure remains unresolved.",
+        "Exported legacy plan-file semantics are not a newly qualified public parent edit route or HTML plan authoring path."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S04:07",
+      "status": "PRESERVED",
+      "frozen_clause": {
+        "from": "terminal collection",
+        "event": "retention exceeded",
+        "guard": "default 32, bounded configurable maximum 64",
+        "to": "terminal collection pruned",
+        "effects": "Drop oldest retained terminal records; nonterminal jobs stay.",
+        "failure_retry": ""
+      },
+      "contract_ref": "docs\\state-contracts-major\\contracts\\transition-coverage.json",
+      "old_proof_ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-conformance.json",
+      "old_proof_sha256": "cf7e52784b9952014394cd2db3c696ee61514b5662edb47d67fbfb17ada97949",
+      "original_scope_group": "finite",
+      "original_mapping": {
+        "trace_ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-inspection.json",
+        "source_mapping": {
+          "guard": "Default recent limit32 and validated maximum64 are independent of the active-job count.",
+          "effect": "Only oldest retained terminal IDs are removed and their output is cleared; nonterminal records are not selected by pruning.",
+          "failure_retry": "Unknown options refuse; no runtime retention stress claim."
+        },
+        "witnesses": [
+          {
+            "path": "plugins/ca-pi/tools/src/background-jobs.ts",
+            "lines": [
+              140,
+              143
+            ]
+          },
+          {
+            "path": "plugins/ca-pi/tools/src/background-jobs.ts",
+            "lines": [
+              201,
+              217
+            ]
+          },
+          {
+            "path": "plugins/ca-pi/tools/src/background-jobs.ts",
+            "lines": [
+              558,
+              569
+            ]
+          }
+        ],
+        "runtime_selectors_required": []
+      },
+      "current_clause_assessment": "Current manager records pending ownership before openTree, installs stream/terminal observers and rechecks readiness/current authorization before stdin release. Capacity, bounded tails and terminal pruning remain separate. Runtime settlement requires verified cleanup before terminal transition; nonzero/error/cancel/timeout and repeated settle retain their existing direction and one promise. Explicit-B affects the Python bridge launch only; manager/runtime source and process tree contracts are unchanged. No actual OS cleanup or installed host outcome is inferred.",
+      "current_witnesses": "raw/current-source-excerpts.json binds exact current owning spans; all29 inputs joined to literalfb6124 and stable before/after.",
+      "new_runtime_observation": false,
+      "limits": [
+        "Manual finite source conformance only. No tests, APIs, network, npm, Pi, native build, artifact acquisition or ZIP extraction.",
+        "Whole cited owner-file equality is a checked input join, not the semantic oracle or runtime/model evidence.",
+        "No whole-machine, task, finding, composed scenario, program completion, host author/provider or physical-consent disposition.",
+        "No child runtime/transport/endpoint qualification. All S10/S11 held; historical raw EOF failure remains unresolved.",
+        "Exported legacy plan-file semantics are not a newly qualified public parent edit route or HTML plan authoring path."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S05:01",
+      "status": "PRESERVED",
+      "frozen_clause": {
+        "from": "healthy",
+        "event": "launch request",
+        "guard": "trusted lease and four-slot reservation available",
+        "to": "launch pending",
+        "effects": "Reserve before awaiting spawn; record pending ownership; start managed process tree.",
+        "failure_retry": ""
+      },
+      "contract_ref": "docs\\state-contracts-major\\contracts\\transition-coverage.json",
+      "old_proof_ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-conformance.json",
+      "old_proof_sha256": "cf7e52784b9952014394cd2db3c696ee61514b5662edb47d67fbfb17ada97949",
+      "original_scope_group": "finite",
+      "original_mapping": {
+        "trace_ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-inspection.json",
+        "source_mapping": {
+          "guard": "Controller stable() combines lifecycle, exact parent trust/session/cwd, command/tool ownership, audit and runtime health.",
+          "effect": "Four-slot reservation is recorded synchronously before resolveLaunch or runtime spawn awaits; runtime records pending ownership before openTree.",
+          "failure_retry": "Stale authority or failed spawn refuses and releases only its reservation; pending ownership is retained for stop."
+        },
+        "witnesses": [
+          {
+            "path": "plugins/ca-pi/tools/src/native-background.ts",
+            "lines": [
+              109,
+              158
+            ]
+          },
+          {
+            "path": "plugins/ca-pi/tools/src/native-background.ts",
+            "lines": [
+              304,
+              350
+            ]
+          },
+          {
+            "path": "plugins/ca-pi/tools/src/background-jobs.ts",
+            "lines": [
+              783,
+              800
+            ]
+          }
+        ],
+        "runtime_selectors_required": []
+      },
+      "current_clause_assessment": "Current native background controller combines lifecycle/session/cwd/trust/command/tool/runtime/audit health, reserves capacity synchronously, separates launch and terminal audit failures from actual child outcomes, and releases reservations in finally. Stop invalidates authority before awaiting pending ownership/audits/watchers; unverified cleanup latches unhealthy and cannot reactivate normally. The bridge -B argument does not change these guards or awaited order. This preserves source contracts only, not parent/model/host execution.",
+      "current_witnesses": "raw/current-source-excerpts.json binds exact current owning spans; all29 inputs joined to literalfb6124 and stable before/after.",
+      "new_runtime_observation": false,
+      "limits": [
+        "Manual finite source conformance only. No tests, APIs, network, npm, Pi, native build, artifact acquisition or ZIP extraction.",
+        "Whole cited owner-file equality is a checked input join, not the semantic oracle or runtime/model evidence.",
+        "No whole-machine, task, finding, composed scenario, program completion, host author/provider or physical-consent disposition.",
+        "No child runtime/transport/endpoint qualification. All S10/S11 held; historical raw EOF failure remains unresolved.",
+        "Exported legacy plan-file semantics are not a newly qualified public parent edit route or HTML plan authoring path."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S05:02",
+      "status": "PRESERVED",
+      "frozen_clause": {
+        "from": "launch pending",
+        "event": "process admitted",
+        "guard": "readiness/handshake and lease valid",
+        "to": "running",
+        "effects": "Mark job active; close stdin; install deadline and terminal observer.",
+        "failure_retry": ""
+      },
+      "contract_ref": "docs\\state-contracts-major\\contracts\\transition-coverage.json",
+      "old_proof_ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-conformance.json",
+      "old_proof_sha256": "cf7e52784b9952014394cd2db3c696ee61514b5662edb47d67fbfb17ada97949",
+      "original_scope_group": "finite",
+      "original_mapping": {
+        "trace_ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-inspection.json",
+        "source_mapping": {
+          "guard": "Managed readiness and current authorization must both hold immediately before stdin release.",
+          "effect": "Streams/terminal observers are attached to the owned slot, stdin closes with bounded launch input, active state and deadline follow.",
+          "failure_retry": "Late stop/readiness failure settles instead of announcing admitted work."
+        },
+        "witnesses": [
+          {
+            "path": "plugins/ca-pi/tools/src/background-jobs.ts",
+            "lines": [
+              806,
+              849
+            ]
+          }
+        ],
+        "runtime_selectors_required": []
+      },
+      "current_clause_assessment": "Current native background controller combines lifecycle/session/cwd/trust/command/tool/runtime/audit health, reserves capacity synchronously, separates launch and terminal audit failures from actual child outcomes, and releases reservations in finally. Stop invalidates authority before awaiting pending ownership/audits/watchers; unverified cleanup latches unhealthy and cannot reactivate normally. The bridge -B argument does not change these guards or awaited order. This preserves source contracts only, not parent/model/host execution.",
+      "current_witnesses": "raw/current-source-excerpts.json binds exact current owning spans; all29 inputs joined to literalfb6124 and stable before/after.",
+      "new_runtime_observation": false,
+      "limits": [
+        "Manual finite source conformance only. No tests, APIs, network, npm, Pi, native build, artifact acquisition or ZIP extraction.",
+        "Whole cited owner-file equality is a checked input join, not the semantic oracle or runtime/model evidence.",
+        "No whole-machine, task, finding, composed scenario, program completion, host author/provider or physical-consent disposition.",
+        "No child runtime/transport/endpoint qualification. All S10/S11 held; historical raw EOF failure remains unresolved.",
+        "Exported legacy plan-file semantics are not a newly qualified public parent edit route or HTML plan authoring path."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S05:03",
+      "status": "PRESERVED",
+      "frozen_clause": {
+        "from": "launch pending",
+        "event": "audit launch fails",
+        "guard": "process may already exist",
+        "to": "settling then unhealthy",
+        "effects": "Cancel child; latch controller unhealthy; suppress success.",
+        "failure_retry": ""
+      },
+      "contract_ref": "docs\\state-contracts-major\\contracts\\transition-coverage.json",
+      "old_proof_ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-conformance.json",
+      "old_proof_sha256": "cf7e52784b9952014394cd2db3c696ee61514b5662edb47d67fbfb17ada97949",
+      "original_scope_group": "finite",
+      "original_mapping": {
+        "trace_ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-inspection.json",
+        "source_mapping": {
+          "guard": "Launch may already have produced a child when the audit callback refuses.",
+          "effect": "Controller cancels that exact job, drops its launch bookkeeping, degrades and returns failure without a started result.",
+          "failure_retry": "This is an explicit audit-failure branch; absence of an optional audit callback is not claimed as a successful durable audit."
+        },
+        "witnesses": [
+          {
+            "path": "plugins/ca-pi/tools/src/native-background.ts",
+            "lines": [
+              355,
+              380
+            ]
+          },
+          {
+            "path": "plugins/ca-pi/tools/src/native-background.ts",
+            "lines": [
+              128,
+              135
+            ]
+          }
+        ],
+        "runtime_selectors_required": []
+      },
+      "current_clause_assessment": "Current native background controller combines lifecycle/session/cwd/trust/command/tool/runtime/audit health, reserves capacity synchronously, separates launch and terminal audit failures from actual child outcomes, and releases reservations in finally. Stop invalidates authority before awaiting pending ownership/audits/watchers; unverified cleanup latches unhealthy and cannot reactivate normally. The bridge -B argument does not change these guards or awaited order. This preserves source contracts only, not parent/model/host execution.",
+      "current_witnesses": "raw/current-source-excerpts.json binds exact current owning spans; all29 inputs joined to literalfb6124 and stable before/after.",
+      "new_runtime_observation": false,
+      "limits": [
+        "Manual finite source conformance only. No tests, APIs, network, npm, Pi, native build, artifact acquisition or ZIP extraction.",
+        "Whole cited owner-file equality is a checked input join, not the semantic oracle or runtime/model evidence.",
+        "No whole-machine, task, finding, composed scenario, program completion, host author/provider or physical-consent disposition.",
+        "No child runtime/transport/endpoint qualification. All S10/S11 held; historical raw EOF failure remains unresolved.",
+        "Exported legacy plan-file semantics are not a newly qualified public parent edit route or HTML plan authoring path."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S05:04",
+      "status": "PRESERVED",
+      "frozen_clause": {
+        "from": "running or launch pending",
+        "event": "finish/cancel/timeout/stop",
+        "guard": "job not already settling",
+        "to": "settling",
+        "effects": "Cache one settling promise; terminate and verify tree; wait for in-flight spawn ownership before disposal.",
+        "failure_retry": ""
+      },
+      "contract_ref": "docs\\state-contracts-major\\contracts\\transition-coverage.json",
+      "old_proof_ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-conformance.json",
+      "old_proof_sha256": "cf7e52784b9952014394cd2db3c696ee61514b5662edb47d67fbfb17ada97949",
+      "original_scope_group": "finite",
+      "original_mapping": {
+        "trace_ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-inspection.json",
+        "source_mapping": {
+          "guard": "An existing slot.settling promise is reused.",
+          "effect": "Timer clears; owned tree termination is awaited; stop awaits all pending spawn ownership before settling slots.",
+          "failure_retry": "The cached promise does not create an independent cleanup retry after a failure."
+        },
+        "witnesses": [
+          {
+            "path": "plugins/ca-pi/tools/src/background-jobs.ts",
+            "lines": [
+              859,
+              868
+            ]
+          },
+          {
+            "path": "plugins/ca-pi/tools/src/background-jobs.ts",
+            "lines": [
+              886,
+              905
+            ]
+          }
+        ],
+        "runtime_selectors_required": []
+      },
+      "current_clause_assessment": "Current native background controller combines lifecycle/session/cwd/trust/command/tool/runtime/audit health, reserves capacity synchronously, separates launch and terminal audit failures from actual child outcomes, and releases reservations in finally. Stop invalidates authority before awaiting pending ownership/audits/watchers; unverified cleanup latches unhealthy and cannot reactivate normally. The bridge -B argument does not change these guards or awaited order. This preserves source contracts only, not parent/model/host execution.",
+      "current_witnesses": "raw/current-source-excerpts.json binds exact current owning spans; all29 inputs joined to literalfb6124 and stable before/after.",
+      "new_runtime_observation": false,
+      "limits": [
+        "Manual finite source conformance only. No tests, APIs, network, npm, Pi, native build, artifact acquisition or ZIP extraction.",
+        "Whole cited owner-file equality is a checked input join, not the semantic oracle or runtime/model evidence.",
+        "No whole-machine, task, finding, composed scenario, program completion, host author/provider or physical-consent disposition.",
+        "No child runtime/transport/endpoint qualification. All S10/S11 held; historical raw EOF failure remains unresolved.",
+        "Exported legacy plan-file semantics are not a newly qualified public parent edit route or HTML plan authoring path."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S05:05",
+      "status": "PRESERVED",
+      "frozen_clause": {
+        "from": "settling",
+        "event": "verified containment",
+        "guard": "cleanup result clean",
+        "to": "healthy or stopping",
+        "effects": "Publish terminal job state; audit terminal result; notify host; release slot.",
+        "failure_retry": ""
+      },
+      "contract_ref": "docs\\state-contracts-major\\contracts\\transition-coverage.json",
+      "old_proof_ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-conformance.json",
+      "old_proof_sha256": "cf7e52784b9952014394cd2db3c696ee61514b5662edb47d67fbfb17ada97949",
+      "original_scope_group": "finite",
+      "original_mapping": {
+        "trace_ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-inspection.json",
+        "source_mapping": {
+          "guard": "Only verified containment reaches the terminal manager transition; watcher additionally requires terminal state and runtime health.",
+          "effect": "Watcher attempts terminal audit, notifies only current stable ownership and releases the reservation in finally.",
+          "failure_retry": "Audit failure is kept separate from actual process outcome and follows S05:07; notification is not guaranteed after ownership retirement."
+        },
+        "witnesses": [
+          {
+            "path": "plugins/ca-pi/tools/src/background-jobs.ts",
+            "lines": [
+              891,
+              905
+            ]
+          },
+          {
+            "path": "plugins/ca-pi/tools/src/native-background.ts",
+            "lines": [
+              160,
+              205
+            ]
+          }
+        ],
+        "runtime_selectors_required": []
+      },
+      "current_clause_assessment": "Current native background controller combines lifecycle/session/cwd/trust/command/tool/runtime/audit health, reserves capacity synchronously, separates launch and terminal audit failures from actual child outcomes, and releases reservations in finally. Stop invalidates authority before awaiting pending ownership/audits/watchers; unverified cleanup latches unhealthy and cannot reactivate normally. The bridge -B argument does not change these guards or awaited order. This preserves source contracts only, not parent/model/host execution.",
+      "current_witnesses": "raw/current-source-excerpts.json binds exact current owning spans; all29 inputs joined to literalfb6124 and stable before/after.",
+      "new_runtime_observation": false,
+      "limits": [
+        "Manual finite source conformance only. No tests, APIs, network, npm, Pi, native build, artifact acquisition or ZIP extraction.",
+        "Whole cited owner-file equality is a checked input join, not the semantic oracle or runtime/model evidence.",
+        "No whole-machine, task, finding, composed scenario, program completion, host author/provider or physical-consent disposition.",
+        "No child runtime/transport/endpoint qualification. All S10/S11 held; historical raw EOF failure remains unresolved.",
+        "Exported legacy plan-file semantics are not a newly qualified public parent edit route or HTML plan authoring path."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S05:06",
+      "status": "PRESERVED",
+      "frozen_clause": {
+        "from": "settling",
+        "event": "cleanup cannot be verified",
+        "guard": "refused/failed cleanup",
+        "to": "unhealthy",
+        "effects": "Latch unhealthy and retain unresolved/nonterminal evidence.",
+        "failure_retry": "Cached settling promise prevents an independent cleanup retry; recovery is reload/new runtime, not another ordinary job action."
+      },
+      "contract_ref": "docs\\state-contracts-major\\contracts\\transition-coverage.json",
+      "old_proof_ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-conformance.json",
+      "old_proof_sha256": "cf7e52784b9952014394cd2db3c696ee61514b5662edb47d67fbfb17ada97949",
+      "original_scope_group": "finite",
+      "original_mapping": {
+        "trace_ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-inspection.json",
+        "source_mapping": {
+          "guard": "Cleanup returning unverified/throwing is not a terminal success.",
+          "effect": "Runtime health latches false and the owned slot is retained; native stable() prevents ordinary further actions.",
+          "failure_retry": "Cached settling returns the same failure; recovery requires a fresh runtime/reload, not a second ordinary action."
+        },
+        "witnesses": [
+          {
+            "path": "plugins/ca-pi/tools/src/background-jobs.ts",
+            "lines": [
+              891,
+              905
+            ]
+          },
+          {
+            "path": "plugins/ca-pi/tools/src/native-background.ts",
+            "lines": [
+              121,
+              135
+            ]
+          }
+        ],
+        "runtime_selectors_required": []
+      },
+      "current_clause_assessment": "Current native background controller combines lifecycle/session/cwd/trust/command/tool/runtime/audit health, reserves capacity synchronously, separates launch and terminal audit failures from actual child outcomes, and releases reservations in finally. Stop invalidates authority before awaiting pending ownership/audits/watchers; unverified cleanup latches unhealthy and cannot reactivate normally. The bridge -B argument does not change these guards or awaited order. This preserves source contracts only, not parent/model/host execution.",
+      "current_witnesses": "raw/current-source-excerpts.json binds exact current owning spans; all29 inputs joined to literalfb6124 and stable before/after.",
+      "new_runtime_observation": false,
+      "limits": [
+        "Manual finite source conformance only. No tests, APIs, network, npm, Pi, native build, artifact acquisition or ZIP extraction.",
+        "Whole cited owner-file equality is a checked input join, not the semantic oracle or runtime/model evidence.",
+        "No whole-machine, task, finding, composed scenario, program completion, host author/provider or physical-consent disposition.",
+        "No child runtime/transport/endpoint qualification. All S10/S11 held; historical raw EOF failure remains unresolved.",
+        "Exported legacy plan-file semantics are not a newly qualified public parent edit route or HTML plan authoring path."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S05:07",
+      "status": "PRESERVED",
+      "frozen_clause": {
+        "from": "terminal watcher",
+        "event": "terminal audit fails",
+        "guard": "outcome exists but audit failed",
+        "to": "unhealthy",
+        "effects": "Keep failure separate from process outcome; block further controller actions.",
+        "failure_retry": ""
+      },
+      "contract_ref": "docs\\state-contracts-major\\contracts\\transition-coverage.json",
+      "old_proof_ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-conformance.json",
+      "old_proof_sha256": "cf7e52784b9952014394cd2db3c696ee61514b5662edb47d67fbfb17ada97949",
+      "original_scope_group": "finite",
+      "original_mapping": {
+        "trace_ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-inspection.json",
+        "source_mapping": {
+          "guard": "A real terminal snapshot can exist while its terminal audit callback refuses.",
+          "effect": "auditHealthy becomes false, controller degrades and suppresses success notice while retaining process-state separation.",
+          "failure_retry": "Reservation cleanup still occurs in finally; no false assertion that the process itself failed."
+        },
+        "witnesses": [
+          {
+            "path": "plugins/ca-pi/tools/src/native-background.ts",
+            "lines": [
+              167,
+              204
+            ]
+          }
+        ],
+        "runtime_selectors_required": []
+      },
+      "current_clause_assessment": "Current native background controller combines lifecycle/session/cwd/trust/command/tool/runtime/audit health, reserves capacity synchronously, separates launch and terminal audit failures from actual child outcomes, and releases reservations in finally. Stop invalidates authority before awaiting pending ownership/audits/watchers; unverified cleanup latches unhealthy and cannot reactivate normally. The bridge -B argument does not change these guards or awaited order. This preserves source contracts only, not parent/model/host execution.",
+      "current_witnesses": "raw/current-source-excerpts.json binds exact current owning spans; all29 inputs joined to literalfb6124 and stable before/after.",
+      "new_runtime_observation": false,
+      "limits": [
+        "Manual finite source conformance only. No tests, APIs, network, npm, Pi, native build, artifact acquisition or ZIP extraction.",
+        "Whole cited owner-file equality is a checked input join, not the semantic oracle or runtime/model evidence.",
+        "No whole-machine, task, finding, composed scenario, program completion, host author/provider or physical-consent disposition.",
+        "No child runtime/transport/endpoint qualification. All S10/S11 held; historical raw EOF failure remains unresolved.",
+        "Exported legacy plan-file semantics are not a newly qualified public parent edit route or HTML plan authoring path."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S05:08",
+      "status": "PRESERVED",
+      "frozen_clause": {
+        "from": "healthy or unhealthy",
+        "event": "stop lifecycle",
+        "guard": "invalidate lease first",
+        "to": "stopping",
+        "effects": "Await pending admissions and settle all owned processes.",
+        "failure_retry": "Dispose manager only after verified cleanup; unresolved containment is not silently cleared."
+      },
+      "contract_ref": "docs\\state-contracts-major\\contracts\\transition-coverage.json",
+      "old_proof_ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-conformance.json",
+      "old_proof_sha256": "cf7e52784b9952014394cd2db3c696ee61514b5662edb47d67fbfb17ada97949",
+      "original_scope_group": "finite",
+      "original_mapping": {
+        "trace_ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-inspection.json",
+        "source_mapping": {
+          "guard": "Native stop invalidates owned first; runtime stop latches stopping reason before awaiting pending spawns.",
+          "effect": "Stop waits runtime cleanup, pending audits, watchers and reservation completions before attempting dispose.",
+          "failure_retry": "Any failed cleanup/health/audit outcome keeps unhealthy; it is not silently cleared on shutdown."
+        },
+        "witnesses": [
+          {
+            "path": "plugins/ca-pi/tools/src/native-background.ts",
+            "lines": [
+              389,
+              413
+            ]
+          },
+          {
+            "path": "plugins/ca-pi/tools/src/background-jobs.ts",
+            "lines": [
+              859,
+              883
+            ]
+          }
+        ],
+        "runtime_selectors_required": []
+      },
+      "current_clause_assessment": "Current native background controller combines lifecycle/session/cwd/trust/command/tool/runtime/audit health, reserves capacity synchronously, separates launch and terminal audit failures from actual child outcomes, and releases reservations in finally. Stop invalidates authority before awaiting pending ownership/audits/watchers; unverified cleanup latches unhealthy and cannot reactivate normally. The bridge -B argument does not change these guards or awaited order. This preserves source contracts only, not parent/model/host execution.",
+      "current_witnesses": "raw/current-source-excerpts.json binds exact current owning spans; all29 inputs joined to literalfb6124 and stable before/after.",
+      "new_runtime_observation": false,
+      "limits": [
+        "Manual finite source conformance only. No tests, APIs, network, npm, Pi, native build, artifact acquisition or ZIP extraction.",
+        "Whole cited owner-file equality is a checked input join, not the semantic oracle or runtime/model evidence.",
+        "No whole-machine, task, finding, composed scenario, program completion, host author/provider or physical-consent disposition.",
+        "No child runtime/transport/endpoint qualification. All S10/S11 held; historical raw EOF failure remains unresolved.",
+        "Exported legacy plan-file semantics are not a newly qualified public parent edit route or HTML plan authoring path."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S05:09",
+      "status": "PRESERVED",
+      "frozen_clause": {
+        "from": "stopping",
+        "event": "all owned processes clean",
+        "guard": "no pending ownership",
+        "to": "disposed",
+        "effects": "Release runtime/controller resources; next session builds a fresh controller.",
+        "failure_retry": ""
+      },
+      "contract_ref": "docs\\state-contracts-major\\contracts\\transition-coverage.json",
+      "old_proof_ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-conformance.json",
+      "old_proof_sha256": "cf7e52784b9952014394cd2db3c696ee61514b5662edb47d67fbfb17ada97949",
+      "original_scope_group": "finite",
+      "original_mapping": {
+        "trace_ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-inspection.json",
+        "source_mapping": {
+          "guard": "Dispose succeeds only after stop is clean and runtime healthy.",
+          "effect": "Manager is disposed only after verified cleanup; next valid activate obtains a new runtime from the production factory.",
+          "failure_retry": "Unhealthy controller cannot reactivate in place. This is source resource ownership, not an installed new-session liveness result."
+        },
+        "witnesses": [
+          {
+            "path": "plugins/ca-pi/tools/src/background-jobs.ts",
+            "lines": [
+              876,
+              883
+            ]
+          },
+          {
+            "path": "plugins/ca-pi/tools/src/native-background.ts",
+            "lines": [
+              269,
+              295
+            ]
+          },
+          {
+            "path": "plugins/ca-pi/tools/src/extension.ts",
+            "lines": [
+              1143,
+              1158
+            ]
+          }
+        ],
+        "runtime_selectors_required": []
+      },
+      "current_clause_assessment": "Current native background controller combines lifecycle/session/cwd/trust/command/tool/runtime/audit health, reserves capacity synchronously, separates launch and terminal audit failures from actual child outcomes, and releases reservations in finally. Stop invalidates authority before awaiting pending ownership/audits/watchers; unverified cleanup latches unhealthy and cannot reactivate normally. The bridge -B argument does not change these guards or awaited order. This preserves source contracts only, not parent/model/host execution.",
+      "current_witnesses": "raw/current-source-excerpts.json binds exact current owning spans; all29 inputs joined to literalfb6124 and stable before/after.",
+      "new_runtime_observation": false,
+      "limits": [
+        "Manual finite source conformance only. No tests, APIs, network, npm, Pi, native build, artifact acquisition or ZIP extraction.",
+        "Whole cited owner-file equality is a checked input join, not the semantic oracle or runtime/model evidence.",
+        "No whole-machine, task, finding, composed scenario, program completion, host author/provider or physical-consent disposition.",
+        "No child runtime/transport/endpoint qualification. All S10/S11 held; historical raw EOF failure remains unresolved.",
+        "Exported legacy plan-file semantics are not a newly qualified public parent edit route or HTML plan authoring path."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S13:01",
+      "status": "PRESERVED",
+      "frozen_clause": {
+        "from": "spawning",
+        "event": "POSIX child spawn",
+        "guard": "detached process with valid group identity",
+        "to": "ready",
+        "effects": "Own process group before handing execution authority to caller.",
+        "failure_retry": ""
+      },
+      "contract_ref": "docs\\state-contracts-major\\contracts\\transition-coverage.json",
+      "old_proof_ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-conformance.json",
+      "old_proof_sha256": "cf7e52784b9952014394cd2db3c696ee61514b5662edb47d67fbfb17ada97949",
+      "original_scope_group": "finite",
+      "original_mapping": {
+        "trace_ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-inspection.json",
+        "source_mapping": {
+          "guard": "Canonical executable/cwd and detached POSIX spawn establish a child process-group ownership convention; ready requires positive PID.",
+          "effect": "openProcessTree returns both spawned child and mandatory cleanup handle.",
+          "failure_retry": "Invalid PID refuses cleanup readiness. No actual OS process-group or same-PID-reuse qualification is asserted."
+        },
+        "witnesses": [
+          {
+            "path": "plugins/ca-pi/tools/src/process-tree.ts",
+            "lines": [
+              392,
+              401
+            ]
+          },
+          {
+            "path": "plugins/ca-pi/tools/src/process-tree.ts",
+            "lines": [
+              860,
+              869
+            ]
+          },
+          {
+            "path": "plugins/ca-pi/tools/src/process-tree.ts",
+            "lines": [
+              916,
+              935
+            ]
+          },
+          {
+            "path": "plugins/ca-pi/tools/src/process-tree.ts",
+            "lines": [
+              990,
+              1005
+            ]
+          }
+        ],
+        "runtime_selectors_required": []
+      },
+      "current_clause_assessment": "Current process-tree/supervisor sources preserve the exact readiness token order, launch/control/environment bounds, attached-before-release ordering, PID/watch/leash checks, once-only child launch, bounded stream drain and retained exit code. Cleanup verifies actual absence, Windows job/child/supervisor jointly and POSIX escalation; one cached termination promise cannot turn unknown cleanup into success. These owners and callers are byte-identical to the original source witnesses. The separate Python bridge argv change does not alter their native/source protocol. No real parent-death, Job Object, PID reuse or all-descendant qualification is asserted.",
+      "current_witnesses": "raw/current-source-excerpts.json binds exact current owning spans; all29 inputs joined to literalfb6124 and stable before/after.",
+      "new_runtime_observation": false,
+      "limits": [
+        "Manual finite source conformance only. No tests, APIs, network, npm, Pi, native build, artifact acquisition or ZIP extraction.",
+        "Whole cited owner-file equality is a checked input join, not the semantic oracle or runtime/model evidence.",
+        "No whole-machine, task, finding, composed scenario, program completion, host author/provider or physical-consent disposition.",
+        "No child runtime/transport/endpoint qualification. All S10/S11 held; historical raw EOF failure remains unresolved.",
+        "Exported legacy plan-file semantics are not a newly qualified public parent edit route or HTML plan authoring path."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S13:02",
+      "status": "PRESERVED",
+      "frozen_clause": {
+        "from": "spawning",
+        "event": "Windows inert supervisor starts",
+        "guard": "bounded environment/launch material",
+        "to": "admitting",
+        "effects": "Wait STARTING→COMPILED→PID_ACCEPTED→ATTACHED; idle bound 15s and absolute bound 30s; transcript ≤64 records.",
+        "failure_retry": "No target launch before JobObject attachment."
+      },
+      "contract_ref": "docs\\state-contracts-major\\contracts\\transition-coverage.json",
+      "old_proof_ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-conformance.json",
+      "old_proof_sha256": "cf7e52784b9952014394cd2db3c696ee61514b5662edb47d67fbfb17ada97949",
+      "original_scope_group": "finite",
+      "original_mapping": {
+        "trace_ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-inspection.json",
+        "source_mapping": {
+          "guard": "Windows guard requires exact STARTING/COMPILED/PID_ACCEPTED/ATTACHED sequence with bounded idle and ceiling.",
+          "effect": "Inert supervisor is attached before any launch/control pipe is released; malformed or oversized protocol latches refusal.",
+          "failure_retry": "15s idle/30s ceiling and64-byte queued protocol bounds remain source constants, not a successful Windows timing observation."
+        },
+        "witnesses": [
+          {
+            "path": "plugins/ca-pi/tools/src/process-tree.ts",
+            "lines": [
+              31,
+              42
+            ]
+          },
+          {
+            "path": "plugins/ca-pi/tools/src/process-tree.ts",
+            "lines": [
+              351,
+              394
+            ]
+          },
+          {
+            "path": "plugins/ca-pi/tools/src/process-tree.ts",
+            "lines": [
+              618,
+              643
+            ]
+          },
+          {
+            "path": "plugins/ca-pi/tools/src/process-tree.ts",
+            "lines": [
+              880,
+              905
+            ]
+          }
+        ],
+        "runtime_selectors_required": []
+      },
+      "current_clause_assessment": "Current process-tree/supervisor sources preserve the exact readiness token order, launch/control/environment bounds, attached-before-release ordering, PID/watch/leash checks, once-only child launch, bounded stream drain and retained exit code. Cleanup verifies actual absence, Windows job/child/supervisor jointly and POSIX escalation; one cached termination promise cannot turn unknown cleanup into success. These owners and callers are byte-identical to the original source witnesses. The separate Python bridge argv change does not alter their native/source protocol. No real parent-death, Job Object, PID reuse or all-descendant qualification is asserted.",
+      "current_witnesses": "raw/current-source-excerpts.json binds exact current owning spans; all29 inputs joined to literalfb6124 and stable before/after.",
+      "new_runtime_observation": false,
+      "limits": [
+        "Manual finite source conformance only. No tests, APIs, network, npm, Pi, native build, artifact acquisition or ZIP extraction.",
+        "Whole cited owner-file equality is a checked input join, not the semantic oracle or runtime/model evidence.",
+        "No whole-machine, task, finding, composed scenario, program completion, host author/provider or physical-consent disposition.",
+        "No child runtime/transport/endpoint qualification. All S10/S11 held; historical raw EOF failure remains unresolved.",
+        "Exported legacy plan-file semantics are not a newly qualified public parent edit route or HTML plan authoring path."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S13:03",
+      "status": "PRESERVED",
+      "frozen_clause": {
+        "from": "admitting",
+        "event": "launch payload then exact START",
+        "guard": "fd4 ≤3 MiB; fd5 exact START ≤16 bytes; env ≤256 entries/262,144 bytes",
+        "to": "ready",
+        "effects": "Supervisor launches child and emits STARTED/WATCHING; parent leash remains active.",
+        "failure_retry": ""
+      },
+      "contract_ref": "docs\\state-contracts-major\\contracts\\transition-coverage.json",
+      "old_proof_ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-conformance.json",
+      "old_proof_sha256": "cf7e52784b9952014394cd2db3c696ee61514b5662edb47d67fbfb17ada97949",
+      "original_scope_group": "finite",
+      "original_mapping": {
+        "trace_ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-inspection.json",
+        "source_mapping": {
+          "guard": "Launch/control/environment records enforce3MiB,16B exact START,256 entries/262144B bounds.",
+          "effect": "Only after attachment are launch/control bytes written; child starts once, STARTED PID is checked and root watch armed.",
+          "failure_retry": "Invalid or reused START refuses. No TLS, native API or installed host claim."
+        },
+        "witnesses": [
+          {
+            "path": "plugins/ca-pi/tools/src/windows-supervisor.ts",
+            "lines": [
+              15,
+              24
+            ]
+          },
+          {
+            "path": "plugins/ca-pi/tools/src/windows-supervisor.ts",
+            "lines": [
+              47,
+              74
+            ]
+          },
+          {
+            "path": "plugins/ca-pi/tools/src/windows-supervisor.ts",
+            "lines": [
+              155,
+              175
+            ]
+          },
+          {
+            "path": "plugins/ca-pi/tools/src/process-tree.ts",
+            "lines": [
+              896,
+              919
+            ]
+          }
+        ],
+        "runtime_selectors_required": []
+      },
+      "current_clause_assessment": "Current process-tree/supervisor sources preserve the exact readiness token order, launch/control/environment bounds, attached-before-release ordering, PID/watch/leash checks, once-only child launch, bounded stream drain and retained exit code. Cleanup verifies actual absence, Windows job/child/supervisor jointly and POSIX escalation; one cached termination promise cannot turn unknown cleanup into success. These owners and callers are byte-identical to the original source witnesses. The separate Python bridge argv change does not alter their native/source protocol. No real parent-death, Job Object, PID reuse or all-descendant qualification is asserted.",
+      "current_witnesses": "raw/current-source-excerpts.json binds exact current owning spans; all29 inputs joined to literalfb6124 and stable before/after.",
+      "new_runtime_observation": false,
+      "limits": [
+        "Manual finite source conformance only. No tests, APIs, network, npm, Pi, native build, artifact acquisition or ZIP extraction.",
+        "Whole cited owner-file equality is a checked input join, not the semantic oracle or runtime/model evidence.",
+        "No whole-machine, task, finding, composed scenario, program completion, host author/provider or physical-consent disposition.",
+        "No child runtime/transport/endpoint qualification. All S10/S11 held; historical raw EOF failure remains unresolved.",
+        "Exported legacy plan-file semantics are not a newly qualified public parent edit route or HTML plan authoring path."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S13:04",
+      "status": "PRESERVED",
+      "frozen_clause": {
+        "from": "admitting",
+        "event": "bad order/timeout/parent death",
+        "guard": "any failed admission guard",
+        "to": "refused",
+        "effects": "Fail closed before target authority; cleanup supervisor and job.",
+        "failure_retry": ""
+      },
+      "contract_ref": "docs\\state-contracts-major\\contracts\\transition-coverage.json",
+      "old_proof_ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-conformance.json",
+      "old_proof_sha256": "cf7e52784b9952014394cd2db3c696ee61514b5662edb47d67fbfb17ada97949",
+      "original_scope_group": "finite",
+      "original_mapping": {
+        "trace_ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-inspection.json",
+        "source_mapping": {
+          "guard": "Wrong order, missing attachment, invalid PID or failed watch cannot return a ready managed child.",
+          "effect": "Supervisor/job close and leash-end refusal paths execute before success return; supervisor emits bounded refusal then exits70.",
+          "failure_retry": "Cleanup is attempted; this finite source edge does not claim actual host absence after every refusal."
+        },
+        "witnesses": [
+          {
+            "path": "plugins/ca-pi/tools/src/process-tree.ts",
+            "lines": [
+              880,
+              919
+            ]
+          },
+          {
+            "path": "plugins/ca-pi/tools/src/windows-supervisor.ts",
+            "lines": [
+              226,
+              242
+            ]
+          }
+        ],
+        "runtime_selectors_required": []
+      },
+      "current_clause_assessment": "Current process-tree/supervisor sources preserve the exact readiness token order, launch/control/environment bounds, attached-before-release ordering, PID/watch/leash checks, once-only child launch, bounded stream drain and retained exit code. Cleanup verifies actual absence, Windows job/child/supervisor jointly and POSIX escalation; one cached termination promise cannot turn unknown cleanup into success. These owners and callers are byte-identical to the original source witnesses. The separate Python bridge argv change does not alter their native/source protocol. No real parent-death, Job Object, PID reuse or all-descendant qualification is asserted.",
+      "current_witnesses": "raw/current-source-excerpts.json binds exact current owning spans; all29 inputs joined to literalfb6124 and stable before/after.",
+      "new_runtime_observation": false,
+      "limits": [
+        "Manual finite source conformance only. No tests, APIs, network, npm, Pi, native build, artifact acquisition or ZIP extraction.",
+        "Whole cited owner-file equality is a checked input join, not the semantic oracle or runtime/model evidence.",
+        "No whole-machine, task, finding, composed scenario, program completion, host author/provider or physical-consent disposition.",
+        "No child runtime/transport/endpoint qualification. All S10/S11 held; historical raw EOF failure remains unresolved.",
+        "Exported legacy plan-file semantics are not a newly qualified public parent edit route or HTML plan authoring path."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S13:05",
+      "status": "PRESERVED",
+      "frozen_clause": {
+        "from": "ready",
+        "event": "terminate",
+        "guard": "first termination request",
+        "to": "terminating",
+        "effects": "Cache one termination promise. POSIX SIGTERM then 500ms grace, SIGKILL and 2s verification; Windows taskkill/root plus JobObject close and root/supervisor verification.",
+        "failure_retry": ""
+      },
+      "contract_ref": "docs\\state-contracts-major\\contracts\\transition-coverage.json",
+      "old_proof_ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-conformance.json",
+      "old_proof_sha256": "cf7e52784b9952014394cd2db3c696ee61514b5662edb47d67fbfb17ada97949",
+      "original_scope_group": "finite",
+      "original_mapping": {
+        "trace_ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-inspection.json",
+        "source_mapping": {
+          "guard": "Positive PID and bounded cleanup timing gate the first termination request.",
+          "effect": "POSIX sends group TERM, waits500ms default, escalates KILL and verifies2s default; Windows closes JobObject and checks child+supervisor.",
+          "failure_retry": "One cached promise owns termination; repeated calls do not start a new independent cleanup attempt."
+        },
+        "witnesses": [
+          {
+            "path": "plugins/ca-pi/tools/src/process-tree.ts",
+            "lines": [
+              13,
+              17
+            ]
+          },
+          {
+            "path": "plugins/ca-pi/tools/src/process-tree.ts",
+            "lines": [
+              954,
+              1005
+            ]
+          }
+        ],
+        "runtime_selectors_required": []
+      },
+      "current_clause_assessment": "Current process-tree/supervisor sources preserve the exact readiness token order, launch/control/environment bounds, attached-before-release ordering, PID/watch/leash checks, once-only child launch, bounded stream drain and retained exit code. Cleanup verifies actual absence, Windows job/child/supervisor jointly and POSIX escalation; one cached termination promise cannot turn unknown cleanup into success. These owners and callers are byte-identical to the original source witnesses. The separate Python bridge argv change does not alter their native/source protocol. No real parent-death, Job Object, PID reuse or all-descendant qualification is asserted.",
+      "current_witnesses": "raw/current-source-excerpts.json binds exact current owning spans; all29 inputs joined to literalfb6124 and stable before/after.",
+      "new_runtime_observation": false,
+      "limits": [
+        "Manual finite source conformance only. No tests, APIs, network, npm, Pi, native build, artifact acquisition or ZIP extraction.",
+        "Whole cited owner-file equality is a checked input join, not the semantic oracle or runtime/model evidence.",
+        "No whole-machine, task, finding, composed scenario, program completion, host author/provider or physical-consent disposition.",
+        "No child runtime/transport/endpoint qualification. All S10/S11 held; historical raw EOF failure remains unresolved.",
+        "Exported legacy plan-file semantics are not a newly qualified public parent edit route or HTML plan authoring path."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S13:06",
+      "status": "PRESERVED",
+      "frozen_clause": {
+        "from": "terminating",
+        "event": "absence verified",
+        "guard": "owned group/job no longer live",
+        "to": "clean",
+        "effects": "Resolve cleanup success; later terminate calls reuse result.",
+        "failure_retry": ""
+      },
+      "contract_ref": "docs\\state-contracts-major\\contracts\\transition-coverage.json",
+      "old_proof_ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-conformance.json",
+      "old_proof_sha256": "cf7e52784b9952014394cd2db3c696ee61514b5662edb47d67fbfb17ada97949",
+      "original_scope_group": "finite",
+      "original_mapping": {
+        "trace_ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-inspection.json",
+        "source_mapping": {
+          "guard": "Only verified absence returns verified:true.",
+          "effect": "POSIX wait and Windows jobClosed/actualGone/supervisorGone jointly govern success; later terminate calls reuse result.",
+          "failure_retry": "Verification failure is retained rather than reported clean."
+        },
+        "witnesses": [
+          {
+            "path": "plugins/ca-pi/tools/src/process-tree.ts",
+            "lines": [
+              954,
+              1005
+            ]
+          }
+        ],
+        "runtime_selectors_required": []
+      },
+      "current_clause_assessment": "Current process-tree/supervisor sources preserve the exact readiness token order, launch/control/environment bounds, attached-before-release ordering, PID/watch/leash checks, once-only child launch, bounded stream drain and retained exit code. Cleanup verifies actual absence, Windows job/child/supervisor jointly and POSIX escalation; one cached termination promise cannot turn unknown cleanup into success. These owners and callers are byte-identical to the original source witnesses. The separate Python bridge argv change does not alter their native/source protocol. No real parent-death, Job Object, PID reuse or all-descendant qualification is asserted.",
+      "current_witnesses": "raw/current-source-excerpts.json binds exact current owning spans; all29 inputs joined to literalfb6124 and stable before/after.",
+      "new_runtime_observation": false,
+      "limits": [
+        "Manual finite source conformance only. No tests, APIs, network, npm, Pi, native build, artifact acquisition or ZIP extraction.",
+        "Whole cited owner-file equality is a checked input join, not the semantic oracle or runtime/model evidence.",
+        "No whole-machine, task, finding, composed scenario, program completion, host author/provider or physical-consent disposition.",
+        "No child runtime/transport/endpoint qualification. All S10/S11 held; historical raw EOF failure remains unresolved.",
+        "Exported legacy plan-file semantics are not a newly qualified public parent edit route or HTML plan authoring path."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S13:07",
+      "status": "PRESERVED",
+      "frozen_clause": {
+        "from": "terminating",
+        "event": "unverifiable ownership/liveness",
+        "guard": "checks fail or process remains",
+        "to": "cleanup failed",
+        "effects": "Return refused/failed result; caller must not call this clean.",
+        "failure_retry": "Cached termination result offers no new cleanup attempt by itself."
+      },
+      "contract_ref": "docs\\state-contracts-major\\contracts\\transition-coverage.json",
+      "old_proof_ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-conformance.json",
+      "old_proof_sha256": "cf7e52784b9952014394cd2db3c696ee61514b5662edb47d67fbfb17ada97949",
+      "original_scope_group": "finite",
+      "original_mapping": {
+        "trace_ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-inspection.json",
+        "source_mapping": {
+          "guard": "Invalid identity, unknown guard readiness, remaining liveness or thrown checks refuse/fail.",
+          "effect": "Returned verified:false is kept distinct from clean; the background caller transitions terminal state only for verified:true.",
+          "failure_retry": "Cached termination cannot itself retry unresolved cleanup."
+        },
+        "witnesses": [
+          {
+            "path": "plugins/ca-pi/tools/src/process-tree.ts",
+            "lines": [
+              963,
+              1005
+            ]
+          },
+          {
+            "path": "plugins/ca-pi/tools/src/background-jobs.ts",
+            "lines": [
+              893,
+              901
+            ]
+          }
+        ],
+        "runtime_selectors_required": []
+      },
+      "current_clause_assessment": "Current process-tree/supervisor sources preserve the exact readiness token order, launch/control/environment bounds, attached-before-release ordering, PID/watch/leash checks, once-only child launch, bounded stream drain and retained exit code. Cleanup verifies actual absence, Windows job/child/supervisor jointly and POSIX escalation; one cached termination promise cannot turn unknown cleanup into success. These owners and callers are byte-identical to the original source witnesses. The separate Python bridge argv change does not alter their native/source protocol. No real parent-death, Job Object, PID reuse or all-descendant qualification is asserted.",
+      "current_witnesses": "raw/current-source-excerpts.json binds exact current owning spans; all29 inputs joined to literalfb6124 and stable before/after.",
+      "new_runtime_observation": false,
+      "limits": [
+        "Manual finite source conformance only. No tests, APIs, network, npm, Pi, native build, artifact acquisition or ZIP extraction.",
+        "Whole cited owner-file equality is a checked input join, not the semantic oracle or runtime/model evidence.",
+        "No whole-machine, task, finding, composed scenario, program completion, host author/provider or physical-consent disposition.",
+        "No child runtime/transport/endpoint qualification. All S10/S11 held; historical raw EOF failure remains unresolved.",
+        "Exported legacy plan-file semantics are not a newly qualified public parent edit route or HTML plan authoring path."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S13:08",
+      "status": "PRESERVED",
+      "frozen_clause": {
+        "from": "Windows ready",
+        "event": "parent leash closes",
+        "guard": "parent vanished",
+        "to": "terminating then refused",
+        "effects": "Supervisor fails closed (70) and job cleanup removes child tree.",
+        "failure_retry": ""
+      },
+      "contract_ref": "docs\\state-contracts-major\\contracts\\transition-coverage.json",
+      "old_proof_ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-conformance.json",
+      "old_proof_sha256": "cf7e52784b9952014394cd2db3c696ee61514b5662edb47d67fbfb17ada97949",
+      "original_scope_group": "finite",
+      "original_mapping": {
+        "trace_ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-inspection.json",
+        "source_mapping": {
+          "guard": "Parent leash end/error or disconnect invokes the fail-closed supervisor handler.",
+          "effect": "Supervisor schedules70 and closes held pipes; native JobObject is kill-on-close and parent-watch finally closes the job handle.",
+          "failure_retry": "Source describes intended cleanup; no new actual parent-death or all-descendant-kill observation."
+        },
+        "witnesses": [
+          {
+            "path": "plugins/ca-pi/tools/src/windows-supervisor.ts",
+            "lines": [
+              105,
+              113
+            ]
+          },
+          {
+            "path": "plugins/ca-pi/tools/src/windows-supervisor.ts",
+            "lines": [
+              150,
+              154
+            ]
+          },
+          {
+            "path": "plugins/ca-pi/tools/src/process-tree.ts",
+            "lines": [
+              50,
+              110
+            ]
+          },
+          {
+            "path": "plugins/ca-pi/tools/src/process-tree.ts",
+            "lines": [
+              170,
+              190
+            ]
+          }
+        ],
+        "runtime_selectors_required": []
+      },
+      "current_clause_assessment": "Current process-tree/supervisor sources preserve the exact readiness token order, launch/control/environment bounds, attached-before-release ordering, PID/watch/leash checks, once-only child launch, bounded stream drain and retained exit code. Cleanup verifies actual absence, Windows job/child/supervisor jointly and POSIX escalation; one cached termination promise cannot turn unknown cleanup into success. These owners and callers are byte-identical to the original source witnesses. The separate Python bridge argv change does not alter their native/source protocol. No real parent-death, Job Object, PID reuse or all-descendant qualification is asserted.",
+      "current_witnesses": "raw/current-source-excerpts.json binds exact current owning spans; all29 inputs joined to literalfb6124 and stable before/after.",
+      "new_runtime_observation": false,
+      "limits": [
+        "Manual finite source conformance only. No tests, APIs, network, npm, Pi, native build, artifact acquisition or ZIP extraction.",
+        "Whole cited owner-file equality is a checked input join, not the semantic oracle or runtime/model evidence.",
+        "No whole-machine, task, finding, composed scenario, program completion, host author/provider or physical-consent disposition.",
+        "No child runtime/transport/endpoint qualification. All S10/S11 held; historical raw EOF failure remains unresolved.",
+        "Exported legacy plan-file semantics are not a newly qualified public parent edit route or HTML plan authoring path."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S13:09",
+      "status": "PRESERVED",
+      "frozen_clause": {
+        "from": "Windows ready",
+        "event": "child exits",
+        "guard": "normal managed child",
+        "to": "terminal",
+        "effects": "Drain read/write streams for bounded 500ms each; preserve exit code, use 71 for missing code; refusal flush bounded 500ms before 70.",
+        "failure_retry": ""
+      },
+      "contract_ref": "docs\\state-contracts-major\\contracts\\transition-coverage.json",
+      "old_proof_ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-conformance.json",
+      "old_proof_sha256": "cf7e52784b9952014394cd2db3c696ee61514b5662edb47d67fbfb17ada97949",
+      "original_scope_group": "finite",
+      "original_mapping": {
+        "trace_ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-inspection.json",
+        "source_mapping": {
+          "guard": "Child exit is finalized once after proxy readiness, preserving observed numeric code.",
+          "effect": "Readable/writable drains have500ms caps; missing code maps71 and refusal flush has the same bound before70.",
+          "failure_retry": "This is source drain/return-code behavior; the separate historical raw Pi EOF shutdown remains unresolved."
+        },
+        "witnesses": [
+          {
+            "path": "plugins/ca-pi/tools/src/windows-supervisor.ts",
+            "lines": [
+              114,
+              145
+            ]
+          },
+          {
+            "path": "plugins/ca-pi/tools/src/windows-supervisor.ts",
+            "lines": [
+              179,
+              203
+            ]
+          },
+          {
+            "path": "plugins/ca-pi/tools/src/windows-supervisor.ts",
+            "lines": [
+              226,
+              242
+            ]
+          }
+        ],
+        "runtime_selectors_required": []
+      },
+      "current_clause_assessment": "Current process-tree/supervisor sources preserve the exact readiness token order, launch/control/environment bounds, attached-before-release ordering, PID/watch/leash checks, once-only child launch, bounded stream drain and retained exit code. Cleanup verifies actual absence, Windows job/child/supervisor jointly and POSIX escalation; one cached termination promise cannot turn unknown cleanup into success. These owners and callers are byte-identical to the original source witnesses. The separate Python bridge argv change does not alter their native/source protocol. No real parent-death, Job Object, PID reuse or all-descendant qualification is asserted.",
+      "current_witnesses": "raw/current-source-excerpts.json binds exact current owning spans; all29 inputs joined to literalfb6124 and stable before/after.",
+      "new_runtime_observation": false,
+      "limits": [
+        "Manual finite source conformance only. No tests, APIs, network, npm, Pi, native build, artifact acquisition or ZIP extraction.",
+        "Whole cited owner-file equality is a checked input join, not the semantic oracle or runtime/model evidence.",
+        "No whole-machine, task, finding, composed scenario, program completion, host author/provider or physical-consent disposition.",
+        "No child runtime/transport/endpoint qualification. All S10/S11 held; historical raw EOF failure remains unresolved.",
+        "Exported legacy plan-file semantics are not a newly qualified public parent edit route or HTML plan authoring path."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S17:02",
+      "status": "PRESERVED",
+      "frozen_clause": {
+        "from": "eligible prefix",
+        "event": "plan validates",
+        "guard": "zero removable prefix/already compacted/same prior fingerprint",
+        "to": "no-op",
+        "effects": "Return no change; no child launch.",
+        "failure_retry": ""
+      },
+      "contract_ref": "docs\\state-contracts-major\\contracts\\transition-coverage.json",
+      "old_proof_ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-conformance.json",
+      "old_proof_sha256": "cf7e52784b9952014394cd2db3c696ee61514b5662edb47d67fbfb17ada97949",
+      "original_scope_group": "finite",
+      "original_mapping": {
+        "trace_ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-inspection.json",
+        "source_mapping": {
+          "guard": "Already-compacted tail, zero candidate prefix or a prior exact plan fingerprint returns undefined.",
+          "effect": "No summarize/child call occurs on these branches.",
+          "failure_retry": "No-op does not mutate conversation or fabricate a summary."
+        },
+        "witnesses": [
+          {
+            "path": "plugins/ca-pi/tools/src/compaction.ts",
+            "lines": [
+              278,
+              301
+            ]
+          },
+          {
+            "path": "plugins/ca-pi/tools/src/compaction.ts",
+            "lines": [
+              397,
+              407
+            ]
+          }
+        ],
+        "runtime_selectors_required": []
+      },
+      "current_clause_assessment": "Current compaction validates bounded semantic entries, protected boundary/action uniqueness/metrics/fingerprint, refuses compacted/empty/duplicate work, redacts and bounds summary input/output, and requests empty tools/skills with --no-tools enforcement. Post-await abort/lifecycle checks prevent a stale proposal; only the host applies replacement context. The fixed Python bridge used for prune-plan keeps the same codec/result validation and bounded failure direction with -B. No provider/model endpoint policy or actual summarization is qualified.",
+      "current_witnesses": "raw/current-source-excerpts.json binds exact current owning spans; all29 inputs joined to literalfb6124 and stable before/after.",
+      "new_runtime_observation": false,
+      "limits": [
+        "Manual finite source conformance only. No tests, APIs, network, npm, Pi, native build, artifact acquisition or ZIP extraction.",
+        "Whole cited owner-file equality is a checked input join, not the semantic oracle or runtime/model evidence.",
+        "No whole-machine, task, finding, composed scenario, program completion, host author/provider or physical-consent disposition.",
+        "No child runtime/transport/endpoint qualification. All S10/S11 held; historical raw EOF failure remains unresolved.",
+        "Exported legacy plan-file semantics are not a newly qualified public parent edit route or HTML plan authoring path."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S17:03",
+      "status": "PRESERVED",
+      "frozen_clause": {
+        "from": "eligible prefix",
+        "event": "plan validates actionable",
+        "guard": "protected tail/actions/metrics/fingerprint consistent",
+        "to": "child summarizing",
+        "effects": "Serialize redacted prefix ≤48KiB, previous summary ≤8KiB and custom instructions ≤4KiB; run isolated child with no tools or skills.",
+        "failure_retry": ""
+      },
+      "contract_ref": "docs\\state-contracts-major\\contracts\\transition-coverage.json",
+      "old_proof_ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-conformance.json",
+      "old_proof_sha256": "cf7e52784b9952014394cd2db3c696ee61514b5662edb47d67fbfb17ada97949",
+      "original_scope_group": "finite",
+      "original_mapping": {
+        "trace_ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-inspection.json",
+        "source_mapping": {
+          "guard": "Plan boundary/protected IDs/unique actions/metrics/fingerprint pass validPlan before summarize.",
+          "effect": "Conversation is redacted/bounded48000B, prior summary8000B, custom instructions4096B. Internal compaction requests empty tools/skills; runner enforces and emits --no-tools.",
+          "failure_retry": "Failed plan or child result suppresses proposal. Endpoint-policy S10/S11 and actual provider isolation remain outside this disposition."
+        },
+        "witnesses": [
+          {
+            "path": "plugins/ca-pi/tools/src/compaction.ts",
+            "lines": [
+              208,
+              243
+            ]
+          },
+          {
+            "path": "plugins/ca-pi/tools/src/compaction.ts",
+            "lines": [
+              253,
+              275
+            ]
+          },
+          {
+            "path": "plugins/ca-pi/tools/src/compaction.ts",
+            "lines": [
+              406,
+              423
+            ]
+          },
+          {
+            "path": "plugins/ca-pi/tools/src/runner.ts",
+            "lines": [
+              129,
+              148
+            ]
+          },
+          {
+            "path": "plugins/ca-pi/tools/src/runner.ts",
+            "lines": [
+              255,
+              275
+            ]
+          }
+        ],
+        "runtime_selectors_required": []
+      },
+      "current_clause_assessment": "Current compaction validates bounded semantic entries, protected boundary/action uniqueness/metrics/fingerprint, refuses compacted/empty/duplicate work, redacts and bounds summary input/output, and requests empty tools/skills with --no-tools enforcement. Post-await abort/lifecycle checks prevent a stale proposal; only the host applies replacement context. The fixed Python bridge used for prune-plan keeps the same codec/result validation and bounded failure direction with -B. No provider/model endpoint policy or actual summarization is qualified.",
+      "current_witnesses": "raw/current-source-excerpts.json binds exact current owning spans; all29 inputs joined to literalfb6124 and stable before/after.",
+      "new_runtime_observation": false,
+      "limits": [
+        "Manual finite source conformance only. No tests, APIs, network, npm, Pi, native build, artifact acquisition or ZIP extraction.",
+        "Whole cited owner-file equality is a checked input join, not the semantic oracle or runtime/model evidence.",
+        "No whole-machine, task, finding, composed scenario, program completion, host author/provider or physical-consent disposition.",
+        "No child runtime/transport/endpoint qualification. All S10/S11 held; historical raw EOF failure remains unresolved.",
+        "Exported legacy plan-file semantics are not a newly qualified public parent edit route or HTML plan authoring path."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S17:04",
+      "status": "PRESERVED",
+      "frozen_clause": {
+        "from": "child summarizing",
+        "event": "valid bounded summary",
+        "guard": "≤16KiB; same lease/fingerprint",
+        "to": "proposal ready",
+        "effects": "Return compaction proposal; the host, not this helper, mutates conversation context.",
+        "failure_retry": ""
+      },
+      "contract_ref": "docs\\state-contracts-major\\contracts\\transition-coverage.json",
+      "old_proof_ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-conformance.json",
+      "old_proof_sha256": "cf7e52784b9952014394cd2db3c696ee61514b5662edb47d67fbfb17ada97949",
+      "original_scope_group": "finite",
+      "original_mapping": {
+        "trace_ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-inspection.json",
+        "source_mapping": {
+          "guard": "Successful nonempty summary is bounded/redacted16000B; abort is rechecked and installer compares captured lifecycle after await.",
+          "effect": "Return immutable compaction proposal with exact validated plan fingerprint; only host receives the proposal for context replacement.",
+          "failure_retry": "No active session manager is forwarded and no direct conversation write exists here; not installed host/provider qualification."
+        },
+        "witnesses": [
+          {
+            "path": "plugins/ca-pi/tools/src/compaction.ts",
+            "lines": [
+              422,
+              439
+            ]
+          },
+          {
+            "path": "plugins/ca-pi/tools/src/compaction.ts",
+            "lines": [
+              490,
+              502
+            ]
+          }
+        ],
+        "runtime_selectors_required": []
+      },
+      "current_clause_assessment": "Current compaction validates bounded semantic entries, protected boundary/action uniqueness/metrics/fingerprint, refuses compacted/empty/duplicate work, redacts and bounds summary input/output, and requests empty tools/skills with --no-tools enforcement. Post-await abort/lifecycle checks prevent a stale proposal; only the host applies replacement context. The fixed Python bridge used for prune-plan keeps the same codec/result validation and bounded failure direction with -B. No provider/model endpoint policy or actual summarization is qualified.",
+      "current_witnesses": "raw/current-source-excerpts.json binds exact current owning spans; all29 inputs joined to literalfb6124 and stable before/after.",
+      "new_runtime_observation": false,
+      "limits": [
+        "Manual finite source conformance only. No tests, APIs, network, npm, Pi, native build, artifact acquisition or ZIP extraction.",
+        "Whole cited owner-file equality is a checked input join, not the semantic oracle or runtime/model evidence.",
+        "No whole-machine, task, finding, composed scenario, program completion, host author/provider or physical-consent disposition.",
+        "No child runtime/transport/endpoint qualification. All S10/S11 held; historical raw EOF failure remains unresolved.",
+        "Exported legacy plan-file semantics are not a newly qualified public parent edit route or HTML plan authoring path."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S17:05",
+      "status": "PRESERVED",
+      "frozen_clause": {
+        "from": "child summarizing",
+        "event": "abort/stale/error/invalid summary",
+        "guard": "any fault",
+        "to": "stale/refused",
+        "effects": "Throw or suppress proposal; no partial context mutation.",
+        "failure_retry": ""
+      },
+      "contract_ref": "docs\\state-contracts-major\\contracts\\transition-coverage.json",
+      "old_proof_ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-conformance.json",
+      "old_proof_sha256": "cf7e52784b9952014394cd2db3c696ee61514b5662edb47d67fbfb17ada97949",
+      "original_scope_group": "finite",
+      "original_mapping": {
+        "trace_ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-inspection.json",
+        "source_mapping": {
+          "guard": "Malformed event/plan, aborted signal, failed child or invalid summary cannot return a proposal.",
+          "effect": "Fixed sanitized error or suppressed stale lease leaves context mutation with the host; no partial helper mutation.",
+          "failure_retry": "No automatic fallback provider or partial-summary success is asserted."
+        },
+        "witnesses": [
+          {
+            "path": "plugins/ca-pi/tools/src/compaction.ts",
+            "lines": [
+              383,
+              444
+            ]
+          },
+          {
+            "path": "plugins/ca-pi/tools/src/compaction.ts",
+            "lines": [
+              490,
+              502
+            ]
+          }
+        ],
+        "runtime_selectors_required": []
+      },
+      "current_clause_assessment": "Current compaction validates bounded semantic entries, protected boundary/action uniqueness/metrics/fingerprint, refuses compacted/empty/duplicate work, redacts and bounds summary input/output, and requests empty tools/skills with --no-tools enforcement. Post-await abort/lifecycle checks prevent a stale proposal; only the host applies replacement context. The fixed Python bridge used for prune-plan keeps the same codec/result validation and bounded failure direction with -B. No provider/model endpoint policy or actual summarization is qualified.",
+      "current_witnesses": "raw/current-source-excerpts.json binds exact current owning spans; all29 inputs joined to literalfb6124 and stable before/after.",
+      "new_runtime_observation": false,
+      "limits": [
+        "Manual finite source conformance only. No tests, APIs, network, npm, Pi, native build, artifact acquisition or ZIP extraction.",
+        "Whole cited owner-file equality is a checked input join, not the semantic oracle or runtime/model evidence.",
+        "No whole-machine, task, finding, composed scenario, program completion, host author/provider or physical-consent disposition.",
+        "No child runtime/transport/endpoint qualification. All S10/S11 held; historical raw EOF failure remains unresolved.",
+        "Exported legacy plan-file semantics are not a newly qualified public parent edit route or HTML plan authoring path."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S18:01",
+      "status": "PRESERVED",
+      "frozen_clause": {
+        "from": "any",
+        "event": "start session",
+        "guard": "interactive hasUI and mode absent/TUI",
+        "to": "install pending",
+        "effects": "Dispose prior generation; await metrics library; retain native footer until safe installation.",
+        "failure_retry": ""
+      },
+      "contract_ref": "docs\\state-contracts-major\\contracts\\transition-coverage.json",
+      "old_proof_ref": "docs/state-contracts-major/execution/evidence/pi-committed51-a0f4/s18-five-preserved.json",
+      "old_proof_sha256": "07e6b1c9846ecace0068e4b405f14f41ef3fe30e26f558150a49c0ef5c9750f1",
+      "original_scope_group": "status",
+      "original_mapping": {
+        "inspected_source_clauses": "Start still disposes prior locally owned footer, advances generation, resets snapshots and admits only interactive hasUI/mode. No current factory is installed before metrics await/current-generation check. New classdispose token clear precedes host callback so old component retirement cannot erase newly prepared ownership; start remains independently reusable.",
+        "component_support_selectors": [
+          "vitest:plugins/ca-pi/tools/test/status.test.ts:Pi keyed status lifecycle shutdown during a deferred metrics load prevents every later activation and footer side effect",
+          "vitest:plugins/ca-pi/tools/test/status.test.ts:Pi keyed status lifecycle a replacement session wins while the prior deferred metrics load cannot resurrect"
+        ],
+        "limits": "Fresh finite source preservation at actuala0f4, supported by current committed status41 subset within51. Historical3688/83b21 and ce3+WIP outcomes remain history; no installed/TUI/machine/task inference."
+      },
+      "current_clause_assessment": "Current status owner disposes the prior generation, waits for validated metrics and guards installation/factory/render ownership. Refresh is serialized and checks context/generation before and after prepare/data awaits; usage/governance/Git remain independent allSettled inputs with trusted/inactive/unknown distinctions. Dispose clears owner before restoring native footer; component retirement cannot erase a replacement. The bridge -B change preserves input/output and response/failure parsing used by these reads. Source/component conformance does not prove visible TUI or host lifecycle acceptance.",
+      "current_witnesses": "raw/current-source-excerpts.json binds exact current owning spans; all29 inputs joined to literalfb6124 and stable before/after.",
+      "new_runtime_observation": false,
+      "limits": [
+        "Fresh finite source inspection and current committeda0f4 input join, supported by actual51 selected component cases (status41 subset).",
+        "Original3688/83b21 and ce3+WIP source/runtime observations remain historical; this proof does not relabel them.",
+        "UI ports/metrics/bridge are declared fixture substitutes; no installed/renderedTUI, humanconsent, wholemachine/task/adapter/provider qualification.",
+        "S18:03 combined fallback/notice clause remains withheld. S18:07 has a separate new componentTESTED proof, not this fiveP source proof."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S18:02",
+      "status": "PRESERVED",
+      "frozen_clause": {
+        "from": "install pending",
+        "event": "metrics ready",
+        "guard": "generation still current",
+        "to": "installed",
+        "effects": "Install owned footer; guard against stale async completion.",
+        "failure_retry": ""
+      },
+      "contract_ref": "docs\\state-contracts-major\\contracts\\transition-coverage.json",
+      "old_proof_ref": "docs/state-contracts-major/execution/evidence/pi-committed51-a0f4/s18-five-preserved.json",
+      "old_proof_sha256": "07e6b1c9846ecace0068e4b405f14f41ef3fe30e26f558150a49c0ef5c9750f1",
+      "original_scope_group": "status",
+      "original_mapping": {
+        "inspected_source_clauses": "Post-metrics context/generation admission remains; the factory now also checks captured generation before creating its unique component owner. setFooter installs and records initialized state only on the same synchronous supported UI path. Current host component disposal explicitly retires only matching owner/context/generation, so a foreign replacement is not treated as continued ownership.",
+        "component_support_selectors": [
+          "vitest:plugins/ca-pi/tools/test/status.test.ts:Pi keyed status lifecycle a replacement session wins while the prior deferred metrics load cannot resurrect"
+        ],
+        "limits": "Fresh finite source preservation at actuala0f4, supported by current committed status41 subset within51. Historical3688/83b21 and ce3+WIP outcomes remain history; no installed/TUI/machine/task inference."
+      },
+      "current_clause_assessment": "Current status owner disposes the prior generation, waits for validated metrics and guards installation/factory/render ownership. Refresh is serialized and checks context/generation before and after prepare/data awaits; usage/governance/Git remain independent allSettled inputs with trusted/inactive/unknown distinctions. Dispose clears owner before restoring native footer; component retirement cannot erase a replacement. The bridge -B change preserves input/output and response/failure parsing used by these reads. Source/component conformance does not prove visible TUI or host lifecycle acceptance.",
+      "current_witnesses": "raw/current-source-excerpts.json binds exact current owning spans; all29 inputs joined to literalfb6124 and stable before/after.",
+      "new_runtime_observation": false,
+      "limits": [
+        "Fresh finite source inspection and current committeda0f4 input join, supported by actual51 selected component cases (status41 subset).",
+        "Original3688/83b21 and ce3+WIP source/runtime observations remain historical; this proof does not relabel them.",
+        "UI ports/metrics/bridge are declared fixture substitutes; no installed/renderedTUI, humanconsent, wholemachine/task/adapter/provider qualification.",
+        "S18:03 combined fallback/notice clause remains withheld. S18:07 has a separate new componentTESTED proof, not this fiveP source proof."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S18:04",
+      "status": "PRESERVED",
+      "frozen_clause": {
+        "from": "installed",
+        "event": "refresh",
+        "guard": "current lease/generation",
+        "to": "refreshing",
+        "effects": "Serialize refreshes; softly prepare bridge; independently await usage/governance/Git using allSettled.",
+        "failure_retry": ""
+      },
+      "contract_ref": "docs\\state-contracts-major\\contracts\\transition-coverage.json",
+      "old_proof_ref": "docs/state-contracts-major/execution/evidence/pi-committed51-a0f4/s18-five-preserved.json",
+      "old_proof_sha256": "07e6b1c9846ecace0068e4b405f14f41ef3fe30e26f558150a49c0ef5c9750f1",
+      "original_scope_group": "status",
+      "original_mapping": {
+        "inspected_source_clauses": "Refresh queue serialization and initial/post-prepare context+generation/installed guards remain intact. Usage/governance/Git remain independent Promise.allSettled inputs. New component retirement advances generation and clears context, causing previously queued/in-flight refresh to refuse application after ownership loss; no delegated effect authority is inferred.",
+        "component_support_selectors": [
+          "vitest:plugins/ca-pi/tools/test/status.test.ts:Pi keyed status lifecycle serializes same-session refreshes so overlapping events neither duplicate nor roll back cursor work"
+        ],
+        "limits": "Fresh finite source preservation at actuala0f4, supported by current committed status41 subset within51. Historical3688/83b21 and ce3+WIP outcomes remain history; no installed/TUI/machine/task inference."
+      },
+      "current_clause_assessment": "Current status owner disposes the prior generation, waits for validated metrics and guards installation/factory/render ownership. Refresh is serialized and checks context/generation before and after prepare/data awaits; usage/governance/Git remain independent allSettled inputs with trusted/inactive/unknown distinctions. Dispose clears owner before restoring native footer; component retirement cannot erase a replacement. The bridge -B change preserves input/output and response/failure parsing used by these reads. Source/component conformance does not prove visible TUI or host lifecycle acceptance.",
+      "current_witnesses": "raw/current-source-excerpts.json binds exact current owning spans; all29 inputs joined to literalfb6124 and stable before/after.",
+      "new_runtime_observation": false,
+      "limits": [
+        "Fresh finite source inspection and current committeda0f4 input join, supported by actual51 selected component cases (status41 subset).",
+        "Original3688/83b21 and ce3+WIP source/runtime observations remain historical; this proof does not relabel them.",
+        "UI ports/metrics/bridge are declared fixture substitutes; no installed/renderedTUI, humanconsent, wholemachine/task/adapter/provider qualification.",
+        "S18:03 combined fallback/notice clause remains withheld. S18:07 has a separate new componentTESTED proof, not this fiveP source proof."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S18:05",
+      "status": "PRESERVED",
+      "frozen_clause": {
+        "from": "refreshing",
+        "event": "partial data success",
+        "guard": "same current lifecycle",
+        "to": "installed",
+        "effects": "Use fulfilled usage cursor; keep prior governance if a trusted refresh fails; clear governance if inactive/untrusted; unavailable Git remains unknown.",
+        "failure_retry": ""
+      },
+      "contract_ref": "docs\\state-contracts-major\\contracts\\transition-coverage.json",
+      "old_proof_ref": "docs/state-contracts-major/execution/evidence/pi-committed51-a0f4/s18-five-preserved.json",
+      "old_proof_sha256": "07e6b1c9846ecace0068e4b405f14f41ef3fe30e26f558150a49c0ef5c9750f1",
+      "original_scope_group": "status",
+      "original_mapping": {
+        "inspected_source_clauses": "Fulfilled usage cursor, trusted governance retention on failure, inactive/untrusted governance clearing, unknown repository/dirty enrichment and fulfilled update-version handling are unchanged. They remain behind post-results context/generation check; new retirement can suppress obsolete UI data rather than apply it to another owner. Independent Pi branch fact is still separate from missing Git enrichment.",
+        "component_support_selectors": [
+          "vitest:plugins/ca-pi/tools/test/status.test.ts:Pi keyed status lifecycle serializes same-session refreshes so overlapping events neither duplicate nor roll back cursor work"
+        ],
+        "limits": "Fresh finite source preservation at actuala0f4, supported by current committed status41 subset within51. Historical3688/83b21 and ce3+WIP outcomes remain history; no installed/TUI/machine/task inference."
+      },
+      "current_clause_assessment": "Current status owner disposes the prior generation, waits for validated metrics and guards installation/factory/render ownership. Refresh is serialized and checks context/generation before and after prepare/data awaits; usage/governance/Git remain independent allSettled inputs with trusted/inactive/unknown distinctions. Dispose clears owner before restoring native footer; component retirement cannot erase a replacement. The bridge -B change preserves input/output and response/failure parsing used by these reads. Source/component conformance does not prove visible TUI or host lifecycle acceptance.",
+      "current_witnesses": "raw/current-source-excerpts.json binds exact current owning spans; all29 inputs joined to literalfb6124 and stable before/after.",
+      "new_runtime_observation": false,
+      "limits": [
+        "Fresh finite source inspection and current committeda0f4 input join, supported by actual51 selected component cases (status41 subset).",
+        "Original3688/83b21 and ce3+WIP source/runtime observations remain historical; this proof does not relabel them.",
+        "UI ports/metrics/bridge are declared fixture substitutes; no installed/renderedTUI, humanconsent, wholemachine/task/adapter/provider qualification.",
+        "S18:03 combined fallback/notice clause remains withheld. S18:07 has a separate new componentTESTED proof, not this fiveP source proof."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S18:06",
+      "status": "PRESERVED",
+      "frozen_clause": {
+        "from": "refreshing",
+        "event": "stale completion",
+        "guard": "generation changed",
+        "to": "disposed or newer installed",
+        "effects": "Ignore result rather than overwrite new session.",
+        "failure_retry": ""
+      },
+      "contract_ref": "docs\\state-contracts-major\\contracts\\transition-coverage.json",
+      "old_proof_ref": "docs/state-contracts-major/execution/evidence/pi-committed51-a0f4/s18-five-preserved.json",
+      "old_proof_sha256": "07e6b1c9846ecace0068e4b405f14f41ef3fe30e26f558150a49c0ef5c9750f1",
+      "original_scope_group": "status",
+      "original_mapping": {
+        "inspected_source_clauses": "Old async result cannot pass changed context/generation checks. New foreign-disposal retirement increments generation; stale component callback is idempotent and cannot clear a new unique component owner/context/generation. Existing current focused replacement-load/refresh tests plus samecontext new-generation stale disposal assertion pass; no actualTUI claim.",
+        "component_support_selectors": [
+          "vitest:plugins/ca-pi/tools/test/status.test.ts:Pi keyed status lifecycle lets a replacement session refresh immediately while stale completion remains unable to mutate it",
+          "vitest:plugins/ca-pi/tools/test/status.test.ts:Pi keyed status lifecycle shutdown during a deferred metrics load prevents every later activation and footer side effect"
+        ],
+        "limits": "Fresh finite source preservation at actuala0f4, supported by current committed status41 subset within51. Historical3688/83b21 and ce3+WIP outcomes remain history; no installed/TUI/machine/task inference."
+      },
+      "current_clause_assessment": "Current status owner disposes the prior generation, waits for validated metrics and guards installation/factory/render ownership. Refresh is serialized and checks context/generation before and after prepare/data awaits; usage/governance/Git remain independent allSettled inputs with trusted/inactive/unknown distinctions. Dispose clears owner before restoring native footer; component retirement cannot erase a replacement. The bridge -B change preserves input/output and response/failure parsing used by these reads. Source/component conformance does not prove visible TUI or host lifecycle acceptance.",
+      "current_witnesses": "raw/current-source-excerpts.json binds exact current owning spans; all29 inputs joined to literalfb6124 and stable before/after.",
+      "new_runtime_observation": false,
+      "limits": [
+        "Fresh finite source inspection and current committeda0f4 input join, supported by actual51 selected component cases (status41 subset).",
+        "Original3688/83b21 and ce3+WIP source/runtime observations remain historical; this proof does not relabel them.",
+        "UI ports/metrics/bridge are declared fixture substitutes; no installed/renderedTUI, humanconsent, wholemachine/task/adapter/provider qualification.",
+        "S18:03 combined fallback/notice clause remains withheld. S18:07 has a separate new componentTESTED proof, not this fiveP source proof."
+      ]
+    }
+  ],
+  "groups": {
+    "plan": {
+      "original_proof_ref": "docs/state-contracts-major/execution/evidence/pi-plan-source-preservation/source-conformance.json",
+      "original_proof_sha256": "b072280665e5c15878747aa92fe9432fda77f3ba951a4992e593314736f7492d",
+      "original_epoch": "3688ef7fcedce06561443c0b3a8c3186b9e6e7be",
+      "original_scope": "/root/pi_program: direct bounded clause inspection of native plan entry/approval/cancel and imported guards; prospective parent admission only",
+      "limits": [
+        "Source-conformance only. No new tests, host launch, native build, installed UI or release qualification.",
+        "S03:07 preserves refusal/no approved successor and the stored owning draft; if lease retires, mode() returns execute through baseline ownership-loss behavior. This packet does not prove new-session plan restrictions or close S03:09.",
+        "Canonical native plan admission is currently legacy-Markdown-only and stricter than baseline: HTML/ambiguous/missing legacy pairs refuse; no HTML plan-authoring claim.",
+        "Input cone binds exact owning controllers, runtime predicates/callers, type/policy interface and canonical Python plan-file admission. It is not global Pi lifecycle or native filesystem backend qualification.",
+        "Original3688 hosted component observations are kept separately; their PR event and failed aggregate run cannot satisfy the final successful integration-push hosted evidence gate.",
+        "Root admission excludes S03:07 entirely: the frozen effect also requires preserved restrictions for stale/cancelled confirmation, beyond preserved stored draft. Its original trace remains a source observation, not qualification of that row."
+      ],
+      "selected_ids": [
+        "disposition:transitions:S03:01",
+        "disposition:transitions:S03:05",
+        "disposition:transitions:S03:06",
+        "disposition:transitions:S03:08"
+      ]
+    },
+    "finite": {
+      "original_proof_ref": "docs/state-contracts-major/execution/evidence/pi-d594-finite-source-preservation/source-conformance.json",
+      "original_proof_sha256": "cf7e52784b9952014394cd2db3c696ee61514b5662edb47d67fbfb17ada97949",
+      "original_epoch": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+      "original_scope": "/root/pi_program: current bounded guard/effect/retry and dependency source inspection; no runtime qualification",
+      "limits": [
+        "Manual finite source conformance only. No tests, APIs, network, npm, Pi, native build, artifact acquisition or ZIP extraction.",
+        "Whole cited owner-file equality is a checked input join, not the semantic oracle or runtime/model evidence.",
+        "No whole-machine, task, finding, composed scenario, program completion, host author/provider or physical-consent disposition.",
+        "No child runtime/transport/endpoint qualification. All S10/S11 held; historical raw EOF failure remains unresolved.",
+        "Exported legacy plan-file semantics are not a newly qualified public parent edit route or HTML plan authoring path."
+      ],
+      "selected_ids": [
+        "disposition:transitions:S03:02",
+        "disposition:transitions:S03:04",
+        "disposition:transitions:S03:09",
+        "disposition:transitions:S04:02",
+        "disposition:transitions:S04:03",
+        "disposition:transitions:S04:04",
+        "disposition:transitions:S04:05",
+        "disposition:transitions:S04:07",
+        "disposition:transitions:S05:01",
+        "disposition:transitions:S05:02",
+        "disposition:transitions:S05:03",
+        "disposition:transitions:S05:04",
+        "disposition:transitions:S05:05",
+        "disposition:transitions:S05:06",
+        "disposition:transitions:S05:07",
+        "disposition:transitions:S05:08",
+        "disposition:transitions:S05:09",
+        "disposition:transitions:S13:01",
+        "disposition:transitions:S13:02",
+        "disposition:transitions:S13:03",
+        "disposition:transitions:S13:04",
+        "disposition:transitions:S13:05",
+        "disposition:transitions:S13:06",
+        "disposition:transitions:S13:07",
+        "disposition:transitions:S13:08",
+        "disposition:transitions:S13:09",
+        "disposition:transitions:S17:02",
+        "disposition:transitions:S17:03",
+        "disposition:transitions:S17:04",
+        "disposition:transitions:S17:05"
+      ]
+    },
+    "status": {
+      "original_proof_ref": "docs/state-contracts-major/execution/evidence/pi-committed51-a0f4/s18-five-preserved.json",
+      "original_proof_sha256": "07e6b1c9846ecace0068e4b405f14f41ef3fe30e26f558150a49c0ef5c9750f1",
+      "original_epoch": "a0f4bc274c78613b739757743616bd23b1fe63ef",
+      "original_scope": "/root/pi_program fresh finite changed-owner source conformance at actuala0f4 with current committed51 component support; old component epochs remain history",
+      "limits": [
+        "Fresh finite source inspection and current committeda0f4 input join, supported by actual51 selected component cases (status41 subset).",
+        "Original3688/83b21 and ce3+WIP source/runtime observations remain historical; this proof does not relabel them.",
+        "UI ports/metrics/bridge are declared fixture substitutes; no installed/renderedTUI, humanconsent, wholemachine/task/adapter/provider qualification.",
+        "S18:03 combined fallback/notice clause remains withheld. S18:07 has a separate new componentTESTED proof, not this fiveP source proof."
+      ],
+      "selected_ids": [
+        "disposition:transitions:S18:01",
+        "disposition:transitions:S18:02",
+        "disposition:transitions:S18:04",
+        "disposition:transitions:S18:05",
+        "disposition:transitions:S18:06"
+      ]
+    }
+  },
+  "source_delta_conclusion": "Only explicit -B insertion before the bridge script; preserves fixed Python/script/path/environment/cwd/request/response/bounds/failure/cleanup contracts of these39 source claims. Existing53+selected1 source63 controls and review are corroboration, not fresh runtime qualification.",
+  "excluded": [
+    "S03:07",
+    "S10/S11 HTTP decision",
+    "new transitions/machines/tasks",
+    "installed/UI/model/provider/native/parent lifecycle",
+    "historical2df EOF cause"
+  ]
+}

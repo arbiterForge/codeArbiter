@@ -186,5 +186,83 @@ class ConcurrentSuitesTests(unittest.TestCase):
                 run.assert_not_called()
 
 
+    def test_each_real_unittest_run_requires_a_positive_successful_summary(self):
+        # Real unittest TestResults deliberately do not set the child's exit code.
+        cases = [(("pass", "fail"), 1), (("fail", "pass"), 1),
+                 (("empty", "pass"), 1), (("pass", "empty"), 1),
+                 (("pass", "pass"), 0), (("pass", "skip"), 0),
+                 (("pass", "expected"), 0)]
+        for order, expected in cases:
+            with self.subTest(order=order):
+                script = self.suite("two-runs.py", """
+                    import unittest
+                    class Passing(unittest.TestCase):
+                        def test_one(self):
+                            pass
+                    class Failing(unittest.TestCase):
+                        def test_one(self):
+                            self.fail("deliberate child unittest failure")
+                    class Skipped(unittest.TestCase):
+                        @unittest.skip("deliberate supported skip")
+                        def test_one(self):
+                            pass
+                    class ExpectedFailure(unittest.TestCase):
+                        @unittest.expectedFailure
+                        def test_one(self):
+                            self.fail("deliberate expected failure")
+                    kinds = {"pass": Passing, "fail": Failing,
+                             "skip": Skipped, "expected": ExpectedFailure}
+                    for kind in ORDER:
+                        suite = unittest.TestSuite()
+                        if kind != "empty":
+                            suite.addTest(kinds[kind]("test_one"))
+                        unittest.TextTestRunner().run(suite)
+                """.replace("ORDER", repr(order)))
+                observed = []
+                actual_run = runner.run
+                def observe(interpreter, path):
+                    value = actual_run(interpreter, path)
+                    observed.append(value)
+                    return value
+                with mock.patch.object(runner, "run", side_effect=observe):
+                    code, output = self.run_main([script])
+                self.assertEqual(len(observed), 1)
+                child_code, child_output = observed[0]
+                self.assertEqual(child_code, 0, child_output)
+                self.assertEqual(child_output.count("Ran "), 2, child_output)
+                print("C05 actual child observation:", order, "child exit", child_code,
+                      "aggregate", code, "expected", expected)
+                # Retain child diagnostics without presenting fixture verdicts
+                # as this test module's own canonical unittest summaries.
+                print("\n".join("C05 child> " + line for line in child_output.splitlines()))
+                self.assertEqual(code, expected, output)
+                self.assertIn("0 of 1 passed" if expected else "1 of 1 passed", output)
+
+
+    def test_invalid_timeout_or_unavailable_interpreter_refuses_before_launch(self):
+        real = self.suite("preflight.py", PASSING)
+        missing = str(self.root / "unavailable-interpreter")
+        self.assertFalse(Path(missing).exists())
+        cases = [("zero", 0, None), ("negative", -1, None),
+                 ("nan", float("nan"), None), ("infinity", float("inf"), None),
+                 ("negative infinity", float("-inf"), None),
+                 ("missing interpreter", 30, missing)]
+        for label, timeout, interpreter in cases:
+            with self.subTest(case=label):
+                argv = [real] if interpreter is None else [
+                    "--interpreter-env", "C05_UNAVAILABLE_INTERPRETER", real]
+                env = {} if interpreter is None else {
+                    "C05_UNAVAILABLE_INTERPRETER": interpreter}
+                # This is an inert interception, never fake successful output.
+                # Invalid timeout values must never reach a real child process.
+                with mock.patch.object(runner, "TIMEOUT_SECONDS", timeout), \
+                     mock.patch.object(runner, "run", return_value=(
+                         1, "testlaunchintercept:nochildexecuted")) as launch:
+                    code, output = self.run_main(argv, env)
+                print("C05 preflight observation:", label, "return", code,
+                      "intercepted run calls", launch.call_count)
+                self.assertEqual((code, launch.call_count), (2, 0), output)
+
+
 if __name__ == "__main__":
     unittest.main()

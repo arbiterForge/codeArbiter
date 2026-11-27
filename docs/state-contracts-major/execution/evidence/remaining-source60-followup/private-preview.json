@@ -1,0 +1,24 @@
+{
+ "result": "PASS_PRIVATE_SOURCE_PREVIEW",
+ "proposals": [
+  {
+   "delivery": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-remaining-hooks60-source-2e09-rwhj0q48\\delivery.json",
+   "sha256": "99decf671169673e93aa3f436942e1df14161cb0e3ae2acd2fd5e0e105a43753",
+   "cells": 60,
+   "skipped_old_epoch_cells": [],
+   "skip_reason": null
+  }
+ ],
+ "adoption_sha256": "fa0c660fa62c70dc1886e2a4effe479a9191a5e508c29dd71e7c413abf0f5687",
+ "strict_projection_sha256": "650971d7c73c72d5b9050cfc3eab64fe193fce81ab44d000f34d6af8a0414b3e",
+ "cells": 60,
+ "records": 777,
+ "planned": {
+  "findings": 49,
+  "machines": 0,
+  "transitions": 8,
+  "total": 57
+ },
+ "root_state_unchanged": true,
+ "full_owner_called": false
+}

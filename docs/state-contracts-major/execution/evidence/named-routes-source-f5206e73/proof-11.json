@@ -1,0 +1,95 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "f5206e7371e0d74ce6730f701e418ac3b3bfa7a5",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "Exact named-route delta with preserved source owner predicates"
+  },
+  "inputs": {
+    ".github/scripts/run_concurrent_suites.py": "bf1ea7abcfc00d25c8dbdb9135a42ec860e525a007ff61d024a766c037601614",
+    ".github/workflows/ci.yml": "c6cb97e0e1f46b549929ed1e19e2434cc1aaecd9c8a9c65b51bb97031915fbd9",
+    "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+    "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+    "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+    "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e"
+  },
+  "disposition_ids": [
+    "disposition:machines:C05"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/named-routes-source-f5206e73/source-delta-review.json",
+      "sha256": "a39467b84f49180871624444e76bd8a39b4513ae8d3e3d5024935894a94e7951"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/recovery-upload-source-6e9cf6bd/proof-10.json",
+      "sha256": "26e66ad5c2d27065078668006d392fe53aff572f30555a412479e6a18c68f984"
+    }
+  ],
+  "prior_source_fingerprint": {
+    "path": "docs/state-contracts-major/execution/evidence/recovery-upload-source-6e9cf6bd/proof-10.json",
+    "sha256": "26e66ad5c2d27065078668006d392fe53aff572f30555a412479e6a18c68f984",
+    "original_code": "6e9cf6bd4631184174100923e6e012960669ddf6",
+    "stored_at": "5d9f62dc3addc8c9c6709f3b417ecbd48e27b65f"
+  },
+  "scope": {
+    "source_only": true,
+    "families": [
+      "C05"
+    ],
+    "complete_machine": true,
+    "inspected_all_literal_clauses": [
+      "disposition:transitions:C05:01",
+      "disposition:transitions:C05:02",
+      "disposition:transitions:C05:03",
+      "disposition:transitions:C05:04",
+      "disposition:transitions:C05:05"
+    ],
+    "existing_advanced_rows_unchanged": [
+      "disposition:transitions:C05:01",
+      "disposition:transitions:C05:02",
+      "disposition:transitions:C05:03",
+      "disposition:transitions:C05:04",
+      "disposition:transitions:C05:05"
+    ],
+    "intake_variances": [
+      {
+        "id": "C05-PINNED-VERDICT-STRENGTHENING",
+        "cells": [
+          "C05:01",
+          "C05:04",
+          "C05:05"
+        ],
+        "classification": "PREVIOUS_IMPLEMENTED_STRENGTHENING_RETAINED",
+        "statement": "Pinned parse/main did not prevalidate finite timeout/available interpreter, and pinned verdict used last Ran plus any OK. Current source checks all summaries and admission; existing three TESTED rows and evidence are preserved exactly. This packet does not requalify tests."
+      }
+    ]
+  },
+  "changed_paths": [
+    ".github/workflows/ci.yml"
+  ],
+  "limits": [
+    "Reasoned finite source guard/effect/retry conformance only. No actual suite/CI/Go/Docker/Vitest/installed/provider execution or success, runtime evidence epoch, task completion, human acceptance or publication qualification is asserted.",
+    "No canonical/index/ref/marker/ledger writes. These are proposals for Root compare-and-set adoption; no current staged candidate or security marker is fabricated.",
+    "Unkeyed source hashes/records provide cooperative source consistency, not adversarial authentication or observed execution.",
+    "No run, platform, package, task, provider, user or installed evidence was renewed.",
+    "All prior original source epochs and raw evidence remain exact.",
+    "New file names are bound in the exact full Python namespace; the disjoint entry points are not a claim of newly executed tests.",
+    "Only evidence binding was renewed for unchanged finite predicates. C35 has explicit maintainer-authorized policy changes.",
+    "Source-only assessment. All execution and prior evidence retain their original epochs.",
+    "Static renewal preserves finite owner, effect and authorization predicates. The fixed Windows upload handoff uses the same two existing native candidate members.",
+    "Source-only assessment. All execution and prior evidence retain their original epochs.",
+    "This source renewal preserves each prior finite clause. The new original-result routes were not promoted.",
+    "Source-only assessment. All execution and prior evidence retain their original epochs."
+  ],
+  "input_membership": [
+    {
+      "profile": "python-import-directory-v1",
+      "root": ".github/scripts",
+      "path_order": "windows",
+      "sha256": "434ab55d7381a628a19f46607073b7a4df23e2dfc2ba9a4b88d4433fac07b334"
+    }
+  ]
+}

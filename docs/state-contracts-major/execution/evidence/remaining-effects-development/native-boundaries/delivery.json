@@ -1,0 +1,42 @@
+{
+  "schema": "private-native-four-unit-successor/1",
+  "source_epoch": "27d38a2ddc0f6fbf77671a86cad04cd1a02e43dd",
+  "actual_head_at_copy": "27d38a2ddc0f6fbf77671a86cad04cd1a02e43dd",
+  "changed_files": [
+    "core/artifacts/internal/operations/next_native_boundary_contract_test.go"
+  ],
+  "candidate_sha256": "a62da1b75a035010879b4b4e5e6b1e7846e8082b4825a0bad93f5efddfc2d17c",
+  "patch_sha256": "35d77275f4a6e0b37c0faa1b27fb3f4781cf40a2a9871851f4fa285a46ec1fe2",
+  "filemap_sha256": "173d1a825c6b61337e82fd5bff83115baf050810b2416cd5afd20503335993f8",
+  "future_recipe_fragment_sha256": "f87ad352e6011731caefebb6a238e8004608365538e43026c2a06f34890f118f",
+  "actual_command": [
+    "C:/Program Files/Go/bin/go.exe",
+    "test",
+    "-json",
+    "./internal/operations",
+    "-run",
+    "^(TestN01AdmissionHasNoRepositoryEffects|TestN13CallerReportBindsOperationTimeAndSubjects|TestN13TrimRetainsActualJournalBeforeImage|TestN13UnavailableScopesRemainReportableWithoutReadMutation)$",
+    "-count=1",
+    "-timeout=90s",
+    "-failfast"
+  ],
+  "actual_exit_code": 0,
+  "actual_duration_seconds": 7.266204300001846,
+  "actual_outcomes": {
+    "parents_passed": 4,
+    "children_passed": 12,
+    "skipped": 0
+  },
+  "test_invocations_in_this_successor": 1,
+  "original_failed_capture_preserved": true,
+  "new_tests_only": true,
+  "production_unchanged": true,
+  "canonical_writes": false,
+  "qualification": false,
+  "limits": [
+    "Original fixture failure and one explicitly authorized corrected successor are separate genuine observations.",
+    "No existing complement suite rerun; no all-six platform/installed/live-host/CLI/helper/provider proof.",
+    "No new native/Go dependency/build acquisition, Node/SDK/model/network or canonical mutations.",
+    "Ready future recipes are prospective fragments only; Root sole owner integration and later genuine hosted qualification."
+  ]
+}

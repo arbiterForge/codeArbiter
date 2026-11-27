@@ -1,0 +1,14 @@
+test_empty_statusline_reports_cannot_pass (__main__.MeasurementContracts.test_empty_statusline_reports_cannot_pass) ... ok
+test_failed_smarts_child_cannot_pass_from_plausible_output (__main__.MeasurementContracts.test_failed_smarts_child_cannot_pass_from_plausible_output) ... ok
+test_farm_escalation_does_not_invent_premium_spend_or_abort_cause (__main__.MeasurementContracts.test_farm_escalation_does_not_invent_premium_spend_or_abort_cause) ... ok
+test_nonempty_compatible_subset_compares_and_wrong_harness_refuses (__main__.MeasurementContracts.test_nonempty_compatible_subset_compares_and_wrong_harness_refuses) ... ok
+test_screenshot_browser_failure_closes_browser_and_preserves_prior_image (__main__.MeasurementContracts.test_screenshot_browser_failure_closes_browser_and_preserves_prior_image) ... ok
+test_screenshot_failed_run_cleans_owned_scratch_and_preserves_prior_image (__main__.MeasurementContracts.test_screenshot_failed_run_cleans_owned_scratch_and_preserves_prior_image) ... ok
+test_screenshot_renderer_failure_is_not_a_good_image (__main__.MeasurementContracts.test_screenshot_renderer_failure_is_not_a_good_image) ... ok
+test_smarts_lens_keywords_are_not_material_alternatives (__main__.MeasurementContracts.test_smarts_lens_keywords_are_not_material_alternatives) ... ok
+test_unknown_statusline_scenario_is_rejected_before_measurement (__main__.MeasurementContracts.test_unknown_statusline_scenario_is_rejected_before_measurement) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 0.104s
+
+OK

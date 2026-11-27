@@ -1,0 +1,403 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "cfa8effd8e3e856571052f94311f4f01c96b7f77",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "/root: current source-only literal26-clause reinspection after audited mode repair; actual prior independent source/code review reuse"
+ },
+ "inputs": {
+  ".codearbiter/decisions/0032-hosted-static-codex-release-evidence.md": "96b28b262f0bff474a53383c9823c22fbe06ecc3f63f343d8c6a31993c97e4c9",
+  ".codearbiter/decisions/0034-establish-closed-legacy-published-tag-provenance-epoch.md": "caec3ca7d29942c143661cab268b49cb57bb1c403c55d1ac476ca02a7059e224",
+  ".codearbiter/decisions/0040-independent-per-target-release-with-consumer-safety-gates.md": "2dce2651ea067cc7bec25982ce23fdeb1528e9bfb003906c55be7e243a3a8964",
+  ".codearbiter/decisions/0043-assistive-state-engine.md": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+  ".codearbiter/decisions/0044-trusted-pi-npm-publication.md": "fda3c0194f83d41bcb169fae7c14d1b24bdaf3bace8d41780a88825e10fe30d6",
+  ".codearbiter/decisions/0049-require-https-outside-bounded-loopback.md": "c757cef9d5e318b75ff164d270b29a49255449360f0b7cde51e53775e6916ab8",
+  "core/pysrc/_durabilitylib.py": "42e9d3ed6f6f43c76bef073e6edad2b8a119dfc154e2a497909422b4e4d28f9b",
+  "core/pysrc/_hooklib.py": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+  "core/pysrc/wire-statusline.py": "aaed6ec530fd58778e77f30d81c9a8eb27d7dbd70068bb154ae825a385315a87",
+  "core/surface/commands/doctor.md": "88c8f8e41178fea7ca683c7411c57500b4e05a2f736d73cb1bd0f688febf1c7e",
+  "core/surface/commands/prune.md": "423f25f00d3ef199ae94bdfbc2c1c890118bdc747f9e84e2504b12de0f72ce95",
+  "core/surface/commands/status.md": "1355e635239bfc50130fdcf23d1fba4eac42d57a2a6100676aae3dc10d424dcf",
+  "core/surface/commands/statusline.md": "a166f27f2644cae22e082c5ad81615df37bc60598b3412e8f6bd88e8bfb67233",
+  "core/surface/includes/pi-host-notes.md": "e179d2d7c866d95de28b74efbc45c94dc48f74e98134fa0f282ee0ff2c854038",
+  "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e"
+ },
+ "disposition_ids": [
+  "disposition:machines:WF-34",
+  "disposition:transitions:WF-34:01",
+  "disposition:transitions:WF-34:02",
+  "disposition:transitions:WF-34:03",
+  "disposition:transitions:WF-34:04",
+  "disposition:transitions:WF-34:05"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/repaired-five-source-cfa8/source-bindings.json",
+   "sha256": "8babe064021f1b04b4fbb67c306596503503621ea4ff7edc3663ed7d6813a9b9"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/repaired-five-source-cfa8/clause-inspection.json",
+   "sha256": "db86b6d8b1fa9ccf86f4d8924c9c43510d112b393f32a9fe9c1bbd727c266f46"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/repaired-five-source-cfa8/current-reinspection.json",
+   "sha256": "e6624c3877987f7115ecefeab4e4f5b476e5b0694f7f9543a79473b92bf4d1fe"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/repaired-five-source-cfa8/prior-independent-source-review.json",
+   "sha256": "862f1c5b33258b71a90e8df568379d1a92f1fdb3462815599f8b4ca5899afc5d"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:WF-34",
+   "frozen_row_sha256": "964478b5ab80db794734acd6f37e037404da502fc3a9c8af734b3fe82a79d105",
+   "clause_ids": [
+    "disposition:transitions:WF-34:01",
+    "disposition:transitions:WF-34:02",
+    "disposition:transitions:WF-34:03",
+    "disposition:transitions:WF-34:04",
+    "disposition:transitions:WF-34:05"
+   ],
+   "witnesses": [
+    {
+     "path": "core/surface/commands/doctor.md",
+     "start": 8,
+     "end": 94,
+     "file_sha256": "88c8f8e41178fea7ca683c7411c57500b4e05a2f736d73cb1bd0f688febf1c7e",
+     "span_sha256": "cbaa8ea0c454aea55ce0f8b65ee295e3ecd63801c80dcf64724b4a54f2bd7d8b"
+    },
+    {
+     "path": "core/surface/includes/pi-host-notes.md",
+     "start": 87,
+     "end": 114,
+     "file_sha256": "e179d2d7c866d95de28b74efbc45c94dc48f74e98134fa0f282ee0ff2c854038",
+     "span_sha256": "ae6fd61a98418120ef6ef567b2de42299682bb1bd863cd88449c6c6e4aa0d247"
+    },
+    {
+     "path": "core/surface/commands/prune.md",
+     "start": 1,
+     "end": 99,
+     "file_sha256": "423f25f00d3ef199ae94bdfbc2c1c890118bdc747f9e84e2504b12de0f72ce95",
+     "span_sha256": "423f25f00d3ef199ae94bdfbc2c1c890118bdc747f9e84e2504b12de0f72ce95"
+    },
+    {
+     "path": "core/surface/includes/pi-host-notes.md",
+     "start": 55,
+     "end": 61,
+     "file_sha256": "e179d2d7c866d95de28b74efbc45c94dc48f74e98134fa0f282ee0ff2c854038",
+     "span_sha256": "d3e66facff8e44349dfbbd1c71d19e2eec960bf384d8584e8e0bc7882eca9b63"
+    },
+    {
+     "path": "core/surface/commands/statusline.md",
+     "start": 57,
+     "end": 76,
+     "file_sha256": "a166f27f2644cae22e082c5ad81615df37bc60598b3412e8f6bd88e8bfb67233",
+     "span_sha256": "37f4783f92076874047dfbf5bb722be4f94d64e8b2293dcfd68f4a541ba2cbfb"
+    },
+    {
+     "path": "core/pysrc/wire-statusline.py",
+     "start": 72,
+     "end": 110,
+     "file_sha256": "aaed6ec530fd58778e77f30d81c9a8eb27d7dbd70068bb154ae825a385315a87",
+     "span_sha256": "7e9280425e98e9d7e64d648a7e754bada5a71f8f9957fe8f5e5b9761cd23feef"
+    },
+    {
+     "path": "core/pysrc/wire-statusline.py",
+     "start": 156,
+     "end": 216,
+     "file_sha256": "aaed6ec530fd58778e77f30d81c9a8eb27d7dbd70068bb154ae825a385315a87",
+     "span_sha256": "81adec9947554e5f137d8f7cd8a44d4d76582b7f766266846c39ba61d565879e"
+    },
+    {
+     "path": "core/pysrc/wire-statusline.py",
+     "start": 240,
+     "end": 365,
+     "file_sha256": "aaed6ec530fd58778e77f30d81c9a8eb27d7dbd70068bb154ae825a385315a87",
+     "span_sha256": "65775062492d7aa09848c229603bb28dae59c9ce934338dbbc8b0d1c35c02601"
+    },
+    {
+     "path": "core/pysrc/_durabilitylib.py",
+     "start": 79,
+     "end": 186,
+     "file_sha256": "42e9d3ed6f6f43c76bef073e6edad2b8a119dfc154e2a497909422b4e4d28f9b",
+     "span_sha256": "eb6b43409cf949ca2a867dbae8e0571d6d18b7356dda1454f03a7c54e7a9d48b"
+    },
+    {
+     "path": "core/pysrc/_hooklib.py",
+     "start": 482,
+     "end": 506,
+     "file_sha256": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+     "span_sha256": "68f7a642ed5850e896737ac476a524b1b3343ef35e51182f17d1fd5a0464126b"
+    },
+    {
+     "path": "core/surface/commands/statusline.md",
+     "start": 78,
+     "end": 82,
+     "file_sha256": "a166f27f2644cae22e082c5ad81615df37bc60598b3412e8f6bd88e8bfb67233",
+     "span_sha256": "8a67f28f44f95decaa3936ec65a9a3fca98ba3bffc9dc60dd4a008440e9e2878"
+    },
+    {
+     "path": "core/pysrc/wire-statusline.py",
+     "start": 156,
+     "end": 188,
+     "file_sha256": "aaed6ec530fd58778e77f30d81c9a8eb27d7dbd70068bb154ae825a385315a87",
+     "span_sha256": "b5e1f221bd1aec0f8e08ea9305240a4567e5e0c20a63154407184039c57ecbd2"
+    },
+    {
+     "path": "core/pysrc/wire-statusline.py",
+     "start": 353,
+     "end": 400,
+     "file_sha256": "aaed6ec530fd58778e77f30d81c9a8eb27d7dbd70068bb154ae825a385315a87",
+     "span_sha256": "5851bbae68164112746f0aa811ce97c46b291a2a7e6a6743da6f1bfb68f0f579"
+    },
+    {
+     "path": "core/pysrc/wire-statusline.py",
+     "start": 402,
+     "end": 461,
+     "file_sha256": "aaed6ec530fd58778e77f30d81c9a8eb27d7dbd70068bb154ae825a385315a87",
+     "span_sha256": "c09f3838436a741576cea973d374b02fd3bfb77eb0590f68ce14c2b0698fcd3c"
+    },
+    {
+     "path": "core/surface/commands/statusline.md",
+     "start": 14,
+     "end": 49,
+     "file_sha256": "a166f27f2644cae22e082c5ad81615df37bc60598b3412e8f6bd88e8bfb67233",
+     "span_sha256": "f8bb2866d589a7b26207f9bd8766795e791f2782a173c2de536ad8f31650f453"
+    },
+    {
+     "path": "core/surface/commands/status.md",
+     "start": 1,
+     "end": 24,
+     "file_sha256": "1355e635239bfc50130fdcf23d1fba4eac42d57a2a6100676aae3dc10d424dcf",
+     "span_sha256": "a7767053b2f6f2d8448034dcd980fb221abfedb059754417dfb36ba1b7192554"
+    },
+    {
+     "path": "core/surface/commands/status.md",
+     "start": 31,
+     "end": 81,
+     "file_sha256": "1355e635239bfc50130fdcf23d1fba4eac42d57a2a6100676aae3dc10d424dcf",
+     "span_sha256": "911b8cbd4a3c7c736ce01989d1555713d1f2b4539a13a108d62263766f417e3b"
+    },
+    {
+     "path": "core/surface/commands/status.md",
+     "start": 108,
+     "end": 111,
+     "file_sha256": "1355e635239bfc50130fdcf23d1fba4eac42d57a2a6100676aae3dc10d424dcf",
+     "span_sha256": "7cc5888d2a2f7a4ef9099dccb8b9d399c9b9ed4898c8fa10af1e72e09b42b1fd"
+    },
+    {
+     "path": "core/surface/includes/pi-host-notes.md",
+     "start": 44,
+     "end": 59,
+     "file_sha256": "e179d2d7c866d95de28b74efbc45c94dc48f74e98134fa0f282ee0ff2c854038",
+     "span_sha256": "0b03e3ee1c1615d73bcb2e4703e5e42ae6d803188f3c4eb0fe910672df3cc687"
+    }
+   ],
+   "semantic_assessment": "All literal family clauses, including retained advanced children, are mapped to current/pinned owners and essential callee spans. Exact accepted repairs and honest limitations are explicit per clause. This authored source-only assessment does not renew runtime evidence or close actual task/host/human acceptance.",
+   "limits": "Authored reasoned source conformance only. No actual host/user/model/provider/task, installed/runtime/native/OS containment, browser/accessibility, promotion/publication or human acceptance. All prior runtime/evidence epochs remain unchanged. Strict prospective owner authentication and independent review are pending."
+  },
+  {
+   "cell": "disposition:transitions:WF-34:01",
+   "frozen_row_sha256": "4963098f6a31ccfd71dd6967365abe66eb69c553aa9cb2093f17be0abb793014",
+   "witnesses": [
+    {
+     "path": "core/surface/commands/doctor.md",
+     "start": 8,
+     "end": 94,
+     "file_sha256": "88c8f8e41178fea7ca683c7411c57500b4e05a2f736d73cb1bd0f688febf1c7e",
+     "span_sha256": "cbaa8ea0c454aea55ce0f8b65ee295e3ecd63801c80dcf64724b4a54f2bd7d8b"
+    },
+    {
+     "path": "core/surface/includes/pi-host-notes.md",
+     "start": 87,
+     "end": 114,
+     "file_sha256": "e179d2d7c866d95de28b74efbc45c94dc48f74e98134fa0f282ee0ff2c854038",
+     "span_sha256": "ae6fd61a98418120ef6ef567b2de42299682bb1bd863cd88449c6c6e4aa0d247"
+    }
+   ],
+   "semantic_assessment": "Doctor resolves the actual host package and pinned payload/capability identity, distinguishes a harmless wrapper self-test from active dispatcher proof, reports unsupported/degraded paths and keeps manual trust repair/foreign hooks outside automatic remediation.",
+   "intake_variances": [
+    "The supported Pi version changed from1.1.0 to1.5.0. PI-AC28 remains explicitly blocked; a version label or package self-report is not installed dispatch qualification."
+   ],
+   "limits": "Authored reasoned source conformance only. No actual host/user/model/provider/task, installed/runtime/native/OS containment, browser/accessibility, promotion/publication or human acceptance. All prior runtime/evidence epochs remain unchanged. Strict prospective owner authentication and independent review are pending."
+  },
+  {
+   "cell": "disposition:transitions:WF-34:02",
+   "frozen_row_sha256": "987cc540f0d516274def1df0b341fae5fc53f2cbb4aea7cc390873fe265f3b06",
+   "witnesses": [
+    {
+     "path": "core/surface/commands/prune.md",
+     "start": 1,
+     "end": 99,
+     "file_sha256": "423f25f00d3ef199ae94bdfbc2c1c890118bdc747f9e84e2504b12de0f72ce95",
+     "span_sha256": "423f25f00d3ef199ae94bdfbc2c1c890118bdc747f9e84e2504b12de0f72ce95"
+    },
+    {
+     "path": "core/surface/includes/pi-host-notes.md",
+     "start": 55,
+     "end": 61,
+     "file_sha256": "e179d2d7c866d95de28b74efbc45c94dc48f74e98134fa0f282ee0ff2c854038",
+     "span_sha256": "d3e66facff8e44349dfbbd1c71d19e2eec960bf384d8584e8e0bc7882eca9b63"
+    }
+   ],
+   "semantic_assessment": "Off/dry/on is explicitly selected through the sanctioned prune owner. Dry reports effects, Pi uses native compaction and Claude has its distinct transcript path/metrics. No active Pi JSONL hand-editing, automatic on-policy, unsafe interrupted rewrite or conflation of compacted context with file bytes is allowed.",
+   "intake_variances": [
+    "These are source workflow obligations. No actual compaction, session mutation, byte recovery or installed host result is asserted."
+   ],
+   "limits": "Authored reasoned source conformance only. No actual host/user/model/provider/task, installed/runtime/native/OS containment, browser/accessibility, promotion/publication or human acceptance. All prior runtime/evidence epochs remain unchanged. Strict prospective owner authentication and independent review are pending."
+  },
+  {
+   "cell": "disposition:transitions:WF-34:03",
+   "frozen_row_sha256": "9b3b47699b9e4c81e47b58304b9619c403245bcdbb69368cd2ee8f074f0fb41a",
+   "witnesses": [
+    {
+     "path": "core/surface/commands/statusline.md",
+     "start": 57,
+     "end": 76,
+     "file_sha256": "a166f27f2644cae22e082c5ad81615df37bc60598b3412e8f6bd88e8bfb67233",
+     "span_sha256": "37f4783f92076874047dfbf5bb722be4f94d64e8b2293dcfd68f4a541ba2cbfb"
+    },
+    {
+     "path": "core/pysrc/wire-statusline.py",
+     "start": 72,
+     "end": 110,
+     "file_sha256": "aaed6ec530fd58778e77f30d81c9a8eb27d7dbd70068bb154ae825a385315a87",
+     "span_sha256": "7e9280425e98e9d7e64d648a7e754bada5a71f8f9957fe8f5e5b9761cd23feef"
+    },
+    {
+     "path": "core/pysrc/wire-statusline.py",
+     "start": 156,
+     "end": 216,
+     "file_sha256": "aaed6ec530fd58778e77f30d81c9a8eb27d7dbd70068bb154ae825a385315a87",
+     "span_sha256": "81adec9947554e5f137d8f7cd8a44d4d76582b7f766266846c39ba61d565879e"
+    },
+    {
+     "path": "core/pysrc/wire-statusline.py",
+     "start": 240,
+     "end": 365,
+     "file_sha256": "aaed6ec530fd58778e77f30d81c9a8eb27d7dbd70068bb154ae825a385315a87",
+     "span_sha256": "65775062492d7aa09848c229603bb28dae59c9ce934338dbbc8b0d1c35c02601"
+    },
+    {
+     "path": "core/pysrc/_durabilitylib.py",
+     "start": 79,
+     "end": 186,
+     "file_sha256": "42e9d3ed6f6f43c76bef073e6edad2b8a119dfc154e2a497909422b4e4d28f9b",
+     "span_sha256": "eb6b43409cf949ca2a867dbae8e0571d6d18b7356dda1454f03a7c54e7a9d48b"
+    },
+    {
+     "path": "core/pysrc/_hooklib.py",
+     "start": 482,
+     "end": 506,
+     "file_sha256": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+     "span_sha256": "68f7a642ed5850e896737ac476a524b1b3343ef35e51182f17d1fd5a0464126b"
+    }
+   ],
+   "semantic_assessment": "Explicit install checks renderer existence and rejects ephemeral roots, inspects existing settings, backs up the live current choice, then stamps exactly owned commands. Refresh only changes an owned stable path/legacy-backup migration, preserves the prior backup and ignores foreign/absent lines. Invalid JSON refuses; failed reads propagate rather than becoming absent.",
+   "intake_variances": [
+    "Accepted HW05 narrows ownership: later user choices begin a new explicit-install backup cycle; automatic refresh never replaces them. Unique temporary-file replacement protects prior bytes on an ordinary failure but is not whole-settings concurrency or arbitrary crash durability."
+   ],
+   "limits": "Authored reasoned source conformance only. No actual host/user/model/provider/task, installed/runtime/native/OS containment, browser/accessibility, promotion/publication or human acceptance. All prior runtime/evidence epochs remain unchanged. Strict prospective owner authentication and independent review are pending."
+  },
+  {
+   "cell": "disposition:transitions:WF-34:04",
+   "frozen_row_sha256": "01a27d847f1419f3d4325a73fa7bb22b260b4cbc0db979ba501b4fc9782bd1d0",
+   "witnesses": [
+    {
+     "path": "core/surface/commands/statusline.md",
+     "start": 78,
+     "end": 82,
+     "file_sha256": "a166f27f2644cae22e082c5ad81615df37bc60598b3412e8f6bd88e8bfb67233",
+     "span_sha256": "8a67f28f44f95decaa3936ec65a9a3fca98ba3bffc9dc60dd4a008440e9e2878"
+    },
+    {
+     "path": "core/pysrc/wire-statusline.py",
+     "start": 156,
+     "end": 188,
+     "file_sha256": "aaed6ec530fd58778e77f30d81c9a8eb27d7dbd70068bb154ae825a385315a87",
+     "span_sha256": "b5e1f221bd1aec0f8e08ea9305240a4567e5e0c20a63154407184039c57ecbd2"
+    },
+    {
+     "path": "core/pysrc/wire-statusline.py",
+     "start": 353,
+     "end": 400,
+     "file_sha256": "aaed6ec530fd58778e77f30d81c9a8eb27d7dbd70068bb154ae825a385315a87",
+     "span_sha256": "5851bbae68164112746f0aa811ce97c46b291a2a7e6a6743da6f1bfb68f0f579"
+    },
+    {
+     "path": "core/pysrc/wire-statusline.py",
+     "start": 402,
+     "end": 461,
+     "file_sha256": "aaed6ec530fd58778e77f30d81c9a8eb27d7dbd70068bb154ae825a385315a87",
+     "span_sha256": "c09f3838436a741576cea973d374b02fd3bfb77eb0590f68ce14c2b0698fcd3c"
+    }
+   ],
+   "semantic_assessment": "Uninstall restores/removes only a still-owned statusline and independently owned spinner. Exact owner mismatch, replacement, removal or legacy backup without current ownership preserves the later user setting and settles only stale bookkeeping. Legacy spinner backup migrates without destroying its value, avoiding old-reader restore trigger.",
+   "intake_variances": [
+    "The accepted ownership repair narrows the generic restore-prior prose. No new sanitizer, arbitrary malformed-settings repair, host consent or real global-settings acceptance is inferred."
+   ],
+   "limits": "Authored reasoned source conformance only. No actual host/user/model/provider/task, installed/runtime/native/OS containment, browser/accessibility, promotion/publication or human acceptance. All prior runtime/evidence epochs remain unchanged. Strict prospective owner authentication and independent review are pending."
+  },
+  {
+   "cell": "disposition:transitions:WF-34:05",
+   "frozen_row_sha256": "8700ba2a837b598b9ca71840cbedca56e8e34a3b0621fac08f5b63c12d95766e",
+   "witnesses": [
+    {
+     "path": "core/surface/commands/statusline.md",
+     "start": 14,
+     "end": 49,
+     "file_sha256": "a166f27f2644cae22e082c5ad81615df37bc60598b3412e8f6bd88e8bfb67233",
+     "span_sha256": "f8bb2866d589a7b26207f9bd8766795e791f2782a173c2de536ad8f31650f453"
+    },
+    {
+     "path": "core/surface/commands/status.md",
+     "start": 1,
+     "end": 24,
+     "file_sha256": "1355e635239bfc50130fdcf23d1fba4eac42d57a2a6100676aae3dc10d424dcf",
+     "span_sha256": "a7767053b2f6f2d8448034dcd980fb221abfedb059754417dfb36ba1b7192554"
+    },
+    {
+     "path": "core/surface/commands/status.md",
+     "start": 31,
+     "end": 81,
+     "file_sha256": "1355e635239bfc50130fdcf23d1fba4eac42d57a2a6100676aae3dc10d424dcf",
+     "span_sha256": "911b8cbd4a3c7c736ce01989d1555713d1f2b4539a13a108d62263766f417e3b"
+    },
+    {
+     "path": "core/surface/commands/status.md",
+     "start": 108,
+     "end": 111,
+     "file_sha256": "1355e635239bfc50130fdcf23d1fba4eac42d57a2a6100676aae3dc10d424dcf",
+     "span_sha256": "7cc5888d2a2f7a4ef9099dccb8b9d399c9b9ed4898c8fa10af1e72e09b42b1fd"
+    },
+    {
+     "path": "core/surface/includes/pi-host-notes.md",
+     "start": 44,
+     "end": 59,
+     "file_sha256": "e179d2d7c866d95de28b74efbc45c94dc48f74e98134fa0f282ee0ff2c854038",
+     "span_sha256": "0b03e3ee1c1615d73bcb2e4703e5e42ae6d803188f3c4eb0fe910672df3cc687"
+    }
+   ],
+   "semantic_assessment": "Status and the cost display distinguish exact observations, host-only, approximate/lower-bound, unavailable and stale provenance. Drift/pipelines/recovery report their selected read scope; absent/partial/unreadable recovery is not completed historical work and status performs no resume/promotion/completion.",
+   "intake_variances": [
+    "Added workflow recovery is bounded read-only disclosure with page cursors, not full-backlog counting or renewed work authority."
+   ],
+   "limits": "Authored reasoned source conformance only. No actual host/user/model/provider/task, installed/runtime/native/OS containment, browser/accessibility, promotion/publication or human acceptance. All prior runtime/evidence epochs remain unchanged. Strict prospective owner authentication and independent review are pending."
+  }
+ ],
+ "scope": "Authored reasoned source-only preservation of selected PLANNED cells; no actual execution, installed/runtime acceptance, host consent, model/benchmark or publication claim.",
+ "limits": [
+  "Authored reasoned source conformance only. No actual host/user/model/provider/task, installed/runtime/native/OS containment, browser/accessibility, promotion/publication or human acceptance. All prior runtime/evidence epochs remain unchanged. Strict prospective owner authentication and independent review are pending.",
+  "All26 literal frozen transition rows are mapped, including9 advanced rows; only5 PLANNED machines and17 PLANNED transitions are proposed PRESERVED. No source row is proposed TESTED or N/A.",
+  "Accepted persona recovery, later-user statusline ownership, Farm receipt recovery, link containment and parity hint corrections are explicit per clause. No historical defect is silently asserted to remain current.",
+  "Future launches, double storage denial, shared Git concurrency, lexical-not-realpath link checks and manual/two-host qualification remain explicit boundaries.",
+  "No subject code/runtime, tests, owner validation, models/providers, network/API, tools/install, source edits, Root/index/ref/marker/ledger writes or new reviewer fleet are performed by this author lane. Sole CI watcher is a separately authorized read-only lane."
+ ]
+}

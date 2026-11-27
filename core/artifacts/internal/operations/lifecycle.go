@@ -249,32 +249,6 @@ func appendRefs(s object, refs ...string) {
 	}
 	s["evidence_refs"] = model.List(existing...)
 }
-func invalidateDependents(d *model.Document, id, reason string) {
-	changed := map[string]bool{id: true}
-	again := true
-	for again {
-		again = false
-		for _, v := range model.A(d.Norm()["tasks"]) {
-			task := model.M(v)
-			tid := model.S(task["id"])
-			if changed[tid] {
-				continue
-			}
-			for _, dep := range model.Strings(task["depends_on"]) {
-				if changed[dep] {
-					changed[tid] = true
-					again = true
-					s := state(d, tid)
-					if status := model.S(s["state"]); status != "PENDING" && status != "BLOCKED" {
-						s["state"] = "STALE"
-						s["reason"] = "Dependency invalidated: " + reason
-					}
-					break
-				}
-			}
-		}
-	}
-}
 func (e *Engine) progress(op string, r object, entry repository.Entry) (any, error) {
 	d := entry.Doc
 	if d.Kind() != "plan" {
@@ -299,6 +273,9 @@ func (e *Engine) progress(op string, r object, entry repository.Entry) (any, err
 	// The remaining receipted operations below validate explicit evidence claims;
 	// ordinary progress above has no artifact-authority prerequisite.
 	if op == "task-block" {
+		// This operation changes the historical dependency propagation contract.
+		// Other progress writes keep their existing normative identity.
+		next.Data["schema_version"] = model.AtLeast(next.Data, model.ProgressVersion)
 		id := model.S(r["task"])
 		task, ok := d.Symbols.ByID[id]
 		if !ok || task.Kind != "tasks" {
@@ -307,7 +284,6 @@ func (e *Engine) progress(op string, r object, entry repository.Entry) (any, err
 		s := state(next, id)
 		s["state"] = "BLOCKED"
 		s["reason"] = r["reason"]
-		invalidateDependents(next, id, model.S(r["reason"]))
 		next.Data["revision"] = d.Revision() + 1
 		next, err = render.Prepare(next.Data)
 		if err != nil {
@@ -428,7 +404,7 @@ func (e *Engine) progress(op string, r object, entry repository.Entry) (any, err
 			s["reason"] = r["reason"]
 			appendRefs(s, receipt.Path)
 			if wanted != "REVIEW" {
-				invalidateDependents(next, id, model.S(r["reason"]))
+				next.Data["schema_version"] = model.AtLeast(next.Data, model.ProgressVersion)
 			}
 		case "scope-reconcile":
 			scope := model.S(r["scope"])

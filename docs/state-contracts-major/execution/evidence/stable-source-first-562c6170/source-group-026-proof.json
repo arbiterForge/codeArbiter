@@ -1,0 +1,101 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "562c6170c010eedbef93a4216b4baa971fd6b9a6",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "Exact prepared finite clauses with immutable current witness and namespace join"
+  },
+  "inputs": {
+    "core/artifacts/internal/authority/receipt.go": "ca238dd369aad9f62a1d57c2405a3b2ddb2eac8c753c0ef552f88f9ffc0ef694",
+    "core/artifacts/internal/observation/contract.go": "0c3996eb62a798f4b2d1405f85966fa49f7b1a9f7f62802497d654d46ef003ca",
+    "core/artifacts/internal/operations/capture_export.go": "850ee6ce3b2ace09cea3cba2ffaaa1364552f829436be42a13d8556f52c84479",
+    "core/artifacts/internal/operations/context_authority.go": "a28f2baab110fa1231215be6d2f43613d1f0d835c645afd8559d1907bbaee083",
+    "core/artifacts/internal/operations/engine.go": "7a227941034c9d3903036c5f5769bf7dee8f60cefae969af060661764a4b9e01",
+    "core/artifacts/internal/operations/evidence_context.go": "23375b83a286417fc34e7228e032360fbc439a71c08c40b0797fff6f64a3abcd",
+    "core/artifacts/internal/operations/lifecycle.go": "f2733f681dd9d6271138dcdde23e9cd84d09c9947c28eb94d7489054b69eb362",
+    "core/artifacts/internal/operations/migration.go": "e1f9f5a36117e5e64f5511106e10d7447d00408cd36bdeb76aad8d220d3cca45",
+    "core/artifacts/internal/operations/mutations.go": "55b954e73dfc8c2562ce02ae117aaea85761e17d408089ec05d98ea00fd3c8af",
+    "core/artifacts/internal/operations/protocol.go": "bc1c453d055afa61127c5445ae9cd15263e90c6311d9ecc6eda27558fa97464b",
+    "core/artifacts/internal/operations/sprint.go": "e2a7d07fb30fc640a052f5e738aa54b0f6fc637e77c013ff6096e19548057436",
+    "core/artifacts/internal/operations/work.go": "511dabc1b5956ce0729e32b301e7fef98569a3a2ec8d927d28c8c0ce0c5496e3",
+    "core/artifacts/internal/operations/work_coordination.go": "90d1dc63dce04d7e059ceb116609ad4dffe17257646e057e2d8a107fd1854afd",
+    "core/artifacts/internal/operations/work_effects.go": "036bbf127d5c6ffa4dfd841e087a935fc568d28e9a8b1e37551009e233c9031e",
+    "core/artifacts/internal/operations/work_project.go": "5f10e2e7d314385d7c1a21501b95080d89c062f7929d0867b184a9481c5edf0e",
+    "core/artifacts/internal/operations/work_transition_map.go": "7dcf9a9fb84c003945aba31a705dd3e15c7a2937c5ae2e6c2cf1a75475aa8d19",
+    "core/artifacts/internal/read/read.go": "8a5b99fb3cdcc08611b36d56382251b053e8b884b8112e3506f412a5dcee5c39",
+    "core/artifacts/internal/render/render.go": "4df5683211a7478872695377155492b77b1d816b31425cfc52c7e0f0e5a5ca99",
+    "core/artifacts/internal/repository/catalog.go": "86624df536e1fb3ead9437febe8f7b9e242a7da46167a15f76996b7061e8e727",
+    "core/artifacts/internal/schema/knowledge.schema.json": "29f6a16e9b0b2e494bf89d67a8c7ea3846d6ee424d9d7c72adbf8b51af724101",
+    "core/artifacts/internal/store/infrastructure.go": "d6b6a81415a6b1da916b8e862ea17f8b83eb92c836a501d80a5e004e77677328",
+    "core/artifacts/internal/store/transaction.go": "ab6ae0757fe7532a43d57d2c2fb92605afc9605d72d3358607611d342d37fd83",
+    "core/artifacts/internal/validate/knowledge.go": "49939ddf0aab44e9b2ce84b67648a0984a5d5cb14f86507ed1051ea478706609",
+    "core/artifacts/internal/validate/validate.go": "a08f8769393e8fa6f468b9557d6006393c5cc1adc6a317a2be80e2a5fcc61c56",
+    "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+    "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd"
+  },
+  "disposition_ids": [
+    "disposition:machines:N15",
+    "disposition:machines:N26",
+    "disposition:machines:N32",
+    "disposition:machines:N33",
+    "disposition:transitions:N04:04",
+    "disposition:transitions:N05:04",
+    "disposition:transitions:N15:01",
+    "disposition:transitions:N15:02",
+    "disposition:transitions:N15:03",
+    "disposition:transitions:N15:04",
+    "disposition:transitions:N20:01",
+    "disposition:transitions:N20:02",
+    "disposition:transitions:N25:01",
+    "disposition:transitions:N25:04",
+    "disposition:transitions:N26:01",
+    "disposition:transitions:N26:02",
+    "disposition:transitions:N26:03",
+    "disposition:transitions:N29:01",
+    "disposition:transitions:N29:02",
+    "disposition:transitions:N29:03",
+    "disposition:transitions:N29:04",
+    "disposition:transitions:N29:05",
+    "disposition:transitions:N29:06",
+    "disposition:transitions:N32:01",
+    "disposition:transitions:N32:02",
+    "disposition:transitions:N32:03",
+    "disposition:transitions:N32:04",
+    "disposition:transitions:N32:05",
+    "disposition:transitions:N33:01",
+    "disposition:transitions:N33:02",
+    "disposition:transitions:N33:03",
+    "disposition:transitions:N33:04",
+    "disposition:transitions:N33:05",
+    "disposition:transitions:N33:06",
+    "disposition:transitions:N33:07",
+    "disposition:transitions:N33:08",
+    "disposition:transitions:N33:09",
+    "disposition:transitions:N33:10",
+    "disposition:transitions:N33:11"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/stable-source-first-562c6170/source-group-026-inspection.json",
+      "sha256": "cd5e6142163f127e2e3efbe748d3c03a3cb93fb127128ac172f9d69608621c34"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "sha256": "ea2446fa717e5e80c47784622c668a55c36a5ed9932df926954bf9d8c92daa35"
+    }
+  ],
+  "retained_prior_proof": {
+    "path": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+    "sha256": "ea2446fa717e5e80c47784622c668a55c36a5ed9932df926954bf9d8c92daa35",
+    "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+    "retained_at": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca"
+  },
+  "semantic_mapping_ref": "docs/state-contracts-major/execution/evidence/stable-source-first-562c6170/source-group-026-inspection.json",
+  "scope": "SOURCE PRESERVED: exactly35baseline transition source contracts plus4machines whose complete frozen edge sets are covered. No execution qualification.",
+  "limits": [
+    "No run, platform, package, task, provider, user or installed evidence was renewed.",
+    "All prior original source epochs and raw evidence remain exact."
+  ]
+}

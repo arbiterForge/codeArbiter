@@ -500,6 +500,7 @@ function wrappedDefinition(
   onTrustWithdrawn: () => void,
   allowNativeFallback = true,
   bridgeToolName = toolName,
+  delegatedConfirmation?: string,
 ): ToolDefinitionPort {
   const original = factory(cwd);
   if (original.name !== toolName || typeof original.execute !== "function") {
@@ -618,7 +619,7 @@ function wrappedDefinition(
           ? "current"
           : "lifecycle-stale";
       };
-      if (policy.decision === "ask") {
+      if (policy.decision === "ask" || delegatedConfirmation !== undefined) {
         const confirmation = confirmationUi(context);
         if (confirmation === undefined) {
           await audit("denied");
@@ -633,7 +634,9 @@ function wrappedDefinition(
           confirmed = await confirmation.confirm.call(
             confirmation.ui,
             CONFIRMATION_TITLE,
-            confirmationMessage(policy.confirmation.actionClasses, policy.confirmation.cwd, policy.confirmation.consequence),
+            delegatedConfirmation ?? (policy.decision === "ask"
+              ? confirmationMessage(policy.confirmation.actionClasses, policy.confirmation.cwd, policy.confirmation.consequence)
+              : "Allow this exact governed operation?"),
             { timeout: CONFIRMATION_TIMEOUT_MS, signal },
           ) === true;
         } catch {
@@ -751,6 +754,7 @@ export class EnforcementInstaller {
   private fallbackSessionId: string | undefined;
   private lifecycleGeneration: LifecycleGeneration | undefined;
   private trustRevoked = false;
+  private delegatedBuiltins: { pi: ToolGuardPiPort; bridge: BridgePort; options: WrapBuiltinsOptions; generation: LifecycleGeneration } | undefined;
 
   private sessionIdFor(context: ToolExecutionContextPort | undefined): string {
     const native = nativeSessionId(context);
@@ -812,6 +816,7 @@ export class EnforcementInstaller {
     this.trustRevoked = false;
     this.fallbackSessionId = undefined;
     this.lifecycleGeneration = undefined;
+    this.delegatedBuiltins = undefined;
   }
 
   ensureGuard(pi: ToolGuardPiPort, descriptor: Readonly<Record<string, ToolCategory>>, wrapperSourcePath: string): void {
@@ -839,6 +844,53 @@ export class EnforcementInstaller {
       (context) => this.sessionIdFor(context),
       () => this.revokeForTrustWithdrawal(),
     );
+    if (this.lifecycleGeneration !== undefined) {
+      this.delegatedBuiltins = { pi, bridge, options, generation: this.lifecycleGeneration };
+    }
+  }
+
+  /** Reuse the parent's final gate while substituting only its owned effect executor.
+   * Context is the original parent dispatch context, never child-supplied data. */
+  async executeDelegated(
+    tool: "write" | "edit" | "bash", toolCallId: string, params: Record<string, unknown>, signal: AbortSignal,
+    context: ToolExecutionContextPort, effect: (approved: Record<string, unknown>) => Promise<Record<string, unknown>>,
+    executionDescription?: string,
+  ): Promise<{ admitted: boolean; reason?: "no-parent-ui"; result: Record<string, unknown> }> {
+    const declined = () => ({ admitted: false, result: { isError: true,
+      content: [{ type: "text", text: "Parent permission gate refused the delegated operation." }] } });
+    if (context.mode !== "tui" || context.hasUI !== true || typeof context.ui?.confirm !== "function") {
+      return { ...declined(), reason: "no-parent-ui" };
+    }
+    const saved = this.delegatedBuiltins;
+    if (saved === undefined || saved.generation !== this.lifecycleGeneration || !this.ready) {
+      return declined();
+    }
+    const { pi, bridge, options, generation } = saved;
+    const policy = options.permissionPolicy ?? compileBuiltinPermissionPolicy(options.descriptor, {});
+    if (policy === undefined) return declined();
+    let admitted = false;
+    const factory = () => ({ name: tool, execute: async (_id: string, approved: Record<string, unknown>) => {
+      admitted = true;
+      return await effect(approved);
+    } });
+    let snapshot: Record<string, unknown>;
+    try { snapshot = canonicalSnapshot(params) as Record<string, unknown>; }
+    catch { return declined(); }
+    const exact = JSON.stringify(snapshot);
+    const confirmation = `Delegated ${tool} in ${options.cwd}\n${exact}\nSHA-256: ${createHash("sha256").update(exact).digest("hex")}\n`
+      + (executionDescription === undefined ? "" : `${executionDescription}\n`)
+      + "The parent executes this exact request on the trusted host. Approved commands have host filesystem and network access.";
+    const definition = wrappedDefinition(pi, tool, factory, factory, options.descriptor[tool] ?? "OTHER", options.cwd,
+      bridge, generation, () => this.lifecycleGeneration, () => this.ready, (ctx) => this.sessionIdFor(ctx),
+      policy, options.getMode ?? (() => "execute"), options.permissionAudit, options.wrapperSourcePath,
+      options.projectTrust, () => this.revokeForTrustWithdrawal(), false, tool, confirmation);
+    try {
+      const result = await definition.execute(toolCallId, snapshot, signal, undefined, context);
+      return { admitted, result };
+    } catch (error) {
+      if (admitted) throw error; // The owned executor must retain a possible effect outcome.
+      return declined();
+    }
   }
 
   ensureCustomTool(pi: ToolGuardPiPort, bridge: BridgePort, options: WrapCustomToolOptions): void {

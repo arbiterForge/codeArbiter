@@ -1,0 +1,1063 @@
+{
+  "schema": "codearbiter.current-finite-source-inspection/1",
+  "source_commit": "f3cb12f5095401d5b7e8c32c2861816c7109ce02",
+  "original_semantic_inspection_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+  "group": "source-group-048",
+  "positive_input_join": {
+    ".github/scripts/run_artifact_authority_shard.py": {
+      "sha256": "2a274ccc4704979acf8a1301567d897559425f32f04aae7cc1de3f8130423e1d",
+      "previous_sha256": "2a274ccc4704979acf8a1301567d897559425f32f04aae7cc1de3f8130423e1d",
+      "bytes": 25652,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "2a274ccc4704979acf8a1301567d897559425f32f04aae7cc1de3f8130423e1d",
+        "bytes": 25652
+      }
+    },
+    ".github/scripts/ci20_native_binding.py": {
+      "sha256": "8a927974424c7c18d3e2e28db0173de07c65e2f1bb068e08dd11e14614284c3f",
+      "previous_sha256": "8a927974424c7c18d3e2e28db0173de07c65e2f1bb068e08dd11e14614284c3f",
+      "bytes": 15795,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "8a927974424c7c18d3e2e28db0173de07c65e2f1bb068e08dd11e14614284c3f",
+        "bytes": 15795
+      }
+    },
+    ".github/scripts/major_qualification_report.py": {
+      "sha256": "0bce288ca86ffa66a5ee6586e7873b955f713e579b1f3f86668c5c68cbed934f",
+      "previous_sha256": "64c975bdbfddc61aa208bae81d53e3c71ed144e7843333a0469d7a1301a4af99",
+      "bytes": 268907,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "0bce288ca86ffa66a5ee6586e7873b955f713e579b1f3f86668c5c68cbed934f",
+        "bytes": 268907
+      }
+    },
+    ".github/workflows/ci.yml": {
+      "sha256": "9b9bbb72e86631c1577135cb3ee13181d3b04ed8db2f5e7f4f957e6fb85f1fb3",
+      "previous_sha256": "c0e8e0f0480ffb0f660c894347f26df49da423a300158a1566da702e5a0d8102",
+      "bytes": 306751,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "9b9bbb72e86631c1577135cb3ee13181d3b04ed8db2f5e7f4f957e6fb85f1fb3",
+        "bytes": 306751
+      }
+    },
+    ".github/scripts/test_ci20_native_pipeline.py": {
+      "sha256": "e50321586d52115a17d5ad64e4340181ecf0dd200fa447473f07bd4912cc4e89",
+      "previous_sha256": "e50321586d52115a17d5ad64e4340181ecf0dd200fa447473f07bd4912cc4e89",
+      "bytes": 38285,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "e50321586d52115a17d5ad64e4340181ecf0dd200fa447473f07bd4912cc4e89",
+        "bytes": 38285
+      }
+    },
+    ".github/scripts/test_artifact_authority_retention.py": {
+      "sha256": "30b87cebeb04a07fb7c061d2e65812723d9b49de4f8fd8526adcc53074136eb5",
+      "previous_sha256": "30b87cebeb04a07fb7c061d2e65812723d9b49de4f8fd8526adcc53074136eb5",
+      "bytes": 14960,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "30b87cebeb04a07fb7c061d2e65812723d9b49de4f8fd8526adcc53074136eb5",
+        "bytes": 14960
+      }
+    },
+    "docs/state-contracts-major/PROGRAM.md": {
+      "sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+      "previous_sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+      "bytes": 7910,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+        "bytes": 7910
+      }
+    },
+    "docs/state-contracts-major/contracts/machine-coverage.json": {
+      "sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+      "previous_sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+      "bytes": 385316,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+        "bytes": 385316
+      }
+    },
+    "docs/state-contracts-major/contracts/transition-coverage.json": {
+      "sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+      "previous_sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+      "bytes": 3185278,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+        "bytes": 3185278
+      }
+    },
+    "docs/state-contracts-major/contracts/tasks.json": {
+      "sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+      "previous_sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+      "bytes": 331224,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+        "bytes": 331224
+      }
+    },
+    "docs/state-contracts-major/contracts/program.json": {
+      "sha256": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+      "previous_sha256": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+      "bytes": 6403,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+        "bytes": 6403
+      }
+    }
+  },
+  "current_input_membership": [
+    {
+      "profile": "python-import-directory-v1",
+      "root": ".github/scripts",
+      "path_order": "windows",
+      "sha256": "434ab55d7381a628a19f46607073b7a4df23e2dfc2ba9a4b88d4433fac07b334"
+    }
+  ],
+  "closed_namespace_review": {
+    "profile": {
+      "profile": "python-import-directory-v1",
+      "root": ".github/scripts",
+      "path_order": "windows"
+    },
+    "inspection_source": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+    "current_source": "f3cb12f5095401d5b7e8c32c2861816c7109ce02",
+    "inspection_namespace_sha256": "30dfb70857dada7f2af20b58b264573d7e513e9fa5cf520f2de33b9922046943",
+    "current_namespace_sha256": "434ab55d7381a628a19f46607073b7a4df23e2dfc2ba9a4b88d4433fac07b334",
+    "entries_before": 281,
+    "entries_now": 284,
+    "added": [
+      {
+        "path": ".github/scripts/site_vitest_observation.py",
+        "sha256_at_review": "d545215d255ddc9433955a413da58b4f11ccb6d54ef09fb3ab6cbc57a67aab60",
+        "role": "Docs site source and coverage/report owner. Explicitly invoked by the named Docs workflow steps and imported by its own new tests."
+      },
+      {
+        "path": ".github/scripts/test_pi_payload_identity.py",
+        "sha256_at_review": "4adbb9a6d233807f230129d7c5c3e0293ced3fefb74625b12a1c408ec4afe27e",
+        "role": "Fixture selector for the Pi source payload identity predicate. Individually declared by the original Hook evidence route."
+      },
+      {
+        "path": ".github/scripts/test_site_vitest_observation.py",
+        "sha256_at_review": "651d1f0eb2034ff3016da09a7a427722b9960bc3417983958c1d3921062ef942",
+        "role": "Fixture for the named Docs Vitest source/report owner. Explicitly invoked by Docs, with its own main entry point."
+      }
+    ],
+    "negative_scope": "No old namespace member, mode or object class changed. The three new named entry points are explicitly routed, while fixture/module lookup for the assessed predicates remains owned by its reviewed path. The digest binds names, object classes and modes."
+  },
+  "current_owner_delta_review": {
+    "scope": "Four-shard discovery/partition/output retention and required aggregate are byte-identical callsites on unchanged owning runner/retention code. The changed qualification emitter introduces separate finite Python/Docs admission work; original authority does not run through that emitter.",
+    "workflow_callsite_join": {
+      "artifact-authority": {
+        "previous_sha256": "721b4b14a5197446649c550a5e700a5da91ddcf4479b9db7fde2cc21f605f46c",
+        "current_sha256": "721b4b14a5197446649c550a5e700a5da91ddcf4479b9db7fde2cc21f605f46c",
+        "current_scope": "Complete owning job or top-level event/concurrency block unchanged."
+      },
+      "ci-passed": {
+        "previous_sha256": "81001122248ea9a598041073e239f01f3f2f6d68e3c350db7a00f4fa88bc019b",
+        "current_sha256": "81001122248ea9a598041073e239f01f3f2f6d68e3c350db7a00f4fa88bc019b",
+        "current_scope": "Complete owning job or top-level event/concurrency block unchanged."
+      }
+    }
+  },
+  "semantic_rows": [
+    {
+      "cell": "disposition:machines:C06",
+      "frozen_record": {
+        "machine_id": "C06",
+        "name": "Authority suite discovery, partition, deadline and exact-coverage join",
+        "domain": "Hosted CI and release",
+        "kind": "implemented",
+        "owner": "release-and-tooling",
+        "closure_task": "Q-01",
+        "task_ids": [
+          "Q-01"
+        ],
+        "explicit_machine_task_ids": [],
+        "source_intersection_task_ids": [],
+        "mapping_basis": "Owner assignment uses the inspected audit domain and explicit owner ledger; source intersections flag review impact, not a claim every edge changes.",
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "status": "NOT_RUN",
+        "transition_count": 4,
+        "source_refs": [
+          "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/run_artifact_authority_shard.py"
+        ],
+        "proposed_composed_scenario_ids": [],
+        "required_disposition": "Read the pinned/current owner, preserve each existing guard/effect/retry boundary except a named authorized change, map meaningful executed tests or reasoned conformance review to the row IDs, and add new rows for introduced events.",
+        "evidence": []
+      },
+      "frozen_record_sha256": "cf6747c6f7564a43259ccc5c8a58095e3bc3d251cfd9f18c7d55ab50e3ead6e1",
+      "group": "source-group-048",
+      "literal_inspection": "13-exact-prior65-machine-records",
+      "assessment": "Conditional finite source composition of Authority suite discovery, partition, deadline and exact-coverage join. Constituent guard/effect/retry source scopes and named accepted changes retained; neither task_ids nor model-guided instructions prove executed runtime/installed/model behavior.",
+      "changed_helper_interpretation_ids": [
+        "Pi7-closed-finite-finding-map"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/source13-ci-callsite-revalidation/C06-preserved.json",
+          "sha256": "dcd01c7f5ce5688e8a5a166255fbfe1b2935ae40538125f949cb5e891c9f4d36",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:C06:01",
+      "frozen_record": {
+        "transition_id": "C06:01",
+        "machine_id": "C06",
+        "owner": "release-and-tooling",
+        "baseline": {
+          "from_state": "undiscovered",
+          "from": "undiscovered",
+          "event": "discover and partition",
+          "guard": "nonempty unique actual test inventory; shard count within 1..32",
+          "to": "partitioned",
+          "effects": "Group by fixture class, use weights only for scheduling, create nonempty disjoint plan and digest.",
+          "failure_retry": "Invalid inventory/weights/partition fails; weights cannot remove tests.",
+          "source": [
+            {
+              "path": ".github/scripts/run_artifact_authority_shard.py",
+              "symbol": "partition",
+              "lines": [
+                78,
+                106
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/run_artifact_authority_shard.py"
+            }
+          ],
+          "transition_id": "C06:01"
+        },
+        "task_ids": [
+          "Q-01"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "e1fa7c91295f7c34048372231ebfab7ed26fbf692c68e80d53e920797991bff7",
+      "group": "source-group-048",
+      "assessment": "Actual unique inventory and whole fixture-class grouping still own complete disjoint membership, with scheduling-only weights.",
+      "literal_inspection": "65-assessment",
+      "changed_helper_interpretation_ids": [
+        "Pi7-closed-finite-finding-map"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/source13-ci-callsite-revalidation/C06-preserved.json",
+          "sha256": "dcd01c7f5ce5688e8a5a166255fbfe1b2935ae40538125f949cb5e891c9f4d36",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d"
+        }
+      ],
+      "exact_earlier_clause_assessment": {
+        "cell": "disposition:transitions:C06:01",
+        "frozen_row_sha256": "e1fa7c91295f7c34048372231ebfab7ed26fbf692c68e80d53e920797991bff7",
+        "literal": {
+          "event": "discover and partition",
+          "guard": "nonempty unique actual test inventory; shard count within 1..32",
+          "effects": "Group by fixture class, use weights only for scheduling, create nonempty disjoint plan and digest.",
+          "failure_retry": "Invalid inventory/weights/partition fails; weights cannot remove tests."
+        },
+        "actual_current_interpretation": "Actual unique inventory and whole fixture-class grouping still own complete disjoint membership, with scheduling-only weights.",
+        "witness_ids": [
+          "w81",
+          "w82",
+          "w83",
+          "w84",
+          "w85",
+          "w86"
+        ],
+        "prior_proof": "docs/state-contracts-major/execution/evidence/source13-ci-callsite-revalidation/C06-preserved.json",
+        "selected_for_successor": true,
+        "action": "Append source successor only at actual commit, retaining old evidence."
+      }
+    },
+    {
+      "cell": "disposition:transitions:C06:02",
+      "frozen_record": {
+        "transition_id": "C06:02",
+        "machine_id": "C06",
+        "owner": "release-and-tooling",
+        "baseline": {
+          "from_state": "partitioned",
+          "from": "partitioned",
+          "event": "run-all",
+          "guard": "valid plan",
+          "to": "running shards",
+          "effects": "Run up to four child shards with common deadline and plan identity.",
+          "failure_retry": "Spawn/deadline failures kill direct children and make the run fail; no broad process-tree guarantee.",
+          "source": [
+            {
+              "path": ".github/scripts/run_artifact_authority_shard.py",
+              "symbol": "run_all",
+              "lines": [
+                185,
+                238
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/run_artifact_authority_shard.py"
+            }
+          ],
+          "transition_id": "C06:02"
+        },
+        "task_ids": [
+          "Q-01"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "349fffed5fad871f9d8ec2cab349e8287d8bb6d1f6f4ee818bbcf49e59d0df39",
+      "group": "source-group-048",
+      "assessment": "Existing repaired partial-spawn cleanup still attempts every acquired direct child and retains original cause/unconfirmed cleanup limits.",
+      "literal_inspection": "65-assessment",
+      "changed_helper_interpretation_ids": [
+        "Pi7-closed-finite-finding-map"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/source13-ci-callsite-revalidation/C06-preserved.json",
+          "sha256": "dcd01c7f5ce5688e8a5a166255fbfe1b2935ae40538125f949cb5e891c9f4d36",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d"
+        }
+      ],
+      "exact_earlier_clause_assessment": {
+        "cell": "disposition:transitions:C06:02",
+        "frozen_row_sha256": "349fffed5fad871f9d8ec2cab349e8287d8bb6d1f6f4ee818bbcf49e59d0df39",
+        "literal": {
+          "event": "run-all",
+          "guard": "valid plan",
+          "effects": "Run up to four child shards with common deadline and plan identity.",
+          "failure_retry": "Spawn/deadline failures kill direct children and make the run fail; no broad process-tree guarantee."
+        },
+        "actual_current_interpretation": "Existing repaired partial-spawn cleanup still attempts every acquired direct child and retains original cause/unconfirmed cleanup limits.",
+        "witness_ids": [
+          "w87",
+          "w88"
+        ],
+        "prior_proof": "docs/state-contracts-major/execution/evidence/source13-ci-callsite-revalidation/C06-preserved.json",
+        "selected_for_successor": true,
+        "action": "Append source successor only at actual commit, retaining old evidence."
+      }
+    },
+    {
+      "cell": "disposition:transitions:C06:03",
+      "frozen_record": {
+        "transition_id": "C06:03",
+        "machine_id": "C06",
+        "owner": "release-and-tooling",
+        "baseline": {
+          "from_state": "running shards",
+          "from": "running shards",
+          "event": "child executes selected tests",
+          "guard": "selection matches actual discoverable tests",
+          "to": "observed shards",
+          "effects": "Collect per-test outcomes/timings and exclusive JSON observation.",
+          "failure_retry": "wasSuccessful, testsRun, selected population and non-vacuous execution are checked; skips/expected failures do not supply missing substantive execution.",
+          "source": [
+            {
+              "path": ".github/scripts/run_artifact_authority_shard.py",
+              "symbol": "main",
+              "lines": [
+                241,
+                290
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/run_artifact_authority_shard.py"
+            }
+          ],
+          "transition_id": "C06:03"
+        },
+        "task_ids": [
+          "Q-01"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "88bf97de66b5afd46197449d9403036968accb703d5d0dc870830319f09df289",
+      "group": "source-group-048",
+      "assessment": "Exact selected TestResult observations and substantive execution remain required.",
+      "literal_inspection": "65-assessment",
+      "changed_helper_interpretation_ids": [
+        "Pi7-closed-finite-finding-map"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/source13-ci-callsite-revalidation/C06-preserved.json",
+          "sha256": "dcd01c7f5ce5688e8a5a166255fbfe1b2935ae40538125f949cb5e891c9f4d36",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d"
+        }
+      ],
+      "exact_earlier_clause_assessment": {
+        "cell": "disposition:transitions:C06:03",
+        "frozen_row_sha256": "88bf97de66b5afd46197449d9403036968accb703d5d0dc870830319f09df289",
+        "literal": {
+          "event": "child executes selected tests",
+          "guard": "selection matches actual discoverable tests",
+          "effects": "Collect per-test outcomes/timings and exclusive JSON observation.",
+          "failure_retry": "wasSuccessful, testsRun, selected population and non-vacuous execution are checked; skips/expected failures do not supply missing substantive execution."
+        },
+        "actual_current_interpretation": "Exact selected TestResult observations and substantive execution remain required.",
+        "witness_ids": [
+          "w89",
+          "w86"
+        ],
+        "prior_proof": "docs/state-contracts-major/execution/evidence/source13-ci-callsite-revalidation/C06-preserved.json",
+        "selected_for_successor": true,
+        "action": "Append source successor only at actual commit, retaining old evidence."
+      }
+    },
+    {
+      "cell": "disposition:transitions:C06:04",
+      "frozen_record": {
+        "transition_id": "C06:04",
+        "machine_id": "C06",
+        "owner": "release-and-tooling",
+        "baseline": {
+          "from_state": "observed shards",
+          "from": "observed shards",
+          "event": "coverage join",
+          "guard": "same plan digest, every selected test appears exactly once, all required outcomes pass",
+          "to": "exact pass",
+          "effects": "Return success and timings.",
+          "failure_retry": "Missing, duplicate, foreign or failing observation rejects; no averaging over missing shards.",
+          "source": [
+            {
+              "path": ".github/scripts/run_artifact_authority_shard.py",
+              "symbol": "coverage_problems",
+              "lines": [
+                168,
+                182
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/run_artifact_authority_shard.py"
+            }
+          ],
+          "transition_id": "C06:04"
+        },
+        "task_ids": [
+          "Q-01"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "1d389ea422771ab73a185877c45fab2d9afd1e67ac42b70f7779f9756fd64537",
+      "group": "source-group-048",
+      "assessment": "Exact plan/once-only passing join remains and new hook-review profile leaves authority default observation unchanged.",
+      "literal_inspection": "65-assessment",
+      "changed_helper_interpretation_ids": [
+        "Pi7-closed-finite-finding-map"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/source13-ci-callsite-revalidation/C06-preserved.json",
+          "sha256": "dcd01c7f5ce5688e8a5a166255fbfe1b2935ae40538125f949cb5e891c9f4d36",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d"
+        }
+      ],
+      "exact_earlier_clause_assessment": {
+        "cell": "disposition:transitions:C06:04",
+        "frozen_row_sha256": "1d389ea422771ab73a185877c45fab2d9afd1e67ac42b70f7779f9756fd64537",
+        "literal": {
+          "event": "coverage join",
+          "guard": "same plan digest, every selected test appears exactly once, all required outcomes pass",
+          "effects": "Return success and timings.",
+          "failure_retry": "Missing, duplicate, foreign or failing observation rejects; no averaging over missing shards."
+        },
+        "actual_current_interpretation": "Exact plan/once-only passing join remains and new hook-review profile leaves authority default observation unchanged.",
+        "witness_ids": [
+          "w90",
+          "w91",
+          "w92",
+          "w88"
+        ],
+        "prior_proof": "docs/state-contracts-major/execution/evidence/source13-ci-callsite-revalidation/C06-preserved.json",
+        "selected_for_successor": true,
+        "action": "Append source successor only at actual commit, retaining old evidence."
+      }
+    }
+  ],
+  "verified_literal_witnesses": [
+    {
+      "witness_id": "w39",
+      "path": ".github/scripts/ci20_native_binding.py",
+      "actual0ef_spans": [
+        [
+          264,
+          276
+        ]
+      ],
+      "current_file_sha256": "8a927974424c7c18d3e2e28db0173de07c65e2f1bb068e08dd11e14614284c3f",
+      "prior": {
+        "id": "w39",
+        "path": ".github/scripts/ci20_native_binding.py",
+        "old_source": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+        "old_span": [
+          264,
+          276
+        ],
+        "current_spans": [
+          [
+            264,
+            276
+          ]
+        ],
+        "sha256_of_LF_span": "ab93f6afce12a96752ff789217771c70690e94a20169e4032c735a70ae3e1d46",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "8a927974424c7c18d3e2e28db0173de07c65e2f1bb068e08dd11e14614284c3f"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift.",
+      "current_f3_spans": [
+        [
+          264,
+          276
+        ]
+      ],
+      "current_f3_sha256": "8a927974424c7c18d3e2e28db0173de07c65e2f1bb068e08dd11e14614284c3f"
+    },
+    {
+      "witness_id": "w40",
+      "path": ".github/scripts/ci20_native_binding.py",
+      "actual0ef_spans": [
+        [
+          238,
+          261
+        ]
+      ],
+      "current_file_sha256": "8a927974424c7c18d3e2e28db0173de07c65e2f1bb068e08dd11e14614284c3f",
+      "prior": {
+        "id": "w40",
+        "path": ".github/scripts/ci20_native_binding.py",
+        "old_source": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+        "old_span": [
+          238,
+          261
+        ],
+        "current_spans": [
+          [
+            238,
+            261
+          ]
+        ],
+        "sha256_of_LF_span": "516ade8dfbe4b8207dc731b9cd692f7594e6f762ff9b23cd8d300e7209d8fa30",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "8a927974424c7c18d3e2e28db0173de07c65e2f1bb068e08dd11e14614284c3f"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift.",
+      "current_f3_spans": [
+        [
+          238,
+          261
+        ]
+      ],
+      "current_f3_sha256": "8a927974424c7c18d3e2e28db0173de07c65e2f1bb068e08dd11e14614284c3f"
+    },
+    {
+      "witness_id": "w81",
+      "path": ".github/scripts/run_artifact_authority_shard.py",
+      "actual0ef_spans": [
+        [
+          35,
+          51
+        ]
+      ],
+      "current_file_sha256": "2a274ccc4704979acf8a1301567d897559425f32f04aae7cc1de3f8130423e1d",
+      "prior": {
+        "id": "w81",
+        "path": ".github/scripts/run_artifact_authority_shard.py",
+        "old_source": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+        "old_span": [
+          35,
+          51
+        ],
+        "current_spans": [
+          [
+            35,
+            51
+          ]
+        ],
+        "sha256_of_LF_span": "b6216ca40eb35d2a42f276070e86c9e041cd3ddd77b76feed448714442dcf45c",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "2a274ccc4704979acf8a1301567d897559425f32f04aae7cc1de3f8130423e1d"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift.",
+      "current_f3_spans": [
+        [
+          35,
+          51
+        ]
+      ],
+      "current_f3_sha256": "2a274ccc4704979acf8a1301567d897559425f32f04aae7cc1de3f8130423e1d"
+    },
+    {
+      "witness_id": "w82",
+      "path": ".github/scripts/run_artifact_authority_shard.py",
+      "actual0ef_spans": [
+        [
+          60,
+          76
+        ]
+      ],
+      "current_file_sha256": "2a274ccc4704979acf8a1301567d897559425f32f04aae7cc1de3f8130423e1d",
+      "prior": {
+        "id": "w82",
+        "path": ".github/scripts/run_artifact_authority_shard.py",
+        "old_source": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+        "old_span": [
+          60,
+          76
+        ],
+        "current_spans": [
+          [
+            60,
+            76
+          ]
+        ],
+        "sha256_of_LF_span": "53b76037a93d932291591629bafb5a6a0dc390e1e4f3feacea7da9b80bf4ca34",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "2a274ccc4704979acf8a1301567d897559425f32f04aae7cc1de3f8130423e1d"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift.",
+      "current_f3_spans": [
+        [
+          60,
+          76
+        ]
+      ],
+      "current_f3_sha256": "2a274ccc4704979acf8a1301567d897559425f32f04aae7cc1de3f8130423e1d"
+    },
+    {
+      "witness_id": "w83",
+      "path": ".github/scripts/run_artifact_authority_shard.py",
+      "actual0ef_spans": [
+        [
+          79,
+          107
+        ]
+      ],
+      "current_file_sha256": "2a274ccc4704979acf8a1301567d897559425f32f04aae7cc1de3f8130423e1d",
+      "prior": {
+        "id": "w83",
+        "path": ".github/scripts/run_artifact_authority_shard.py",
+        "old_source": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+        "old_span": [
+          79,
+          107
+        ],
+        "current_spans": [
+          [
+            79,
+            107
+          ]
+        ],
+        "sha256_of_LF_span": "d1fea6091304ad5013183207178d4883e19e03a38bfa786cab866fa73b63acd4",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "2a274ccc4704979acf8a1301567d897559425f32f04aae7cc1de3f8130423e1d"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift.",
+      "current_f3_spans": [
+        [
+          79,
+          107
+        ]
+      ],
+      "current_f3_sha256": "2a274ccc4704979acf8a1301567d897559425f32f04aae7cc1de3f8130423e1d"
+    },
+    {
+      "witness_id": "w84",
+      "path": ".github/scripts/run_artifact_authority_shard.py",
+      "actual0ef_spans": [
+        [
+          157,
+          161
+        ]
+      ],
+      "current_file_sha256": "2a274ccc4704979acf8a1301567d897559425f32f04aae7cc1de3f8130423e1d",
+      "prior": {
+        "id": "w84",
+        "path": ".github/scripts/run_artifact_authority_shard.py",
+        "old_source": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+        "old_span": [
+          157,
+          161
+        ],
+        "current_spans": [
+          [
+            157,
+            161
+          ]
+        ],
+        "sha256_of_LF_span": "baa3c99b4903b50e524925ae46bc221749d49e5c31b5ba27f506fbd967f1dd40",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "2a274ccc4704979acf8a1301567d897559425f32f04aae7cc1de3f8130423e1d"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift.",
+      "current_f3_spans": [
+        [
+          157,
+          161
+        ]
+      ],
+      "current_f3_sha256": "2a274ccc4704979acf8a1301567d897559425f32f04aae7cc1de3f8130423e1d"
+    },
+    {
+      "witness_id": "w85",
+      "path": ".github/scripts/run_artifact_authority_shard.py",
+      "actual0ef_spans": [
+        [
+          164,
+          166
+        ]
+      ],
+      "current_file_sha256": "2a274ccc4704979acf8a1301567d897559425f32f04aae7cc1de3f8130423e1d",
+      "prior": {
+        "id": "w85",
+        "path": ".github/scripts/run_artifact_authority_shard.py",
+        "old_source": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+        "old_span": [
+          164,
+          166
+        ],
+        "current_spans": [
+          [
+            164,
+            166
+          ]
+        ],
+        "sha256_of_LF_span": "d77ad033c32b9606be00237044cb611510f9890942bfdf543362d4845f93676d",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "2a274ccc4704979acf8a1301567d897559425f32f04aae7cc1de3f8130423e1d"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift.",
+      "current_f3_spans": [
+        [
+          164,
+          166
+        ]
+      ],
+      "current_f3_sha256": "2a274ccc4704979acf8a1301567d897559425f32f04aae7cc1de3f8130423e1d"
+    },
+    {
+      "witness_id": "w86",
+      "path": ".github/scripts/run_artifact_authority_shard.py",
+      "actual0ef_spans": [
+        [
+          435,
+          484
+        ]
+      ],
+      "current_file_sha256": "2a274ccc4704979acf8a1301567d897559425f32f04aae7cc1de3f8130423e1d",
+      "prior": {
+        "id": "w86",
+        "path": ".github/scripts/run_artifact_authority_shard.py",
+        "old_source": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+        "old_span": [
+          435,
+          484
+        ],
+        "current_spans": [
+          [
+            435,
+            484
+          ]
+        ],
+        "sha256_of_LF_span": "a63cfe24a7a5bcb920614338d0698ab87799edacc3ec1e01a75e93441481c7ff",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "2a274ccc4704979acf8a1301567d897559425f32f04aae7cc1de3f8130423e1d"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift.",
+      "current_f3_spans": [
+        [
+          435,
+          484
+        ]
+      ],
+      "current_f3_sha256": "2a274ccc4704979acf8a1301567d897559425f32f04aae7cc1de3f8130423e1d"
+    },
+    {
+      "witness_id": "w87",
+      "path": ".github/scripts/run_artifact_authority_shard.py",
+      "actual0ef_spans": [
+        [
+          314,
+          330
+        ]
+      ],
+      "current_file_sha256": "2a274ccc4704979acf8a1301567d897559425f32f04aae7cc1de3f8130423e1d",
+      "prior": {
+        "id": "w87",
+        "path": ".github/scripts/run_artifact_authority_shard.py",
+        "old_source": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+        "old_span": [
+          314,
+          330
+        ],
+        "current_spans": [
+          [
+            314,
+            330
+          ]
+        ],
+        "sha256_of_LF_span": "94cae2ddbda855632c99b1a557a6c331aafe7c84428e37becc9f3a619a8b5693",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "2a274ccc4704979acf8a1301567d897559425f32f04aae7cc1de3f8130423e1d"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift.",
+      "current_f3_spans": [
+        [
+          314,
+          330
+        ]
+      ],
+      "current_f3_sha256": "2a274ccc4704979acf8a1301567d897559425f32f04aae7cc1de3f8130423e1d"
+    },
+    {
+      "witness_id": "w88",
+      "path": ".github/scripts/run_artifact_authority_shard.py",
+      "actual0ef_spans": [
+        [
+          333,
+          432
+        ]
+      ],
+      "current_file_sha256": "2a274ccc4704979acf8a1301567d897559425f32f04aae7cc1de3f8130423e1d",
+      "prior": {
+        "id": "w88",
+        "path": ".github/scripts/run_artifact_authority_shard.py",
+        "old_source": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+        "old_span": [
+          333,
+          432
+        ],
+        "current_spans": [
+          [
+            333,
+            432
+          ]
+        ],
+        "sha256_of_LF_span": "fdf3281bdca6694030d9c8c7cb47b75d4db3536e908e772ae8d3ea36732d0147",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "2a274ccc4704979acf8a1301567d897559425f32f04aae7cc1de3f8130423e1d"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift.",
+      "current_f3_spans": [
+        [
+          333,
+          432
+        ]
+      ],
+      "current_f3_sha256": "2a274ccc4704979acf8a1301567d897559425f32f04aae7cc1de3f8130423e1d"
+    },
+    {
+      "witness_id": "w89",
+      "path": ".github/scripts/run_artifact_authority_shard.py",
+      "actual0ef_spans": [
+        [
+          110,
+          154
+        ]
+      ],
+      "current_file_sha256": "2a274ccc4704979acf8a1301567d897559425f32f04aae7cc1de3f8130423e1d",
+      "prior": {
+        "id": "w89",
+        "path": ".github/scripts/run_artifact_authority_shard.py",
+        "old_source": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+        "old_span": [
+          110,
+          154
+        ],
+        "current_spans": [
+          [
+            110,
+            154
+          ]
+        ],
+        "sha256_of_LF_span": "ed2ec2532b0bf27a2031351a3695ebb00c7959ce6f191256c442c204500c10cd",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "2a274ccc4704979acf8a1301567d897559425f32f04aae7cc1de3f8130423e1d"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift.",
+      "current_f3_spans": [
+        [
+          110,
+          154
+        ]
+      ],
+      "current_f3_sha256": "2a274ccc4704979acf8a1301567d897559425f32f04aae7cc1de3f8130423e1d"
+    },
+    {
+      "witness_id": "w90",
+      "path": ".github/scripts/run_artifact_authority_shard.py",
+      "actual0ef_spans": [
+        [
+          169,
+          183
+        ]
+      ],
+      "current_file_sha256": "2a274ccc4704979acf8a1301567d897559425f32f04aae7cc1de3f8130423e1d",
+      "prior": {
+        "id": "w90",
+        "path": ".github/scripts/run_artifact_authority_shard.py",
+        "old_source": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+        "old_span": [
+          169,
+          183
+        ],
+        "current_spans": [
+          [
+            169,
+            183
+          ]
+        ],
+        "sha256_of_LF_span": "c54305ad952dacdad6b992dd2e9e4f841d0f3606331a65470e4771b2aa92cf7b",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "2a274ccc4704979acf8a1301567d897559425f32f04aae7cc1de3f8130423e1d"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift.",
+      "current_f3_spans": [
+        [
+          169,
+          183
+        ]
+      ],
+      "current_f3_sha256": "2a274ccc4704979acf8a1301567d897559425f32f04aae7cc1de3f8130423e1d"
+    },
+    {
+      "witness_id": "w91",
+      "path": ".github/scripts/run_artifact_authority_shard.py",
+      "actual0ef_spans": [
+        [
+          226,
+          283
+        ]
+      ],
+      "current_file_sha256": "2a274ccc4704979acf8a1301567d897559425f32f04aae7cc1de3f8130423e1d",
+      "prior": {
+        "id": "w91",
+        "path": ".github/scripts/run_artifact_authority_shard.py",
+        "old_source": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+        "old_span": [
+          226,
+          283
+        ],
+        "current_spans": [
+          [
+            226,
+            283
+          ]
+        ],
+        "sha256_of_LF_span": "c8b971212b60236aecf5949a082f88e7fa856ea2c4f6da433943b93fa953ff01",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "2a274ccc4704979acf8a1301567d897559425f32f04aae7cc1de3f8130423e1d"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift.",
+      "current_f3_spans": [
+        [
+          226,
+          283
+        ]
+      ],
+      "current_f3_sha256": "2a274ccc4704979acf8a1301567d897559425f32f04aae7cc1de3f8130423e1d"
+    },
+    {
+      "witness_id": "w92",
+      "path": ".github/scripts/run_artifact_authority_shard.py",
+      "actual0ef_spans": [
+        [
+          286,
+          308
+        ]
+      ],
+      "current_file_sha256": "2a274ccc4704979acf8a1301567d897559425f32f04aae7cc1de3f8130423e1d",
+      "prior": {
+        "id": "w92",
+        "path": ".github/scripts/run_artifact_authority_shard.py",
+        "old_source": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+        "old_span": [
+          286,
+          308
+        ],
+        "current_spans": [
+          [
+            286,
+            308
+          ]
+        ],
+        "sha256_of_LF_span": "8f562f5addd5270c9ec6c7f26047419044c8f655ec12df281f5d8d8bed302484",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "2a274ccc4704979acf8a1301567d897559425f32f04aae7cc1de3f8130423e1d"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift.",
+      "current_f3_spans": [
+        [
+          286,
+          308
+        ]
+      ],
+      "current_f3_sha256": "2a274ccc4704979acf8a1301567d897559425f32f04aae7cc1de3f8130423e1d"
+    }
+  ],
+  "changed_old_literals": [],
+  "reused_helper_assessments": [
+    {
+      "id": "Pi7-closed-finite-finding-map",
+      "paths": [
+        ".github/scripts/major_qualification_report.py",
+        ".github/major-test-selections.json",
+        ".github/major-qualification-policy.json"
+      ],
+      "assessment": "Exact committed Pi7 candidate already independently reviewed:7 singleton finding routes/38 exact selectors, owning profile/job/payload and complete composition, with original stable source/run/whole execution/upload/final-main guards. Existing profile cells and authority/default behavior remain. No task/installed/model/human promotion; source65 CI/C06 input hashes still require final-epoch reselection."
+    }
+  ],
+  "negative_scope": "Static finite guarded claims only, with inherited scope/limits. No execution, qualification or unchecked new source claim."
+}

@@ -1,0 +1,76 @@
+{
+  "schema": "codearbiter.original-ci-diagnostic-projection/1",
+  "source_commit": "6d4c858fff4df40cc14d71c19c0e4d5a0d6bf434",
+  "run_id": 43572058255,
+  "job_id": 132378425857,
+  "original_temp_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-6d4c858f-farm-original.log",
+  "original_sha256": "fd1f3de899a993b0adf2eb94a5601aaf3b2946283ead6221914f4bf5b8ae25ff",
+  "projection_policy": "Selected original diagnostic lines only, ANSI/control presentation sequences removed. Original raw retained byte-exact in named Temp path, not rewritten; this projection is neither original raw bytes nor successful authenticated integration evidence.",
+  "selected_lines": [
+    {
+      "original_line_number": 55,
+      "text": "2026-11-14T07:40:55.5391507Z git version 2.56.1"
+    },
+    {
+      "original_line_number": 267,
+      "text": "2026-11-14T07:41:18.7585758Z    \u00d7 FARM-R01 real pre-merge interruption preserves pending merge resources through receipt-only recovery (source) 563ms"
+    },
+    {
+      "original_line_number": 268,
+      "text": "2026-11-14T07:41:18.7587294Z    \u00d7 FARM-R01 real pre-merge interruption preserves pending merge resources through receipt-only recovery (bundle) 412ms"
+    },
+    {
+      "original_line_number": 469,
+      "text": "2026-11-14T07:42:40.7445101Z  FAIL  farm-interruption.test.ts > FARM-R01 real pre-merge interruption preserves pending merge resources through receipt-only recovery (source)"
+    },
+    {
+      "original_line_number": 470,
+      "text": "2026-11-14T07:42:40.7447156Z Error: ENOENT: no such file or directory, open '/tmp/farm-process-interruption-0OxHiM/repo/.git/worktrees/integration-wt/MERGE_HEAD'"
+    },
+    {
+      "original_line_number": 471,
+      "text": "2026-11-14T07:42:40.7448279Z  \u276f farm-interruption.test.ts:298:14"
+    },
+    {
+      "original_line_number": 483,
+      "text": "2026-11-14T07:42:40.7495160Z  FAIL  farm-interruption.test.ts > FARM-R01 real pre-merge interruption preserves pending merge resources through receipt-only recovery (bundle)"
+    },
+    {
+      "original_line_number": 484,
+      "text": "2026-11-14T07:42:40.7497048Z Error: ENOENT: no such file or directory, open '/tmp/farm-process-interruption-SLFtSt/repo/.git/worktrees/integration-wt/MERGE_HEAD'"
+    },
+    {
+      "original_line_number": 485,
+      "text": "2026-11-14T07:42:40.7498257Z  \u276f farm-interruption.test.ts:298:14"
+    },
+    {
+      "original_line_number": 489,
+      "text": "2026-11-14T07:42:40.7503759Z       Tests  2 failed | 949 passed | 1 skipped (952)"
+    },
+    {
+      "original_line_number": 500,
+      "text": "2026-11-14T07:42:40.7536600Z ##[error]Error: ENOENT: no such file or directory, open '/tmp/farm-process-interruption-0OxHiM/repo/.git/worktrees/integration-wt/MERGE_HEAD'"
+    },
+    {
+      "original_line_number": 501,
+      "text": " \u276f farm-interruption.test.ts:298:14"
+    },
+    {
+      "original_line_number": 507,
+      "text": "2026-11-14T07:42:40.7550650Z ##[error]Error: ENOENT: no such file or directory, open '/tmp/farm-process-interruption-SLFtSt/repo/.git/worktrees/integration-wt/MERGE_HEAD'"
+    },
+    {
+      "original_line_number": 508,
+      "text": " \u276f farm-interruption.test.ts:298:14"
+    },
+    {
+      "original_line_number": 516,
+      "text": "2026-11-14T07:42:40.8718007Z git version 2.56.1"
+    }
+  ],
+  "scope": "Original LinuxGit2.56.1 two-target ENOENT marker expectation failure;949 other cases PASS/1skip remains context, not qualification.",
+  "limits": [
+    "No artifact/job/run success admission; observed job failed.",
+    "No claim that Windows/WSL replay exactly equals hosted process tree or Git version."
+  ]
+}

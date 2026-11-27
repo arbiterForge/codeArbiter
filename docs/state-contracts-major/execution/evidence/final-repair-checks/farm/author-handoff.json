@@ -1,0 +1,54 @@
+{
+  "state": "IMPLEMENTED_VERIFIED_LOCAL_FROZEN",
+  "task": "FARM-R03",
+  "source_hashes": {
+    "plugins/ca/tools/farm.ts": "fb5ea9ffce3c4b495825b2c44e5b72196be6d8370badd7ca417886db83a5ffe6",
+    "plugins/ca/tools/farm.js": "d9e199f83d29d6be6e85d4b05baca80dbcdc9800457fe5b2335f480517320123",
+    "plugins/ca/tools/state-contracts.test.ts": "01e536885cc3d51c97fa378c0e8368cdf8454c73e1c1ea24af325b2eaeeace69"
+  },
+  "actual_execution_epoch": {
+    "RED": "f4dde0 HEAD plus new regression only",
+    "GREEN": "f4dde0 plus minimal production guard/regression",
+    "focused": "f4dde0 to0ea198 metadata-only HEAD transition;29 input bytes stable",
+    "coverage": "0ea198 HEAD plus frozen staged3 source bytes; all29 input bytes stable"
+  },
+  "target_sequence": "Dirty regression genuinely RED with add/commit/merge calls; two baseline controls passed. Same unchanged dirty/unknown/clean cases GREEN after guard.",
+  "checks": {
+    "target": "3 passed",
+    "affected": "475 passed/1 original platform skip",
+    "typecheck": "passed",
+    "generated_bundle": "owning build passed; only farm.js output changed",
+    "coverage": {
+      "passed": 941,
+      "skipped": 3,
+      "failed": 0,
+      "host": "Windows amd64",
+      "lines": {
+        "percent": 74.04,
+        "covered": 1381,
+        "total": 1865
+      },
+      "branches": {
+        "percent": 73.03,
+        "covered": 1357,
+        "total": 1858
+      },
+      "statements_percent": 72.46,
+      "functions_percent": 66.66,
+      "profile": "lines-branches",
+      "stage2_local_floor70": "PASSED",
+      "supported_host_union": "PENDING hosted",
+      "raw_sha256": "73f45e0c1d3903f17a9540be10f76e925fae9969cf03fdf09e02394331574152"
+    },
+    "diff_check": "passed"
+  },
+  "process_identity": "Actual Vitest main/worker/fixture test runtimes observed safeNode24.22.1; system npx dispatch shim used ProgramFiles node (retained process observation); no claim every helper used one binary.",
+  "source_scope": "Only farm.ts/generated farm.js/state-contracts.test.ts; separate authorized deadline acceptance test has independent packet and does not affect captured Farm29.",
+  "limits": [
+    "No whole FARM-R03 task completion/current runtime at a future commit claim; no evidence successor/ledger/progress mutation.",
+    "Three actual Windows platform skips retained; no Docker/provider/nonroot/paid or publication qualification.",
+    "Source guard remains a cooperative latest observation, not an atomic filesystem lock against same-user writes after the check."
+  ],
+  "remaining_matrix": "remaining-acceptance.md",
+  "no_more_source_changes_planned": true
+}

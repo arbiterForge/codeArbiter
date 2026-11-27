@@ -85,7 +85,8 @@ func (e *Engine) eligible(d *model.Document) (any, error) {
 		available := status == "PENDING" && len(waiting) == 0 && len(conditions) == 0
 		row := object{"task": id, "state": status, "eligible": available,
 			"waiting_on": waiting, "waiting_prerequisites": conditions,
-			"reason": state(d, id)["reason"], "evidence_assessed": false}
+			"reason": state(d, id)["reason"], "evidence_assessed": false,
+			"progress": model.TaskProgress(d, id)}
 		if status != "PENDING" {
 			row["diagnostic"] = "NOT_PENDING"
 		} else if len(waiting) != 0 {

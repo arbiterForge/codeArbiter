@@ -4,6 +4,54 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.30.0] - 2026-11-13
+
+### Changed
+
+- Reuse the validated worktree for automatic recovery scans, avoiding a second Git process within the existing one-second deadline.
+- Keep protected Python stdin writes guarded when a PowerShell here-string body precedes its executor or a later command follows it.
+- Bind audited binary security overrides to the complete staged candidate; reject reuse after text changes and reject old binary-only markers.
+- Attribute task-lock ignore-rule initialization to its actual owner in generated init guidance.
+- Refuse prefix-sibling paths before transcript healing or pruning; require a proper canonical descendant of the Claude home.
+- Audit an attributable prior mode exit together with its new entry, preserving bounded replay and truthful uncertain-storage guidance.
+- Refuse nonregular or changed legacy work files before bounded adoption reads, preserving existing archives and replay inputs.
+- Invalidate a stale persona delivery record after an update failure; report when storage also denies invalidation.
+- Preserve no-bytecode execution when SessionStart launches the detached updater.
+- Document refusal of reused farm run IDs and direct retained-effect recovery to its receipts.
+- Preserve a later user statusline replacement or removal when uninstalling a legacy installation with stale backup metadata.
+- Require HTTPS outside the existing literal loopback exception; refuse external HTTP configuration and broker redirects before exposing their headers or body to the child (ADR-0049).
+- Major state-contract program (in progress on major/state-contracts; final notes at freeze).
+- Carry the current verifier-compatible ADR acceptance writer and LF-boundary ledger reader into the major candidate; retain immutable accepted source ancestry.
+- Read current HTML knowledge records through the shared, identity-bound reader; preserve retained history separately and prepare the native reader before bounded Pi qualification steps.
+- Report source author capability separately from packaged-host qualification. The optional private artifact approval entry remains unavailable on supported Pi 1.5.0.
+
+### Added
+
+- Route scoped child author write, edit and command requests through the parent's current permission gate, with authenticated requests, exact replay protection and retained effect observations.
+- Show bounded delegation and workflow recovery notices while independent authorized work continues; retain visible child handback material when cleanup degrades.
+
+### Fixed
+
+- Redact sensitive lines inside a valid role summary while keeping its structured judgment usable by the parent and reviewer. Refuse exact credential values even when the child JSON escapes them.
+- Avoid Windows version-discovery shell commands in the shared native bridge while retaining native architecture, binary identity and process guards.
+- Regenerate the shipped parent bundle with the HTTPS admission and redirect controls.
+- Preserve exact audit file and directory identities on Windows; refuse rounded numeric IDs before any audit append.
+
+- Detect changes beneath plain directory knowledge scopes, retaining exact paths, glob depth, sibling boundaries and unknown baseline state.
+
+- Provide a credential-blind environment for selected local Git metadata reads while retaining ordinary hook environments and protected file-based configuration.
+
+- Disable Python helper bytecode before package imports, including isolated interpreter launches.
+- Preserve newer user spinner choices during rollback and migrate legacy backup metadata without discarding its value.
+- Suppress repeated fallback workflow recovery notices after the host records the notice as delivered.
+- Inspect final check states after CI watching; cancelled checks and interrupted watches remain unverified.
+- Keep unverified process-tree cleanup explicit when a Farm preview is cancelled.
+- Classify malformed provider JSON at the transport boundary without hiding programmer errors.
+- Keep independent mapped targets moving after expected provider read failures, while preserving pending intent, uncertain sends and completed targets.
+- Allow independent read-only shell statements without weakening protected-file write guards; retain conservative handling for complex shell syntax and redirection.
+- Keep failed persona readiness separate from bridge health, and retry persona loading only for the current session.
+- Cancel pending sidebar installation across disposal so late metrics cannot restore stale terminal patches.
+
 ## [0.27.9] - 2026-11-12
 
 ### Fixed

@@ -1,0 +1,295 @@
+{
+ "schema": "codearbiter.private-independent-code-review/1",
+ "verdict": "PASS",
+ "findings": [],
+ "reviewer": "/root/ci_repair_review",
+ "task_id": "WORK-2A68C3051D5A477EAC131493FF8A85AF",
+ "source_epoch": "41aa7a4995d88c1e680e2e5ed01b3a2eb5cf61ec",
+ "observed_head": "41aa7a4995d88c1e680e2e5ed01b3a2eb5cf61ec",
+ "candidate": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-persona-record-failure-fix-rns65l7e\\delivery.json",
+  "sha256": "d1299dfb6382fb92c1a5bf55b5c35836e35ea3a9c715f247b2bfb96c69058435"
+ },
+ "patch_sha256": "c6dc0e06e24f188b3a9582b0ed585610e603b4bd9833965f5c9bbe67c8e04a61",
+ "full_subjects": [
+  {
+   "path": "core/pysrc/prompt-submit.py",
+   "preimage_sha256": "34eeb237a4484224083e6b8e75f351041c28f5e22c57c8d9ca33ba9a9dc9743b",
+   "sha256": "db4218a203d1078e7aecc887c8b522fc313a7c0cc29aa353f1065ed97a8adddf",
+   "bytes": 30296,
+   "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-persona-record-failure-fix-rns65l7e\\candidate\\core\\pysrc\\prompt-submit.py",
+   "physical_preimage_sha256": "34eeb237a4484224083e6b8e75f351041c28f5e22c57c8d9ca33ba9a9dc9743b",
+   "original_git_blob_oid": "5a92b48650a9b5beb056e0d01cc6af997ff98acd",
+   "binding": "PRIVATE_CANDIDATE_NOT_STAGED",
+   "git_index_oid": null
+  },
+  {
+   "path": ".github/scripts/test_prompt_submit.py",
+   "preimage_sha256": "19f3a60730653710203f0bcd550d9f32d5eb9fc53752bb6ba0e87a23913b741d",
+   "sha256": "86e0e8d628296b7021e22b166dadcd91ceb4ea6f7282f16eaf0841b023fbd3d2",
+   "bytes": 42681,
+   "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-persona-record-failure-fix-rns65l7e\\candidate\\.github\\scripts\\test_prompt_submit.py",
+   "physical_preimage_sha256": "19f3a60730653710203f0bcd550d9f32d5eb9fc53752bb6ba0e87a23913b741d",
+   "original_git_blob_oid": "8bc5743ebde7951ff308a52b71bc3d8859b61bde",
+   "binding": "PRIVATE_CANDIDATE_NOT_STAGED",
+   "git_index_oid": null
+  },
+  {
+   "path": "plugins/ca/hooks/prompt-submit.py",
+   "preimage_sha256": "34eeb237a4484224083e6b8e75f351041c28f5e22c57c8d9ca33ba9a9dc9743b",
+   "sha256": "db4218a203d1078e7aecc887c8b522fc313a7c0cc29aa353f1065ed97a8adddf",
+   "bytes": 30296,
+   "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-persona-record-failure-fix-rns65l7e\\candidate\\plugins\\ca\\hooks\\prompt-submit.py",
+   "physical_preimage_sha256": "34eeb237a4484224083e6b8e75f351041c28f5e22c57c8d9ca33ba9a9dc9743b",
+   "original_git_blob_oid": "5a92b48650a9b5beb056e0d01cc6af997ff98acd",
+   "binding": "PRIVATE_CANDIDATE_NOT_STAGED",
+   "git_index_oid": null
+  },
+  {
+   "path": "plugins/ca-codex/hooks/prompt-submit.py",
+   "preimage_sha256": "34eeb237a4484224083e6b8e75f351041c28f5e22c57c8d9ca33ba9a9dc9743b",
+   "sha256": "db4218a203d1078e7aecc887c8b522fc313a7c0cc29aa353f1065ed97a8adddf",
+   "bytes": 30296,
+   "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-persona-record-failure-fix-rns65l7e\\candidate\\plugins\\ca-codex\\hooks\\prompt-submit.py",
+   "physical_preimage_sha256": "34eeb237a4484224083e6b8e75f351041c28f5e22c57c8d9ca33ba9a9dc9743b",
+   "original_git_blob_oid": "5a92b48650a9b5beb056e0d01cc6af997ff98acd",
+   "binding": "PRIVATE_CANDIDATE_NOT_STAGED",
+   "git_index_oid": null
+  },
+  {
+   "path": "plugins/ca-pi/hooks/prompt-submit.py",
+   "preimage_sha256": "34eeb237a4484224083e6b8e75f351041c28f5e22c57c8d9ca33ba9a9dc9743b",
+   "sha256": "db4218a203d1078e7aecc887c8b522fc313a7c0cc29aa353f1065ed97a8adddf",
+   "bytes": 30296,
+   "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-persona-record-failure-fix-rns65l7e\\candidate\\plugins\\ca-pi\\hooks\\prompt-submit.py",
+   "physical_preimage_sha256": "34eeb237a4484224083e6b8e75f351041c28f5e22c57c8d9ca33ba9a9dc9743b",
+   "original_git_blob_oid": "5a92b48650a9b5beb056e0d01cc6af997ff98acd",
+   "binding": "PRIVATE_CANDIDATE_NOT_STAGED",
+   "git_index_oid": null
+  }
+ ],
+ "assessment": [
+  "Failed delivery-record update now calls the existing exact root/session/versioned marker owner. Successful removal or an already absent record prevents the old A tuple from being trusted by the next process after B emission. No process-local cache or alternate authority is introduced.",
+  "Emission order, effective mode, no-op/duplicate behavior, session and compaction identities, legacy marker handling and Claude/Codex envelopes are unchanged. The compaction caller ignores the new boolean, preserving its existing best-effort semantics.",
+  "Update plus invalidation denial remains explicitly unresolved storage state: the old tuple can survive and return emission can remain suppressed. The fixed bounded stderr diagnostic contains no raw path, argv, environment, exception text or secret data. This review does not certify universal redelivery under storage denial.",
+  "Separate-process original Claude/Codex regression failures establish the actual stale-record defect; exact same first method passes after the narrow fix. The expanded control honestly observes the remaining double-denial limit, rather than changing emission policy or manufacturing a successful durable write."
+ ],
+ "preservation": {
+  "four_source_copies_byte_equal": true,
+  "changed_production_functions": [
+   "_invalidate_injection_markers",
+   "_record_delivered"
+  ],
+  "other_production_function_asts_exact": 23,
+  "entire_original_test_module_AST_preserved_after_removing_only_two_new_methods": true,
+  "original_methods": 50,
+  "final_methods": 52,
+  "new_methods": [
+   "TestPersonaFollowsRealTransitions.test_double_denied_delivery_record_update_reports_remaining_limit",
+   "TestPersonaFollowsRealTransitions.test_failed_delivery_record_write_does_not_suppress_return_persona"
+  ],
+  "first_regression_AST_equal_original_RED": true,
+  "both_new_ASTs_equal_expanded_RED": true
+ },
+ "retained_actual_results": {
+  "red": {
+   "argv": [
+    "C:\\Python314\\python.exe",
+    "-B",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-persona-record-failure-fix-rns65l7e\\run-owning.py",
+    "TestPersonaFollowsRealTransitions.test_failed_delivery_record_write_does_not_suppress_return_persona"
+   ],
+   "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-persona-record-failure-fix-rns65l7e",
+   "exit_code": 1,
+   "elapsed_seconds": 1.6342102999915369,
+   "source_sha256": "34eeb237a4484224083e6b8e75f351041c28f5e22c57c8d9ca33ba9a9dc9743b",
+   "test_sha256": "75c28b9651144fcd001d2d9ef52662cc93b1fbd219bc2cb61e6f0af1bc057ad5",
+   "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "stderr_sha256": "3088d187bc568d2198ac0d547a6fa269ac7b887bf44ea54af31d6d97bb36c13e"
+  },
+  "expanded-red": {
+   "argv": [
+    "C:\\Python314\\python.exe",
+    "-B",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-persona-record-failure-fix-rns65l7e\\run-owning.py",
+    "TestPersonaFollowsRealTransitions.test_failed_delivery_record_write_does_not_suppress_return_persona",
+    "TestPersonaFollowsRealTransitions.test_double_denied_delivery_record_update_reports_remaining_limit"
+   ],
+   "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-persona-record-failure-fix-rns65l7e",
+   "exit_code": 1,
+   "elapsed_seconds": 1.7259997999935877,
+   "source_sha256": "34eeb237a4484224083e6b8e75f351041c28f5e22c57c8d9ca33ba9a9dc9743b",
+   "test_sha256": "86e0e8d628296b7021e22b166dadcd91ceb4ea6f7282f16eaf0841b023fbd3d2",
+   "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "stderr_sha256": "10142154b3ff3a2c59fe5a9cd843e4f37791d724dc281ae9f87654c2ebc74716"
+  },
+  "green": {
+   "argv": [
+    "C:\\Python314\\python.exe",
+    "-B",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-persona-record-failure-fix-rns65l7e\\run-owning.py"
+   ],
+   "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-persona-record-failure-fix-rns65l7e",
+   "exit_code": 0,
+   "elapsed_seconds": 2.4963571000262164,
+   "source_sha256": "db4218a203d1078e7aecc887c8b522fc313a7c0cc29aa353f1065ed97a8adddf",
+   "test_sha256": "86e0e8d628296b7021e22b166dadcd91ceb4ea6f7282f16eaf0841b023fbd3d2",
+   "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "stderr_sha256": "82ec8b93d6535e9784bdfed329d8bc6e93f34060147f66e8fae621f7b3cb4622"
+  }
+ },
+ "verified_retained_records": [
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-persona-record-failure-fix-rns65l7e\\original\\core\\pysrc\\prompt-submit.py",
+   "sha256": "34eeb237a4484224083e6b8e75f351041c28f5e22c57c8d9ca33ba9a9dc9743b",
+   "bytes": 29719
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-persona-record-failure-fix-rns65l7e\\candidate\\core\\pysrc\\prompt-submit.py",
+   "sha256": "db4218a203d1078e7aecc887c8b522fc313a7c0cc29aa353f1065ed97a8adddf",
+   "bytes": 30296
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-persona-record-failure-fix-rns65l7e\\original\\.github\\scripts\\test_prompt_submit.py",
+   "sha256": "19f3a60730653710203f0bcd550d9f32d5eb9fc53752bb6ba0e87a23913b741d",
+   "bytes": 37012
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-persona-record-failure-fix-rns65l7e\\candidate\\.github\\scripts\\test_prompt_submit.py",
+   "sha256": "86e0e8d628296b7021e22b166dadcd91ceb4ea6f7282f16eaf0841b023fbd3d2",
+   "bytes": 42681
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-persona-record-failure-fix-rns65l7e\\original\\plugins\\ca\\hooks\\prompt-submit.py",
+   "sha256": "34eeb237a4484224083e6b8e75f351041c28f5e22c57c8d9ca33ba9a9dc9743b",
+   "bytes": 29719
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-persona-record-failure-fix-rns65l7e\\candidate\\plugins\\ca\\hooks\\prompt-submit.py",
+   "sha256": "db4218a203d1078e7aecc887c8b522fc313a7c0cc29aa353f1065ed97a8adddf",
+   "bytes": 30296
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-persona-record-failure-fix-rns65l7e\\original\\plugins\\ca-codex\\hooks\\prompt-submit.py",
+   "sha256": "34eeb237a4484224083e6b8e75f351041c28f5e22c57c8d9ca33ba9a9dc9743b",
+   "bytes": 29719
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-persona-record-failure-fix-rns65l7e\\candidate\\plugins\\ca-codex\\hooks\\prompt-submit.py",
+   "sha256": "db4218a203d1078e7aecc887c8b522fc313a7c0cc29aa353f1065ed97a8adddf",
+   "bytes": 30296
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-persona-record-failure-fix-rns65l7e\\original\\plugins\\ca-pi\\hooks\\prompt-submit.py",
+   "sha256": "34eeb237a4484224083e6b8e75f351041c28f5e22c57c8d9ca33ba9a9dc9743b",
+   "bytes": 29719
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-persona-record-failure-fix-rns65l7e\\candidate\\plugins\\ca-pi\\hooks\\prompt-submit.py",
+   "sha256": "db4218a203d1078e7aecc887c8b522fc313a7c0cc29aa353f1065ed97a8adddf",
+   "bytes": 30296
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-persona-record-failure-fix-rns65l7e\\candidate.patch",
+   "sha256": "c6dc0e06e24f188b3a9582b0ed585610e603b4bd9833965f5c9bbe67c8e04a61",
+   "bytes": 16647
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-persona-record-failure-fix-rns65l7e\\outcomes.json",
+   "sha256": "beee5008453bd057b4d1dfdc9e33971e219d402a7133a773041f066b8d4c30a9",
+   "bytes": 3148
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-persona-record-failure-fix-rns65l7e\\source-preservation.json",
+   "sha256": "33fe1f24ea44f8573e67f85ba091bb201c1d48c1cb8c51c8ce5fb58e40a26ef5",
+   "bytes": 1781
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-persona-record-failure-fix-rns65l7e\\dependency-joins.json",
+   "sha256": "287a86959b4f67d5382502a9372cbd017b87580d06f2f6ab338d10fe732641dd",
+   "bytes": 9701
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-persona-record-failure-fix-rns65l7e\\input-input.txt",
+   "sha256": "067f9b274c147218a26a5ef26c7cfdd42d9eaee60be6c1c6c68bb93a4bae74b2",
+   "bytes": 8611
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-persona-record-failure-fix-rns65l7e\\input-context.json",
+   "sha256": "043379902b11760100fea868fa2e0d94393acfc55ff015fc754a3caac8e7dfd0",
+   "bytes": 14251
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-persona-record-failure-fix-rns65l7e\\input-config.json",
+   "sha256": "04e6524841b836fc7da266b042b9d40027fd7a2384475a7eb048b70ae910200b",
+   "bytes": 2662
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-persona-record-failure-fix-rns65l7e\\red.json",
+   "sha256": "26d4a8345773faff151f9e19413df56fd7e1d7aa0f210a0e743d1e10f897cb92",
+   "bytes": 765
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-persona-record-failure-fix-rns65l7e\\expanded-red.json",
+   "sha256": "a73a8f4aa4efbc2d988d61bbbf1bf485451a4644710c8b48e70f63e1c3cc2c55",
+   "bytes": 871
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-persona-record-failure-fix-rns65l7e\\green.json",
+   "sha256": "dad6f7e880c66ad6d0a6d01f99efa56b21db5bdff6e0478c81321665f211b2e8",
+   "bytes": 658
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-persona-record-failure-fix-rns65l7e\\run-owning.py",
+   "sha256": "e86df1c01e44e708b3a99a09f8066250f84d2dc59de037c7614d71dd56fa3be4",
+   "bytes": 940
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-persona-record-failure-fix-rns65l7e\\regression-original-red.py",
+   "sha256": "75c28b9651144fcd001d2d9ef52662cc93b1fbd219bc2cb61e6f0af1bc057ad5",
+   "bytes": 40396
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-persona-record-failure-fix-rns65l7e\\regression-expanded-red.py",
+   "sha256": "86e0e8d628296b7021e22b166dadcd91ceb4ea6f7282f16eaf0841b023fbd3d2",
+   "bytes": 42681
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-persona-record-failure-fix-rns65l7e\\logs\\red.stdout",
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "bytes": 0
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-persona-record-failure-fix-rns65l7e\\logs\\red.stderr",
+   "sha256": "3088d187bc568d2198ac0d547a6fa269ac7b887bf44ea54af31d6d97bb36c13e",
+   "bytes": 3172
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-persona-record-failure-fix-rns65l7e\\logs\\expanded-red.stdout",
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "bytes": 0
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-persona-record-failure-fix-rns65l7e\\logs\\expanded-red.stderr",
+   "sha256": "10142154b3ff3a2c59fe5a9cd843e4f37791d724dc281ae9f87654c2ebc74716",
+   "bytes": 5728
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-persona-record-failure-fix-rns65l7e\\logs\\green.stdout",
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "bytes": 0
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-persona-record-failure-fix-rns65l7e\\logs\\green.stderr",
+   "sha256": "82ec8b93d6535e9784bdfed329d8bc6e93f34060147f66e8fae621f7b3cb4622",
+   "bytes": 9388
+  }
+ ],
+ "coverage": "Existing typed FACT-005 no-numeric-Python-tooling declaration and its retained receipt hash verified; retained syntax/owning controls do not imply numeric coverage.",
+ "limits": [
+  "No runtime/test/compile/owner replay or API/network/install/provider/fleet; private metadata/AST/hash review only, no Root/index/ref/marker/source/settings writes.",
+  "No universal storage-failure, concurrent-hook serialization, crash-durable invalidation, exactly-once delivery, live host installation or model retention guarantee.",
+  "Successful unlink is the cooperative owned-file boundary; a failed update and failed unlink remain diagnosed uncertainty.",
+  "Root owns generation, canonical adoption, prospective source dispositions, staged gates and exact-head hosted qualification. The earlier source proof finding is not retroactively erased."
+ ]
+}

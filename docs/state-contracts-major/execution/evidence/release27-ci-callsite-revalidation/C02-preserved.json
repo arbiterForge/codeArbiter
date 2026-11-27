@@ -1,0 +1,183 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "Root: current source-only reinspection after independent optional Pi argument repair; all owning spans and other inputs unchanged"
+ },
+ "inputs": {
+  ".codearbiter/decisions/0040-independent-per-target-release-with-consumer-safety-gates.md": "2dce2651ea067cc7bec25982ce23fdeb1528e9bfb003906c55be7e243a3a8964",
+  ".codearbiter/decisions/0043-assistive-state-engine.md": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+  ".codearbiter/decisions/0044-trusted-pi-npm-publication.md": "fda3c0194f83d41bcb169fae7c14d1b24bdaf3bace8d41780a88825e10fe30d6",
+  ".codearbiter/decisions/0049-require-https-outside-bounded-loopback.md": "c757cef9d5e318b75ff164d270b29a49255449360f0b7cde51e53775e6916ab8",
+  ".github/workflows/ci.yml": "a5b6e922ae90e6b47095f9a1f8986b781e1a12866315d7513fda5daeb6672dcb",
+  ".github/workflows/release.yml": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126",
+  "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e"
+ },
+ "disposition_ids": [
+  "disposition:machines:C02",
+  "disposition:transitions:C02:01",
+  "disposition:transitions:C02:02",
+  "disposition:transitions:C02:03",
+  "disposition:transitions:C02:04"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/release-fourteen-source-ea9/source-bindings.json",
+   "sha256": "e0d46104538361ca98ef02148b9cc499edce928cdd83f1a936277f2a7a8e1425"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/release-fourteen-source-ea9/clause-inspection.json",
+   "sha256": "d838b0dd41af96e04fadb1d976401b69f67c12e69c7e2c4e5c01a1d1cfa61140"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/release27-ci-callsite-revalidation/reinspection.json",
+   "sha256": "ca0f6f16cb2d28929019e7036f0accf497ad2614d21a74a42ce9dc11cc9df6ae"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:C02",
+   "frozen_row_sha256": "cd8b36a960c0f5981258dc191db1dad322f0290a9a6c8a943afe1867cf120291",
+   "clause_ids": [
+    "disposition:transitions:C02:01",
+    "disposition:transitions:C02:02",
+    "disposition:transitions:C02:03",
+    "disposition:transitions:C02:04"
+   ],
+   "witnesses": [
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 4968,
+     "end": 5037,
+     "file_sha256": "a5b6e922ae90e6b47095f9a1f8986b781e1a12866315d7513fda5daeb6672dcb",
+     "span_sha256": "ff42c7ec51002a80b60c7db946d05be312890d744f52e0f59a8f9592f3c62e0c"
+    },
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 5031,
+     "end": 5058,
+     "file_sha256": "a5b6e922ae90e6b47095f9a1f8986b781e1a12866315d7513fda5daeb6672dcb",
+     "span_sha256": "3c2ff5d09f0d00b94f9adec65624f96379b8d4c06dab99f7d4d3cbcaa1967a01"
+    },
+    {
+     "path": ".github/workflows/release.yml",
+     "start": 31,
+     "end": 63,
+     "file_sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126",
+     "span_sha256": "5105f6969e75baad3743f95b19291e0a7e6fd594ae1cf11a6aa32aede72b4a60"
+    },
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 5040,
+     "end": 5058,
+     "file_sha256": "a5b6e922ae90e6b47095f9a1f8986b781e1a12866315d7513fda5daeb6672dcb",
+     "span_sha256": "4d1857be2b41df6cc0609bcee2619dc631a0554c712193c7cdac6fa091acfbf3"
+    },
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 4975,
+     "end": 5037,
+     "file_sha256": "a5b6e922ae90e6b47095f9a1f8986b781e1a12866315d7513fda5daeb6672dcb",
+     "span_sha256": "34d74a8ead5ead44569392392dba83deb2a4573776ea91fba8fedfe60e362845"
+    }
+   ],
+   "semantic_assessment": "Every literal clause is assessed in shared source inspection, including retained advanced rows. Current supported guards/effects/retry paths and named accepted repairs are mapped; analytical baseline defects/overstatements are not claimed preserved. Existing advanced N/A/status/evidence histories are untouched. No runtime or whole-task acceptance follows.",
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C02:01",
+   "frozen_row_sha256": "c44ae62fc188d22a8c71cf94f6841279653269c71c789be7e2304d42382497b3",
+   "witnesses": [
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 4968,
+     "end": 5037,
+     "file_sha256": "a5b6e922ae90e6b47095f9a1f8986b781e1a12866315d7513fda5daeb6672dcb",
+     "span_sha256": "ff42c7ec51002a80b60c7db946d05be312890d744f52e0f59a8f9592f3c62e0c"
+    }
+   ],
+   "semantic_assessment": "ci-passed uses always() and awaits its enumerated dependency population, including advisory lanes, before inspecting required_results and strict selected gates.",
+   "intake_variances": [],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C02:02",
+   "frozen_row_sha256": "7207eaae364d355c5da5cf4831ce51a5ead7b6d0b24ab8d65586315e97a3fb04",
+   "witnesses": [
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 5031,
+     "end": 5058,
+     "file_sha256": "a5b6e922ae90e6b47095f9a1f8986b781e1a12866315d7513fda5daeb6672dcb",
+     "span_sha256": "3c2ff5d09f0d00b94f9adec65624f96379b8d4c06dab99f7d4d3cbcaa1967a01"
+    },
+    {
+     "path": ".github/workflows/release.yml",
+     "start": 31,
+     "end": 63,
+     "file_sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126",
+     "span_sha256": "5105f6969e75baad3743f95b19291e0a7e6fd594ae1cf11a6aa32aede72b4a60"
+    }
+   ],
+   "semantic_assessment": "Required results accept only success/skipped, while candidate readiness must succeed unconditionally and selected native coverage/program integrity must succeed. The release workflow separately requires a successful same-repository main-push CI event.",
+   "intake_variances": [
+    "The current program adds a strict selected program-integrity result; generic skip acceptance does not bypass it."
+   ],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C02:03",
+   "frozen_row_sha256": "29eedc2bad486084c2143b9a2978852d55d5fb867ff4dee7302c67350481c148",
+   "witnesses": [
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 5040,
+     "end": 5058,
+     "file_sha256": "a5b6e922ae90e6b47095f9a1f8986b781e1a12866315d7513fda5daeb6672dcb",
+     "span_sha256": "4d1857be2b41df6cc0609bcee2619dc631a0554c712193c7cdac6fa091acfbf3"
+    }
+   ],
+   "semantic_assessment": "Required failure/cancellation/unexpected results or skipped strict gates exit nonzero. The workflow cannot replace a failed exact run with a different run through this aggregate.",
+   "intake_variances": [],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C02:04",
+   "frozen_row_sha256": "29fb84bff8a86c84a56d2879f6f5469ce986987ae3f755c2ecf1ff0b35c7e2ff",
+   "witnesses": [
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 4975,
+     "end": 5037,
+     "file_sha256": "a5b6e922ae90e6b47095f9a1f8986b781e1a12866315d7513fda5daeb6672dcb",
+     "span_sha256": "34d74a8ead5ead44569392392dba83deb2a4573776ea91fba8fedfe60e362845"
+    }
+   ],
+   "semantic_assessment": "Pi/Codex latest and the four Claude/Pi coverage-union lanes are awaited but omitted from required_results. Their outcomes remain visible; only the required set and strict gates decide this aggregate.",
+   "intake_variances": [
+    "The single-canary registration comment is stale prose; literal needs and required_results describe the wider advisory population."
+   ],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  }
+ ],
+ "scope": "Current source-only Release/CI preservation and explicit accepted repair deltas; no hosted/publication/account/installed qualification.",
+ "limits": [
+  "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification.",
+  "PROGRAM current source and accepted task direction govern. All frozen clauses remain literal; named accepted repairs/intake variances are explicit, not failed tests relabeled N/A.",
+  "No automatic task, runtime epoch, installed capability, actual hosted/platform, release/account or public-readback qualification follows from source PRESERVED.",
+  "Only14 selected machines and their48 still-PLANNED transitions are proposed; all32 advanced transitions and every other row/history remain untouched. C05-C10 are excluded.",
+  "No canonical/index/ref/marker/ledger/status/progress writes, runtime tests, provider/API/network calls, builds, installs or review fleet. Root owns independent review and strict prospective admission."
+ ],
+ "revalidated_from": {
+  "path": "docs/state-contracts-major/execution/evidence/release-fourteen-source-ea9/proofs/C02-preserved.json",
+  "sha256": "979693faa14261de0e04689aceb8dc2b0d2f40ec2b4bda0813c19ba6a4a12e9a",
+  "source_commit": "ea9da763b33708c8533623568b7241eaaea0d153"
+ }
+}

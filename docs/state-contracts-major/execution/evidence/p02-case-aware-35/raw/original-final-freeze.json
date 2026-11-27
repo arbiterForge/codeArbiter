@@ -1,0 +1,95 @@
+{
+  "schema": "codearbiter.case-aware-absence-author-freeze/1",
+  "state": "TEMP_ONLY_NOT_APPLIED",
+  "source_base_git": "6a636870bc23f5079700faf58a234d19f6823eca",
+  "files": {
+    ".github/scripts/major_readiness.py": "a636eb4e73d1097735b810f1057cacb65f63e36e146ce36193687d3520ffe6fc",
+    ".github/scripts/test_state_contracts_integration.py": "2b774153cd331fafe444749e5c8fd978268cc6f38c56fd54d069d042ccc34250"
+  },
+  "base_files": {
+    ".github/scripts/major_readiness.py": "dbf5cdc9357bb2834d5977a39ecc6c55260f3b953615b8f7882dc11234bdfe48",
+    ".github/scripts/test_state_contracts_integration.py": "f7ba0840c01c2bcd04767a0146cc3e428cd85348dc98287763febdc5a4a8e021"
+  },
+  "patch": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-case-absence-fix-svvscu3k\\final.patch",
+    "sha256": "ab4325e6423a038fb64e04604d28d2760957f9e4dfbb940f6ac2021de7166332",
+    "apply_whitespace_ast": "PASS"
+  },
+  "red": {
+    "path": "red.log",
+    "sha256": "aeecbce07439f21eaecdaf525539e7e771bad6d0dfed0d8608b26607ed8a42f0",
+    "actual_defect": "Inert actual Git _HOST.py member: old reader APPLICABLE vs required STALE, and actual Windows lowercase Path.is_file true. Observed before repair using prior provisional string declaration."
+  },
+  "new_format": "Closed absent_inputs:[{path,path_style:posix|windows}]; all existing provisional fixture declarations updated to explicit style. No admitted old absent-input consumers were changed.",
+  "green": {
+    "green-integration": {
+      "methods": 35,
+      "result": "PASS",
+      "raw_metadata": {
+        "argv": [
+          "C:/Python314/python.exe",
+          "-B",
+          "-m",
+          "unittest",
+          "-v",
+          "test_state_contracts_integration"
+        ],
+        "exit_code": 0,
+        "seconds": 88.59324840002228,
+        "source_hashes": {
+          ".github/scripts/major_readiness.py": "a636eb4e73d1097735b810f1057cacb65f63e36e146ce36193687d3520ffe6fc",
+          ".github/scripts/test_state_contracts_integration.py": "2b774153cd331fafe444749e5c8fd978268cc6f38c56fd54d069d042ccc34250"
+        },
+        "stderr_sha256": "b23bba8bb0b42a19b19eecb5959843c17ace38837b7fff0e1b36181b2e68c2f7"
+      },
+      "log_sha256": "b23bba8bb0b42a19b19eecb5959843c17ace38837b7fff0e1b36181b2e68c2f7"
+    },
+    "green-readiness37": {
+      "methods": 37,
+      "result": "PASS",
+      "raw_metadata": {
+        "argv": [
+          "C:/Python314/python.exe",
+          "-B",
+          "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-case-absence-fix-svvscu3k\\run-readiness.py"
+        ],
+        "exit_code": 0,
+        "seconds": 88.60952850000467,
+        "source_hashes": {
+          ".github/scripts/major_readiness.py": "a636eb4e73d1097735b810f1057cacb65f63e36e146ce36193687d3520ffe6fc",
+          ".github/scripts/test_state_contracts_integration.py": "2b774153cd331fafe444749e5c8fd978268cc6f38c56fd54d069d042ccc34250"
+        },
+        "stderr_sha256": "45f43f1adada0a3df5e4a45d0604793180ddade7cedfe96371874f5906f3da19"
+      },
+      "log_sha256": "45f43f1adada0a3df5e4a45d0604793180ddade7cedfe96371874f5906f3da19"
+    }
+  },
+  "semantics": [
+    "POSIX lookup resolves UTF8 literal tree names exactly.",
+    "Windows declared lookup paths and traversed entries must be ASCII; lowercase ASCII comparison only, not a claim to emulate Unicode NTFS comparison.",
+    "Each Windows ancestor uses its matched actual literal tree name before descending.",
+    "Ambiguous ASCII matches and unsupported non-ASCII inventory comparisons refuse; current applicability catches them as UNKNOWN, strict reader refuses.",
+    "No absence is inferred from failed reads; successful inventories required; original history authentication remains distinct from applicability."
+  ],
+  "controls": [
+    "Actual case-variant leaf addition nowSTALE/strict refusal.",
+    "Actual ancestor case uses Core/PySrc/_HOST.py and resolves all components.",
+    "Actual Git tree with core and CORE ambiguity refuses Windows; literal POSIX control remains valid.",
+    "NonASCII inventory refuses Windows; exact POSIX UTF8 positive remains valid.",
+    "Malformed/legacy bare-string/unknown/extra-key descriptors refuse."
+  ],
+  "wr_successor": {
+    "original_run": "6a63687038PASS26.854s,100literalGit/workinginputs+successful physical/immutable lookup inventories before/after",
+    "packet": "C:/Users/brenn/AppData/Local/Temp/ca-wr-observed-absence-psqdh4ky/successor22-proposal.json",
+    "sha256": "c2cd32eabbab96e3c6d7ff13b8a9941afec55c5516e82b9a49e1150739bf9fe2",
+    "proof_sha256": "b18333ea241c0ccc8e6bf50685b0514bcf3a0d7346272f01ed9fc78302f81d42",
+    "descriptor_updated_without_rerun": true,
+    "strict_future_metadata_authentication": "22PASS"
+  },
+  "limits": [
+    "No native build, context fixture rerun, provider/host/cohort/TUI/release execution.",
+    "Retained native120 migration remains unapplied; producer8 missing original stable post-absence remains UNKNOWN.",
+    "ASCII-only Windows comparison is deliberately bounded; other Windows name semantics remain unsupported, fail closed.",
+    "Two Gov source files unchanged by author; no index/metadata/marker edits."
+  ]
+}

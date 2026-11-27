@@ -1,0 +1,29 @@
+{
+  "captures": [
+    {
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hook-f04-owner-fix-q8ie53ku\\target-red.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "utf8_text": ""
+    },
+    {
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hook-f04-owner-fix-q8ie53ku\\target-red.stderr",
+      "sha256": "566252ac504c499c6c24ad7b42189aa775dcc76189b7cf5c9d89c9963c6c60dd",
+      "bytes": 1159,
+      "utf8_text": "test_class_selection_is_disjoint_complete_and_preserves_all_twenty_one_methods (partition.NpmRuntimeOwnerTests.test_class_selection_is_disjoint_complete_and_preserves_all_twenty_one_methods) ... FAIL\r\n\r\n======================================================================\r\nFAIL: test_class_selection_is_disjoint_complete_and_preserves_all_twenty_one_methods (partition.NpmRuntimeOwnerTests.test_class_selection_is_disjoint_complete_and_preserves_all_twenty_one_methods)\r\n----------------------------------------------------------------------\r\nTraceback (most recent call last):\r\n  File \"C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hook-f04-owner-fix-q8ie53ku\\original\\.github\\scripts\\test_hook_ci_partition.py\", line 739, in test_class_selection_is_disjoint_complete_and_preserves_all_twenty_one_methods\r\n    self.assertEqual(set(classes),selected|{'ProducerBoundaryTests'})\r\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\nAssertionError: Items in the first set but not the second:\r\n'HookF04FiniteFindingAdmissionTests'\r\n\r\n----------------------------------------------------------------------\r\nRan 1 test in 0.014s\r\n\r\nFAILED (failures=1)\r\n"
+    },
+    {
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hook-f04-owner-fix-q8ie53ku\\affected-green.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "utf8_text": ""
+    },
+    {
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hook-f04-owner-fix-q8ie53ku\\affected-green.stderr",
+      "sha256": "bbc35f5e18dcf9ff18658dc44f1ee4f1dea30b275d20360c4e6a384d9307dd06",
+      "bytes": 1573,
+      "utf8_text": "test_class_selection_is_disjoint_complete_and_preserves_all_twenty_one_methods (partition.NpmRuntimeOwnerTests.test_class_selection_is_disjoint_complete_and_preserves_all_twenty_one_methods) ... ok\r\ntest_full_runtime_producer_uses_each_pinned_native_runtime_once (partition.NpmRuntimeOwnerTests.test_full_runtime_producer_uses_each_pinned_native_runtime_once) ... ok\r\ntest_runtime_owner_refuses_unpinned_repeated_conditional_or_incomplete_routes (partition.NpmRuntimeOwnerTests.test_runtime_owner_refuses_unpinned_repeated_conditional_or_incomplete_routes) ... ok\r\ntest_current_roles_keep_the_original_inventory_and_counts (partition.SourceQualificationRoleTests.test_current_roles_keep_the_original_inventory_and_counts) ... ok\r\ntest_exact_hw04_addition_preserves_all_prior_ordered_commands (partition.SourceQualificationRoleTests.test_exact_hw04_addition_preserves_all_prior_ordered_commands) ... ok\r\ntest_folded_scalar_keeps_every_interpolation_and_argument (partition.SourceQualificationRoleTests.test_folded_scalar_keeps_every_interpolation_and_argument) ... ok\r\ntest_q02_roles_refuse_changed_profile_payload_results_and_authority (partition.SourceQualificationRoleTests.test_q02_roles_refuse_changed_profile_payload_results_and_authority) ... ok\r\ntest_source_roles_cannot_change_guards_repeat_original_tests_or_forward_credentials (partition.SourceQualificationRoleTests.test_source_roles_cannot_change_guards_repeat_original_tests_or_forward_credentials) ... ok\r\n\r\n----------------------------------------------------------------------\r\nRan 8 tests in 0.133s\r\n\r\nOK\r\n"
+    }
+  ],
+  "scope": "Actual exact class inventory regression RED and8affected owner/negative controlsPASS; no runtime producer replay."
+}

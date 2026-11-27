@@ -1,0 +1,661 @@
+{
+ "schema": "codearbiter.closed-transport-diagnostic-private-fix/1",
+ "status": "IMPLEMENTATION_COMPLETE_AWAITING_INDEPENDENT_REVIEW",
+ "actor": "acceptance_security_review acting as scoped infra-author, not independent reviewer of this implementation",
+ "task_id": "WORK-2A68C3051D5A477EAC131493FF8A85AF",
+ "baseline_head": "ea9da763b33708c8533623568b7241eaaea0d153",
+ "root": "C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter",
+ "scope": "Confirmed closed transport diagnostic loss and primary-failure masking only; actual Node4260 exit/wait cause UNKNOWN.",
+ "route": "ca-fix under existing program authority and exact supplied typed context; private Temp only",
+ "context": [
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-transport-diagnostic-fix-8psky15c\\native-closed-diagnostic-fix-input.txt",
+   "sha256": "e35f19665fa887c90cc3a3ac94c5bf364f80cc5485ee247250b52fdb285bbdf1",
+   "bytes": 8548
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-transport-diagnostic-fix-8psky15c\\native-closed-diagnostic-fix-context.json",
+   "sha256": "a718c53f42d1eef4430020cef552ef67df8d62063024bed77851a32a5fefb04b",
+   "bytes": 13947
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-transport-diagnostic-fix-8psky15c\\native-closed-diagnostic-config.json",
+   "sha256": "36c479cf247b094316249f3a248a85ac93c24343c115a822d0cbc95d403b3a0a",
+   "bytes": 2449
+  }
+ ],
+ "bug_origin": {
+  "diagnosis": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-a713-pi-original-diagnostic-f8131600\\transport-source-diagnosis.json",
+   "sha256": "4996f880ae245579bd09f5c55bf64e93a79df88689bb7bb13967804835ec1a69",
+   "bytes": 3539
+  },
+  "regression_test": ".github/scripts/test_pi_package.py::DebuggerInboxTests.test_parent_retains_closed_transport_operation_and_primary_failure",
+  "red_before_production_edits": true,
+  "red_assertion_failures": 9,
+  "red_errors": 0,
+  "primary_loss": "pipe-peek primary transport followed by temporary-directory cleanup originally replaced failure with os-error",
+  "secondary_original_red": "known pipe WinError 233 erased before collector"
+ },
+ "subjects": [
+  {
+   "relative_path": ".github/scripts/_windows_rpc_timeout.py",
+   "preimage": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-transport-diagnostic-fix-8psky15c\\original\\.github\\scripts\\_windows_rpc_timeout.py",
+    "sha256": "779ec631f9ed52ec08a08bbcf766a6066f6a0a898fa4bb4487c024006e586c9f",
+    "bytes": 28281
+   },
+   "candidate": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-transport-diagnostic-fix-8psky15c\\repo\\.github\\scripts\\_windows_rpc_timeout.py",
+    "sha256": "dbdcb85576315b1024b58484a7b03f90aeb6d9d8298fdb1e9ea61621cd2292ce",
+    "bytes": 32777
+   },
+   "canonical_current": {
+    "path": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\.github\\scripts\\_windows_rpc_timeout.py",
+    "sha256": "779ec631f9ed52ec08a08bbcf766a6066f6a0a898fa4bb4487c024006e586c9f",
+    "bytes": 28281
+   },
+   "canonical_still_equals_preimage": true
+  },
+  {
+   "relative_path": ".github/scripts/test_pi_package.py",
+   "preimage": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-transport-diagnostic-fix-8psky15c\\original\\.github\\scripts\\test_pi_package.py",
+    "sha256": "68136d266bc4a8d32a738af8eae902f37b4b2fb3fbd67186cff9c24b2619f166",
+    "bytes": 316443
+   },
+   "candidate": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-transport-diagnostic-fix-8psky15c\\repo\\.github\\scripts\\test_pi_package.py",
+    "sha256": "9a064598aa2f0b197086fe558d23a19de9e79da38bba8f367cd19bfc0b261f33",
+    "bytes": 328069
+   },
+   "canonical_current": {
+    "path": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\.github\\scripts\\test_pi_package.py",
+    "sha256": "68136d266bc4a8d32a738af8eae902f37b4b2fb3fbd67186cff9c24b2619f166",
+    "bytes": 316443
+   },
+   "canonical_still_equals_preimage": true
+  }
+ ],
+ "patch": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-transport-diagnostic-fix-8psky15c\\changes.patch",
+  "sha256": "dc6db8ecd533f6d2bcbe6d178727fe24147bd9fd1a3e1100acfbaafe63d712ea",
+  "bytes": 24589
+ },
+ "change_summary": [
+  "Retain fixed operation, closed exception kind and bounded integer errno/WinError; no exception text/args, paths, argv, environment, raw output or register content added.",
+  "Record owned-worker spawn and already-observed poll/wait exit code plus bounded collected byte count; these are transport observations, not proof of attach, native target settlement or Node cause.",
+  "Preserve earlier transport/worker failure across a secondary temporary-root cleanup exception; retain one closed cleanupFailure and primaryStatus separately. Existing cleanup_unknown behavior for unresolved owned-worker cleanup remains visible.",
+  "Preserve known PeekNamedPipe WinError on its fixed OSError; existing ERROR_BROKEN_PIPE 109 EOF behavior remains unchanged.",
+  "Keep original 5-second deadline, 128 KiB transport cap, 32 KiB diagnostic cap, provider full-file hashes/profile validation, schema3 decoder, isolated worker invocation and owned-worker/observed-target authority separation."
+ ],
+ "diagnostic_schema": {
+  "keys": [
+   "phase",
+   "failure",
+   "elapsedMs",
+   "remainingMs",
+   "operation",
+   "exception",
+   "errno",
+   "winerror",
+   "workerSpawned",
+   "workerExited",
+   "workerReturnCode",
+   "collectedBytes",
+   "cleanupFailure",
+   "primaryStatus"
+  ],
+  "operations": [
+   "worker-launch",
+   "request-write",
+   "request-close",
+   "pipe-peek",
+   "pipe-read",
+   "worker-poll",
+   "worker-wait",
+   "temporary-root-cleanup",
+   "worker-final-cleanup"
+  ],
+  "errno_bounds": [
+   -2147483648,
+   2147483647
+  ],
+  "winerror_bounds": [
+   0,
+   4294967295
+  ],
+  "return_code_bounds": [
+   -2147483648,
+   4294967295
+  ],
+  "integer_bool_rejected": true,
+  "raw_exception_text_retained": false
+ },
+ "executions": [
+  {
+   "label": "red",
+   "meaning": "Original-source named regression: nine assertion-failing subcases, including primary transport failure masked by secondary temporary cleanup; written and executed before production edits.",
+   "command": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-transport-diagnostic-fix-8psky15c\\red-command.json",
+    "sha256": "717290925c3c022fbaa20dd4374ef9d703e4c627ede741c441fd888be89611f8",
+    "bytes": 1169
+   },
+   "result": {
+    "tests_run": 1,
+    "failures": 9,
+    "errors": 0,
+    "skips": 0,
+    "successful": false,
+    "seconds": 0.033708599978126585
+   },
+   "result_file": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-transport-diagnostic-fix-8psky15c\\red-result.json",
+    "sha256": "dc9384d60fb5a5d3306eddff86609cb5700f03571f1bcc87e0949b2f70d1812a",
+    "bytes": 127
+   },
+   "stdout": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-transport-diagnostic-fix-8psky15c\\red.stdout",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+   },
+   "stderr": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-transport-diagnostic-fix-8psky15c\\red.stderr",
+    "sha256": "c007602b922e77871c9ce17233c816328b0edd00a196b56dfdde22c54b25708c",
+    "bytes": 10204
+   },
+   "candidate_source_sha256": "779ec631f9ed52ec08a08bbcf766a6066f6a0a898fa4bb4487c024006e586c9f",
+   "candidate_test_sha256": "4f3b9511ca02860f7bd00e587fabd7f725295b62332ae646e920ccb4689d3209"
+  },
+  {
+   "label": "pipe-red",
+   "meaning": "Original-source known PeekNamedPipe WinError preservation assertion RED, before production edits.",
+   "command": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-transport-diagnostic-fix-8psky15c\\pipe-red-command.json",
+    "sha256": "e5b1dc011c13d453ac6eb261ffd31cd9cc9a131a188fc85386d8ee7345b8c9e8",
+    "bytes": 838
+   },
+   "result": {
+    "tests_run": 1,
+    "failures": 1,
+    "errors": 0,
+    "skips": 0,
+    "successful": false,
+    "seconds": 0.009943700017174706
+   },
+   "result_file": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-transport-diagnostic-fix-8psky15c\\pipe-red-result.json",
+    "sha256": "598ca4c9abd0bd7356b3046f3a54c19f3ee1534d2a224097a12ec89477e36b54",
+    "bytes": 127
+   },
+   "stdout": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-transport-diagnostic-fix-8psky15c\\pipe-red.stdout",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+   },
+   "stderr": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-transport-diagnostic-fix-8psky15c\\pipe-red.stderr",
+    "sha256": "b96595b599a89cfef10bc464c514bb31bf9d451d9d38fa020ea617675423893f",
+    "bytes": 1267
+   },
+   "candidate_source_sha256": "779ec631f9ed52ec08a08bbcf766a6066f6a0a898fa4bb4487c024006e586c9f",
+   "candidate_test_sha256": "bd8adbbcc07c88fd03361bb8cbbb3c8e0565895f98e74c94127839884c1546a0"
+  },
+  {
+   "label": "green-target",
+   "meaning": "First private implementation: original two regressions GREEN.",
+   "command": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-transport-diagnostic-fix-8psky15c\\green-target-command.json",
+    "sha256": "39076d1f5db3cf20befb247ab424aecd524e8e27952bcc1bd95734f43f462cf0",
+    "bytes": 932
+   },
+   "result": {
+    "tests_run": 2,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0,
+    "successful": true,
+    "seconds": 0.03170190000673756
+   },
+   "result_file": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-transport-diagnostic-fix-8psky15c\\green-target-result.json",
+    "sha256": "e2b7a7bd47df687270688bf56e9b2c8431129196cbb4a287aed5afdfb7420b9d",
+    "bytes": 125
+   },
+   "stdout": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-transport-diagnostic-fix-8psky15c\\green-target.stdout",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+   },
+   "stderr": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-transport-diagnostic-fix-8psky15c\\green-target.stderr",
+    "sha256": "c8db024a86f68612fb15ba3e129a22d47cbc77f6aab91ba7694391212bdda015",
+    "bytes": 449
+   },
+   "candidate_source_sha256": "e98b84ca004d1235524e32afcc041a05c2e64f287ac2c045d39729cf2ddf2355",
+   "candidate_test_sha256": "77441ae4107d94a90558dce0f0fb8d15667f55d0a71ccbb84869695deda14bc0"
+  },
+  {
+   "label": "focused-green",
+   "meaning": "Intermediate implementation: three new and twelve original inert controls GREEN.",
+   "command": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-transport-diagnostic-fix-8psky15c\\focused-green-command.json",
+    "sha256": "c26f6d7e640e92490eae782ca5f1aef20351e676684ccbc3a98e4dc20b658bc7",
+    "bytes": 2299
+   },
+   "result": {
+    "tests_run": 15,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0,
+    "successful": true,
+    "seconds": 0.14691739997942932
+   },
+   "result_file": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-transport-diagnostic-fix-8psky15c\\focused-green-result.json",
+    "sha256": "da191895db23b322855d386dbf9c7be5144864bc15f3aecb04a5008f0d3e5ba5",
+    "bytes": 126
+   },
+   "stdout": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-transport-diagnostic-fix-8psky15c\\focused-green.stdout",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+   },
+   "stderr": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-transport-diagnostic-fix-8psky15c\\focused-green.stderr",
+    "sha256": "934439f8bc08a82582136d88dd143ce40b24ca415c7c33f5f94591a4af6f726e",
+    "bytes": 2845
+   },
+   "candidate_source_sha256": "2b178500bd72f3aa78aa2924eb07ee98690ae815953311d4a42bcb9642d0f22f",
+   "candidate_test_sha256": "e1fe6a8fab50b85ac4bdb74c605feac915b702817f0a4dc406bb0326de4891e6"
+  },
+  {
+   "label": "final-operation-red",
+   "meaning": "Additional final-worker poll/wait attribution assertions RED against retained INTERMEDIATE private implementation, not original production.",
+   "command": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-transport-diagnostic-fix-8psky15c\\final-operation-red-command.json",
+    "sha256": "961cdeb23b66c75aee8b11875223277d63247428d2404b9258206cdfb479382d",
+    "bytes": 657
+   },
+   "result": {
+    "tests_run": 1,
+    "failures": 2,
+    "errors": 0,
+    "skips": 0,
+    "successful": false,
+    "seconds": 0.023648900008993223
+   },
+   "result_file": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-transport-diagnostic-fix-8psky15c\\final-operation-red-result.json",
+    "sha256": "42d6437475d995edcc019a9def879542d7a0796a595d8c21e0ed4831915aab24",
+    "bytes": 127
+   },
+   "stdout": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-transport-diagnostic-fix-8psky15c\\final-operation-red.stdout",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+   },
+   "stderr": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-transport-diagnostic-fix-8psky15c\\final-operation-red.stderr",
+    "sha256": "a363b63a96def925e0e72bbe9fca0758034133614e55839470b9e1dded57aa59",
+    "bytes": 3240
+   },
+   "candidate_source_sha256": "2b178500bd72f3aa78aa2924eb07ee98690ae815953311d4a42bcb9642d0f22f",
+   "candidate_test_sha256": "9a064598aa2f0b197086fe558d23a19de9e79da38bba8f367cd19bfc0b261f33"
+  },
+  {
+   "label": "final-green",
+   "meaning": "Final exact two candidates: four new and twelve original inert controls GREEN.",
+   "command": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-transport-diagnostic-fix-8psky15c\\final-green-command.json",
+    "sha256": "ef55d1036d990bf248e808314013c6f5734d7acf67af85a1cd1d37cc7a258a1a",
+    "bytes": 2373
+   },
+   "result": {
+    "tests_run": 16,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0,
+    "successful": true,
+    "seconds": 0.1487409999826923
+   },
+   "result_file": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-transport-diagnostic-fix-8psky15c\\final-green-result.json",
+    "sha256": "b20090fa035b60764f925ce66fc1dc618c11eb643694cad985a0b15767889e69",
+    "bytes": 125
+   },
+   "stdout": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-transport-diagnostic-fix-8psky15c\\final-green.stdout",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+   },
+   "stderr": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-transport-diagnostic-fix-8psky15c\\final-green.stderr",
+    "sha256": "aac766c8b09cf3c582f151e2f8dfd50889023dde9ffbb76c4fe9c495900fc700",
+    "bytes": 3016
+   },
+   "candidate_source_sha256": "dbdcb85576315b1024b58484a7b03f90aeb6d9d8298fdb1e9ea61621cd2292ce",
+   "candidate_test_sha256": "9a064598aa2f0b197086fe558d23a19de9e79da38bba8f367cd19bfc0b261f33"
+  }
+ ],
+ "final_verification": {
+  "tests_run": 16,
+  "failures": 0,
+  "errors": 0,
+  "skips": 0,
+  "seconds": 0.1487409999826923,
+  "scope": "Four new methods plus twelve explicitly selected original inert controls; no whole-module/native suite replay. New methods cover nine fault sites, known pipe WinError, bounded-code/privacy/first-cleanup retention, and final owned-worker poll/wait attribution.",
+  "python_identity_observed_at_seal": {
+   "path": "C:\\Python314\\python.exe",
+   "sha256": "03168c01b7b7491423350e82c26fee71f35b43694d1319d3c668bda6903a0c38",
+   "bytes": 106208
+  },
+  "identity_observation_limit": "Executable hash observed at sealing, not asserted as pre-execution attestation.",
+  "compile": "Both final candidate source strings compile without execution or pyc writes.",
+  "assertion_preservation": "All original assertion ASTs equal; sole original method edit accepts optional private metadata sink in inert collect double.",
+  "regression_preservation": "Named original RED method, pipe RED method and intermediate final-operation RED method ASTs unchanged in final test candidate."
+ },
+ "preservation": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-transport-diagnostic-fix-8psky15c\\preservation.json",
+  "sha256": "40596d0661849ca59c8018f794899d34e26768296a95bfaaaaa90a034afd3c3b",
+  "bytes": 6380
+ },
+ "source_after": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-transport-diagnostic-fix-8psky15c\\source-after.json",
+  "sha256": "96f7202ccc8dabdd5fd8d143f8f951e6e48bb697c571580a8894125e5f8fe74b",
+  "bytes": 3853
+ },
+ "dependencies": [
+  {
+   "relative_path": ".github/scripts/_windows_dbgeng.py",
+   "private": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-transport-diagnostic-fix-8psky15c\\repo\\.github\\scripts\\_windows_dbgeng.py",
+    "sha256": "0e685a895b8467a7737a1f887bde5dd86e1288e4e87b93374938a6e6eb802b24",
+    "bytes": 18333
+   },
+   "canonical_current": {
+    "path": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\.github\\scripts\\_windows_dbgeng.py",
+    "sha256": "0e685a895b8467a7737a1f887bde5dd86e1288e4e87b93374938a6e6eb802b24",
+    "bytes": 18333
+   },
+   "private_unchanged": true,
+   "canonical_equals_preimage": true
+  },
+  {
+   "relative_path": ".github/scripts/pi_cli_resolver.py",
+   "private": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-transport-diagnostic-fix-8psky15c\\repo\\.github\\scripts\\pi_cli_resolver.py",
+    "sha256": "9161c4ee81f0d2f9ea566b682c72785f861a1c7c51331070d8068c94f1bf31e1",
+    "bytes": 1729
+   },
+   "canonical_current": {
+    "path": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\.github\\scripts\\pi_cli_resolver.py",
+    "sha256": "9161c4ee81f0d2f9ea566b682c72785f861a1c7c51331070d8068c94f1bf31e1",
+    "bytes": 1729
+   },
+   "private_unchanged": true,
+   "canonical_equals_preimage": true
+  },
+  {
+   "relative_path": ".github/scripts/_boundedproc.py",
+   "private": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-transport-diagnostic-fix-8psky15c\\repo\\.github\\scripts\\_boundedproc.py",
+    "sha256": "671458a00f178ac690e4d1f4e0458da7b3833353384f9cb7546be711bab15f51",
+    "bytes": 12673
+   },
+   "canonical_current": {
+    "path": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\.github\\scripts\\_boundedproc.py",
+    "sha256": "671458a00f178ac690e4d1f4e0458da7b3833353384f9cb7546be711bab15f51",
+    "bytes": 12673
+   },
+   "private_unchanged": true,
+   "canonical_equals_preimage": true
+  }
+ ],
+ "limits": [
+  "No real Popen child, SDK/native/Pi/provider target/probe, network, install, Docker, API or runtime qualification executed. Popen/OS/DLL surfaces in selected cases are inert doubles; only owned temporary fixture files used.",
+  "Actual A713 Node4260 failure cause remains UNKNOWN; no native repair, attach success, thread-stack evidence or OS cleanup claim.",
+  "Canonical two source preimages still match initial snapshot at seal. No canonical/index/ref/marker/ledger writes performed. Root owns independent review, integration, staged/full-owner checks, commit and publication gates.",
+  "Unkeyed SHA256 joins identify private bytes; they are not external authentication."
+ ],
+ "policy_reuse": {
+  "complete_security_policy": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-next1116-independent-review-3gre2x8b\\complete-security-policy.json",
+   "sha256": "4c5437f0dc40eece20aab3c9965e18297a7e15e805efa599d3e04950dcfecdf4",
+   "bytes": 55276
+  },
+  "rules": "Reuse unchanged ca-fix/ca-debug and reviewer/security contract context; no new review fleet or policy reread."
+ },
+ "raw_files": [
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-transport-diagnostic-fix-8psky15c\\changes.patch",
+   "sha256": "dc6db8ecd533f6d2bcbe6d178727fe24147bd9fd1a3e1100acfbaafe63d712ea",
+   "bytes": 24589
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-transport-diagnostic-fix-8psky15c\\final-green-command.json",
+   "sha256": "ef55d1036d990bf248e808314013c6f5734d7acf67af85a1cd1d37cc7a258a1a",
+   "bytes": 2373
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-transport-diagnostic-fix-8psky15c\\final-green-result.json",
+   "sha256": "b20090fa035b60764f925ce66fc1dc618c11eb643694cad985a0b15767889e69",
+   "bytes": 125
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-transport-diagnostic-fix-8psky15c\\final-green.stderr",
+   "sha256": "aac766c8b09cf3c582f151e2f8dfd50889023dde9ffbb76c4fe9c495900fc700",
+   "bytes": 3016
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-transport-diagnostic-fix-8psky15c\\final-green.stdout",
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "bytes": 0
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-transport-diagnostic-fix-8psky15c\\final-operation-red-command.json",
+   "sha256": "961cdeb23b66c75aee8b11875223277d63247428d2404b9258206cdfb479382d",
+   "bytes": 657
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-transport-diagnostic-fix-8psky15c\\final-operation-red-result.json",
+   "sha256": "42d6437475d995edcc019a9def879542d7a0796a595d8c21e0ed4831915aab24",
+   "bytes": 127
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-transport-diagnostic-fix-8psky15c\\final-operation-red-source.py",
+   "sha256": "2b178500bd72f3aa78aa2924eb07ee98690ae815953311d4a42bcb9642d0f22f",
+   "bytes": 32560
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-transport-diagnostic-fix-8psky15c\\final-operation-red-test.py",
+   "sha256": "9a064598aa2f0b197086fe558d23a19de9e79da38bba8f367cd19bfc0b261f33",
+   "bytes": 328069
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-transport-diagnostic-fix-8psky15c\\final-operation-red.stderr",
+   "sha256": "a363b63a96def925e0e72bbe9fca0758034133614e55839470b9e1dded57aa59",
+   "bytes": 3240
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-transport-diagnostic-fix-8psky15c\\final-operation-red.stdout",
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "bytes": 0
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-transport-diagnostic-fix-8psky15c\\focused-green-command.json",
+   "sha256": "c26f6d7e640e92490eae782ca5f1aef20351e676684ccbc3a98e4dc20b658bc7",
+   "bytes": 2299
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-transport-diagnostic-fix-8psky15c\\focused-green-result.json",
+   "sha256": "da191895db23b322855d386dbf9c7be5144864bc15f3aecb04a5008f0d3e5ba5",
+   "bytes": 126
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-transport-diagnostic-fix-8psky15c\\focused-green.stderr",
+   "sha256": "934439f8bc08a82582136d88dd143ce40b24ca415c7c33f5f94591a4af6f726e",
+   "bytes": 2845
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-transport-diagnostic-fix-8psky15c\\focused-green.stdout",
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "bytes": 0
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-transport-diagnostic-fix-8psky15c\\green-target-command.json",
+   "sha256": "39076d1f5db3cf20befb247ab424aecd524e8e27952bcc1bd95734f43f462cf0",
+   "bytes": 932
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-transport-diagnostic-fix-8psky15c\\green-target-result.json",
+   "sha256": "e2b7a7bd47df687270688bf56e9b2c8431129196cbb4a287aed5afdfb7420b9d",
+   "bytes": 125
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-transport-diagnostic-fix-8psky15c\\green-target.stderr",
+   "sha256": "c8db024a86f68612fb15ba3e129a22d47cbc77f6aab91ba7694391212bdda015",
+   "bytes": 449
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-transport-diagnostic-fix-8psky15c\\green-target.stdout",
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "bytes": 0
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-transport-diagnostic-fix-8psky15c\\native-closed-diagnostic-config.json",
+   "sha256": "36c479cf247b094316249f3a248a85ac93c24343c115a822d0cbc95d403b3a0a",
+   "bytes": 2449
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-transport-diagnostic-fix-8psky15c\\native-closed-diagnostic-fix-context.json",
+   "sha256": "a718c53f42d1eef4430020cef552ef67df8d62063024bed77851a32a5fefb04b",
+   "bytes": 13947
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-transport-diagnostic-fix-8psky15c\\native-closed-diagnostic-fix-input.txt",
+   "sha256": "e35f19665fa887c90cc3a3ac94c5bf364f80cc5485ee247250b52fdb285bbdf1",
+   "bytes": 8548
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-transport-diagnostic-fix-8psky15c\\original\\.github\\scripts\\_boundedproc.py",
+   "sha256": "671458a00f178ac690e4d1f4e0458da7b3833353384f9cb7546be711bab15f51",
+   "bytes": 12673
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-transport-diagnostic-fix-8psky15c\\original\\.github\\scripts\\_windows_dbgeng.py",
+   "sha256": "0e685a895b8467a7737a1f887bde5dd86e1288e4e87b93374938a6e6eb802b24",
+   "bytes": 18333
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-transport-diagnostic-fix-8psky15c\\original\\.github\\scripts\\_windows_rpc_timeout.py",
+   "sha256": "779ec631f9ed52ec08a08bbcf766a6066f6a0a898fa4bb4487c024006e586c9f",
+   "bytes": 28281
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-transport-diagnostic-fix-8psky15c\\original\\.github\\scripts\\pi_cli_resolver.py",
+   "sha256": "9161c4ee81f0d2f9ea566b682c72785f861a1c7c51331070d8068c94f1bf31e1",
+   "bytes": 1729
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-transport-diagnostic-fix-8psky15c\\original\\.github\\scripts\\test_pi_package.py",
+   "sha256": "68136d266bc4a8d32a738af8eae902f37b4b2fb3fbd67186cff9c24b2619f166",
+   "bytes": 316443
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-transport-diagnostic-fix-8psky15c\\pipe-red-command.json",
+   "sha256": "e5b1dc011c13d453ac6eb261ffd31cd9cc9a131a188fc85386d8ee7345b8c9e8",
+   "bytes": 838
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-transport-diagnostic-fix-8psky15c\\pipe-red-result.json",
+   "sha256": "598ca4c9abd0bd7356b3046f3a54c19f3ee1534d2a224097a12ec89477e36b54",
+   "bytes": 127
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-transport-diagnostic-fix-8psky15c\\pipe-red.stderr",
+   "sha256": "b96595b599a89cfef10bc464c514bb31bf9d451d9d38fa020ea617675423893f",
+   "bytes": 1267
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-transport-diagnostic-fix-8psky15c\\pipe-red.stdout",
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "bytes": 0
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-transport-diagnostic-fix-8psky15c\\preservation.json",
+   "sha256": "40596d0661849ca59c8018f794899d34e26768296a95bfaaaaa90a034afd3c3b",
+   "bytes": 6380
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-transport-diagnostic-fix-8psky15c\\red-command.json",
+   "sha256": "717290925c3c022fbaa20dd4374ef9d703e4c627ede741c441fd888be89611f8",
+   "bytes": 1169
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-transport-diagnostic-fix-8psky15c\\red-result.json",
+   "sha256": "dc9384d60fb5a5d3306eddff86609cb5700f03571f1bcc87e0949b2f70d1812a",
+   "bytes": 127
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-transport-diagnostic-fix-8psky15c\\red.stderr",
+   "sha256": "c007602b922e77871c9ce17233c816328b0edd00a196b56dfdde22c54b25708c",
+   "bytes": 10204
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-transport-diagnostic-fix-8psky15c\\red.stdout",
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "bytes": 0
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-transport-diagnostic-fix-8psky15c\\regression-red-test-with-pipe.py",
+   "sha256": "bd8adbbcc07c88fd03361bb8cbbb3c8e0565895f98e74c94127839884c1546a0",
+   "bytes": 323773
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-transport-diagnostic-fix-8psky15c\\regression-red-test.py",
+   "sha256": "4f3b9511ca02860f7bd00e587fabd7f725295b62332ae646e920ccb4689d3209",
+   "bytes": 322976
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-transport-diagnostic-fix-8psky15c\\repo\\.github\\scripts\\_boundedproc.py",
+   "sha256": "671458a00f178ac690e4d1f4e0458da7b3833353384f9cb7546be711bab15f51",
+   "bytes": 12673
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-transport-diagnostic-fix-8psky15c\\repo\\.github\\scripts\\_windows_dbgeng.py",
+   "sha256": "0e685a895b8467a7737a1f887bde5dd86e1288e4e87b93374938a6e6eb802b24",
+   "bytes": 18333
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-transport-diagnostic-fix-8psky15c\\repo\\.github\\scripts\\_windows_rpc_timeout.py",
+   "sha256": "dbdcb85576315b1024b58484a7b03f90aeb6d9d8298fdb1e9ea61621cd2292ce",
+   "bytes": 32777
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-transport-diagnostic-fix-8psky15c\\repo\\.github\\scripts\\pi_cli_resolver.py",
+   "sha256": "9161c4ee81f0d2f9ea566b682c72785f861a1c7c51331070d8068c94f1bf31e1",
+   "bytes": 1729
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-transport-diagnostic-fix-8psky15c\\repo\\.github\\scripts\\test_pi_package.py",
+   "sha256": "9a064598aa2f0b197086fe558d23a19de9e79da38bba8f367cd19bfc0b261f33",
+   "bytes": 328069
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-transport-diagnostic-fix-8psky15c\\run-selected.py",
+   "sha256": "de66cdb7e8535c8b434cb5c0dcab3c1cd6d7bd37bc0e3159d66dd4e715b7ae0b",
+   "bytes": 726
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-transport-diagnostic-fix-8psky15c\\source-after.json",
+   "sha256": "96f7202ccc8dabdd5fd8d143f8f951e6e48bb697c571580a8894125e5f8fe74b",
+   "bytes": 3853
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-transport-diagnostic-fix-8psky15c\\source-before.json",
+   "sha256": "40a9c76287d0f32c0bbf5c0edb96fb3b8e77342ccc0a1d8b38b31c90a9a17f51",
+   "bytes": 803
+  }
+ ]
+}

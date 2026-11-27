@@ -1,0 +1,792 @@
+{
+  "schema": "codearbiter.current-finite-source-inspection/1",
+  "source_commit": "562c6170c010eedbef93a4216b4baa971fd6b9a6",
+  "original_semantic_inspection_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+  "group": "source-group-032",
+  "positive_input_join": {
+    "plugins/ca-pi/tools/src/audit-sink.ts": {
+      "sha256": "118e24ae1be2ad4807801860dbb9fb7b953e0404d198124d4393cd575e49ed27",
+      "bytes": 9787,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "118e24ae1be2ad4807801860dbb9fb7b953e0404d198124d4393cd575e49ed27",
+        "bytes": 9787
+      }
+    },
+    "plugins/ca-pi/tools/src/path-boundary.ts": {
+      "sha256": "1cee1fe111e84b87930e58833e7ad6e749e2f12a966367dddb321c9f81801d1e",
+      "bytes": 2993,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "1cee1fe111e84b87930e58833e7ad6e749e2f12a966367dddb321c9f81801d1e",
+        "bytes": 2993
+      }
+    },
+    "plugins/ca-pi/tools/src/tool-guard.ts": {
+      "sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141",
+      "bytes": 46425,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141",
+        "bytes": 46425
+      }
+    },
+    "plugins/ca-pi/tools/src/policy.ts": {
+      "sha256": "87950047f3d721b15a08bae83b1212d368367f3c332488611073050c0bc77676",
+      "bytes": 12721,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "87950047f3d721b15a08bae83b1212d368367f3c332488611073050c0bc77676",
+        "bytes": 12721
+      }
+    },
+    "plugins/ca-pi/tools/src/contracts.ts": {
+      "sha256": "6e1e8b96c95fc9d7dc392817795c7fdbc1d1400c3a2837fb1fd4476cbd8ce928",
+      "bytes": 7509,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "6e1e8b96c95fc9d7dc392817795c7fdbc1d1400c3a2837fb1fd4476cbd8ce928",
+        "bytes": 7509
+      }
+    },
+    "plugins/ca-pi/tools/src/redaction.ts": {
+      "sha256": "661a80a80cf818ddc7e8c088d7ede3ccd4e5e1a572c9b799e2e5aa3e61ab6742",
+      "bytes": 4571,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "661a80a80cf818ddc7e8c088d7ede3ccd4e5e1a572c9b799e2e5aa3e61ab6742",
+        "bytes": 4571
+      }
+    },
+    "plugins/ca/tools/redactor.ts": {
+      "sha256": "ef6344cdbb5578e525173852e08e2b410a02238a622e548488daff48b9e30f03",
+      "bytes": 6993,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "ef6344cdbb5578e525173852e08e2b410a02238a622e548488daff48b9e30f03",
+        "bytes": 6993
+      }
+    },
+    "plugins/ca-pi/tools/test/audit-sink.test.ts": {
+      "sha256": "508dea1980c3342a751585aa49d6b275fd825bc63e4d2c5e774ee3410f421fde",
+      "bytes": 15013,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "508dea1980c3342a751585aa49d6b275fd825bc63e4d2c5e774ee3410f421fde",
+        "bytes": 15013
+      }
+    },
+    "plugins/ca-pi/tools/test/tool-guard.test.ts": {
+      "sha256": "55d73f2ebadfaa034584309a1cd04aacd7559320c4b2e752bfbc8d1ac53e64db",
+      "bytes": 95610,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "55d73f2ebadfaa034584309a1cd04aacd7559320c4b2e752bfbc8d1ac53e64db",
+        "bytes": 95610
+      }
+    },
+    "plugins/ca-pi/tools/test/setup-disposable-home.ts": {
+      "sha256": "768c65b5a03877e16ba9a81f758ccaf8173f28363573aafcd85dab1cc4be6e53",
+      "bytes": 2729,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "768c65b5a03877e16ba9a81f758ccaf8173f28363573aafcd85dab1cc4be6e53",
+        "bytes": 2729
+      }
+    },
+    "plugins/ca-pi/tools/vitest.config.ts": {
+      "sha256": "bea41c8f465ce1a6f78de62b8a85e560ee03214c6ede6ee5309f1600f8222e9d",
+      "bytes": 2558,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "bea41c8f465ce1a6f78de62b8a85e560ee03214c6ede6ee5309f1600f8222e9d",
+        "bytes": 2558
+      }
+    },
+    "plugins/ca/hooks/secret-detection-corpus.json": {
+      "sha256": "3c13059896890da1ecc5c55dde0460877ddee96bcc2c6ec256bb3235495bc88d",
+      "bytes": 2206,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "3c13059896890da1ecc5c55dde0460877ddee96bcc2c6ec256bb3235495bc88d",
+        "bytes": 2206
+      }
+    }
+  },
+  "current_input_membership": [],
+  "semantic_rows": [
+    {
+      "cell": "disposition:machines:S16",
+      "frozen_record": {
+        "machine_id": "S16",
+        "name": "Pi local audit append durability and approval dependency",
+        "domain": "Pi, farm, sandbox, site and packaging",
+        "kind": "implemented",
+        "owner": "pi",
+        "closure_task": "PI-D07",
+        "task_ids": [
+          "PI-D04",
+          "PI-D07"
+        ],
+        "explicit_machine_task_ids": [],
+        "source_intersection_task_ids": [
+          "PI-D04"
+        ],
+        "mapping_basis": "Owner assignment uses the inspected audit domain and explicit owner ledger; source intersections flag review impact, not a claim every edge changes.",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "status": "NOT_RUN",
+        "transition_count": 6,
+        "source_refs": [
+          "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/audit-sink.ts"
+        ],
+        "proposed_composed_scenario_ids": [
+          "SEQ-12",
+          "SEQ-13",
+          "SEQ-14"
+        ],
+        "required_disposition": "Read the pinned/current owner, preserve each existing guard/effect/retry boundary except a named authorized change, map meaningful executed tests or reasoned conformance review to the row IDs, and add new rows for introduced events.",
+        "evidence": []
+      },
+      "frozen_record_sha256": "6bb672f444e80d43c5c6976e50157f953cf459cd55fc4ae94c79751164e28948",
+      "group": "source-group-032",
+      "literal_inspection": "74-new-full-frozen-machine-or-finding-records",
+      "assessment": "Conditional finite source composition of Pi local audit append durability and approval dependency. Constituent guard/effect/retry source scopes and named accepted changes retained; neither task_ids nor model-guided instructions prove executed runtime/installed/model behavior.",
+      "changed_helper_interpretation_ids": [
+        "pi-exact-audit-identities"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/pi-s16-audit-source-current/pi-s16-source-preserved.json",
+          "sha256": "b221c1ad604307a3c2e513c627f493ead3e9896783851562fb738fb324398a9c",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "0830b95752a05343563be027e513a2845a6c57df"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S16:01",
+      "frozen_record": {
+        "transition_id": "S16:01",
+        "machine_id": "S16",
+        "owner": "pi",
+        "baseline": {
+          "event": "append row",
+          "guard": "redacted one-line row \u22642,048 bytes; canonical trusted directory",
+          "to": "opened",
+          "effects": "Open existing regular single-link target or exclusive-create new target.",
+          "failure_retry": "",
+          "source": [
+            {
+              "path": "plugins/ca-pi/tools/src/audit-sink.ts",
+              "symbol": "append audit row",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/audit-sink.ts",
+              "lines": "1-187"
+            }
+          ],
+          "from": "unopened",
+          "transition_id": "S16:01"
+        },
+        "task_ids": [
+          "PI-D04",
+          "PI-D07"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-12",
+          "SEQ-13",
+          "SEQ-14"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "bd5112bbaa198848ab9ed98b2abb64f775edcaede3c7f8edb54cc14869e10c33",
+      "group": "source-group-032",
+      "assessment": "Bigint device/inode preservation strengthens actual descriptor/path identity; unsafe numeric or negative identities refuse. Existing regular/single-link/bounded append+fsync checks remain. False after write is uncertain persistence, not proof no row exists; mandatory permission audit blocks, other callers may be best effort.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "pi-exact-audit-identities"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/pi-s16-audit-source-current/pi-s16-source-preserved.json",
+          "sha256": "b221c1ad604307a3c2e513c627f493ead3e9896783851562fb738fb324398a9c",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "0830b95752a05343563be027e513a2845a6c57df"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S16:02",
+      "frozen_record": {
+        "transition_id": "S16:02",
+        "machine_id": "S16",
+        "owner": "pi",
+        "baseline": {
+          "event": "create races existing file",
+          "guard": "EEXIST on create",
+          "to": "opened or refused",
+          "effects": "Retry once through existing-file validation.",
+          "failure_retry": "",
+          "source": [
+            {
+              "path": "plugins/ca-pi/tools/src/audit-sink.ts",
+              "symbol": "append audit row",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/audit-sink.ts",
+              "lines": "1-187"
+            }
+          ],
+          "from": "unopened",
+          "transition_id": "S16:02"
+        },
+        "task_ids": [
+          "PI-D04",
+          "PI-D07"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-12",
+          "SEQ-13",
+          "SEQ-14"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "261bd36108d77a14400672cd343b7eb52466dc9775595015b4919332077771aa",
+      "group": "source-group-032",
+      "assessment": "Bigint device/inode preservation strengthens actual descriptor/path identity; unsafe numeric or negative identities refuse. Existing regular/single-link/bounded append+fsync checks remain. False after write is uncertain persistence, not proof no row exists; mandatory permission audit blocks, other callers may be best effort.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "pi-exact-audit-identities"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/pi-s16-audit-source-current/pi-s16-source-preserved.json",
+          "sha256": "b221c1ad604307a3c2e513c627f493ead3e9896783851562fb738fb324398a9c",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "0830b95752a05343563be027e513a2845a6c57df"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S16:03",
+      "frozen_record": {
+        "transition_id": "S16:03",
+        "machine_id": "S16",
+        "owner": "pi",
+        "baseline": {
+          "event": "append",
+          "guard": "same inode/path/link identity before write",
+          "to": "appending",
+          "effects": "Append bytes, fsync, verify size and file/path identity after write.",
+          "failure_retry": "",
+          "source": [
+            {
+              "path": "plugins/ca-pi/tools/src/audit-sink.ts",
+              "symbol": "append audit row",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/audit-sink.ts",
+              "lines": "1-187"
+            }
+          ],
+          "from": "opened",
+          "transition_id": "S16:03"
+        },
+        "task_ids": [
+          "PI-D04",
+          "PI-D07"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-12",
+          "SEQ-13",
+          "SEQ-14"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "17e651c5678c74816a6c67f675aa09280b94f4f1e9b69cf879b7bcdf642beb37",
+      "group": "source-group-032",
+      "assessment": "Bigint device/inode preservation strengthens actual descriptor/path identity; unsafe numeric or negative identities refuse. Existing regular/single-link/bounded append+fsync checks remain. False after write is uncertain persistence, not proof no row exists; mandatory permission audit blocks, other callers may be best effort.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "pi-exact-audit-identities"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/pi-s16-audit-source-current/pi-s16-source-preserved.json",
+          "sha256": "b221c1ad604307a3c2e513c627f493ead3e9896783851562fb738fb324398a9c",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "0830b95752a05343563be027e513a2845a6c57df"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S16:04",
+      "frozen_record": {
+        "transition_id": "S16:04",
+        "machine_id": "S16",
+        "owner": "pi",
+        "baseline": {
+          "event": "post-write checks pass",
+          "guard": "expected append size/identity",
+          "to": "durable",
+          "effects": "Return true to caller.",
+          "failure_retry": "",
+          "source": [
+            {
+              "path": "plugins/ca-pi/tools/src/audit-sink.ts",
+              "symbol": "append audit row",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/audit-sink.ts",
+              "lines": "1-187"
+            }
+          ],
+          "from": "appending",
+          "transition_id": "S16:04"
+        },
+        "task_ids": [
+          "PI-D04",
+          "PI-D07"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-12",
+          "SEQ-13",
+          "SEQ-14"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "0203b9ca215cc9940ddcbd5605af264658e5d35f88b032cf831db40dad865c5a",
+      "group": "source-group-032",
+      "assessment": "Bigint device/inode preservation strengthens actual descriptor/path identity; unsafe numeric or negative identities refuse. Existing regular/single-link/bounded append+fsync checks remain. False after write is uncertain persistence, not proof no row exists; mandatory permission audit blocks, other callers may be best effort.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "pi-exact-audit-identities"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/pi-s16-audit-source-current/pi-s16-source-preserved.json",
+          "sha256": "b221c1ad604307a3c2e513c627f493ead3e9896783851562fb738fb324398a9c",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "0830b95752a05343563be027e513a2845a6c57df"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S16:05",
+      "frozen_record": {
+        "transition_id": "S16:05",
+        "machine_id": "S16",
+        "owner": "pi",
+        "baseline": {
+          "event": "fsync/post-write check fails",
+          "guard": "bytes may already exist",
+          "to": "unverified append",
+          "effects": "Return false.",
+          "failure_retry": "False is not proof that no row was written. Approved permission audit false blocks tool mutation; less critical audit callers are best effort.",
+          "source": [
+            {
+              "path": "plugins/ca-pi/tools/src/audit-sink.ts",
+              "symbol": "append audit row",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/audit-sink.ts",
+              "lines": "1-187"
+            }
+          ],
+          "from": "appending",
+          "transition_id": "S16:05"
+        },
+        "task_ids": [
+          "PI-D04",
+          "PI-D07"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-12",
+          "SEQ-13",
+          "SEQ-14"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "f0b6b00a57ef34777c215ef8ddd91094db1348d14829f44f7da15040bb2cb509",
+      "group": "source-group-032",
+      "assessment": "Bigint device/inode preservation strengthens actual descriptor/path identity; unsafe numeric or negative identities refuse. Existing regular/single-link/bounded append+fsync checks remain. False after write is uncertain persistence, not proof no row exists; mandatory permission audit blocks, other callers may be best effort.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "pi-exact-audit-identities"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/pi-s16-audit-source-current/pi-s16-source-preserved.json",
+          "sha256": "b221c1ad604307a3c2e513c627f493ead3e9896783851562fb738fb324398a9c",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "0830b95752a05343563be027e513a2845a6c57df"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S16:06",
+      "frozen_record": {
+        "transition_id": "S16:06",
+        "machine_id": "S16",
+        "owner": "pi",
+        "baseline": {
+          "event": "unsafe path/file/row",
+          "guard": "guard fails",
+          "to": "refused",
+          "effects": "Return false without claiming audit persistence; do not follow linked targets.",
+          "failure_retry": "",
+          "source": [
+            {
+              "path": "plugins/ca-pi/tools/src/audit-sink.ts",
+              "symbol": "append audit row",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/audit-sink.ts",
+              "lines": "1-187"
+            }
+          ],
+          "from": "unopened or opened",
+          "transition_id": "S16:06"
+        },
+        "task_ids": [
+          "PI-D04",
+          "PI-D07"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-12",
+          "SEQ-13",
+          "SEQ-14"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "f928f0b548608d1dca847d22625321fe07e5fe50f1681456e8cac9ef18a9e759",
+      "group": "source-group-032",
+      "assessment": "Bigint device/inode preservation strengthens actual descriptor/path identity; unsafe numeric or negative identities refuse. Existing regular/single-link/bounded append+fsync checks remain. False after write is uncertain persistence, not proof no row exists; mandatory permission audit blocks, other callers may be best effort.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "pi-exact-audit-identities"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/pi-s16-audit-source-current/pi-s16-source-preserved.json",
+          "sha256": "b221c1ad604307a3c2e513c627f493ead3e9896783851562fb738fb324398a9c",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "0830b95752a05343563be027e513a2845a6c57df"
+        }
+      ]
+    }
+  ],
+  "verified_literal_witnesses": [
+    {
+      "path": "plugins/ca-pi/tools/src/audit-sink.ts",
+      "old_span": [
+        80,
+        119
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/pi-s16-audit-source-current/pi-s16-source-preserved.json",
+      "block_sha256_LF": "1859fe9bd554dd63772466e1b2b4e2e4b81355136665b4b3aba9e1ce06015998",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          108,
+          147
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/pi-s16-audit-source-current/pi-s16-source-preserved.json",
+      "actual0ef_spans": [
+        [
+          108,
+          147
+        ]
+      ],
+      "actual0ef_file_sha256": "118e24ae1be2ad4807801860dbb9fb7b953e0404d198124d4393cd575e49ed27",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "plugins/ca-pi/tools/src/audit-sink.ts",
+      "old_span": [
+        128,
+        152
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/pi-s16-audit-source-current/pi-s16-source-preserved.json",
+      "block_sha256_LF": "21c5de50f492674731bc041cb212376b94e3c0b0d168cc3da34ff83060babb3f",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          156,
+          180
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/pi-s16-audit-source-current/pi-s16-source-preserved.json",
+      "actual0ef_spans": [
+        [
+          156,
+          180
+        ]
+      ],
+      "actual0ef_file_sha256": "118e24ae1be2ad4807801860dbb9fb7b953e0404d198124d4393cd575e49ed27",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+      "old_span": [
+        250,
+        279
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/pi-s16-audit-source-current/pi-s16-source-preserved.json",
+      "block_sha256_LF": "9aa0a54649ed722a6214b14d596b075048171a3e8261683d69f17f4deb78e879",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          250,
+          279
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/pi-s16-audit-source-current/pi-s16-source-preserved.json",
+      "actual0ef_spans": [
+        [
+          250,
+          279
+        ]
+      ],
+      "actual0ef_file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "plugins/ca-pi/tools/src/audit-sink.ts",
+      "old_span": [
+        80,
+        123
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/pi-s16-audit-source-current/pi-s16-source-preserved.json",
+      "block_sha256_LF": "062c7a411463140d38681b1a3be5b267e82b3139cc4a2c882121bd07920f5ca9",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          108,
+          151
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/pi-s16-audit-source-current/pi-s16-source-preserved.json",
+      "actual0ef_spans": [
+        [
+          108,
+          151
+        ]
+      ],
+      "actual0ef_file_sha256": "118e24ae1be2ad4807801860dbb9fb7b953e0404d198124d4393cd575e49ed27",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "plugins/ca-pi/tools/src/audit-sink.ts",
+      "old_span": [
+        153,
+        168
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/pi-s16-audit-source-current/pi-s16-source-preserved.json",
+      "block_sha256_LF": "d01d0c45c36ebe54fc9141b3b21587fdc4eb9e7a68a935118de1a7faca77d33a",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          181,
+          196
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/pi-s16-audit-source-current/pi-s16-source-preserved.json",
+      "actual0ef_spans": [
+        [
+          181,
+          196
+        ]
+      ],
+      "actual0ef_file_sha256": "118e24ae1be2ad4807801860dbb9fb7b953e0404d198124d4393cd575e49ed27",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "plugins/ca-pi/tools/src/audit-sink.ts",
+      "old_span": [
+        153,
+        170
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/pi-s16-audit-source-current/pi-s16-source-preserved.json",
+      "block_sha256_LF": "55f8a230efeb12a93ecdd4ef15e65b340a22d57cdf09b16db332729f1472cfb7",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          181,
+          198
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/pi-s16-audit-source-current/pi-s16-source-preserved.json",
+      "actual0ef_spans": [
+        [
+          181,
+          198
+        ]
+      ],
+      "actual0ef_file_sha256": "118e24ae1be2ad4807801860dbb9fb7b953e0404d198124d4393cd575e49ed27",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "plugins/ca-pi/tools/src/audit-sink.ts",
+      "old_span": [
+        158,
+        170
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/pi-s16-audit-source-current/pi-s16-source-preserved.json",
+      "block_sha256_LF": "96e2ba818a5c1cb51aad93ef840f6cc3897721d04d8f78f97f942a992eca2eba",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          186,
+          198
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/pi-s16-audit-source-current/pi-s16-source-preserved.json",
+      "actual0ef_spans": [
+        [
+          186,
+          198
+        ]
+      ],
+      "actual0ef_file_sha256": "118e24ae1be2ad4807801860dbb9fb7b953e0404d198124d4393cd575e49ed27",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+      "old_span": [
+        649,
+        661
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/pi-s16-audit-source-current/pi-s16-source-preserved.json",
+      "block_sha256_LF": "31691720cddb99c30bf3e0a7741aac0599feeebf22b8767eb740a49fbb3d8bc1",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          649,
+          661
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/pi-s16-audit-source-current/pi-s16-source-preserved.json",
+      "actual0ef_spans": [
+        [
+          649,
+          661
+        ]
+      ],
+      "actual0ef_file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "plugins/ca-pi/tools/src/audit-sink.ts",
+      "old_span": [
+        128,
+        170
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/pi-s16-audit-source-current/pi-s16-source-preserved.json",
+      "block_sha256_LF": "8b9e4e4ef400b104e7e2c83611007f433b0a59a7cb7bb11df99cb6df75b9d3b8",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          156,
+          198
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/pi-s16-audit-source-current/pi-s16-source-preserved.json",
+      "actual0ef_spans": [
+        [
+          156,
+          198
+        ]
+      ],
+      "actual0ef_file_sha256": "118e24ae1be2ad4807801860dbb9fb7b953e0404d198124d4393cd575e49ed27",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    }
+  ],
+  "changed_old_literals": [
+    {
+      "path": "plugins/ca-pi/tools/src/audit-sink.ts",
+      "older_witness": {
+        "path": "plugins/ca-pi/tools/src/audit-sink.ts",
+        "old_span": [
+          67,
+          78
+        ],
+        "origin": "docs/state-contracts-major/execution/evidence/pi-s16-audit-source-current/pi-s16-source-preserved.json",
+        "block_sha256_LF": "163d9a348fc8783d500eb1461decc4e0b1c2a063752d7eab80fdab78a286ce42",
+        "result": "CHANGED_OR_REMOVED",
+        "current_spans": [],
+        "prior_proof": "docs/state-contracts-major/execution/evidence/pi-s16-audit-source-current/pi-s16-source-preserved.json",
+        "actual0ef_spans": [],
+        "actual0ef_file_sha256": "118e24ae1be2ad4807801860dbb9fb7b953e0404d198124d4393cd575e49ed27",
+        "actual0ef_literal_state": "CHANGED_HELPER_INTERPRETATION_REQUIRED"
+      },
+      "prepared_current_interpretations": [
+        {
+          "id": "pi-exact-audit-identities",
+          "paths": [
+            "plugins/ca-pi/tools/src/audit-sink.ts"
+          ],
+          "assessment": "Native filesystem port retains bigint device/inode at path and descriptor boundaries; size/nlink conversion must be safe. sameIdentity rejects unsafe numeric or negative identifiers. Existing bounded regular/single-link/identity checks and caller failure direction remain; no actual append/runtime authority or all-platform guarantee is inferred."
+        }
+      ]
+    }
+  ],
+  "reused_helper_assessments": [
+    {
+      "id": "pi-exact-audit-identities",
+      "paths": [
+        "plugins/ca-pi/tools/src/audit-sink.ts"
+      ],
+      "assessment": "Native filesystem port retains bigint device/inode at path and descriptor boundaries; size/nlink conversion must be safe. sameIdentity rejects unsafe numeric or negative identifiers. Existing bounded regular/single-link/identity checks and caller failure direction remain; no actual append/runtime authority or all-platform guarantee is inferred."
+    }
+  ],
+  "negative_scope": "Static finite guarded claims only, with inherited scope/limits. No execution, qualification or unchecked new source claim."
+}

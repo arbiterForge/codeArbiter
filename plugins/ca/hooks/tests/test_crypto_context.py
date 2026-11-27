@@ -485,6 +485,29 @@ class CryptoContextHookTest(unittest.TestCase):
                 self.assertEqual(result.returncode, 0, result.stderr)
                 self.assertNotIn("H-09b", result.stderr)
 
+    def test_ordinary_context_derives_no_unused_approval_identities(self):
+        # Approval identities belong to findings, not every ordinary added row.
+        # This work oracle is deterministic even on a fast/local interpreter.
+        from unittest.mock import patch
+        with patch.object(sys, "path", [HOOKS, *sys.path]):
+            import _sensitivelib as scanner
+        source = "DES = 1\nitems = (\n    DES,\n)\n" + "value = 0\n" * 20_000
+        with patch.object(scanner, "line_digest", wraps=scanner.line_digest) as identities:
+            result = scanner.security_scan_source("sample.py", source, range(1, 20_005))
+            self.assertIsNotNone(result)
+            self.assertFalse(result.crypto)
+            self.assertEqual(result.findings, ())
+            self.assertEqual(result.digests, set())
+            self.assertEqual(identities.call_count, 0)
+        expected = scanner.line_digest("key_type = RSA", "sample.py")
+        with patch.object(scanner, "line_digest", wraps=scanner.line_digest) as identities:
+            result = scanner.security_scan_lines(["value = 0", "key_type = RSA"], "sample.py", [1, 2])
+            self.assertTrue(result.crypto)
+            self.assertEqual([(f.category, f.path, f.line, f.digest) for f in result.findings],
+                             [("crypto", "sample.py", 2, expected)])
+            self.assertEqual(result.digests, {expected})
+            self.assertEqual(identities.call_count, 1)
+
     def test_contextual_import_list_and_statement_boundaries(self):
         # R8-S1: the trusted import context, not a single-item line shape,
         # decides multi-item, alias, final-statement and continuation rows.
@@ -663,6 +686,50 @@ class CryptoContextHookTest(unittest.TestCase):
                         result = hook()
                         self.assertEqual(result.returncode, blocked_exit, result.stderr)
                         self.assertIn("H-09b", result.stderr)
+
+    def test_pass_binds_the_whole_staged_candidate_not_only_sensitive_lines(self):
+        """HW-17 (W-F06): the documented invalidation tuple is worktree +
+        complete staged diff + sensitive-row diagnostics. An UNRELATED,
+        non-sensitive staged edit invalidates the same marker; removing it
+        restores the reviewed candidate exactly."""
+        self._stage("key_type = RSA\n")
+        self._record_context_pass()
+        self._assert_admission(False)
+        self._write("notes.txt", "unrelated prose\n")
+        self._git("add", "notes.txt")
+        for hook, code in ((self._pre_bash, 2), (self._git_enforce, 1)):
+            with self.subTest(hook=hook.__name__):
+                result = hook()
+                self.assertEqual(result.returncode, code, result.stderr)
+                self.assertIn("staged candidate differs from the exact diff", result.stderr)
+        self._git("reset", "-q", "--", "notes.txt")
+        self._assert_admission(False)
+
+    def test_absorbing_commit_form_blocks_only_a_sensitive_candidate(self):
+        self._stage("key_type = RSA\n")
+        self._record_context_pass()
+        blocked = self._pre_bash(command="git commit -a -m 'sweep'")
+        self.assertEqual(blocked.returncode, 2, blocked.stderr)
+        self.assertIn("can absorb unstaged content", blocked.stderr)
+        self._git("commit", "-q", "--no-verify", "-m", "reviewed")
+        self._write("sample.py", "value = 2\n")
+        allowed = self._pre_bash(command="git commit -a -m 'ordinary sweep'")
+        self.assertEqual(allowed.returncode, 0, allowed.stderr)
+
+    def test_rendered_help_predicts_the_enforced_tuple(self):
+        repo = os.path.dirname(os.path.dirname(os.path.dirname(HOOKS)))
+        for rel in ("plugins/ca/commands/override.md",
+                    "plugins/ca/includes/security-gate-record.md",
+                    "plugins/ca-codex/includes/security-gate-record.md",
+                    "plugins/ca-pi/includes/security-gate-record.md"):
+            with self.subTest(rel=rel):
+                with open(os.path.join(repo, rel), encoding="utf-8") as stream:
+                    text = " ".join(stream.read().split())
+                self.assertNotIn("bound to the sensitive lines it approves", text)
+                self.assertIn("complete staged diff", text)
+                self.assertIn("worktree", text)
+                self.assertIn("unrelated staged edit", text)
+                self.assertIn("does not itself prove", text)
 
 
 if __name__ == "__main__":

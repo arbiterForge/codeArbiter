@@ -1,0 +1,1680 @@
+{
+  "snapshot_source": "5dc99c8859f596497cd94728f8841557403913d6",
+  "current_observation_source": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+  "unique_non_native": 149,
+  "deferred_native": 133,
+  "new_actual_renewals": 39,
+  "unselected_non_native": 110,
+  "groups": [
+    {
+      "proof": {
+        "path": "docs/state-contracts-major/execution/evidence/site-component-current-7f741ba5/component-tested.json",
+        "sha256": "1e882c854ed7534174e949c87b738c25d1b3ed1e30489292d3c72eb2ec91a1c2",
+        "source_commit": "7f741ba5bf56cb785bc9c54e0d1fd8faa97a8cbb"
+      },
+      "producer_class": "local-host",
+      "kind": "test",
+      "records": [
+        {
+          "cell": "disposition:findings:SF16",
+          "changed_inputs": [
+            ".github/scripts/major_readiness.py"
+          ],
+          "selected_current_observation": false
+        },
+        {
+          "cell": "disposition:transitions:S62:05",
+          "changed_inputs": [
+            ".github/scripts/major_readiness.py"
+          ],
+          "selected_current_observation": false
+        }
+      ],
+      "original_selectors_location": "docs/state-contracts-major/execution/evidence/site-component-current-7f741ba5/component-tested.json#commands / semantic_mapping / semantic_groups / original_named_results; original bytes retained, no old argv/source rewritten",
+      "disposition_count": 2
+    },
+    {
+      "proof": {
+        "path": "docs/state-contracts-major/execution/evidence/original-pages-M-46e29a79/pages-drawer-tested.json",
+        "sha256": "1159be5f2a6052e335dba201334c0bf0b1c8f49f06a47b970ddd152139e53524",
+        "source_commit": "46e29a796e89e0eaa3250cf171e4c9bea97ac437"
+      },
+      "producer_class": "local-host",
+      "kind": "test",
+      "records": [
+        {
+          "cell": "disposition:findings:SF16",
+          "changed_inputs": [
+            ".github/scripts/major_readiness.py"
+          ],
+          "selected_current_observation": false
+        },
+        {
+          "cell": "disposition:machines:S62",
+          "changed_inputs": [
+            ".github/scripts/major_readiness.py"
+          ],
+          "selected_current_observation": false
+        },
+        {
+          "cell": "disposition:transitions:S62:01",
+          "changed_inputs": [
+            ".github/scripts/major_readiness.py"
+          ],
+          "selected_current_observation": false
+        },
+        {
+          "cell": "disposition:transitions:S62:02",
+          "changed_inputs": [
+            ".github/scripts/major_readiness.py"
+          ],
+          "selected_current_observation": false
+        },
+        {
+          "cell": "disposition:transitions:S62:03",
+          "changed_inputs": [
+            ".github/scripts/major_readiness.py"
+          ],
+          "selected_current_observation": false
+        },
+        {
+          "cell": "disposition:transitions:S62:04",
+          "changed_inputs": [
+            ".github/scripts/major_readiness.py"
+          ],
+          "selected_current_observation": false
+        },
+        {
+          "cell": "disposition:transitions:S62:05",
+          "changed_inputs": [
+            ".github/scripts/major_readiness.py"
+          ],
+          "selected_current_observation": false
+        }
+      ],
+      "original_selectors_location": "docs/state-contracts-major/execution/evidence/original-pages-M-46e29a79/pages-drawer-tested.json#commands / semantic_mapping / semantic_groups / original_named_results; original bytes retained, no old argv/source rewritten",
+      "disposition_count": 7
+    },
+    {
+      "proof": {
+        "path": "docs/state-contracts-major/execution/evidence/adr48-policy-reconciliation-31e/required-policy-preserved.json",
+        "sha256": "7c282a3da04c46ebfaa2815dd96fb74ec7d16ab51bfe24cc849feb4671e46e76",
+        "source_commit": "31e200feffac4179cf6782b70a5c683a436b345d"
+      },
+      "producer_class": "source-conformance",
+      "kind": "conformance-check",
+      "records": [
+        {
+          "cell": "disposition:findings:C-F03",
+          "changed_inputs": [
+            ".github/workflows/ci.yml"
+          ],
+          "selected_current_observation": false
+        },
+        {
+          "cell": "disposition:transitions:C15:04",
+          "changed_inputs": [
+            ".github/workflows/ci.yml"
+          ],
+          "selected_current_observation": false
+        }
+      ],
+      "original_selectors_location": "docs/state-contracts-major/execution/evidence/adr48-policy-reconciliation-31e/required-policy-preserved.json#commands / semantic_mapping / semantic_groups / original_named_results; original bytes retained, no old argv/source rewritten",
+      "disposition_count": 2
+    },
+    {
+      "proof": {
+        "path": "docs/state-contracts-major/execution/evidence/reader-integrity-dde4/reader-fixtures.json",
+        "sha256": "55a78c96c423cea3890321f04e6bef73e17d21f7776b72275821d60e7e06ff88",
+        "source_commit": "dde429b98eb16622cf4ed211386783342fc9d48a"
+      },
+      "producer_class": "local-host",
+      "kind": "test",
+      "records": [
+        {
+          "cell": "disposition:findings:C-F08",
+          "changed_inputs": [
+            ".github/scripts/check_codex_host.py"
+          ],
+          "selected_current_observation": false
+        },
+        {
+          "cell": "disposition:transitions:C36:02",
+          "changed_inputs": [
+            ".github/scripts/check_codex_host.py"
+          ],
+          "selected_current_observation": false
+        },
+        {
+          "cell": "disposition:transitions:C36:03",
+          "changed_inputs": [
+            ".github/scripts/check_codex_host.py"
+          ],
+          "selected_current_observation": false
+        },
+        {
+          "cell": "disposition:added_transitions:C36:added-prefetched-completion",
+          "changed_inputs": [
+            ".github/scripts/check_codex_host.py"
+          ],
+          "selected_current_observation": false
+        },
+        {
+          "cell": "disposition:added_transitions:C36:added-stdin-eof",
+          "changed_inputs": [
+            ".github/scripts/check_codex_host.py"
+          ],
+          "selected_current_observation": false
+        },
+        {
+          "cell": "disposition:added_transitions:C36:added-input-once",
+          "changed_inputs": [
+            ".github/scripts/check_codex_host.py"
+          ],
+          "selected_current_observation": false
+        },
+        {
+          "cell": "disposition:added_transitions:C36:added-input-timeout",
+          "changed_inputs": [
+            ".github/scripts/check_codex_host.py"
+          ],
+          "selected_current_observation": false
+        },
+        {
+          "cell": "disposition:added_transitions:C36:added-cleanup-denied",
+          "changed_inputs": [
+            ".github/scripts/check_codex_host.py"
+          ],
+          "selected_current_observation": false
+        }
+      ],
+      "original_selectors_location": "docs/state-contracts-major/execution/evidence/reader-integrity-dde4/reader-fixtures.json#commands / semantic_mapping / semantic_groups / original_named_results; original bytes retained, no old argv/source rewritten",
+      "disposition_count": 8
+    },
+    {
+      "proof": {
+        "path": "docs/state-contracts-major/execution/evidence/sandbox-S48-current-7fc1ea8c/preserved.json",
+        "sha256": "195c9076bed95d272c360b2deb2244422974258a4f51aa91dbb38a574bcade4f",
+        "source_commit": "7fc1ea8ce8cf9b9b7108aeaff522ac9d080c7383"
+      },
+      "producer_class": "source-conformance",
+      "kind": "conformance-check",
+      "records": [
+        {
+          "cell": "disposition:machines:S48",
+          "changed_inputs": [
+            "plugins/ca-sandbox/tools/claude-inside.test.ts",
+            "plugins/ca-sandbox/tools/claude-inside.ts"
+          ],
+          "selected_current_observation": false
+        },
+        {
+          "cell": "disposition:transitions:S48:01",
+          "changed_inputs": [
+            "plugins/ca-sandbox/tools/claude-inside.test.ts",
+            "plugins/ca-sandbox/tools/claude-inside.ts"
+          ],
+          "selected_current_observation": false
+        },
+        {
+          "cell": "disposition:transitions:S48:02",
+          "changed_inputs": [
+            "plugins/ca-sandbox/tools/claude-inside.test.ts",
+            "plugins/ca-sandbox/tools/claude-inside.ts"
+          ],
+          "selected_current_observation": false
+        },
+        {
+          "cell": "disposition:transitions:S48:03",
+          "changed_inputs": [
+            "plugins/ca-sandbox/tools/claude-inside.test.ts",
+            "plugins/ca-sandbox/tools/claude-inside.ts"
+          ],
+          "selected_current_observation": false
+        },
+        {
+          "cell": "disposition:transitions:S48:04",
+          "changed_inputs": [
+            "plugins/ca-sandbox/tools/claude-inside.test.ts",
+            "plugins/ca-sandbox/tools/claude-inside.ts"
+          ],
+          "selected_current_observation": false
+        },
+        {
+          "cell": "disposition:transitions:S48:05",
+          "changed_inputs": [
+            "plugins/ca-sandbox/tools/claude-inside.test.ts",
+            "plugins/ca-sandbox/tools/claude-inside.ts"
+          ],
+          "selected_current_observation": false
+        },
+        {
+          "cell": "disposition:transitions:S48:08",
+          "changed_inputs": [
+            "plugins/ca-sandbox/tools/claude-inside.test.ts",
+            "plugins/ca-sandbox/tools/claude-inside.ts"
+          ],
+          "selected_current_observation": false
+        }
+      ],
+      "original_selectors_location": "docs/state-contracts-major/execution/evidence/sandbox-S48-current-7fc1ea8c/preserved.json#commands / semantic_mapping / semantic_groups / original_named_results; original bytes retained, no old argv/source rewritten",
+      "disposition_count": 7
+    },
+    {
+      "proof": {
+        "path": "docs/state-contracts-major/execution/evidence/sandbox-selected44-142e072b/sandbox17-tested.json",
+        "sha256": "634805d2db4407a9eea12d5fb1f50b79cd2b6c7010e7142abb2e65342db1fb1f",
+        "source_commit": "142e072bf33d23124194bd7d8c153d29ab5c7844"
+      },
+      "producer_class": "local-host",
+      "kind": "test",
+      "records": [
+        {
+          "cell": "disposition:machines:S53",
+          "changed_inputs": [
+            "plugins/ca-sandbox/tools/build.ts",
+            "plugins/ca-sandbox/tools/claude-inside.ts",
+            "plugins/ca-sandbox/tools/create.ts"
+          ],
+          "selected_current_observation": true
+        },
+        {
+          "cell": "disposition:transitions:S48:06",
+          "changed_inputs": [
+            "plugins/ca-sandbox/tools/build.ts",
+            "plugins/ca-sandbox/tools/claude-inside.ts",
+            "plugins/ca-sandbox/tools/create.ts"
+          ],
+          "selected_current_observation": true
+        },
+        {
+          "cell": "disposition:transitions:S48:07",
+          "changed_inputs": [
+            "plugins/ca-sandbox/tools/build.ts",
+            "plugins/ca-sandbox/tools/claude-inside.ts",
+            "plugins/ca-sandbox/tools/create.ts"
+          ],
+          "selected_current_observation": true
+        },
+        {
+          "cell": "disposition:transitions:S49:01",
+          "changed_inputs": [
+            "plugins/ca-sandbox/tools/build.ts",
+            "plugins/ca-sandbox/tools/claude-inside.ts",
+            "plugins/ca-sandbox/tools/create.ts"
+          ],
+          "selected_current_observation": true
+        },
+        {
+          "cell": "disposition:transitions:S51:05",
+          "changed_inputs": [
+            "plugins/ca-sandbox/tools/build.ts",
+            "plugins/ca-sandbox/tools/claude-inside.ts",
+            "plugins/ca-sandbox/tools/create.ts"
+          ],
+          "selected_current_observation": true
+        },
+        {
+          "cell": "disposition:transitions:S52:01",
+          "changed_inputs": [
+            "plugins/ca-sandbox/tools/build.ts",
+            "plugins/ca-sandbox/tools/claude-inside.ts",
+            "plugins/ca-sandbox/tools/create.ts"
+          ],
+          "selected_current_observation": true
+        },
+        {
+          "cell": "disposition:transitions:S52:02",
+          "changed_inputs": [
+            "plugins/ca-sandbox/tools/build.ts",
+            "plugins/ca-sandbox/tools/claude-inside.ts",
+            "plugins/ca-sandbox/tools/create.ts"
+          ],
+          "selected_current_observation": true
+        },
+        {
+          "cell": "disposition:transitions:S52:03",
+          "changed_inputs": [
+            "plugins/ca-sandbox/tools/build.ts",
+            "plugins/ca-sandbox/tools/claude-inside.ts",
+            "plugins/ca-sandbox/tools/create.ts"
+          ],
+          "selected_current_observation": true
+        },
+        {
+          "cell": "disposition:transitions:S52:04",
+          "changed_inputs": [
+            "plugins/ca-sandbox/tools/build.ts",
+            "plugins/ca-sandbox/tools/claude-inside.ts",
+            "plugins/ca-sandbox/tools/create.ts"
+          ],
+          "selected_current_observation": true
+        },
+        {
+          "cell": "disposition:transitions:S52:05",
+          "changed_inputs": [
+            "plugins/ca-sandbox/tools/build.ts",
+            "plugins/ca-sandbox/tools/claude-inside.ts",
+            "plugins/ca-sandbox/tools/create.ts"
+          ],
+          "selected_current_observation": true
+        },
+        {
+          "cell": "disposition:transitions:S53:01",
+          "changed_inputs": [
+            "plugins/ca-sandbox/tools/build.ts",
+            "plugins/ca-sandbox/tools/claude-inside.ts",
+            "plugins/ca-sandbox/tools/create.ts"
+          ],
+          "selected_current_observation": true
+        },
+        {
+          "cell": "disposition:transitions:S53:02",
+          "changed_inputs": [
+            "plugins/ca-sandbox/tools/build.ts",
+            "plugins/ca-sandbox/tools/claude-inside.ts",
+            "plugins/ca-sandbox/tools/create.ts"
+          ],
+          "selected_current_observation": true
+        },
+        {
+          "cell": "disposition:transitions:S53:03",
+          "changed_inputs": [
+            "plugins/ca-sandbox/tools/build.ts",
+            "plugins/ca-sandbox/tools/claude-inside.ts",
+            "plugins/ca-sandbox/tools/create.ts"
+          ],
+          "selected_current_observation": true
+        },
+        {
+          "cell": "disposition:transitions:S53:04",
+          "changed_inputs": [
+            "plugins/ca-sandbox/tools/build.ts",
+            "plugins/ca-sandbox/tools/claude-inside.ts",
+            "plugins/ca-sandbox/tools/create.ts"
+          ],
+          "selected_current_observation": true
+        },
+        {
+          "cell": "disposition:transitions:S53:05",
+          "changed_inputs": [
+            "plugins/ca-sandbox/tools/build.ts",
+            "plugins/ca-sandbox/tools/claude-inside.ts",
+            "plugins/ca-sandbox/tools/create.ts"
+          ],
+          "selected_current_observation": true
+        },
+        {
+          "cell": "disposition:transitions:S53:06",
+          "changed_inputs": [
+            "plugins/ca-sandbox/tools/build.ts",
+            "plugins/ca-sandbox/tools/claude-inside.ts",
+            "plugins/ca-sandbox/tools/create.ts"
+          ],
+          "selected_current_observation": true
+        },
+        {
+          "cell": "disposition:transitions:S53:07",
+          "changed_inputs": [
+            "plugins/ca-sandbox/tools/build.ts",
+            "plugins/ca-sandbox/tools/claude-inside.ts",
+            "plugins/ca-sandbox/tools/create.ts"
+          ],
+          "selected_current_observation": true
+        }
+      ],
+      "original_selectors_location": "docs/state-contracts-major/execution/evidence/sandbox-selected44-142e072b/sandbox17-tested.json#commands / semantic_mapping / semantic_groups / original_named_results; original bytes retained, no old argv/source rewritten",
+      "disposition_count": 17
+    },
+    {
+      "proof": {
+        "path": "docs/state-contracts-major/execution/evidence/c33-finite-M-ten/tested-component.json",
+        "sha256": "66ddf7b4919089360673385077a5735e7864cd357033b7bab60876e0b4506385",
+        "source_commit": "46e29a796e89e0eaa3250cf171e4c9bea97ac437"
+      },
+      "producer_class": "local-host",
+      "kind": "test",
+      "records": [
+        {
+          "cell": "disposition:machines:C33",
+          "changed_inputs": [
+            "core/surface/commands/watch.md"
+          ],
+          "selected_current_observation": false
+        },
+        {
+          "cell": "disposition:transitions:C33:01",
+          "changed_inputs": [
+            "core/surface/commands/watch.md"
+          ],
+          "selected_current_observation": false
+        },
+        {
+          "cell": "disposition:transitions:C33:02",
+          "changed_inputs": [
+            "core/surface/commands/watch.md"
+          ],
+          "selected_current_observation": false
+        },
+        {
+          "cell": "disposition:transitions:C33:03",
+          "changed_inputs": [
+            "core/surface/commands/watch.md"
+          ],
+          "selected_current_observation": false
+        }
+      ],
+      "original_selectors_location": "docs/state-contracts-major/execution/evidence/c33-finite-M-ten/tested-component.json#commands / semantic_mapping / semantic_groups / original_named_results; original bytes retained, no old argv/source rewritten",
+      "disposition_count": 4
+    },
+    {
+      "proof": {
+        "path": "docs/state-contracts-major/execution/evidence/c33-finite-acf1-three/tested-component.json",
+        "sha256": "d3acd50ff91a9764a51bad78fbb76592cb43e0ed737dce8ba0bf9d21ea5f093b",
+        "source_commit": "acf1aeeafc44696fbac966cba7eb999e14857514"
+      },
+      "producer_class": "local-host",
+      "kind": "test",
+      "records": [
+        {
+          "cell": "disposition:machines:C33",
+          "changed_inputs": [
+            "core/surface/commands/watch.md"
+          ],
+          "selected_current_observation": false
+        },
+        {
+          "cell": "disposition:transitions:C33:01",
+          "changed_inputs": [
+            "core/surface/commands/watch.md"
+          ],
+          "selected_current_observation": false
+        },
+        {
+          "cell": "disposition:transitions:C33:03",
+          "changed_inputs": [
+            "core/surface/commands/watch.md"
+          ],
+          "selected_current_observation": false
+        }
+      ],
+      "original_selectors_location": "docs/state-contracts-major/execution/evidence/c33-finite-acf1-three/tested-component.json#commands / semantic_mapping / semantic_groups / original_named_results; original bytes retained, no old argv/source rewritten",
+      "disposition_count": 3
+    },
+    {
+      "proof": {
+        "path": "docs/state-contracts-major/execution/evidence/native-eight-M46-components/hosted-Go-component.json",
+        "sha256": "bcdbfe671a9124b1d79daa23ae4c1defb753172c909e0a6e4bbece8c781e4334",
+        "source_commit": "46e29a796e89e0eaa3250cf171e4c9bea97ac437"
+      },
+      "producer_class": "hosted",
+      "kind": "test",
+      "records": [
+        {
+          "cell": "disposition:transitions:hooks:verifier:07",
+          "changed_inputs": [
+            ".github/scripts/major_qualification_report.py",
+            ".github/scripts/major_readiness.py",
+            "core/artifacts/internal/operations/intentional_change_test.go",
+            "core/pysrc/_bashguardlib.py",
+            "core/pysrc/_workgithub.py",
+            "membership:core/artifacts",
+            "plugins/ca/README.md",
+            "plugins/ca/commands/watch.md",
+            "plugins/ca/hooks/_bashguardlib.py",
+            "plugins/ca/hooks/_workgithub.py",
+            "plugins/ca/tools/farm.js",
+            "plugins/ca/tools/farm.ts"
+          ],
+          "selected_current_observation": false
+        }
+      ],
+      "original_selectors_location": "docs/state-contracts-major/execution/evidence/native-eight-M46-components/hosted-Go-component.json#commands / semantic_mapping / semantic_groups / original_named_results; original bytes retained, no old argv/source rewritten",
+      "disposition_count": 1
+    },
+    {
+      "proof": {
+        "path": "docs/state-contracts-major/execution/evidence/native-eight-M46-components/ce3-producer-component.json",
+        "sha256": "f890791dada7ea5dad8fd5da3afb00e1f7c430539760a2daf8e9cc923b825c71",
+        "source_commit": "ce3a4a91a3164e1b778e81d206ec76517633c518"
+      },
+      "producer_class": "local-host",
+      "kind": "test",
+      "records": [
+        {
+          "cell": "disposition:transitions:hooks:verifier:07",
+          "changed_inputs": [
+            ".github/scripts/major_qualification_report.py",
+            ".github/scripts/major_readiness.py",
+            "core/artifacts/internal/operations/intentional_change_test.go",
+            "core/pysrc/_bashguardlib.py",
+            "core/pysrc/_workgithub.py",
+            "membership:core/artifacts",
+            "plugins/ca/README.md",
+            "plugins/ca/commands/watch.md",
+            "plugins/ca/hooks/_bashguardlib.py",
+            "plugins/ca/hooks/_workgithub.py",
+            "plugins/ca/tools/farm.js",
+            "plugins/ca/tools/farm.ts"
+          ],
+          "selected_current_observation": false
+        }
+      ],
+      "original_selectors_location": "docs/state-contracts-major/execution/evidence/native-eight-M46-components/ce3-producer-component.json#commands / semantic_mapping / semantic_groups / original_named_results; original bytes retained, no old argv/source rewritten",
+      "disposition_count": 1
+    },
+    {
+      "proof": {
+        "path": "docs/state-contracts-major/execution/evidence/native-eight-M46-components/local-installed-stage-component.json",
+        "sha256": "0bd0dbc7603b09ee20da7b930468ba47410fc29c6de4248d3112ab8e9db8d580",
+        "source_commit": "46e29a796e89e0eaa3250cf171e4c9bea97ac437"
+      },
+      "producer_class": "local-host",
+      "kind": "test",
+      "records": [
+        {
+          "cell": "disposition:transitions:hooks:verifier:07",
+          "changed_inputs": [
+            ".github/scripts/major_qualification_report.py",
+            ".github/scripts/major_readiness.py",
+            "core/artifacts/internal/operations/intentional_change_test.go",
+            "core/pysrc/_bashguardlib.py",
+            "core/pysrc/_workgithub.py",
+            "membership:core/artifacts",
+            "plugins/ca/README.md",
+            "plugins/ca/commands/watch.md",
+            "plugins/ca/hooks/_bashguardlib.py",
+            "plugins/ca/hooks/_workgithub.py",
+            "plugins/ca/tools/farm.js",
+            "plugins/ca/tools/farm.ts"
+          ],
+          "selected_current_observation": false
+        }
+      ],
+      "original_selectors_location": "docs/state-contracts-major/execution/evidence/native-eight-M46-components/local-installed-stage-component.json#commands / semantic_mapping / semantic_groups / original_named_results; original bytes retained, no old argv/source rewritten",
+      "disposition_count": 1
+    },
+    {
+      "proof": {
+        "path": "docs/state-contracts-major/execution/evidence/pi-committed51-45a6/footer-doctor2-tested.json",
+        "sha256": "466dad243175a578e02e0dcc0389cb95fd13d1b93d11aa2dbcdafa42f4fcaaf7",
+        "source_commit": "45a6a8e33db6c6143bbddc4bd009b7e7bac79207"
+      },
+      "producer_class": "local-host",
+      "kind": "test",
+      "records": [
+        {
+          "cell": "disposition:transitions:S18:07",
+          "changed_inputs": [
+            "plugins/ca-pi/extensions/codearbiter.js",
+            "plugins/ca-pi/tools/src/farm.ts",
+            "plugins/ca-pi/tools/test/farm.test.ts"
+          ],
+          "selected_current_observation": false
+        }
+      ],
+      "original_selectors_location": "docs/state-contracts-major/execution/evidence/pi-committed51-45a6/footer-doctor2-tested.json#commands / semantic_mapping / semantic_groups / original_named_results; original bytes retained, no old argv/source rewritten",
+      "disposition_count": 1
+    },
+    {
+      "proof": {
+        "path": "docs/state-contracts-major/execution/evidence/original-pi-rpc-M-46e29a79/pi-original-installed.json",
+        "sha256": "3d69c1a9d0a3d7d0e1929c406e304751f0aef086d6c21bbba57de1e10f784123",
+        "source_commit": "46e29a796e89e0eaa3250cf171e4c9bea97ac437"
+      },
+      "producer_class": "local-host",
+      "kind": "installed-run",
+      "records": [
+        {
+          "cell": "disposition:transitions:S20:01",
+          "changed_inputs": [
+            ".github/scripts/major_readiness.py",
+            ".github/scripts/test_pi_package.py",
+            "core/pysrc/_bashguardlib.py",
+            "core/pysrc/_workgithub.py",
+            "core/surface/commands/watch.md",
+            "plugins/ca-pi/CHANGELOG.md",
+            "plugins/ca-pi/extensions/codearbiter.js",
+            "plugins/ca-pi/hooks/_bashguardlib.py",
+            "plugins/ca-pi/hooks/_workgithub.py",
+            "plugins/ca-pi/skills/ca-watch/SKILL.md"
+          ],
+          "selected_current_observation": false
+        },
+        {
+          "cell": "disposition:transitions:S20:03",
+          "changed_inputs": [
+            ".github/scripts/major_readiness.py",
+            ".github/scripts/test_pi_package.py",
+            "core/pysrc/_bashguardlib.py",
+            "core/pysrc/_workgithub.py",
+            "core/surface/commands/watch.md",
+            "plugins/ca-pi/CHANGELOG.md",
+            "plugins/ca-pi/extensions/codearbiter.js",
+            "plugins/ca-pi/hooks/_bashguardlib.py",
+            "plugins/ca-pi/hooks/_workgithub.py",
+            "plugins/ca-pi/skills/ca-watch/SKILL.md"
+          ],
+          "selected_current_observation": false
+        },
+        {
+          "cell": "disposition:transitions:S20:06",
+          "changed_inputs": [
+            ".github/scripts/major_readiness.py",
+            ".github/scripts/test_pi_package.py",
+            "core/pysrc/_bashguardlib.py",
+            "core/pysrc/_workgithub.py",
+            "core/surface/commands/watch.md",
+            "plugins/ca-pi/CHANGELOG.md",
+            "plugins/ca-pi/extensions/codearbiter.js",
+            "plugins/ca-pi/hooks/_bashguardlib.py",
+            "plugins/ca-pi/hooks/_workgithub.py",
+            "plugins/ca-pi/skills/ca-watch/SKILL.md"
+          ],
+          "selected_current_observation": false
+        }
+      ],
+      "original_selectors_location": "docs/state-contracts-major/execution/evidence/original-pi-rpc-M-46e29a79/pi-original-installed.json#commands / semantic_mapping / semantic_groups / original_named_results; original bytes retained, no old argv/source rewritten",
+      "disposition_count": 3
+    },
+    {
+      "proof": {
+        "path": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sandbox-cache-builder-guards-tested.json",
+        "sha256": "35909af1bbe66746a9ad446a636876db481d028e38bbdb5592570c13fadabc7b",
+        "source_commit": "ef40ab5f33f4430a3650c225909801094acabbb4"
+      },
+      "producer_class": "local-host",
+      "kind": "test",
+      "records": [
+        {
+          "cell": "disposition:transitions:S49:02",
+          "changed_inputs": [
+            "plugins/ca-sandbox/tools/build.ts",
+            "plugins/ca-sandbox/tools/claude-inside.ts",
+            "plugins/ca-sandbox/tools/create.ts"
+          ],
+          "selected_current_observation": false
+        },
+        {
+          "cell": "disposition:transitions:S49:03",
+          "changed_inputs": [
+            "plugins/ca-sandbox/tools/build.ts",
+            "plugins/ca-sandbox/tools/claude-inside.ts",
+            "plugins/ca-sandbox/tools/create.ts"
+          ],
+          "selected_current_observation": false
+        },
+        {
+          "cell": "disposition:transitions:S49:04",
+          "changed_inputs": [
+            "plugins/ca-sandbox/tools/build.ts",
+            "plugins/ca-sandbox/tools/claude-inside.ts",
+            "plugins/ca-sandbox/tools/create.ts"
+          ],
+          "selected_current_observation": false
+        },
+        {
+          "cell": "disposition:transitions:S49:05",
+          "changed_inputs": [
+            "plugins/ca-sandbox/tools/build.ts",
+            "plugins/ca-sandbox/tools/claude-inside.ts",
+            "plugins/ca-sandbox/tools/create.ts"
+          ],
+          "selected_current_observation": false
+        },
+        {
+          "cell": "disposition:transitions:S49:06",
+          "changed_inputs": [
+            "plugins/ca-sandbox/tools/build.ts",
+            "plugins/ca-sandbox/tools/claude-inside.ts",
+            "plugins/ca-sandbox/tools/create.ts"
+          ],
+          "selected_current_observation": false
+        },
+        {
+          "cell": "disposition:transitions:S49:07",
+          "changed_inputs": [
+            "plugins/ca-sandbox/tools/build.ts",
+            "plugins/ca-sandbox/tools/claude-inside.ts",
+            "plugins/ca-sandbox/tools/create.ts"
+          ],
+          "selected_current_observation": false
+        },
+        {
+          "cell": "disposition:transitions:S49:08",
+          "changed_inputs": [
+            "plugins/ca-sandbox/tools/build.ts",
+            "plugins/ca-sandbox/tools/claude-inside.ts",
+            "plugins/ca-sandbox/tools/create.ts"
+          ],
+          "selected_current_observation": false
+        },
+        {
+          "cell": "disposition:transitions:S49:09",
+          "changed_inputs": [
+            "plugins/ca-sandbox/tools/build.ts",
+            "plugins/ca-sandbox/tools/claude-inside.ts",
+            "plugins/ca-sandbox/tools/create.ts"
+          ],
+          "selected_current_observation": false
+        }
+      ],
+      "original_selectors_location": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sandbox-cache-builder-guards-tested.json#commands / semantic_mapping / semantic_groups / original_named_results; original bytes retained, no old argv/source rewritten",
+      "disposition_count": 8
+    },
+    {
+      "proof": {
+        "path": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sandbox-token-guard-software-tested.json",
+        "sha256": "f86b07554467fb8664b087113e825076890178737e4c46f7f645cd73b2971869",
+        "source_commit": "ef40ab5f33f4430a3650c225909801094acabbb4"
+      },
+      "producer_class": "local-host",
+      "kind": "test",
+      "records": [
+        {
+          "cell": "disposition:transitions:S51:01",
+          "changed_inputs": [
+            "plugins/ca-sandbox/tools/claude-inside.test.ts",
+            "plugins/ca-sandbox/tools/claude-inside.ts"
+          ],
+          "selected_current_observation": false
+        },
+        {
+          "cell": "disposition:transitions:S51:02",
+          "changed_inputs": [
+            "plugins/ca-sandbox/tools/claude-inside.test.ts",
+            "plugins/ca-sandbox/tools/claude-inside.ts"
+          ],
+          "selected_current_observation": false
+        }
+      ],
+      "original_selectors_location": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sandbox-token-guard-software-tested.json#commands / semantic_mapping / semantic_groups / original_named_results; original bytes retained, no old argv/source rewritten",
+      "disposition_count": 2
+    },
+    {
+      "proof": {
+        "path": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sandbox-copy-contract-tested.json",
+        "sha256": "3762d92c83ebe332f49697430dbb90f9199f7d5b6fb69fe77fcdd759825e1e07",
+        "source_commit": "ef40ab5f33f4430a3650c225909801094acabbb4"
+      },
+      "producer_class": "local-host",
+      "kind": "test",
+      "records": [
+        {
+          "cell": "disposition:transitions:S52:06",
+          "changed_inputs": [
+            "plugins/ca-sandbox/tools/build.ts",
+            "plugins/ca-sandbox/tools/create.ts"
+          ],
+          "selected_current_observation": false
+        }
+      ],
+      "original_selectors_location": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sandbox-copy-contract-tested.json#commands / semantic_mapping / semantic_groups / original_named_results; original bytes retained, no old argv/source rewritten",
+      "disposition_count": 1
+    },
+    {
+      "proof": {
+        "path": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sandbox-cli-dispatch-tested.json",
+        "sha256": "e21b85d3cc9c0914c8625ca7fe37ad612bd537b86133e3ff78090c568244cdb0",
+        "source_commit": "ef40ab5f33f4430a3650c225909801094acabbb4"
+      },
+      "producer_class": "local-host",
+      "kind": "test",
+      "records": [
+        {
+          "cell": "disposition:transitions:S54:01",
+          "changed_inputs": [
+            "plugins/ca-sandbox/tools/build.ts",
+            "plugins/ca-sandbox/tools/create.ts"
+          ],
+          "selected_current_observation": false
+        }
+      ],
+      "original_selectors_location": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sandbox-cli-dispatch-tested.json#commands / semantic_mapping / semantic_groups / original_named_results; original bytes retained, no old argv/source rewritten",
+      "disposition_count": 1
+    },
+    {
+      "proof": {
+        "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/cold-installed.json",
+        "sha256": "08c674efe2e221fe4571dfda2538393fff7a63eef71c0610ed9a7a0f6b990228",
+        "source_commit": "46e29a796e89e0eaa3250cf171e4c9bea97ac437"
+      },
+      "producer_class": "local-host",
+      "kind": "installed-run",
+      "records": [
+        {
+          "cell": "disposition:transitions:S71:05",
+          "changed_inputs": [
+            ".github/scripts/major_readiness.py",
+            "core/pysrc/_bashguardlib.py",
+            "core/pysrc/_workgithub.py"
+          ],
+          "selected_current_observation": false
+        },
+        {
+          "cell": "disposition:transitions:S71:06",
+          "changed_inputs": [
+            ".github/scripts/major_readiness.py",
+            "core/pysrc/_bashguardlib.py",
+            "core/pysrc/_workgithub.py"
+          ],
+          "selected_current_observation": false
+        },
+        {
+          "cell": "disposition:transitions:S72:01",
+          "changed_inputs": [
+            ".github/scripts/major_readiness.py",
+            "core/pysrc/_bashguardlib.py",
+            "core/pysrc/_workgithub.py"
+          ],
+          "selected_current_observation": false
+        },
+        {
+          "cell": "disposition:transitions:S72:02",
+          "changed_inputs": [
+            ".github/scripts/major_readiness.py",
+            "core/pysrc/_bashguardlib.py",
+            "core/pysrc/_workgithub.py"
+          ],
+          "selected_current_observation": false
+        },
+        {
+          "cell": "disposition:transitions:S72:03",
+          "changed_inputs": [
+            ".github/scripts/major_readiness.py",
+            "core/pysrc/_bashguardlib.py",
+            "core/pysrc/_workgithub.py"
+          ],
+          "selected_current_observation": false
+        },
+        {
+          "cell": "disposition:transitions:S72:04",
+          "changed_inputs": [
+            ".github/scripts/major_readiness.py",
+            "core/pysrc/_bashguardlib.py",
+            "core/pysrc/_workgithub.py"
+          ],
+          "selected_current_observation": false
+        },
+        {
+          "cell": "disposition:transitions:S72:05",
+          "changed_inputs": [
+            ".github/scripts/major_readiness.py",
+            "core/pysrc/_bashguardlib.py",
+            "core/pysrc/_workgithub.py"
+          ],
+          "selected_current_observation": false
+        },
+        {
+          "cell": "disposition:transitions:S72:06",
+          "changed_inputs": [
+            ".github/scripts/major_readiness.py",
+            "core/pysrc/_bashguardlib.py",
+            "core/pysrc/_workgithub.py"
+          ],
+          "selected_current_observation": false
+        }
+      ],
+      "original_selectors_location": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/cold-installed.json#commands / semantic_mapping / semantic_groups / original_named_results; original bytes retained, no old argv/source rewritten",
+      "disposition_count": 8
+    },
+    {
+      "proof": {
+        "path": "docs/state-contracts-major/execution/evidence/publisher-b7a75-successor/surface-publication.json",
+        "sha256": "630d62619ccbe53ce2573b553ec5ecdcb27c6f795ac2e163a4679c4a07db64d2",
+        "source_commit": "b7a75fcab005d9ab3c29618d59559da2edee3283"
+      },
+      "producer_class": "local-host",
+      "kind": "test",
+      "records": [
+        {
+          "cell": "disposition:transitions:S75:05",
+          "changed_inputs": [
+            "core/surface/commands/watch.md"
+          ],
+          "selected_current_observation": false
+        },
+        {
+          "cell": "disposition:transitions:S75:08",
+          "changed_inputs": [
+            "core/surface/commands/watch.md"
+          ],
+          "selected_current_observation": false
+        }
+      ],
+      "original_selectors_location": "docs/state-contracts-major/execution/evidence/publisher-b7a75-successor/surface-publication.json#commands / semantic_mapping / semantic_groups / original_named_results; original bytes retained, no old argv/source rewritten",
+      "disposition_count": 2
+    },
+    {
+      "proof": {
+        "path": "docs/state-contracts-major/execution/evidence/adr48-policy-reconciliation-31e/retired-advisory-pretag.json",
+        "sha256": "b40b72a1f5042ac35939d784bf2f7248049e32c0b72e363504f7b263191e7a2e",
+        "source_commit": "31e200feffac4179cf6782b70a5c683a436b345d"
+      },
+      "producer_class": "source-conformance",
+      "kind": "conformance-check",
+      "records": [
+        {
+          "cell": "disposition:transitions:C15:05",
+          "changed_inputs": [
+            ".github/workflows/ci.yml"
+          ],
+          "selected_current_observation": false
+        }
+      ],
+      "original_selectors_location": "docs/state-contracts-major/execution/evidence/adr48-policy-reconciliation-31e/retired-advisory-pretag.json#commands / semantic_mapping / semantic_groups / original_named_results; original bytes retained, no old argv/source rewritten",
+      "disposition_count": 1
+    },
+    {
+      "proof": {
+        "path": "docs/state-contracts-major/execution/evidence/release-family-preserved-9e3b2ea5/preserved.json",
+        "sha256": "8457d9c426be7d0783eb02da9aad8ce3f28dd8b96b893bb2c9d36e44ee5696d7",
+        "source_commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef"
+      },
+      "producer_class": "source-conformance",
+      "kind": "conformance-check",
+      "records": [
+        {
+          "cell": "disposition:transitions:C16:03",
+          "changed_inputs": [
+            ".github/scripts/test_ci_impact.py",
+            ".github/workflows/ci.yml",
+            "tools/ci-impact.py"
+          ],
+          "selected_current_observation": false
+        },
+        {
+          "cell": "disposition:transitions:C17:01",
+          "changed_inputs": [
+            ".github/scripts/test_ci_impact.py",
+            ".github/workflows/ci.yml",
+            "tools/ci-impact.py"
+          ],
+          "selected_current_observation": false
+        },
+        {
+          "cell": "disposition:transitions:C17:02",
+          "changed_inputs": [
+            ".github/scripts/test_ci_impact.py",
+            ".github/workflows/ci.yml",
+            "tools/ci-impact.py"
+          ],
+          "selected_current_observation": false
+        },
+        {
+          "cell": "disposition:transitions:C17:03",
+          "changed_inputs": [
+            ".github/scripts/test_ci_impact.py",
+            ".github/workflows/ci.yml",
+            "tools/ci-impact.py"
+          ],
+          "selected_current_observation": false
+        },
+        {
+          "cell": "disposition:transitions:C17:04",
+          "changed_inputs": [
+            ".github/scripts/test_ci_impact.py",
+            ".github/workflows/ci.yml",
+            "tools/ci-impact.py"
+          ],
+          "selected_current_observation": false
+        },
+        {
+          "cell": "disposition:transitions:C17:05",
+          "changed_inputs": [
+            ".github/scripts/test_ci_impact.py",
+            ".github/workflows/ci.yml",
+            "tools/ci-impact.py"
+          ],
+          "selected_current_observation": false
+        },
+        {
+          "cell": "disposition:transitions:C17:06",
+          "changed_inputs": [
+            ".github/scripts/test_ci_impact.py",
+            ".github/workflows/ci.yml",
+            "tools/ci-impact.py"
+          ],
+          "selected_current_observation": false
+        },
+        {
+          "cell": "disposition:transitions:C17:07",
+          "changed_inputs": [
+            ".github/scripts/test_ci_impact.py",
+            ".github/workflows/ci.yml",
+            "tools/ci-impact.py"
+          ],
+          "selected_current_observation": false
+        },
+        {
+          "cell": "disposition:transitions:C17:08",
+          "changed_inputs": [
+            ".github/scripts/test_ci_impact.py",
+            ".github/workflows/ci.yml",
+            "tools/ci-impact.py"
+          ],
+          "selected_current_observation": false
+        },
+        {
+          "cell": "disposition:transitions:C17:09",
+          "changed_inputs": [
+            ".github/scripts/test_ci_impact.py",
+            ".github/workflows/ci.yml",
+            "tools/ci-impact.py"
+          ],
+          "selected_current_observation": false
+        },
+        {
+          "cell": "disposition:transitions:C17:11",
+          "changed_inputs": [
+            ".github/scripts/test_ci_impact.py",
+            ".github/workflows/ci.yml",
+            "tools/ci-impact.py"
+          ],
+          "selected_current_observation": false
+        }
+      ],
+      "original_selectors_location": "docs/state-contracts-major/execution/evidence/release-family-preserved-9e3b2ea5/preserved.json#commands / semantic_mapping / semantic_groups / original_named_results; original bytes retained, no old argv/source rewritten",
+      "disposition_count": 11
+    },
+    {
+      "proof": {
+        "path": "docs/state-contracts-major/execution/evidence/tool-controllers-source-d594/impact-planner-preserved.json",
+        "sha256": "8a9931380882e91b25d1ea4155f48de82017a94b18284689be75e3be4985cea2",
+        "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+      },
+      "producer_class": "source-conformance",
+      "kind": "conformance-check",
+      "records": [
+        {
+          "cell": "disposition:transitions:T01:01",
+          "changed_inputs": [
+            "tools/ci-impact.py"
+          ],
+          "selected_current_observation": false
+        },
+        {
+          "cell": "disposition:transitions:T01:02",
+          "changed_inputs": [
+            "tools/ci-impact.py"
+          ],
+          "selected_current_observation": false
+        },
+        {
+          "cell": "disposition:transitions:T01:03",
+          "changed_inputs": [
+            "tools/ci-impact.py"
+          ],
+          "selected_current_observation": false
+        },
+        {
+          "cell": "disposition:transitions:T01:04",
+          "changed_inputs": [
+            "tools/ci-impact.py"
+          ],
+          "selected_current_observation": false
+        },
+        {
+          "cell": "disposition:transitions:T01:05",
+          "changed_inputs": [
+            "tools/ci-impact.py"
+          ],
+          "selected_current_observation": false
+        }
+      ],
+      "original_selectors_location": "docs/state-contracts-major/execution/evidence/tool-controllers-source-d594/impact-planner-preserved.json#commands / semantic_mapping / semantic_groups / original_named_results; original bytes retained, no old argv/source rewritten",
+      "disposition_count": 5
+    },
+    {
+      "proof": {
+        "path": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+        "sha256": "6f79917f90e577317a8f411ade240c12d018f6ccc05d05f060188b9ebb60f22c",
+        "source_commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945"
+      },
+      "producer_class": "source-conformance",
+      "kind": "conformance-check",
+      "records": [
+        {
+          "cell": "disposition:transitions:SW01:02",
+          "changed_inputs": [
+            "plugins/ca-sandbox/skills/INDEX.md"
+          ],
+          "selected_current_observation": false
+        },
+        {
+          "cell": "disposition:transitions:SW01:03",
+          "changed_inputs": [
+            "plugins/ca-sandbox/skills/INDEX.md"
+          ],
+          "selected_current_observation": false
+        },
+        {
+          "cell": "disposition:transitions:SW01:04",
+          "changed_inputs": [
+            "plugins/ca-sandbox/skills/INDEX.md"
+          ],
+          "selected_current_observation": false
+        },
+        {
+          "cell": "disposition:transitions:SW01:05",
+          "changed_inputs": [
+            "plugins/ca-sandbox/skills/INDEX.md"
+          ],
+          "selected_current_observation": false
+        },
+        {
+          "cell": "disposition:transitions:SW01:06",
+          "changed_inputs": [
+            "plugins/ca-sandbox/skills/INDEX.md"
+          ],
+          "selected_current_observation": false
+        },
+        {
+          "cell": "disposition:transitions:SW01:07",
+          "changed_inputs": [
+            "plugins/ca-sandbox/skills/INDEX.md"
+          ],
+          "selected_current_observation": false
+        },
+        {
+          "cell": "disposition:transitions:SW01:08",
+          "changed_inputs": [
+            "plugins/ca-sandbox/skills/INDEX.md"
+          ],
+          "selected_current_observation": false
+        },
+        {
+          "cell": "disposition:transitions:SW01:09",
+          "changed_inputs": [
+            "plugins/ca-sandbox/skills/INDEX.md"
+          ],
+          "selected_current_observation": false
+        },
+        {
+          "cell": "disposition:transitions:SW01:10",
+          "changed_inputs": [
+            "plugins/ca-sandbox/skills/INDEX.md"
+          ],
+          "selected_current_observation": false
+        },
+        {
+          "cell": "disposition:transitions:SW01:11",
+          "changed_inputs": [
+            "plugins/ca-sandbox/skills/INDEX.md"
+          ],
+          "selected_current_observation": false
+        },
+        {
+          "cell": "disposition:transitions:SW01:12",
+          "changed_inputs": [
+            "plugins/ca-sandbox/skills/INDEX.md"
+          ],
+          "selected_current_observation": false
+        },
+        {
+          "cell": "disposition:transitions:SW01:13",
+          "changed_inputs": [
+            "plugins/ca-sandbox/skills/INDEX.md"
+          ],
+          "selected_current_observation": false
+        },
+        {
+          "cell": "disposition:transitions:SW01:14",
+          "changed_inputs": [
+            "plugins/ca-sandbox/skills/INDEX.md"
+          ],
+          "selected_current_observation": false
+        },
+        {
+          "cell": "disposition:transitions:SW01:15",
+          "changed_inputs": [
+            "plugins/ca-sandbox/skills/INDEX.md"
+          ],
+          "selected_current_observation": false
+        },
+        {
+          "cell": "disposition:transitions:SW01:17",
+          "changed_inputs": [
+            "plugins/ca-sandbox/skills/INDEX.md"
+          ],
+          "selected_current_observation": false
+        },
+        {
+          "cell": "disposition:transitions:SW01:18",
+          "changed_inputs": [
+            "plugins/ca-sandbox/skills/INDEX.md"
+          ],
+          "selected_current_observation": false
+        },
+        {
+          "cell": "disposition:transitions:SW01:19",
+          "changed_inputs": [
+            "plugins/ca-sandbox/skills/INDEX.md"
+          ],
+          "selected_current_observation": false
+        },
+        {
+          "cell": "disposition:transitions:SW01:20",
+          "changed_inputs": [
+            "plugins/ca-sandbox/skills/INDEX.md"
+          ],
+          "selected_current_observation": false
+        },
+        {
+          "cell": "disposition:transitions:SW01:21",
+          "changed_inputs": [
+            "plugins/ca-sandbox/skills/INDEX.md"
+          ],
+          "selected_current_observation": false
+        },
+        {
+          "cell": "disposition:transitions:SW01:22",
+          "changed_inputs": [
+            "plugins/ca-sandbox/skills/INDEX.md"
+          ],
+          "selected_current_observation": false
+        },
+        {
+          "cell": "disposition:transitions:SW01:23",
+          "changed_inputs": [
+            "plugins/ca-sandbox/skills/INDEX.md"
+          ],
+          "selected_current_observation": false
+        },
+        {
+          "cell": "disposition:transitions:SW01:24",
+          "changed_inputs": [
+            "plugins/ca-sandbox/skills/INDEX.md"
+          ],
+          "selected_current_observation": false
+        }
+      ],
+      "original_selectors_location": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json#commands / semantic_mapping / semantic_groups / original_named_results; original bytes retained, no old argv/source rewritten",
+      "disposition_count": 22
+    },
+    {
+      "proof": {
+        "path": "docs/state-contracts-major/execution/evidence/pi-committed51-45a6/isolation3-tested.json",
+        "sha256": "155786c392363c9a2a0e44bf0100e35d4ec047ece8d80c5a061b3b27305daddf",
+        "source_commit": "45a6a8e33db6c6143bbddc4bd009b7e7bac79207"
+      },
+      "producer_class": "local-host",
+      "kind": "test",
+      "records": [
+        {
+          "cell": "disposition:transitions:pi-qualification:disposable-home:01",
+          "changed_inputs": [
+            "plugins/ca-pi/extensions/codearbiter.js",
+            "plugins/ca-pi/tools/src/farm.ts",
+            "plugins/ca-pi/tools/test/farm.test.ts"
+          ],
+          "selected_current_observation": false
+        },
+        {
+          "cell": "disposition:transitions:pi-qualification:disposable-home:02",
+          "changed_inputs": [
+            "plugins/ca-pi/extensions/codearbiter.js",
+            "plugins/ca-pi/tools/src/farm.ts",
+            "plugins/ca-pi/tools/test/farm.test.ts"
+          ],
+          "selected_current_observation": false
+        },
+        {
+          "cell": "disposition:transitions:pi-qualification:disposable-home:03",
+          "changed_inputs": [
+            "plugins/ca-pi/extensions/codearbiter.js",
+            "plugins/ca-pi/tools/src/farm.ts",
+            "plugins/ca-pi/tools/test/farm.test.ts"
+          ],
+          "selected_current_observation": false
+        }
+      ],
+      "original_selectors_location": "docs/state-contracts-major/execution/evidence/pi-committed51-45a6/isolation3-tested.json#commands / semantic_mapping / semantic_groups / original_named_results; original bytes retained, no old argv/source rewritten",
+      "disposition_count": 3
+    },
+    {
+      "proof": {
+        "path": "docs/state-contracts-major/execution/evidence/publisher-b7a75-successor/publisher-introduced-edges.json",
+        "sha256": "e9018e61cf1056f5a130a3d5950a99186bc270fea4c86bf5e963b6b642f968d3",
+        "source_commit": "b7a75fcab005d9ab3c29618d59559da2edee3283"
+      },
+      "producer_class": "local-host",
+      "kind": "test",
+      "records": [
+        {
+          "cell": "disposition:added_transitions:S75:added-stage-failed",
+          "changed_inputs": [
+            "core/surface/commands/watch.md"
+          ],
+          "selected_current_observation": false
+        },
+        {
+          "cell": "disposition:added_transitions:S75:added-rolled-back",
+          "changed_inputs": [
+            "core/surface/commands/watch.md"
+          ],
+          "selected_current_observation": false
+        },
+        {
+          "cell": "disposition:added_transitions:S75:added-unusable",
+          "changed_inputs": [
+            "core/surface/commands/watch.md"
+          ],
+          "selected_current_observation": false
+        },
+        {
+          "cell": "disposition:added_transitions:S75:added-writer-refused",
+          "changed_inputs": [
+            "core/surface/commands/watch.md"
+          ],
+          "selected_current_observation": false
+        }
+      ],
+      "original_selectors_location": "docs/state-contracts-major/execution/evidence/publisher-b7a75-successor/publisher-introduced-edges.json#commands / semantic_mapping / semantic_groups / original_named_results; original bytes retained, no old argv/source rewritten",
+      "disposition_count": 4
+    },
+    {
+      "proof": {
+        "path": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/builder3-tested-successor.json",
+        "sha256": "48ad8c44b9f9130e4f1e8179b3d1b9bcb74c05f57449453f6f000adf9f22bf17",
+        "source_commit": "ef40ab5f33f4430a3650c225909801094acabbb4"
+      },
+      "producer_class": "local-host",
+      "kind": "test",
+      "records": [
+        {
+          "cell": "disposition:added_transitions:SBX-BUILD-OBSERVATION:01",
+          "changed_inputs": [
+            "plugins/ca-sandbox/tools/build.ts"
+          ],
+          "selected_current_observation": false
+        },
+        {
+          "cell": "disposition:added_transitions:SBX-BUILD-OBSERVATION:02",
+          "changed_inputs": [
+            "plugins/ca-sandbox/tools/build.ts"
+          ],
+          "selected_current_observation": false
+        },
+        {
+          "cell": "disposition:added_transitions:SBX-BUILD-OBSERVATION:03",
+          "changed_inputs": [
+            "plugins/ca-sandbox/tools/build.ts"
+          ],
+          "selected_current_observation": false
+        }
+      ],
+      "original_selectors_location": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/builder3-tested-successor.json#commands / semantic_mapping / semantic_groups / original_named_results; original bytes retained, no old argv/source rewritten",
+      "disposition_count": 3
+    },
+    {
+      "proof": {
+        "path": "docs/state-contracts-major/execution/evidence/p02-selected14-566375bb/integration-fixtures.json",
+        "sha256": "61ac94a056a435a065174863cc1040b35117e031bfd50dbcb4f42b2b330f94f8",
+        "source_commit": "566375bb5557e1c749a11b94eb1f6da58ee30136"
+      },
+      "producer_class": "local-host",
+      "kind": "test",
+      "records": [
+        {
+          "cell": "disposition:added_transitions:P02:added-stale-history",
+          "changed_inputs": [
+            ".github/scripts/check_state_contracts_integration.py",
+            ".github/scripts/major_readiness.py",
+            ".github/scripts/test_hook_ci_partition.py",
+            ".github/scripts/test_state_contracts_integration.py",
+            ".github/workflows/ci.yml"
+          ],
+          "selected_current_observation": false
+        },
+        {
+          "cell": "disposition:added_transitions:P02:added-unknown-input",
+          "changed_inputs": [
+            ".github/scripts/check_state_contracts_integration.py",
+            ".github/scripts/major_readiness.py",
+            ".github/scripts/test_hook_ci_partition.py",
+            ".github/scripts/test_state_contracts_integration.py",
+            ".github/workflows/ci.yml"
+          ],
+          "selected_current_observation": false
+        },
+        {
+          "cell": "disposition:added_transitions:P02:added-original-tamper",
+          "changed_inputs": [
+            ".github/scripts/check_state_contracts_integration.py",
+            ".github/scripts/major_readiness.py",
+            ".github/scripts/test_hook_ci_partition.py",
+            ".github/scripts/test_state_contracts_integration.py",
+            ".github/workflows/ci.yml"
+          ],
+          "selected_current_observation": false
+        },
+        {
+          "cell": "disposition:added_transitions:P02:added-frozen-anchor",
+          "changed_inputs": [
+            ".github/scripts/check_state_contracts_integration.py",
+            ".github/scripts/major_readiness.py",
+            ".github/scripts/test_hook_ci_partition.py",
+            ".github/scripts/test_state_contracts_integration.py",
+            ".github/workflows/ci.yml"
+          ],
+          "selected_current_observation": false
+        },
+        {
+          "cell": "disposition:added_transitions:P02:added-origin-mix",
+          "changed_inputs": [
+            ".github/scripts/check_state_contracts_integration.py",
+            ".github/scripts/major_readiness.py",
+            ".github/scripts/test_hook_ci_partition.py",
+            ".github/scripts/test_state_contracts_integration.py",
+            ".github/workflows/ci.yml"
+          ],
+          "selected_current_observation": false
+        },
+        {
+          "cell": "disposition:added_transitions:P02:added-selected-gate",
+          "changed_inputs": [
+            ".github/scripts/check_state_contracts_integration.py",
+            ".github/scripts/major_readiness.py",
+            ".github/scripts/test_hook_ci_partition.py",
+            ".github/scripts/test_state_contracts_integration.py",
+            ".github/workflows/ci.yml"
+          ],
+          "selected_current_observation": false
+        }
+      ],
+      "original_selectors_location": "docs/state-contracts-major/execution/evidence/p02-selected14-566375bb/integration-fixtures.json#commands / semantic_mapping / semantic_groups / original_named_results; original bytes retained, no old argv/source rewritten",
+      "disposition_count": 6
+    },
+    {
+      "proof": {
+        "path": "docs/state-contracts-major/execution/evidence/workflow-recovery-ce3a4a91/canonical-runtime.json",
+        "sha256": "1d5a538b2a62d7dc4cee5eb688804b40a35c5a4e27e6f376509df908f6865a63",
+        "source_commit": "ce3a4a91a3164e1b778e81d206ec76517633c518"
+      },
+      "producer_class": "local-host",
+      "kind": "test",
+      "records": [
+        {
+          "cell": "disposition:added_transitions:WR-01",
+          "changed_inputs": [
+            "core/pysrc/_bashguardlib.py",
+            "core/pysrc/_workgithub.py"
+          ],
+          "selected_current_observation": true
+        },
+        {
+          "cell": "disposition:added_transitions:WR-02",
+          "changed_inputs": [
+            "core/pysrc/_bashguardlib.py",
+            "core/pysrc/_workgithub.py"
+          ],
+          "selected_current_observation": true
+        },
+        {
+          "cell": "disposition:added_transitions:WR-03",
+          "changed_inputs": [
+            "core/pysrc/_bashguardlib.py",
+            "core/pysrc/_workgithub.py"
+          ],
+          "selected_current_observation": true
+        },
+        {
+          "cell": "disposition:added_transitions:WR-04",
+          "changed_inputs": [
+            "core/pysrc/_bashguardlib.py",
+            "core/pysrc/_workgithub.py"
+          ],
+          "selected_current_observation": true
+        },
+        {
+          "cell": "disposition:added_transitions:WR-05",
+          "changed_inputs": [
+            "core/pysrc/_bashguardlib.py",
+            "core/pysrc/_workgithub.py"
+          ],
+          "selected_current_observation": true
+        },
+        {
+          "cell": "disposition:added_transitions:WR-06",
+          "changed_inputs": [
+            "core/pysrc/_bashguardlib.py",
+            "core/pysrc/_workgithub.py"
+          ],
+          "selected_current_observation": true
+        },
+        {
+          "cell": "disposition:added_transitions:WR-07",
+          "changed_inputs": [
+            "core/pysrc/_bashguardlib.py",
+            "core/pysrc/_workgithub.py"
+          ],
+          "selected_current_observation": true
+        },
+        {
+          "cell": "disposition:added_transitions:WR-08",
+          "changed_inputs": [
+            "core/pysrc/_bashguardlib.py",
+            "core/pysrc/_workgithub.py"
+          ],
+          "selected_current_observation": true
+        },
+        {
+          "cell": "disposition:added_transitions:WR-09",
+          "changed_inputs": [
+            "core/pysrc/_bashguardlib.py",
+            "core/pysrc/_workgithub.py"
+          ],
+          "selected_current_observation": true
+        },
+        {
+          "cell": "disposition:added_transitions:WR-10",
+          "changed_inputs": [
+            "core/pysrc/_bashguardlib.py",
+            "core/pysrc/_workgithub.py"
+          ],
+          "selected_current_observation": true
+        },
+        {
+          "cell": "disposition:added_transitions:WR-11",
+          "changed_inputs": [
+            "core/pysrc/_bashguardlib.py",
+            "core/pysrc/_workgithub.py"
+          ],
+          "selected_current_observation": true
+        },
+        {
+          "cell": "disposition:added_transitions:WR-12",
+          "changed_inputs": [
+            "core/pysrc/_bashguardlib.py",
+            "core/pysrc/_workgithub.py"
+          ],
+          "selected_current_observation": true
+        },
+        {
+          "cell": "disposition:added_transitions:WR-13",
+          "changed_inputs": [
+            "core/pysrc/_bashguardlib.py",
+            "core/pysrc/_workgithub.py"
+          ],
+          "selected_current_observation": true
+        },
+        {
+          "cell": "disposition:added_transitions:WR-14",
+          "changed_inputs": [
+            "core/pysrc/_bashguardlib.py",
+            "core/pysrc/_workgithub.py"
+          ],
+          "selected_current_observation": true
+        },
+        {
+          "cell": "disposition:added_transitions:WR-15",
+          "changed_inputs": [
+            "core/pysrc/_bashguardlib.py",
+            "core/pysrc/_workgithub.py"
+          ],
+          "selected_current_observation": true
+        },
+        {
+          "cell": "disposition:added_transitions:WR-16",
+          "changed_inputs": [
+            "core/pysrc/_bashguardlib.py",
+            "core/pysrc/_workgithub.py"
+          ],
+          "selected_current_observation": true
+        },
+        {
+          "cell": "disposition:added_transitions:WR-17",
+          "changed_inputs": [
+            "core/pysrc/_bashguardlib.py",
+            "core/pysrc/_workgithub.py"
+          ],
+          "selected_current_observation": true
+        },
+        {
+          "cell": "disposition:added_transitions:WR-18",
+          "changed_inputs": [
+            "core/pysrc/_bashguardlib.py",
+            "core/pysrc/_workgithub.py"
+          ],
+          "selected_current_observation": true
+        },
+        {
+          "cell": "disposition:added_transitions:WR-19",
+          "changed_inputs": [
+            "core/pysrc/_bashguardlib.py",
+            "core/pysrc/_workgithub.py"
+          ],
+          "selected_current_observation": true
+        },
+        {
+          "cell": "disposition:added_transitions:WR-20",
+          "changed_inputs": [
+            "core/pysrc/_bashguardlib.py",
+            "core/pysrc/_workgithub.py"
+          ],
+          "selected_current_observation": true
+        },
+        {
+          "cell": "disposition:added_transitions:WR-21",
+          "changed_inputs": [
+            "core/pysrc/_bashguardlib.py",
+            "core/pysrc/_workgithub.py"
+          ],
+          "selected_current_observation": true
+        },
+        {
+          "cell": "disposition:added_transitions:WR-22",
+          "changed_inputs": [
+            "core/pysrc/_bashguardlib.py",
+            "core/pysrc/_workgithub.py"
+          ],
+          "selected_current_observation": true
+        }
+      ],
+      "original_selectors_location": "docs/state-contracts-major/execution/evidence/workflow-recovery-ce3a4a91/canonical-runtime.json#commands / semantic_mapping / semantic_groups / original_named_results; original bytes retained, no old argv/source rewritten",
+      "disposition_count": 22
+    }
+  ],
+  "overlap_note": "Group memberships may overlap; unique disposition identities determine totals."
+}

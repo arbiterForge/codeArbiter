@@ -1,0 +1,13 @@
+{
+  "state": "ACTUAL_CAPTURE_SEALED",
+  "owner": "benchmark",
+  "source_commit": "602ec619325b85e5b37e079fda9e3f6a3f327100",
+  "source_tree": "7a59ccbfee227490fce7a03ed69b521ab5066521",
+  "exit_code": 0,
+  "seconds": 4.1944246999919415,
+  "PASS": "original --samples100 benchmark",
+  "positive_inputs": 30,
+  "runtime_records": 10795,
+  "actual_imports": 14,
+  "HEAD_index_source_runtime_namespaces_stable": true
+}

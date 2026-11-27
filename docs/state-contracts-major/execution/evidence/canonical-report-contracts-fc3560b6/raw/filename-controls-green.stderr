@@ -1,0 +1,30 @@
+test_canonical_emit_archive_roundtrips_unchanged_exact_filename_reader (test_major_qualification_report.QualificationOutputFilenameTests.test_canonical_emit_archive_roundtrips_unchanged_exact_filename_reader) ... ok
+test_emit_refuses_noncanonical_report_names_before_metadata_or_write (test_major_qualification_report.QualificationOutputFilenameTests.test_emit_refuses_noncanonical_report_names_before_metadata_or_write) ... ok
+test_every_generic_ci_emit_upload_and_readback_uses_canonical_report_name (test_major_qualification_report.QualificationOutputFilenameTests.test_every_generic_ci_emit_upload_and_readback_uses_canonical_report_name) ... ok
+test_original_non_emit_operations_keep_arbitrary_output_filenames (test_major_qualification_report.QualificationOutputFilenameTests.test_original_non_emit_operations_keep_arbitrary_output_filenames) ... ok
+test_sdk_footer_preserves_original_suite_once_and_closed_owner_event_roles (test_ci_impact.SdkFooterSourceWorkflowTests.test_sdk_footer_preserves_original_suite_once_and_closed_owner_event_roles) ... ok
+test_sdk_report_merge_group_exemption_requires_exact_original_role (test_ci_impact.SdkFooterSourceWorkflowTests.test_sdk_report_merge_group_exemption_requires_exact_original_role) ... ERROR
+
+======================================================================
+ERROR: test_sdk_report_merge_group_exemption_requires_exact_original_role (test_ci_impact.SdkFooterSourceWorkflowTests.test_sdk_report_merge_group_exemption_requires_exact_original_role)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\brenn\AppData\Local\Temp\ca-canonical-qualification-filename-fix-l8hj69go\candidate\.github\scripts\test_ci_impact.py", line 5743, in test_sdk_report_merge_group_exemption_requires_exact_original_role
+    WorkflowContractTest("test_every_enforced_job_is_reachable_and_correctly_based_in_a_merge_group").test_every_enforced_job_is_reachable_and_correctly_based_in_a_merge_group()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\brenn\AppData\Local\Temp\ca-canonical-qualification-filename-fix-l8hj69go\candidate\.github\scripts\test_ci_impact.py", line 3073, in test_every_enforced_job_is_reachable_and_correctly_based_in_a_merge_group
+    source_guards = reviewed_python_source_event_guards(block) if job_id == "hooks" else set()
+                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
+  File "C:\Users\brenn\AppData\Local\Temp\ca-canonical-qualification-filename-fix-l8hj69go\candidate\.github\scripts\test_hook_ci_partition.py", line 223, in reviewed_python_source_event_guards
+    roles=python_source_roles(block)
+  File "C:\Users\brenn\AppData\Local\Temp\ca-canonical-qualification-filename-fix-l8hj69go\candidate\.github\scripts\test_hook_ci_partition.py", line 200, in python_source_roles
+    require(found[name]==[expected], 'Python source qualification role changed or repeated: '+name)
+    ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\brenn\AppData\Local\Temp\ca-canonical-qualification-filename-fix-l8hj69go\candidate\.github\scripts\test_hook_ci_partition.py", line 158, in require
+    raise ValueError(message)
+ValueError: Python source qualification role changed or repeated: Emit original Python source qualification report
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.127s
+
+FAILED (errors=1)

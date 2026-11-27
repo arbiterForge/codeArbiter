@@ -1,0 +1,333 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "ea9da763b33708c8533623568b7241eaaea0d153",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "/root/ci_repair_review: literal80-clause Release/CI current/pinned source inspection; no execution"
+ },
+ "inputs": {
+  ".codearbiter/decisions/0040-independent-per-target-release-with-consumer-safety-gates.md": "2dce2651ea067cc7bec25982ce23fdeb1528e9bfb003906c55be7e243a3a8964",
+  ".codearbiter/decisions/0043-assistive-state-engine.md": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+  ".codearbiter/decisions/0044-trusted-pi-npm-publication.md": "fda3c0194f83d41bcb169fae7c14d1b24bdaf3bace8d41780a88825e10fe30d6",
+  ".codearbiter/decisions/0049-require-https-outside-bounded-loopback.md": "c757cef9d5e318b75ff164d270b29a49255449360f0b7cde51e53775e6916ab8",
+  ".github/scripts/_contextverificationlib.py": "361b29a202f8ff3fe4f35c58a42d53cf77c4f8fe05985b1e91b721fc8f2a0707",
+  ".github/scripts/_npm_publishlib.py": "7ff29182306d065369610d83e7ecba8450a2444340d05580fb03f7afaccfae6a",
+  ".github/scripts/ci20_native_binding.py": "8a927974424c7c18d3e2e28db0173de07c65e2f1bb068e08dd11e14614284c3f",
+  ".github/workflows/ci.yml": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f",
+  "core/pysrc/_artifactmanifestlib.py": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054",
+  "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+  "tools/build-artifacts.py": "74f4d1a73dcee6731b8d6211d8c715f518d4582ad8083485519b0dafb9389db4",
+  "tools/build-host-packages.py": "c2c812bf93e81b69cbf62c133c569a6bce07a56e8fc0edbe501a22f9f60d2225"
+ },
+ "disposition_ids": [
+  "disposition:machines:C04",
+  "disposition:transitions:C04:01",
+  "disposition:transitions:C04:02",
+  "disposition:transitions:C04:04",
+  "disposition:transitions:C04:05",
+  "disposition:transitions:C04:06",
+  "disposition:transitions:C04:07"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/release-fourteen-source-ea9/source-bindings.json",
+   "sha256": "e0d46104538361ca98ef02148b9cc499edce928cdd83f1a936277f2a7a8e1425"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/release-fourteen-source-ea9/clause-inspection.json",
+   "sha256": "d838b0dd41af96e04fadb1d976401b69f67c12e69c7e2c4e5c01a1d1cfa61140"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:C04",
+   "frozen_row_sha256": "b95409eb58eabb6cdb075aecf157dd6840e000a6b850f0af5829cb3601eee5ee",
+   "clause_ids": [
+    "disposition:transitions:C04:01",
+    "disposition:transitions:C04:02",
+    "disposition:transitions:C04:03",
+    "disposition:transitions:C04:04",
+    "disposition:transitions:C04:05",
+    "disposition:transitions:C04:06",
+    "disposition:transitions:C04:07"
+   ],
+   "witnesses": [
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 709,
+     "end": 803,
+     "file_sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f",
+     "span_sha256": "e179a4265579647a605d14e5f32dfc58940bfaacabdfc319eeb289f17a924b5b"
+    },
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 610,
+     "end": 641,
+     "file_sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f",
+     "span_sha256": "f7b3f04996b19b8fac8220a9dcc47d79691f966cd6db51e1ff27095366c246e1"
+    },
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 1385,
+     "end": 1447,
+     "file_sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f",
+     "span_sha256": "da1ae78430a31b8346cd16bd3253944786022dfa0759b64837b35cab88e95c55"
+    },
+    {
+     "path": ".github/scripts/ci20_native_binding.py",
+     "start": 264,
+     "end": 276,
+     "file_sha256": "8a927974424c7c18d3e2e28db0173de07c65e2f1bb068e08dd11e14614284c3f",
+     "span_sha256": "ab93f6afce12a96752ff789217771c70690e94a20169e4032c735a70ae3e1d46"
+    },
+    {
+     "path": ".github/scripts/ci20_native_binding.py",
+     "start": 238,
+     "end": 261,
+     "file_sha256": "8a927974424c7c18d3e2e28db0173de07c65e2f1bb068e08dd11e14614284c3f",
+     "span_sha256": "516ade8dfbe4b8207dc731b9cd692f7594e6f762ff9b23cd8d300e7209d8fa30"
+    },
+    {
+     "path": "tools/build-artifacts.py",
+     "start": 40,
+     "end": 99,
+     "file_sha256": "74f4d1a73dcee6731b8d6211d8c715f518d4582ad8083485519b0dafb9389db4",
+     "span_sha256": "8fb633a1b587d943f2ccd9c17f2fe1c1d0b4b38c1543c35a19fd71d8d49d2cf4"
+    },
+    {
+     "path": "tools/build-artifacts.py",
+     "start": 116,
+     "end": 189,
+     "file_sha256": "74f4d1a73dcee6731b8d6211d8c715f518d4582ad8083485519b0dafb9389db4",
+     "span_sha256": "689450ff7436347b3fedb17c9493537d4266a28372fe802bad6ca14dda31fe7f"
+    },
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 633,
+     "end": 707,
+     "file_sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f",
+     "span_sha256": "ad1324bc0e27c6458a679879d7b5c2b6b92bcc034e894e0dc00585bf63d3c691"
+    },
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 1460,
+     "end": 1520,
+     "file_sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f",
+     "span_sha256": "502ae938007d53250cf1c014d56bd12491e2a736c55e78f7624fa136fb31cda9"
+    },
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 1594,
+     "end": 1614,
+     "file_sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f",
+     "span_sha256": "06e1b5afb1de2e63ad7f7c9c874c38282f33f46f70ea1241c873064e3c2f0566"
+    },
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 1616,
+     "end": 1671,
+     "file_sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f",
+     "span_sha256": "54c61947880db766130c6c81567b9a1016594094753a169d38af358d36a55832"
+    },
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 1697,
+     "end": 1821,
+     "file_sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f",
+     "span_sha256": "0bfd5fda857a83ea81b5f0f6cb18a0c6415534f4c59b8ca6df5af2b4f2485ddc"
+    },
+    {
+     "path": ".github/scripts/_npm_publishlib.py",
+     "start": 266,
+     "end": 298,
+     "file_sha256": "7ff29182306d065369610d83e7ecba8450a2444340d05580fb03f7afaccfae6a",
+     "span_sha256": "49dfc0223e76536e2ac56373e3f2398fb1eeb6adef5887e251a63223e38b1c1d"
+    },
+    {
+     "path": ".github/scripts/_npm_publishlib.py",
+     "start": 221,
+     "end": 334,
+     "file_sha256": "7ff29182306d065369610d83e7ecba8450a2444340d05580fb03f7afaccfae6a",
+     "span_sha256": "8d1d4d3cee2c10fc6a67eed19ad3ef0113cd5351ef630fadb970f3909fbeb2a6"
+    },
+    {
+     "path": "core/pysrc/_artifactmanifestlib.py",
+     "start": 24,
+     "end": 63,
+     "file_sha256": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054",
+     "span_sha256": "83195b16ca6388737e6fab773e2c42105470088deb16dfdf6e1723d580972829"
+    }
+   ],
+   "semantic_assessment": "Every literal clause is assessed in shared source inspection, including retained advanced rows. Current supported guards/effects/retry paths and named accepted repairs are mapped; analytical baseline defects/overstatements are not claimed preserved. Existing advanced N/A/status/evidence histories are untouched. No runtime or whole-task acceptance follows.",
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C04:01",
+   "frozen_row_sha256": "3da9b80e6bee16bfe75f09cd33825934cf4d0422563de9741811e17df84be96e",
+   "witnesses": [
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 709,
+     "end": 803,
+     "file_sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f",
+     "span_sha256": "e179a4265579647a605d14e5f32dfc58940bfaacabdfc319eeb289f17a924b5b"
+    }
+   ],
+   "semantic_assessment": "Six explicit native OS/architecture runners use pinned Go1.27.1 and Python3.14, run the producer unit, then build/test and stamp the exact candidate. Raw named outcomes and binding are retained with that candidate. A partial matrix is not the full cohort.",
+   "intake_variances": [],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C04:02",
+   "frozen_row_sha256": "391188a5c39fa3f16d61d1aef453ab7e6c032afa99a75871e16583f67608d11a",
+   "witnesses": [
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 610,
+     "end": 641,
+     "file_sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f",
+     "span_sha256": "f7b3f04996b19b8fac8220a9dcc47d79691f966cd6db51e1ff27095366c246e1"
+    },
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 1385,
+     "end": 1447,
+     "file_sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f",
+     "span_sha256": "da1ae78430a31b8346cd16bd3253944786022dfa0759b64837b35cab88e95c55"
+    }
+   ],
+   "semantic_assessment": "Native build/default/coverage/bridges/authority dependencies feed the issuer. Coverage requires native coverage success and invokes the statement summarizer with minimum70 and require-integration. Source wiring declares the population; no six-platform execution is claimed by this inspection.",
+   "intake_variances": [],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C04:04",
+   "frozen_row_sha256": "f9d49f81feb49601738f64dd79198a6e0472bdeb10c4fd6f6955fda4dfc2c627",
+   "witnesses": [
+    {
+     "path": ".github/scripts/ci20_native_binding.py",
+     "start": 238,
+     "end": 261,
+     "file_sha256": "8a927974424c7c18d3e2e28db0173de07c65e2f1bb068e08dd11e14614284c3f",
+     "span_sha256": "516ade8dfbe4b8207dc731b9cd692f7594e6f762ff9b23cd8d300e7209d8fa30"
+    },
+    {
+     "path": "tools/build-artifacts.py",
+     "start": 40,
+     "end": 99,
+     "file_sha256": "74f4d1a73dcee6731b8d6211d8c715f518d4582ad8083485519b0dafb9389db4",
+     "span_sha256": "8fb633a1b587d943f2ccd9c17f2fe1c1d0b4b38c1543c35a19fd71d8d49d2cf4"
+    },
+    {
+     "path": "tools/build-artifacts.py",
+     "start": 116,
+     "end": 189,
+     "file_sha256": "74f4d1a73dcee6731b8d6211d8c715f518d4582ad8083485519b0dafb9389db4",
+     "span_sha256": "689450ff7436347b3fedb17c9493537d4266a28372fe802bad6ca14dda31fe7f"
+    },
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 633,
+     "end": 707,
+     "file_sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f",
+     "span_sha256": "ad1324bc0e27c6458a679879d7b5c2b6b92bcc034e894e0dc00585bf63d3c691"
+    }
+   ],
+   "semantic_assessment": "Only the final issuer accepts exactly one tested and one context directory for each of six runners, then invokes qualification sequentially. Each receipt binds source/candidate/context observations; uploads follow the successful step, so earlier scratch receipts do not qualify a failed whole step.",
+   "intake_variances": [],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C04:05",
+   "frozen_row_sha256": "852995b746de96ee3481e66fe31e743e2bb2df9e9fd22e847abb2386d35a7e2b",
+   "witnesses": [
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 1460,
+     "end": 1520,
+     "file_sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f",
+     "span_sha256": "502ae938007d53250cf1c014d56bd12491e2a736c55e78f7624fa136fb31cda9"
+    },
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 1594,
+     "end": 1614,
+     "file_sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f",
+     "span_sha256": "06e1b5afb1de2e63ad7f7c9c874c38282f33f46f70ea1241c873064e3c2f0566"
+    }
+   ],
+   "semantic_assessment": "Assembly depends on successful engine qualification, requires exactly six platform receipts, builds the source/run-bound payload overlay, then builds/verifies normal host packages and uploads the cohort only on success.",
+   "intake_variances": [
+    "This is a source-level producer/DAG assertion, not a new build or archive-member observation."
+   ],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C04:06",
+   "frozen_row_sha256": "bc2daeb7f278d3268389e569cc883d45ba786ca5fa6903e5fe8dd8f07ee8ac8a",
+   "witnesses": [
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 1616,
+     "end": 1671,
+     "file_sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f",
+     "span_sha256": "54c61947880db766130c6c81567b9a1016594094753a169d38af358d36a55832"
+    },
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 1697,
+     "end": 1821,
+     "file_sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f",
+     "span_sha256": "0bfd5fda857a83ea81b5f0f6cb18a0c6415534f4c59b8ca6df5af2b4f2485ddc"
+    },
+    {
+     "path": ".github/scripts/_npm_publishlib.py",
+     "start": 266,
+     "end": 298,
+     "file_sha256": "7ff29182306d065369610d83e7ecba8450a2444340d05580fb03f7afaccfae6a",
+     "span_sha256": "49dfc0223e76536e2ac56373e3f2398fb1eeb6adef5887e251a63223e38b1c1d"
+    }
+   ],
+   "semantic_assessment": "Cold matrix names all six platforms. Same-head payload/package downloads feed each host proof; independent later Codex/Pi stages use !cancelled. Receipts upload only after that host succeeds. The observed Claude path preserves its original package authority and retains separate observations without treating failures as qualification.",
+   "intake_variances": [],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C04:07",
+   "frozen_row_sha256": "b442f1f3f42b863a9378a1048df0e6b6ee0c956ff5044b234a41eaf6542a31bf",
+   "witnesses": [
+    {
+     "path": ".github/scripts/_npm_publishlib.py",
+     "start": 221,
+     "end": 334,
+     "file_sha256": "7ff29182306d065369610d83e7ecba8450a2444340d05580fb03f7afaccfae6a",
+     "span_sha256": "8d1d4d3cee2c10fc6a67eed19ad3ef0113cd5351ef630fadb970f3909fbeb2a6"
+    },
+    {
+     "path": "core/pysrc/_artifactmanifestlib.py",
+     "start": 24,
+     "end": 63,
+     "file_sha256": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054",
+     "span_sha256": "83195b16ca6388737e6fab773e2c42105470088deb16dfdf6e1723d580972829"
+    }
+   ],
+   "semantic_assessment": "The publication verifier first checks the qualified package cohort, then exactly18 unique host/platform cold receipts. Closed fields bind source/workflow/run/promotion/package/manifest/binary and required installed-workflow outcomes; Pi synthetic-policy modes differ from Claude/Codex host-observed modes. Optional context qualification requires exact declared context proof fields.",
+   "intake_variances": [],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  }
+ ],
+ "scope": "Current source-only Release/CI preservation and explicit accepted repair deltas; no hosted/publication/account/installed qualification.",
+ "limits": [
+  "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification.",
+  "PROGRAM current source and accepted task direction govern. All frozen clauses remain literal; named accepted repairs/intake variances are explicit, not failed tests relabeled N/A.",
+  "No automatic task, runtime epoch, installed capability, actual hosted/platform, release/account or public-readback qualification follows from source PRESERVED.",
+  "Only14 selected machines and their48 still-PLANNED transitions are proposed; all32 advanced transitions and every other row/history remain untouched. C05-C10 are excluded.",
+  "No canonical/index/ref/marker/ledger/status/progress writes, runtime tests, provider/API/network calls, builds, installs or review fleet. Root owns independent review and strict prospective admission."
+ ]
+}

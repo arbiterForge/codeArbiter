@@ -1,0 +1,30 @@
+{
+  "schema": "codearbiter-introduced-transition-proposal/1",
+  "state": "PROPOSED_ONLY",
+  "source_commit": "2c62fc67ba7105e26f86f3ee8a87ae968c505854",
+  "transitions": [
+    {
+      "transition_id": "FARM-CLEANUP-OBSERVATION:01",
+      "owner": "farm",
+      "machine_id": "S30",
+      "task_ids": [
+        "FARM-R01"
+      ],
+      "contract": {
+        "from": "removal attempted; Git observation obtained",
+        "event": "filesystem observation fails",
+        "guard": "lstat failure other than genuine ENOENT; Git registration may be present or absent",
+        "to": "cleanup unverified",
+        "effects": "Return ok:false with bounded code-only diagnostic at current attempt. Do not prune or start another destructive removal; preserve unresolved ownership without claiming path presence or absence.",
+        "failure_retry": "No cleanup or author retry is authorized by unknown observation. Explicit recovery may obtain a new observation under its own owner."
+      },
+      "source": [
+        {
+          "path": "plugins/ca/tools/farm.ts",
+          "symbol": "observeWorktreePath/removeWorktreeVerified"
+        }
+      ],
+      "rationale": "Introduces a refusal for the old error-as-absence path; S30:05 known-present exhaustion remains unchanged."
+    }
+  ]
+}

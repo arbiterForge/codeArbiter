@@ -1,0 +1,33 @@
+{
+  "argv": [
+    "C:\\Python314\\python.exe",
+    "-I",
+    "-S",
+    "-B",
+    "-X",
+    "utf8",
+    "-c",
+    "import sys,unittest,shutil;sys.path.insert(0,'C:\\\\Users\\\\brenn\\\\.codex\\\\worktrees\\\\program-governance-prep\\\\codeArbiter\\\\.github\\\\scripts');print(\"actual_git=\"+str(shutil.which(\"git\")));r=unittest.TextTestRunner(verbosity=2).run(unittest.TestSuite(unittest.defaultTestLoader.loadTestsFromName(n) for n in ['test_release_workflow.ConsumerSafetyGateTest.test_pi_publish_refuses_a_different_workflow_commit', 'test_release_workflow.ReceiptShellBoundaryTest','test_release_workflow.BashDiscoveryTest']));sys.exit(not r.wasSuccessful())"
+  ],
+  "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
+  "controlled_existing_git_dir": "C:\\Program Files\\Git\\mingw64\\libexec\\git-core",
+  "environment_keys": [
+    "GIT_CONFIG_GLOBAL",
+    "GIT_CONFIG_NOSYSTEM",
+    "HOME",
+    "PATH",
+    "PYTHONDONTWRITEBYTECODE",
+    "PYTHONNOUSERSITE",
+    "SYSTEMROOT",
+    "TEMP",
+    "TMP",
+    "USERPROFILE",
+    "WINDIR"
+  ],
+  "source_sha256": "0e24dac61bdfd26e9ff3edb988333624acde9206ec47b2ee620f60860e4de82d",
+  "seconds": 10.343,
+  "exit_code": 0,
+  "stdout_sha256": "a463623b61f88332c9b8a3d60e59b0b54df2894981656fb7ce80cb53b3595280",
+  "stderr_sha256": "b56454d24fd4ef389ab42edad50cb838aae4f12b94785eb27633ad156666ae0c",
+  "scope": "5 original actual internal-Git/Bash methods plus4discovery methods; canonical alias equality and declared linked entrypoint included. Original hosted Git path unknown."
+}

@@ -1,0 +1,52 @@
+{
+  "source_M": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+  "source_tree": "d69fb1c0eb4b16672137e1185eb085339f13727d",
+  "event": "push",
+  "run_R": 43582198115,
+  "run_status_at_acquisition": "completed",
+  "run_conclusion_at_acquisition": "success",
+  "assembly_job_id": 132423292928,
+  "repository": "arbiterForge/codeArbiter",
+  "original_acquisition_sha256": "c4362438de5cc8f0f5b3b5d11d21691be6e37cd1f9e27d82491261421e8f2e0c",
+  "promotion_receipt_sha256": "a026e43fb2a74cfa8dcedf022db50f6cb46876a15556b318d3660f39d856d084",
+  "cohort_sha256": "9a73912786f525c6347539e73fc5f37644482bddefca8c0260ed4dda43f6ef01",
+  "pi_package": {
+    "file": "arbiterforge-ca-pi-0.30.0.tgz",
+    "version": "0.30.0",
+    "size": 16881535,
+    "sha256": "c52dfd6a2022edc6dfc90eab88ce6a8cd433d1fa61bbb8b31fe81166bfecb553"
+  },
+  "original_uploads": [
+    {
+      "directory": "stage",
+      "artifact_id": 14109699644,
+      "name": "artifact-host-payloads-46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+      "digest": "sha256:54cab0cc0f336c89f3a205b1522cb88cd640c88dc6389634daf9c32428191968",
+      "archive_sha256": "54cab0cc0f336c89f3a205b1522cb88cd640c88dc6389634daf9c32428191968",
+      "created_at": "2026-11-14T10:47:34Z",
+      "workflow_run": {
+        "id": 43582198115,
+        "repository_id": 1233366728,
+        "head_repository_id": 1233366728,
+        "head_branch": "major/state-contracts",
+        "head_sha": "46e29a796e89e0eaa3250cf171e4c9bea97ac437"
+      }
+    },
+    {
+      "directory": "packages",
+      "artifact_id": 14109784562,
+      "name": "artifact-release-packages-46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+      "digest": "sha256:d6f4d6a0f6e104c6c387f86ea78a36b6a2ff74d33e1dc4ac2459030a07baf22e",
+      "archive_sha256": "d6f4d6a0f6e104c6c387f86ea78a36b6a2ff74d33e1dc4ac2459030a07baf22e",
+      "created_at": "2026-11-14T10:48:08Z",
+      "workflow_run": {
+        "id": 43582198115,
+        "repository_id": 1233366728,
+        "head_repository_id": 1233366728,
+        "head_branch": "major/state-contracts",
+        "head_sha": "46e29a796e89e0eaa3250cf171e4c9bea97ac437"
+      }
+    }
+  ],
+  "authority": "Production cohort re-derived with unchanged require_production=True before effects; no publication/UI-consent authority."
+}

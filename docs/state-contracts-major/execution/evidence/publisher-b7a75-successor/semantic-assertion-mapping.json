@@ -1,0 +1,196 @@
+{
+  "source_commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
+  "state": "FRESH_ORIGINAL_EXECUTED_CHECKS",
+  "groups": [
+    {
+      "id": "disposition:transitions:S75:05",
+      "claim": "Changed candidate behavior stages the complete selected host set through publish_files after all renders/target checks; actual second-host render failure leaves first host old, foreign targets refuse, handwritten files survive. It does not preserve the frozen direct-write/no-transaction behavior.",
+      "selectors": [
+        {
+          "id": "__main__.GeneratedOutputTests.test_second_host_render_failure_has_no_first_host_effect",
+          "result": {
+            "id": "__main__.GeneratedOutputTests.test_second_host_render_failure_has_no_first_host_effect",
+            "status": "PASSED",
+            "seconds": 0.018501500017009676
+          },
+          "assertion_source": ".github/scripts/test_generated_output.py",
+          "line": 96,
+          "body_sha256_lf": "e281a426f91253fae5ac651f65108b7ae45466f88c4035ce0c85cb5a59c95316",
+          "body": "def test_second_host_render_failure_has_no_first_host_effect(self):\n        spec=importlib.util.spec_from_file_location('surface_fault',ROOT/'tools/build-surface.py')\n        module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)\n        hosts=[SimpleNamespace(name=n,plugin_dir=n) for n in ['one','two']]\n        target=self.root/'one/page';target.parent.mkdir();target.write_bytes(b'old')\n        with mock.patch.object(module,'load_host_descriptors',return_value=hosts), mock.patch.object(module,'_disk_files',return_value={'page'}), mock.patch.object(module,'render_all',side_effect=[{'page':b'new'},module.SurfaceError('late render')]):\n            with self.assertRaisesRegex(module.SurfaceError,'late render'):module.write_all(str(self.root))\n        self.assertEqual(target.read_bytes(),b'old')"
+        },
+        {
+          "id": "__main__.GeneratedOutputTests.test_foreign_target_refuses_and_handwritten_files_survive",
+          "result": {
+            "id": "__main__.GeneratedOutputTests.test_foreign_target_refuses_and_handwritten_files_survive",
+            "status": "PASSED",
+            "seconds": 0.01009689993225038
+          },
+          "assertion_source": ".github/scripts/test_generated_output.py",
+          "line": 50,
+          "body_sha256_lf": "afd0e97870144b33873c59e5ce9425d3125c6bd58faf2785cad58c4727fd1552",
+          "body": "def test_foreign_target_refuses_and_handwritten_files_survive(self):\n        with self.assertRaisesRegex(OSError,'escapes'): publish_files(self.root,'test',{self.root.parent/'foreign':b'bad'})\n        publish_files(self.root,'test',{self.a:b'new'})\n        self.assertEqual(self.b.read_bytes(),b'old-b')"
+        },
+        {
+          "id": "__main__.GeneratedOutputTests.test_contract_generator_rename_failure_preserves_importable_canonical_helper",
+          "result": {
+            "id": "__main__.GeneratedOutputTests.test_contract_generator_rename_failure_preserves_importable_canonical_helper",
+            "status": "PASSED",
+            "seconds": 0.02376640005968511
+          },
+          "assertion_source": ".github/scripts/test_generated_output.py",
+          "line": 69,
+          "body_sha256_lf": "f535ef5483191ea9bfa67be44ebcf681e9c9650c582bf87158953ae84faa8f34",
+          "body": "def test_contract_generator_rename_failure_preserves_importable_canonical_helper(self):\n        spec=importlib.util.spec_from_file_location('manifest_generator',ROOT/'tools/build-artifact-manifest-contract.py')\n        module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)\n        contract=self.root/'core/artifact-release-manifest.json';contract.parent.mkdir()\n        import json\n        value=json.loads((ROOT/'core/artifact-release-manifest.json').read_text(encoding='utf8'))\n        value['workflow']='changed-workflow';contract.write_text(json.dumps(value),encoding='utf8')\n        target=self.root/'core/pysrc/_artifactmanifestlib.py';target.parent.mkdir()\n        target.write_bytes((ROOT/'core/pysrc/_artifactmanifestlib.py').read_bytes())\n        previous=target.read_bytes()\n        real=os.replace\n        def fail(src,dst):\n            if Path(dst)==target:raise OSError('controlled contract rename failure')\n            return real(src,dst)\n        with mock.patch.object(module,'ROOT',self.root),mock.patch.object(sys,'argv',['generator']),mock.patch('os.replace',side_effect=fail):\n            with self.assertRaisesRegex(OSError,'controlled contract'):module.main()\n        self.assertEqual(target.read_bytes(),previous)\n        with mock.patch.object(module,'ROOT',self.root),mock.patch.object(sys,'argv',['generator']):\n            self.assertEqual(module.main(),0)\n        compile(target.read_bytes(),str(target),'exec')\n        self.assertNotEqual(target.read_bytes(),previous)"
+        }
+      ]
+    },
+    {
+      "id": "disposition:transitions:S75:08",
+      "claim": "Late prepublication or rename failure preserves/rolls back old complete bytes; clean retry converges. Rollback refusal retains unusable marker/journal and consumers refuse dependent generation. No full crash/powerloss atomicity claim.",
+      "selectors": [
+        {
+          "id": "__main__.GeneratedOutputTests.test_late_stage_failure_preserves_old_complete_set",
+          "result": {
+            "id": "__main__.GeneratedOutputTests.test_late_stage_failure_preserves_old_complete_set",
+            "status": "PASSED",
+            "seconds": 0.0036292000440880656
+          },
+          "assertion_source": ".github/scripts/test_generated_output.py",
+          "line": 21,
+          "body_sha256_lf": "f1704dc890da84c15fcc0e32bc6d812846195d69d0b663894ba7f98eba55989c",
+          "body": "def test_late_stage_failure_preserves_old_complete_set(self):\n        with self.assertRaises(TypeError): publish_files(self.root,'test',{self.a:b'new',self.b:None})\n        self.assertEqual(self.a.read_bytes(),b'old-a');self.assertEqual(self.b.read_bytes(),b'old-b')\n        assert_complete(self.root,'test')"
+        },
+        {
+          "id": "__main__.GeneratedOutputTests.test_late_rename_failure_rolls_back_and_clean_rerun_converges",
+          "result": {
+            "id": "__main__.GeneratedOutputTests.test_late_rename_failure_rolls_back_and_clean_rerun_converges",
+            "status": "PASSED",
+            "seconds": 0.02259760000742972
+          },
+          "assertion_source": ".github/scripts/test_generated_output.py",
+          "line": 25,
+          "body_sha256_lf": "8054e1d37ca02d2d7b3b9280556a452648b641f227801e80638d3698112eb6e8",
+          "body": "def test_late_rename_failure_rolls_back_and_clean_rerun_converges(self):\n        real=os.replace\n        def fail(src,dst):\n            if Path(dst)==self.b and str(src).endswith('.new'):raise OSError('controlled rename')\n            return real(src,dst)\n        with mock.patch('os.replace',side_effect=fail),self.assertRaisesRegex(OSError,'controlled'):\n            publish_files(self.root,'test',{self.a:b'new-a',self.b:b'new-b'})\n        self.assertEqual(self.a.read_bytes(),b'old-a');self.assertEqual(self.b.read_bytes(),b'old-b')\n        assert_complete(self.root,'test')\n        publish_files(self.root,'test',{self.a:b'new-a',self.b:b'new-b'})\n        self.assertEqual(self.a.read_bytes(),b'new-a');self.assertEqual(self.b.read_bytes(),b'new-b')"
+        },
+        {
+          "id": "__main__.GeneratedOutputTests.test_rollback_failure_retains_explicit_unusable_marker_and_journal",
+          "result": {
+            "id": "__main__.GeneratedOutputTests.test_rollback_failure_retains_explicit_unusable_marker_and_journal",
+            "status": "PASSED",
+            "seconds": 0.011220300104469061
+          },
+          "assertion_source": ".github/scripts/test_generated_output.py",
+          "line": 36,
+          "body_sha256_lf": "65f447bf0b25dc666f7e0621f8a517119b1e7d57dc585f5cb6d7ffdb9759c8e1",
+          "body": "def test_rollback_failure_retains_explicit_unusable_marker_and_journal(self):\n        real=os.replace\n        def fail(src,dst):\n            if Path(dst)==self.b or Path(src).name=='rollback':raise OSError('controlled recovery failure')\n            return real(src,dst)\n        with mock.patch('os.replace',side_effect=fail),self.assertRaises(OSError):\n            publish_files(self.root,'test',{self.a:b'new-a',self.b:b'new-b'})\n        with self.assertRaisesRegex(OSError,'incomplete'): assert_complete(self.root,'test')\n        journal=Path((self.root/'.generated-test.lock').read_text())\n        self.assertTrue((journal/'journal.json').is_file())"
+        },
+        {
+          "id": "__main__.GeneratedOutputTests.test_consumers_refuse_any_pending_contract_publication",
+          "result": {
+            "id": "__main__.GeneratedOutputTests.test_consumers_refuse_any_pending_contract_publication",
+            "status": "PASSED",
+            "seconds": 0.0016272999346256256
+          },
+          "assertion_source": ".github/scripts/test_generated_output.py",
+          "line": 91,
+          "body_sha256_lf": "efae82497011ee4d4b5d773e0546c0a249d57be9f658e76c41b79896e505265d",
+          "body": "def test_consumers_refuse_any_pending_contract_publication(self):\n        (self.root/'.generated-artifact-manifest-contract.lock').write_text('interrupted')\n        for consumer in ['core','surface']:\n            with self.assertRaisesRegex(OSError,'incomplete'):assert_complete(self.root,consumer)"
+        }
+      ]
+    },
+    {
+      "id": "disposition:added_transitions:S75:added-stage-failed",
+      "claim": "Invalid late staged data raises before replacing either old target.",
+      "selectors": [
+        {
+          "id": "__main__.GeneratedOutputTests.test_late_stage_failure_preserves_old_complete_set",
+          "result": {
+            "id": "__main__.GeneratedOutputTests.test_late_stage_failure_preserves_old_complete_set",
+            "status": "PASSED",
+            "seconds": 0.0036292000440880656
+          },
+          "assertion_source": ".github/scripts/test_generated_output.py",
+          "line": 21,
+          "body_sha256_lf": "f1704dc890da84c15fcc0e32bc6d812846195d69d0b663894ba7f98eba55989c",
+          "body": "def test_late_stage_failure_preserves_old_complete_set(self):\n        with self.assertRaises(TypeError): publish_files(self.root,'test',{self.a:b'new',self.b:None})\n        self.assertEqual(self.a.read_bytes(),b'old-a');self.assertEqual(self.b.read_bytes(),b'old-b')\n        assert_complete(self.root,'test')"
+        }
+      ]
+    },
+    {
+      "id": "disposition:added_transitions:S75:added-rolled-back",
+      "claim": "Injected late rename failure restores both old files; rerun replaces with exact intended bytes.",
+      "selectors": [
+        {
+          "id": "__main__.GeneratedOutputTests.test_late_rename_failure_rolls_back_and_clean_rerun_converges",
+          "result": {
+            "id": "__main__.GeneratedOutputTests.test_late_rename_failure_rolls_back_and_clean_rerun_converges",
+            "status": "PASSED",
+            "seconds": 0.02259760000742972
+          },
+          "assertion_source": ".github/scripts/test_generated_output.py",
+          "line": 25,
+          "body_sha256_lf": "8054e1d37ca02d2d7b3b9280556a452648b641f227801e80638d3698112eb6e8",
+          "body": "def test_late_rename_failure_rolls_back_and_clean_rerun_converges(self):\n        real=os.replace\n        def fail(src,dst):\n            if Path(dst)==self.b and str(src).endswith('.new'):raise OSError('controlled rename')\n            return real(src,dst)\n        with mock.patch('os.replace',side_effect=fail),self.assertRaisesRegex(OSError,'controlled'):\n            publish_files(self.root,'test',{self.a:b'new-a',self.b:b'new-b'})\n        self.assertEqual(self.a.read_bytes(),b'old-a');self.assertEqual(self.b.read_bytes(),b'old-b')\n        assert_complete(self.root,'test')\n        publish_files(self.root,'test',{self.a:b'new-a',self.b:b'new-b'})\n        self.assertEqual(self.a.read_bytes(),b'new-a');self.assertEqual(self.b.read_bytes(),b'new-b')"
+        }
+      ]
+    },
+    {
+      "id": "disposition:added_transitions:S75:added-unusable",
+      "claim": "Injected rollback failure leaves explicit incomplete marker and recoverable journal; dependent core/surface consumers refuse incomplete publication.",
+      "selectors": [
+        {
+          "id": "__main__.GeneratedOutputTests.test_rollback_failure_retains_explicit_unusable_marker_and_journal",
+          "result": {
+            "id": "__main__.GeneratedOutputTests.test_rollback_failure_retains_explicit_unusable_marker_and_journal",
+            "status": "PASSED",
+            "seconds": 0.011220300104469061
+          },
+          "assertion_source": ".github/scripts/test_generated_output.py",
+          "line": 36,
+          "body_sha256_lf": "65f447bf0b25dc666f7e0621f8a517119b1e7d57dc585f5cb6d7ffdb9759c8e1",
+          "body": "def test_rollback_failure_retains_explicit_unusable_marker_and_journal(self):\n        real=os.replace\n        def fail(src,dst):\n            if Path(dst)==self.b or Path(src).name=='rollback':raise OSError('controlled recovery failure')\n            return real(src,dst)\n        with mock.patch('os.replace',side_effect=fail),self.assertRaises(OSError):\n            publish_files(self.root,'test',{self.a:b'new-a',self.b:b'new-b'})\n        with self.assertRaisesRegex(OSError,'incomplete'): assert_complete(self.root,'test')\n        journal=Path((self.root/'.generated-test.lock').read_text())\n        self.assertTrue((journal/'journal.json').is_file())"
+        },
+        {
+          "id": "__main__.GeneratedOutputTests.test_consumers_refuse_any_pending_contract_publication",
+          "result": {
+            "id": "__main__.GeneratedOutputTests.test_consumers_refuse_any_pending_contract_publication",
+            "status": "PASSED",
+            "seconds": 0.0016272999346256256
+          },
+          "assertion_source": ".github/scripts/test_generated_output.py",
+          "line": 91,
+          "body_sha256_lf": "efae82497011ee4d4b5d773e0546c0a249d57be9f658e76c41b79896e505265d",
+          "body": "def test_consumers_refuse_any_pending_contract_publication(self):\n        (self.root/'.generated-artifact-manifest-contract.lock').write_text('interrupted')\n        for consumer in ['core','surface']:\n            with self.assertRaisesRegex(OSError,'incomplete'):assert_complete(self.root,consumer)"
+        }
+      ]
+    },
+    {
+      "id": "disposition:added_transitions:S75:added-writer-refused",
+      "claim": "Existing other-writer lock causes FileExistsError, retains its exact marker and old target bytes.",
+      "selectors": [
+        {
+          "id": "__main__.GeneratedOutputTests.test_concurrent_writer_refuses_without_deleting_other_marker",
+          "result": {
+            "id": "__main__.GeneratedOutputTests.test_concurrent_writer_refuses_without_deleting_other_marker",
+            "status": "PASSED",
+            "seconds": 0.009274399955756962
+          },
+          "assertion_source": ".github/scripts/test_generated_output.py",
+          "line": 46,
+          "body_sha256_lf": "dad340287c61d74cde4d065296e3b070f9fc694c72b1720961f43a76269fe0a8",
+          "body": "def test_concurrent_writer_refuses_without_deleting_other_marker(self):\n        marker=self.root/'.generated-test.lock';marker.write_text('other owner')\n        with self.assertRaises(FileExistsError): publish_files(self.root,'test',{self.a:b'new'})\n        self.assertEqual(marker.read_text(),'other owner');self.assertEqual(self.a.read_bytes(),b'old-a')"
+        }
+      ]
+    }
+  ],
+  "production_call_chain": {
+    "tools/build-surface.py:1272..1295": "All selected hosts render and target validation completes before one publish_files call; same-file equal bytes skipped, owned removals passed in same set.",
+    "tools/owned_output.py:publish_files": "Exclusive marker, fully rendered bytes, staging/before-images, journal, revalidation at effect boundary, rollback or retained incomplete state.",
+    "tools/build-artifact-manifest-contract.py:main": "Canonical generated helper is parsed then published via same publisher."
+  },
+  "limits": [
+    "Surface render_all is intentionally replaced by the unchanged owning fault fixture; this proves publisher sequencing, not complete newly rendered prose/content correctness.",
+    "All9 owning tests executed fresh at b7a75 on Windows; no Linux/macOS or production package/cohort qualification.",
+    "No all-gen.ts/sync/Academy/globaltransaction or power-loss durability claim."
+  ]
+}

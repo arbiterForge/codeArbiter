@@ -1,0 +1,64 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "/root/packaging_site_tools: bounded remaining-only immutable source-clause guard/effect/retry inspection after9ab"
+  },
+  "inputs": {
+    ".github/scripts/pi_evidence.py": "f6cac74021dea801c76482362d755dd89a8b4787a2a5198c0f0fc60af23d1652",
+    ".github/scripts/verify_pi_support.py": "31138076affccbb4b9a9b8c1dedf2663eafe63840ae06b969ab68999ed0106ee",
+    "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+    "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+    "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e"
+  },
+  "disposition_ids": [
+    "disposition:transitions:C27:01"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/inspection.json",
+      "sha256": "7bdf6363096e657456b22553f28e1557073f264a2bfa36e0b57706e275b8d4f7"
+    }
+  ],
+  "scope": "Strict builder shape/population and exact rendering only. Imported supported parameter changes1.1.0->1.5.0; strict_promotion/render function ASTs identical and actual bodies inspected. Supplied commit still not authenticated against fetched job heads by this builder; real host/provenance remains separate.",
+  "semantic_mapping": [
+    {
+      "cell": "disposition:transitions:C27:01",
+      "witnesses": [
+        {
+          "path": ".github/scripts/pi_evidence.py",
+          "start": 50,
+          "end": 95,
+          "file_sha256": "f6cac74021dea801c76482362d755dd89a8b4787a2a5198c0f0fc60af23d1652"
+        },
+        {
+          "path": ".github/scripts/pi_evidence.py",
+          "start": 102,
+          "end": 145,
+          "file_sha256": "f6cac74021dea801c76482362d755dd89a8b4787a2a5198c0f0fc60af23d1652"
+        },
+        {
+          "path": ".github/scripts/verify_pi_support.py",
+          "start": 95,
+          "end": 198,
+          "file_sha256": "31138076affccbb4b9a9b8c1dedf2663eafe63840ae06b969ab68999ed0106ee"
+        },
+        {
+          "path": ".github/scripts/verify_pi_support.py",
+          "start": 201,
+          "end": 228,
+          "file_sha256": "31138076affccbb4b9a9b8c1dedf2663eafe63840ae06b969ab68999ed0106ee"
+        }
+      ],
+      "semantic_assessment": "Builder collects green matching hosted adapter rows and successful CodeQL durations, joins caller-supplied local/canary measurements and commit, then calls strict shape/exact-population validator before JSON and exact Markdown rendering. Current imported supported window1.5.0 is a parameter change; validators/render functions are unchanged.",
+      "limits": "No original job-source/commit authentication by builder, no real CI/API/local measurement or Pi promotion claim. Separate final verifier owns commit/job binding; writes are ordered, not atomic pair.",
+      "frozen_row_sha256": "9093251eab3dfcec0bcebce0a3ddda5d43dde255ac44923ebef0d410818b867d",
+      "scope": "SOURCE_CLAUSE_ONLY"
+    }
+  ],
+  "dependency_boundary": "Strict builder shape/population and exact rendering only. Imported supported parameter changes1.1.0->1.5.0; strict_promotion/render function ASTs identical and actual bodies inspected. Supplied commit still not authenticated against fetched job heads by this builder; real host/provenance remains separate.",
+  "excluded_cells": []
+}

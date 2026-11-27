@@ -1,0 +1,52 @@
+{
+  "argv": [
+    "C:/Python314/python.exe",
+    "-B",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-c33-ten-local-M-iuj03a43\\run-selected.py",
+    "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-c33-ten-local-M-iuj03a43"
+  ],
+  "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
+  "environment": {
+    "COMSPEC": "C:\\WINDOWS\\system32\\cmd.exe",
+    "PATHEXT": ".COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH;.MSC;.PY;.PYW;.CPL",
+    "SYSTEMDRIVE": "C:",
+    "SYSTEMROOT": "C:\\WINDOWS",
+    "WINDIR": "C:\\WINDOWS",
+    "PATH": "C:/Python314;C:/Program Files/Git/cmd;C:/Windows/System32",
+    "HOME": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-c33-ten-local-M-iuj03a43\\private-home",
+    "USERPROFILE": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-c33-ten-local-M-iuj03a43\\private-home",
+    "HOMEDRIVE": "C:",
+    "HOMEPATH": "\\Users\\brenn\\AppData\\Local\\Temp\\ca-c33-ten-local-M-iuj03a43\\private-home",
+    "APPDATA": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-c33-ten-local-M-iuj03a43\\private-home\\AppData\\Roaming",
+    "LOCALAPPDATA": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-c33-ten-local-M-iuj03a43\\private-home\\AppData\\Local",
+    "XDG_CONFIG_HOME": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-c33-ten-local-M-iuj03a43\\private-home\\.config",
+    "XDG_CACHE_HOME": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-c33-ten-local-M-iuj03a43\\private-home\\.cache",
+    "TMP": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-c33-ten-local-M-iuj03a43\\fixtures",
+    "TEMP": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-c33-ten-local-M-iuj03a43\\fixtures",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONUTF8": "1",
+    "PYTHONPYCACHEPREFIX": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-c33-ten-local-M-iuj03a43\\private-home\\.pycache",
+    "GIT_CONFIG_NOSYSTEM": "1",
+    "GIT_CONFIG_SYSTEM": "nul",
+    "GIT_CONFIG_GLOBAL": "nul"
+  },
+  "python_sha256": "03168c01b7b7491423350e82c26fee71f35b43694d1319d3c668bda6903a0c38",
+  "git_sha256": "7b7971dd13f0c3a284e538601f2f9770b3a87dfaccb5fb52d68141c67ed22364",
+  "observer_sha256": "f463be295c4544ecd0a209c4f8ee41d793725d5d969eb68005578cf9434413b5",
+  "source_commit": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+  "selected_methods": [
+    "CheckFailureModeTest.test_fresh_document_passes",
+    "MainCLITest.test_the_cli_passing_path_returns_zero_against_a_current_proof",
+    "CheckFailureModeTest.test_proof_current_false",
+    "CheckFailureModeTest.test_recorded_path_is_not_a_rendered_payload",
+    "CheckFailureModeTest.test_hash_mismatch",
+    "MainCLITest.test_the_cli_reports_a_withdrawn_proof_distinctly_from_a_stale_hash",
+    "CheckLiveRepoTest.test_the_live_artifact_still_fails_when_the_recorded_hash_is_wrong",
+    "PayloadDerivationTest.test_composed_commands_do_not_become_independent_owner_proof",
+    "PayloadDerivationTest.test_derives_exactly_the_three_full_prose_payloads_on_live_repo",
+    "CheckLiveRepoTest.test_historical_hash_map_is_bound_to_its_own_exercise"
+  ],
+  "started_at": "2026-11-14T10:49:52.445947+00:00",
+  "scope": "Exactly10 existing Python methods; imports/read effects only in Gov, all writable test artifacts in private Temp; no native/release build or invocation."
+}

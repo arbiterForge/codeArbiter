@@ -1,0 +1,309 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "0830b95752a05343563be027e513a2845a6c57df",
+  "inputs": {
+    "plugins/ca-pi/tools/src/audit-sink.ts": "505f118926fc741081de0dff584463d05d0378563d0df80f1d5db0dd64c4d1d0",
+    "plugins/ca-pi/tools/src/path-boundary.ts": "1cee1fe111e84b87930e58833e7ad6e749e2f12a966367dddb321c9f81801d1e",
+    "plugins/ca-pi/tools/src/tool-guard.ts": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141",
+    "plugins/ca-pi/tools/src/policy.ts": "87950047f3d721b15a08bae83b1212d368367f3c332488611073050c0bc77676",
+    "plugins/ca-pi/tools/src/contracts.ts": "6e1e8b96c95fc9d7dc392817795c7fdbc1d1400c3a2837fb1fd4476cbd8ce928",
+    "plugins/ca-pi/tools/src/redaction.ts": "661a80a80cf818ddc7e8c088d7ede3ccd4e5e1a572c9b799e2e5aa3e61ab6742",
+    "plugins/ca/tools/redactor.ts": "ef6344cdbb5578e525173852e08e2b410a02238a622e548488daff48b9e30f03",
+    "plugins/ca-pi/tools/test/audit-sink.test.ts": "2cb576607d0af8b1489f7814e5171f11e714db13737e604bb5ccbb30ec96f808",
+    "plugins/ca-pi/tools/test/tool-guard.test.ts": "55d73f2ebadfaa034584309a1cd04aacd7559320c4b2e752bfbc8d1ac53e64db",
+    "plugins/ca-pi/tools/test/setup-disposable-home.ts": "768c65b5a03877e16ba9a81f758ccaf8173f28363573aafcd85dab1cc4be6e53",
+    "plugins/ca-pi/tools/vitest.config.ts": "bea41c8f465ce1a6f78de62b8a85e560ee03214c6ede6ee5309f1600f8222e9d",
+    "plugins/ca/hooks/secret-detection-corpus.json": "3c13059896890da1ecc5c55dde0460877ddee96bcc2c6ec256bb3235495bc88d"
+  },
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "/root/pi_program fresh complete finiteS16 six-row audit source/approval-dependency inspection with exact historical component support separately retained"
+  },
+  "disposition_ids": [
+    "disposition:transitions:S16:01",
+    "disposition:transitions:S16:02",
+    "disposition:transitions:S16:03",
+    "disposition:transitions:S16:04",
+    "disposition:transitions:S16:05",
+    "disposition:transitions:S16:06",
+    "disposition:machines:S16"
+  ],
+  "semantic_mapping": [
+    {
+      "cell": "disposition:transitions:S16:01",
+      "proposed_status": "PRESERVED",
+      "frozen_clause": {
+        "event": "append row",
+        "guard": "redacted one-line row \u22642,048 bytes; canonical trusted directory",
+        "to": "opened",
+        "effects": "Open existing regular single-link target or exclusive-create new target.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "plugins/ca-pi/tools/src/audit-sink.ts",
+            "symbol": "append audit row",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/audit-sink.ts",
+            "lines": "1-187"
+          }
+        ],
+        "from": "unopened",
+        "transition_id": "S16:01"
+      },
+      "contract_sha256": "b9a400decb8f05e2ec5ce411528c835e8b3d1d0aa243ef8746c748b623b73171",
+      "inspected_source_clauses": "Already-redacted row is a caller precondition; sink checks UTF8 bytes<=2048 and exactly one terminal LF/no embedded LF. Canonical state directory must remain real/in-root/same identity. Open existing regular single-link file with available O_NOFOLLOW, or exclusive-create new file. Permission caller emits only closed command-free enum/hash fields.",
+      "witnesses": [
+        {
+          "path": "plugins/ca-pi/tools/src/audit-sink.ts",
+          "start": 80,
+          "end": 119,
+          "file_sha256": "505f118926fc741081de0dff584463d05d0378563d0df80f1d5db0dd64c4d1d0"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/audit-sink.ts",
+          "start": 128,
+          "end": 152,
+          "file_sha256": "505f118926fc741081de0dff584463d05d0378563d0df80f1d5db0dd64c4d1d0"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+          "start": 250,
+          "end": 279,
+          "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+        }
+      ],
+      "component_support_selectors": [
+        "vitest:plugins/ca-pi/tools/test/audit-sink.test.ts:Pi audit sink race cases rejects a line that is unbounded, unterminated, or carries an embedded newline",
+        "vitest:plugins/ca-pi/tools/test/audit-sink.test.ts:Pi audit sink race cases rejects an opened handle whose identity is not the validated path"
+      ],
+      "limits": "Source conformance, not fresh runtime. Empty selector list denotes source-only branch; existing actual component support uses injected IO/permission fixtures with stated scope, no public parent TUI or complete platform/power-loss proof."
+    },
+    {
+      "cell": "disposition:transitions:S16:02",
+      "proposed_status": "PRESERVED",
+      "frozen_clause": {
+        "event": "create races existing file",
+        "guard": "EEXIST on create",
+        "to": "opened or refused",
+        "effects": "Retry once through existing-file validation.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "plugins/ca-pi/tools/src/audit-sink.ts",
+            "symbol": "append audit row",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/audit-sink.ts",
+            "lines": "1-187"
+          }
+        ],
+        "from": "unopened",
+        "transition_id": "S16:02"
+      },
+      "contract_sha256": "261bd36108d77a14400672cd343b7eb52466dc9775595015b4919332077771aa",
+      "inspected_source_clauses": "openedAuditTarget loops at most2 attempts. Only first exclusive-create EEXIST with previously absent target retries; second iteration freshly lstats and validates the now-existing regular/single-link target. Every other create/open error refuses. Hardlink race is rejected on fresh link validation, no sentinel write.",
+      "witnesses": [
+        {
+          "path": "plugins/ca-pi/tools/src/audit-sink.ts",
+          "start": 80,
+          "end": 123,
+          "file_sha256": "505f118926fc741081de0dff584463d05d0378563d0df80f1d5db0dd64c4d1d0"
+        }
+      ],
+      "component_support_selectors": [
+        "vitest:plugins/ca-pi/tools/test/audit-sink.test.ts:Pi audit sink race cases rejects a hardlink raced into an absent target"
+      ],
+      "limits": "Source conformance, not fresh runtime. Empty selector list denotes source-only branch; existing actual component support uses injected IO/permission fixtures with stated scope, no public parent TUI or complete platform/power-loss proof."
+    },
+    {
+      "cell": "disposition:transitions:S16:03",
+      "proposed_status": "PRESERVED",
+      "frozen_clause": {
+        "event": "append",
+        "guard": "same inode/path/link identity before write",
+        "to": "appending",
+        "effects": "Append bytes, fsync, verify size and file/path identity after write.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "plugins/ca-pi/tools/src/audit-sink.ts",
+            "symbol": "append audit row",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/audit-sink.ts",
+            "lines": "1-187"
+          }
+        ],
+        "from": "opened",
+        "transition_id": "S16:03"
+      },
+      "contract_sha256": "17e651c5678c74816a6c67f675aa09280b94f4f1e9b69cf879b7bcdf642beb37",
+      "inspected_source_clauses": "Handle/path/file identity and current state-directory identity are compared before append; appendFile then sync precede post-write fstat/lstat. Post condition requires same device/inode, regular/nonlinked/single-link and minimum size growth by own row bytes; it permits other concurrent appends, not exclusive-writer/exact-size attestation.",
+      "witnesses": [
+        {
+          "path": "plugins/ca-pi/tools/src/audit-sink.ts",
+          "start": 67,
+          "end": 78,
+          "file_sha256": "505f118926fc741081de0dff584463d05d0378563d0df80f1d5db0dd64c4d1d0"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/audit-sink.ts",
+          "start": 153,
+          "end": 168,
+          "file_sha256": "505f118926fc741081de0dff584463d05d0378563d0df80f1d5db0dd64c4d1d0"
+        }
+      ],
+      "component_support_selectors": [
+        "vitest:plugins/ca-pi/tools/test/audit-sink.test.ts:Pi audit sink race cases rejects a target swapped between validation and open",
+        "vitest:plugins/ca-pi/tools/test/audit-sink.test.ts:Pi audit sink race cases rejects an opened handle whose identity is not the validated path",
+        "vitest:plugins/ca-pi/tools/test/audit-sink.test.ts:Pi audit sink race cases rejects a target swapped after the append"
+      ],
+      "limits": "Source conformance, not fresh runtime. Empty selector list denotes source-only branch; existing actual component support uses injected IO/permission fixtures with stated scope, no public parent TUI or complete platform/power-loss proof."
+    },
+    {
+      "cell": "disposition:transitions:S16:04",
+      "proposed_status": "PRESERVED",
+      "frozen_clause": {
+        "event": "post-write checks pass",
+        "guard": "expected append size/identity",
+        "to": "durable",
+        "effects": "Return true to caller.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "plugins/ca-pi/tools/src/audit-sink.ts",
+            "symbol": "append audit row",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/audit-sink.ts",
+            "lines": "1-187"
+          }
+        ],
+        "from": "appending",
+        "transition_id": "S16:04"
+      },
+      "contract_sha256": "0203b9ca215cc9940ddcbd5605af264658e5d35f88b032cf831db40dad865c5a",
+      "inspected_source_clauses": "Return true occurs only after append,sync,post-write identity/minimum-size/current-directory checks and successful handle close. This is source-defined durable append result under ordinary filesystem semantics, not a new power-loss/directory-fsync/platform guarantee.",
+      "witnesses": [
+        {
+          "path": "plugins/ca-pi/tools/src/audit-sink.ts",
+          "start": 153,
+          "end": 170,
+          "file_sha256": "505f118926fc741081de0dff584463d05d0378563d0df80f1d5db0dd64c4d1d0"
+        }
+      ],
+      "component_support_selectors": [],
+      "limits": "Source conformance, not fresh runtime. Empty selector list denotes source-only branch; existing actual component support uses injected IO/permission fixtures with stated scope, no public parent TUI or complete platform/power-loss proof."
+    },
+    {
+      "cell": "disposition:transitions:S16:05",
+      "proposed_status": "PRESERVED",
+      "frozen_clause": {
+        "event": "fsync/post-write check fails",
+        "guard": "bytes may already exist",
+        "to": "unverified append",
+        "effects": "Return false.",
+        "failure_retry": "False is not proof that no row was written. Approved permission audit false blocks tool mutation; less critical audit callers are best effort.",
+        "source": [
+          {
+            "path": "plugins/ca-pi/tools/src/audit-sink.ts",
+            "symbol": "append audit row",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/audit-sink.ts",
+            "lines": "1-187"
+          }
+        ],
+        "from": "appending",
+        "transition_id": "S16:05"
+      },
+      "contract_sha256": "f0b6b00a57ef34777c215ef8ddd91094db1348d14829f44f7da15040bb2cb509",
+      "inspected_source_clauses": "sync/post-write/close failure falls to false after bytes may already have been appended; no rollback or no-bytes claim. wrapBuiltins requires true from audit(approved) before executeOriginal, then revalidates again. Best-effort read/inspection audit failure does not manufacture a mutation.",
+      "witnesses": [
+        {
+          "path": "plugins/ca-pi/tools/src/audit-sink.ts",
+          "start": 158,
+          "end": 170,
+          "file_sha256": "505f118926fc741081de0dff584463d05d0378563d0df80f1d5db0dd64c4d1d0"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+          "start": 649,
+          "end": 661,
+          "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+        }
+      ],
+      "component_support_selectors": [
+        "vitest:plugins/ca-pi/tools/test/audit-sink.test.ts:Pi audit sink race cases rejects a target swapped after the append",
+        "vitest:plugins/ca-pi/tools/test/tool-guard.test.ts:Pi final-wrapper permission decision denies missing or noninteractive UI and fails closed when an approved mutation cannot be audited"
+      ],
+      "limits": "Source conformance, not fresh runtime. Empty selector list denotes source-only branch; existing actual component support uses injected IO/permission fixtures with stated scope, no public parent TUI or complete platform/power-loss proof."
+    },
+    {
+      "cell": "disposition:transitions:S16:06",
+      "proposed_status": "PRESERVED",
+      "frozen_clause": {
+        "event": "unsafe path/file/row",
+        "guard": "guard fails",
+        "to": "refused",
+        "effects": "Return false without claiming audit persistence; do not follow linked targets.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "plugins/ca-pi/tools/src/audit-sink.ts",
+            "symbol": "append audit row",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/audit-sink.ts",
+            "lines": "1-187"
+          }
+        ],
+        "from": "unopened or opened",
+        "transition_id": "S16:06"
+      },
+      "contract_sha256": "f928f0b548608d1dca847d22625321fe07e5fe50f1681456e8cac9ef18a9e759",
+      "inspected_source_clauses": "Invalid row/directory/target/link/identity path returns false. Opened mismatches close retained handle before refusal; outer/finally exceptions remain false. No adoption of a raced hardlink or redirected target is claimed. Windows lacks uniform O_NOFOLLOW, so pre/post identity/link guards remain part of the contract, not an OS sandbox.",
+      "witnesses": [
+        {
+          "path": "plugins/ca-pi/tools/src/audit-sink.ts",
+          "start": 80,
+          "end": 123,
+          "file_sha256": "505f118926fc741081de0dff584463d05d0378563d0df80f1d5db0dd64c4d1d0"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/audit-sink.ts",
+          "start": 128,
+          "end": 170,
+          "file_sha256": "505f118926fc741081de0dff584463d05d0378563d0df80f1d5db0dd64c4d1d0"
+        }
+      ],
+      "component_support_selectors": [
+        "vitest:plugins/ca-pi/tools/test/audit-sink.test.ts:Pi audit sink race cases rejects a hardlink raced into an absent target",
+        "vitest:plugins/ca-pi/tools/test/audit-sink.test.ts:Pi audit sink race cases rejects a target swapped between validation and open",
+        "vitest:plugins/ca-pi/tools/test/audit-sink.test.ts:Pi audit sink race cases rejects a line that is unbounded, unterminated, or carries an embedded newline"
+      ],
+      "limits": "Source conformance, not fresh runtime. Empty selector list denotes source-only branch; existing actual component support uses injected IO/permission fixtures with stated scope, no public parent TUI or complete platform/power-loss proof."
+    }
+  ],
+  "machine_mapping": {
+    "cell": "disposition:machines:S16",
+    "proposed_status": "PRESERVED",
+    "contract_sha256": "6bb672f444e80d43c5c6976e50157f953cf459cd55fc4ae94c79751164e28948",
+    "clauses": "Complete six-edge primitive and caller approval-dependency as mapped; current source owner equals frozen187-line body, imported path boundary and current composed permission false guard inspected.",
+    "limits": [
+      "FiniteS16 original audit append/approval-dependency machine only; no taskPI-D04/D07, delegation durable journal, workflow ledger, finding or scenario completion inferred.",
+      "All6 frozen rows inspected including guard/effect/retry; machine preservation derives from this complete finite mapping, not suite counts/file equality alone.",
+      "Sink receives already-redacted rows by precondition; does not claim generic arbitrary caller strings are automatically secret-redacted. Current closed permission-row producer and approved false->no-effect dependency reviewed.",
+      "Original3688 component outcomes retain event/checkout/job/artifact identities; wholePRcancelled status means they are not final hosted qualification. No rerun/installed artifact replay or physical consent.",
+      "S10/S11 endpoint governing conflict and S20:02/S20:06 gaps untouched; raw6083EOF remains unresolved."
+    ]
+  },
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pi-s16-audit-source-current/source-review.json",
+      "sha256": "1b29f7fdd1059c4369cd59623a0dbdf176061b5bb606b0797fa3ebb4bb6ae086"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pi-s16-audit-source-current/component-observations.json",
+      "sha256": "3b3f34df7f0e62d49381f21a2e4a1c71e7e1ce876392269c416219c777dcebb4"
+    }
+  ],
+  "limits": [
+    "FiniteS16 original audit append/approval-dependency machine only; no taskPI-D04/D07, delegation durable journal, workflow ledger, finding or scenario completion inferred.",
+    "All6 frozen rows inspected including guard/effect/retry; machine preservation derives from this complete finite mapping, not suite counts/file equality alone.",
+    "Sink receives already-redacted rows by precondition; does not claim generic arbitrary caller strings are automatically secret-redacted. Current closed permission-row producer and approved false->no-effect dependency reviewed.",
+    "Original3688 component outcomes retain event/checkout/job/artifact identities; wholePRcancelled status means they are not final hosted qualification. No rerun/installed artifact replay or physical consent.",
+    "S10/S11 endpoint governing conflict and S20:02/S20:06 gaps untouched; raw6083EOF remains unresolved."
+  ]
+}

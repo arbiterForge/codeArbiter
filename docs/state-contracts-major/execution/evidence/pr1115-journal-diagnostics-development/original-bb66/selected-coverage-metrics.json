@@ -1,0 +1,118 @@
+{
+  "source": "bb66e3fca9fa0b87b5a983ccd1e930b691f22861",
+  "run": 43881612076,
+  "attempt": 1,
+  "typescript_unions": [
+    {
+      "job": 133353371078,
+      "head": "bb66e3fca9fa0b87b5a983ccd1e930b691f22861",
+      "supported_hosts": 2,
+      "metrics": [
+        {
+          "metric": "statements",
+          "percent": 81.9,
+          "covered": 7156,
+          "total": 8737
+        },
+        {
+          "metric": "branches",
+          "percent": 81.94,
+          "covered": 6486,
+          "total": 7915
+        },
+        {
+          "metric": "functions",
+          "percent": 84.91,
+          "covered": 1143,
+          "total": 1346
+        },
+        {
+          "metric": "lines",
+          "percent": 86.95,
+          "covered": 6084,
+          "total": 6997
+        }
+      ],
+      "log_sha256": "698f155b39666f5f00fdf51bda4ed4f89201bf526cb521f4c9ad0f541de35927",
+      "threshold": 70,
+      "status": "COMPLETE_SUPPORTED_HOST_UNION",
+      "declared_threshold_metrics": [
+        "lines",
+        "branches"
+      ],
+      "other_metrics_reporting_only": [
+        "statements",
+        "functions"
+      ]
+    },
+    {
+      "job": 133358005240,
+      "head": "bb66e3fca9fa0b87b5a983ccd1e930b691f22861",
+      "supported_hosts": 2,
+      "metrics": [
+        {
+          "metric": "statements",
+          "percent": 73.37,
+          "covered": 1684,
+          "total": 2295
+        },
+        {
+          "metric": "branches",
+          "percent": 74.15,
+          "covered": 1406,
+          "total": 1896
+        },
+        {
+          "metric": "functions",
+          "percent": 67.3,
+          "covered": 212,
+          "total": 315
+        },
+        {
+          "metric": "lines",
+          "percent": 74.94,
+          "covered": 1433,
+          "total": 1912
+        }
+      ],
+      "log_sha256": "0c421b48a1e228b44701be2c5a178d26cd986ae375e5c690bee01b01dab0743c",
+      "threshold": 70,
+      "status": "COMPLETE_SUPPORTED_HOST_UNION",
+      "declared_threshold_metrics": [
+        "lines",
+        "branches"
+      ],
+      "other_metrics_reporting_only": [
+        "statements",
+        "functions"
+      ]
+    }
+  ],
+  "whole_run_qualification": false,
+  "native_union": {
+    "job": 133354030496,
+    "status": "COMPLETE",
+    "metric": "statements",
+    "statements": {
+      "covered": 11851,
+      "percent": 84.3428,
+      "total": 14051
+    },
+    "source_sha256": "aa36dbbbbed3447cb633b0aaa4a3dc4f445d71c8df8c2b6a39c67f1f9c402a4a",
+    "platforms": [
+      "darwin/amd64",
+      "darwin/arm64",
+      "linux/amd64",
+      "linux/arm64",
+      "windows/amd64",
+      "windows/arm64"
+    ],
+    "missing_platforms": [],
+    "not_measured": [
+      "lines",
+      "branches"
+    ],
+    "minimum": 70,
+    "log_sha256": "6134352cf14f040c98f4a7c5b5839460d957337d8f845b11bd849efe80b09250"
+  }
+}

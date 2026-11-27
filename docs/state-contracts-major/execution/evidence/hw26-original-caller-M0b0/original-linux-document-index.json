@@ -1,0 +1,177 @@
+{
+  "coordinator-complete.json": {
+    "type": "dict",
+    "keys": [
+      "phase",
+      "source_commit",
+      "run_id",
+      "job_id"
+    ]
+  },
+  "coordinator-inputs.json": {
+    "type": "dict",
+    "keys": [
+      "source_commit",
+      "source_tree",
+      "run_id",
+      "attempt",
+      "job_id",
+      "platform",
+      "consumed"
+    ]
+  },
+  "producer/cleanup.json": {
+    "type": "dict",
+    "keys": [
+      "complete"
+    ]
+  },
+  "producer/install-exit.json": {
+    "type": "dict",
+    "keys": [
+      "argv",
+      "returncode",
+      "timed_out",
+      "containment",
+      "stdout_sha256",
+      "stderr_sha256"
+    ]
+  },
+  "producer/installed-after.json": {
+    "type": "dict",
+    "keys": [
+      "members"
+    ]
+  },
+  "producer/observation.json": {
+    "type": "dict",
+    "keys": [
+      "format",
+      "source_commit",
+      "source_tree",
+      "ci_run_id",
+      "source_stable",
+      "proof_kind",
+      "producer",
+      "argv",
+      "exit_code",
+      "tests",
+      "installed_binding"
+    ]
+  },
+  "producer/original-test-result.json": {
+    "type": "dict",
+    "keys": [
+      "id",
+      "run_count",
+      "failures",
+      "errors",
+      "skips",
+      "result",
+      "failure_sha256"
+    ]
+  },
+  "producer/production-admission.json": {
+    "type": "dict",
+    "keys": [
+      "source_commit",
+      "ci_run_id",
+      "promotion_sha256",
+      "cohort_sha256",
+      "require_production"
+    ]
+  },
+  "producer/route-alias.json": {
+    "type": "dict",
+    "keys": [
+      "name",
+      "records",
+      "settings"
+    ]
+  },
+  "producer/route-bare.json": {
+    "type": "dict",
+    "keys": [
+      "name",
+      "records",
+      "settings"
+    ]
+  },
+  "producer/route-doctor.json": {
+    "type": "dict",
+    "keys": [
+      "name",
+      "records",
+      "settings"
+    ]
+  },
+  "producer/runtime-acquisition.json": {
+    "type": "dict",
+    "keys": [
+      "format",
+      "source_commit",
+      "source_tree",
+      "ci_run_id",
+      "producer_job_id",
+      "version",
+      "prefix",
+      "fresh_prefix",
+      "source_locks",
+      "command",
+      "runtime_before",
+      "runtime_after",
+      "graph_after"
+    ]
+  },
+  "producer/worker-exit.json": {
+    "type": "dict",
+    "keys": [
+      "argv",
+      "returncode",
+      "timed_out",
+      "containment",
+      "stdout_sha256",
+      "stderr_sha256"
+    ]
+  },
+  "producer/worker-result.json": {
+    "type": "dict",
+    "keys": [
+      "format",
+      "test",
+      "routes",
+      "doctor",
+      "source_before",
+      "source_after",
+      "runtime_before",
+      "runtime_after",
+      "graph_before",
+      "graph_after",
+      "payload_before",
+      "payload_after",
+      "installed_before",
+      "installed_after"
+    ]
+  },
+  "production-admission.json": {
+    "type": "dict",
+    "keys": [
+      "require_production",
+      "source_commit",
+      "cohort_sha256",
+      "promotion_sha256"
+    ]
+  },
+  "qualification.json": {
+    "type": "dict",
+    "keys": [
+      "schema",
+      "source_commit",
+      "source_tree",
+      "ci_run_id",
+      "job_id",
+      "results",
+      "payloads"
+    ]
+  }
+}

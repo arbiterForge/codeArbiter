@@ -1,0 +1,101 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "cfa8effd8e3e856571052f94311f4f01c96b7f77",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "/root/ci_repair_review: source author only, no independent self-approval"
+ },
+ "inputs": {
+  ".codearbiter/decisions/0043-assistive-state-engine.md": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+  "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+  "docs/state-contracts-major/hooks-workflow-tasks.json": "05a2b15eb968b7fa25bb2af6c11c862eef599757f66404b6abcf5b0f519c3e30",
+  "plugins/ca-pi/tools/test/setup-disposable-home.ts": "768c65b5a03877e16ba9a81f758ccaf8173f28363573aafcd85dab1cc4be6e53"
+ },
+ "disposition_ids": [
+  "disposition:machines:pi-qualification:disposable-home"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/generator-pi-source-cfa8/source-bindings.json",
+   "sha256": "3adaff2059ca2cdf5707fe3482a31d48bfaa32c2946a479102d7632d7eb0943a"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/generator-pi-source-cfa8/clause-inspection.json",
+   "sha256": "81248b3b9c7bb3c1c99a4221c1f3929fa581840e50c406bd83f52d44d6b80899"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/generator-pi-source-cfa8/inherited-evidence-inventory.json",
+   "sha256": "c400619a82717d35be1aa63df9f4fa7b5862243cd6c577e5f10253302ccb7bea"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/generator-pi-source-cfa8/baseline-current-joins.json",
+   "sha256": "a463f15a20be7e42fe52f0a47fa1cca2bce66f07f8f7e0b71b112f940ef50dd1"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:pi-qualification:disposable-home",
+   "frozen_row_sha256": "5e5e503d186ccb2c35012687419a7c8751b439f138be67109d94231e1e5aaa73",
+   "clause_ids": [
+    "disposition:transitions:pi-qualification:disposable-home:01",
+    "disposition:transitions:pi-qualification:disposable-home:02",
+    "disposition:transitions:pi-qualification:disposable-home:03",
+    "disposition:transitions:pi-qualification:disposable-home:04"
+   ],
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/test/setup-disposable-home.ts",
+     "symbol": "literal source lines 29-42",
+     "start": 29,
+     "end": 42,
+     "file_sha256": "768c65b5a03877e16ba9a81f758ccaf8173f28363573aafcd85dab1cc4be6e53",
+     "span_sha256": "5ac3cfd17b16d04c74432e8289b454782443468e0786c5de001c4238698edbb4",
+     "git_oid": "510ca209e22183e2fe306fa6255e8f43bf4b83a9"
+    },
+    {
+     "path": "plugins/ca-pi/tools/test/setup-disposable-home.ts",
+     "symbol": "literal source lines 34-42",
+     "start": 34,
+     "end": 42,
+     "file_sha256": "768c65b5a03877e16ba9a81f758ccaf8173f28363573aafcd85dab1cc4be6e53",
+     "span_sha256": "83563aa4400f2ef87e442ef128c01f0f261809a4e291950dbc4f3f4fdfbf1757",
+     "git_oid": "510ca209e22183e2fe306fa6255e8f43bf4b83a9"
+    },
+    {
+     "path": "plugins/ca-pi/tools/test/setup-disposable-home.ts",
+     "symbol": "literal source lines 44-54",
+     "start": 44,
+     "end": 54,
+     "file_sha256": "768c65b5a03877e16ba9a81f758ccaf8173f28363573aafcd85dab1cc4be6e53",
+     "span_sha256": "db9527597a876bdb6eb9a7fb596f1480e78408c7c1c80692e1697f3505294b8c",
+     "git_oid": "510ca209e22183e2fe306fa6255e8f43bf4b83a9"
+    },
+    {
+     "path": "plugins/ca-pi/tools/test/setup-disposable-home.ts",
+     "symbol": "literal source lines 53-60",
+     "start": 53,
+     "end": 60,
+     "file_sha256": "768c65b5a03877e16ba9a81f758ccaf8173f28363573aafcd85dab1cc4be6e53",
+     "span_sha256": "261f6c6fe500e869267d5b0888e2f1d4a45fe4157649c8380d1ed2d2f15eff6f",
+     "git_oid": "510ca209e22183e2fe306fa6255e8f43bf4b83a9"
+    }
+   ],
+   "semantic_assessment": "All 4 literal clauses assessed by the named current/pinned source witnesses and explicit accepted-task corrections/limits in clause-inspection. Advanced observations remain entire historical records, not renewed.",
+   "intake_variances": [],
+   "limits": "Source-only conformance; no tests/actual generation/installed host/runtime/model/human/task/scenario acceptance or write authority."
+  }
+ ],
+ "scope": "pi-qualification:disposable-home literal current/pinned guard/effect/retry source inspection, not runtime qualification.",
+ "limits": [
+  "No tests, product imports, site generation, Node/Pi/native product execution, API/network/provider/install or canonical/index/ref/ledger/markers/status writes.",
+  "All eight advanced Pi rows and history/proof bytes retained exactly; no old observation epoch rewritten.",
+  "HW-23/HW-24 intentional changes explicitly identified; no preservation of old defect or advertised global parser exactness.",
+  "Root owns independent review and unchanged strict prospective source admission; no runtime/task/scenario completion."
+ ]
+}

@@ -1,0 +1,5 @@
+{
+  "phase": "bootstrap",
+  "exception_type": "ReadinessError",
+  "diagnostic_sha256": "1d854126158034194ca5313dceeadb9b306f697653a490a920a0c91f6a3cacac"
+}

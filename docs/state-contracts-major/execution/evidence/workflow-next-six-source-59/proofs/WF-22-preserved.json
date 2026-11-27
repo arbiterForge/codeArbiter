@@ -1,0 +1,123 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "/root/acceptance_security_review: authored literal31-clause pinned/current/callee assessment; no execution or independent self-review"
+ },
+ "inputs": {
+  ".codearbiter/decisions/0043-assistive-state-engine.md": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+  "core/pysrc/_standuplib.py": "621d318ca6429c95bc45dadeb7fbebbfdd9bc3a5f94267d87fa692e69ef74169",
+  "core/surface/commands/standup.md": "7e509ae3354c4c8db7365812991806efe467420844cbdb35635b283d686a96cb",
+  "core/surface/skills/post-merge-cleanup/SKILL.md": "350a64b693b0d344ae85f53c410c0574448a0bfe8733d94672e3ac2b1b48dea7",
+  "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e"
+ },
+ "disposition_ids": [
+  "disposition:machines:WF-22"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/workflow-next-six-source-59/source-bindings.json",
+   "sha256": "15a46800e7b462952fd4afa6911cefd0322d801c9c4c3013b23458f9b2b7c51d"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/workflow-next-six-source-59/clause-inspection.json",
+   "sha256": "1e82e8464047365a8d22f62634e1c18400aff11ccb908e6c04c887f865aba1ce"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/workflow-next-six-source-59/inherited-evidence-inventory.json",
+   "sha256": "c706481337dc118c3405105442cf9c891f04dc9fa50d15d66e08cecbda927f32"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/workflow-next-six-source-59/owner-baseline-current.diff",
+   "sha256": "1fd32bc879928941cd8b953ffac9a86c1c8f97de530a6b4315108ce380e5a797"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:WF-22",
+   "frozen_row_sha256": "57a716bca54b627983890a15bc4169ce934d5d0804553451fa038b6d989c61ba",
+   "clause_ids": [
+    "disposition:transitions:WF-22:01",
+    "disposition:transitions:WF-22:02",
+    "disposition:transitions:WF-22:03",
+    "disposition:transitions:WF-22:04"
+   ],
+   "witnesses": [
+    {
+     "path": "core/surface/commands/standup.md",
+     "start": 12,
+     "end": 49,
+     "file_sha256": "7e509ae3354c4c8db7365812991806efe467420844cbdb35635b283d686a96cb",
+     "span_sha256": "0c1125017603a92f2bf42d75e661b545130b7fe8be4e2a041b5cb99eaee5fa1a"
+    },
+    {
+     "path": "core/surface/skills/post-merge-cleanup/SKILL.md",
+     "start": 48,
+     "end": 95,
+     "file_sha256": "350a64b693b0d344ae85f53c410c0574448a0bfe8733d94672e3ac2b1b48dea7",
+     "span_sha256": "66c7a5964e0fe50e746e75365eb930ffd7620a387806a7dc5087fae0c346a038"
+    },
+    {
+     "path": "core/surface/commands/standup.md",
+     "start": 21,
+     "end": 27,
+     "file_sha256": "7e509ae3354c4c8db7365812991806efe467420844cbdb35635b283d686a96cb",
+     "span_sha256": "dd6cf27117ac9054b72ce37ee85e8fc9d2322ea33f1e8212fc8e70c5464202af"
+    },
+    {
+     "path": "core/pysrc/_standuplib.py",
+     "start": 174,
+     "end": 183,
+     "file_sha256": "621d318ca6429c95bc45dadeb7fbebbfdd9bc3a5f94267d87fa692e69ef74169",
+     "span_sha256": "293622872cfa6f5f0c287286229c03ee0a74d869077356c77109409544c57623"
+    },
+    {
+     "path": "core/surface/commands/standup.md",
+     "start": 70,
+     "end": 89,
+     "file_sha256": "7e509ae3354c4c8db7365812991806efe467420844cbdb35635b283d686a96cb",
+     "span_sha256": "d8a04c6b9bb65c1bd5cf06c05e2409a063ae4e7d61d5e63488d1c1e4dccca1d1"
+    },
+    {
+     "path": "core/surface/commands/standup.md",
+     "start": 114,
+     "end": 136,
+     "file_sha256": "7e509ae3354c4c8db7365812991806efe467420844cbdb35635b283d686a96cb",
+     "span_sha256": "37c8d6fcf1a68a455515d8ba7f39703508e6927337e8530ff7267de5addbf900"
+    },
+    {
+     "path": "core/surface/commands/standup.md",
+     "start": 91,
+     "end": 145,
+     "file_sha256": "7e509ae3354c4c8db7365812991806efe467420844cbdb35635b283d686a96cb",
+     "span_sha256": "7b0b3356c5466ea83c347e86177a4939655bd344876619767e9bf91228a58170"
+    },
+    {
+     "path": "core/surface/skills/post-merge-cleanup/SKILL.md",
+     "start": 227,
+     "end": 250,
+     "file_sha256": "350a64b693b0d344ae85f53c410c0574448a0bfe8733d94672e3ac2b1b48dea7",
+     "span_sha256": "01c7c79b8db72e214b4fbb053ac11b8527b4f0ec5dc2bf0d9683421f6ec4c41d"
+    }
+   ],
+   "semantic_assessment": "All 4 frozen literal transitions assessed against pinned/current owner and named applicable changes; includes advanced edges for machine analysis without modifying them. Guidance conformance only; explicit exceptions stay in clause-inspection.",
+   "intake_variances": [],
+   "limits": "Source-only reasoned inspection, no test/native/build/SDK/provider/model/network/API/install/dispatch/real workflow operation executed."
+  }
+ ],
+ "scope": "Source-only six-family assessment with precise format/authority/audited-write scopes; not task/runtime qualification.",
+ "limits": [
+  "Source-only reasoned inspection, no test/native/build/SDK/provider/model/network/API/install/dispatch/real workflow operation executed.",
+  "Only six machines and twenty-seven actual PLANNED edges proposed; four advanced WF22 rows and all other records/history/epochs retained. No accepted task, scenario, CI, host, promotion or publication qualification.",
+  "ADR43 applies to ordinary progress/refresh; real user/host/security stops and commit/release controls remain. No artifact receipt creates authority or independent review.",
+  "Every literal baseline event/guard/effect/retry is recorded. Managed Markdown preview differs from HTML journaled record writes; spec/plan migration differs from context conversion; audited log target/sink set is explicit.",
+  "Unkeyed hashes and Git names bind cooperative bytes, not hostile same-user containment, semantic truth, actual approval or external authenticity."
+ ]
+}

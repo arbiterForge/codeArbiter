@@ -74,6 +74,9 @@ class Manager implements SidebarManager {
   private autoDecided = false;
   private lastReason: string | undefined;
   private metrics: FooterTextMetrics | undefined;
+  /** PI-L02: disposal or explicit off retires pending installs; a late metrics
+   * result may be cached but must not patch a retired generation's terminal. */
+  private generation = 0;
 
   constructor(private readonly ports: SidebarManagerPorts) {}
 
@@ -105,6 +108,7 @@ class Manager implements SidebarManager {
   }
 
   dispose(): void {
+    this.generation += 1;
     try { this.compositor?.dispose(); } catch { /* Restore is fail-soft; native stays authoritative. */ }
     this.compositor = undefined;
     this.expected = false;
@@ -127,22 +131,36 @@ class Manager implements SidebarManager {
   }
 
   private async install(context: ExtensionContextPort): Promise<boolean> {
+    const generation = this.generation;
+    if (this.ports.currentTui() === undefined || this.ports.terminal() === undefined) {
+      this.lastReason = this.ports.currentTui() === undefined ? "no-tui" : "no-terminal";
+      return false;
+    }
+    if (this.metrics === undefined) {
+      let loaded: FooterTextMetrics | undefined;
+      try {
+        loaded = await this.ports.loadMetrics?.();
+      } catch {
+        loaded = undefined;
+      }
+      // The metrics loader is runtime-scoped, so a late result may still be
+      // cached; but a disposed session never records a reason or installs.
+      if (loaded !== undefined) this.metrics ??= loaded;
+      if (generation !== this.generation) return false;
+      if (this.metrics === undefined) {
+        this.lastReason = "no-metrics";
+        return false;
+      }
+    }
+    // A concurrent install in this same session may have finished first.
+    if (this.compositor?.installed === true) return true;
+    // Read the live TUI and terminal only after the await: geometry or the
+    // footer handle may have changed while metrics loaded.
     const tui = this.ports.currentTui();
     const terminal = this.ports.terminal();
     if (tui === undefined || terminal === undefined) {
       this.lastReason = tui === undefined ? "no-tui" : "no-terminal";
       return false;
-    }
-    if (this.metrics === undefined) {
-      try {
-        this.metrics = await this.ports.loadMetrics?.();
-      } catch {
-        this.metrics = undefined;
-      }
-      if (this.metrics === undefined) {
-        this.lastReason = "no-metrics";
-        return false;
-      }
     }
     const notify = (message: string) => {
       try { context.ui.notify(message, "warning"); } catch { /* Notification is best-effort. */ }
@@ -179,6 +197,7 @@ class Manager implements SidebarManager {
   }
 
   private turnOff(context: ExtensionContextPort): void {
+    this.generation += 1;
     this.userDisabled = true;
     this.autoDecided = true;
     try { this.compositor?.dispose(); } catch { /* Restore is fail-soft. */ }

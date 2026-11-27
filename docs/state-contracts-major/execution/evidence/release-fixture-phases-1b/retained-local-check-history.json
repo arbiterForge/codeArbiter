@@ -1,0 +1,125 @@
+{
+  "captures": [
+    {
+      "phase": "phase-target-red",
+      "stream": "receipt",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-fixture-phase-jyegxga2\\phase-target-red.json",
+      "sha256": "e14d03c59cba7f3ebf670530765fc6b78da3f06e3f40ce75ff3fd263462d9b45",
+      "bytes": 808,
+      "utf8_text": "{\r\n \"argv\": [\r\n  \"C:/Python314/python.exe\",\r\n  \"-I\",\r\n  \"-S\",\r\n  \"-B\",\r\n  \"-X\",\r\n  \"utf8\",\r\n  \"C:/Users/brenn/AppData/Local/Temp/ca-release-fixture-phase-jyegxga2/run.py\",\r\n  \"ReleaseFixtureDiagnosticsTest.test_timeout_retains_last_closed_phase_and_the_original_exception\"\r\n ],\r\n \"cwd\": \"C:\\\\Users\\\\brenn\\\\AppData\\\\Local\\\\Temp\\\\ca-release-fixture-phase-jyegxga2\",\r\n \"exit_code\": 1,\r\n \"elapsed_seconds\": 0.17945709999185055,\r\n \"streams\": {\r\n  \"stdout\": {\r\n   \"bytes\": 0,\r\n   \"sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"\r\n  },\r\n  \"stderr\": {\r\n   \"bytes\": 1702,\r\n   \"sha256\": \"f0de119ffbde4ae808596e06e4caf8447fe0a395e13a62f9fd9af1fabf8d8bb9\"\r\n  }\r\n },\r\n \"environment\": \"owned HOME/TEMP + credential-blind allowlist + private Git config; no provider/network/install command\"\r\n}\r\n"
+    },
+    {
+      "phase": "phase-target-red",
+      "stream": "stdout",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-fixture-phase-jyegxga2\\phase-target-red.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "utf8_text": ""
+    },
+    {
+      "phase": "phase-target-red",
+      "stream": "stderr",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-fixture-phase-jyegxga2\\phase-target-red.stderr",
+      "sha256": "f0de119ffbde4ae808596e06e4caf8447fe0a395e13a62f9fd9af1fabf8d8bb9",
+      "bytes": 1702,
+      "utf8_text": "test_timeout_retains_last_closed_phase_and_the_original_exception (release_followup_candidate.ReleaseFixtureDiagnosticsTest.test_timeout_retains_last_closed_phase_and_the_original_exception) ... FAIL\r\n\r\n======================================================================\r\nFAIL: test_timeout_retains_last_closed_phase_and_the_original_exception (release_followup_candidate.ReleaseFixtureDiagnosticsTest.test_timeout_retains_last_closed_phase_and_the_original_exception)\r\n----------------------------------------------------------------------\r\nTraceback (most recent call last):\r\n  File \"C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-fixture-phase-jyegxga2\\candidate\\plugins\\ca\\hooks\\tests\\test_release_workflow_followup.py\", line 428, in test_timeout_retains_last_closed_phase_and_the_original_exception\r\n    self.assertEqual(getattr(raised.exception, \"__notes__\", []), [\r\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n        \"release fixture last observed phase: invocation-entered; announcement only, not effect or exit completion\"])\r\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\nAssertionError: Lists differ: [] != ['release fixture last observed phase: inv[62 chars]ion']\r\n\r\nSecond list contains 1 additional elements.\r\nFirst extra element 0:\r\n'release fixture last observed phase: invocation-entered; announcement only, not effect or exit completion'\r\n\r\n- []\r\n+ ['release fixture last observed phase: invocation-entered; announcement only, '\r\n+  'not effect or exit completion']\r\n\r\n----------------------------------------------------------------------\r\nRan 1 test in 0.004s\r\n\r\nFAILED (failures=1)\r\n"
+    },
+    {
+      "phase": "phase-target-green",
+      "stream": "receipt",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-fixture-phase-jyegxga2\\phase-target-green.json",
+      "sha256": "c2658ab461105eef843b772a34bea99be01f78cf1b2f338f066b63f84ceb7c56",
+      "bytes": 807,
+      "utf8_text": "{\r\n \"argv\": [\r\n  \"C:/Python314/python.exe\",\r\n  \"-I\",\r\n  \"-S\",\r\n  \"-B\",\r\n  \"-X\",\r\n  \"utf8\",\r\n  \"C:/Users/brenn/AppData/Local/Temp/ca-release-fixture-phase-jyegxga2/run.py\",\r\n  \"ReleaseFixtureDiagnosticsTest.test_timeout_retains_last_closed_phase_and_the_original_exception\"\r\n ],\r\n \"cwd\": \"C:\\\\Users\\\\brenn\\\\AppData\\\\Local\\\\Temp\\\\ca-release-fixture-phase-jyegxga2\",\r\n \"exit_code\": 0,\r\n \"elapsed_seconds\": 0.17414459999417886,\r\n \"streams\": {\r\n  \"stdout\": {\r\n   \"bytes\": 0,\r\n   \"sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"\r\n  },\r\n  \"stderr\": {\r\n   \"bytes\": 301,\r\n   \"sha256\": \"9f53f76a9b28d4aa21c74b354b5c16e977a0a7588137f6d9bd45490abe5d0e16\"\r\n  }\r\n },\r\n \"environment\": \"owned HOME/TEMP + credential-blind allowlist + private Git config; no provider/network/install command\"\r\n}\r\n"
+    },
+    {
+      "phase": "phase-target-green",
+      "stream": "stdout",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-fixture-phase-jyegxga2\\phase-target-green.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "utf8_text": ""
+    },
+    {
+      "phase": "phase-target-green",
+      "stream": "stderr",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-fixture-phase-jyegxga2\\phase-target-green.stderr",
+      "sha256": "9f53f76a9b28d4aa21c74b354b5c16e977a0a7588137f6d9bd45490abe5d0e16",
+      "bytes": 301,
+      "utf8_text": "test_timeout_retains_last_closed_phase_and_the_original_exception (release_followup_candidate.ReleaseFixtureDiagnosticsTest.test_timeout_retains_last_closed_phase_and_the_original_exception) ... ok\r\n\r\n----------------------------------------------------------------------\r\nRan 1 test in 0.009s\r\n\r\nOK\r\n"
+    },
+    {
+      "phase": "phase-focused-controls",
+      "stream": "receipt",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-fixture-phase-jyegxga2\\phase-focused-controls.json",
+      "sha256": "31d4efecff0f23c01a09d30a2db9882f3ea9f994fd9f762660d3c96ea4d92002",
+      "bytes": 742,
+      "utf8_text": "{\r\n \"argv\": [\r\n  \"C:/Python314/python.exe\",\r\n  \"-I\",\r\n  \"-S\",\r\n  \"-B\",\r\n  \"-X\",\r\n  \"utf8\",\r\n  \"C:/Users/brenn/AppData/Local/Temp/ca-release-fixture-phase-jyegxga2/run.py\",\r\n  \"ReleaseFixtureDiagnosticsTest\"\r\n ],\r\n \"cwd\": \"C:\\\\Users\\\\brenn\\\\AppData\\\\Local\\\\Temp\\\\ca-release-fixture-phase-jyegxga2\",\r\n \"exit_code\": 1,\r\n \"elapsed_seconds\": 0.38491210000938736,\r\n \"streams\": {\r\n  \"stdout\": {\r\n   \"bytes\": 0,\r\n   \"sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"\r\n  },\r\n  \"stderr\": {\r\n   \"bytes\": 3046,\r\n   \"sha256\": \"1661c7605d30ccf43501665ee067a98c45a30ea0182559907bdcb42d48ba2107\"\r\n  }\r\n },\r\n \"environment\": \"owned HOME/TEMP + credential-blind allowlist + private Git config; no provider/network/install command\"\r\n}\r\n"
+    },
+    {
+      "phase": "phase-focused-controls",
+      "stream": "stdout",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-fixture-phase-jyegxga2\\phase-focused-controls.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "utf8_text": ""
+    },
+    {
+      "phase": "phase-focused-controls",
+      "stream": "stderr",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-fixture-phase-jyegxga2\\phase-focused-controls.stderr",
+      "sha256": "1661c7605d30ccf43501665ee067a98c45a30ea0182559907bdcb42d48ba2107",
+      "bytes": 3046,
+      "utf8_text": "test_empty_prefix_malformed_and_oversized_progress_have_closed_notes (release_followup_candidate.ReleaseFixtureDiagnosticsTest.test_empty_prefix_malformed_and_oversized_progress_have_closed_notes) ... \r\n  test_empty_prefix_malformed_and_oversized_progress_have_closed_notes (release_followup_candidate.ReleaseFixtureDiagnosticsTest.test_empty_prefix_malformed_and_oversized_progress_have_closed_notes) (expected='bash-entered', bytes=13) ... FAIL\r\ntest_nonregular_replaced_linked_or_unreadable_progress_is_unavailable (release_followup_candidate.ReleaseFixtureDiagnosticsTest.test_nonregular_replaced_linked_or_unreadable_progress_is_unavailable) ... ok\r\ntest_ordinary_completed_process_is_returned_without_projection (release_followup_candidate.ReleaseFixtureDiagnosticsTest.test_ordinary_completed_process_is_returned_without_projection) ... ok\r\ntest_real_shell_sink_denial_preserves_streams_arguments_and_exit_status (release_followup_candidate.ReleaseFixtureDiagnosticsTest.test_real_shell_sink_denial_preserves_streams_arguments_and_exit_status) ... ok\r\ntest_timeout_retains_last_closed_phase_and_the_original_exception (release_followup_candidate.ReleaseFixtureDiagnosticsTest.test_timeout_retains_last_closed_phase_and_the_original_exception) ... ok\r\n\r\n======================================================================\r\nFAIL: test_empty_prefix_malformed_and_oversized_progress_have_closed_notes (release_followup_candidate.ReleaseFixtureDiagnosticsTest.test_empty_prefix_malformed_and_oversized_progress_have_closed_notes) (expected='bash-entered', bytes=13)\r\n----------------------------------------------------------------------\r\nTraceback (most recent call last):\r\n  File \"C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-fixture-phase-jyegxga2\\candidate\\plugins\\ca\\hooks\\tests\\test_release_workflow_followup.py\", line 539, in test_empty_prefix_malformed_and_oversized_progress_have_closed_notes\r\n    self.assertEqual(notes, [\"release fixture last observed phase: \" + expected +\r\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n                             \"; announcement only, not effect or exit completion\"])\r\n                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\nAssertionError: Lists differ: ['rel[29 chars]ase: unavailable; announcement only, not effec[17 chars]ion'] != ['rel[29 chars]ase: bash-entered; announcement only, not effe[18 chars]ion']\r\n\r\nFirst differing element 0:\r\n'rele[28 chars]ase: unavailable; announcement only, not effec[16 chars]tion'\r\n'rele[28 chars]ase: bash-entered; announcement only, not effe[17 chars]tion'\r\n\r\n- ['release fixture last observed phase: unavailable; announcement only, not '\r\n?                                        ^ ^^^^^^^^\r\n\r\n+ ['release fixture last observed phase: bash-entered; announcement only, not '\r\n?                                        ^^^^^^ ^ +++\r\n\r\n   'effect or exit completion']\r\n\r\n----------------------------------------------------------------------\r\nRan 5 tests in 0.216s\r\n\r\nFAILED (failures=1)\r\n"
+    },
+    {
+      "phase": "phase-affected-read-controls-green",
+      "stream": "receipt",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-fixture-phase-jyegxga2\\phase-affected-read-controls-green.json",
+      "sha256": "f806e16b0ab06a20037e233c822265249dba87c5c592832f053b0f10b0b7c869",
+      "bytes": 916,
+      "utf8_text": "{\r\n \"argv\": [\r\n  \"C:/Python314/python.exe\",\r\n  \"-I\",\r\n  \"-S\",\r\n  \"-B\",\r\n  \"-X\",\r\n  \"utf8\",\r\n  \"C:/Users/brenn/AppData/Local/Temp/ca-release-fixture-phase-jyegxga2/run.py\",\r\n  \"ReleaseFixtureDiagnosticsTest.test_empty_prefix_malformed_and_oversized_progress_have_closed_notes\",\r\n  \"ReleaseFixtureDiagnosticsTest.test_nonregular_replaced_linked_or_unreadable_progress_is_unavailable\"\r\n ],\r\n \"cwd\": \"C:\\\\Users\\\\brenn\\\\AppData\\\\Local\\\\Temp\\\\ca-release-fixture-phase-jyegxga2\",\r\n \"exit_code\": 0,\r\n \"elapsed_seconds\": 0.20008409998263232,\r\n \"streams\": {\r\n  \"stdout\": {\r\n   \"bytes\": 0,\r\n   \"sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"\r\n  },\r\n  \"stderr\": {\r\n   \"bytes\": 515,\r\n   \"sha256\": \"b77ba91df5f097ef35cf60112e9416af2dce8b23d20eaf76ea4391dd388b8646\"\r\n  }\r\n },\r\n \"environment\": \"owned HOME/TEMP + credential-blind allowlist + private Git config; no provider/network/install command\"\r\n}\r\n"
+    },
+    {
+      "phase": "phase-affected-read-controls-green",
+      "stream": "stdout",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-fixture-phase-jyegxga2\\phase-affected-read-controls-green.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "utf8_text": ""
+    },
+    {
+      "phase": "phase-affected-read-controls-green",
+      "stream": "stderr",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-fixture-phase-jyegxga2\\phase-affected-read-controls-green.stderr",
+      "sha256": "b77ba91df5f097ef35cf60112e9416af2dce8b23d20eaf76ea4391dd388b8646",
+      "bytes": 515,
+      "utf8_text": "test_empty_prefix_malformed_and_oversized_progress_have_closed_notes (release_followup_candidate.ReleaseFixtureDiagnosticsTest.test_empty_prefix_malformed_and_oversized_progress_have_closed_notes) ... ok\r\ntest_nonregular_replaced_linked_or_unreadable_progress_is_unavailable (release_followup_candidate.ReleaseFixtureDiagnosticsTest.test_nonregular_replaced_linked_or_unreadable_progress_is_unavailable) ... ok\r\n\r\n----------------------------------------------------------------------\r\nRan 2 tests in 0.026s\r\n\r\nOK\r\n"
+    },
+    {
+      "phase": "release-followup-owning-green",
+      "stream": "receipt",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-fixture-phase-jyegxga2\\release-followup-owning-green.json",
+      "sha256": "0ead6543b66c574f98b935a9a2cc30a3bdd5efe3e575f777310aa322fccb8b5e",
+      "bytes": 705,
+      "utf8_text": "{\r\n \"argv\": [\r\n  \"C:/Python314/python.exe\",\r\n  \"-I\",\r\n  \"-S\",\r\n  \"-B\",\r\n  \"-X\",\r\n  \"utf8\",\r\n  \"C:/Users/brenn/AppData/Local/Temp/ca-release-fixture-phase-jyegxga2/run.py\"\r\n ],\r\n \"cwd\": \"C:\\\\Users\\\\brenn\\\\AppData\\\\Local\\\\Temp\\\\ca-release-fixture-phase-jyegxga2\",\r\n \"exit_code\": 0,\r\n \"elapsed_seconds\": 28.175264899997273,\r\n \"streams\": {\r\n  \"stdout\": {\r\n   \"bytes\": 0,\r\n   \"sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"\r\n  },\r\n  \"stderr\": {\r\n   \"bytes\": 3901,\r\n   \"sha256\": \"52088e1306f9f8d490c3baf0d97ade3880287d0ca18f0af7891efcac0fe695ff\"\r\n  }\r\n },\r\n \"environment\": \"owned HOME/TEMP + credential-blind allowlist + private Git config; no provider/network/install command\"\r\n}\r\n"
+    },
+    {
+      "phase": "release-followup-owning-green",
+      "stream": "stdout",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-fixture-phase-jyegxga2\\release-followup-owning-green.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "utf8_text": ""
+    },
+    {
+      "phase": "release-followup-owning-green",
+      "stream": "stderr",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-fixture-phase-jyegxga2\\release-followup-owning-green.stderr",
+      "sha256": "52088e1306f9f8d490c3baf0d97ade3880287d0ca18f0af7891efcac0fe695ff",
+      "bytes": 3901,
+      "utf8_text": "test_empty_prefix_malformed_and_oversized_progress_have_closed_notes (release_followup_candidate.ReleaseFixtureDiagnosticsTest.test_empty_prefix_malformed_and_oversized_progress_have_closed_notes) ... ok\r\ntest_nonregular_replaced_linked_or_unreadable_progress_is_unavailable (release_followup_candidate.ReleaseFixtureDiagnosticsTest.test_nonregular_replaced_linked_or_unreadable_progress_is_unavailable) ... ok\r\ntest_ordinary_completed_process_is_returned_without_projection (release_followup_candidate.ReleaseFixtureDiagnosticsTest.test_ordinary_completed_process_is_returned_without_projection) ... ok\r\ntest_real_shell_sink_denial_preserves_streams_arguments_and_exit_status (release_followup_candidate.ReleaseFixtureDiagnosticsTest.test_real_shell_sink_denial_preserves_streams_arguments_and_exit_status) ... ok\r\ntest_timeout_retains_last_closed_phase_and_the_original_exception (release_followup_candidate.ReleaseFixtureDiagnosticsTest.test_timeout_retains_last_closed_phase_and_the_original_exception) ... ok\r\ntest_actual_default_and_detached_branches_refuse_before_a_write_attempt (release_followup_candidate.ReleaseWorkflowFollowupTest.test_actual_default_and_detached_branches_refuse_before_a_write_attempt) ... ok\r\ntest_actual_missing_prerequisite_refuses_before_a_write_attempt (release_followup_candidate.ReleaseWorkflowFollowupTest.test_actual_missing_prerequisite_refuses_before_a_write_attempt) ... ok\r\ntest_calls_are_wired_before_each_write_boundary (release_followup_candidate.ReleaseWorkflowFollowupTest.test_calls_are_wired_before_each_write_boundary) ... ok\r\ntest_clean_guard_reaches_the_controlled_write_only_on_success (release_followup_candidate.ReleaseWorkflowFollowupTest.test_clean_guard_reaches_the_controlled_write_only_on_success) ... ok\r\ntest_empty_full_history_is_terminal_not_another_confirmation_loop (release_followup_candidate.ReleaseWorkflowFollowupTest.test_empty_full_history_is_terminal_not_another_confirmation_loop) ... ok\r\ntest_empty_stdout_failed_and_timed_out_probes_stop_before_side_effect (release_followup_candidate.ReleaseWorkflowFollowupTest.test_empty_stdout_failed_and_timed_out_probes_stop_before_side_effect) ... ok\r\ntest_first_release_reentry_for_every_merge_method (release_followup_candidate.ReleaseWorkflowFollowupTest.test_first_release_reentry_for_every_merge_method) ... ok\r\ntest_missing_published_reconciliation_still_blocks_after_confirmation (release_followup_candidate.ReleaseWorkflowFollowupTest.test_missing_published_reconciliation_still_blocks_after_confirmation) ... ok\r\ntest_no_payload_arguments_is_not_a_whole_repository_fallback (release_followup_candidate.ReleaseWorkflowFollowupTest.test_no_payload_arguments_is_not_a_whole_repository_fallback) ... ok\r\ntest_nonempty_adoption_window_is_not_widened (release_followup_candidate.ReleaseWorkflowFollowupTest.test_nonempty_adoption_window_is_not_widened) ... ok\r\ntest_prepared_nondefault_branch_passes_actual_guard (release_followup_candidate.ReleaseWorkflowFollowupTest.test_prepared_nondefault_branch_passes_actual_guard) ... ok\r\ntest_real_clean_and_dirty_probes_do_not_share_a_success_verdict (release_followup_candidate.ReleaseWorkflowFollowupTest.test_real_clean_and_dirty_probes_do_not_share_a_success_verdict) ... ok\r\ntest_tagged_empty_window_does_not_offer_first_release_widening (release_followup_candidate.ReleaseWorkflowFollowupTest.test_tagged_empty_window_does_not_offer_first_release_widening) ... ok\r\ntest_unresolvable_adoption_and_window_are_failures_not_empty_history (release_followup_candidate.ReleaseWorkflowFollowupTest.test_unresolvable_adoption_and_window_are_failures_not_empty_history) ... ok\r\ntest_valid_but_nonancestor_adoption_is_refused (release_followup_candidate.ReleaseWorkflowFollowupTest.test_valid_but_nonancestor_adoption_is_refused) ... ok\r\n\r\n----------------------------------------------------------------------\r\nRan 20 tests in 28.006s\r\n\r\nOK\r\n"
+    }
+  ],
+  "scope": "Actual missing-note RED/GREEN, retained draft parser portability failure and actual20-owning-method finalPASS. No hosted/root-cause or production fix assertion."
+}

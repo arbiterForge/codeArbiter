@@ -1,0 +1,129 @@
+{
+  "path": "C:/Users/brenn/AppData/Local/Temp/ca-HW05-migration-independent-review-dvfest4v/review.json",
+  "sha256": "8fcf362ac1e798041a9cc8c322664bad56fa8e265467fc61664062ef84d67698",
+  "bytes": 8648,
+  "record": {
+    "schema": "codearbiter.independent-review/1",
+    "role": "independent functional/settings-migration/security/coverage reviewer",
+    "result": "PASS_WITH_LIMITS",
+    "gate": "PASS",
+    "candidate": "candidate-v1:2d25c7fbcb1aee492e2aeeb2694f9e4fe541f6c10fbd742044721248c6d769cf",
+    "source_head": "bb4886b9ce9236870e80f8d1969df1c867a87be1",
+    "subjects": {
+      "CHANGELOG.md": "e6b2b97030ea9b228828ffe7aa88a2ba89155f425d54ed10f25fcffc0cd8707c",
+      "core/pysrc/wire-statusline.py": "41c489a88d6a6f1be51806d9269013a124d0f0974830f248615201d2be0d8192",
+      "plugins/ca-codex/CHANGELOG.md": "c4e752b253b9ef3c3aa97bcbb08976878d8385504661968c9fa43d4f7d2bd542",
+      "plugins/ca-codex/hooks/wire-statusline.py": "41c489a88d6a6f1be51806d9269013a124d0f0974830f248615201d2be0d8192",
+      "plugins/ca-pi/CHANGELOG.md": "4361113a88921342e754aae545c45829b0b49c7bcede8d7bb76efddcd2153d29",
+      "plugins/ca-pi/hooks/wire-statusline.py": "41c489a88d6a6f1be51806d9269013a124d0f0974830f248615201d2be0d8192",
+      "plugins/ca/hooks/tests/test_wire_statusline.py": "979d8d33ac36396a0364500b1e94d418a81c7eacb80644bf2cb5df6f0e4d6ee9",
+      "plugins/ca/hooks/wire-statusline.py": "41c489a88d6a6f1be51806d9269013a124d0f0974830f248615201d2be0d8192"
+    },
+    "findings": [],
+    "context_consumed": true,
+    "policy": {
+      "owner": "CTX-SECURITY-CONTROLS",
+      "html_sha256": "8630d1cad36de7b06a0a9360beea27a48b1642cc05a4547362a25ec8c9ec491e",
+      "complete_records": 32,
+      "notes_identical_to_constraints": true,
+      "reused_native_owner_capture": "current-complete-security-policy.json",
+      "controls_applied": [
+        "CON-001",
+        "CON-002",
+        "CON-003",
+        "CON-007",
+        "CON-009",
+        "CON-011",
+        "CON-016"
+      ]
+    },
+    "reviewed": [
+      "Complete canonical runtime diff, whole install/uninstall/refresh/save/status boundary; three generated runtimes exactly equal canonical staged bytes.",
+      "V2 key removes only the legacy released-reader restore trigger, retains prior backup value and owner stamp. Legacy data is explicitly migrated before spinner settlement; unrelated/custom current values preserved by existing exact ownership checks.",
+      "Mixed V2/legacy refuses explicit operations before save and automatic refresh returns false without mutation. In-memory changes before refusal never reach disk. Existing atomic save/no multiwriter-CAS residual remains.",
+      "Durable owned refresh migrates stale or already-current commands; foreign/ephemeral and missing-renderer cmd_refresh paths remain inert, steady V2 returns false. Status recognizes single legacy format without migration.",
+      "Verbatim eight-line released function and legacy constant independently joined to immutable released 3f1bd137 Git bytes; source SHA256 matches portable pinned test fixture. Fixed first-party source is compiled with empty builtins; no user input executed.",
+      "Actual target RED install plus stale/current refresh clobber assertions inspected. Original114 methods/helpers AST-identical; final six tests cover exact old reader, legacy/custom/malformed data, conflicting formats, inert boundaries and idempotence. 92 owning/heal PASS1.044s; final six after portable pin PASS0.078s. No tests rerun by reviewer.",
+      "Three additive changelog notes accurately describe bounded user spinner preservation; no workflow, dependencies, authority grants, secret flows or scanner policy changes."
+    ],
+    "charter_note": "Installed migration-reviewer and reviewer-contract fully read. backend-reviewer does not exist in installed0.26.9; Root corrected the role name and explicitly directed the concrete functional checks under these charters. Backend-author read for conventions only, not misrepresented as a reviewer charter.",
+    "material_limits": [
+      "Finite shared software/settings compatibility against the exact released pure uninstall function; no actual old package install, real Host/UI, complete rollback release, whole HW05/HW27/model/Q01 or task closure.",
+      "Arbitrary older writers can create the old trigger again; no universal old-writer safety claim. Ambiguous mixed formats intentionally require explicit resolution.",
+      "Automatic heal retains existing reread-before-save mitigation and acknowledged no-CAS race; no multiwriter transaction guarantee.",
+      "Prior 9c1a61-method observation remains genuine historical evidence and is not current proof of this changed runtime. A future committed67 capture is separate.",
+      "Existing malformed ownership exact-value behavior is unchanged; no new schema/authority semantics inferred."
+    ],
+    "receipts": {
+      "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\HW05-source-peer-input.txt": {
+        "sha256": "9fa1bea081e08599ac38d637acfb71c506bbb2347ca5b28528375663d9ff2f51",
+        "bytes": 12290
+      },
+      "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\HW05-source-peer-context.json": {
+        "sha256": "44ef10243b7e2c991be73bcd47530955fbe3a5b9584a667c12fcd827319459e9",
+        "bytes": 17647
+      },
+      "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\HW05-source-peer-config.json": {
+        "sha256": "4bc058bfe7f82a82ce99c1686340af64ee067d4770188b0847fb06791ded28a7",
+        "bytes": 5037
+      },
+      "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\HW05-source-guards.json": {
+        "sha256": "6f3ebf3f7deaaa9d8f0897d190be32e3f372f49e22fc600edd1380582aa89473",
+        "bytes": 1099
+      },
+      "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\HW05-supported-prior-reader.json": {
+        "sha256": "72aaa99aef7381e9f9eca1b3ca9993c1ccf5f73df3f19229b13cf29998194711",
+        "bytes": 711
+      },
+      "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\HW05-owning-final-green.json": {
+        "sha256": "8e95613c7e6345642fc8f16acb15224a0b32c622ae653733ee2260a69a188fe9",
+        "bytes": 2054
+      },
+      "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\HW05-owning-final-green.stderr": {
+        "sha256": "4166c799ef8ade4cfafe35a20fbdd385edd61cbfe03a1550c189b4b09e555e67",
+        "bytes": 196
+      },
+      "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\HW05-final-fixture-green.json": {
+        "sha256": "608235437d9130fd225eee26fd184cbc34c615d10c004df1eec5a2fe930742ae",
+        "bytes": 1979
+      },
+      "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\HW05-final-fixture-green.stderr": {
+        "sha256": "9cd9427a37abcd86cdc3f1d4c13ab97bcfe73e2ab2b98b6dc8641b7b1523e440",
+        "bytes": 109
+      },
+      "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\HW05-idempotence-final-green.json": {
+        "sha256": "c6025c08adff25579de0d60878fdf2619eafb089ba6bf4c7f4c419a951a660c9",
+        "bytes": 2043
+      },
+      "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\current-complete-security-policy.json": {
+        "sha256": "02e5e721b039df9a54686cc9ec82b8b6baedacff8f78cbfac4da2caec7b382ec",
+        "bytes": 54891
+      },
+      "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-HW05-rollback-tests-8x34m6dk\\delivery.json": {
+        "sha256": "839b5fcb614dfc34a729325c81061d3b422ed22aea03fe7f1dbe75c452fbcbdc",
+        "bytes": 11612
+      },
+      "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-HW05-rollback-tests-8x34m6dk\\actual-red.json": {
+        "sha256": "fcc56f12f73dc49d0e189b8d408d32b52cba08dd55128d9e37e251392e78ffe0",
+        "bytes": 1296
+      },
+      "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-HW05-rollback-tests-8x34m6dk\\actual-red.stderr": {
+        "sha256": "6707a8f3f8c5fdd091e7f6f5aace59b5304c2257623df0f3204508529a2b56d5",
+        "bytes": 2054
+      },
+      "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-HW05-rollback-refresh-tests-mzhs1fkq\\delivery.json": {
+        "sha256": "dcc71c4cf67ad990fe3824015a8f69041456cfc2da329102c63d913ff349adaf",
+        "bytes": 11528
+      },
+      "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-HW05-rollback-refresh-tests-mzhs1fkq\\actual-red.json": {
+        "sha256": "c72847adbb2d73b2038b3598ae6a44d11f6641502ac346cd8057c48bad3b2d97",
+        "bytes": 875
+      },
+      "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-HW05-rollback-refresh-tests-mzhs1fkq\\actual-red.stderr": {
+        "sha256": "49409fe64a84290ea75eb2d1b125087aa77909580859393a8b0caea1ade7e58c",
+        "bytes": 3436
+      }
+    },
+    "reviewer_effects": "Read-only Git/source/data/AST inspection; only this private Temp verdict written. No tests, provider/network/build/installed effects, Gov/index/refs/markers writes."
+  }
+}

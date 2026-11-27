@@ -1,0 +1,93 @@
+{
+  "original_head": "6fe32cc68c2d8fdef3c7938fc19dbd5c524de5f0",
+  "source_commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
+  "original_full_log": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hooks-whole-findings-8623-gh1qt6xj\\original-6fe-linux-hook.log",
+  "original_full_log_sha256": "53481945b5acba79ddda6fb98d5f7f9c15a7cff3a56afc37236dc20dc4a097ac",
+  "job_id": 132519001876,
+  "run_id": 43618573091,
+  "excerpt": "original-6fe-marketplace-excerpt.json",
+  "excerpt_sha256": "80e2baf1bea8e97734979e6d443aa6565b88ecb403b1993fb30255c5c9a23b54",
+  "actual_original": "Combined full-module invocation test_release_target.py42OK then test_marketplace_git_channels.py19OK, LinuxPython3.15.2, not freshly rerun.",
+  "source_join": [
+    {
+      "path": ".github/scripts/test_marketplace_git_channels.py",
+      "original_git_content_sha256": "a309e384656c31f507a1708441092eaeceb0d4571de73302f76962c98bf59525",
+      "current_git_content_sha256": "a309e384656c31f507a1708441092eaeceb0d4571de73302f76962c98bf59525",
+      "unchanged": true
+    },
+    {
+      "path": "tools/promote-claude-marketplace.py",
+      "original_git_content_sha256": "e7116b3e55aac1f20cedfc164a66563b10f7773b1499700483a91f8df1636bda",
+      "current_git_content_sha256": "e7116b3e55aac1f20cedfc164a66563b10f7773b1499700483a91f8df1636bda",
+      "unchanged": true
+    },
+    {
+      "path": "tools/promote-codex-marketplace.py",
+      "original_git_content_sha256": "491e8ab597c869827aae0444a58bd4b8a390f28ba6589dfa25d1bb932c2f56a9",
+      "current_git_content_sha256": "491e8ab597c869827aae0444a58bd4b8a390f28ba6589dfa25d1bb932c2f56a9",
+      "unchanged": true
+    },
+    {
+      "path": "tools/build-host-packages.py",
+      "original_git_content_sha256": "c2c812bf93e81b69cbf62c133c569a6bce07a56e8fc0edbe501a22f9f60d2225",
+      "current_git_content_sha256": "c2c812bf93e81b69cbf62c133c569a6bce07a56e8fc0edbe501a22f9f60d2225",
+      "unchanged": true
+    },
+    {
+      "path": "tools/owned_output.py",
+      "original_git_content_sha256": "52ee664a00b4f66df8f585047cf38a839428c489762890208a9db1961060b22c",
+      "current_git_content_sha256": "52ee664a00b4f66df8f585047cf38a839428c489762890208a9db1961060b22c",
+      "unchanged": true
+    },
+    {
+      "path": "tools/host_descriptors.py",
+      "original_git_content_sha256": "2c98ea82723f60879616469ec399cd81db0fb9cb98f4c943eea1dce852123601",
+      "current_git_content_sha256": "2c98ea82723f60879616469ec399cd81db0fb9cb98f4c943eea1dce852123601",
+      "unchanged": true
+    },
+    {
+      "path": "tools/install-artifact-payload.py",
+      "original_git_content_sha256": "57d98c6db9a9a24431b42ab5e77907f8c94c10d7dbb4f7a273c9c55c90b5f985",
+      "current_git_content_sha256": "57d98c6db9a9a24431b42ab5e77907f8c94c10d7dbb4f7a273c9c55c90b5f985",
+      "unchanged": true
+    },
+    {
+      "path": "core/pysrc/_gitexec.py",
+      "original_git_content_sha256": "a5935246028f506ef5ab13ba379b399cb7a754a077866fd39528545f30f4bef3",
+      "current_git_content_sha256": "a5935246028f506ef5ab13ba379b399cb7a754a077866fd39528545f30f4bef3",
+      "unchanged": true
+    },
+    {
+      "path": "core/pysrc/_artifactmanifestlib.py",
+      "original_git_content_sha256": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054",
+      "current_git_content_sha256": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054",
+      "unchanged": true
+    },
+    {
+      "path": ".github/scripts/_releaselib.py",
+      "original_git_content_sha256": "59ffb55276bf3a0b873861be71c6d286ddf25b035db35715e34c8929bccc6c21",
+      "current_git_content_sha256": "59ffb55276bf3a0b873861be71c6d286ddf25b035db35715e34c8929bccc6c21",
+      "unchanged": true
+    },
+    {
+      "path": "core/pysrc/_releaselib.py",
+      "original_git_content_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea",
+      "current_git_content_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea",
+      "unchanged": true
+    },
+    {
+      "path": "core/hosts.json",
+      "original_git_content_sha256": "3ea50fd2af1ed359e602210de3f0a9b661a567c45d08a5f947f0f4c2e24a8cd8",
+      "current_git_content_sha256": "3ea50fd2af1ed359e602210de3f0a9b661a567c45d08a5f947f0f4c2e24a8cd8",
+      "unchanged": true
+    },
+    {
+      "path": ".claude-plugin/marketplace.json",
+      "original_git_content_sha256": "a3a6b24af000bc458fadce167057d906d675e4b889a3b59bfbdf5baed02e78ea",
+      "current_git_content_sha256": "a3a6b24af000bc458fadce167057d906d675e4b889a3b59bfbdf5baed02e78ea",
+      "unchanged": true
+    }
+  ],
+  "method_scope": "Current exact source methods/assertions derive the named population from complete unfiltered original module invocation; raw log is dots, not individual named pass observations. This is corroboration of the direct current source conformance, not a new qualified host/publication claim.",
+  "excerpt_encoding": "base64; decoded bytes and SHA-256 retained inside envelope"
+}

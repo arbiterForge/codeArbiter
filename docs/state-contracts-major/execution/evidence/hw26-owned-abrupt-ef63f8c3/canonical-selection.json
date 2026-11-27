@@ -1,0 +1,18 @@
+{
+  "scope": "One Windows/Node24 owned hard-kill observation, no real Pi/provider/auth-store execution.",
+  "omitted_dummy_files": [
+    {
+      "path": "fake-operator-home/.pi/agent/auth.json",
+      "bytes": 60,
+      "sha256": "de92ca38da685991178a060752929e4e71a2d972646bdb531da6d607a92bb533"
+    },
+    {
+      "path": "tmp/ca-pi-operator-home-NBPq2b/.pi/agent/auth.json",
+      "bytes": 76,
+      "sha256": "f4f8713476abb65177a0ca5df5e6e304da4917297f01ff9121c7276bb85c6143"
+    }
+  ],
+  "reason": "Private dummy-auth fixture file bodies stay private; original source, recorded digests, effects and trees retain their evidence. No actual operator credentials were consulted.",
+  "task_status_promotion": false,
+  "runtime_epoch_renewal": false
+}

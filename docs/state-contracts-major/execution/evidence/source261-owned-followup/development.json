@@ -1,0 +1,86 @@
+{
+ "schema": "codearbiter.major.source261-owned-followup/1",
+ "recorded_at": "2026-11-17T06:13:27.990017+00:00",
+ "controller_anchor": "41aa7a4995d88c1e680e2e5ed01b3a2eb5cf61ec",
+ "branch": "codex/state-contracts-ownership-and-source",
+ "integration_commit": "ac826ed2c77aab89449799cebdcf7b61d3513d6c",
+ "adopted_source_cells": 261,
+ "private_current_source_records": 520,
+ "planned": {
+  "findings": 49,
+  "machines": 50,
+  "transitions": 223,
+  "total": 322
+ },
+ "reviews": [
+  {
+   "scope": "Release62",
+   "path": "docs/state-contracts-major/execution/evidence/source261-owned-followup/reviews/Release62.json",
+   "sha256": "b86dfac8de22db55f97e5123bb1fabc0af48356024d925460e99a21373c1aa95"
+  },
+  {
+   "scope": "Farm23-original",
+   "path": "docs/state-contracts-major/execution/evidence/source261-owned-followup/reviews/Farm23-original.json",
+   "sha256": "80eb5e31dc3cf7200dbabe734a40d68f0d39403465ec97ecd599b0727dc96ff7"
+  },
+  {
+   "scope": "Farm23-corrections",
+   "path": "docs/state-contracts-major/execution/evidence/source261-owned-followup/reviews/Farm23-corrections.json",
+   "sha256": "3eb058a19f1e338fcc7c4e9ab914e03a2e2099fa751ef994ca167c533c8e08ae"
+  },
+  {
+   "scope": "Release47",
+   "path": "docs/state-contracts-major/execution/evidence/source261-owned-followup/reviews/Release47.json",
+   "sha256": "05eeccccb50212504ad6723ace78cb9597247bbca0ed75409bfc69c834c434fb"
+  },
+  {
+   "scope": "Workflow33-cells",
+   "path": "docs/state-contracts-major/execution/evidence/source261-owned-followup/reviews/Workflow33-cells.json",
+   "sha256": "c9bc86351e18db247588fdf9998103ddfa82632614c3a39632e053ca06e73139"
+  },
+  {
+   "scope": "Tooling63-original",
+   "path": "docs/state-contracts-major/execution/evidence/source261-owned-followup/reviews/Tooling63-original.json",
+   "sha256": "620924ca94be6b2faca67f69bdbc8121d218dbb65de820b2435cb0b14d5bfe94"
+  },
+  {
+   "scope": "Tooling63-correction",
+   "path": "docs/state-contracts-major/execution/evidence/source261-owned-followup/reviews/Tooling63-correction.json",
+   "sha256": "fd1fc92264bcbcdb807ee4b21f939f08cc352abcc93c26252db8e91bc40bbbb6"
+  },
+  {
+   "scope": "Site18",
+   "path": "docs/state-contracts-major/execution/evidence/source261-owned-followup/reviews/Site18.json",
+   "sha256": "22628388357358e7d6b176c7d9f065310c3f9b5a322d46132a8e941ee981b008"
+  },
+  {
+   "scope": "Healthy15-from-WF20",
+   "path": "docs/state-contracts-major/execution/evidence/source261-owned-followup/reviews/Healthy15-from-WF20.json",
+   "sha256": "09d4b62aeede32c57ff515f71a9575744807067243e6942543e2d18bdf5232bf"
+  }
+ ],
+ "review_limits": "Original bounded peer judgments reused. Farm23 and tooling63 prose findings closed by tiny independent coordinator delta checks. WF33 rejected claims omitted entirely; healthy15 mechanically narrowed under retained peer judgment, not a fresh independent verdict. Release27 source-only reinspection follows independently reviewed optional CI argument changes; owning source spans unchanged.",
+ "physical_source_join": "Atlas Git-clean CRLF text is retained with separate immutable Git/physical hashes and attributes. No user file rewritten; no runtime byte equality is inferred.",
+ "current_child_original": {
+  "PR": 1117,
+  "head": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+  "merged_at": "2026-11-17T05:34:55Z",
+  "merge_commit": "ac826ed2c77aab89449799cebdcf7b61d3513d6c",
+  "passed": 92,
+  "skipped": 8,
+  "failed": 0
+ },
+ "normal_integration": {
+  "CI": 44025115372,
+  "state": "RUNNING_WITH_CONFIRMED_LINUX_INSTALLED_PI_FAILURE",
+  "failed_original_job": 133856586945,
+  "Docs": 44025115366,
+  "Docs_result": "SUCCESS",
+  "TUI": "Actual failing phase under original retained log/artifact inspection; not inferred."
+ },
+ "task_status_promotion": false,
+ "runtime_epoch_renewal": false,
+ "final_staged_owner": "Pending actual final staged checks; private source520 is not full-owner qualification.",
+ "main_merge": "HELD_FOR_USER_TESTING",
+ "publication": "NOT_AUTHORIZED"
+}

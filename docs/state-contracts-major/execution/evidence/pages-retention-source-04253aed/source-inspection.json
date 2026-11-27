@@ -1,0 +1,128 @@
+{
+  "schema": "codearbiter-source-only-delta-inspection/1",
+  "source": "04253aedfbd65761cdb816d814b38c49a122266f",
+  "source_tree": "26798b6f7ade5d3fe1597bc9b84e4fea952f2525",
+  "base": "bad24886ceb514cae7d8e3b0e11b9bca3ce178dc",
+  "changed_source": [
+    {
+      "path": ".github/scripts/test_ci_impact.py",
+      "before_sha256": "d1e7894c3ade40f05e9812a8cc751c27a18a9882286b1be4edd430e4fae5ba38",
+      "after_sha256": "5c15ef991868765c4522676cecee63786ff5d8a53bbbc5964f12a84d28d28471"
+    },
+    {
+      "path": ".github/workflows/docs.yml",
+      "before_sha256": "0c9649d2c510235d52938ebb833fcfbd43476ea86bda0dd24729c4b014b03172",
+      "after_sha256": "65ed7547ac447257221bcac5a3afe8d77d07ba3142f730ed06c1e0cdc75af0f4"
+    }
+  ],
+  "workflow_scope": "The pinned upload-pages-artifact invocation gained one retention input. Exact removal of that line restores the preceding workflow bytes.",
+  "test_scope": "Removing the newly added targeted retention regression restores the complete prior Python AST. Existing cases, validators, and assertions are unchanged.",
+  "pinned_uploader": "https://github.com/actions/upload-pages-artifact/blob/fc324d3547104276b827a68afc52ff2a11cc49c9/action.yml#L13-L16",
+  "scopes": [
+    {
+      "predecessor": "original-owner-captures-source-56241415/proof-02.json",
+      "cells": [
+        "disposition:machines:C35"
+      ]
+    },
+    {
+      "predecessor": "original-owner-captures-source-56241415/proof-13.json",
+      "cells": [
+        "disposition:findings:C-F03",
+        "disposition:machines:S48",
+        "disposition:machines:S77",
+        "disposition:transitions:S48:01",
+        "disposition:transitions:S48:02",
+        "disposition:transitions:S48:03",
+        "disposition:transitions:S48:04",
+        "disposition:transitions:S48:05",
+        "disposition:transitions:S48:08",
+        "disposition:transitions:S77:01",
+        "disposition:transitions:S77:02",
+        "disposition:transitions:S77:03",
+        "disposition:transitions:S77:04",
+        "disposition:transitions:S77:05",
+        "disposition:transitions:S77:06",
+        "disposition:transitions:S77:07",
+        "disposition:transitions:S77:08",
+        "disposition:transitions:S77:09",
+        "disposition:transitions:C05:02",
+        "disposition:transitions:C05:03",
+        "disposition:transitions:C15:04",
+        "disposition:transitions:C16:03",
+        "disposition:transitions:C17:01",
+        "disposition:transitions:C17:02",
+        "disposition:transitions:C17:03",
+        "disposition:transitions:C17:04",
+        "disposition:transitions:C17:05",
+        "disposition:transitions:C17:06",
+        "disposition:transitions:C17:07",
+        "disposition:transitions:C17:08",
+        "disposition:transitions:C17:09",
+        "disposition:transitions:C17:11",
+        "disposition:transitions:T01:01",
+        "disposition:transitions:T01:02",
+        "disposition:transitions:T01:03",
+        "disposition:transitions:T01:04",
+        "disposition:transitions:T01:05",
+        "disposition:transitions:SW01:02",
+        "disposition:transitions:SW01:03",
+        "disposition:transitions:SW01:04",
+        "disposition:transitions:SW01:05",
+        "disposition:transitions:SW01:06",
+        "disposition:transitions:SW01:07",
+        "disposition:transitions:SW01:08",
+        "disposition:transitions:SW01:09",
+        "disposition:transitions:SW01:10",
+        "disposition:transitions:SW01:11",
+        "disposition:transitions:SW01:12",
+        "disposition:transitions:SW01:13",
+        "disposition:transitions:SW01:14",
+        "disposition:transitions:SW01:15",
+        "disposition:transitions:SW01:17",
+        "disposition:transitions:SW01:18",
+        "disposition:transitions:SW01:19",
+        "disposition:transitions:SW01:20",
+        "disposition:transitions:SW01:21",
+        "disposition:transitions:SW01:22",
+        "disposition:transitions:SW01:23",
+        "disposition:transitions:SW01:24"
+      ]
+    },
+    {
+      "predecessor": "original-owner-captures-source-56241415/proof-14.json",
+      "cells": [
+        "disposition:transitions:C15:05"
+      ]
+    },
+    {
+      "predecessor": "original-owner-captures-source-56241415/proof-15.json",
+      "cells": [
+        "disposition:transitions:C35:01",
+        "disposition:transitions:C35:02",
+        "disposition:transitions:C35:03",
+        "disposition:transitions:C35:04"
+      ]
+    },
+    {
+      "predecessor": "original-owner-captures-source-8bf4cfbe/proof-01.json",
+      "cells": [
+        "disposition:machines:C29",
+        "disposition:transitions:C29:01",
+        "disposition:transitions:C29:02",
+        "disposition:transitions:C29:03",
+        "disposition:transitions:C29:04",
+        "disposition:transitions:C29:05"
+      ]
+    },
+    {
+      "predecessor": "original-owner-captures-source-8bf4cfbe/proof-02.json",
+      "cells": [
+        "disposition:machines:SX03",
+        "disposition:transitions:SX03:06"
+      ]
+    }
+  ],
+  "status_changes": 0,
+  "tests_executed_by_this_inspection": 0
+}

@@ -1,0 +1,163 @@
+test_v2_arbitrary_and_forged_exception_names_remain_unclassified (test_artifact_package.ColdFailureDiagnosticTests.test_v2_arbitrary_and_forged_exception_names_remain_unclassified) ... ERROR
+test_v2_builtin_subtypes_and_families_keep_no_messages (test_artifact_package.ColdFailureDiagnosticTests.test_v2_builtin_subtypes_and_families_keep_no_messages) ... FAIL
+test_v2_decoder_rejects_unknown_duplicate_and_inconsistent_fields (test_artifact_package.ColdFailureDiagnosticTests.test_v2_decoder_rejects_unknown_duplicate_and_inconsistent_fields) ... FAIL
+test_v2_keeps_exact_legacy_v1_decoder_and_nested_record (test_artifact_package.ColdFailureDiagnosticTests.test_v2_keeps_exact_legacy_v1_decoder_and_nested_record) ... ok
+test_v2_nested_failure_survives_both_consumers_without_private_stderr (test_artifact_package.ColdFailureDiagnosticTests.test_v2_nested_failure_survives_both_consumers_without_private_stderr) ... FAIL
+test_v2_real_audit_denial_reports_closed_outer_context (test_artifact_package.ColdFailureDiagnosticTests.test_v2_real_audit_denial_reports_closed_outer_context) ... FAIL
+test_v2_real_guard_builtin_failure_has_safe_subtype_and_site (test_artifact_package.ColdFailureDiagnosticTests.test_v2_real_guard_builtin_failure_has_safe_subtype_and_site) ... FAIL
+test_v2_real_nested_audit_retains_deepest_context (test_artifact_package.ColdFailureDiagnosticTests.test_v2_real_nested_audit_retains_deepest_context) ... FAIL
+
+======================================================================
+ERROR: test_v2_arbitrary_and_forged_exception_names_remain_unclassified (test_artifact_package.ColdFailureDiagnosticTests.test_v2_arbitrary_and_forged_exception_names_remain_unclassified)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\brenn\AppData\Local\Temp\ca-cold-diagnostics-v2-o52jgysl\.github\scripts\test_artifact_package.py", line 2234, in test_v2_arbitrary_and_forged_exception_names_remain_unclassified
+    self.assertEqual(record["family"], "unclassified")
+                     ~~~~~~^^^^^^^^^^
+KeyError: 'family'
+
+======================================================================
+FAIL: test_v2_builtin_subtypes_and_families_keep_no_messages (test_artifact_package.ColdFailureDiagnosticTests.test_v2_builtin_subtypes_and_families_keep_no_messages)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\brenn\AppData\Local\Temp\ca-cold-diagnostics-v2-o52jgysl\.github\scripts\test_artifact_package.py", line 2222, in test_v2_builtin_subtypes_and_families_keep_no_messages
+    self.assertEqual(record["error"], cls.__name__)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'unclassified' != 'RecursionError'
+- unclassified
++ RecursionError
+
+
+======================================================================
+FAIL: test_v2_decoder_rejects_unknown_duplicate_and_inconsistent_fields (test_artifact_package.ColdFailureDiagnosticTests.test_v2_decoder_rejects_unknown_duplicate_and_inconsistent_fields)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\brenn\AppData\Local\Temp\ca-cold-diagnostics-v2-o52jgysl\.github\scripts\test_artifact_package.py", line 2240, in test_v2_decoder_rejects_unknown_duplicate_and_inconsistent_fields
+    self.assertEqual(INSTALLED_HOST.decode_failure(json.dumps(good).encode()), good)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: None != {'format': 'codearbiter.installed-host-fa[233 chars]ter'}
+
+======================================================================
+FAIL: test_v2_nested_failure_survives_both_consumers_without_private_stderr (test_artifact_package.ColdFailureDiagnosticTests.test_v2_nested_failure_survives_both_consumers_without_private_stderr)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\brenn\AppData\Local\Temp\ca-cold-diagnostics-v2-o52jgysl\.github\scripts\test_artifact_package.py", line 2258, in test_v2_nested_failure_survives_both_consumers_without_private_stderr
+    self.assertEqual(INSTALLED_HOST.failure_record(nested, phase="bootstrap"), record)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: {'for[39 chars]re/0.1.0', 'phase': 'bootstrap', 'step': 'entr[54 chars]ied'} != {'for[39 chars]re/0.2.0', 'phase': 'commit-proof', 'step': 'e[184 chars]ter'}
++ {'audit_depth': 'outer',
++  'audit_event': 'open',
++  'audit_site': 'path-guard',
+- {'code': 'unclassified',
+? ^
+
++  'code': 'unclassified',
+? ^
+
+-  'error': 'AssertionError',
+?            ^ ----
+
++  'error': 'RecursionError',
+?            ^^^^^
+
++  'family': 'recursion',
+-  'format': 'codearbiter.installed-host-failure/0.1.0',
+?                                                  ^
+
++  'format': 'codearbiter.installed-host-failure/0.2.0',
+?                                                  ^
+
+-  'phase': 'bootstrap',
+-  'step': 'entrypoint'}
++  'host': 'claude',
++  'phase': 'commit-proof',
++  'step': 'enforce_runtime_event'}
+
+======================================================================
+FAIL: test_v2_real_audit_denial_reports_closed_outer_context (test_artifact_package.ColdFailureDiagnosticTests.test_v2_real_audit_denial_reports_closed_outer_context)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\brenn\AppData\Local\Temp\ca-cold-diagnostics-v2-o52jgysl\.github\scripts\test_artifact_package.py", line 2310, in test_v2_real_audit_denial_reports_closed_outer_context
+    self.assertEqual(self.audited_child("network"), self.v2(error="RuntimeError", family="runtime", audit_event="network", audit_site="network-guard"))
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: {'code': 'unclassified', 'error': 'RuntimeE[113 chars]ent'} != {'format': 'codearbiter.installed-host-fail[233 chars]ter'}
++ {'audit_depth': 'outer',
++  'audit_event': 'network',
++  'audit_site': 'network-guard',
+- {'code': 'unclassified',
+? ^
+
++  'code': 'unclassified',
+? ^
+
+   'error': 'RuntimeError',
++  'family': 'runtime',
+-  'format': 'codearbiter.installed-host-failure/0.1.0',
+?                                                  ^
+
++  'format': 'codearbiter.installed-host-failure/0.2.0',
+?                                                  ^
+
++  'host': 'claude',
+   'phase': 'commit-proof',
+   'step': 'enforce_runtime_event'}
+
+======================================================================
+FAIL: test_v2_real_guard_builtin_failure_has_safe_subtype_and_site (test_artifact_package.ColdFailureDiagnosticTests.test_v2_real_guard_builtin_failure_has_safe_subtype_and_site)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\brenn\AppData\Local\Temp\ca-cold-diagnostics-v2-o52jgysl\.github\scripts\test_artifact_package.py", line 2316, in test_v2_real_guard_builtin_failure_has_safe_subtype_and_site
+    self.assertEqual(self.audited_child("builtin"), self.v2(error="NotADirectoryError", family="filesystem", audit_event="native-library", audit_site="library-guard"))
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: {'code': 'unclassified', 'error': 'unclassi[113 chars]ent'} != {'format': 'codearbiter.installed-host-fail[249 chars]ter'}
++ {'audit_depth': 'outer',
++  'audit_event': 'native-library',
++  'audit_site': 'library-guard',
+- {'code': 'unclassified',
+? ^
+
++  'code': 'unclassified',
+? ^
+
+-  'error': 'unclassified',
++  'error': 'NotADirectoryError',
++  'family': 'filesystem',
+-  'format': 'codearbiter.installed-host-failure/0.1.0',
+?                                                  ^
+
++  'format': 'codearbiter.installed-host-failure/0.2.0',
+?                                                  ^
+
++  'host': 'claude',
+   'phase': 'commit-proof',
+   'step': 'enforce_runtime_event'}
+
+======================================================================
+FAIL: test_v2_real_nested_audit_retains_deepest_context (test_artifact_package.ColdFailureDiagnosticTests.test_v2_real_nested_audit_retains_deepest_context)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\brenn\AppData\Local\Temp\ca-cold-diagnostics-v2-o52jgysl\.github\scripts\test_artifact_package.py", line 2313, in test_v2_real_nested_audit_retains_deepest_context
+    self.assertEqual(self.audited_child("nested"), self.v2(error="RuntimeError", family="runtime", audit_event="network", audit_site="network-guard", audit_depth="nested"))
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: {'code': 'unclassified', 'error': 'RuntimeE[113 chars]ent'} != {'format': 'codearbiter.installed-host-fail[234 chars]ted'}
++ {'audit_depth': 'nested',
++  'audit_event': 'network',
++  'audit_site': 'network-guard',
+- {'code': 'unclassified',
+? ^
+
++  'code': 'unclassified',
+? ^
+
+   'error': 'RuntimeError',
++  'family': 'runtime',
+-  'format': 'codearbiter.installed-host-failure/0.1.0',
+?                                                  ^
+
++  'format': 'codearbiter.installed-host-failure/0.2.0',
+?                                                  ^
+
++  'host': 'claude',
+   'phase': 'commit-proof',
+   'step': 'enforce_runtime_event'}
+

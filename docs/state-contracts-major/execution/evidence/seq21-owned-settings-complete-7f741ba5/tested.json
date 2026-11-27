@@ -1,0 +1,187 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "7f741ba5bf56cb785bc9c54e0d1fd8faa97a8cbb",
+  "kind": "test",
+  "result": "PASSED",
+  "producer": {
+    "class": "local-host",
+    "identity": "/root/farm_sandbox_program one fresh current committed7f Windows CPython10-case existing settings-ownership selection; complete14 positive inputs and actual present adapter lookup before/after"
+  },
+  "platform": "windows/amd64",
+  "inputs": {
+    "core/pysrc/_durabilitylib.py": "42e9d3ed6f6f43c76bef073e6edad2b8a119dfc154e2a497909422b4e4d28f9b",
+    "core/pysrc/wire-statusline.py": "216e3754cf0fb8f9c33d77a18c2ce26f85a1b0b025ef28675bfcd3785bfef1a4",
+    "plugins/ca/hooks/_activationlib.py": "60c6391b4d8b143c5e59cf2320291a2d31063e8fbebe0fcf337dd83e07f8fd97",
+    "plugins/ca/hooks/_durabilitylib.py": "42e9d3ed6f6f43c76bef073e6edad2b8a119dfc154e2a497909422b4e4d28f9b",
+    "plugins/ca/hooks/_gitexec.py": "a5935246028f506ef5ab13ba379b399cb7a754a077866fd39528545f30f4bef3",
+    "plugins/ca/hooks/_hooklib.py": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+    "plugins/ca/hooks/_host.py": "9d04b88683d1deab03850ef1f2a169579f59756d3430079bdc6aa2160994bc1b",
+    "plugins/ca/hooks/_pathnorm.py": "f6a99cddf6277641316f5e8f9d86fb97691e535ba569aa6cb51c9e4f3ed52906",
+    "plugins/ca/hooks/_protectedlib.py": "3156e9ad47cf577476dfcae27fde1d4ebfd71fe33b5e1976d351b8f833ea53d3",
+    "plugins/ca/hooks/_scopelib.py": "03d1f066863d08c952ebda8d9b6f1515813f53a4fd3fc0af560a735f63954e0b",
+    "plugins/ca/hooks/_sensitivelib.py": "a3902997c16d367a3c7e6e7247a42ba35d962e2c885f9ed3e8e1ab0ce98ec506",
+    "plugins/ca/hooks/hostapi.py": "2aea81ad167a458c6053cb52880952521159a367eaa5baa7df6e2e35fea574e4",
+    "plugins/ca/hooks/tests/test_wire_statusline.py": "579fe364417021770a3c536c42bdc1664c6b1c2eebfc7820fd53a17a36cd0c88",
+    "plugins/ca/hooks/wire-statusline.py": "216e3754cf0fb8f9c33d77a18c2ce26f85a1b0b025ef28675bfcd3785bfef1a4"
+  },
+  "commands": [
+    {
+      "argv": [
+        "C:\\Python314\\python.exe",
+        "-B",
+        "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-seq21-positive-host-7f741ba5-mm8wp0ik\\run-selected.py",
+        "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
+        "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-seq21-positive-host-7f741ba5-mm8wp0ik"
+      ],
+      "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
+      "exit_code": 0
+    }
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/seq21-owned-settings-complete-7f741ba5/raw/observe.py",
+      "sha256": "10fb30ed9c9c364e3cd26895c21fc8c3677a7b50879c119dc8a34b5d26f35bfa"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/seq21-owned-settings-complete-7f741ba5/raw/run-selected.py",
+      "sha256": "a55a2427f4fc65334d2a298de0561136deabd517efd02d3eba0e1f9c04bf7c63"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/seq21-owned-settings-complete-7f741ba5/raw/selectors.json",
+      "sha256": "3bcbae54fae580bf91641675db1b7bd9cb7276d69db2f92f2917957695e92af0"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/seq21-owned-settings-complete-7f741ba5/raw/positive-paths.json",
+      "sha256": "c6541f58e32377eafce95e422e78f21d6c76951a71762b1ff69090fe654dc578"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/seq21-owned-settings-complete-7f741ba5/raw/original.stdout.log",
+      "sha256": "3b2b966ba6f46cdedda5e1183e3e7d8344350951fcd70c58b504c8cee0b94f8e"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/seq21-owned-settings-complete-7f741ba5/raw/original.stderr.log",
+      "sha256": "c3d6ba9861e0541978f60a0d90f8b5e55c99d1ad583c236d2ba618cf112b7e99"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/seq21-owned-settings-complete-7f741ba5/raw/result.json",
+      "sha256": "302a60047bb0db06200ff340dd728330fd19c1bfb5c81a43a063b42e242edd00"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/seq21-owned-settings-complete-7f741ba5/raw/observation.json",
+      "sha256": "f01c5bd0bbcf6374a263205622c648ba6b9984f7433103ef63b71c774871be05"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/seq21-owned-settings-complete-7f741ba5/raw/child-exit.json",
+      "sha256": "b7b481bde21cc978d278c5eaf8d2a4178f94a1e6b3107c11d26524aded549f49"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/seq21-owned-settings-complete-7f741ba5/raw/inputs-before.json",
+      "sha256": "fd45b8068f13671e0f9ed58f8ea1e2563814523a52bfb0e97ab4971e9067adf0"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/seq21-owned-settings-complete-7f741ba5/raw/inputs-after.json",
+      "sha256": "fd45b8068f13671e0f9ed58f8ea1e2563814523a52bfb0e97ab4971e9067adf0"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/seq21-owned-settings-complete-7f741ba5/raw/host-lookup-before.json",
+      "sha256": "5ef4b8872c88793e0e2b9e0ea6e6b18e1a2143aebcd8e9261234525923cbaa25"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/seq21-owned-settings-complete-7f741ba5/raw/host-lookup-after.json",
+      "sha256": "5ef4b8872c88793e0e2b9e0ea6e6b18e1a2143aebcd8e9261234525923cbaa25"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/seq21-owned-settings-complete-7f741ba5/raw/source-cone.json",
+      "sha256": "71b70b3c54b88ce75fbebc84cd6665b6845cb8d0ca7e30959decac11adb1f80d"
+    }
+  ],
+  "disposition_ids": [
+    "disposition:findings:HOOK-F05",
+    "disposition:transitions:hooks:statusline-wiring:04",
+    "disposition:transitions:hooks:statusline-wiring:05"
+  ],
+  "composed_scenario_ids": [
+    "SEQ-21"
+  ],
+  "per_cell_assertion_mapping": [
+    {
+      "cell": "disposition:findings:HOOK-F05",
+      "observed_named_cases": [
+        "test_wire_statusline.TestSpinnerOwnershipIsExact.test_user_custom_spinner_after_install_survives_uninstall",
+        "test_wire_statusline.TestSpinnerOwnershipIsExact.test_still_owned_uninstall_restores_previous_value",
+        "test_wire_statusline.TestSpinnerOwnershipIsExact.test_user_removed_spinner_after_install_is_not_recreated",
+        "test_wire_statusline.TestSpinnerOwnershipIsExact.test_legacy_backup_without_stamp_is_conservative",
+        "test_wire_statusline.TestSpinnerOwnershipIsExact.test_repeated_uninstall_is_a_noop",
+        "test_wire_statusline.TestSpinnerOwnershipIsExact.test_spinner_ownership_is_independent_of_statusline_replacement"
+      ],
+      "assertion_scope": "Real fixture settings install writes separate exact owner stamp and prior backup; later custom spinner survives uninstall, stale bookkeeping is dropped, unrelated theme remains, and ownership-ended report is emitted. Still-owned prior value restores; deleted spinner is not recreated; legacy backup conservatively restores only exact current installed value; repeated uninstall is no-op. Independent status replacement survives while still-owned spinner restores.",
+      "limits": [
+        "Finite current synchronous filesystems and exact existing fixtures. No concurrent-writer CAS, all malformed backups, partial-write failure matrix, actual Claude installation, or machine-wide completion."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:hooks:statusline-wiring:04",
+      "observed_named_cases": [
+        "test_wire_statusline.TestUninstall.test_restores_exact_third_party_statusline_setting",
+        "test_wire_statusline.TestFreshInstall.test_uninstall_removes_statusline_when_no_prior_existed",
+        "test_wire_statusline.TestSpinnerOwnershipIsExact.test_spinner_ownership_is_independent_of_statusline_replacement"
+      ],
+      "assertion_scope": "Install followed by uninstall restores the exact prior statusLine dictionary with extra fields; no-prior owned line is removed together with owner/backup metadata; a user replacement after install remains unchanged while independent owned spinner is restored.",
+      "limits": [
+        "No concurrent writer or arbitrary settings I/O failure qualification."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:hooks:statusline-wiring:05",
+      "observed_named_cases": [
+        "test_wire_statusline.TestSpinnerOwnershipIsExact.test_install_stamps_the_exact_owned_value",
+        "test_wire_statusline.TestSpinnerOwnershipIsExact.test_still_owned_uninstall_restores_previous_value",
+        "test_wire_statusline.TestSpinnerOwnershipIsExact.test_user_custom_spinner_after_install_survives_uninstall",
+        "test_wire_statusline.TestSpinnerOwnershipIsExact.test_user_removed_spinner_after_install_is_not_recreated",
+        "test_wire_statusline.TestSpinnerOwnershipIsExact.test_reinstall_after_user_change_does_not_overwrite_silently_then_uninstall_restores_it",
+        "test_wire_statusline.TestSpinnerOwnershipIsExact.test_legacy_backup_without_stamp_is_conservative",
+        "test_wire_statusline.TestSpinnerOwnershipIsExact.test_repeated_uninstall_is_a_noop",
+        "test_wire_statusline.TestSpinnerOwnershipIsExact.test_spinner_ownership_is_independent_of_statusline_replacement"
+      ],
+      "assertion_scope": "HW-05 deliberately corrects historical unconditional spinner restoration: current exact installed-value equality grants restoration, while later user changes or deletion survive and stale own bookkeeping is removed. Legacy unstamped backup restores only while current spinner equals this version installed value; explicit reinstall backs up the current custom choice; repeated uninstall is idempotent.",
+      "candidate_transition": {
+        "from": "spinner installed or ownership ended",
+        "event": "uninstall",
+        "guard": "current spinner equals recorded installed value; conservative unstamped legacy equality fallback",
+        "to": "restored prior spinner when still owned, otherwise retained user choice",
+        "effects": "Remove own spinner metadata; restore/remove prior spinner only while owned; preserve custom/deleted user setting and unrelated keys otherwise",
+        "failure_retry": "Repeated uninstall is no-op; statusLine ownership is evaluated independently. Atomic replacement/concurrent-writer races are not qualified by this finite sequence."
+      }
+    }
+  ],
+  "selected_assertion_body_sha256": {
+    "test_wire_statusline.TestFreshInstall.test_uninstall_removes_statusline_when_no_prior_existed": "21e34c932093d81259687adeda568e105fdc4324358ab5a224e3782ae3a037b1",
+    "test_wire_statusline.TestUninstall.test_restores_exact_third_party_statusline_setting": "25ec91a50a790981a9158ef6b02654e475b0011c7800712a3ba13ba3edae9442",
+    "test_wire_statusline.TestSpinnerOwnershipIsExact.test_install_stamps_the_exact_owned_value": "fb4c74dcbd136558472701544647ccbed809865380f66c85c00975c2a0bcc220",
+    "test_wire_statusline.TestSpinnerOwnershipIsExact.test_still_owned_uninstall_restores_previous_value": "ff8d33caf71ad0d4f92fd3cc9f29d975ceb0f9fb6b7b32869d5f78fc6a6ac20d",
+    "test_wire_statusline.TestSpinnerOwnershipIsExact.test_user_custom_spinner_after_install_survives_uninstall": "c81679cf11319774dffa6e37f9b890a5ec083984ddd45048b5132a82b4a5bff9",
+    "test_wire_statusline.TestSpinnerOwnershipIsExact.test_user_removed_spinner_after_install_is_not_recreated": "96fdc5ba21ad09bf8bb7002581755bbabba9bb48b91088cebba115bde2d0da32",
+    "test_wire_statusline.TestSpinnerOwnershipIsExact.test_reinstall_after_user_change_does_not_overwrite_silently_then_uninstall_restores_it": "31e7ebb9e325fb29d0ca695903abe20c888d5b4f4cb460d9a8b8d325ebeaa2ab",
+    "test_wire_statusline.TestSpinnerOwnershipIsExact.test_legacy_backup_without_stamp_is_conservative": "1a2a15594ee31b55c74932fbba37a5d84a208771c49f1e106b8b84030c422478",
+    "test_wire_statusline.TestSpinnerOwnershipIsExact.test_repeated_uninstall_is_a_noop": "d7b317e4b776343241a33a64c58eaa2b68036736c7edd06c896c810e2bd389c4",
+    "test_wire_statusline.TestSpinnerOwnershipIsExact.test_spinner_ownership_is_independent_of_statusline_replacement": "3fb18be1c5f9bb5f4b071483872e20f81747797d7a91f809872dd99ef7fa6ee7"
+  },
+  "source_clause_binding": {
+    "path": "core/pysrc/wire-statusline.py",
+    "clauses": [
+      "_spinner_owned",
+      "_install_spinner_verbs",
+      "cmd_uninstall",
+      "_uninstall_spinner_verbs"
+    ],
+    "generated_executed_copy": "plugins/ca/hooks/wire-statusline.py",
+    "parity": "complete byte-identical canonical/generated owner at source commit; tested generated copy matches original before/after physical and immutable input captures"
+  },
+  "scope_limits": [
+    "Existing real temporary-settings/main-function acceptance only; authenticated fixture adapter identity is a test seam, not real installed package authentication.",
+    "No new code/test, no provider/native build/real home installation, no broad suite/numeric coverage or concurrent-writer/partial-write qualification.",
+    "All10 actual named outcomes PASS/no skipped in0.125s. Actual14 positive physical/immutable hashes and full present-adapter physical/Git lookup inventories captured before/after unchanged; HEAD/index/Gov status stable and private HOME/TEMP empty afterward.",
+    "Original326a5zp2 run remains diagnostic history with missing lookup closure. Fresh corrected7f capture is a separate runtime epoch; no retrospective absence or canonical before claim.",
+    "Tracked plugins/ca/hooks/_host.py is present, captured as14th positive input; no negative-input declaration or future absence/membership inference."
+  ]
+}

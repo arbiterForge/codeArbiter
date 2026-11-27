@@ -1,0 +1,23 @@
+{
+  "format": "finite-software-import-and-child-observation/1",
+  "pid": 32016,
+  "executed_repository_modules": {},
+  "loaded_repository_modules": {},
+  "observer_errors": [],
+  "parent_pycache_prefix": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-reader14-current-fb6124c4-add7hs65\\profile\\pycache",
+  "parent_no_user_site": 1,
+  "python": "3.14.6 (tags/v3.14.6:c63aec6, Jun 10 2026, 10:26:10) [MSC v.1944 64 bit (AMD64)]",
+  "executable": "C:\\Python314\\python.exe",
+  "sys_path": [
+    "",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-reader14-current-fb6124c4-add7hs65\\observer",
+    "C:\\Python314\\python314.zip",
+    "C:\\Python314\\DLLs",
+    "C:\\Python314\\Lib",
+    "C:\\Python314",
+    "C:\\Python314\\Lib\\site-packages"
+  ],
+  "python_child_launches": [],
+  "owned_process_executable_identities": {},
+  "limits": "Passive source execution, final import registry and exact child-launch policy witness; no source/test/target replacement."
+}

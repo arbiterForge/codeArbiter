@@ -1,0 +1,150 @@
+{
+  "tool": "actual Vitest4.1.12 V8 source-mapped Istanbul",
+  "scope": "claude-inside.ts owning selected controls only",
+  "source_sha256": "7c75389558766cf58fe32473909dd8627faafce5161ea0d54c69355dd577a0da",
+  "summary": {
+    "lines": {
+      "total": 66,
+      "covered": 65,
+      "skipped": 0,
+      "pct": 98.48
+    },
+    "statements": {
+      "total": 75,
+      "covered": 74,
+      "skipped": 0,
+      "pct": 98.66
+    },
+    "functions": {
+      "total": 10,
+      "covered": 10,
+      "skipped": 0,
+      "pct": 100
+    },
+    "branches": {
+      "total": 54,
+      "covered": 50,
+      "skipped": 0,
+      "pct": 92.59
+    },
+    "branchesTrue": {
+      "total": 0,
+      "covered": 0,
+      "skipped": 0,
+      "pct": "Unknown"
+    }
+  },
+  "critical_changed_observations": [
+    {
+      "kind": "statement",
+      "line": 359,
+      "hits": 7
+    },
+    {
+      "kind": "statement",
+      "line": 360,
+      "hits": 7
+    },
+    {
+      "kind": "statement",
+      "line": 361,
+      "hits": 7
+    },
+    {
+      "kind": "statement",
+      "line": 362,
+      "hits": 7
+    },
+    {
+      "kind": "statement",
+      "line": 370,
+      "hits": 4
+    },
+    {
+      "kind": "statement",
+      "line": 372,
+      "hits": 4
+    },
+    {
+      "kind": "statement",
+      "line": 371,
+      "hits": 4
+    },
+    {
+      "kind": "statement",
+      "line": 371,
+      "hits": 4
+    },
+    {
+      "kind": "statement",
+      "line": 371,
+      "hits": 4
+    },
+    {
+      "kind": "statement",
+      "line": 375,
+      "hits": 4
+    },
+    {
+      "kind": "statement",
+      "line": 405,
+      "hits": 12
+    },
+    {
+      "kind": "statement",
+      "line": 406,
+      "hits": 2
+    },
+    {
+      "kind": "statement",
+      "line": 433,
+      "hits": 5
+    },
+    {
+      "kind": "statement",
+      "line": 434,
+      "hits": 2
+    },
+    {
+      "kind": "branch",
+      "line": 363,
+      "hits": [
+        5,
+        2
+      ]
+    },
+    {
+      "kind": "branch",
+      "line": 363,
+      "hits": [
+        7,
+        5
+      ]
+    },
+    {
+      "kind": "branch",
+      "line": 373,
+      "hits": [
+        3,
+        1
+      ]
+    },
+    {
+      "kind": "branch",
+      "line": 405,
+      "hits": [
+        2,
+        10
+      ]
+    },
+    {
+      "kind": "branch",
+      "line": 433,
+      "hits": [
+        2,
+        3
+      ]
+    }
+  ],
+  "limits": "No wholeproject/platform/installed/Docker qualification; no threshold edits. Both new guards true/false and cancellation cleanup verified/unknown exercised."
+}

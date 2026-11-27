@@ -1,0 +1,48 @@
+[
+  {
+    "close_parent_readers": false,
+    "git_version": "git version 2.53.0",
+    "python": "3.14.4 (main, Jun 18 2026, 14:25:02) [GCC 15.2.0]",
+    "git_pid_matches_hook_parent": true,
+    "returncode": 1,
+    "stderr": "Not committing merge; use 'git commit' to complete the merge.\n",
+    "base": "020173c1024e4ffc113e5a665aa326493e6124bb",
+    "candidate": "c34c970b46de4a6e6717fd76b41fc770c76b64ca",
+    "before": {
+      "HEAD": "020173c1024e4ffc113e5a665aa326493e6124bb",
+      "MERGE_HEAD_exists": false,
+      "staged": "task.txt"
+    },
+    "after": {
+      "HEAD": "020173c1024e4ffc113e5a665aa326493e6124bb",
+      "MERGE_HEAD_exists": true,
+      "MERGE_HEAD": "c34c970b46de4a6e6717fd76b41fc770c76b64ca",
+      "staged": "task.txt",
+      "implementation": "pending candidate\n",
+      "index_sha256": "bf7fb3529e7beb2eca16556d24983a31b386d4024a28ab6dac8a32222f444f95"
+    }
+  },
+  {
+    "close_parent_readers": true,
+    "git_version": "git version 2.53.0",
+    "python": "3.14.4 (main, Jun 18 2026, 14:25:02) [GCC 15.2.0]",
+    "git_pid_matches_hook_parent": true,
+    "returncode": -13,
+    "stderr": "closed reader: no diagnostic bytes available",
+    "base": "020173c1024e4ffc113e5a665aa326493e6124bb",
+    "candidate": "c34c970b46de4a6e6717fd76b41fc770c76b64ca",
+    "before": {
+      "HEAD": "020173c1024e4ffc113e5a665aa326493e6124bb",
+      "MERGE_HEAD_exists": false,
+      "staged": "task.txt"
+    },
+    "after": {
+      "HEAD": "020173c1024e4ffc113e5a665aa326493e6124bb",
+      "MERGE_HEAD_exists": false,
+      "MERGE_HEAD": null,
+      "staged": "task.txt",
+      "implementation": "pending candidate\n",
+      "index_sha256": "7e76e432f98ae9422a58b69e69497c023ba998fd638c86c6761d57efaf4d887d"
+    }
+  }
+]

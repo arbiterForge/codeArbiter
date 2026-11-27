@@ -1,0 +1,111 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "/root/acceptance_security_review: finite accepted normative text and actual owner assessment; private author proposal"
+  },
+  "inputs": {
+    "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+    "docs/state-contracts-major/contracts/finding-dispositions.json": "de8506e391821b5658d41aff80ff53e985e755d60efd5769c53f41bf05962237",
+    "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+    "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+    "plugins/ca-sandbox/COMMANDS.md": "c6a80169f8e3bd107128ed3b097e59afaba272296c2ee00fc4d34b940002c63a",
+    "plugins/ca-sandbox/README.md": "1761ea9c07c32010f3c21e47d56a0faf50cc115da865a7238acc01f6f64fa38b",
+    "plugins/ca-sandbox/commands/sandbox.md": "0da6140363fad993f69641d3d83571c5a64ecf8ac17cab9d4d2f4b6165e8fa02",
+    "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md": "5be31d7fc3f94142792563437adeb92b6a75dbe7fab0a8a40e50a271e22e34f9",
+    "plugins/ca-sandbox/tools/create.ts": "6b4801a9f3af26ffaeaca8d6fcfd35bcf3e7e15aaed5e616ce5df11fe9a96346",
+    "plugins/ca-sandbox/tools/run.ts": "ccc40123e2594539925e3bbcba2f8f9a4d574509349c25f047d298e275dc595a"
+  },
+  "disposition_ids": [
+    "disposition:findings:SW-F05"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/source65-sw9-2ed65753/sw9-clause-assessment.json",
+      "sha256": "c893cd7fc0de73642e06fe2b3c7e9d8ce610cef875372bfbbf420068f41f3d01"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/source65-sw9-2ed65753/source-bindings.json",
+      "sha256": "7d5438daf15ececf16de433cdfa69a7ce00b310d4940b6a085f4966e23f54a41"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/source65-sw9-2ed65753/sw9-baseline-current-joins.json",
+      "sha256": "cb225ccdf9601fa6599f05889add061750b06de9739f6488d10bf69e7792b235"
+    }
+  ],
+  "semantic_mapping": [
+    {
+      "cell": "disposition:findings:SW-F05",
+      "frozen_row_sha256": "1162249599dc2b1beab9e773cdc52747402a3eb0913e7da43e5b0bee273d7c26",
+      "clause_ids": [
+        "SW-F05:1",
+        "SW-F05:2",
+        "SW-F05:3"
+      ],
+      "witnesses": [
+        {
+          "path": "plugins/ca-sandbox/commands/sandbox.md",
+          "start": 10,
+          "end": 14,
+          "file_sha256": "0da6140363fad993f69641d3d83571c5a64ecf8ac17cab9d4d2f4b6165e8fa02",
+          "span_sha256": "342d9045be9b2cbabe5e27b4bc35419020679d3b752b7a1849080e802e88c4cc"
+        },
+        {
+          "path": "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md",
+          "start": 10,
+          "end": 27,
+          "file_sha256": "5be31d7fc3f94142792563437adeb92b6a75dbe7fab0a8a40e50a271e22e34f9",
+          "span_sha256": "a4a255f0fa8126082d4aacde5d473f22e0923913f6c95a9a8c005efdc444c2d3"
+        },
+        {
+          "path": "plugins/ca-sandbox/README.md",
+          "start": 46,
+          "end": 50,
+          "file_sha256": "1761ea9c07c32010f3c21e47d56a0faf50cc115da865a7238acc01f6f64fa38b",
+          "span_sha256": "546954ddfc90aad07f17b69d4a05634a6f7ca500c1967d65dca18dc9b4e561c7"
+        },
+        {
+          "path": "plugins/ca-sandbox/COMMANDS.md",
+          "start": 51,
+          "end": 56,
+          "file_sha256": "c6a80169f8e3bd107128ed3b097e59afaba272296c2ee00fc4d34b940002c63a",
+          "span_sha256": "654ff7aeba6468b551ed6830b81de5d6f209bcfc35b5e2e2f88ecad688fbb992"
+        },
+        {
+          "path": "plugins/ca-sandbox/tools/run.ts",
+          "start": 62,
+          "end": 81,
+          "file_sha256": "ccc40123e2594539925e3bbcba2f8f9a4d574509349c25f047d298e275dc595a",
+          "span_sha256": "98a636a28e1330b02ba1f3f2754b430d12a255fae09b0dfbdbcfeb2ac4fe7ef9"
+        },
+        {
+          "path": "plugins/ca-sandbox/tools/run.ts",
+          "start": 122,
+          "end": 222,
+          "file_sha256": "ccc40123e2594539925e3bbcba2f8f9a4d574509349c25f047d298e275dc595a",
+          "span_sha256": "72bcacc0e9f3a0323b45cbe281e6f2b9bb746790141b8a549743aedaac4b4fb1"
+        },
+        {
+          "path": "plugins/ca-sandbox/tools/create.ts",
+          "start": 439,
+          "end": 503,
+          "file_sha256": "6b4801a9f3af26ffaeaca8d6fcfd35bcf3e7e15aaed5e616ce5df11fe9a96346",
+          "span_sha256": "458d8a57d39c9d4819d55c06974b109e7cea7e83ab2d7241e26771091490e123"
+        }
+      ],
+      "semantic_assessment": "Ordinary accepted network policy names resolve to effective offline; experimental allowlist helpers do not grant ordinary-create capability."
+    }
+  ],
+  "scope": "Only this finite normative finding at actual source; the frozen diagnosis is corrected by the explicitly narrowed accepted contract.",
+  "accepted_contract_note": "Ordinary accepted network policy names resolve to effective offline; experimental allowlist helpers do not grant ordinary-create capability.",
+  "limits": [
+    "Reasoned source guard/effect/retry or finite normative-text conformance only, not observed execution.",
+    "No tests, native/SDK/Pi/Docker/browser/provider/API/network/install or original-owner replay was performed.",
+    "No TESTED/runtime epoch, whole linked task, installed package, model behavior, human acceptance, final-main or publication qualification.",
+    "Existing storage denial, cooperative concurrency, per-resource acquisition, unsupported grammar and platform limits remain; no global atomicity, durability or adversarial attestation.",
+    "Private proposal only. Root owns adoption, original strict authentication, independent review and canonical/index/ref/marker writes."
+  ]
+}

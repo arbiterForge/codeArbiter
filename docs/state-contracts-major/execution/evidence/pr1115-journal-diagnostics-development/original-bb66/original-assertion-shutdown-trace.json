@@ -1,0 +1,53 @@
+[
+  {
+    "schemaVersion": 1,
+    "pid": 804,
+    "node": "v22.19.0",
+    "platform": "win32",
+    "phases": [
+      {
+        "phase": "started",
+        "elapsedMs": 0,
+        "stdinEnded": false,
+        "resources": [
+          "FSReqPromise",
+          "PipeWrap",
+          "PipeWrap",
+          "PipeWrap"
+        ]
+      },
+      {
+        "phase": "stdin_end",
+        "elapsedMs": 1840,
+        "stdinEnded": true,
+        "resources": [
+          "PipeWrap",
+          "PipeWrap",
+          "PipeWrap"
+        ]
+      },
+      {
+        "phase": "session_shutdown_observer",
+        "elapsedMs": 1840,
+        "stdinEnded": true,
+        "resources": [
+          "PipeWrap",
+          "PipeWrap",
+          "PipeWrap"
+        ]
+      },
+      {
+        "phase": "process_exit",
+        "elapsedMs": 1842,
+        "stdinEnded": true,
+        "resources": [
+          "PipeWrap",
+          "PipeWrap",
+          "PipeWrap"
+        ],
+        "exitCode": 0
+      }
+    ],
+    "reallyExitCallEntered": true
+  }
+]

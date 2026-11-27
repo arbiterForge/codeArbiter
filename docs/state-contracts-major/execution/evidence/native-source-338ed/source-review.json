@@ -1,0 +1,750 @@
+{
+  "schema": "codearbiter-native-source-successor-review/1",
+  "reviewer": "/root/pi_program",
+  "source_commit": "338ed6a17a783d233a24edd10cd565777655e934",
+  "disposition": "SOURCE_CONFORMANCE_PRESERVED_ONLY",
+  "changed_inherited_inputs": {
+    "core/artifacts/internal/operations/completion_fixture_test.go": {
+      "prior": "4cfeb45f0cd7e99d0c20d675fe9aac3ab3ad97bbd0935c8435fbc99b60a5c742",
+      "current": "d66fca2f772314af0a214c648543f1efc356b7674669408f963888c9bf4205b1"
+    }
+  },
+  "added_dependency": {
+    "core/artifacts/internal/operations/completion_git_diagnostics_test.go": "8a2ed4fa471d69d26fd16aadc482af9b7d658a4d5bee25c502191823c67f85e5"
+  },
+  "input_cone": "All243 prior native inputs retained,242 unchanged; fixture digest refreshed only after complete two-file delta/source review. New test-only helper included because changed completionGit calls it. All244 current bytes independently equal immutable Git at review HEAD. No producer/Python/runtime claims rebaselined.",
+  "delta_review": [
+    "completionGit still invokes exact Git argv once and preserves CombinedOutput success result; failure remains fatal, adds private Temp trace and bounded read-only diagnostic context. Ambient trace disclosure selectors cleared case-insensitively.",
+    "New _test.go helper is test-only, read-only Git version/common-dir/worktree-list and bounded directory/trace observations with finite waits/output caps; no retry, repair, canonical mutation, grant, policy, defer/validation/ticket/CLI response behavior change.",
+    "All13 production source guard/effect/retry witnesses unchanged. Reviewed actual Run/deferred close, per-FS memo, generic update\u2192Structural\u2192save, closed schemas/Ready, CheckTicket, legacy prerequisite projection, CLI Run\u2192budget\u2192stdout/recover, context typed claims/provenance\u2192current evidence path."
+  ],
+  "semantic_mapping": [
+    {
+      "cell": "disposition:transitions:N01:07",
+      "proposed_status": "PRESERVED",
+      "frozen_clause": {
+        "from_state": "locked",
+        "from": "locked",
+        "event": "return or error",
+        "guard": "deferred cleanup",
+        "to": "released",
+        "effects": "Unlock and close filesystem; discard per-operation memo.",
+        "failure_retry": "No daemon or persistent in-memory coordinator.",
+        "source": [
+          {
+            "path": "core/artifacts/internal/operations/engine.go",
+            "symbol": "Run",
+            "lines": [
+              76
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/engine.go"
+          }
+        ],
+        "transition_id": "N01:07"
+      },
+      "contract_sha256": "e1f039e228cff857abe2af57d4343107e2e47d9f10ded49288ddafd515f809e9",
+      "inspected_guard_effect_retry": [
+        "Run returns immediately if opening the filesystem fails. After successful open it registers defer f.Close before every later return; after successful lock it registers defer unlock. Go defer order releases the lock before closing the filesystem on ordinary return/error or recoverable stack unwinding.",
+        "Store.Open creates a new FS and newMemo for that handle. The Engine is allocated within Run with that FS; production openStore is the store.Open function. No daemon/global memo is assigned. Memo lifetime is scoped to the per-call handle reachability, not an explicit memory wipe claim.",
+        "Native init-store has its own immediate unlock and is still covered by deferred filesystem close. Failure before a lock is acquired has no acquired unlock obligation."
+      ],
+      "current_source_witnesses": [
+        {
+          "path": "core/artifacts/internal/operations/engine.go",
+          "line": 78,
+          "symbol_or_anchor": "func Run(",
+          "sha256": "7a227941034c9d3903036c5f5769bf7dee8f60cefae969af060661764a4b9e01"
+        },
+        {
+          "path": "core/artifacts/internal/store/fs_portable.go",
+          "line": 45,
+          "symbol_or_anchor": "func Open(",
+          "sha256": "5c0ba079432d6e7c8c422c5145b9f715cc017848fd88dc5f23282a99351e6be9"
+        },
+        {
+          "path": "core/artifacts/internal/store/fs_portable.go",
+          "line": 72,
+          "symbol_or_anchor": "func (f *FS) Close(",
+          "sha256": "5c0ba079432d6e7c8c422c5145b9f715cc017848fd88dc5f23282a99351e6be9"
+        }
+      ],
+      "observed_assertions": [],
+      "source_review": "Current finite controlling source inspected by /root/pi_program at 338ed6a17a783d233a24edd10cd565777655e934; witnesses exactly match retained source-trace hashes. Changed completion fixture and new failure-only helper reviewed separately; neither is production guard/effect code.",
+      "assumptions": [
+        "Go defer semantics apply; process termination/os.Exit and uncooperative filesystem attacks are outside this return/error contract."
+      ],
+      "runtime_limits": [
+        "Existing runtime tests exercise successful return and subsequent operations, lock exclusion/retry and bounded per-operation reuse; no named test directly observes every deferred close on every error branch."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:N07:02",
+      "proposed_status": "PRESERVED",
+      "frozen_clause": {
+        "from_state": "resolved",
+        "from": "resolved",
+        "event": "record.update status=open",
+        "guard": "valid closed schema",
+        "to": "open",
+        "effects": "Retain explicit unresolved state; blocking decision causes Ready failure.",
+        "failure_retry": "No specialized irreversible transition policy: generic apply permits reopening. Deferred is a criterion disposition or decomposition question state, not a spec open-decision status.",
+        "source": [
+          {
+            "path": "core/artifacts/internal/validate/validate.go",
+            "symbol": "Ready",
+            "lines": [
+              437
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/validate/validate.go"
+          }
+        ],
+        "transition_id": "N07:02"
+      },
+      "contract_sha256": "7473e3a029df1772daf36662aa867ff03517ea8fa4876e677b2e670927c2adf9",
+      "inspected_guard_effect_retry": [
+        "Generic record.update clones the document, finds the active symbol, keeps its immutable ID, and writes supplied fields before structural validation. It contains no irreversible open-decision transition rule.",
+        "The closed open_decision schema allows exactly open/resolved status. Generic apply can therefore move resolved to open if all record fields remain valid. Prepare performs Structural, not Ready; saving an explicitly unresolved draft remains possible.",
+        "Ready separately emits OPEN_BLOCKER whenever blocking is true and status is not resolved. The update changes semantic content/revision; invalid structure is rejected before save."
+      ],
+      "current_source_witnesses": [
+        {
+          "path": "core/artifacts/internal/operations/mutations.go",
+          "line": 208,
+          "symbol_or_anchor": "func Changes(",
+          "sha256": "55b954e73dfc8c2562ce02ae117aaea85761e17d408089ec05d98ea00fd3c8af"
+        },
+        {
+          "path": "core/artifacts/internal/render/render.go",
+          "line": 50,
+          "symbol_or_anchor": "func Prepare(",
+          "sha256": "3f22d0afd949d2bd3388b9c0fa8bf1921690abe1d270161148befccece57439f"
+        },
+        {
+          "path": "core/artifacts/internal/validate/validate.go",
+          "line": 450,
+          "symbol_or_anchor": "func Ready(",
+          "sha256": "a08f8769393e8fa6f468b9557d6006393c5cc1adc6a317a2be80e2a5fcc61c56"
+        },
+        {
+          "path": "core/artifacts/internal/operations/engine.go",
+          "line": 482,
+          "symbol_or_anchor": "func (e *Engine) save(",
+          "sha256": "7a227941034c9d3903036c5f5769bf7dee8f60cefae969af060661764a4b9e01"
+        },
+        {
+          "path": "core/artifacts/internal/schema/common.schema.json",
+          "line": 461,
+          "symbol_or_anchor": "\"open_decision\":",
+          "sha256": "2238ef2c68073e4018d5881906b1200221133d70d288b82f06b607fec0b650ee"
+        }
+      ],
+      "observed_assertions": [],
+      "source_review": "Current finite controlling source inspected by /root/pi_program at 338ed6a17a783d233a24edd10cd565777655e934; witnesses exactly match retained source-trace hashes. Changed completion fixture and new failure-only helper reviewed separately; neither is production guard/effect code.",
+      "assumptions": [],
+      "runtime_limits": [
+        "No existing named assertion found for the complete resolved\u2192open\u2192Ready OPEN_BLOCKER sequence or invalid status preserving the original document. Static schema/control-flow conformance supports the baseline; no runtime test result is invented."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:N12:03",
+      "proposed_status": "PRESERVED",
+      "frozen_clause": {
+        "from_state": "legacy satisfied, no ordinary observation",
+        "from": "legacy satisfied, no ordinary observation",
+        "event": "ordinary assessment",
+        "guard": "historical receipt not live assessed here",
+        "to": "unknown / legacy_receipt_unassessed",
+        "effects": "Report recorded legacy flag separately.",
+        "failure_retry": "Never silently promote old satisfied flag into fresh observed fact.",
+        "source": [
+          {
+            "path": "core/artifacts/internal/operations/prerequisite_observation.go",
+            "symbol": "recordPrerequisite",
+            "lines": [
+              17
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/prerequisite_observation.go"
+          }
+        ],
+        "transition_id": "N12:03"
+      },
+      "contract_sha256": "d3891d9ea86c1a642e07289b5782d40e76c3fb366b46fcb8513f714ddf72c640",
+      "inspected_guard_effect_retry": [
+        "outcome, provenance initialized unknown, none.",
+        "Only matching ordinary observation can assign outcome.",
+        "else-if legacy prerequisite state equals satisfied assigns provenance legacy_receipt_unassessed, leaving outcome unknown.",
+        "Return exposes recorded_state independently and literal evidence_assessed false."
+      ],
+      "current_source_witnesses": [
+        {
+          "path": "core/artifacts/internal/model/assistive.go",
+          "sha256": "9b4340da66568a9250c37eca228efe3b3b6788a799eb246d2e13c9b8ac6a4a9c",
+          "line": 83,
+          "symbol_or_anchor": "PrerequisiteAssessment"
+        }
+      ],
+      "observed_assertions": [],
+      "source_review": "Current finite controlling source inspected by /root/pi_program at 338ed6a17a783d233a24edd10cd565777655e934; witnesses exactly match retained source-trace hashes. Changed completion fixture and new failure-only helper reviewed separately; neither is production guard/effect code.",
+      "assumptions": [
+        "Structural admitted plan supplies execution/prerequisites as defined; this is read projection, no fresh legacy receipt validity assertion."
+      ],
+      "runtime_limits": [
+        "No original named assertion sets legacy satisfied with no observation; proposed PRESERVED relies on the exact source branch, not another test outcome."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:N20:04",
+      "proposed_status": "PRESERVED",
+      "frozen_clause": {
+        "from_state": "completed delivery",
+        "from": "completed delivery",
+        "event": "CheckTicket",
+        "guard": "exact current context selection and full delivery offset",
+        "to": "valid or stale ticket",
+        "effects": "Validate retained ticket only.",
+        "failure_retry": "No production call sites currently consume CheckTicket; ordinary task-start ignores historical ticket.",
+        "source": [
+          {
+            "path": "core/artifacts/internal/read/read.go",
+            "symbol": "CheckTicket",
+            "lines": [
+              383
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/read/read.go"
+          }
+        ],
+        "transition_id": "N20:04"
+      },
+      "contract_sha256": "2e97e5fdd04d72aece81043c7c856d8d472ff4ef7f0f36a384cb09a232bdda11",
+      "inspected_guard_effect_retry": [
+        "CheckTicket loads the retained content-addressed receipt, checks purpose=context plus exact artifact/task symbol, computes current Context and compares vector_sha256, manifest_sha256 and full delivered offset=len(items). It returns the appropriate error without changing task progress.",
+        "The current production Go call graph has no CheckTicket consumer: the only calls outside its definition are two Linux-only direct tests. Ordinary task-start routes to recordWork and does not consult historical CheckTicket.",
+        "Retained ticket validation does not grant authority or start work. Changed selection/manifest/offset refuses; no private context-key is used."
+      ],
+      "current_source_witnesses": [
+        {
+          "path": "core/artifacts/internal/read/read.go",
+          "line": 383,
+          "symbol_or_anchor": "func CheckTicket(",
+          "sha256": "8a5b99fb3cdcc08611b36d56382251b053e8b884b8112e3506f412a5dcee5c39"
+        },
+        {
+          "path": "core/artifacts/internal/store/infrastructure.go",
+          "line": 193,
+          "symbol_or_anchor": "func (f *FS) ContextToken(",
+          "sha256": "d6b6a81415a6b1da916b8e862ea17f8b83eb92c836a501d80a5e004e77677328"
+        },
+        {
+          "path": "core/artifacts/internal/operations/engine.go",
+          "line": 78,
+          "symbol_or_anchor": "func Run(",
+          "sha256": "7a227941034c9d3903036c5f5769bf7dee8f60cefae969af060661764a4b9e01"
+        },
+        {
+          "path": "core/artifacts/internal/operations/lifecycle.go",
+          "line": 252,
+          "symbol_or_anchor": "func (e *Engine) progress(",
+          "sha256": "f2733f681dd9d6271138dcdde23e9cd84d09c9947c28eb94d7489054b69eb362"
+        }
+      ],
+      "observed_assertions": [],
+      "source_review": "Current finite controlling source inspected by /root/pi_program at 338ed6a17a783d233a24edd10cd565777655e934; witnesses exactly match retained source-trace hashes. Changed completion fixture and new failure-only helper reviewed separately; neither is production guard/effect code.",
+      "assumptions": [],
+      "runtime_limits": [
+        "Both existing selectors are Linux-build-only and absent from the actual Windows475 population. They cover invented/forged receipt rejection and content-addressing; no named positive CheckTicket or stale vector/manifest/partial-offset matrix was found."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:N25:02",
+      "proposed_status": "PRESERVED",
+      "frozen_clause": {
+        "from_state": "question open/deferred",
+        "from": "question open/deferred",
+        "event": "record.update status answered",
+        "guard": "question type; nonblank answer",
+        "to": "answered",
+        "effects": "Persist answer and semantic revision.",
+        "failure_retry": "Answered without answer rejects; no requirement that a specific actor event occurred.",
+        "source": [
+          {
+            "path": "core/artifacts/internal/validate/knowledge.go",
+            "symbol": "knowledgeStructure",
+            "lines": [
+              13
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/validate/knowledge.go"
+          }
+        ],
+        "transition_id": "N25:02"
+      },
+      "contract_sha256": "ae8c2502945c5fbb5e29e9f9d25e681e72028f5b066d292f26851fdbd41f15de",
+      "inspected_guard_effect_retry": [
+        "Question is a decomposition record type. The closed schema permits open,answered,deferred statuses; knowledgeStructure requires status exactly for question records.",
+        "Changing question status to answered requires nonblank answer. Structural validation happens before native save; an answered-without-answer update therefore cannot publish a new canonical revision.",
+        "A valid generic update persists the answer and revision via the common transactional save; no user/event receipt is required by this generic record contract."
+      ],
+      "current_source_witnesses": [
+        {
+          "path": "core/artifacts/internal/operations/mutations.go",
+          "line": 208,
+          "symbol_or_anchor": "func Changes(",
+          "sha256": "55b954e73dfc8c2562ce02ae117aaea85761e17d408089ec05d98ea00fd3c8af"
+        },
+        {
+          "path": "core/artifacts/internal/render/render.go",
+          "line": 50,
+          "symbol_or_anchor": "func Prepare(",
+          "sha256": "3f22d0afd949d2bd3388b9c0fa8bf1921690abe1d270161148befccece57439f"
+        },
+        {
+          "path": "core/artifacts/internal/validate/knowledge.go",
+          "line": 13,
+          "symbol_or_anchor": "func knowledgeStructure(",
+          "sha256": "49939ddf0aab44e9b2ce84b67648a0984a5d5cb14f86507ed1051ea478706609"
+        },
+        {
+          "path": "core/artifacts/internal/operations/engine.go",
+          "line": 482,
+          "symbol_or_anchor": "func (e *Engine) save(",
+          "sha256": "7a227941034c9d3903036c5f5769bf7dee8f60cefae969af060661764a4b9e01"
+        },
+        {
+          "path": "core/artifacts/internal/schema/decomposition.schema.json",
+          "line": 207,
+          "symbol_or_anchor": "\"promotion\":",
+          "sha256": "773cda5e5e7abea276f67ba6a0d10173e03d0769350365eaf42644c21e29476b"
+        }
+      ],
+      "observed_assertions": [],
+      "source_review": "Current finite controlling source inspected by /root/pi_program at 338ed6a17a783d233a24edd10cd565777655e934; witnesses exactly match retained source-trace hashes. Changed completion fixture and new failure-only helper reviewed separately; neither is production guard/effect code.",
+      "assumptions": [],
+      "runtime_limits": [
+        "No direct existing named answer/nonblank/refusal-preserves-revision assertion found. Source conformance is limited to the closed shape, validator predicate and pre-save ordering."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:N25:03",
+      "proposed_status": "PRESERVED",
+      "frozen_clause": {
+        "from_state": "answered/open",
+        "from": "answered/open",
+        "event": "record.update status open/deferred",
+        "guard": "valid closed schema",
+        "to": "open/deferred",
+        "effects": "Permit reopening/defer; no irreversible policy encoded.",
+        "failure_retry": "Only question records may carry status/answer.",
+        "source": [
+          {
+            "path": "core/artifacts/internal/validate/knowledge.go",
+            "symbol": "knowledgeStructure",
+            "lines": [
+              13
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/validate/knowledge.go"
+          }
+        ],
+        "transition_id": "N25:03"
+      },
+      "contract_sha256": "db30f5c2aa3165a5df4dfa3cd7d43886661ce39fe2457f0de57b27241487295e",
+      "inspected_guard_effect_retry": [
+        "The same closed decomposition record schema allows open and deferred. record.update has no irreversible answered-state rule, so an answered/open question can reopen or defer if the resulting record remains structurally valid.",
+        "knowledgeStructure rejects status or answer on non-question records. Generic update retains immutable identity and saves one new semantic revision only after Structural passes.",
+        "Ready does not reinterpret decomposition question status as artifact authority. Retained answer text may remain when reopening; no additional actor/event requirement is introduced."
+      ],
+      "current_source_witnesses": [
+        {
+          "path": "core/artifacts/internal/operations/mutations.go",
+          "line": 208,
+          "symbol_or_anchor": "func Changes(",
+          "sha256": "55b954e73dfc8c2562ce02ae117aaea85761e17d408089ec05d98ea00fd3c8af"
+        },
+        {
+          "path": "core/artifacts/internal/render/render.go",
+          "line": 50,
+          "symbol_or_anchor": "func Prepare(",
+          "sha256": "3f22d0afd949d2bd3388b9c0fa8bf1921690abe1d270161148befccece57439f"
+        },
+        {
+          "path": "core/artifacts/internal/validate/knowledge.go",
+          "line": 13,
+          "symbol_or_anchor": "func knowledgeStructure(",
+          "sha256": "49939ddf0aab44e9b2ce84b67648a0984a5d5cb14f86507ed1051ea478706609"
+        },
+        {
+          "path": "core/artifacts/internal/operations/engine.go",
+          "line": 482,
+          "symbol_or_anchor": "func (e *Engine) save(",
+          "sha256": "7a227941034c9d3903036c5f5769bf7dee8f60cefae969af060661764a4b9e01"
+        },
+        {
+          "path": "core/artifacts/internal/schema/decomposition.schema.json",
+          "line": 207,
+          "symbol_or_anchor": "\"promotion\":",
+          "sha256": "773cda5e5e7abea276f67ba6a0d10173e03d0769350365eaf42644c21e29476b"
+        }
+      ],
+      "observed_assertions": [],
+      "source_review": "Current finite controlling source inspected by /root/pi_program at 338ed6a17a783d233a24edd10cd565777655e934; witnesses exactly match retained source-trace hashes. Changed completion fixture and new failure-only helper reviewed separately; neither is production guard/effect code.",
+      "assumptions": [],
+      "runtime_limits": [
+        "No direct named answered\u2192open/deferred matrix or non-question status/answer refusal sequence found. The relevant enum/type/control-flow are source-conformant."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:N25:05",
+      "proposed_status": "PRESERVED",
+      "frozen_clause": {
+        "from_state": "work_item unpromoted",
+        "from": "work_item unpromoted",
+        "event": "record.update promotion",
+        "guard": "work_item type; exact board_id or work_id + origin shape",
+        "to": "promoted reference",
+        "effects": "Store reference only; native generic apply does not itself create linked work.",
+        "failure_retry": "Cross-store promotion reconciliation belongs to Python caller; shape alone does not prove target exists.",
+        "source": [
+          {
+            "path": "core/artifacts/internal/validate/knowledge.go",
+            "symbol": "knowledgeStructure",
+            "lines": [
+              13
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/validate/knowledge.go"
+          }
+        ],
+        "transition_id": "N25:05"
+      },
+      "contract_sha256": "40258cb1cf712fe447b8afa5e5d9c800f30115d850cecdfca3fc48e339dfac97",
+      "inspected_guard_effect_retry": [
+        "Promotion is permitted only on work_item records. The closed promotion shape is null or exactly one origin+board_id or origin+WORK-[A-F0-9]{32} work_id form; malformed or non-work-item promotion fails Structural before save.",
+        "Generic record.update stores a back-reference through ordinary save. It does not invoke work-create or verify that the cross-store target exists. Cross-store retry/reconciliation is a caller responsibility.",
+        "The existing candidate-is-not-published test confirms saving an unpromoted candidate changes neither the legacy board nor promotion field; Python promotion adapters separately own actual work creation and idempotent repair."
+      ],
+      "current_source_witnesses": [
+        {
+          "path": "core/artifacts/internal/operations/mutations.go",
+          "line": 208,
+          "symbol_or_anchor": "func Changes(",
+          "sha256": "55b954e73dfc8c2562ce02ae117aaea85761e17d408089ec05d98ea00fd3c8af"
+        },
+        {
+          "path": "core/artifacts/internal/render/render.go",
+          "line": 50,
+          "symbol_or_anchor": "func Prepare(",
+          "sha256": "3f22d0afd949d2bd3388b9c0fa8bf1921690abe1d270161148befccece57439f"
+        },
+        {
+          "path": "core/artifacts/internal/validate/knowledge.go",
+          "line": 13,
+          "symbol_or_anchor": "func knowledgeStructure(",
+          "sha256": "49939ddf0aab44e9b2ce84b67648a0984a5d5cb14f86507ed1051ea478706609"
+        },
+        {
+          "path": "core/artifacts/internal/operations/engine.go",
+          "line": 482,
+          "symbol_or_anchor": "func (e *Engine) save(",
+          "sha256": "7a227941034c9d3903036c5f5769bf7dee8f60cefae969af060661764a4b9e01"
+        },
+        {
+          "path": "core/artifacts/internal/schema/decomposition.schema.json",
+          "line": 207,
+          "symbol_or_anchor": "\"promotion\":",
+          "sha256": "773cda5e5e7abea276f67ba6a0d10173e03d0769350365eaf42644c21e29476b"
+        }
+      ],
+      "observed_assertions": [],
+      "source_review": "Current finite controlling source inspected by /root/pi_program at 338ed6a17a783d233a24edd10cd565777655e934; witnesses exactly match retained source-trace hashes. Changed completion fixture and new failure-only helper reviewed separately; neither is production guard/effect code.",
+      "assumptions": [],
+      "runtime_limits": [
+        "Candidate nonpublication is an actual Windows named pass. No native named promotion shape/type matrix or arbitrary syntactically valid but nonexistent target probe was found.",
+        "Existing Python KnowledgeCLITest promotion tests exercise caller repair/work creation, not a substitute for every native generic-promotion rejection clause."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:N36:03",
+      "proposed_status": "PRESERVED",
+      "frozen_clause": {
+        "from_state": "any memo state",
+        "from": "any memo state",
+        "event": "operation closes FS",
+        "guard": "deferred close",
+        "to": "discarded",
+        "effects": "No cross-operation trust/cache survives.",
+        "failure_retry": "Completion normalized cache only valid if no intervening output/catalog write in same operation.",
+        "source": [
+          {
+            "path": "core/artifacts/internal/evidence/completion_workspace.go",
+            "symbol": "completionWorkspaceKey",
+            "lines": [
+              92
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/evidence/completion_workspace.go"
+          }
+        ],
+        "transition_id": "N36:03"
+      },
+      "contract_sha256": "868a16961af8d696263e052134f45aa4a662edd3b71991fabd5c9a2c3da843fd",
+      "inspected_guard_effect_retry": [
+        "Each Run calls openStore and defers Close; Open allocates a fresh newMemo per FS and no Run handle escapes. completionWorkspaceKey is explicitly an operation-memo key; normalized reuse is conditional on no intervening catalog/output write, not automatically invalidated by every arbitrary caller. Reusing completion consumers operate before publication. No daemon/global cross-operation trust cache exists."
+      ],
+      "current_source_witnesses": [
+        {
+          "path": "core/artifacts/internal/operations/engine.go",
+          "sha256": "7a227941034c9d3903036c5f5769bf7dee8f60cefae969af060661764a4b9e01",
+          "line": 78,
+          "symbol_or_anchor": null
+        },
+        {
+          "path": "core/artifacts/internal/store/fs_portable.go",
+          "sha256": "5c0ba079432d6e7c8c422c5145b9f715cc017848fd88dc5f23282a99351e6be9",
+          "line": 24,
+          "symbol_or_anchor": null
+        },
+        {
+          "path": "core/artifacts/internal/evidence/completion_workspace.go",
+          "sha256": "e9c84c68692521f2d316c26e47158345ffd35fd9cf23f4df307a14679f145e05",
+          "line": null,
+          "symbol_or_anchor": "completionWorkspaceKey"
+        }
+      ],
+      "observed_assertions": [],
+      "source_review": "Current finite controlling source inspected by /root/pi_program at 338ed6a17a783d233a24edd10cd565777655e934; witnesses exactly match retained source-trace hashes. Changed completion fixture and new failure-only helper reviewed separately; neither is production guard/effect code.",
+      "assumptions": [],
+      "runtime_limits": [
+        "Operation ownership/lifetime source contract only; Close does not promise synchronous erasure of an externally retained FS pointer. No timing/memory-retention or cross-process runtime claim."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:N37:02",
+      "proposed_status": "PRESERVED",
+      "frozen_clause": {
+        "from_state": "durable result",
+        "from": "durable result",
+        "event": "encode bounded response",
+        "guard": "encoded payload fits budget",
+        "to": "response encoded",
+        "effects": "Build JSON stdout result.",
+        "failure_retry": "RESPONSE_TOO_LARGE after Run may occur after side effect; do not infer no commit from error.",
+        "source": [
+          {
+            "path": "core/artifacts/cmd/ca-artifact/main.go",
+            "symbol": "main",
+            "lines": [
+              16
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/cmd/ca-artifact/main.go"
+          }
+        ],
+        "transition_id": "N37:02"
+      },
+      "contract_sha256": "dd6c60ea86518dd6e79aedf0f4b5398bcf4eeeae66fec094d2ae26d146fac08a",
+      "inspected_guard_effect_retry": [
+        "CLI calls operations.Run before serializing the success envelope. It marshals that envelope, selects default65536 or a present request budget, and rejects encoded length+newline above the limit with RESPONSE_TOO_LARGE.",
+        "The size check precedes stdout success write but follows Run. Therefore its error does not establish rollback or absence of a completed mutation. Recovery/operation identity remains authoritative for uncertain acknowledgement.",
+        "Native source is unchanged for this wrapper; the one CLI named test only proves a JSON public fault and matching unknown-operation exit classification."
+      ],
+      "current_source_witnesses": [
+        {
+          "path": "core/artifacts/cmd/ca-artifact/main.go",
+          "line": 17,
+          "symbol_or_anchor": "func run(",
+          "sha256": "157e5443911f3e5c8e6b0e531d9340cbbec5f17d13f441535a9b7a5c88530bcb"
+        }
+      ],
+      "observed_assertions": [],
+      "source_review": "Current finite controlling source inspected by /root/pi_program at 338ed6a17a783d233a24edd10cd565777655e934; witnesses exactly match retained source-trace hashes. Changed completion fixture and new failure-only helper reviewed separately; neither is production guard/effect code.",
+      "assumptions": [],
+      "runtime_limits": [
+        "No named runtime fixture covers a successful Run whose final encoded envelope exceeds the wrapper budget, especially after a mutation. Source ordering establishes the limited no-rollback contract, not a local execution observation."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:N37:03",
+      "proposed_status": "PRESERVED",
+      "frozen_clause": {
+        "from_state": "response encoded",
+        "from": "response encoded",
+        "event": "stdout write",
+        "guard": "write succeeds",
+        "to": "ack delivered",
+        "effects": "Caller observes result.",
+        "failure_retry": "Write failure exits5; same operation ID/recovery state is authority for uncertain acknowledgement.",
+        "source": [
+          {
+            "path": "core/artifacts/cmd/ca-artifact/main.go",
+            "symbol": "main",
+            "lines": [
+              16
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/cmd/ca-artifact/main.go"
+          }
+        ],
+        "transition_id": "N37:03"
+      },
+      "contract_sha256": "0c010126b1f8bcf757fdceed874ff95c2bb7fd26bed9daf7a5ba3c5938c91399",
+      "inspected_guard_effect_retry": [
+        "After passing encoding/budget checks, CLI writes the success JSON plus newline once. A returned stdout write error yields exit5; successful writes proceed to ordinary exit0 or validation exit2 as applicable.",
+        "There is no rollback on acknowledgement write failure. Run may already have committed; the caller must inspect/retry the same operation ID according to native recovery state.",
+        "The public-fault helper has a separate best-effort write; it is not the successful acknowledgement branch being preserved here."
+      ],
+      "current_source_witnesses": [
+        {
+          "path": "core/artifacts/cmd/ca-artifact/main.go",
+          "line": 17,
+          "symbol_or_anchor": "func run(",
+          "sha256": "157e5443911f3e5c8e6b0e531d9340cbbec5f17d13f441535a9b7a5c88530bcb"
+        }
+      ],
+      "observed_assertions": [],
+      "source_review": "Current finite controlling source inspected by /root/pi_program at 338ed6a17a783d233a24edd10cd565777655e934; witnesses exactly match retained source-trace hashes. Changed completion fixture and new failure-only helper reviewed separately; neither is production guard/effect code.",
+      "assumptions": [
+        "io.Writer follows its interface contract; this branch guarantees handling a returned write error, not an independently proven arbitrary writer implementation."
+      ],
+      "runtime_limits": [
+        "No direct named stdout-write-error/exit5 assertion found. Existing actual JSON-fault test does not exercise successful-envelope write failure."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:N37:04",
+      "proposed_status": "PRESERVED",
+      "frozen_clause": {
+        "from_state": "operation running",
+        "from": "operation running",
+        "event": "panic",
+        "guard": "recover handler",
+        "to": "error acknowledgement",
+        "effects": "Return INTERNAL_ERROR with recovery inspection advice.",
+        "failure_retry": "No rollback claim; transaction state controls safe retry.",
+        "source": [
+          {
+            "path": "core/artifacts/cmd/ca-artifact/main.go",
+            "symbol": "main",
+            "lines": [
+              16
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/cmd/ca-artifact/main.go"
+          }
+        ],
+        "transition_id": "N37:04"
+      },
+      "contract_sha256": "c4d8aa232fafc96b5f78906a24c9458c0d44a61d017b8f6be1e7f81efebfd22a",
+      "inspected_guard_effect_retry": [
+        "CLI installs a deferred recover handler before argument/request/Run processing. A recoverable panic is converted to INTERNAL_ERROR with explicit no-completion/recovery-inspection advice and the public fault exit class.",
+        "The handler never claims transaction rollback. Canonical recovery state remains the source of safe retry truth after a possible effect.",
+        "A failure/panic inside the reporting writers themselves is not promised as a second independently recoverable failure by this source contract."
+      ],
+      "current_source_witnesses": [
+        {
+          "path": "core/artifacts/cmd/ca-artifact/main.go",
+          "line": 17,
+          "symbol_or_anchor": "func run(",
+          "sha256": "157e5443911f3e5c8e6b0e531d9340cbbec5f17d13f441535a9b7a5c88530bcb"
+        }
+      ],
+      "observed_assertions": [],
+      "source_review": "Current finite controlling source inspected by /root/pi_program at 338ed6a17a783d233a24edd10cd565777655e934; witnesses exactly match retained source-trace hashes. Changed completion fixture and new failure-only helper reviewed separately; neither is production guard/effect code.",
+      "assumptions": [
+        "A recoverable Go panic and functioning diagnostic writers are required; fatal runtime/process termination and a second panic in reporting are excluded."
+      ],
+      "runtime_limits": [
+        "No direct named injected panic\u2192INTERNAL_ERROR/recovery-advice assertion found; the ordinary public fault named pass is only partial output-shape evidence."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:N38:02",
+      "proposed_status": "PRESERVED",
+      "frozen_clause": {
+        "from_state": "any fact/constraint status",
+        "from": "any fact/constraint status",
+        "event": "propose typed claim",
+        "guard": "closed state vocabulary; evidence refs and valid source/consumer paths",
+        "to": "requested proposed/inferred/observed or existing_applicable/observed_upstream/proposed_adoption",
+        "effects": "Retain declared meaning distinct from source revalidation and permission.",
+        "failure_retry": "No automatic promotion to approved policy.",
+        "source": [
+          {
+            "path": "core/artifacts/internal/contextdocument/contract.go",
+            "symbol": "validateEntry",
+            "lines": [
+              177
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/contextdocument/contract.go"
+          }
+        ],
+        "transition_id": "N38:02"
+      },
+      "contract_sha256": "3d5d3ee1d38a9ee77aee600a83a163833beb76dbd8567c15df3c21533f9d0218",
+      "inspected_guard_effect_retry": [
+        "validateEntry closes kind-specific key sets; fact state only observed/inferred/proposed and constraint-reference status only existing_applicable/observed_upstream/proposed_adoption. refs and relative scope validation precede return. No route grants approval from declared status."
+      ],
+      "current_source_witnesses": [
+        {
+          "path": "core/artifacts/internal/contextdocument/contract.go",
+          "sha256": "62d24a2193b7a68a659c3f3beaa8d09b34ac03d165e781aae20939d8ad2ca84a",
+          "line": 177,
+          "symbol_or_anchor": null
+        }
+      ],
+      "observed_assertions": [],
+      "source_review": "Current finite controlling source inspected by /root/pi_program at 338ed6a17a783d233a24edd10cd565777655e934; witnesses exactly match retained source-trace hashes. Changed completion fixture and new failure-only helper reviewed separately; neither is production guard/effect code.",
+      "assumptions": [],
+      "runtime_limits": [
+        "Finite source-contract conformance only; no assertion all state variants or authenticity/source revalidation executed."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:N38:03",
+      "proposed_status": "PRESERVED",
+      "frozen_clause": {
+        "from_state": "provenance claim",
+        "from": "provenance claim",
+        "event": "propose semantic review",
+        "guard": "closed unreviewed/reviewed/identity_acknowledged shape; reviewed requires reference",
+        "to": "declared review state",
+        "effects": "Retain reference and provenance; apply independently reacquires source bytes/membership.",
+        "failure_retry": "A review label is not authenticated review authority.",
+        "source": [
+          {
+            "path": "core/artifacts/internal/contextdocument/operations.go",
+            "symbol": "parseProvenanceV2",
+            "lines": [
+              199
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/contextdocument/operations.go"
+          }
+        ],
+        "transition_id": "N38:03"
+      },
+      "contract_sha256": "fc9c6554394b2c0df08b9bdc6ec9d40976f28dd10eba321d7f141e062905594c",
+      "inspected_guard_effect_retry": [
+        "parseProvenanceV2 requires exact claim/review keys; state only unreviewed/reviewed/identity_acknowledged; reviewed requires safe nonempty reference. ApplyOrdinary separately calls ValidateCurrentEvidence before mutation; reference label is not authority."
+      ],
+      "current_source_witnesses": [
+        {
+          "path": "core/artifacts/internal/contextdocument/operations.go",
+          "sha256": "68e53440d35b83b7ec0f382bec5623232a514eed2704ac8241322a30f45edb8f",
+          "line": 199,
+          "symbol_or_anchor": null
+        },
+        {
+          "path": "core/artifacts/internal/contextdocument/operations.go",
+          "sha256": "68e53440d35b83b7ec0f382bec5623232a514eed2704ac8241322a30f45edb8f",
+          "line": null,
+          "symbol_or_anchor": "ApplyOrdinary"
+        }
+      ],
+      "observed_assertions": [],
+      "source_review": "Current finite controlling source inspected by /root/pi_program at 338ed6a17a783d233a24edd10cd565777655e934; witnesses exactly match retained source-trace hashes. Changed completion fixture and new failure-only helper reviewed separately; neither is production guard/effect code.",
+      "assumptions": [],
+      "runtime_limits": [
+        "Finite source clause preserved; no independent review authentication, model quality or runtime matrix of all semantic-review state variants."
+      ]
+    }
+  ],
+  "new_tests_executed": false,
+  "native_build_executed": false,
+  "limits": [
+    "PRESERVED source clauses only. All retained exceptional runtime gaps/assumptions remain; no missing case is labeled TESTED.",
+    "128 legacy runtime UNKNOWN cells are outside proposal; no whole native/runtime/membership qualification inferred.",
+    "Original source10/source3 records and their histories remain immutable; this is a new source review, not old execution at new commit."
+  ]
+}

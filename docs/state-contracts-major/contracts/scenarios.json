@@ -1,0 +1,384 @@
+{
+  "schema": "codearbiter-handoff-scenarios/1",
+  "source_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "execution_state": "NOT_RUN",
+  "note": "Proposed composed acceptance scenarios. Task-specific cases remain in the complete owner ledgers. External production settlement is Q-03 and is not a prepublication prerequisite.",
+  "scenarios": [
+    {
+      "id": "SEQ-01",
+      "name": "Mode revisitation",
+      "sequence": "arbiter → dangerous → arbiter; repeat unchanged prompt; compaction; new session",
+      "assertion": "The selected persona is delivered when selection changes, unchanged events deduplicate, compaction/session identity remains correct and deterministic guards stay active.",
+      "finding_ids": [
+        "HOOK-F01"
+      ],
+      "status": "NOT_RUN",
+      "evidence": []
+    },
+    {
+      "id": "SEQ-02",
+      "name": "Partial mode persistence",
+      "sequence": "Marker write succeeds → audit append fails → restart/retry",
+      "assertion": "Raw/effective state and owed audit are truthful; replay/recovery neither loses debt nor invents success.",
+      "finding_ids": [
+        "HOOK-F02"
+      ],
+      "status": "NOT_RUN",
+      "evidence": []
+    },
+    {
+      "id": "SEQ-03",
+      "name": "Native output closure",
+      "sequence": "Ordinary preview → strict snapshot → completion consumer",
+      "assertion": "Every supported generated output is recognized and validated; arbitrary unregistered output still rejects.",
+      "finding_ids": [
+        "N-F01"
+      ],
+      "status": "NOT_RUN",
+      "evidence": []
+    },
+    {
+      "id": "SEQ-04",
+      "name": "Native discovery closure",
+      "sequence": "Capabilities/schema discovery → dispatch each declared operation; implemented operation enumeration",
+      "assertion": "Names, schema, dispatch, lock/effect class and documentation agree, including repair-apply.",
+      "finding_ids": [
+        "N-F02"
+      ],
+      "status": "NOT_RUN",
+      "evidence": []
+    },
+    {
+      "id": "SEQ-05",
+      "name": "Qualified binding limits",
+      "sequence": "Largest supported npm/OS launch binding → completion; one over limit; duplicates/unsafe files",
+      "assertion": "Producer/consumer bounds agree for all supported cells without broad unsafe admission.",
+      "finding_ids": [
+        "N-F09",
+        "HOOK-F04"
+      ],
+      "status": "NOT_RUN",
+      "evidence": []
+    },
+    {
+      "id": "SEQ-06",
+      "name": "History-preserving retirement",
+      "sequence": "Check task → retire → render/validate/history lookup; scope baseline → checkpoint retirement",
+      "assertion": "Retired identity/history remains valid; current observations are not silently deleted to make validation pass.",
+      "finding_ids": [
+        "N-F10"
+      ],
+      "status": "NOT_RUN",
+      "evidence": []
+    },
+    {
+      "id": "SEQ-07",
+      "name": "Progress/evidence decision",
+      "sequence": "Upstream block/change → independent task; dependent task; ordinary versus strict review",
+      "assertion": "Apply the B-selected SMARTS semantics. Independent work continues; current evidence never overstates historical progress or authority.",
+      "finding_ids": [
+        "N-F03",
+        "N-F04"
+      ],
+      "status": "NOT_RUN",
+      "evidence": []
+    },
+    {
+      "id": "SEQ-08",
+      "name": "Scoped conflicts",
+      "sequence": "One artifact/policy conflict → dependent task and independent task; shared pending journal",
+      "assertion": "Pause only actual dependencies. Preserve store-wide integrity dependency where pending multi-file recovery requires it.",
+      "finding_ids": [
+        "W-F01"
+      ],
+      "status": "NOT_RUN",
+      "evidence": []
+    },
+    {
+      "id": "SEQ-09",
+      "name": "Corrected resubmission",
+      "sequence": "Malformed debug/review → corrected fresh attempt → later actual denial → replay old attempt",
+      "assertion": "Corrected input is evaluated anew under proper identity/current bindings. Old rejection remains immutable; host/user denial is not bypassed.",
+      "finding_ids": [
+        "W-F02",
+        "HOOK-B01"
+      ],
+      "status": "NOT_RUN",
+      "evidence": []
+    },
+    {
+      "id": "SEQ-10",
+      "name": "Durable harvest interruption",
+      "sequence": "Find eligible result → durable obligation → terminate before terminal step → reentry → reconcile → duplicate reentry",
+      "assertion": "One logical target entry is settled or explicitly unresolved; duplicate delivery is detected; optional backlog never blocks independent ordinary work.",
+      "finding_ids": [
+        "W-F04",
+        "HOOK-B04"
+      ],
+      "status": "NOT_RUN",
+      "evidence": []
+    },
+    {
+      "id": "SEQ-11",
+      "name": "Harvest failure and retention",
+      "sequence": "Storage failure; corrupt record; claimed worker crash; index rebuild; failed target observation; retention boundary",
+      "assertion": "Bounded diagnostics, no false settlement, no data loss disguised as cleanup and no repeat remote effect without readback.",
+      "finding_ids": [
+        "W-F04"
+      ],
+      "status": "NOT_RUN",
+      "evidence": []
+    },
+    {
+      "id": "SEQ-12",
+      "name": "Functional Pi author",
+      "sequence": "Supported parent → scoped child → read/write/edit → permitted verification execution",
+      "assertion": "Actual mutations and verification succeed within a parent-admitted action scope; the final bridge and authority checks remain enforced.",
+      "finding_ids": [
+        "SF01"
+      ],
+      "status": "NOT_RUN",
+      "evidence": []
+    },
+    {
+      "id": "SEQ-13",
+      "name": "Pi delegation abuse/refusal",
+      "sequence": "Wrong child/session/run/generation; forged scope; path escape; plan mode; revoked/expired grant; replay changed request",
+      "assertion": "All invalid attempts refuse before their side effects. Exact replay does not duplicate the effect; a child cannot mint or broaden its grant.",
+      "finding_ids": [
+        "SF01"
+      ],
+      "status": "NOT_RUN",
+      "evidence": []
+    },
+    {
+      "id": "SEQ-14",
+      "name": "Pi delegation interruption",
+      "sequence": "Grant admitted → parent cancels/session switches → child response late; effect commits then response/audit settlement lost",
+      "assertion": "Ordinary authority is revoked, owned cleanup completes, uncertain effect is observed before retry and result truth is retained.",
+      "finding_ids": [
+        "SF01"
+      ],
+      "status": "NOT_RUN",
+      "evidence": []
+    },
+    {
+      "id": "SEQ-15",
+      "name": "UI lifetime and readiness",
+      "sequence": "Dispose while metrics pending; bridge ready then persona read fails then bridge refresh succeeds",
+      "assertion": "No stale sidebar installation; readiness exposes independent persona/bridge state and retry.",
+      "finding_ids": [
+        "SF02",
+        "SF03"
+      ],
+      "status": "NOT_RUN",
+      "evidence": []
+    },
+    {
+      "id": "SEQ-16",
+      "name": "Package identities",
+      "sequence": "Build a qualified manifest → install → doctor → farm admission",
+      "assertion": "One supported manifest shape and package identity works across producer/installer/bridge/farm/diagnostics; unsupported/malformed metadata still refuses.",
+      "finding_ids": [
+        "SF04",
+        "HOOK-F03",
+        "HOOK-B05"
+      ],
+      "status": "NOT_RUN",
+      "evidence": []
+    },
+    {
+      "id": "SEQ-17",
+      "name": "Farm receipt-only recovery",
+      "sequence": "Commit/merge tasks → report failure → resume/recover same run",
+      "assertion": "Recover evidence from retained operation/commit identities without author redispatch, branch reset or log truncation.",
+      "finding_ids": [
+        "SF05"
+      ],
+      "status": "NOT_RUN",
+      "evidence": []
+    },
+    {
+      "id": "SEQ-18",
+      "name": "Farm containment and observation",
+      "sequence": "Gate timeout → failed cleanup; failed Git diff/listing → retry decision",
+      "assertion": "No mutation/reset/retry while containment is unknown; unavailable observation is not clean.",
+      "finding_ids": [
+        "SF06",
+        "SF07"
+      ],
+      "status": "NOT_RUN",
+      "evidence": []
+    },
+    {
+      "id": "SEQ-19",
+      "name": "Sandbox cache",
+      "sequence": "Equal dependencies in different temporary paths; changed builder/dependencies/platform",
+      "assertion": "Stable equal identity reuses the intended cache; relevant content/builder/platform changes invalidate it.",
+      "finding_ids": [
+        "SF08"
+      ],
+      "status": "NOT_RUN",
+      "evidence": []
+    },
+    {
+      "id": "SEQ-20",
+      "name": "Sandbox overflow/cleanup",
+      "sequence": "Output overflow/abort → container stop/removal fails → registry observation fails → targeted re-observation",
+      "assertion": "Command failure, containment, removal and observation remain separate. No false destroyed/empty claim and no unrelated instance cleanup.",
+      "finding_ids": [
+        "SF09",
+        "SF10",
+        "SW-F03"
+      ],
+      "status": "NOT_RUN",
+      "evidence": []
+    },
+    {
+      "id": "SEQ-21",
+      "name": "User setting ownership",
+      "sequence": "Install → user edits spinner/status setting → uninstall",
+      "assertion": "Uninstall restores only still-owned values; later user edits survive.",
+      "finding_ids": [
+        "HOOK-F05"
+      ],
+      "status": "NOT_RUN",
+      "evidence": []
+    },
+    {
+      "id": "SEQ-22",
+      "name": "Release interruption",
+      "sequence": "Tag/draft/registry/public Release → final publication receipt failure → rerun",
+      "assertion": "Only missing effects run. Public-without-receipt remains recoverable; immutable source/payload identity holds.",
+      "finding_ids": [
+        "C-F01"
+      ],
+      "status": "NOT_RUN",
+      "evidence": []
+    },
+    {
+      "id": "SEQ-23",
+      "name": "Exact release source/readiness",
+      "sequence": "Older successful main CI, newer failed head, candidate artifact rebuild, forged/absent readiness; main advances during qualification; prepublication readiness while Q-03 remains pending",
+      "assertion": "Major publication binds the approved exact source/build/bytes; no first publication before required installed qualification. Pi new publication preserves event/source SHA equality; readiness excludes actual external settlement and is noncircular.",
+      "finding_ids": [
+        "C-F02"
+      ],
+      "status": "NOT_RUN",
+      "evidence": []
+    },
+    {
+      "id": "SEQ-24",
+      "name": "Publication projection",
+      "sequence": "Stable tag-only/draft/published/mismatch/API unavailable → site and route clock",
+      "assertion": "Tag is not publication; exact observed state and uncertainty survive into visible claims and JSON.",
+      "finding_ids": [
+        "SX-F01",
+        "C-F04"
+      ],
+      "status": "NOT_RUN",
+      "evidence": []
+    },
+    {
+      "id": "SEQ-25",
+      "name": "Qualification truth",
+      "sequence": "Empty measurements, unknown scenario, optional skip, unavailable host/protection API, invalid base version",
+      "assertion": "No false PASS/first-introduction/verified claim; existing advisory exit behavior stays explicitly scoped.",
+      "finding_ids": [
+        "T-F01",
+        "C-F06",
+        "C-F07"
+      ],
+      "status": "NOT_RUN",
+      "evidence": []
+    },
+    {
+      "id": "SEQ-26",
+      "name": "Measurement identity",
+      "sequence": "Dirty workflow at HEAD; failed SMARTS subprocess; lens-name-only output; failed statusline renderer",
+      "assertion": "Evidence is bound to actual source/harness, material reasoning is checked, no success from failed/empty producers and cleanup settles.",
+      "finding_ids": [
+        "T-F02",
+        "T-F03",
+        "T-F04"
+      ],
+      "status": "NOT_RUN",
+      "evidence": []
+    },
+    {
+      "id": "SEQ-27",
+      "name": "Verifier liveness",
+      "sequence": "Child never emits first line/ready; installer hangs; cancellation during collection",
+      "assertion": "Deadline bounds every phase; partial diagnostics and process containment are preserved.",
+      "finding_ids": [
+        "C-F08"
+      ],
+      "status": "NOT_RUN",
+      "evidence": []
+    },
+    {
+      "id": "SEQ-28",
+      "name": "Site async controls",
+      "sequence": "Search/load/data/expand reject and resolve out of order; drawer reconnect",
+      "assertion": "Current generation controls visible results, finally/retry restores controls, listeners do not multiply.",
+      "finding_ids": [
+        "SF11",
+        "SF16"
+      ],
+      "status": "NOT_RUN",
+      "evidence": []
+    },
+    {
+      "id": "SEQ-29",
+      "name": "Generated/source consistency",
+      "sequence": "Change owner fact → regenerate hooks/surfaces/catalog/site/bundles → package → installed readback",
+      "assertion": "Counts/grammar/identity/claims come from actual owners, while bytes and host behavior are verified separately.",
+      "finding_ids": [
+        "W-F05",
+        "W-F06",
+        "W-F07",
+        "W-F08",
+        "GEN-F01",
+        "GEN-F02",
+        "GEN-B01",
+        "SF13"
+      ],
+      "status": "NOT_RUN",
+      "evidence": []
+    },
+    {
+      "id": "SEQ-30",
+      "name": "Sandbox instruction usability",
+      "sequence": "No Nixpacks but supported fallback; shell exit; named destroy; normal offline run; consumer lacks maintainer docs",
+      "assertion": "Model-guided instructions select supported behavior and correct scope without inventing authority or promising unsupported confinement.",
+      "finding_ids": [
+        "SW-F01",
+        "SW-F02",
+        "SW-F03",
+        "SW-F04",
+        "SW-F05",
+        "SW-F06",
+        "SW-F07",
+        "SW-F08",
+        "SW-F09"
+      ],
+      "status": "NOT_RUN",
+      "evidence": []
+    },
+    {
+      "id": "SEQ-31",
+      "name": "Fresh and upgraded installs",
+      "sequence": "Each supported prior artifact/state → new candidate → actual host workflow → uninstall/rollback boundary",
+      "assertion": "Installed artifacts, schema compatibility, state preservation and user settings survive supported upgrade paths; unsupported cells are explicit.",
+      "finding_ids": [
+        "SF12",
+        "SF14",
+        "SF15",
+        "N-F05",
+        "N-F08"
+      ],
+      "status": "NOT_RUN",
+      "evidence": []
+    }
+  ]
+}

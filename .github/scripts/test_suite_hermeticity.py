@@ -41,6 +41,7 @@ from __future__ import annotations
 
 import concurrent.futures
 import hashlib
+import json
 import os
 import re
 import subprocess
@@ -129,6 +130,9 @@ def run_suite(command: list[str], home: Path) -> subprocess.CompletedProcess[str
 
 
 HOOK_TESTS = REPO / "plugins/ca/hooks/tests"
+STATUSLINE_MODULES = frozenset(("test_wire_statusline", "test_durabilitylib", "test_atomic_writes"))
+STATUSLINE_RESULTS_FORMAT = "codearbiter.hermetic-statusline-results/1"
+MAX_STATUSLINE_RESULTS_BYTES = 128 * 1024
 RAN = re.compile(r"^Ran (\d+) tests? in ", re.M)
 # Scheduling order only: the longest observed modules start first so the
 # queue does not end on one of them. Discovery still owns membership.
@@ -147,32 +151,155 @@ def hook_modules() -> list[str]:
     return sorted(path.stem for path in HOOK_TESTS.glob("test_*.py"))
 
 
+class _NamedStatuslineResult(unittest.TextTestResult):
+    """Keep original test callbacks while observing only the outer runner."""
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.rows = []
+        self.current_id = None
+
+    def startTest(self, test):
+        self.current_id = id(test)
+        self.rows.append({"id": test.id(), "result": None})
+        super().startTest(test)
+
+    def stopTest(self, test):
+        self.current_id = None
+        super().stopTest(test)
+
+    def _record(self, test, outcome):
+        if id(test) == self.current_id:
+            self.rows[-1]["result"] = outcome
+
+    def addSuccess(self, test):
+        self._record(test, "passed")
+        super().addSuccess(test)
+
+    def addSkip(self, test, reason):
+        self._record(getattr(test, "test_case", test), "skipped")
+        super().addSkip(test, reason)
+
+    def addExpectedFailure(self, test, error):
+        self._record(test, "expected-failure")
+        super().addExpectedFailure(test, error)
+
+    def named_results(self):
+        if any(row["result"] is None for row in self.rows):
+            raise ValueError("statusline discovery yielded a case without an outcome")
+        return self.rows
+
+
+def _discovery_args(module, start, top):
+    return ["discover", "-s", start, "-p", f"{module}.py", *(["-t", top] if top else [])]
+
+
+def _write_named_results(path, document):
+    raw = (json.dumps(document, ensure_ascii=True, separators=(",", ":")) + "\n").encode("ascii")
+    if len(raw) > MAX_STATUSLINE_RESULTS_BYTES:
+        raise ValueError("statusline named results exceed bound")
+    with path.open("xb") as stream:
+        stream.write(raw)
+
+
+def _capture_statusline_child(module, start, top, output):
+    if module not in STATUSLINE_MODULES or output.exists() or output.is_symlink():
+        raise ValueError("statusline child requires an allowed module and a new output")
+    # Match the original `python -m unittest discover` process search path and
+    # use its own loader/runner settings. A result subclass records the exact
+    # existing discovery, without observing nested fixture runners.
+    sys.path[0] = str(Path.cwd())
+    sys.argv[:] = [f"{Path(sys.executable).name} -m unittest", *_discovery_args(module, start, top)]
+    class ObservingRunner(unittest.TextTestRunner):
+        resultclass = _NamedStatuslineResult
+
+        def run(self, suite):
+            result = super().run(suite)
+            if result.wasSuccessful() and result.testsRun:
+                try:
+                    _write_named_results(output, result.named_results())
+                except (OSError, ValueError) as error:
+                    # The parent separately requires a complete capture.
+                    print(f"statusline child capture failed: {error}", file=sys.stderr)
+            return result
+
+    unittest.main(module=None, testRunner=ObservingRunner)
+
+
+def _read_statusline_child(output, module, start, top, result):
+    if not output.is_file() or output.is_symlink():
+        raise ValueError("missing owned statusline child results")
+    with output.open("rb") as stream:
+        raw = stream.read(MAX_STATUSLINE_RESULTS_BYTES + 1)
+    if len(raw) > MAX_STATUSLINE_RESULTS_BYTES:
+        raise ValueError("statusline child results exceed bound")
+    rows = json.loads(raw)
+    count = RAN.search(result.stderr)
+    if not isinstance(rows, list) or not count or len(rows) != int(count[1]) or not rows:
+        raise ValueError("statusline child results differ from the original test population")
+    filename = Path(start, f"{module}.py").resolve()
+    stem = ".".join(filename.relative_to(Path(top).resolve()).with_suffix("").parts) if top else module
+    names = set()
+    for row in rows:
+        if not isinstance(row, dict) or set(row) != {"id", "result"}:
+            raise ValueError("invalid named statusline result")
+        name = row["id"]
+        if (not isinstance(name, str) or not name.startswith(stem + ".")
+                or len(name) > 512 or name in names
+                or row["result"] not in ("passed", "skipped", "expected-failure")):
+            raise ValueError("invalid or repeated name in statusline child results")
+        names.add(name)
+    return rows
+
+
 def run_hook_modules(modules: list[str], workers: int | None = None,
-                     start: str = "plugins/ca/hooks/tests", top: str | None = None) -> dict[str, tuple]:
+                     start: str = "plugins/ca/hooks/tests", top: str | None = None,
+                     *, statusline_results: dict[str, list[dict[str, str]]] | None = None) -> dict[str, tuple]:
     """Run each module in a separate child and pristine home; return results and snapshots.
 
     The start directory is the import root, exactly as in a plain `discover -s`
     run, so each module imports its sibling helpers without relying on an
-    earlier module having extended sys.path."""
-    def one(module: str) -> tuple[str, tuple]:
+    earlier module having extended sys.path. Optional named results come from
+    the same original invocation and live outside the redirected home."""
+    def run(command, home):
+        try:
+            return run_suite(command, home)
+        except subprocess.TimeoutExpired as expired:
+            # A wedged module is that module's failure, reported with its output.
+            return subprocess.CompletedProcess(
+                command, -1, _text(expired.stdout), _text(expired.stderr) + "\nchild timed out")
+
+    def one(module):
         with tempfile.TemporaryDirectory() as directory:
             home = Path(directory)
             seeded_home(home)
             before = snapshot(home)
-            command = [sys.executable, "-W", "always::ResourceWarning", "-m", "unittest",
-                       "discover", "-s", start, "-p", f"{module}.py", *(["-t", top] if top else [])]
-            try:
-                result = run_suite(command, home)
-            except subprocess.TimeoutExpired as expired:
-                # A wedged module is that module's failure, reported with its output.
-                result = subprocess.CompletedProcess(
-                    command, -1, _text(expired.stdout), _text(expired.stderr) + "\nchild timed out")
-            return module, (result, before, snapshot(home))
+            command = [sys.executable, "-W", "always::ResourceWarning"]
+            rows = None
+            if statusline_results is not None and module in STATUSLINE_MODULES:
+                with tempfile.TemporaryDirectory() as capture_dir:
+                    output = Path(capture_dir) / "named-results.json"
+                    result = run([*command, str(Path(__file__).resolve()), "--statusline-child",
+                                  module, start, top or "", str(output)], home)
+                    if result.returncode == 0:
+                        try:
+                            rows = _read_statusline_child(output, module, start, top, result)
+                        except (OSError, ValueError) as error:
+                            # Retain the original return code and snapshots.
+                            result.stderr += f"\nstatusline child capture refused: {error}"
+            else:
+                result = run([*command, "-m", "unittest", *_discovery_args(module, start, top)], home)
+            return module, (result, before, snapshot(home)), rows
     order = sorted(modules, key=lambda m: (SLOW_FIRST.index(m) if m in SLOW_FIRST else len(SLOW_FIRST), m))
     # Hosted runners have three or four cores; more children only contend.
     default = min(4, max(2, os.cpu_count() or 2))
+    results = {}
     with concurrent.futures.ThreadPoolExecutor(max_workers=workers or default) as pool:
-        return dict(pool.map(one, order))
+        for module, outcome, named in pool.map(one, order):
+            results[module] = outcome
+            if named is not None:
+                statusline_results[module] = named
+    return results
 
 
 class TestSuitesStayInsideTheirTempDirs(unittest.TestCase):
@@ -264,6 +391,7 @@ class TestTheSuiteLeaksNoHandlesOrProcesses(unittest.TestCase):
     they are the interpreter's advice about a warning, not a warning."""
 
     ADVICE = "Enable tracemalloc"
+    statusline_results = None
 
     @classmethod
     def setUpClass(cls):
@@ -271,7 +399,7 @@ class TestTheSuiteLeaksNoHandlesOrProcesses(unittest.TestCase):
         # discovered module runs in its own child with its own pristine home,
         # several at once, so an unclean module is named and the runner's cores
         # are used. Class fixtures are recreated on each run; no result cache.
-        cls.results = run_hook_modules(hook_modules())
+        cls.results = run_hook_modules(hook_modules(), statusline_results=cls.statusline_results)
 
     def test_every_hook_module_ran_and_passed(self):
         self.assertEqual(sorted(self.results), hook_modules())
@@ -340,6 +468,21 @@ class TestTheGuardItselfCanFail(unittest.TestCase):
             "test_writes_home": ("import os, pathlib, unittest\nclass T(unittest.TestCase):\n"
                                  "    def test_w(self): (pathlib.Path(os.path.expanduser('~')) / 'stray').write_text('x')\n"),
             "test_empty": "import unittest\n",
+            "test_atomic_writes": (
+                "import io, unittest\n"
+                "class T(unittest.TestCase):\n"
+                "    @unittest.expectedFailure\n"
+                "    def test_expected(self): self.fail('expected')\n"
+                "    def test_outer(self):\n"
+                "        class Nested(unittest.TestCase):\n"
+                "            def test_inner(self): pass\n"
+                "        suite = unittest.defaultTestLoader.loadTestsFromTestCase(Nested)\n"
+                "        self.assertTrue(unittest.TextTestRunner(stream=io.StringIO()).run(suite).wasSuccessful())\n"
+                "    def test_skips(self):\n"
+                "        with self.subTest(): self.skipTest('fixture subtest')\n"
+            ),
+            "test_durabilitylib": "import unittest\nclass T(unittest.TestCase):\n"
+                                  "    def test_fails(self): self.fail('original failure')\n",
             "test_leaks": ("import unittest\nclass T(unittest.TestCase):\n"
                            "    def test_l(self): open(__file__)\n"),
         }
@@ -349,10 +492,22 @@ class TestTheGuardItselfCanFail(unittest.TestCase):
             (package / "__init__.py").write_text("", encoding="utf-8")
             for name, body in modules.items():
                 (package / f"{name}.py").write_text(body, encoding="utf-8")
-            results = run_hook_modules(sorted(modules), workers=3, start=str(package), top=top)
+            captured = {}
+            results = run_hook_modules(sorted(modules), workers=3, start=str(package), top=top,
+                                       statusline_results=captured)
         self.assertEqual(sorted(results), sorted(modules))
         code = {name: result.returncode for name, (result, _, _) in results.items()}
         self.assertEqual(code["test_clean"], 0)
+        self.assertIn("-m", results["test_clean"][0].args)
+        self.assertIn("--statusline-child", results["test_atomic_writes"][0].args)
+        self.assertEqual(code["test_atomic_writes"], 0)
+        self.assertEqual(code["test_durabilitylib"], 1)
+        self.assertEqual(results["test_atomic_writes"][1], results["test_atomic_writes"][2])
+        self.assertEqual(captured, {"test_atomic_writes": [
+            {"id": "suite.test_atomic_writes.T.test_expected", "result": "expected-failure"},
+            {"id": "suite.test_atomic_writes.T.test_outer", "result": "passed"},
+            {"id": "suite.test_atomic_writes.T.test_skips", "result": "skipped"},
+        ]})
         self.assertNotEqual(code["test_fails"], 0)
         ran = {name: RAN.search(result.stderr) for name, (result, _, _) in results.items()}
         self.assertEqual(ran["test_empty"][1], "0")
@@ -382,5 +537,36 @@ class TestTheGuardItselfCanFail(unittest.TestCase):
         )
 
 
-if __name__ == "__main__":
+def main():
+    args = sys.argv[1:]
+    if args[:1] == ["--statusline-child"]:
+        if len(args) != 5:
+            raise ValueError("invalid statusline child invocation")
+        _, module, start, top, output = args
+        return _capture_statusline_child(module, start, top or None, Path(output))
+    if args[:1] == ["--statusline-results"]:
+        if len(args) != 2:
+            raise ValueError("statusline results require the complete hermeticity suite")
+        output = Path(args[1]).absolute()
+        if output.exists() or output.is_symlink():
+            raise ValueError("statusline capture requires a new output")
+        records = {}
+        owner = TestTheSuiteLeaksNoHandlesOrProcesses
+        previous = owner.statusline_results
+        owner.statusline_results = records
+        try:
+            program = unittest.main(argv=sys.argv[:1], verbosity=2, exit=False)
+        finally:
+            owner.statusline_results = previous
+        if not program.result.wasSuccessful():
+            return 1
+        missing = STATUSLINE_MODULES - records.keys()
+        if missing:
+            raise ValueError("statusline capture missing original modules: " + ", ".join(sorted(missing)))
+        _write_named_results(output, {"format": STATUSLINE_RESULTS_FORMAT, "modules": records})
+        return 0
     unittest.main(verbosity=2)
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

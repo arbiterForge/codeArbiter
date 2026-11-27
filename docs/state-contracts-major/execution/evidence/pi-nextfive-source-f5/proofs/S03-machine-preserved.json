@@ -1,0 +1,211 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "f5dff55e71530806c58a5dd6c352935d369ac5ae",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "/root/ci_repair_review: literal47-clause current Pi source/caller inspection; no execution"
+ },
+ "inputs": {
+  ".codearbiter/decisions/0043-assistive-state-engine.md": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+  ".codearbiter/decisions/0049-require-https-outside-bounded-loopback.md": "c757cef9d5e318b75ff164d270b29a49255449360f0b7cde51e53775e6916ab8",
+  "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+  "docs/state-contracts-major/surfaces-tasks.json": "5a68b14cdc637e369fa5298d3f566b950dec9fb8056e4f1fa77baf40cb4b0d97",
+  "plugins/ca-pi/tools/src/bridge.ts": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+  "plugins/ca-pi/tools/src/native-plan.ts": "b638b19da6078d9f86281d900a05b53602e6b034cc8890fa221229655c6fdce8",
+  "plugins/ca-pi/tools/src/plan-mode.ts": "1b7df3d367cc185484b3072329d9b6dbac162070e2f31dc52d5944dd2db0c754"
+ },
+ "disposition_ids": [
+  "disposition:machines:S03"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/pi-nextfive-source-f5/clause-inspection.json",
+   "sha256": "f5e00c8018474f0ac90e62529aa59e94eba6e06009665435ecae8518affda102"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/pi-nextfive-source-f5/source-bindings.json",
+   "sha256": "9c2baf70473957bd4adbdd180f477f193a950467e3c57428bb559427dab63a67"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:S03",
+   "frozen_row_sha256": "b29e1b2313c19d1a750ecafeb47968eda13e127cbdd10e1f2ddc6d61e5810541",
+   "clause_ids": [
+    "disposition:transitions:S03:01",
+    "disposition:transitions:S03:02",
+    "disposition:transitions:S03:03",
+    "disposition:transitions:S03:04",
+    "disposition:transitions:S03:05",
+    "disposition:transitions:S03:06",
+    "disposition:transitions:S03:07",
+    "disposition:transitions:S03:08",
+    "disposition:transitions:S03:09"
+   ],
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/native-plan.ts",
+     "start": 176,
+     "end": 257,
+     "file_sha256": "b638b19da6078d9f86281d900a05b53602e6b034cc8890fa221229655c6fdce8",
+     "span_sha256": "f67fc3e2ce0f7abbd5bf575726a55fcc27a016689867ff9a3bb85778460f33ad"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/plan-mode.ts",
+     "start": 268,
+     "end": 278,
+     "file_sha256": "1b7df3d367cc185484b3072329d9b6dbac162070e2f31dc52d5944dd2db0c754",
+     "span_sha256": "86b85546c88bfe5de7b48643d081f012d84f54f0513df050fa9b3c23c801da72"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/plan-mode.ts",
+     "start": 281,
+     "end": 352,
+     "file_sha256": "1b7df3d367cc185484b3072329d9b6dbac162070e2f31dc52d5944dd2db0c754",
+     "span_sha256": "42205106475534a6d92207c7d7f765ebfa7740e893f80f70e767ddc6a6627814"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/plan-mode.ts",
+     "start": 461,
+     "end": 514,
+     "file_sha256": "1b7df3d367cc185484b3072329d9b6dbac162070e2f31dc52d5944dd2db0c754",
+     "span_sha256": "ba4703bbeeae0b2d9e412903e1400a42d442d6f2527dc6d1699e24e492ec7fec"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/plan-mode.ts",
+     "start": 516,
+     "end": 545,
+     "file_sha256": "1b7df3d367cc185484b3072329d9b6dbac162070e2f31dc52d5944dd2db0c754",
+     "span_sha256": "fe88875f1b15e4f0d80f6c6de24f18fa94f73b0832733612fa5802c918e6d2a3"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/native-plan.ts",
+     "start": 212,
+     "end": 220,
+     "file_sha256": "b638b19da6078d9f86281d900a05b53602e6b034cc8890fa221229655c6fdce8",
+     "span_sha256": "4f7983b7903921837ca72616fc5825bba0b24c54bee65861f3d87d7fcf10351e"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/native-plan.ts",
+     "start": 223,
+     "end": 328,
+     "file_sha256": "b638b19da6078d9f86281d900a05b53602e6b034cc8890fa221229655c6fdce8",
+     "span_sha256": "3dfeb87917f205a0494a3225b8bf341e68b4ada88bab041ce9a5021494a13796"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/plan-mode.ts",
+     "start": 14,
+     "end": 34,
+     "file_sha256": "1b7df3d367cc185484b3072329d9b6dbac162070e2f31dc52d5944dd2db0c754",
+     "span_sha256": "8896f127917372df2ce902bc51f26732b837e0f7028e4fd19f1c15ac3cfe484b"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/plan-mode.ts",
+     "start": 375,
+     "end": 428,
+     "file_sha256": "1b7df3d367cc185484b3072329d9b6dbac162070e2f31dc52d5944dd2db0c754",
+     "span_sha256": "988b6946b6b4d407bd0071c678cd9b49d6140b6fe684e604c665634fcbd9cd02"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/native-plan.ts",
+     "start": 223,
+     "end": 363,
+     "file_sha256": "b638b19da6078d9f86281d900a05b53602e6b034cc8890fa221229655c6fdce8",
+     "span_sha256": "87a84b7aec9fd02b0e1bf59a6182d1dad40738a8c092a355a27cb0735c9a9805"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/bridge.ts",
+     "start": 501,
+     "end": 525,
+     "file_sha256": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+     "span_sha256": "1f747e92694e08bbf59acaa8fdbdfd6cfbd4aa1a5009d8b6e617ce279dea1edc"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/native-plan.ts",
+     "start": 126,
+     "end": 154,
+     "file_sha256": "b638b19da6078d9f86281d900a05b53602e6b034cc8890fa221229655c6fdce8",
+     "span_sha256": "f06191db839f8aa09948a720f58232440addee3d2f08a4ff721a72fe4c5cc713"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/native-plan.ts",
+     "start": 276,
+     "end": 302,
+     "file_sha256": "b638b19da6078d9f86281d900a05b53602e6b034cc8890fa221229655c6fdce8",
+     "span_sha256": "17a0ba7a29789fc858a30e648297053503330c2049ccf1af6f857b2f5ed01a3c"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/native-plan.ts",
+     "start": 303,
+     "end": 324,
+     "file_sha256": "b638b19da6078d9f86281d900a05b53602e6b034cc8890fa221229655c6fdce8",
+     "span_sha256": "d57a4ec73b2b6330e6be506529694c1474181a45378015f26808d8268ca6c350"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/plan-mode.ts",
+     "start": 355,
+     "end": 369,
+     "file_sha256": "1b7df3d367cc185484b3072329d9b6dbac162070e2f31dc52d5944dd2db0c754",
+     "span_sha256": "0a947a53bfd5f3224280439c9298bad7eb47f5c578d9495b8b1719162947e60e"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/native-plan.ts",
+     "start": 276,
+     "end": 321,
+     "file_sha256": "b638b19da6078d9f86281d900a05b53602e6b034cc8890fa221229655c6fdce8",
+     "span_sha256": "04556b554aea6f4439495bc194d962ca16a63f0e347fb0f45ecee440f58e8ea4"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/native-plan.ts",
+     "start": 276,
+     "end": 324,
+     "file_sha256": "b638b19da6078d9f86281d900a05b53602e6b034cc8890fa221229655c6fdce8",
+     "span_sha256": "03f513dba06ad90b60b595f4648e72a8e6cf7e57091c0c83eeb5eff8a1d04a1b"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/plan-mode.ts",
+     "start": 355,
+     "end": 372,
+     "file_sha256": "1b7df3d367cc185484b3072329d9b6dbac162070e2f31dc52d5944dd2db0c754",
+     "span_sha256": "08337b6a80463f017f302a5f205a899fe7408e0feb79f785aa87af9ce18efc53"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/native-plan.ts",
+     "start": 259,
+     "end": 274,
+     "file_sha256": "b638b19da6078d9f86281d900a05b53602e6b034cc8890fa221229655c6fdce8",
+     "span_sha256": "9f16af4434c1dffdac8de6f902b3d1d675f3495d4c61ea145fc029fe3693f2ee"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/native-plan.ts",
+     "start": 346,
+     "end": 363,
+     "file_sha256": "b638b19da6078d9f86281d900a05b53602e6b034cc8890fa221229655c6fdce8",
+     "span_sha256": "10701112680be03393bc5c99801780b8fd3dd655c9750680be0cf3bbe4c048c2"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/plan-mode.ts",
+     "start": 412,
+     "end": 428,
+     "file_sha256": "1b7df3d367cc185484b3072329d9b6dbac162070e2f31dc52d5944dd2db0c754",
+     "span_sha256": "53dd72cb71e18b0a48e93ad279e4ff7ab15953740fc502ad6ab0d796936ca8d8"
+    }
+   ],
+   "semantic_assessment": "Every real owner guard/effect/retry clause separately mapped with explicit accepted/intake corrections. No nonexistent effect asserted. S03 analytical edit composite separately N/A; S08 scope only current1.5 optional unavailable. No machine runtime/task closure."
+  }
+ ],
+ "scope": "Source-only actual owner behavior under accepted PROGRAM/ADR0043/0049 and Pi task criteria; no runtime, installed, model, human or task qualification.",
+ "limits": [
+  "S08 N/A is limited to current supported Pi1.5 host; old legacy1.0.2 code/conditional guards/tests remain retained, not failed evidence relabeled.",
+  "PROGRAM/PI-D05/06 S09:10 maps actual signal cancellation, effect grant retirement and owned settlement; no nonexistent universal post-await model-report discard is claimed.",
+  "S03:03 exact unsupported analytical public-edit/hash/revision composite differs from actual CAS helper/state return/disk restore. S03 machine preserves only real owner behavior, with this correction explicit.",
+  "Only40 PLANNED rows proposed; all old source/test/host epochs and foreign rows retained. No runtime or test execution.",
+  "Per-row CAS expected rows bind actual current untouched subjects, not whole ledger hash. Relevant production/frozen positives are literal immutable f5, even if Root HEAD moves."
+ ]
+}

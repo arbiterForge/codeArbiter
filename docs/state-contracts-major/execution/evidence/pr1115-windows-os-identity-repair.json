@@ -1,0 +1,114 @@
+{
+  "schema": "codearbiter-local-development-observation/1",
+  "source_parent": "0ebdc80f587e876aa32218abb17771ea3bf5b32d",
+  "scope": "Confirmed framework OS-discovery defect; local inert regression and static capability controls, not original hosted causal proof.",
+  "original_hosted_failure": {
+    "ci_run": 43931636706,
+    "job": 133533780565,
+    "phase": "commit-proof",
+    "site": "resolved-other-refusal",
+    "actual_executable_or_argv": "UNKNOWN",
+    "initiating_mechanism": "UNKNOWN"
+  },
+  "confirmed_local_cause": "With WMI unavailable, real stdlib platform.system/uname/win32_ver fallback attempted a fixed ver shell while selecting the native binary and dispatching a request. An inert Popen interception called the real guard, which correctly refused before any process creation.",
+  "repair": "All four bridge OS queries use sys.platform. Existing Windows IsWow64Process2 architecture detection, Unix machine aliases, pinned executable/argv/environment rules and network/process refusals remain. The static guard admits only direct read-only sys.platform and rejects module escape, mutation and name rebinding including pattern captures.",
+  "private_delivery": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-windows-os-pattern-binding-successor-avvp8bfd\\delivery.json",
+    "sha256": "d9fc618e9aa93f6f4431358d6eb1db0b46a6e128607d166571ae2c0f2f994d6a"
+  },
+  "subjects": [
+    {
+      "path": "core/pysrc/_artifactlib.py",
+      "preimage_sha256": "59dbf6c51cbbb824cf553aa38aeb9c543dcada14c6311e9393434d231babe03b",
+      "candidate_sha256": "db10153f438023ca6eb7e32f77e1898fbd2f806cdc5ef98bdffb078e27e65187"
+    },
+    {
+      "path": ".github/scripts/test_artifact_installed_host.py",
+      "preimage_sha256": "eb230f183c67fb3bd12153104a9e25846de17f31eed96a2496dac8c428a7b4bf",
+      "candidate_sha256": "2111b6d05267b906dabe4676f8945029aaceeabc343ae962c3afc35362deac04"
+    },
+    {
+      "path": ".github/scripts/test_artifact_package.py",
+      "preimage_sha256": "c6267d3ed0d9f4b473f88b444dc7688c5c46e9798b3f13063939776c08cef389",
+      "candidate_sha256": "92f9be17742faa36d3a776172f50cfcc67d758e940ae9b791dda006a5e84fc9a"
+    },
+    {
+      "path": ".github/scripts/test_artifact_bridge.py",
+      "preimage_sha256": "3620b242d8bcb752d9b4aedfb177f278d211c3af460aa6d14dfd257c585a804f",
+      "candidate_sha256": "47c4ccc5f16c17734fb252f8c2d56f9ae6842db0a606ed442dfc5e64cd66b37f"
+    }
+  ],
+  "actual_results": {
+    "proper_portable_main_RED": {
+      "receipt": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-windows-os-identity-portable-red-5aj42n9a\\delivery.json",
+      "sha256": "3c2f402b515b1f8f174af9ed5adf6b6dafcd5cd906ff9e19eefddef24066ea4c",
+      "method": "RuntimeAuditPlatformTests.test_installed_native_windows_selection_needs_no_version_shell",
+      "failures": 1,
+      "errors": 0,
+      "seconds": 0.0392576000012923
+    },
+    "main_and_affected_GREEN": {
+      "directory": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-windows-os-identity-fix-nxs60css",
+      "result_sha256": "d7dda9c033cad4a399f0cf4eef4da698d4faa3ee02e961b3899c3b91dead88b7",
+      "methods": 9,
+      "subtests": 50,
+      "seconds": 0.4711943999864161,
+      "skips": 0
+    },
+    "pattern_binding_target_RED": {
+      "methods": 1,
+      "subtests_before_failfast": 24,
+      "failures": 1,
+      "errors": 0,
+      "seconds": 0.43924119998700917
+    },
+    "pattern_binding_owning_GREEN": {
+      "methods": 1,
+      "subtests": 26,
+      "seconds": 0.46999919999507256,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0
+    },
+    "no_combined_full_ten_run_claim": true,
+    "source_runtime_private_stable_each_capture": true,
+    "new_main_regression_not_repeated_after_pattern_only_guard_change": true,
+    "scope_limits": [
+      "Exact class/method AST isolation omits native-build/npm setUpModule and unrelatedPackageTests.setUp; selectedmethod does not depend on them.",
+      "Two unchanged RuntimeAudit subprocess-child methods are outside this selected no-extra-process execution.",
+      "ctypes imported for ordinary scalar/array/runtime support before effect guard; every explicit WinDLL/native-target load in selected controls is mocked.",
+      "No nativehost/model/wholecold/installedqualification claim."
+    ],
+    "original_hosted_target": "UNKNOWN"
+  },
+  "retained_metadata_correction": {
+    "original_receipt": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-windows-os-identity-portable-red-5aj42n9a\\delivery.json",
+    "original_receipt_sha256": "3c2f402b515b1f8f174af9ed5adf6b6dafcd5cd906ff9e19eefddef24066ea4c",
+    "preserved_unchanged": true,
+    "erroneous_field": "test_subject.patch_sha256",
+    "stale_Windows_fixture_patch_sha256": "15f195c3770f679f5b7e0f9bf2e6a575862d6403b9382a9ecc9a816cfa477207",
+    "actual_executed_candidate_sha256": "72fc1a9749764a15768b2c6094f7c9a0cb14ba399e4ce43c203aad2d5fae0201",
+    "actual_portable_full_patch_sha256": "76978be45598e8918e7b27fade75a53978d93c2d4b1a1752476e802a477e4576",
+    "reconstruction": "Exact Git0eb literal preimage vs actual before-snapshotted tested72fc bytes; matches retained test-only.patch. Candidate/execution identity was correct; only carried patch metadata field was stale.",
+    "no_test_replay_for_correction": true
+  },
+  "retained_first_attempt": "Initial discriminator reached the selection defect but its real client constructor attempted a DLL load blocked by the no-effect harness. A subsequent inert-client fixture corrected that unrelated boundary. All attempts remain retained.",
+  "generation": {
+    "owner": "python tools/sync-core.py",
+    "changed_copies": [
+      "plugins/ca/hooks/_artifactlib.py",
+      "plugins/ca-codex/hooks/_artifactlib.py",
+      "plugins/ca-pi/hooks/_artifactlib.py"
+    ],
+    "sha256": "db10153f438023ca6eb7e32f77e1898fbd2f806cdc5ef98bdffb078e27e65187",
+    "check": "PASS:98 core files x3 hosts byte-identical"
+  },
+  "limits": [
+    "Local CPython3.14.6; original hosted3.14.10 was not replayed.",
+    "Native architecture and exchange effects were mocked; no native binary, provider, shell, Git or DLL launched by the tested bridge.",
+    "Numeric coverage, full packaged cold execution, all six hosts, fresh whole child CI/Docs and successful trusted normal qualification remain pending."
+  ],
+  "runtime_or_task_proof_epoch_renewal": false,
+  "parent1098_to_main": "HELD_FOR_USER_TESTING",
+  "publication": "NOT_AUTHORIZED"
+}

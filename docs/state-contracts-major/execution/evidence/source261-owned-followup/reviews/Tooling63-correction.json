@@ -1,0 +1,34 @@
+{
+  "verdict": "PASS",
+  "actor": "/root",
+  "scope": "Independent tiny prose-delta closure only; original 85 unaffected clauses and63 source CAS reuse retained independent peer620924. No runtime or full-owner replay.",
+  "finding": "TOOLING-T10-06-PROSE-01",
+  "closed": true,
+  "narrative_changes": [
+    {
+      "path": "authored-clause-data.json/T10:06/semantic_assessment",
+      "old": "Current run mode rejects unknown or empty scenario selections before measurement and writes schema-v2 reports with explicit all/subset selection, harness SHA256, Python/platform and observed checkout revision. Requested output may be overwritten.",
+      "new": "Current run mode rejects unknown requested scenario names; an omitted or empty request selects all declared scenarios. It writes schema-v2 reports with explicit all/subset selection, harness SHA256, Python/platform and observed checkout revision. Requested output may be overwritten. Empty measured populations are rejected later by validate_comparison, not by the request-default branch."
+    },
+    {
+      "path": "clause-inspection.json/clauses/79/semantic_assessment",
+      "old": "Current run mode rejects unknown or empty scenario selections before measurement and writes schema-v2 reports with explicit all/subset selection, harness SHA256, Python/platform and observed checkout revision. Requested output may be overwritten.",
+      "new": "Current run mode rejects unknown requested scenario names; an omitted or empty request selects all declared scenarios. It writes schema-v2 reports with explicit all/subset selection, harness SHA256, Python/platform and observed checkout revision. Requested output may be overwritten. Empty measured populations are rejected later by validate_comparison, not by the request-default branch."
+    },
+    {
+      "path": "clause-inspection.json/clauses/79/guard_effect_retry_assessment",
+      "old": "Current run mode rejects unknown or empty scenario selections before measurement and writes schema-v2 reports with explicit all/subset selection, harness SHA256, Python/platform and observed checkout revision. Requested output may be overwritten.",
+      "new": "Current run mode rejects unknown requested scenario names; an omitted or empty request selects all declared scenarios. It writes schema-v2 reports with explicit all/subset selection, harness SHA256, Python/platform and observed checkout revision. Requested output may be overwritten. Empty measured populations are rejected later by validate_comparison, not by the request-default branch."
+    },
+    {
+      "path": "proofs/T10-preserved.json/semantic_mapping/6/semantic_assessment",
+      "old": "Current run mode rejects unknown or empty scenario selections before measurement and writes schema-v2 reports with explicit all/subset selection, harness SHA256, Python/platform and observed checkout revision. Requested output may be overwritten.",
+      "new": "Current run mode rejects unknown requested scenario names; an omitted or empty request selects all declared scenarios. It writes schema-v2 reports with explicit all/subset selection, harness SHA256, Python/platform and observed checkout revision. Requested output may be overwritten. Empty measured populations are rejected later by validate_comparison, not by the request-default branch."
+    }
+  ],
+  "dependent_hash_leaves": 1,
+  "retained_rows_unchanged": true,
+  "CAS_preimages_unchanged": 63,
+  "source_read": "tools/statusline-bench.py cmd_run367-381 and validate_comparison484-486 inspected at41aa7a49",
+  "successor_sha256": "f3f1926f1c6464aafb187c8c2663dac7483bbf4613664374a466b500c2f7a624"
+}

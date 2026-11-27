@@ -1,0 +1,404 @@
+{
+  "repository": "arbiterForge/codeArbiter",
+  "head": {
+    "branch": "main",
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "commit_time": "2026-11-08T16:47:36Z"
+  },
+  "release_metadata": [
+    {
+      "id": 438396103,
+      "tag": "ca-pi-v0.27.5",
+      "name": "ca-pi 0.27.5",
+      "draft": true,
+      "prerelease": false,
+      "published_at": null,
+      "html_url": "https://github.com/arbiterForge/codeArbiter/releases/tag/untagged-e4c6789d39fbcd3c1c6f",
+      "target_commitish": "main",
+      "assets": [
+        {
+          "name": "arbiterforge-ca-pi-0.27.5.tgz",
+          "size": 16715358,
+          "digest": "sha256:4ee7684f8ef0eeb334fc898425995bc1ef60b09b2f2b57ea2ada1b4871376cc9"
+        }
+      ]
+    },
+    {
+      "id": 437632948,
+      "tag": "ca-pi-v0.27.4",
+      "name": "ca-pi 0.27.4",
+      "draft": true,
+      "prerelease": false,
+      "published_at": null,
+      "html_url": "https://github.com/arbiterForge/codeArbiter/releases/tag/untagged-3d20e88206699edaadf5",
+      "target_commitish": "main",
+      "assets": [
+        {
+          "name": "arbiterforge-ca-pi-0.27.4.tgz",
+          "size": 16716381,
+          "digest": "sha256:7ace7b3f7b056f529afa38a6dbce7bea24efabdec4332342c2709947aa472ab4"
+        }
+      ]
+    },
+    {
+      "id": 428153015,
+      "tag": "ca-pi-v0.23.3",
+      "name": "ca-pi 0.23.3",
+      "draft": true,
+      "prerelease": false,
+      "published_at": null,
+      "html_url": "https://github.com/arbiterForge/codeArbiter/releases/tag/untagged-69986db79a8252824cd7",
+      "target_commitish": "main",
+      "assets": [
+        {
+          "name": "arbiterforge-ca-pi-0.23.3.tgz",
+          "size": 15682014,
+          "digest": "sha256:1d8911ad0a31b66ac776d50921796b46755920a0cb552e78b57f38b3c8b04ae5"
+        }
+      ]
+    },
+    {
+      "id": 423183125,
+      "tag": "ca-pi-v0.23.1",
+      "name": "ca-pi 0.23.1",
+      "draft": true,
+      "prerelease": false,
+      "published_at": null,
+      "html_url": "https://github.com/arbiterForge/codeArbiter/releases/tag/untagged-72c798698b2662db8340",
+      "target_commitish": "main",
+      "assets": [
+        {
+          "name": "arbiterforge-ca-pi-0.23.1.tgz",
+          "size": 15630004,
+          "digest": "sha256:7c7d2d8d59e5264c6da98b16587626b84e0826be1d0127c727231ebe226dd5ee"
+        }
+      ]
+    },
+    {
+      "id": 412145328,
+      "tag": "ca-pi-v0.18.3",
+      "name": "ca-pi 0.18.3",
+      "draft": true,
+      "prerelease": false,
+      "published_at": null,
+      "html_url": "https://github.com/arbiterForge/codeArbiter/releases/tag/untagged-d23189eba7a3673192d4",
+      "target_commitish": "main",
+      "assets": [
+        {
+          "name": "arbiterforge-ca-pi-0.18.3.tgz",
+          "size": 14777767,
+          "digest": "sha256:30c23af91a2b29aa9cd5f96498cb2c2c391c098990390b188543ea189261d14c"
+        }
+      ]
+    },
+    {
+      "id": 396226374,
+      "tag": "ca-codex-v0.13.16",
+      "name": "ca-codex 0.13.16",
+      "draft": true,
+      "prerelease": false,
+      "published_at": null,
+      "html_url": "https://github.com/arbiterForge/codeArbiter/releases/tag/untagged-ef6a9e913ed363ec7833",
+      "target_commitish": "929229354e3a15ae3002c82116b66c837ab43729",
+      "assets": [
+        {
+          "name": "codearbiter-ca-codex-0.13.16.tar.gz",
+          "size": 12206345,
+          "digest": "sha256:581aa9ce13cce11e934e03fbdb6e86772bc9b56d611c46d6620494e67293bd1a"
+        },
+        {
+          "name": "codearbiter-cohort-publication-v1.json",
+          "size": 920,
+          "digest": "sha256:b97f5e440852b98d60f0ebc323a49670e5f5d36f070b483bcce948e6e5bf8600"
+        }
+      ]
+    },
+    {
+      "id": 394310972,
+      "tag": "ca-pi-v0.14.10",
+      "name": "ca-pi 0.14.10",
+      "draft": true,
+      "prerelease": false,
+      "published_at": null,
+      "html_url": "https://github.com/arbiterForge/codeArbiter/releases/tag/untagged-8957917b66857f200601",
+      "target_commitish": "3e3286362847f54c87dd49f792e2eeccec69b501",
+      "assets": []
+    },
+    {
+      "id": 392252876,
+      "tag": "v2.21.4",
+      "name": "codeArbiter 2.21.4",
+      "draft": true,
+      "prerelease": false,
+      "published_at": null,
+      "html_url": "https://github.com/arbiterForge/codeArbiter/releases/tag/untagged-ee8f71c54d4af50d6f2c",
+      "target_commitish": "38968bddd23109a26dd3526f526d461b9b1941cd",
+      "assets": []
+    },
+    {
+      "id": 438396054,
+      "tag": "v3.8.5",
+      "name": "codeArbiter 3.8.5",
+      "draft": false,
+      "prerelease": false,
+      "published_at": "2026-11-08T17:17:21Z",
+      "html_url": "https://github.com/arbiterForge/codeArbiter/releases/tag/v3.8.5",
+      "target_commitish": "main",
+      "assets": [
+        {
+          "name": "codearbiter-ca-3.8.5.tar.gz",
+          "size": 16831278,
+          "digest": "sha256:e9764e5937520609228c5520da728265062a7581c8184ae858b4c5afed206a49"
+        },
+        {
+          "name": "codearbiter-publication.json",
+          "size": 458,
+          "digest": "sha256:16d510096089177b1d2dfc48578a63d4aea968dfcf18cc96a58b85a17e63ca6b"
+        }
+      ]
+    },
+    {
+      "id": 438396085,
+      "tag": "ca-codex-v0.26.5",
+      "name": "ca-codex 0.26.5",
+      "draft": false,
+      "prerelease": false,
+      "published_at": "2026-11-08T17:17:29Z",
+      "html_url": "https://github.com/arbiterForge/codeArbiter/releases/tag/ca-codex-v0.26.5",
+      "target_commitish": "main",
+      "assets": [
+        {
+          "name": "codearbiter-ca-codex-0.26.5.tar.gz",
+          "size": 16248586,
+          "digest": "sha256:c6b1926e59da91e604e1b38b140fb493bdf30934b09cc1692d51f4e755efa6f8"
+        },
+        {
+          "name": "codearbiter-publication.json",
+          "size": 487,
+          "digest": "sha256:a23276233aea5ffa07bb65e741738edffc866f230c686c505998b42ebe191c65"
+        }
+      ]
+    },
+    {
+      "id": 437632914,
+      "tag": "v3.8.4",
+      "name": "codeArbiter 3.8.4",
+      "draft": false,
+      "prerelease": false,
+      "published_at": "2026-11-07T14:41:06Z",
+      "html_url": "https://github.com/arbiterForge/codeArbiter/releases/tag/v3.8.4",
+      "target_commitish": "main",
+      "assets": [
+        {
+          "name": "codearbiter-ca-3.8.4.tar.gz",
+          "size": 16832100,
+          "digest": "sha256:2f8e231029ceb89d29bc37423e90d5b664ff8f17fa430665dc3228b9d8ee99f8"
+        },
+        {
+          "name": "codearbiter-publication.json",
+          "size": 458,
+          "digest": "sha256:2052424f33633ff4d1235fedc7de7db321630bd3709e88639346f62f40a22334"
+        }
+      ]
+    },
+    {
+      "id": 437632982,
+      "tag": "ca-codex-v0.26.4",
+      "name": "ca-codex 0.26.4",
+      "draft": false,
+      "prerelease": false,
+      "published_at": "2026-11-07T14:41:18Z",
+      "html_url": "https://github.com/arbiterForge/codeArbiter/releases/tag/ca-codex-v0.26.4",
+      "target_commitish": "main",
+      "assets": [
+        {
+          "name": "codearbiter-ca-codex-0.26.4.tar.gz",
+          "size": 16249085,
+          "digest": "sha256:3acc3aa22923c1afb8cb9a7237d6d6c8fe555defdd71c200f947e7c965318217"
+        },
+        {
+          "name": "codearbiter-publication.json",
+          "size": 487,
+          "digest": "sha256:38faf4d717a8259bc236feaaa417c1c33bc2eaaefadb0f2be53f956eaed07001"
+        }
+      ]
+    },
+    {
+      "id": 431256518,
+      "tag": "v3.8.3",
+      "name": "codeArbiter 3.8.3",
+      "draft": false,
+      "prerelease": false,
+      "published_at": "2026-11-02T09:13:33Z",
+      "html_url": "https://github.com/arbiterForge/codeArbiter/releases/tag/v3.8.3",
+      "target_commitish": "main",
+      "assets": [
+        {
+          "name": "codearbiter-ca-3.8.3.tar.gz",
+          "size": 16796817,
+          "digest": "sha256:0d6d6443000d12854db88b12608963784b19c91a7608e157afd975e6257efe7c"
+        },
+        {
+          "name": "codearbiter-publication.json",
+          "size": 458,
+          "digest": "sha256:5606182e7c3847922ea33eb09e572f70a347fded9f324dc3c79949dd105ad752"
+        }
+      ]
+    },
+    {
+      "id": 431256677,
+      "tag": "ca-pi-v0.27.3",
+      "name": "ca-pi 0.27.3",
+      "draft": false,
+      "prerelease": false,
+      "published_at": "2026-11-02T09:16:46Z",
+      "html_url": "https://github.com/arbiterForge/codeArbiter/releases/tag/ca-pi-v0.27.3",
+      "target_commitish": "main",
+      "assets": [
+        {
+          "name": "arbiterforge-ca-pi-0.27.3.tgz",
+          "size": 16695774,
+          "digest": "sha256:ce4902d62f223d2a0801189b98456809cdbe1708d3388be98c06ff0d938d87ed"
+        },
+        {
+          "name": "codearbiter-publication.json",
+          "size": 447,
+          "digest": "sha256:3b097e7ea97e95a6d37b7159e2a6ed0e4ed94b54f7298bc010e0646635f6737a"
+        }
+      ]
+    },
+    {
+      "id": 431256586,
+      "tag": "ca-codex-v0.26.3",
+      "name": "ca-codex 0.26.3",
+      "draft": false,
+      "prerelease": false,
+      "published_at": "2026-11-02T09:13:43Z",
+      "html_url": "https://github.com/arbiterForge/codeArbiter/releases/tag/ca-codex-v0.26.3",
+      "target_commitish": "main",
+      "assets": [
+        {
+          "name": "codearbiter-ca-codex-0.26.3.tar.gz",
+          "size": 16228539,
+          "digest": "sha256:cea4987813c02f239a724025643ebb3f2a7d9bfbc0e89f4c0c1704694da12e97"
+        },
+        {
+          "name": "codearbiter-publication.json",
+          "size": 487,
+          "digest": "sha256:cd5602ebc15057156101edcb3a0b3179941661eee9caa9d4d2910c78856693c8"
+        }
+      ]
+    },
+    {
+      "id": 431011308,
+      "tag": "v3.8.2",
+      "name": "codeArbiter 3.8.2",
+      "draft": false,
+      "prerelease": false,
+      "published_at": "2026-11-02T02:29:34Z",
+      "html_url": "https://github.com/arbiterForge/codeArbiter/releases/tag/v3.8.2",
+      "target_commitish": "main",
+      "assets": [
+        {
+          "name": "codearbiter-ca-3.8.2.tar.gz",
+          "size": 16795721,
+          "digest": "sha256:472d94b75284a1674370c0425d4d713a55079165f829639cacafe512b4b56a68"
+        },
+        {
+          "name": "codearbiter-publication.json",
+          "size": 458,
+          "digest": "sha256:2eaba1e997f5353ca28a5ee5a61b452947308443b3928d3a3b12f4459d73ffd1"
+        }
+      ]
+    },
+    {
+      "id": 430704509,
+      "tag": "v3.8.1",
+      "name": "codeArbiter 3.8.1",
+      "draft": false,
+      "prerelease": false,
+      "published_at": "2026-11-01T16:26:55Z",
+      "html_url": "https://github.com/arbiterForge/codeArbiter/releases/tag/v3.8.1",
+      "target_commitish": "main",
+      "assets": [
+        {
+          "name": "codearbiter-ca-3.8.1.tar.gz",
+          "size": 16776560,
+          "digest": "sha256:998710de3a44361459171dde151d9d1e0cb8efe300de4b4667b46065b6669539"
+        },
+        {
+          "name": "codearbiter-publication.json",
+          "size": 458,
+          "digest": "sha256:34d1caf54d6c2c65ddcb1f7e24c1be380e8d980e9022867dacf2f3700b72f5c2"
+        }
+      ]
+    },
+    {
+      "id": 431011492,
+      "tag": "ca-pi-v0.27.2",
+      "name": "ca-pi 0.27.2",
+      "draft": false,
+      "prerelease": false,
+      "published_at": "2026-11-02T02:38:20Z",
+      "html_url": "https://github.com/arbiterForge/codeArbiter/releases/tag/ca-pi-v0.27.2",
+      "target_commitish": "main",
+      "assets": [
+        {
+          "name": "arbiterforge-ca-pi-0.27.2.tgz",
+          "size": 16694821,
+          "digest": "sha256:36aeee5c560b657d55767bb3b5585d8e537121210d6094bcafbcb4997a0fc324"
+        },
+        {
+          "name": "codearbiter-publication.json",
+          "size": 447,
+          "digest": "sha256:f33499fc1d31d5ff341af568db9c7fbb4fbb051be988a8198c96c4b7b8a63fe7"
+        }
+      ]
+    },
+    {
+      "id": 430704520,
+      "tag": "ca-pi-v0.27.1",
+      "name": "ca-pi 0.27.1",
+      "draft": false,
+      "prerelease": false,
+      "published_at": "2026-11-01T16:29:24Z",
+      "html_url": "https://github.com/arbiterForge/codeArbiter/releases/tag/ca-pi-v0.27.1",
+      "target_commitish": "main",
+      "assets": [
+        {
+          "name": "arbiterforge-ca-pi-0.27.1.tgz",
+          "size": 16674591,
+          "digest": "sha256:62b3de448ec467e4e7aa1cbd9b13bd669cdd5934b7a8ea1e477f38a209b104c7"
+        },
+        {
+          "name": "codearbiter-publication.json",
+          "size": 447,
+          "digest": "sha256:07878e3cb47eb38ada538dc3ad25495d722128930760149519ab8219c96cf949"
+        }
+      ]
+    },
+    {
+      "id": 431011401,
+      "tag": "ca-codex-v0.26.2",
+      "name": "ca-codex 0.26.2",
+      "draft": false,
+      "prerelease": false,
+      "published_at": "2026-11-02T02:29:52Z",
+      "html_url": "https://github.com/arbiterForge/codeArbiter/releases/tag/ca-codex-v0.26.2",
+      "target_commitish": "main",
+      "assets": [
+        {
+          "name": "codearbiter-ca-codex-0.26.2.tar.gz",
+          "size": 16227780,
+          "digest": "sha256:01185669fbd3dbfa4bc096227c44e8d22b4619ff74e6635d1b87db7f01395211"
+        },
+        {
+          "name": "codearbiter-publication.json",
+          "size": 487,
+          "digest": "sha256:5903c73a436aec9a8ab063b44e799ac39990e9d90b24d8147675f71888cf3eaf"
+        }
+      ]
+    }
+  ],
+  "boundary": "GET metadata only. Exact distributed asset bytes were not fetched or qualified. Draft status does not identify failure cause."
+}

@@ -1,0 +1,249 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "Codex /root/acceptance_security_review infra-author: exact25-clause C05-C10 source/baseline/caller assessment; healthy source-only proposal, C06 partial-spawn cleanup explicitly pending"
+ },
+ "inputs": {
+  ".github/scripts/_contextverificationlib.py": "361b29a202f8ff3fe4f35c58a42d53cf77c4f8fe05985b1e91b721fc8f2a0707",
+  ".github/scripts/test_artifact_installed_host.py": "2111b6d05267b906dabe4676f8945029aaceeabc343ae962c3afc35362deac04",
+  ".github/scripts/test_context_installed.py": "563efb67846280e1f33b2ae135ba6616e49cee8df96aa56ca30eb421f653bd19",
+  "core/pysrc/_artifactmanifestlib.py": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e"
+ },
+ "disposition_ids": [
+  "disposition:machines:C07",
+  "disposition:transitions:C07:01",
+  "disposition:transitions:C07:02",
+  "disposition:transitions:C07:03",
+  "disposition:transitions:C07:04"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/ci-six-source-384269dc/clause-inspection.json",
+   "sha256": "d596f289beda4dac2a82addbc95848d4038ed5f19242298e498e6a8bb2dbb4c1"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/ci-six-source-384269dc/source-bindings.json",
+   "sha256": "49eeb6dd181daa14b41a2a07cf97ff6b87625f1f785a1828e8b82165e91edb79"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/ci-six-source-384269dc/owner-baseline-current.diff",
+   "sha256": "ebb8d8870a2a601f4ad08ae4298d1aa9f76667e82022c68c45d60aaa9f90a47b"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:C07",
+   "frozen_row_sha256": "60b2c015a49fe0a8e9555b7168350e4edc0de1fb65951260ca40b897b3b94077",
+   "clause_ids": [
+    "disposition:transitions:C07:01",
+    "disposition:transitions:C07:02",
+    "disposition:transitions:C07:03",
+    "disposition:transitions:C07:04"
+   ],
+   "witnesses": [
+    {
+     "path": ".github/scripts/_contextverificationlib.py",
+     "start": 36,
+     "end": 103,
+     "file_sha256": "361b29a202f8ff3fe4f35c58a42d53cf77c4f8fe05985b1e91b721fc8f2a0707"
+    },
+    {
+     "path": ".github/scripts/_contextverificationlib.py",
+     "start": 156,
+     "end": 162,
+     "file_sha256": "361b29a202f8ff3fe4f35c58a42d53cf77c4f8fe05985b1e91b721fc8f2a0707"
+    },
+    {
+     "path": ".github/scripts/_contextverificationlib.py",
+     "start": 226,
+     "end": 309,
+     "file_sha256": "361b29a202f8ff3fe4f35c58a42d53cf77c4f8fe05985b1e91b721fc8f2a0707"
+    },
+    {
+     "path": ".github/scripts/_contextverificationlib.py",
+     "start": 106,
+     "end": 120,
+     "file_sha256": "361b29a202f8ff3fe4f35c58a42d53cf77c4f8fe05985b1e91b721fc8f2a0707"
+    },
+    {
+     "path": ".github/scripts/_contextverificationlib.py",
+     "start": 147,
+     "end": 223,
+     "file_sha256": "361b29a202f8ff3fe4f35c58a42d53cf77c4f8fe05985b1e91b721fc8f2a0707"
+    },
+    {
+     "path": ".github/scripts/_contextverificationlib.py",
+     "start": 312,
+     "end": 407,
+     "file_sha256": "361b29a202f8ff3fe4f35c58a42d53cf77c4f8fe05985b1e91b721fc8f2a0707"
+    },
+    {
+     "path": "core/pysrc/_artifactmanifestlib.py",
+     "start": 24,
+     "end": 63,
+     "file_sha256": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054"
+    },
+    {
+     "path": ".github/scripts/_contextverificationlib.py",
+     "start": 123,
+     "end": 136,
+     "file_sha256": "361b29a202f8ff3fe4f35c58a42d53cf77c4f8fe05985b1e91b721fc8f2a0707"
+    },
+    {
+     "path": ".github/scripts/_contextverificationlib.py",
+     "start": 410,
+     "end": 465,
+     "file_sha256": "361b29a202f8ff3fe4f35c58a42d53cf77c4f8fe05985b1e91b721fc8f2a0707"
+    },
+    {
+     "path": ".github/scripts/test_context_installed.py",
+     "start": 46,
+     "end": 91,
+     "file_sha256": "563efb67846280e1f33b2ae135ba6616e49cee8df96aa56ca30eb421f653bd19"
+    },
+    {
+     "path": ".github/scripts/test_artifact_installed_host.py",
+     "start": 1527,
+     "end": 1584,
+     "file_sha256": "2111b6d05267b906dabe4676f8945029aaceeabc343ae962c3afc35362deac04"
+    }
+   ],
+   "semantic_assessment": "All literal event/guard/effect/retry clauses map to current source and pinned baseline, with explicit intake scopes/previous strengthening above; only source contract is preserved, and any existing TESTED/PRESERVED edge rows remain unchanged."
+  },
+  {
+   "cell": "disposition:transitions:C07:01",
+   "frozen_row_sha256": "6e4c7654a7bf45537c88c1fec348c5b6a5248bf9b45f29cf083eb55a539cb69a",
+   "witnesses": [
+    {
+     "path": ".github/scripts/_contextverificationlib.py",
+     "start": 36,
+     "end": 103,
+     "file_sha256": "361b29a202f8ff3fe4f35c58a42d53cf77c4f8fe05985b1e91b721fc8f2a0707"
+    },
+    {
+     "path": ".github/scripts/_contextverificationlib.py",
+     "start": 156,
+     "end": 162,
+     "file_sha256": "361b29a202f8ff3fe4f35c58a42d53cf77c4f8fe05985b1e91b721fc8f2a0707"
+    },
+    {
+     "path": ".github/scripts/_contextverificationlib.py",
+     "start": 226,
+     "end": 309,
+     "file_sha256": "361b29a202f8ff3fe4f35c58a42d53cf77c4f8fe05985b1e91b721fc8f2a0707"
+    }
+   ],
+   "semantic_assessment": "Finite approved Go selector and unique declared subtests are validated; exact executable/source/module SHA256, go filename, module marker and source containment are checked. Fresh scratch caches, local toolchain, proxy/sumdb/work/env overrides and CGO off precede fixed go test ./... -count=1 -v -run ^case$ -json. Polling rejects stdout/stderr over 1MiB or 120-second execution deadline, killing/waiting the direct child. Post-run executable/source/module hashes must still match. Environment is inherited with Go/compiler/PATH overrides; this is not a blanket credential-isolation or process-tree guarantee.",
+   "limits": "Reasoned finite source guard/effect/retry conformance only. No actual suite/CI/Go/Docker/Vitest/installed/provider execution or success, runtime evidence epoch, task completion, human acceptance or publication qualification is asserted."
+  },
+  {
+   "cell": "disposition:transitions:C07:02",
+   "frozen_row_sha256": "7f80318b27449b9ff6a1d487e89dda144acc50ad0af048d4f86dceb98857e86c",
+   "witnesses": [
+    {
+     "path": ".github/scripts/_contextverificationlib.py",
+     "start": 106,
+     "end": 120,
+     "file_sha256": "361b29a202f8ff3fe4f35c58a42d53cf77c4f8fe05985b1e91b721fc8f2a0707"
+    },
+    {
+     "path": ".github/scripts/_contextverificationlib.py",
+     "start": 147,
+     "end": 223,
+     "file_sha256": "361b29a202f8ff3fe4f35c58a42d53cf77c4f8fe05985b1e91b721fc8f2a0707"
+    }
+   ],
+   "semantic_assessment": "Raw bytes and exit0 are required; output is bounded to 1MiB/stream, <=8192 lines and <=65536 bytes/line, final newline mandatory. Duplicate JSON keys, invalid record/action/package, any fail, named skip, unexpected name or cross-package name reject. Every expected selected test/subtest has exactly run then pass and exactly one package pass. Unselected packages may package-skip only. Returned GoObservation remains fixture/live_qualified false.",
+   "limits": "Reasoned finite source guard/effect/retry conformance only. No actual suite/CI/Go/Docker/Vitest/installed/provider execution or success, runtime evidence epoch, task completion, human acceptance or publication qualification is asserted."
+  },
+  {
+   "cell": "disposition:transitions:C07:03",
+   "frozen_row_sha256": "cf46a611386a2464371eb0b6ee77b15be166e7288be6a211ede8c0703ed1815b",
+   "witnesses": [
+    {
+     "path": ".github/scripts/_contextverificationlib.py",
+     "start": 312,
+     "end": 407,
+     "file_sha256": "361b29a202f8ff3fe4f35c58a42d53cf77c4f8fe05985b1e91b721fc8f2a0707"
+    },
+    {
+     "path": "core/pysrc/_artifactmanifestlib.py",
+     "start": 24,
+     "end": 63,
+     "file_sha256": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054"
+    }
+   ],
+   "semantic_assessment": "Cohort raw hash/source commit/tree and installed member population/sizes/SHA256 bind to the chosen host prefix; lexical escaping and observed symlinks reject. Release input is bounded, duplicate-safe, and now passes shared validate_release_manifest before the original closed five-field or optional-context shape check. Platform filename, native_tested true, binary digest and location remain required. DIST-M01 authorizes validating optional context data; it remains a declaration, not independently authenticated installed qualification. Trusted normalized package paths and cooperative filesystem are assumed; no hostile replacement/Windows junction immunity is invented.",
+   "limits": "Reasoned finite source guard/effect/retry conformance only. No actual suite/CI/Go/Docker/Vitest/installed/provider execution or success, runtime evidence epoch, task completion, human acceptance or publication qualification is asserted."
+  },
+  {
+   "cell": "disposition:transitions:C07:04",
+   "frozen_row_sha256": "7c98347098c2edfdb4841f1241df15fb258d84b9a1a2aa8c50a55cfc5a15f552",
+   "witnesses": [
+    {
+     "path": ".github/scripts/_contextverificationlib.py",
+     "start": 123,
+     "end": 136,
+     "file_sha256": "361b29a202f8ff3fe4f35c58a42d53cf77c4f8fe05985b1e91b721fc8f2a0707"
+    },
+    {
+     "path": ".github/scripts/_contextverificationlib.py",
+     "start": 410,
+     "end": 465,
+     "file_sha256": "361b29a202f8ff3fe4f35c58a42d53cf77c4f8fe05985b1e91b721fc8f2a0707"
+    },
+    {
+     "path": ".github/scripts/test_context_installed.py",
+     "start": 46,
+     "end": 91,
+     "file_sha256": "563efb67846280e1f33b2ae135ba6616e49cee8df96aa56ca30eb421f653bd19"
+    },
+    {
+     "path": ".github/scripts/test_artifact_installed_host.py",
+     "start": 1527,
+     "end": 1584,
+     "file_sha256": "2111b6d05267b906dabe4676f8945029aaceeabc343ae962c3afc35362deac04"
+    }
+   ],
+   "semantic_assessment": "Only supported host and candidate-preflight mode are admitted with exact digest/Git IDs. Candidate/plugin/repo/interpreter/empty PATH paths resolve; plugin must be inside candidate and repository disjoint, Python absolute and named appropriately, PATH an existing empty directory. Binding precedes fixed runner argv Python -I -B and a finite host environment allowlist. It returns InstalledInvocation with proof_kind candidate-preflight/live_qualified false; it launches nothing. The actual installed context caller appends its own context/identity flags, executes and checks its separate result, so planning is not confused with execution.",
+   "limits": "Reasoned finite source guard/effect/retry conformance only. No actual suite/CI/Go/Docker/Vitest/installed/provider execution or success, runtime evidence epoch, task completion, human acceptance or publication qualification is asserted."
+  }
+ ],
+ "scope": {
+  "source_only": true,
+  "families": [
+   "C07"
+  ],
+  "complete_machine": true,
+  "inspected_all_literal_clauses": [
+   "disposition:transitions:C07:01",
+   "disposition:transitions:C07:02",
+   "disposition:transitions:C07:03",
+   "disposition:transitions:C07:04"
+  ],
+  "existing_advanced_rows_unchanged": [],
+  "intake_variances": [
+   {
+    "id": "C07-OPTIONAL-MANIFEST-VALIDATION",
+    "cells": [
+     "C07:03"
+    ],
+    "classification": "ACCEPTED_DIST_M01_STRENGTHENING",
+    "statement": "Current shared manifest validation closes optional context shape/value validation before existing host binary checks. Manifest declarations remain distinct from trusted native/installed qualification; DIST-M01 task status and runtime cells unchanged."
+   }
+  ]
+ },
+ "limits": [
+  "Reasoned finite source guard/effect/retry conformance only. No actual suite/CI/Go/Docker/Vitest/installed/provider execution or success, runtime evidence epoch, task completion, human acceptance or publication qualification is asserted.",
+  "No canonical/index/ref/marker/ledger writes. These are proposals for Root compare-and-set adoption; no current staged candidate or security marker is fabricated.",
+  "Unkeyed source hashes/records provide cooperative source consistency, not adversarial authentication or observed execution."
+ ]
+}

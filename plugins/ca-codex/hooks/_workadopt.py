@@ -7,8 +7,10 @@ work records and snapshots and removes the board. Preview never mutates it.
 from __future__ import annotations
 
 import hashlib
+import os
 from pathlib import Path
 import re
+import stat
 
 import _taskboardlib as board
 import _worklib
@@ -43,15 +45,42 @@ def _fit_title_and_intent(title, description, location, line):
 
 
 def _read(path, limit, *, optional=False):
-    if path.is_symlink():
-        raise ValueError(f"linked legacy {path.name} cannot be adopted")
+    def linked(info):
+        return (stat.S_ISLNK(info.st_mode)
+                or bool(getattr(info, "st_file_attributes", 0)
+                        & getattr(stat, "FILE_ATTRIBUTE_REPARSE_POINT", 0x400)))
+
     try:
-        with path.open("rb") as handle:
-            raw = handle.read(limit + 1)
+        before = path.lstat()
+        if linked(before):
+            raise ValueError(f"linked legacy {path.name} cannot be adopted")
+        if not stat.S_ISREG(before.st_mode):
+            raise ValueError(f"legacy {path.name} must be a regular file")
+        flags = (os.O_RDONLY | getattr(os, "O_BINARY", 0)
+                 | getattr(os, "O_NONBLOCK", 0) | getattr(os, "O_NOFOLLOW", 0)
+                 | getattr(os, "O_CLOEXEC", 0))
+        fd = os.open(path, flags)
     except FileNotFoundError:
         if optional:
             return None
         raise ValueError(f"legacy work owner {path.name} is absent") from None
+    try:
+        acquired = os.fstat(fd)
+        if not stat.S_ISREG(acquired.st_mode):
+            raise ValueError(f"legacy {path.name} must be a regular file")
+        try:
+            after = path.lstat()
+        except FileNotFoundError:
+            raise ValueError(f"legacy {path.name} changed during acquisition") from None
+        if (linked(after) or not stat.S_ISREG(after.st_mode)
+                or not os.path.samestat(before, acquired)
+                or not os.path.samestat(after, acquired)):
+            raise ValueError(f"legacy {path.name} changed during acquisition")
+        # closefd=False keeps one explicit owner even if wrapping/reading fails.
+        with os.fdopen(fd, "rb", closefd=False) as handle:
+            raw = handle.read(limit + 1)
+    finally:
+        os.close(fd)
     if len(raw) > limit:
         raise ValueError(f"legacy {path.name} exceeds its adoption read limit")
     try:

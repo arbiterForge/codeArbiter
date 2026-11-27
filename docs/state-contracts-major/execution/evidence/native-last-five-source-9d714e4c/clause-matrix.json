@@ -1,0 +1,376 @@
+[
+  {
+    "transition_id": "N03:01",
+    "machine_id": "N03",
+    "literal_frozen_clause": {
+      "event": "recover complete",
+      "guard": "all targets currently before or after; every necessary stage verified before any write",
+      "effects": "Complete missing edits, clean verified unused stages, persist terminal state.",
+      "failure_retry": "RECOVERY_CONFLICT for third-party edits; COMMIT_OUTCOME_UNKNOWN for I/O interruption; retry same recovery."
+    },
+    "source_spans": "store/transaction.go:424-539; operations/engine.go:139-145",
+    "guard_assessment": "Recover complete validates mode and journal, then every target must match before/after; all necessary stage bytes are hash-checked before the effect loop.",
+    "effect_assessment": "Apply only missing after-images; hash-check unused stages before cleanup; mark committed through durable metadata update.",
+    "retry_assessment": "Third digest refuses RECOVERY_CONFLICT. Early read/replace/remove errors may propagate directly while journal stays prepared; only failed terminal acknowledgement is wrapped COMMIT_OUTCOME_UNKNOWN. This corrects the inherited all-I/O wording, not the kernel.",
+    "source_conformance": "SUPPORTED_CURRENT_ACCEPTED_CONTRACT",
+    "existing_edge_status": "TESTED",
+    "new_execution": false
+  },
+  {
+    "transition_id": "N03:02",
+    "machine_id": "N03",
+    "literal_frozen_clause": {
+      "event": "recover rollback",
+      "guard": "all current targets before or after; backups hash-valid before any write",
+      "effects": "Restore old bytes/delete new targets, clean stages, preserve transaction/history.",
+      "failure_retry": "All-target preflight prevents overwriting outside changes; incomplete recovery stays prepared."
+    },
+    "source_spans": "store/transaction.go:424-539",
+    "guard_assessment": "All targets match a journal before/after identity; all necessary rollback backups are checked before the effect loop.",
+    "effect_assessment": "Restore before-images or remove originally absent targets; verify cleanup stages and retain history/journal.",
+    "retry_assessment": "Third-party current bytes refuse before effects. Required material failure leaves prepared journal. No arbitrary undo or third-party overwrite authority.",
+    "source_conformance": "SUPPORTED_CURRENT_ACCEPTED_CONTRACT",
+    "existing_edge_status": "TESTED",
+    "new_execution": false
+  },
+  {
+    "transition_id": "N03:03",
+    "machine_id": "N03",
+    "literal_frozen_clause": {
+      "event": "recover again",
+      "guard": "valid terminal journal",
+      "effects": "Return replay without reapplying inverse/forward edits.",
+      "failure_retry": "Recovery is not general undo of a committed arbitrary write."
+    },
+    "source_spans": "store/transaction.go:424-434",
+    "guard_assessment": "Decode and validate the existing terminal journal before considering its state.",
+    "effect_assessment": "If not prepared, return same terminal outcome/replay immediately without effects.",
+    "retry_assessment": "Recover complete/rollback cannot undo a committed operation. Later source edits are not reversed by terminal replay.",
+    "source_conformance": "SUPPORTED_CURRENT_ACCEPTED_CONTRACT",
+    "existing_edge_status": "TESTED",
+    "new_execution": false
+  },
+  {
+    "transition_id": "N03:04",
+    "machine_id": "N03",
+    "literal_frozen_clause": {
+      "event": "target has third digest / missing recovery material",
+      "guard": "preflight mismatch",
+      "effects": "No preflight mutation; preserve evidence for manual reconciliation.",
+      "failure_retry": "RECOVERY_CONFLICT; must resolve actual bytes before retry."
+    },
+    "source_spans": "store/transaction.go:435-469",
+    "guard_assessment": "Preflight every current target and each required recovery input before the effect loop.",
+    "effect_assessment": "Third digest or missing/changed necessary stage/backup returns without target mutation; evidence is retained.",
+    "retry_assessment": "Third digest uses RECOVERY_CONFLICT; missing recovery material uses CORRUPT_JOURNAL, not universally RECOVERY_CONFLICT. Both are literal fd7/current behavior; actual bytes/material must be reconciled.",
+    "source_conformance": "SUPPORTED_CURRENT_ACCEPTED_CONTRACT",
+    "existing_edge_status": "TESTED",
+    "new_execution": false
+  },
+  {
+    "transition_id": "N03:05",
+    "machine_id": "N03",
+    "literal_frozen_clause": {
+      "event": "journal scan",
+      "guard": "invalid shape/name/path/hash, unreadable, listed file disappears",
+      "effects": "Refuse to treat store as clean.",
+      "failure_retry": "CORRUPT_JOURNAL / RECOVERY_REQUIRED / I/O diagnostic."
+    },
+    "source_spans": "store/transaction.go:82-185,213-259; store/infrastructure.go:125-146",
+    "guard_assessment": "Strict anchored scan/name/opID/journal-shape/digest/target/stage/backups and bounded result; links/unreadable entries are errors.",
+    "effect_assessment": "Never infer a clean store from malformed or missing-listed journal; .next is explicitly nonauthoritative.",
+    "retry_assessment": "CORRUPT_JOURNAL, RECOVERY_REQUIRED or contextual I/O error propagates. Current ancestor/descendant target-collision rejection strengthens closed journal admission; disjoint targets remain valid.",
+    "source_conformance": "SUPPORTED_CURRENT_ACCEPTED_CONTRACT",
+    "existing_edge_status": "TESTED",
+    "new_execution": false
+  },
+  {
+    "transition_id": "N04:01",
+    "machine_id": "N04",
+    "literal_frozen_clause": {
+      "event": "create spec/plan/knowledge/decomposition",
+      "guard": "closed supported kind and schema, unique identity/path",
+      "effects": "Create revision 1, typed normative state, presentation, checksums; plan tasks PENDING, governance draft.",
+      "failure_retry": "Duplicate identity, existing canonical slug or catalog bounds refuse."
+    },
+    "source_spans": "operations/mutations.go:19-130; operations/engine.go:279-305,481-501; operations/protocol.go:RequestSchema create; repository/catalog.go:NewPath",
+    "guard_assessment": "Closed public kind/schema/ID/slug; catalog identity unique; legacy Markdown/canonical HTML target absent; new plan binds exact current selected spec.",
+    "effect_assessment": "Revision1/model checksums/canonical presentation; draft governance; syncExecution initializes plan tasks PENDING. Created structure is checked by render.Prepare.",
+    "retry_assessment": "Duplicate IDs/path, incompatible binding, existing target and catalog count/byte caps refuse before Commit.",
+    "source_conformance": "SUPPORTED_CURRENT_ACCEPTED_CONTRACT",
+    "existing_edge_status": "PLANNED",
+    "new_execution": false
+  },
+  {
+    "transition_id": "N04:02",
+    "machine_id": "N04",
+    "literal_frozen_clause": {
+      "event": "read",
+      "guard": "historical schema supported and no newer fields mislabeled",
+      "effects": "Validate and expose without automatic upgrade or recertification.",
+      "failure_retry": "Unsupported versions/assistive fields under old labels fail closed."
+    },
+    "source_spans": "model/artifact.go:70-101; render/render.go:Parse; schema/schema.go",
+    "guard_assessment": "Read only supported schema labels; assistive fields cannot masquerade under0.3.0/1; typed retirement requires non-work0.3.4; mapped work fields require work0.3.3.",
+    "effect_assessment": "Schema/symbol/integrity/render validation exposes historical bytes without rewriting or recertifying them.",
+    "retry_assessment": "Unsupported/newer fields or labels fail closed. NT05/NT09 add feature-gated0.3.4, not unconditional migration of old documents.",
+    "source_conformance": "SUPPORTED_CURRENT_ACCEPTED_CONTRACT",
+    "existing_edge_status": "TESTED",
+    "new_execution": false
+  },
+  {
+    "transition_id": "N04:03",
+    "machine_id": "N04",
+    "literal_frozen_clause": {
+      "event": "assistive mutation or work coordination",
+      "guard": "new fields required",
+      "effects": "Write appropriate 0.3.2/0.3.3 schema while retaining history.",
+      "failure_retry": "No silent reinterpretation on read."
+    },
+    "source_spans": "model/assistive.go:HasAssistiveFields,RequiredVersion,AtLeast; operations/mutations.go:394-405; operations/prerequisite_observation.go:54,99; operations/work_coordination.go:220-221; operations/lifecycle.go:278,407",
+    "guard_assessment": "Only actual new fields/changed progress semantics trigger a feature version; work has its own0.3.3 coordination epoch.",
+    "effect_assessment": "Assistive writes require at least0.3.2; typed retirement and changed dependency propagation use0.3.4 under NT05/NT09. RequiredVersion/AtLeast never downgrade a later label.",
+    "retry_assessment": "Read itself does not upgrade. Frozen0.3.2/0.3.3 wording is extended explicitly by accepted0.3.4 semantics; old history/receipt hashes stay at their real epoch.",
+    "source_conformance": "SUPPORTED_CURRENT_ACCEPTED_CONTRACT",
+    "existing_edge_status": "TESTED",
+    "new_execution": false
+  },
+  {
+    "transition_id": "N04:04",
+    "machine_id": "N04",
+    "literal_frozen_clause": {
+      "event": "catalog scan",
+      "guard": "unique ID; correct directory/kind; no same-slug HTML+Markdown",
+      "effects": "Spec and plan directories remain strict on catalog scans; optional kinds read only when active.",
+      "failure_retry": "One invalid strict spec/plan can reject unrelated catalog-based operation; selected work avoids broad catalog."
+    },
+    "source_spans": "repository/catalog.go:55-156; kind/contracts.go:contracts/codecs; operations/work.go:readWorkWithProject",
+    "guard_assessment": "Strict active codec/directory/kind and unique ID; refuse same-slug HTML+Markdown; anchored no-follow/bounded catalog.",
+    "effect_assessment": "Spec/plan remain strict on catalog scans; optional knowledge/decomposition/work only scanned when selected. Selected work uses exact owned work path.",
+    "retry_assessment": "One bad strict spec/plan can refuse catalog operations; unrelated optional kinds do not silently become broad dependencies.",
+    "source_conformance": "SUPPORTED_CURRENT_ACCEPTED_CONTRACT",
+    "existing_edge_status": "PRESERVED",
+    "new_execution": false
+  },
+  {
+    "transition_id": "N07:01",
+    "machine_id": "N07",
+    "literal_frozen_clause": {
+      "event": "record.update status=resolved",
+      "guard": "nonblank resolution; valid references",
+      "effects": "Update normative record; formerly blocking readiness may clear.",
+      "failure_retry": "Resolved without resolution is structurally invalid."
+    },
+    "source_spans": "validate/validate.go:97-154; operations/mutations.go:record.update; render/render.go:Prepare",
+    "guard_assessment": "Closed schema status vocabulary and live references; resolved requires nonblank resolution.",
+    "effect_assessment": "Generic typed record.update changes the normative record; a formerly blocking decision can then satisfy readiness.",
+    "retry_assessment": "Missing resolution is INVALID_DECISION; failed model/render validation prevents save. A stored resolution is not newly authenticated user approval.",
+    "source_conformance": "SUPPORTED_CURRENT_ACCEPTED_CONTRACT",
+    "existing_edge_status": "PLANNED",
+    "new_execution": false
+  },
+  {
+    "transition_id": "N07:02",
+    "machine_id": "N07",
+    "literal_frozen_clause": {
+      "event": "record.update status=open",
+      "guard": "valid closed schema",
+      "effects": "Retain explicit unresolved state; blocking decision causes Ready failure.",
+      "failure_retry": "No specialized irreversible transition policy: generic apply permits reopening. Deferred is a criterion disposition or decomposition question state, not a spec open-decision status."
+    },
+    "source_spans": "validate/validate.go:450-509; operations/mutations.go:record.update; schema/common.schema.json",
+    "guard_assessment": "Closed open/resolved spec open-decision vocabulary; normal typed update and CAS.",
+    "effect_assessment": "Reopen remains possible; blocking nonresolved decision yields OPEN_BLOCKER from Ready.",
+    "retry_assessment": "No irreversible native transition policy; deferred belongs to other typed scopes. Ready is a structural/evidence-consumer contract, not an ADR43 blanket permission gate on ordinary independent work.",
+    "source_conformance": "SUPPORTED_CURRENT_ACCEPTED_CONTRACT",
+    "existing_edge_status": "PRESERVED",
+    "new_execution": false
+  },
+  {
+    "transition_id": "N07:03",
+    "machine_id": "N07",
+    "literal_frozen_clause": {
+      "event": "validate ready",
+      "guard": "all required semantic fields; named tests for test commands; DAG/partition/input coverage; spec criterion mapping",
+      "effects": "Return deterministic diagnostics; does not approve.",
+      "failure_retry": "OPEN_BLOCKER, uncovered criterion/scope/input, invalid command etc remain diagnostic."
+    },
+    "source_spans": "validate/validate.go:249-449,450-555; validate/input_policy.go:InputPolicyErrors,InputIncludes,IsTestCommand",
+    "guard_assessment": "Structural references/DAG/checkpoint partition/path policy plus nonblank semantic fields; recognized test commands require named tests; all selected spec criteria covered/permitted disposition.",
+    "effect_assessment": "Return sorted bounded diagnostics/readiness assessment without approval or command execution.",
+    "retry_assessment": "OPEN_BLOCKER, uncovered scope/criterion/input, invalid command/path and oversized record remain diagnostic. Custom runner recognition is explicitly finite; no claim of universal shell parsing/build-closure inference.",
+    "source_conformance": "SUPPORTED_CURRENT_ACCEPTED_CONTRACT",
+    "existing_edge_status": "PLANNED",
+    "new_execution": false
+  },
+  {
+    "transition_id": "N07:04",
+    "machine_id": "N07",
+    "literal_frozen_clause": {
+      "event": "mark not_applicable / dispose mandatory",
+      "guard": "Ready/Binding checks",
+      "effects": "Refuse active not-applicable criterion or mandatory criterion disposition.",
+      "failure_retry": "Must explicitly revise/retire outcome with reason; no automatic task execution."
+    },
+    "source_spans": "validate/validate.go:Ready applicability; Binding:557-611; operations/mutations.go:Changes",
+    "guard_assessment": "Active criterion not_applicable is not ready; mandatory must criterion cannot be disposed; coverage/disposition cannot overlap.",
+    "effect_assessment": "Return NOT_READY/UNCOVERED_CRITERION; explicit supported revision/retirement is needed.",
+    "retry_assessment": "No automatic task execution, outcome retirement or user-decision creation. NT05 typed retired ownership is preserved, not fabricated from ID prefixes.",
+    "source_conformance": "SUPPORTED_CURRENT_ACCEPTED_CONTRACT",
+    "existing_edge_status": "PLANNED",
+    "new_execution": false
+  },
+  {
+    "transition_id": "N10:01",
+    "machine_id": "N10",
+    "literal_frozen_clause": {
+      "event": "task-review with verification+review receipts",
+      "guard": "Ready approved plan+spec, approved_source binding, strict prereqs, current snapshot, both exact receipts, completion rules",
+      "effects": "Append both refs, set/retain exact completion receipt selection; establish scope baseline if absent.",
+      "failure_retry": "Stale plan baseline needs scope-reconcile; failed/missing named tests/stale refs reject."
+    },
+    "source_spans": "operations/lifecycle.go:251-270,292-386; evidence/verification.go:48-145; evidence/completion.go:115-162,370-392",
+    "guard_assessment": "Only receipt-bearing task-review enters strict branch: current ready approved plan/spec, approved_source, strict prereqs/snapshot, dispatched state, exact verification+spec_review payloads and completion constraints.",
+    "effect_assessment": "On clone append both refs, REVIEW state, establish missing scope baseline or require plan-hash reconciliation; retain exact explicit completion selection.",
+    "retry_assessment": "Stale/missing/failed/skipped named results/receipt/subject or completion downgrade refuses before save. Ordinary no-receipt review routes to recordWork before these gates; no native global one-review-ever gate is invented (NT11).",
+    "source_conformance": "SUPPORTED_CURRENT_ACCEPTED_CONTRACT",
+    "existing_edge_status": "PLANNED",
+    "new_execution": false
+  },
+  {
+    "transition_id": "N10:02",
+    "machine_id": "N10",
+    "literal_frozen_clause": {
+      "event": "task-reconcile with receipt",
+      "guard": "current reconciliation receipt exact input/task/target; REVIEW additionally TaskFresh",
+      "effects": "Append evidence/reason; target other than REVIEW transitively invalidates dependents.",
+      "failure_retry": "Invalid receipt/input/claim rejects all changes."
+    },
+    "source_spans": "operations/lifecycle.go:387-409; model/assistive.go:TaskProgress; operations/assistive.go:eligible",
+    "guard_assessment": "Receipt-bearing reconcile requires current exact receipt subject/task/input/target; REVIEW additionally requires TaskFresh.",
+    "effect_assessment": "Append receipt/reason, set selected target. Accepted ADR0046/NT09 preserves dependent recorded progress/history; non-REVIEW upgrades changed semantics to at least0.3.4.",
+    "retry_assessment": "Invalid subject/input/claim refuses atomically. Frozen destructive transitive STALE overwrite is intentionally superseded, not claimed preserved. Ordinary no-receipt reconcile remains separately authorized progress.",
+    "source_conformance": "SUPPORTED_CURRENT_ACCEPTED_CONTRACT",
+    "existing_edge_status": "TESTED",
+    "new_execution": false
+  },
+  {
+    "transition_id": "N10:03",
+    "machine_id": "N10",
+    "literal_frozen_clause": {
+      "event": "scope-reconcile",
+      "guard": "current exact reconciliation receipt for scope/input",
+      "effects": "Set base input and plan hashes; append reconciliation to member tasks.",
+      "failure_retry": "Preserve prior evidence; cannot silently convert stale baseline."
+    },
+    "source_spans": "operations/lifecycle.go:410-432; authority/receipt.go:Load,Subject",
+    "guard_assessment": "Selected checkpoint and exact current reconciliation receipt/subject/current input plus nonblank assessment; strict plan/spec/prereqs/snapshot already passed.",
+    "effect_assessment": "Set scope base_input and plan hashes on clone; append receipt to every member without deleting prior refs.",
+    "retry_assessment": "Missing/stale source or malformed receipt refuses before save; no silent baseline restamp and no ordinary-start baseline requirement.",
+    "source_conformance": "SUPPORTED_CURRENT_ACCEPTED_CONTRACT",
+    "existing_edge_status": "PLANNED",
+    "new_execution": false
+  },
+  {
+    "transition_id": "N10:04",
+    "machine_id": "N10",
+    "literal_frozen_clause": {
+      "event": "accept-scope with quality receipt",
+      "guard": "previous checkpoint accepted fresh; every member TaskFresh; exact current quality/completion evidence",
+      "effects": "Accept entire scope atomically, append quality receipt.",
+      "failure_retry": "Any failed member or prior scope refuses entire transition."
+    },
+    "source_spans": "operations/lifecycle.go:433-475; evidence/verification.go:148-212; evidence/completion.go:394-470",
+    "guard_assessment": "Strict quality path requires prior checkpoints AcceptedFresh, every member REVIEW/ACCEPTED and TaskFresh, exact complete quality/task hashes and completion selection.",
+    "effect_assessment": "Only after all member checks, set every cloned member ACCEPTED and append quality receipt; one journaled save.",
+    "retry_assessment": "Any prior/member/quality/completion failure refuses all acceptance. No-receipt accept-scope uses finishScope and records DONE only, not verified acceptance.",
+    "source_conformance": "SUPPORTED_CURRENT_ACCEPTED_CONTRACT",
+    "existing_edge_status": "PLANNED",
+    "new_execution": false
+  },
+  {
+    "transition_id": "N10:05",
+    "machine_id": "N10",
+    "literal_frozen_clause": {
+      "event": "verification-status",
+      "guard": "strict guards+prereqs+snapshot",
+      "effects": "Project all_accepted_and_current only when every task ACCEPTED, fresh, no conflicting checks or unassessed trimmed history.",
+      "failure_retry": "May fail due to approval, stale source, infrastructure or missing evidence; never treats DONE/REVIEW as verification."
+    },
+    "source_spans": "operations/lifecycle.go:207-236; operations/task_check.go:151-285; evidence/verification.go:AcceptedFresh",
+    "guard_assessment": "Plan kind, strict guards/prereq receipt assessment and coherent current snapshot precede each acceptance/currentness assessment.",
+    "effect_assessment": "Read-only all_accepted_and_current requires ACCEPTED+AcceptedFresh for every task and no conflicting reports or unassessed trimmed history.",
+    "retry_assessment": "Approval/source/receipt/infrastructure failures propagate; DONE/REVIEW cannot substitute. Historical progress labels remain independently visible under ADR46.",
+    "source_conformance": "SUPPORTED_CURRENT_ACCEPTED_CONTRACT",
+    "existing_edge_status": "PRESERVED",
+    "new_execution": false
+  },
+  {
+    "transition_id": "N12:01",
+    "machine_id": "N12",
+    "literal_frozen_clause": {
+      "event": "ordinary prerequisite report",
+      "guard": "definition kind fact/decision; source+summary; valid outcome; decision resolution requires user_statement",
+      "effects": "Record caller_reported origin,time,definition digest; legacy flag/evidence not overwritten.",
+      "failure_retry": "Agent/tool may record unknown decision; cannot assert resolved decision as agent/tool."
+    },
+    "source_spans": "operations/prerequisite_observation.go:17-64; operations/lifecycle.go:251-266; operations/protocol.go:prerequisite observation",
+    "guard_assessment": "Live fact/decision definition, closed outcome/origin, nonblank source+summary; a nonunknown decision needs user_statement.",
+    "effect_assessment": "Store caller_reported outcome/source/origin/time/exact definition digest; leave legacy satisfied flag/evidence intact; monotonic versioning.",
+    "retry_assessment": "Unknown agent/tool decision can be recorded, but cannot be mislabeled as resolved user choice. No source execution/host attestation/receipt required for ordinary observation.",
+    "source_conformance": "SUPPORTED_CURRENT_ACCEPTED_CONTRACT",
+    "existing_edge_status": "TESTED",
+    "new_execution": false
+  },
+  {
+    "transition_id": "N12:02",
+    "machine_id": "N12",
+    "literal_frozen_clause": {
+      "event": "definition/applicability changes",
+      "guard": "current definition digest differs",
+      "effects": "Expose stale observation as unknown, retain original.",
+      "failure_retry": "No automatic recertification."
+    },
+    "source_spans": "model/assistive.go:PrerequisiteDefinition,PrerequisiteAssessment",
+    "guard_assessment": "Compare observation definition_sha256 with current id/kind/requirement/task_refs/source_refs digest.",
+    "effect_assessment": "Mismatch exposes outcome unknown/definition_current=false while retaining original observation object.",
+    "retry_assessment": "Title/unrelated edits do not silently recertify or invalidate the definition; read performs no source/receipt execution or refresh.",
+    "source_conformance": "SUPPORTED_CURRENT_ACCEPTED_CONTRACT",
+    "existing_edge_status": "TESTED",
+    "new_execution": false
+  },
+  {
+    "transition_id": "N12:03",
+    "machine_id": "N12",
+    "literal_frozen_clause": {
+      "event": "ordinary assessment",
+      "guard": "historical receipt not live assessed here",
+      "effects": "Report recorded legacy flag separately.",
+      "failure_retry": "Never silently promote old satisfied flag into fresh observed fact."
+    },
+    "source_spans": "model/assistive.go:PrerequisiteAssessment; operations/prerequisite_observation.go:17-64",
+    "guard_assessment": "No ordinary observation, legacy satisfied flag present; ordinary projection does not load its receipt as live authority.",
+    "effect_assessment": "Expose legacy_receipt_unassessed, recorded_state and unknown outcome/evidence_assessed=false.",
+    "retry_assessment": "Never silently turn historical satisfied into current observed fact; report remains distinct from explicit strict receipt consumer.",
+    "source_conformance": "SUPPORTED_CURRENT_ACCEPTED_CONTRACT",
+    "existing_edge_status": "PRESERVED",
+    "new_execution": false
+  },
+  {
+    "transition_id": "N12:04",
+    "machine_id": "N12",
+    "literal_frozen_clause": {
+      "event": "receipted prerequisite",
+      "guard": "strict guards+snapshot; exact current prerequisite receipt",
+      "effects": "Delete ordinary observation for ID, set legacy satisfied and append receipt.",
+      "failure_retry": "Strict consumers require legacy receipts and reject presence of ordinary observation."
+    },
+    "source_spans": "operations/lifecycle.go:292-324; operations/lifecycle.go:157-180; validate/validate.go:418-423",
+    "guard_assessment": "Explicit receipted branch requires strict plan/spec, coherent snapshot and current exact prerequisite receipt.",
+    "effect_assessment": "Delete only selected ordinary observation, set selected legacy satisfied and append receipt; save clone/journal atomically.",
+    "retry_assessment": "Strict consumer rejects ordinary observation even if legacy flag exists; missing flag/reference/current receipt refuses. Structural satisfied-without-evidence fails MISSING_EVIDENCE even before consumer; ordinary observations do not adopt this permission ceremony.",
+    "source_conformance": "SUPPORTED_CURRENT_ACCEPTED_CONTRACT",
+    "existing_edge_status": "PLANNED",
+    "new_execution": false
+  }
+]

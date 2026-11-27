@@ -1,0 +1,79 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "483d0d34e43176dda01496db21201cac3e611ccd",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "/root/packaging_site_tools: bounded remaining-site guard/effect/retry inspection"
+  },
+  "inputs": {
+    "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+    "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+    "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+    "site/src/components/ExecutionMap.astro": "3640d7182dc62e40b4e93b2493c96c9ff5f40f62e05d195161ad2de8e6075e8a",
+    "site/src/scripts/execution-map-navigation.ts": "7f0a27f56602618dd58781d6ca3c08cfca456c8483c0407e67a94cb4fb4a3dc5"
+  },
+  "disposition_ids": [
+    "disposition:transitions:S60:03",
+    "disposition:transitions:S60:05"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/site19-acceptance-483d/inspection.json",
+      "sha256": "bd79337c146ebf2c0792950656dccec184ff81907945f3047f38e45fd7808658"
+    }
+  ],
+  "scope": "Conditional source-clause control flow only; dynamic corpus/DOM data are preconditions, not observed accepted outputs. No runtime transport/dependency completeness claim.",
+  "semantic_mapping": [
+    {
+      "cell": "disposition:transitions:S60:03",
+      "witnesses": [
+        {
+          "path": "site/src/scripts/execution-map-navigation.ts",
+          "start": 26,
+          "end": 49,
+          "file_sha256": "7f0a27f56602618dd58781d6ca3c08cfca456c8483c0407e67a94cb4fb4a3dc5"
+        },
+        {
+          "path": "site/src/components/ExecutionMap.astro",
+          "start": 69,
+          "end": 77,
+          "file_sha256": "3640d7182dc62e40b4e93b2493c96c9ff5f40f62e05d195161ad2de8e6075e8a"
+        }
+      ],
+      "assessment": "A new fragment cancels the earlier frame, resolves a literal owned target, reveals only its ancestors and queues one frame. The frame requires non-aborted connection and connected target; explicit link focus is retained across native hash rescheduling, then scrollIntoView runs. No programmatic history write.",
+      "frozen_row_sha256": "20b49d8e03660e8e69a8c6d29341b1b3fa357c472bbcbb649f044746ea58a616"
+    },
+    {
+      "cell": "disposition:transitions:S60:05",
+      "witnesses": [
+        {
+          "path": "site/src/scripts/execution-map-navigation.ts",
+          "start": 18,
+          "end": 25,
+          "file_sha256": "7f0a27f56602618dd58781d6ca3c08cfca456c8483c0407e67a94cb4fb4a3dc5"
+        },
+        {
+          "path": "site/src/scripts/execution-map-navigation.ts",
+          "start": 51,
+          "end": 74,
+          "file_sha256": "7f0a27f56602618dd58781d6ca3c08cfca456c8483c0407e67a94cb4fb4a3dc5"
+        },
+        {
+          "path": "site/src/components/ExecutionMap.astro",
+          "start": 69,
+          "end": 77,
+          "file_sha256": "3640d7182dc62e40b4e93b2493c96c9ff5f40f62e05d195161ad2de8e6075e8a"
+        }
+      ],
+      "assessment": "New chapter selection cancels pending animation; click microtask checks abort before resolution. Disconnect aborts the connection controller, removes signal-owned listeners and cancels its frame. Reconnection aborts the previous controller. Stale queued work cannot write history; only native links do.",
+      "frozen_row_sha256": "52bfa7e032e35d63f01f37da4d1f53f99bb7ee4e36f2c539b75e505259b82206"
+    }
+  ],
+  "limits": [
+    "Only finite conditional source control-flow clauses. No new runtime/browser/build/corpus/installed/whole-machine/task/program acceptance.",
+    "Every frozen cited source path is bound, with logic witnesses separate from broader family citation exposure.",
+    "Metadata and unrelated staged cancellation changes are outside these inputs. Source epoch is immutable483d; no claim the whole worktree was clean."
+  ]
+}

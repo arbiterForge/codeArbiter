@@ -1,0 +1,75 @@
+{
+  "format": "bounded-independent-review/1",
+  "reviewer": "packaging_site_tools",
+  "roles": [
+    "auth-crypto",
+    "security",
+    "functional",
+    "coverage"
+  ],
+  "gate": "PASS",
+  "findings": [],
+  "candidate": "candidate-v1:61f56b4ffd01f64156082cf19fa1709d252d4e7df56eb0c37eaa320ac9dc180b",
+  "head": "b7729344550faf5f962fe82cc75ef6c2b1f129bb",
+  "scope_sha256": {
+    ".github/scripts/major_readiness.py": "83a5ccf5a201d9364acaf3873e4a7479307235603dea6a4622cf3d07456c54a8",
+    ".github/scripts/retained_archive_cli_observation.py": "7e15ec71286e7da515be115f3a39d52d4aba24ed58c18d8892cc741bf32aae0c",
+    ".github/scripts/coordinate_codex_host.py": "9273891e980c7501f374afb6880dbd7bc0f9daa99a69bc9b956140a960f5d68d",
+    ".github/scripts/coordinate_pi_host.py": "ccefae31968346bbbd2ce9341c162ccdb9905abc8f93b1a43d93bf6e6754eac6",
+    ".github/scripts/test_major_readiness.py": "ab43ae9d55da3a7b2568488ea258541e177f2b27a109714cf4c6fbb30d1e5773",
+    ".github/scripts/test_retained_archive_cli_observation.py": "27169fd622cb0bf4ec2ef1e3e3450b11af974599c5c32c0c9c562572fb138a9a",
+    "CHANGELOG.md": "725008d0c3de3fffbc49bc47252e4eeed9f6216f2e440054fbd7e704a4eb3c9c"
+  },
+  "excluded_authored_fixture": ".github/scripts/test_workflow_recovery.py",
+  "context_consumed": {
+    "input": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\qualification-diagnostic-peer-input.txt",
+    "input_sha256": "0615a9e782dfda2f4f3022d868ec83acb94eec6179d45b318fa3f03ce2b274d5",
+    "context_sha256": "379ecb8f8928a75ed1f264553a1b64cca059dee294d209b23f6dee4e2c4f9498",
+    "admission": "requires_actor_check",
+    "blockers": []
+  },
+  "controls": {
+    "full32_policy_reused_unchanged_sha256": "8630d1cad36de7b06a0a9360beea27a48b1642cc05a4547362a25ec8c9ec491e",
+    "relevant": [
+      "CON-001",
+      "CON-002",
+      "CON-003",
+      "CON-011",
+      "CON-016"
+    ],
+    "FACT-005": "Python no-tooling exemption; direct behavioral controls, no numeric coverage claim",
+    "charters_read": [
+      "agents/auth-crypto-reviewer.md",
+      "routines/secret-handling/SKILL.md",
+      "includes/reviewer-contract.md"
+    ]
+  },
+  "inspection": [
+    "Read full seven-path staged diff and whole command/validate_upload/closed projection/producer failure call paths. Exact 3-argument gh api repository job-log route alone receives diagnostic; legacy exception text/cause, timeout cleanup and refusal remain.",
+    "Projection is exactly five keys, exact built-in scalar types, fixed operation/code, bounded signed/unsigned process status, HTTP 400..599 or null and lowercase 64-hex digest. At most16 cause links with cycle detection; dict length checked before materializing keys. Raw stderr/argv/URL/body/token never projected.",
+    "Only SHA256 from Python hashlib is used for content diagnostics. No new authentication, credential source/transport/lifetime, TLS or cryptographic authority.",
+    "Cold existing Actions error line appends compact admitted JSON; Codex/Pi original exclusive failure JSON adds optional field and re-raises original failure. No successful observation/report is minted by this field.",
+    "No workflow, action pin, permission, retry, upload predicate, artifact provenance or qualification acceptance condition changes. Additive changelog describes observability accurately."
+  ],
+  "retained_evidence": {
+    "author_RED": "5 methods,9 assertion failures,0 setup/import failures; raw regression-red.stderr inspected",
+    "full_owner_run": "121 PASS,0 skip,41.681s across three modules; includes excluded fixture, which is independently reviewed elsewhere",
+    "final_projection_run": "3 PASS,0.118s on final projection bytes",
+    "old_AST_preservation": "115 existing test method ASTs unchanged, Root guards inspected",
+    "gitleaks": "Root full staged-file report no leaks; reused, not rerun"
+  },
+  "limits": [
+    "Observability only; original HTTP cause remains unproven.",
+    "HTTP status is parsed from bounded first65536 stderr bytes; whole stderr is SHA256 only. No arbitrary response interpretation.",
+    "No claim that subprocess capture itself has a new byte cap; existing communicate/timeout behavior is unchanged.",
+    "No review of the authored fixture file, installed/hosted/current-program qualification or external provider acceptance.",
+    "No tests/build/API/runtime/marker/index/ref/source writes performed by reviewer; only read-only candidate and source inspection."
+  ],
+  "evidence_sha256": {
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\upload-diagnostic-and-isolation-full.log": "ced9107a1a5cea9a03ff781aacbae9da971ed89d0be3139c5469b154e959ebea",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\upload-diagnostic-final-projection-green.log": "65f7302ceeba13f10c5807ff84cd10a25a566ca8c86a160d9305f7cbfa44d5ce",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\diagnostic-isolation-source-guards.json": "13d5eba94565c7a30e9ffe2e51244e57269b8f68bd1492a29f2d389409db8e42",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\diagnostic-isolation-source-gitleaks.log": "1504d4cb9882fe05d2b925ae8761aa61151c92ee8a1d1c6c9cf37ee91d9f9a18",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-upload-log-diagnostic-fix-9ekzo0ab\\raw\\regression-red.stderr": "1e6c8b70b2bb3e53b2ebbf02cf312881c6e938aa71ad17ae0d0387193862ae16"
+  }
+}

@@ -1,0 +1,289 @@
+{
+ "schema": "codearbiter.c06-owned-direct-child-fix-delivery/1",
+ "recorded_at": "2026-11-17T03:18:25.792553+00:00",
+ "actor": "/root/acceptance_security_review acting infra-author",
+ "work_id": "WORK-2A68C3051D5A477EAC131493FF8A85AF",
+ "source_epoch": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+ "state": "PRIVATE_IMPLEMENTATION_REPORTED_READY_FOR_ROOT_REVIEW",
+ "scope": "Confirmed C06 partial-spawn/exception direct-child cleanup only, exact2 source candidates. No canonical adoption, commit, marker, task/epoch promotion or new source-conformance proof.",
+ "bug_origin": {
+  "handoff": "C:/Users/brenn/AppData/Local/Temp/ca-C06-partial-spawn-debug-mkciscgz/handoff.json",
+  "sha256": "c6fa5ed24d4f9bdea0039376ac03e34042674ac648159c5a0bd64476418684b0",
+  "installed_validated": true,
+  "source_preimage_sha256": "40ac4be90a8142b623f2ccbdb22a3b5feab5f22015032e30b870d03870a60afa",
+  "regression": ".github/scripts/test_ci20_native_pipeline.py::ShardContract.test_later_spawn_failure_settles_earlier_children"
+ },
+ "subjects": [
+  {
+   "path": ".github/scripts/run_artifact_authority_shard.py",
+   "candidate": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C06-owned-child-fix-ydcjngai\\repo\\.github\\scripts\\run_artifact_authority_shard.py",
+   "preimage_index_oid": "c88cdd555b086c0be956024f639b34fc095c7763",
+   "preimage_sha256": "40ac4be90a8142b623f2ccbdb22a3b5feab5f22015032e30b870d03870a60afa",
+   "preimage_bytes": 23941,
+   "sha256": "2a274ccc4704979acf8a1301567d897559425f32f04aae7cc1de3f8130423e1d",
+   "bytes": 25652
+  },
+  {
+   "path": ".github/scripts/test_ci20_native_pipeline.py",
+   "candidate": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C06-owned-child-fix-ydcjngai\\repo\\.github\\scripts\\test_ci20_native_pipeline.py",
+   "preimage_index_oid": "6467c157fd5be73a6b2451cd2596e4fc4d10580d",
+   "preimage_sha256": "864c00a9fcdcb322c44eeda4f5c5ba39ae8465441401fcb3636f1eb38378ff55",
+   "preimage_bytes": 34373,
+   "sha256": "e50321586d52115a17d5ad64e4340181ecf0dd200fa447473f07bd4912cc4e89",
+   "bytes": 38285
+  }
+ ],
+ "patch": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C06-owned-child-fix-ydcjngai\\changes.patch",
+  "sha256": "622aba9eb8c7bbf0e2eb408eb6150d0c8e4235b5bb015b415aa1851729f2d819",
+  "bytes": 13320
+ },
+ "change": "run_all guards original launch/wait region. Failure attempts kill on each acquired Popen object before a common5second bounded wait pass; one cleanup error does not abandon later owned children. Unconfirmed wait yields explicit RuntimeError chained from original failure; settled failure re-raises original. Scratch-removal failure adds a bounded note instead of replacing original cause. Existing direct-child timeout post-kill wait is bounded5s; original2100s execution limit, argv, environment, populations, retention and coverage predicates remain.",
+ "verification_sequence": [
+  {
+   "phase": "private overlay setup attempts",
+   "result": "Two import failures retained (missing copied ci-impact.py then build-artifacts.py); no target RED credit and no production change. Copied unchanged tooling imports into the private overlay."
+  },
+  {
+   "phase": "proper target RED before any production repair",
+   "receipt": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C06-owned-child-fix-ydcjngai\\red-command.json",
+   "exit_code": 1,
+   "new_named_methods": 4,
+   "failures": 3,
+   "errors": 1,
+   "target_failure": "Named later-spawn regression failed expected kill once/actual0 on exact original40ac4be9. Other cases failed for omitted all-child cleanup, scratch masking and wait-error abandonment.",
+   "production_sha256": "40ac4be90a8142b623f2ccbdb22a3b5feab5f22015032e30b870d03870a60afa",
+   "test_sha256": "e50321586d52115a17d5ad64e4340181ecf0dd200fa447473f07bd4912cc4e89"
+  },
+  {
+   "phase": "same tests GREEN after minimal repair",
+   "receipt": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C06-owned-child-fix-ydcjngai\\green-command.json",
+   "exit_code": 0,
+   "passed": 4,
+   "failed": 0,
+   "skipped": 0,
+   "unittest_seconds": 0.13892650001798756,
+   "outer_seconds": 0.3548453000257723,
+   "production_sha256": "2a274ccc4704979acf8a1301567d897559425f32f04aae7cc1de3f8130423e1d",
+   "test_sha256": "e50321586d52115a17d5ad64e4340181ecf0dd200fa447473f07bd4912cc4e89"
+  },
+  {
+   "phase": "focused original-owner pure controls",
+   "receipt": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C06-owned-child-fix-ydcjngai\\focused-command.json",
+   "exit_code": 0,
+   "passed": 13,
+   "new_regressions_included": 4,
+   "existing_controls": 9,
+   "failed": 0,
+   "skipped": 0,
+   "unittest_seconds": 0.15520700000342913,
+   "outer_seconds": 0.36901560000842437,
+   "selected_ids": [
+    "test_ci20_native_pipeline.ShardContract.test_concurrent_shard_results_must_prove_the_whole_population",
+    "test_ci20_native_pipeline.ShardContract.test_dynamic_discovery_disjoint_nonempty_complete_and_class_atomic",
+    "test_ci20_native_pipeline.ShardContract.test_exception_cleanup_attempts_every_child_and_reports_unconfirmed",
+    "test_ci20_native_pipeline.ShardContract.test_later_spawn_failure_settles_earlier_children",
+    "test_ci20_native_pipeline.ShardContract.test_scratch_removal_failure_does_not_replace_spawn_error",
+    "test_ci20_native_pipeline.ShardContract.test_split_jobs_cover_every_partition_exactly_once",
+    "test_ci20_native_pipeline.ShardContract.test_unknown_future_classes_are_included_not_filtered_by_history",
+    "test_ci20_native_pipeline.ShardContract.test_wait_exception_settles_every_owned_child",
+    "test_ci20_native_pipeline.GateContract.test_complete_green_runs_qualify_and_every_failure_refuses",
+    "test_ci20_native_pipeline.GateContract.test_missing_extra_partial_and_duplicate_need_are_refused",
+    "test_artifact_authority_retention.AuthorityRetentionTest.test_wrong_epoch_candidate_or_original_command_refuses",
+    "test_artifact_authority_retention.AuthorityRetentionTest.test_missing_extra_repeated_or_malformed_named_membership_refuses",
+    "test_artifact_authority_retention.AuthorityRetentionTest.test_retention_output_is_exclusive_direct_runner_temp_child"
+   ]
+  }
+ ],
+ "obligations": [
+  {
+   "id": "C06-FIX-01",
+   "statement": "Named later-spawn failure settles earlier owned direct child; precise RED before production change.",
+   "status": "COVERED_WITHIN_PURE_SOURCE_CONTROL_SCOPE",
+   "evidence": [
+    "proper target RED/GREEN",
+    "focused13",
+    "preservation.json"
+   ]
+  },
+  {
+   "id": "C06-FIX-02",
+   "statement": "Attempt all acquired children even if one kill/wait raises; finite waits and report unconfirmed with original failure as cause.",
+   "status": "COVERED_WITHIN_PURE_SOURCE_CONTROL_SCOPE",
+   "evidence": [
+    "proper target RED/GREEN",
+    "focused13",
+    "preservation.json"
+   ]
+  },
+  {
+   "id": "C06-FIX-03",
+   "statement": "Original spawn/wait failure survives Temp cleanup error.",
+   "status": "COVERED_WITHIN_PURE_SOURCE_CONTROL_SCOPE",
+   "evidence": [
+    "proper target RED/GREEN",
+    "focused13",
+    "preservation.json"
+   ]
+  },
+  {
+   "id": "C06-FIX-04",
+   "statement": "Original argv/env, partition, report population, retention, assertions and2100s execution budget unchanged.",
+   "status": "COVERED_WITHIN_PURE_SOURCE_CONTROL_SCOPE",
+   "evidence": [
+    "proper target RED/GREEN",
+    "focused13",
+    "preservation.json"
+   ]
+  }
+ ],
+ "preservation": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C06-owned-child-fix-ydcjngai\\preservation.json",
+  "sha256": "d45a27bdd8a33b533004bcc67781d905948a1b35918a5d553b9bbce062ebcf0f",
+  "original_test_method_asts_unchanged": true,
+  "same_new_test_bytes_red_green": true,
+  "current_dependency_source_joins": 19,
+  "original_root_head_index_source_unchanged": true
+ },
+ "coverage_and_lint": {
+  "python_coverage": "Unmeasured. Native tech-stack NOTE005 explicitly declares no coverage tooling for Python hooks/build tools including .github/scripts; shared no-tooling policy applies, supported by four targeted failure controls and nine original pure controls. No percentage or branch threshold result invented.",
+  "syntax": "Both exact changed candidate files compiled in memory; no cache output.",
+  "whitespace": "Added lines checked for trailing whitespace; PASS.",
+  "hosted": "Full native fixtures, ordinary actual runner children, all six platforms and exhaustive exact-head CI remain with CI/Root; not replayed locally."
+ },
+ "source_conformance17": "Earlier source proposal delivery a7c3def46fc1235daa6d875b9f405a2b1768da5357904259adb9904fc345e340 remains byte-exact. Do not refresh epochs or promote C06 machine/edge automatically; Root owns a separate post-source-commit proof update.",
+ "limits": [
+  "Private Temp author only; Root is sole canonical/index/ref/marker/ledger/progress writer. No whole-candidate or independent-review PASS asserted.",
+  "All added child cases use inert owned-object doubles; no PID, process-tree, descendant containment or real OS leak-resolution claim.",
+  "No original authority suite, native fixture method, Go/native build, Node/Pi/provider/network/API/Docker/dependency execution or install. Python discovery imports original authority TestCase declarations but executes only explicitly selected pure methods.",
+  "Cleanup waits are finite and unconfirmed settlement remains an error. A returned direct-child exit does not prove descendant quiescence.",
+  "No population/deadline/security waiver, snapshot caching, task status/runtime evidence renewal, main merge or publication authorization."
+ ],
+ "raw_files": [
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C06-owned-child-fix-ydcjngai\\C06-fix-context.json",
+   "sha256": "8383518e601eaf31edf4fbba3c790dec9a9d187e3529255af985c40f12012f0c",
+   "bytes": 17844
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C06-owned-child-fix-ydcjngai\\C06-fix-input.txt",
+   "sha256": "fba2b09a6a57b39510b108c0402d575ceb8093e5cf4b2eaa20400a574aaaac26",
+   "bytes": 10470
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C06-owned-child-fix-ydcjngai\\state.json",
+   "sha256": "ca8c3658c90eccafd04d4c1b223fef7b08da441788d402a27a6ad0acbbc9980c",
+   "bytes": 1257
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C06-owned-child-fix-ydcjngai\\regression-only-test.py",
+   "sha256": "e50321586d52115a17d5ad64e4340181ecf0dd200fa447473f07bd4912cc4e89",
+   "bytes": 38285
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C06-owned-child-fix-ydcjngai\\run-selected.py",
+   "sha256": "a38aaedbe33d4330ecabe791132b16c1a56ee0d9feac53a5061457d293ef4738",
+   "bytes": 3192
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C06-owned-child-fix-ydcjngai\\red-command.json",
+   "sha256": "afc2a82981dc04748e3063ae3f032923267060f40d87562923ec20eba0fde814",
+   "bytes": 690
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C06-owned-child-fix-ydcjngai\\red-result.json",
+   "sha256": "7580751e72587d6ad684a5f2828c4d32f70753cc906674f6e28fa87e27239d4c",
+   "bytes": 3696
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C06-owned-child-fix-ydcjngai\\red.stdout",
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "bytes": 0
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C06-owned-child-fix-ydcjngai\\red.stderr",
+   "sha256": "49e68a48d233c223932ff76064cdeb6d3bd5bbc5049bb0b1a6d6e040a3a6c256",
+   "bytes": 4675
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C06-owned-child-fix-ydcjngai\\green-command.json",
+   "sha256": "05e7b1e1b20f1a9851d4466f5b6aebfd68ca315ad103bd36a20ac3e30a56c461",
+   "bytes": 692
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C06-owned-child-fix-ydcjngai\\green-result.json",
+   "sha256": "a686fe771a427f6a3f30f2d92046da5f7b92268487a49b61576c5a91077ec6a0",
+   "bytes": 3287
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C06-owned-child-fix-ydcjngai\\green.stdout",
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "bytes": 0
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C06-owned-child-fix-ydcjngai\\green.stderr",
+   "sha256": "9553d00e47312a7a28ff2440b7ee0b5952d7d7981b2f8012cb339e2de8f24b52",
+   "bytes": 747
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C06-owned-child-fix-ydcjngai\\focused-command.json",
+   "sha256": "b532bdfccc5af573b55ce84b80965f1d142408ecbe5cc1e020413a4fd55e7735",
+   "bytes": 695
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C06-owned-child-fix-ydcjngai\\focused-result.json",
+   "sha256": "f4b369158deb2e10ab6cd9a3c5903e08efca37f674b46e588e8e420d625022fa",
+   "bytes": 4296
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C06-owned-child-fix-ydcjngai\\focused.stdout",
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "bytes": 0
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C06-owned-child-fix-ydcjngai\\focused.stderr",
+   "sha256": "b81e0ab351d01de669f335819e43f9e3c1371d517185b23c04eac9b7acc706f1",
+   "bytes": 2333
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C06-owned-child-fix-ydcjngai\\preservation.json",
+   "sha256": "d45a27bdd8a33b533004bcc67781d905948a1b35918a5d553b9bbce062ebcf0f",
+   "bytes": 8056
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C06-owned-child-fix-ydcjngai\\changes.patch",
+   "sha256": "622aba9eb8c7bbf0e2eb408eb6150d0c8e4235b5bb015b415aa1851729f2d819",
+   "bytes": 13320
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C06-owned-child-fix-ydcjngai\\setup-failure-2-red-command.json",
+   "sha256": "af809d25f0cca15718c2ab56b9e97d07fb802fff061b09d32bd93e5c586cdbdd",
+   "bytes": 691
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C06-owned-child-fix-ydcjngai\\setup-failure-2-red.stderr",
+   "sha256": "e5473fde2e87eec40b34d395f008e2037ed60dc65359da070b856447334881eb",
+   "bytes": 1156
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C06-owned-child-fix-ydcjngai\\setup-failure-2-red.stdout",
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "bytes": 0
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C06-owned-child-fix-ydcjngai\\setup-failure-red-command.json",
+   "sha256": "1d57c56dcc379ecf93a442556564e5e439c3d72f083b326d2cc30e1dcebef844",
+   "bytes": 690
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C06-owned-child-fix-ydcjngai\\setup-failure-red.stderr",
+   "sha256": "953573fce91e1c0022f9d495e4cfcc29a9d537bb775576b16cae310cc0ecd95b",
+   "bytes": 1317
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C06-owned-child-fix-ydcjngai\\setup-failure-red.stdout",
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "bytes": 0
+  }
+ ]
+}

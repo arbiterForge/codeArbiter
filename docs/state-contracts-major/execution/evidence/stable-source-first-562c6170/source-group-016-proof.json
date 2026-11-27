@@ -1,0 +1,87 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "562c6170c010eedbef93a4216b4baa971fd6b9a6",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "Exact prepared finite clauses with immutable current witness and namespace join"
+  },
+  "inputs": {
+    "core/pysrc/_approvallib.py": "fc71ec67a9c44ebbadd9897244da291b6b50768dbe19e59d576ee3f15505828b",
+    "core/pysrc/_artifactauthoritylib.py": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+    "core/pysrc/_artifactlib.py": "db10153f438023ca6eb7e32f77e1898fbd2f806cdc5ef98bdffb078e27e65187",
+    "core/pysrc/_artifactpromptlib.py": "03e0c4b32c806cc054ef34ae7ac58ed093cbe80521a8fea723b7ceb8ac72e1d9",
+    "core/pysrc/_contextselectlib.py": "0609783e758b6d654c05eeda8c40ccf355641eaf51fb0d9e9978ae5bf4304706",
+    "core/pysrc/_prerequisitelib.py": "8263651e6f29f987b3cc935827c2f6a4b4745251ecddb87a3a7d51fd3d861479",
+    "core/pysrc/_replylib.py": "127d9bcfd842bcea941f2d61b86963cd3e50fcb34a603e8a834fe18d2cc9bf0d",
+    "core/pysrc/_sprintapprovallib.py": "5fe52f17bb36abe2bbdaa124bfb9f5f2e391af7de47d7cc6492e334765a5cac8",
+    "plugins/ca-pi/hooks/pi-approval.py": "cd85ec3f6e6d3efed853f6baadcfc977bb3c189846cea5ef80aad00a7e97da5f"
+  },
+  "disposition_ids": [
+    "disposition:machines:hooks:approval-pair",
+    "disposition:machines:hooks:approval-single",
+    "disposition:machines:hooks:pi-approval",
+    "disposition:machines:hooks:reply-routing",
+    "disposition:transitions:hooks:approval-pair:01",
+    "disposition:transitions:hooks:approval-pair:02",
+    "disposition:transitions:hooks:approval-pair:03",
+    "disposition:transitions:hooks:approval-pair:04",
+    "disposition:transitions:hooks:approval-pair:05",
+    "disposition:transitions:hooks:approval-pair:06",
+    "disposition:transitions:hooks:approval-pair:07",
+    "disposition:transitions:hooks:approval-pair:08",
+    "disposition:transitions:hooks:approval-single:01",
+    "disposition:transitions:hooks:approval-single:02",
+    "disposition:transitions:hooks:approval-single:03",
+    "disposition:transitions:hooks:approval-single:04",
+    "disposition:transitions:hooks:approval-single:05",
+    "disposition:transitions:hooks:approval-single:06",
+    "disposition:transitions:hooks:pi-approval:01",
+    "disposition:transitions:hooks:pi-approval:02",
+    "disposition:transitions:hooks:pi-approval:03",
+    "disposition:transitions:hooks:reply-routing:01",
+    "disposition:transitions:hooks:reply-routing:02",
+    "disposition:transitions:hooks:reply-routing:03",
+    "disposition:transitions:hooks:reply-routing:04",
+    "disposition:transitions:hooks:reply-routing:05",
+    "disposition:transitions:hooks:reply-routing:06",
+    "disposition:transitions:hooks:reply-routing:07"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/stable-source-first-562c6170/source-group-016-inspection.json",
+      "sha256": "56329804ac00a72f2e742be741165cfdddf9db70457f02c108d6ff49bce3613d"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/preserved.json",
+      "sha256": "fb65693b150040b29ddec53919d6a08153c15fe99dcc628cccc1b8ca2f013334"
+    }
+  ],
+  "retained_prior_proof": {
+    "path": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/preserved.json",
+    "sha256": "fb65693b150040b29ddec53919d6a08153c15fe99dcc628cccc1b8ca2f013334",
+    "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+    "retained_at": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca"
+  },
+  "semantic_mapping_ref": "docs/state-contracts-major/execution/evidence/stable-source-first-562c6170/source-group-016-inspection.json",
+  "scope": "approval-routing: 24 whole transition clauses and 4 complete constituent machines; Finite source guard/effect/retry conformance at the frozen source commit only. No runtime, host/package qualification, model compliance, task/scenario, provider/authentication, physical consent, endpoint policy, publication or whole-program readiness claim. HOLD rows receive no ledger mutation.",
+  "limits": [
+    "No run, platform, package, task, provider, user or installed evidence was renewed.",
+    "All prior original source epochs and raw evidence remain exact."
+  ],
+  "input_membership": [
+    {
+      "profile": "python-import-directory-v1",
+      "root": "plugins/ca-pi/hooks",
+      "path_order": "windows",
+      "sha256": "575b1cb6f3ae267643b3bdd9f297e4d605dbaa6dc911dcf7df81b4ab036c4e37"
+    },
+    {
+      "profile": "python-import-directory-v1",
+      "root": "core/pysrc",
+      "path_order": "windows",
+      "sha256": "47866d8dbbe83d269b0c3311e9bb1df44111bd8596c4c9808865eabf6d10ff9d"
+    }
+  ]
+}

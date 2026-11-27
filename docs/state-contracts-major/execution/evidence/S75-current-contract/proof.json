@@ -1,0 +1,28 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "2f65fda443816d84b0ee4283f9fc237df728b663",
+  "kind": "conformance-check",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "Codex root exact S75:08 guarded-contract inspection"
+  },
+  "disposition_ids": [
+    "disposition:transitions:S75:08"
+  ],
+  "result": "NOT_APPLICABLE",
+  "contract": "docs/state-contracts-major/contracts/transition-coverage.json#S75:08.baseline/direct-writes-may-be-partial/no-cross-file-transaction-or-rollback",
+  "rationale": "Only the historical direct-write/no-transaction/no-rollback guarded tuple is obsolete. The I/O failure event, possible partial projection and four introduced failure/recovery runtime obligations remain applicable. Accepted BUILD-G01 requires restoration or an explicitly unusable projection; frozen historical intake and previous runtime evidence remain retained.",
+  "inputs": {
+    "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+    "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+    "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+    "tools/build-surface.py": "70c572a415cf69d6955c4dac67ffa9c0120009807e2f55635c5430c0f962ba3a",
+    "tools/owned_output.py": "52ee664a00b4f66df8f585047cf38a839428c489762890208a9db1961060b22c"
+  },
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/S75-current-contract/inspection.json",
+      "sha256": "dff302c9abc7b949a0b94260083e270e8674b83cd6247e00ac814b81bcb61249"
+    }
+  ]
+}

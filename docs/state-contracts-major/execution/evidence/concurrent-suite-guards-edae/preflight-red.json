@@ -1,0 +1,51 @@
+{
+  "format": "C05-preflight-test-author-RED/1",
+  "HEAD": "8d04b33c4e8b6ac56644cbd2517cae2dde228d64",
+  "source_epoch": "HEAD plus exact recorded staged source",
+  "argv": [
+    "C:/Python314/python.exe",
+    "-B",
+    "-X",
+    "utf8",
+    "-m",
+    "unittest",
+    "-v",
+    "test_run_concurrent_suites.ConcurrentSuitesTests.test_invalid_timeout_or_unavailable_interpreter_refuses_before_launch"
+  ],
+  "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-preflight-test-xozl_sfh\\candidate\\.github\\scripts",
+  "exit_code": 1,
+  "seconds": 0.15305720000469591,
+  "named_methods": 1,
+  "subcases": 6,
+  "target_failures": 6,
+  "all_wrong_results": {
+    "return": 1,
+    "intercepted_run_calls": 1,
+    "expected_return": 2,
+    "expected_calls": 0
+  },
+  "real_invalid_timeout_or_missing_interpreter_children": 0,
+  "inert_interception_only": true,
+  "setup_or_import_errors": false,
+  "identity_before": {
+    "HEAD": "8d04b33c4e8b6ac56644cbd2517cae2dde228d64",
+    "index_sha256": "af33114ce5d780f57c4bd3c7f3cdf9618cb5f95bc50610763b008ed212c0ca3c",
+    "staged_patch_sha256": "f999d6f30bd5623bced6239458cd66f01814feb648a34e9e297d18b70f6e8c3f",
+    "Gov_runner_sha256": "e024c72f245f3401f042411a910ee1b1aaabf4e718bcc6f07efd78d7987c61d5",
+    "Gov_test_sha256": "eeb5d9dfedf58c8891fd36ad7a9e84ecaa2e6b9a46f60868da0a351281981dca",
+    "private_runner_sha256": "e024c72f245f3401f042411a910ee1b1aaabf4e718bcc6f07efd78d7987c61d5",
+    "private_test_sha256": "6b58d5b2ed97e3daae9ebf33c36176b989ff84b7f0eb3bebe65ec87b21b638be"
+  },
+  "identity_after": {
+    "HEAD": "8d04b33c4e8b6ac56644cbd2517cae2dde228d64",
+    "index_sha256": "af33114ce5d780f57c4bd3c7f3cdf9618cb5f95bc50610763b008ed212c0ca3c",
+    "staged_patch_sha256": "f999d6f30bd5623bced6239458cd66f01814feb648a34e9e297d18b70f6e8c3f",
+    "Gov_runner_sha256": "e024c72f245f3401f042411a910ee1b1aaabf4e718bcc6f07efd78d7987c61d5",
+    "Gov_test_sha256": "eeb5d9dfedf58c8891fd36ad7a9e84ecaa2e6b9a46f60868da0a351281981dca",
+    "private_runner_sha256": "e024c72f245f3401f042411a910ee1b1aaabf4e718bcc6f07efd78d7987c61d5",
+    "private_test_sha256": "6b58d5b2ed97e3daae9ebf33c36176b989ff84b7f0eb3bebe65ec87b21b638be"
+  },
+  "HEAD_index_source_stable": true,
+  "old_class_methods_AST_unchanged": 14,
+  "old_test_methods_AST_unchanged": 10
+}

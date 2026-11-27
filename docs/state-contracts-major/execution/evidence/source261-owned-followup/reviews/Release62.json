@@ -1,0 +1,1074 @@
+{
+  "schema": "independent-fixed-source-conformance-review/1",
+  "verdict": "PASS",
+  "gate_status": "PASS",
+  "reviewer": "/root/crypto_evidence_review",
+  "author": "/root/ci_repair_review",
+  "reviewed_at_utc": "2026-11-17T04:40:39.303261+00:00",
+  "scope_kind": "PRIVATE_PROPOSAL_ONLY_NOT_STAGED_OR_ADOPTED",
+  "source_commit": "ea9da763b33708c8533623568b7241eaaea0d153",
+  "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "delivery_sha256": "96f407282234de71ed35e1af10108d864598237f77c86d61969fafd082ff9736",
+  "full_subjects": {
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-fourteen-source-ea9-u361eouy\\delivery.json": {
+      "sha256": "96f407282234de71ed35e1af10108d864598237f77c86d61969fafd082ff9736",
+      "bytes": 6628,
+      "index_oid": null
+    },
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-fourteen-source-ea9-u361eouy\\additional-paths.json": {
+      "sha256": "dcbfb05e31d6ae4080cc5dfddfee32dcb4cb70d3b323d4b37d5402271140af0b",
+      "bytes": 858,
+      "index_oid": null
+    },
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-fourteen-source-ea9-u361eouy\\adoption-filemap.json": {
+      "sha256": "5283708e53bfacda5aa09bf1b6f2bfd26dce4a0b1ed22433fb4a84b6c64f64f6",
+      "bytes": 5723,
+      "index_oid": null
+    },
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-fourteen-source-ea9-u361eouy\\baseline-bindings.json": {
+      "sha256": "b6c9907c11b220fe2b2676bc1e07f861c931a2d193e9213efa7fe7e209bafbbc",
+      "bytes": 3630,
+      "index_oid": null
+    },
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-fourteen-source-ea9-u361eouy\\cas-proposal.json": {
+      "sha256": "c5ba2f8da6cc34e77c966cc5662eaf02f93c6fcb46ede78d857a248d7e02ede6",
+      "bytes": 142763,
+      "index_oid": null
+    },
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-fourteen-source-ea9-u361eouy\\clause-inspection.json": {
+      "sha256": "d838b0dd41af96e04fadb1d976401b69f67c12e69c7e2c4e5c01a1d1cfa61140",
+      "bytes": 169306,
+      "index_oid": null
+    },
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-fourteen-source-ea9-u361eouy\\config.json": {
+      "sha256": "b3e1690314eb2cd906991ce3b903e3ed33482c151201d505175514c753f3d8dd",
+      "bytes": 4333,
+      "index_oid": null
+    },
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-fourteen-source-ea9-u361eouy\\context.json": {
+      "sha256": "06ae0207e78aa36b41f5583543ef3336b8f073271c9a110e9185fbb234dc615a",
+      "bytes": 15190,
+      "index_oid": null
+    },
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-fourteen-source-ea9-u361eouy\\source-bindings.json": {
+      "sha256": "e0d46104538361ca98ef02148b9cc499edce928cdd83f1a936277f2a7a8e1425",
+      "bytes": 20128,
+      "index_oid": null
+    },
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-fourteen-source-ea9-u361eouy\\summary.json": {
+      "sha256": "0c53412b48a93a41d88ddb381a1159c110a66d85f2cd35ba2d60c2aae652edd8",
+      "bytes": 1534,
+      "index_oid": null
+    },
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-fourteen-source-ea9-u361eouy\\validation.json": {
+      "sha256": "f2f3bcf9c030bd6faab52e0645ae53f73aa8eb65fee4a455473485564842b0a0",
+      "bytes": 670,
+      "index_oid": null
+    },
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-fourteen-source-ea9-u361eouy\\proofs\\C01-preserved.json": {
+      "sha256": "d0a4156aafdb986d6701590194c590eeec539dd72afce0844335c783ab6aa07a",
+      "bytes": 13161,
+      "index_oid": null
+    },
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-fourteen-source-ea9-u361eouy\\proofs\\C02-preserved.json": {
+      "sha256": "979693faa14261de0e04689aceb8dc2b0d2f40ec2b4bda0813c19ba6a4a12e9a",
+      "bytes": 9601,
+      "index_oid": null
+    },
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-fourteen-source-ea9-u361eouy\\proofs\\C03-preserved.json": {
+      "sha256": "03a087eb6afccb34a65aa0c813926fced25ab6842f4e8f6bfaa965df219f0cca",
+      "bytes": 7147,
+      "index_oid": null
+    },
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-fourteen-source-ea9-u361eouy\\proofs\\C04-preserved.json": {
+      "sha256": "604019926837d560eb6450d6a5f12bd0103d7a58293415485505ba5a6973470a",
+      "bytes": 17067,
+      "index_oid": null
+    },
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-fourteen-source-ea9-u361eouy\\proofs\\C11-preserved.json": {
+      "sha256": "3641e7eea70ed1178c6d5322dc8e7193b2af2e957055ae77013d47f15a139a95",
+      "bytes": 18721,
+      "index_oid": null
+    },
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-fourteen-source-ea9-u361eouy\\proofs\\C12-preserved.json": {
+      "sha256": "07bcc901b2db11aff648500250db83feeb4ca3a1a5870b7462d3eae68fba30e2",
+      "bytes": 7680,
+      "index_oid": null
+    },
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-fourteen-source-ea9-u361eouy\\proofs\\C13-preserved.json": {
+      "sha256": "7b4598773b8144ab438276b2d8a52381330946e69690db1f3f04134ba99fa61e",
+      "bytes": 9671,
+      "index_oid": null
+    },
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-fourteen-source-ea9-u361eouy\\proofs\\C14-preserved.json": {
+      "sha256": "abdfb7c215128855f11a92b19cb46471221cd4fedbafd114dbb093762148d33c",
+      "bytes": 12524,
+      "index_oid": null
+    },
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-fourteen-source-ea9-u361eouy\\proofs\\C15-preserved.json": {
+      "sha256": "da9c840984c88616967192cae80231963cf0a2e568539a9de327f07fb31c06a8",
+      "bytes": 10171,
+      "index_oid": null
+    },
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-fourteen-source-ea9-u361eouy\\proofs\\C16-preserved.json": {
+      "sha256": "3f4d2e7696f0e840e9362a22f670a5c3872b997b5c4ecbebace4c95080f20416",
+      "bytes": 16780,
+      "index_oid": null
+    },
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-fourteen-source-ea9-u361eouy\\proofs\\C17-preserved.json": {
+      "sha256": "cbf5fb3bc27fbefaf95e34fcb945af9fb9d06229600bdd4c22fe5899fdd7518c",
+      "bytes": 10651,
+      "index_oid": null
+    },
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-fourteen-source-ea9-u361eouy\\proofs\\C18-preserved.json": {
+      "sha256": "c4bfec9c7974a84d83f83905b25c560182cf457466ac9fc25291052c7905fdd4",
+      "bytes": 20906,
+      "index_oid": null
+    },
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-fourteen-source-ea9-u361eouy\\proofs\\C19-preserved.json": {
+      "sha256": "1f58e92080571ed92f14e59cc4c52f17ad5b10a5f83b7b1bbc79006cac33e72d",
+      "bytes": 5465,
+      "index_oid": null
+    },
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-fourteen-source-ea9-u361eouy\\proofs\\C20-preserved.json": {
+      "sha256": "fdff5dae7c6c2e68a4a093d607790a08bd426853a2e1e2528ac62ce6dfe857e5",
+      "bytes": 6730,
+      "index_oid": null
+    }
+  },
+  "source_bindings": {
+    ".codearbiter/decisions/0040-independent-per-target-release-with-consumer-safety-gates.md": {
+      "sha256": "2dce2651ea067cc7bec25982ce23fdeb1528e9bfb003906c55be7e243a3a8964",
+      "bytes": 5797,
+      "git_blob_oid": "9612ed1c41599f28c6effdfc50e746703741b7c8",
+      "physical_before_sha256": "2dce2651ea067cc7bec25982ce23fdeb1528e9bfb003906c55be7e243a3a8964",
+      "physical_after_sha256": "2dce2651ea067cc7bec25982ce23fdeb1528e9bfb003906c55be7e243a3a8964"
+    },
+    ".codearbiter/decisions/0043-assistive-state-engine.md": {
+      "sha256": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+      "bytes": 6365,
+      "git_blob_oid": "71843f6bc73d68f8491f89b95081e6198dfb7e00",
+      "physical_before_sha256": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+      "physical_after_sha256": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5"
+    },
+    ".codearbiter/decisions/0044-trusted-pi-npm-publication.md": {
+      "sha256": "fda3c0194f83d41bcb169fae7c14d1b24bdaf3bace8d41780a88825e10fe30d6",
+      "bytes": 3015,
+      "git_blob_oid": "5065b104dd5056503402967e86a5a544fc454a86",
+      "physical_before_sha256": "fda3c0194f83d41bcb169fae7c14d1b24bdaf3bace8d41780a88825e10fe30d6",
+      "physical_after_sha256": "fda3c0194f83d41bcb169fae7c14d1b24bdaf3bace8d41780a88825e10fe30d6"
+    },
+    ".codearbiter/decisions/0049-require-https-outside-bounded-loopback.md": {
+      "sha256": "c757cef9d5e318b75ff164d270b29a49255449360f0b7cde51e53775e6916ab8",
+      "bytes": 2450,
+      "git_blob_oid": "886b3c4f08dbad58b896b9ad026ece7b29d600f2",
+      "physical_before_sha256": "c757cef9d5e318b75ff164d270b29a49255449360f0b7cde51e53775e6916ab8",
+      "physical_after_sha256": "c757cef9d5e318b75ff164d270b29a49255449360f0b7cde51e53775e6916ab8"
+    },
+    ".github/actions/publish-target/action.yml": {
+      "sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+      "bytes": 27706,
+      "git_blob_oid": "e84fb5e185e62f1e564254d289596332f2622947",
+      "physical_before_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+      "physical_after_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3"
+    },
+    ".github/scripts/_boundedproc.py": {
+      "sha256": "671458a00f178ac690e4d1f4e0458da7b3833353384f9cb7546be711bab15f51",
+      "bytes": 12673,
+      "git_blob_oid": "7c8db0a1a2a1e6b714f9657cdf09eaf8a62f5061",
+      "physical_before_sha256": "671458a00f178ac690e4d1f4e0458da7b3833353384f9cb7546be711bab15f51",
+      "physical_after_sha256": "671458a00f178ac690e4d1f4e0458da7b3833353384f9cb7546be711bab15f51"
+    },
+    ".github/scripts/_contextverificationlib.py": {
+      "sha256": "361b29a202f8ff3fe4f35c58a42d53cf77c4f8fe05985b1e91b721fc8f2a0707",
+      "bytes": 23733,
+      "git_blob_oid": "1e99a2395fab11115d95108b6766d88fdf30eed8",
+      "physical_before_sha256": "361b29a202f8ff3fe4f35c58a42d53cf77c4f8fe05985b1e91b721fc8f2a0707",
+      "physical_after_sha256": "361b29a202f8ff3fe4f35c58a42d53cf77c4f8fe05985b1e91b721fc8f2a0707"
+    },
+    ".github/scripts/_npm_publishlib.py": {
+      "sha256": "7ff29182306d065369610d83e7ecba8450a2444340d05580fb03f7afaccfae6a",
+      "bytes": 54361,
+      "git_blob_oid": "140ad53be2c20a567e00bf695b4ef9ec8aa1f791",
+      "physical_before_sha256": "7ff29182306d065369610d83e7ecba8450a2444340d05580fb03f7afaccfae6a",
+      "physical_after_sha256": "7ff29182306d065369610d83e7ecba8450a2444340d05580fb03f7afaccfae6a"
+    },
+    ".github/scripts/_releaselib.py": {
+      "sha256": "59ffb55276bf3a0b873861be71c6d286ddf25b035db35715e34c8929bccc6c21",
+      "bytes": 22106,
+      "git_blob_oid": "51f5852cb658c5e602e52e080d1af73cba7b3fee",
+      "physical_before_sha256": "59ffb55276bf3a0b873861be71c6d286ddf25b035db35715e34c8929bccc6c21",
+      "physical_after_sha256": "59ffb55276bf3a0b873861be71c6d286ddf25b035db35715e34c8929bccc6c21"
+    },
+    ".github/scripts/_verdictlib.py": {
+      "sha256": "79963873a258965e244fe907055e6fe3d7a06b6a90308c0261374b76dc89197b",
+      "bytes": 6304,
+      "git_blob_oid": "a722a974072f38ccaa4692b5aee69f96f791d082",
+      "physical_before_sha256": "79963873a258965e244fe907055e6fe3d7a06b6a90308c0261374b76dc89197b",
+      "physical_after_sha256": "79963873a258965e244fe907055e6fe3d7a06b6a90308c0261374b76dc89197b"
+    },
+    ".github/scripts/check_auto_release_candidate.py": {
+      "sha256": "b00914befa56089cf633d0327f35e88166bdfcb05b45aff36c1ae4786c9f5d07",
+      "bytes": 11331,
+      "git_blob_oid": "d37b3c2c73ec6a09335af9b5573000ec30159b03",
+      "physical_before_sha256": "b00914befa56089cf633d0327f35e88166bdfcb05b45aff36c1ae4786c9f5d07",
+      "physical_after_sha256": "b00914befa56089cf633d0327f35e88166bdfcb05b45aff36c1ae4786c9f5d07"
+    },
+    ".github/scripts/check_codex_host.py": {
+      "sha256": "ced71d6b20fe30c25ec7b5cb8cde191cd8ef7e72008b904bfa8dcbd3c4adc6b4",
+      "bytes": 25197,
+      "git_blob_oid": "1b3d59e72ee9b99aeaba8573833403a266212820",
+      "physical_before_sha256": "ced71d6b20fe30c25ec7b5cb8cde191cd8ef7e72008b904bfa8dcbd3c4adc6b4",
+      "physical_after_sha256": "ced71d6b20fe30c25ec7b5cb8cde191cd8ef7e72008b904bfa8dcbd3c4adc6b4"
+    },
+    ".github/scripts/check_codex_skill_resources.py": {
+      "sha256": "d9b66e6f9de71e8dcdf3c001141ac35abc350de1dc85b4d583c483be70b7bfb0",
+      "bytes": 145175,
+      "git_blob_oid": "212eca3d09fcdc739d6b95db92c348b090188403",
+      "physical_before_sha256": "d9b66e6f9de71e8dcdf3c001141ac35abc350de1dc85b4d583c483be70b7bfb0",
+      "physical_after_sha256": "d9b66e6f9de71e8dcdf3c001141ac35abc350de1dc85b4d583c483be70b7bfb0"
+    },
+    ".github/scripts/check_codex_static_package.py": {
+      "sha256": "7c0e43244ea71edcf8ecbb62dcd83209b152e6e63f796557f08027915d2c5618",
+      "bytes": 13505,
+      "git_blob_oid": "a88fc04dc94868b10ab6a2bee723e9b5a2bcfb2c",
+      "physical_before_sha256": "7c0e43244ea71edcf8ecbb62dcd83209b152e6e63f796557f08027915d2c5618",
+      "physical_after_sha256": "7c0e43244ea71edcf8ecbb62dcd83209b152e6e63f796557f08027915d2c5618"
+    },
+    ".github/scripts/check_tag_immutability.py": {
+      "sha256": "862a1b3ef2d0f171172c5e3f11856f96bfc8b234dc7b4c1110c75182d84d4d31",
+      "bytes": 26230,
+      "git_blob_oid": "72ab8ac6f00364aee7234d77b73c3aa196d7b14d",
+      "physical_before_sha256": "862a1b3ef2d0f171172c5e3f11856f96bfc8b234dc7b4c1110c75182d84d4d31",
+      "physical_after_sha256": "862a1b3ef2d0f171172c5e3f11856f96bfc8b234dc7b4c1110c75182d84d4d31"
+    },
+    ".github/scripts/ci20_native_binding.py": {
+      "sha256": "8a927974424c7c18d3e2e28db0173de07c65e2f1bb068e08dd11e14614284c3f",
+      "bytes": 15795,
+      "git_blob_oid": "0507a59e8087f92265191d3d33f783d41ea8325d",
+      "physical_before_sha256": "8a927974424c7c18d3e2e28db0173de07c65e2f1bb068e08dd11e14614284c3f",
+      "physical_after_sha256": "8a927974424c7c18d3e2e28db0173de07c65e2f1bb068e08dd11e14614284c3f"
+    },
+    ".github/scripts/codex_agent_routes.py": {
+      "sha256": "756a4a53059853fe85bbb846dd0bf87acf8c556506f4f5b0f7476897b2471092",
+      "bytes": 10498,
+      "git_blob_oid": "d30883e9bdc9a14bc5375cd0002270ce57414073",
+      "physical_before_sha256": "756a4a53059853fe85bbb846dd0bf87acf8c556506f4f5b0f7476897b2471092",
+      "physical_after_sha256": "756a4a53059853fe85bbb846dd0bf87acf8c556506f4f5b0f7476897b2471092"
+    },
+    ".github/scripts/integration_candidate.py": {
+      "sha256": "9ab38e8706167714514d1e18f4b609901c88a84673de55ea53de271c13b60b3b",
+      "bytes": 5651,
+      "git_blob_oid": "95541539cb47f89b4309712933bb98d0b693fdab",
+      "physical_before_sha256": "9ab38e8706167714514d1e18f4b609901c88a84673de55ea53de271c13b60b3b",
+      "physical_after_sha256": "9ab38e8706167714514d1e18f4b609901c88a84673de55ea53de271c13b60b3b"
+    },
+    ".github/scripts/payload_scope.py": {
+      "sha256": "e4cb1fc915489df8c642ae13d38e3f8c1b9dfba94f511ac8a72f5481de08cbea",
+      "bytes": 5270,
+      "git_blob_oid": "d7b9fbc787847cc3cc1c69ce5a7808ea23e7b0f7",
+      "physical_before_sha256": "e4cb1fc915489df8c642ae13d38e3f8c1b9dfba94f511ac8a72f5481de08cbea",
+      "physical_after_sha256": "e4cb1fc915489df8c642ae13d38e3f8c1b9dfba94f511ac8a72f5481de08cbea"
+    },
+    ".github/scripts/payload_version_gate.py": {
+      "sha256": "713ab821fedf797cc0be4b2fee335d1c71a18ef6a6104503d4e7388eea9868d5",
+      "bytes": 20190,
+      "git_blob_oid": "34ce2a338f3464c295b0147290d613e58be4011b",
+      "physical_before_sha256": "713ab821fedf797cc0be4b2fee335d1c71a18ef6a6104503d4e7388eea9868d5",
+      "physical_after_sha256": "713ab821fedf797cc0be4b2fee335d1c71a18ef6a6104503d4e7388eea9868d5"
+    },
+    ".github/scripts/reconcile_tag_receipt.py": {
+      "sha256": "e0455c5a550b45ff127aebbd835d54ae3a1b3841fcf869c9082c99c30eef2722",
+      "bytes": 10020,
+      "git_blob_oid": "814244c048735d583fc1fef359346f241fba4cde",
+      "physical_before_sha256": "e0455c5a550b45ff127aebbd835d54ae3a1b3841fcf869c9082c99c30eef2722",
+      "physical_after_sha256": "e0455c5a550b45ff127aebbd835d54ae3a1b3841fcf869c9082c99c30eef2722"
+    },
+    ".github/scripts/release_source.py": {
+      "sha256": "aa37a86177d236a072bb2ba366e2c00ef6296df83bf5a9b367abb56e7532c2d3",
+      "bytes": 8917,
+      "git_blob_oid": "30217b553fd3d174a9d4d4dee5e963e5d37f7802",
+      "physical_before_sha256": "aa37a86177d236a072bb2ba366e2c00ef6296df83bf5a9b367abb56e7532c2d3",
+      "physical_after_sha256": "aa37a86177d236a072bb2ba366e2c00ef6296df83bf5a9b367abb56e7532c2d3"
+    },
+    ".github/scripts/release_target.py": {
+      "sha256": "1161d997e00605651e80f572b0c66445ada185165793f15bb8ba9a76b5c8fe51",
+      "bytes": 20383,
+      "git_blob_oid": "5b052f79d9ef812cdf22fce415f9d0eb690e2f9d",
+      "physical_before_sha256": "1161d997e00605651e80f572b0c66445ada185165793f15bb8ba9a76b5c8fe51",
+      "physical_after_sha256": "1161d997e00605651e80f572b0c66445ada185165793f15bb8ba9a76b5c8fe51"
+    },
+    ".github/scripts/tag_publication_receipt.py": {
+      "sha256": "6c866f210551a648d92358c94c2fda702f9862e4b490416b65b1f0ff1f0cf7f6",
+      "bytes": 7321,
+      "git_blob_oid": "73f2b403f72ba1569379ca058b69d8e1627dc491",
+      "physical_before_sha256": "6c866f210551a648d92358c94c2fda702f9862e4b490416b65b1f0ff1f0cf7f6",
+      "physical_after_sha256": "6c866f210551a648d92358c94c2fda702f9862e4b490416b65b1f0ff1f0cf7f6"
+    },
+    ".github/scripts/verify_codex_candidate_provenance.py": {
+      "sha256": "302d5d7e3d639cf315f784a4c576cc90ae808c068a8f5c41bc3b983c7ac3c9f0",
+      "bytes": 6957,
+      "git_blob_oid": "44d735a778a2fbfab6601b6e42a3adc0fdebafa1",
+      "physical_before_sha256": "302d5d7e3d639cf315f784a4c576cc90ae808c068a8f5c41bc3b983c7ac3c9f0",
+      "physical_after_sha256": "302d5d7e3d639cf315f784a4c576cc90ae808c068a8f5c41bc3b983c7ac3c9f0"
+    },
+    ".github/scripts/verify_codex_static_candidate.py": {
+      "sha256": "c79f32e90453805d5b5c724110d53beb96752de8d8a512f3d8dd215feb937725",
+      "bytes": 6579,
+      "git_blob_oid": "ab6c9cae84bd83b619c8cc1ad09be29c58d12845",
+      "physical_before_sha256": "c79f32e90453805d5b5c724110d53beb96752de8d8a512f3d8dd215feb937725",
+      "physical_after_sha256": "c79f32e90453805d5b5c724110d53beb96752de8d8a512f3d8dd215feb937725"
+    },
+    ".github/workflows/ci.yml": {
+      "sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f",
+      "bytes": 277135,
+      "git_blob_oid": "3a5b64d44e0cfd7896f896a4b4414cea5ee29db2",
+      "physical_before_sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f",
+      "physical_after_sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f"
+    },
+    ".github/workflows/release.yml": {
+      "sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126",
+      "bytes": 25073,
+      "git_blob_oid": "119ad4820e6c8f9ac5b9c00698cb1d0db34c513c",
+      "physical_before_sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126",
+      "physical_after_sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126"
+    },
+    "core/pysrc/_artifactmanifestlib.py": {
+      "sha256": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054",
+      "bytes": 4249,
+      "git_blob_oid": "1e84d812031a969be1decaa73ee8ea0bf8c613cb",
+      "physical_before_sha256": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054",
+      "physical_after_sha256": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054"
+    },
+    "core/pysrc/_releaselib.py": {
+      "sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea",
+      "bytes": 211540,
+      "git_blob_oid": "7cf0e15740304100bad69c5b20e1ed1bfa6c0ec8",
+      "physical_before_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea",
+      "physical_after_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+    },
+    "docs/state-contracts-major/PROGRAM.md": {
+      "sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+      "bytes": 7910,
+      "git_blob_oid": "b07288b0a1f090e722caa571fbd5d97ed78def92",
+      "physical_before_sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+      "physical_after_sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7"
+    },
+    "docs/state-contracts-major/contracts/machine-coverage.json": {
+      "sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+      "bytes": 385316,
+      "git_blob_oid": "e8454acad91b8a9f3931826a2db4bd8893ae2dfb",
+      "physical_before_sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+      "physical_after_sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd"
+    },
+    "docs/state-contracts-major/contracts/program.json": {
+      "sha256": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+      "bytes": 6403,
+      "git_blob_oid": "5977547ed52a1414358d4e3adba0e0435b4c50fb",
+      "physical_before_sha256": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+      "physical_after_sha256": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d"
+    },
+    "docs/state-contracts-major/contracts/tasks.json": {
+      "sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+      "bytes": 331224,
+      "git_blob_oid": "3f52ff13e833b002a9759706dd6f5f48e499cc63",
+      "physical_before_sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+      "physical_after_sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f"
+    },
+    "docs/state-contracts-major/contracts/transition-coverage.json": {
+      "sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+      "bytes": 3185278,
+      "git_blob_oid": "cf092ff8ef7776f81a23377eb8946f941a6cd1a9",
+      "physical_before_sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+      "physical_after_sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e"
+    },
+    "tools/build-artifacts.py": {
+      "sha256": "74f4d1a73dcee6731b8d6211d8c715f518d4582ad8083485519b0dafb9389db4",
+      "bytes": 15051,
+      "git_blob_oid": "60199483a18cad3b4d3bf45536cf127f2b7dcb75",
+      "physical_before_sha256": "74f4d1a73dcee6731b8d6211d8c715f518d4582ad8083485519b0dafb9389db4",
+      "physical_after_sha256": "74f4d1a73dcee6731b8d6211d8c715f518d4582ad8083485519b0dafb9389db4"
+    },
+    "tools/build-host-packages.py": {
+      "sha256": "c2c812bf93e81b69cbf62c133c569a6bce07a56e8fc0edbe501a22f9f60d2225",
+      "bytes": 116956,
+      "git_blob_oid": "2e00bf31140b6e6354e09f6bc23fff94a539c8e6",
+      "physical_before_sha256": "c2c812bf93e81b69cbf62c133c569a6bce07a56e8fc0edbe501a22f9f60d2225",
+      "physical_after_sha256": "c2c812bf93e81b69cbf62c133c569a6bce07a56e8fc0edbe501a22f9f60d2225"
+    }
+  },
+  "findings": [],
+  "open_findings": [],
+  "findings_summary": {
+    "CRITICAL": 0,
+    "HIGH": 0,
+    "MEDIUM": 0,
+    "LOW": 0
+  },
+  "reviewed_population": {
+    "families": [
+      "C01",
+      "C02",
+      "C03",
+      "C04",
+      "C11",
+      "C12",
+      "C13",
+      "C14",
+      "C15",
+      "C16",
+      "C17",
+      "C18",
+      "C19",
+      "C20"
+    ],
+    "literal_clauses": 80,
+    "proposed_cells": 62,
+    "machine_proposals": 14,
+    "planned_transition_proposals": 48,
+    "advanced_transition_rows_retained_exactly": 32,
+    "runtime_or_NA_proposals": 0
+  },
+  "source_assessment": {
+    "C01-C04": "Event/path/concurrency and aggregate semantics, finite native producer/consumer/issuer identities, source/toolchain/module/byte checks, six-platform stage/coverage closure, same-run host-package assembly and18-host/platform cold receipt verifier were inspected. Source wiring and recorded qualification rules are distinct from actual hosted execution.",
+    "C11-C13": "Codex absent optional skip versus required failure, host subprocess deadlines/readback/member/capability/nested observer paths, trusted static verifier/data-only package closure and advisory latest lanes were inspected. Best-effort home cleanup and static/installed/enforcement limits remain explicit.",
+    "C14-C15": "Shipped-scope diffs, absent/valid/invalid base-manifest admission, ordinary versus integration candidate version spending, exact per-target intent and required pre-tag owner were inspected. Accepted R-06/P-01/R-03 deltas are named; old warning-fallback N/A and pending ADR0040 successor are not rewritten or ratified.",
+    "C16-C18": "Main-only original CI source/ancestry/retention selection, optional exact operator bindings, per-target serialization/recheck/completion model, immutable tag/assets, receipt-only recovery, readiness barrier, Pi exact-source OIDC/integrity/signature/SLSA gates and retry bounds were inspected. Public effects/registry/account availability and wall-clock completion are not inferred.",
+    "C19-C20": "Bounded exact remote tag observation, caller-supplied provenance limits, exclusive hardlink publication, frozen legacy/original inventory separation, complete expected bindings, idempotence and pre-output source-byte recheck were inspected. Cooperative filesystem-race residuals and separate adoption remain explicit."
+  },
+  "semantic_review": [
+    {
+      "cell": "disposition:transitions:C01:01",
+      "frozen_row_sha256": "9c92e9de645a5e3f4a96db900ae69a311d9545bbaff951311952d8ba53811c9c",
+      "verdict": "SUPPORTED_FIXED_SOURCE_CONFORMANCE",
+      "intake_variances_retained": [
+        "P-01 adds major/state-contracts to PR/push admission for integration qualification; release admission remains main-only."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:C01:02",
+      "frozen_row_sha256": "a2dfea41998eb06e8eab0ab1f3ebf24c7c4515f41cec5ffefa3a0d09ec65612d",
+      "verdict": "SUPPORTED_FIXED_SOURCE_CONFORMANCE",
+      "intake_variances_retained": [
+        "Accepted P-01 extends the original main-only trigger with integration qualification. No integration push becomes a release event."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:C01:03",
+      "frozen_row_sha256": "8fa134f75260aeb887682b21f7cc323d3862645e9117744c22c3a1d08f947bd5",
+      "verdict": "SUPPORTED_FIXED_SOURCE_CONFORMANCE",
+      "intake_variances_retained": []
+    },
+    {
+      "cell": "disposition:transitions:C01:04",
+      "frozen_row_sha256": "31699d7458083fbb45f7d29860e66f8dc1cc578200c30cb73d6b6392580695e1",
+      "verdict": "SUPPORTED_FIXED_SOURCE_CONFORMANCE",
+      "intake_variances_retained": []
+    },
+    {
+      "cell": "disposition:transitions:C01:05",
+      "frozen_row_sha256": "55e35b3fed530b425db88957c15e5632ad123ae26887a0c21c2141b1dbb7c722",
+      "verdict": "SUPPORTED_FIXED_SOURCE_CONFORMANCE",
+      "intake_variances_retained": []
+    },
+    {
+      "cell": "disposition:transitions:C02:01",
+      "frozen_row_sha256": "c44ae62fc188d22a8c71cf94f6841279653269c71c789be7e2304d42382497b3",
+      "verdict": "SUPPORTED_FIXED_SOURCE_CONFORMANCE",
+      "intake_variances_retained": []
+    },
+    {
+      "cell": "disposition:transitions:C02:02",
+      "frozen_row_sha256": "7207eaae364d355c5da5cf4831ce51a5ead7b6d0b24ab8d65586315e97a3fb04",
+      "verdict": "SUPPORTED_FIXED_SOURCE_CONFORMANCE",
+      "intake_variances_retained": [
+        "The current program adds a strict selected program-integrity result; generic skip acceptance does not bypass it."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:C02:03",
+      "frozen_row_sha256": "29eedc2bad486084c2143b9a2978852d55d5fb867ff4dee7302c67350481c148",
+      "verdict": "SUPPORTED_FIXED_SOURCE_CONFORMANCE",
+      "intake_variances_retained": []
+    },
+    {
+      "cell": "disposition:transitions:C02:04",
+      "frozen_row_sha256": "29fb84bff8a86c84a56d2879f6f5469ce986987ae3f755c2ecf1ff0b35c7e2ff",
+      "verdict": "SUPPORTED_FIXED_SOURCE_CONFORMANCE",
+      "intake_variances_retained": [
+        "The single-canary registration comment is stale prose; literal needs and required_results describe the wider advisory population."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:C03:01",
+      "frozen_row_sha256": "1357429cb1b8fc14070d514207485d58237b9f8bbbe4359e0df7c0b316ac27a9",
+      "verdict": "SUPPORTED_FIXED_SOURCE_CONFORMANCE",
+      "intake_variances_retained": [
+        "The existing clean-checkout check is git diff HEAD for tracked state, not an untracked namespace or hostile-worktree guarantee. Workflow identity is the admitted workflow path/ref plus source/run fields, not a separately computed workflow-file hash."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:C03:02",
+      "frozen_row_sha256": "a33bf4c44f4bf59658b186742ab2ef100b1ae7e40da83cc400c34b9488681c1a",
+      "verdict": "SUPPORTED_FIXED_SOURCE_CONFORMANCE",
+      "intake_variances_retained": []
+    },
+    {
+      "cell": "disposition:transitions:C03:03",
+      "frozen_row_sha256": "4ae4df101b8008e00e9780f3dfd6d9dc5a3bbdabb55c47f5148ff641cfd5495a",
+      "verdict": "SUPPORTED_FIXED_SOURCE_CONFORMANCE",
+      "intake_variances_retained": []
+    },
+    {
+      "cell": "disposition:transitions:C03:04",
+      "frozen_row_sha256": "fc62bf8bee7c302101759cb29f0f2b5c578330eb242e283225f2f2ba8215b4f5",
+      "verdict": "SUPPORTED_FIXED_SOURCE_CONFORMANCE",
+      "intake_variances_retained": []
+    },
+    {
+      "cell": "disposition:transitions:C04:01",
+      "frozen_row_sha256": "3da9b80e6bee16bfe75f09cd33825934cf4d0422563de9741811e17df84be96e",
+      "verdict": "SUPPORTED_FIXED_SOURCE_CONFORMANCE",
+      "intake_variances_retained": []
+    },
+    {
+      "cell": "disposition:transitions:C04:02",
+      "frozen_row_sha256": "391188a5c39fa3f16d61d1aef453ab7e6c032afa99a75871e16583f67608d11a",
+      "verdict": "SUPPORTED_FIXED_SOURCE_CONFORMANCE",
+      "intake_variances_retained": []
+    },
+    {
+      "cell": "disposition:transitions:C04:03",
+      "frozen_row_sha256": "93a847e27d98f790cba8bd360b4221e8ede3652552d0f87f3c87ff4269c1cabf",
+      "verdict": "SUPPORTED_FIXED_SOURCE_CONFORMANCE",
+      "intake_variances_retained": []
+    },
+    {
+      "cell": "disposition:transitions:C04:04",
+      "frozen_row_sha256": "f9d49f81feb49601738f64dd79198a6e0472bdeb10c4fd6f6955fda4dfc2c627",
+      "verdict": "SUPPORTED_FIXED_SOURCE_CONFORMANCE",
+      "intake_variances_retained": []
+    },
+    {
+      "cell": "disposition:transitions:C04:05",
+      "frozen_row_sha256": "852995b746de96ee3481e66fe31e743e2bb2df9e9fd22e847abb2386d35a7e2b",
+      "verdict": "SUPPORTED_FIXED_SOURCE_CONFORMANCE",
+      "intake_variances_retained": [
+        "This is a source-level producer/DAG assertion, not a new build or archive-member observation."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:C04:06",
+      "frozen_row_sha256": "bc2daeb7f278d3268389e569cc883d45ba786ca5fa6903e5fe8dd8f07ee8ac8a",
+      "verdict": "SUPPORTED_FIXED_SOURCE_CONFORMANCE",
+      "intake_variances_retained": []
+    },
+    {
+      "cell": "disposition:transitions:C04:07",
+      "frozen_row_sha256": "b442f1f3f42b863a9378a1048df0e6b6ee0c956ff5044b234a41eaf6542a31bf",
+      "verdict": "SUPPORTED_FIXED_SOURCE_CONFORMANCE",
+      "intake_variances_retained": []
+    },
+    {
+      "cell": "disposition:transitions:C11:01",
+      "frozen_row_sha256": "2a8ce4ed2fcfc5dea65fd23d4aad5811d0ed70e49b5c7c13f3c19305ae67e110",
+      "verdict": "SUPPORTED_FIXED_SOURCE_CONFORMANCE",
+      "intake_variances_retained": []
+    },
+    {
+      "cell": "disposition:transitions:C11:02",
+      "frozen_row_sha256": "090aae181a5212a3df97c0fc49dcd8d5391ce58683b6b3f38aa1cb03e157faa3",
+      "verdict": "SUPPORTED_FIXED_SOURCE_CONFORMANCE",
+      "intake_variances_retained": []
+    },
+    {
+      "cell": "disposition:transitions:C11:03",
+      "frozen_row_sha256": "89a229283f23123bc5bc0c65d7d13cddda7a611b2c3acc3207e0d8cf6b2c8ed7",
+      "verdict": "SUPPORTED_FIXED_SOURCE_CONFORMANCE",
+      "intake_variances_retained": [
+        "Ignore-errors cleanup is an attempt, not proof of successful deletion or hostile-state isolation."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:C11:04",
+      "frozen_row_sha256": "d8a8dde1dd5d5cc9b85e910ca2a2f9531bef808b7f26d8c2c40872dab0107ece",
+      "verdict": "SUPPORTED_FIXED_SOURCE_CONFORMANCE",
+      "intake_variances_retained": [
+        "R-07 replaces the baseline unbounded host command wait with a300second command bound and reported cleanup outcome; no provider turn is introduced."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:C11:05",
+      "frozen_row_sha256": "b360abec97b52c1c67246e26173cd9ec69af6038426cc035b2fe3e1212b0db88",
+      "verdict": "SUPPORTED_FIXED_SOURCE_CONFORMANCE",
+      "intake_variances_retained": []
+    },
+    {
+      "cell": "disposition:transitions:C11:06",
+      "frozen_row_sha256": "307a92ab69b6de1a61c455a89793c8d5439c9a3c732f72283cd1cf771b55ee6f",
+      "verdict": "SUPPORTED_FIXED_SOURCE_CONFORMANCE",
+      "intake_variances_retained": []
+    },
+    {
+      "cell": "disposition:transitions:C11:07",
+      "frozen_row_sha256": "9abcdacf2a8516d61054928253c68db635095513b7992738ba31de92dc822929",
+      "verdict": "SUPPORTED_FIXED_SOURCE_CONFORMANCE",
+      "intake_variances_retained": [
+        "Accepted R-06 verdict separation and the reviewed Codex nested-observer correction preserve actual installed dependency/capability ownership; source inspection is not installed execution."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:C11:08",
+      "frozen_row_sha256": "2aee331d446e10d39a5c2ba53842314df74be57f67f969301dde241ed2f2a6af",
+      "verdict": "SUPPORTED_FIXED_SOURCE_CONFORMANCE",
+      "intake_variances_retained": [
+        "The frozen no-timeout fact is replaced by accepted R-07, not preserved. Cleanup outcomes are reported; a timeout or best-effort directory removal does not prove descendant quiescence."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:C12:01",
+      "frozen_row_sha256": "7ed94d23d7f8da5827aa4460bbb13d45fcf1cec58fa424865b162f633f778582",
+      "verdict": "SUPPORTED_FIXED_SOURCE_CONFORMANCE",
+      "intake_variances_retained": []
+    },
+    {
+      "cell": "disposition:transitions:C12:02",
+      "frozen_row_sha256": "556dd85d015150418b48c35be38bc57de33946f6706c7ba34a5fce3feab0e0e7",
+      "verdict": "SUPPORTED_FIXED_SOURCE_CONFORMANCE",
+      "intake_variances_retained": []
+    },
+    {
+      "cell": "disposition:transitions:C12:03",
+      "frozen_row_sha256": "4fcb11c62200cf156ae78c2a3db06b87290bd38a525d9d504e560a3e779d0f12",
+      "verdict": "SUPPORTED_FIXED_SOURCE_CONFORMANCE",
+      "intake_variances_retained": []
+    },
+    {
+      "cell": "disposition:transitions:C12:04",
+      "frozen_row_sha256": "f440a839018ab3cc3b9379c9959f0fd2eeb9fc52dd833c4a6d18ea31131e075e",
+      "verdict": "SUPPORTED_FIXED_SOURCE_CONFORMANCE",
+      "intake_variances_retained": []
+    },
+    {
+      "cell": "disposition:transitions:C12:05",
+      "frozen_row_sha256": "2b67815708febf119b8bddb3367691eb456a548679c9ae0aac5dfd4806e9057e",
+      "verdict": "SUPPORTED_FIXED_SOURCE_CONFORMANCE",
+      "intake_variances_retained": []
+    },
+    {
+      "cell": "disposition:transitions:C13:01",
+      "frozen_row_sha256": "7ee4af5d2ee2ef470fbbb385ed460a482e4d3ac425418bb324b49c9f4bb1eb33",
+      "verdict": "SUPPORTED_FIXED_SOURCE_CONFORMANCE",
+      "intake_variances_retained": []
+    },
+    {
+      "cell": "disposition:transitions:C13:02",
+      "frozen_row_sha256": "7e0367840e2947dc9e752f693371f372c08edb56203343c628823840e7b27592",
+      "verdict": "SUPPORTED_FIXED_SOURCE_CONFORMANCE",
+      "intake_variances_retained": []
+    },
+    {
+      "cell": "disposition:transitions:C13:03",
+      "frozen_row_sha256": "c6fb3b45c3ea021716b04530fe77fa1ad4a155d7ddff032b3f5eea008bedfd42",
+      "verdict": "SUPPORTED_FIXED_SOURCE_CONFORMANCE",
+      "intake_variances_retained": []
+    },
+    {
+      "cell": "disposition:transitions:C13:04",
+      "frozen_row_sha256": "5e4d3b0d4ea4118c4da90fabab47aa0d423cdd988d2fe6719f80de872f2fe65f",
+      "verdict": "SUPPORTED_FIXED_SOURCE_CONFORMANCE",
+      "intake_variances_retained": []
+    },
+    {
+      "cell": "disposition:transitions:C14:01",
+      "frozen_row_sha256": "c70904c55bdb3dd874e936b0b4ea27f23c93aaf905ea29e331f5b6942e8b97b4",
+      "verdict": "SUPPORTED_FIXED_SOURCE_CONFORMANCE",
+      "intake_variances_retained": []
+    },
+    {
+      "cell": "disposition:transitions:C14:02",
+      "frozen_row_sha256": "9cb66695711d94c5f53c27d3d3fe866601d273a6eaeac04217d97c87aaae56b7",
+      "verdict": "SUPPORTED_FIXED_SOURCE_CONFORMANCE",
+      "intake_variances_retained": []
+    },
+    {
+      "cell": "disposition:transitions:C14:03",
+      "frozen_row_sha256": "6fbc4d0ce7d3f20d5c23f30d9b1128eb5e18dabcc17863d6f99599da06152186",
+      "verdict": "SUPPORTED_FIXED_SOURCE_CONFORMANCE",
+      "intake_variances_retained": [
+        "R-06/C-F07 replaces the old base_version(None) conflation with explicit absent/valid/invalid states. The compatibility base_version reader remains but the gate does not use None as admission."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:C14:04",
+      "frozen_row_sha256": "3e59f8a73a383d236941e082b37d930d83f80cea0f3da06b0e75a54b52e3f03c",
+      "verdict": "SUPPORTED_FIXED_SOURCE_CONFORMANCE",
+      "intake_variances_retained": [
+        "P-01 integration candidate version ownership is an explicit additional route, not a weakening of main/release version spending."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:C14:05",
+      "frozen_row_sha256": "61346657e2fa2e1a6152950ad1e770c1dc38545a13fc6d9b7ae9ba9cecc1c8bb",
+      "verdict": "SUPPORTED_FIXED_SOURCE_CONFORMANCE",
+      "intake_variances_retained": []
+    },
+    {
+      "cell": "disposition:transitions:C15:01",
+      "frozen_row_sha256": "8d758a684aaa9687d907772f0013e8239cd6a94bf8883cd60f2dd50780fc8881",
+      "verdict": "SUPPORTED_FIXED_SOURCE_CONFORMANCE",
+      "intake_variances_retained": []
+    },
+    {
+      "cell": "disposition:transitions:C15:02",
+      "frozen_row_sha256": "cdc844114b8302b05c5a82681390984cd51f51f92331cd426e40ab0daa4d9611",
+      "verdict": "SUPPORTED_FIXED_SOURCE_CONFORMANCE",
+      "intake_variances_retained": []
+    },
+    {
+      "cell": "disposition:transitions:C15:03",
+      "frozen_row_sha256": "29c6a2247ad773c01e83624d29001f4139e95ddce8b26728524b1d3a50541be7",
+      "verdict": "SUPPORTED_FIXED_SOURCE_CONFORMANCE",
+      "intake_variances_retained": []
+    },
+    {
+      "cell": "disposition:transitions:C15:04",
+      "frozen_row_sha256": "c76cf3958f5fd8be7c518bac6db266dcade003e2fb5914d3e1eb130d160fd9ec",
+      "verdict": "SUPPORTED_FIXED_SOURCE_CONFORMANCE",
+      "intake_variances_retained": []
+    },
+    {
+      "cell": "disposition:transitions:C15:05",
+      "frozen_row_sha256": "c1454c27fe6eb3ef9313df5e75e4a8a348380f312de05b972ce55aed7028ac1f",
+      "verdict": "SUPPORTED_FIXED_SOURCE_CONFORMANCE",
+      "intake_variances_retained": [
+        "Already-dispositioned N/A edge stays unchanged. Accepted R-03 preserves current required enforcement while the ADR0040 advisory wording awaits its governed successor; this proof does not ratify or edit that ADR."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:C16:01",
+      "frozen_row_sha256": "0539bdf3e9496e3d4c0661b917d7c14d38e35de26a50d475d318b8e824009ee8",
+      "verdict": "SUPPORTED_FIXED_SOURCE_CONFORMANCE",
+      "intake_variances_retained": []
+    },
+    {
+      "cell": "disposition:transitions:C16:02",
+      "frozen_row_sha256": "5c275f35b9a2f321fe37869187727d11b3a38b0e2d0b0781b511dfb62b8cba71",
+      "verdict": "SUPPORTED_FIXED_SOURCE_CONFORMANCE",
+      "intake_variances_retained": [
+        "R-02 corrects the old current-head description while retaining useful original-run recovery. No later/older successful run silently substitutes when explicit expected identity is supplied."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:C16:03",
+      "frozen_row_sha256": "278ede2e3414e545c39fbf53e600938c4fd556904246c0f32bf35607028de7e9",
+      "verdict": "SUPPORTED_FIXED_SOURCE_CONFORMANCE",
+      "intake_variances_retained": []
+    },
+    {
+      "cell": "disposition:transitions:C16:04",
+      "frozen_row_sha256": "f938f068880af4f04e2c6f0fe9055c26098683483a27209084c9cad0d5f0f19e",
+      "verdict": "SUPPORTED_FIXED_SOURCE_CONFORMANCE",
+      "intake_variances_retained": [
+        "Existing N/A row remains byte-exact. Accepted R-01 intentionally repairs the public-incomplete recovery hole; no claim that the old failure is preserved."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:C16:05",
+      "frozen_row_sha256": "a99aac728169c19662bdccfd5fabbcba6c2aec7dc8c74f851b39a8d1f9a38be1",
+      "verdict": "SUPPORTED_FIXED_SOURCE_CONFORMANCE",
+      "intake_variances_retained": []
+    },
+    {
+      "cell": "disposition:transitions:C16:06",
+      "frozen_row_sha256": "691e3b67747435e1bec8456224053cd8b3926754d732d6813979ab93132a23c9",
+      "verdict": "SUPPORTED_FIXED_SOURCE_CONFORMANCE",
+      "intake_variances_retained": [
+        "Q-02 adds a release-specific noncircular prepublication requirement while the integration marker exists; no actual readiness or publication is asserted here."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:C17:01",
+      "frozen_row_sha256": "bc323d16ba3a5f2b3646e835e7c5cee5ee99cbcca1593d9e9d81914528e3c2b7",
+      "verdict": "SUPPORTED_FIXED_SOURCE_CONFORMANCE",
+      "intake_variances_retained": []
+    },
+    {
+      "cell": "disposition:transitions:C17:02",
+      "frozen_row_sha256": "51a8f2141d42abc4928f139b55f0b59d40d618a4c4d1ab6f6ee7d8af9a249283",
+      "verdict": "SUPPORTED_FIXED_SOURCE_CONFORMANCE",
+      "intake_variances_retained": []
+    },
+    {
+      "cell": "disposition:transitions:C17:03",
+      "frozen_row_sha256": "fb3d9cf19ba32b125958d8d286bcfae66ecf18563c17b220edc6e8ced4a0fb1b",
+      "verdict": "SUPPORTED_FIXED_SOURCE_CONFORMANCE",
+      "intake_variances_retained": []
+    },
+    {
+      "cell": "disposition:transitions:C17:04",
+      "frozen_row_sha256": "02871aacdd2aeb5c4a9b458d09da79da7d14d3dc33c1342c875ea2f8a189f3be",
+      "verdict": "SUPPORTED_FIXED_SOURCE_CONFORMANCE",
+      "intake_variances_retained": []
+    },
+    {
+      "cell": "disposition:transitions:C17:05",
+      "frozen_row_sha256": "d41dae675165f2b5b5d34691df3832e9f0266e3c10001bdf9dc2914e08260d1e",
+      "verdict": "SUPPORTED_FIXED_SOURCE_CONFORMANCE",
+      "intake_variances_retained": []
+    },
+    {
+      "cell": "disposition:transitions:C17:06",
+      "frozen_row_sha256": "639437a9bb6d51f5a2dd4c2e62160f6a6d6ffba7afe7de8e80eb148b079aa1c8",
+      "verdict": "SUPPORTED_FIXED_SOURCE_CONFORMANCE",
+      "intake_variances_retained": [
+        "R-01 now performs channel readback for receipt recovery; no repeated completed channel effect is required."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:C17:07",
+      "frozen_row_sha256": "c452c4921fdd19553c4225249d47197f9a8532aeb965ddfa0aba52b8c8aa66db",
+      "verdict": "SUPPORTED_FIXED_SOURCE_CONFORMANCE",
+      "intake_variances_retained": []
+    },
+    {
+      "cell": "disposition:transitions:C17:08",
+      "frozen_row_sha256": "d43a037a9d9c77d72a487d3541f704e0d4a76befde2fd4769cb7a15ea334efb3",
+      "verdict": "SUPPORTED_FIXED_SOURCE_CONFORMANCE",
+      "intake_variances_retained": []
+    },
+    {
+      "cell": "disposition:transitions:C17:09",
+      "frozen_row_sha256": "df4c452c87e17a43c844ac7371f2e8cc1663560c2e36050f30d5449e88c1934c",
+      "verdict": "SUPPORTED_FIXED_SOURCE_CONFORMANCE",
+      "intake_variances_retained": [
+        "Accepted R-01 replaces the frozen outer-eligibility recovery hole. Existing advanced edge history stays untouched."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:C17:10",
+      "frozen_row_sha256": "756bac54e8e1c979afeb7cc26dce9c144d4680e0ade2248986264ceb4391d885",
+      "verdict": "SUPPORTED_FIXED_SOURCE_CONFORMANCE",
+      "intake_variances_retained": [
+        "Existing N/A edge remains unchanged. The absent content-readback route was intentionally repaired under R-01."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:C17:11",
+      "frozen_row_sha256": "fa56b1e442c5175fed604e8618918c7b09f60caaaa6940b54d606bd91f682673",
+      "verdict": "SUPPORTED_FIXED_SOURCE_CONFORMANCE",
+      "intake_variances_retained": [
+        "R-01 intentionally changes the old public-incomplete block; original retained source/artifacts and exact identities remain required."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:C18:01",
+      "frozen_row_sha256": "84fc4aa45ad6590c11b91c16bec2845cf275101ef3215cd629d34f3c68123558",
+      "verdict": "SUPPORTED_FIXED_SOURCE_CONFORMANCE",
+      "intake_variances_retained": [
+        "The classifier checks the exact E404 shape/code, not an independently authenticated package identity inside the error text. Success identity is checked separately."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:C18:02",
+      "frozen_row_sha256": "89be25f8c2191c7befc97b8741f579a5a3ae2a8cf1bbe430f34a7c9efb43d013",
+      "verdict": "SUPPORTED_FIXED_SOURCE_CONFORMANCE",
+      "intake_variances_retained": []
+    },
+    {
+      "cell": "disposition:transitions:C18:03",
+      "frozen_row_sha256": "1f3d09cdcd07ce5049e40cb175df6e7dc75fdc4bca79f5af84fbb7e001a72ccf",
+      "verdict": "SUPPORTED_FIXED_SOURCE_CONFORMANCE",
+      "intake_variances_retained": []
+    },
+    {
+      "cell": "disposition:transitions:C18:04",
+      "frozen_row_sha256": "ff7b073a42dfabd57ade2691a5683b35000e32a456e7bb5593c75e3e4c516abc",
+      "verdict": "SUPPORTED_FIXED_SOURCE_CONFORMANCE",
+      "intake_variances_retained": []
+    },
+    {
+      "cell": "disposition:transitions:C18:05",
+      "frozen_row_sha256": "6a2b97b91eca4a13170861861dd31f422a3006eae0acbc3898cd35dd663f78c1",
+      "verdict": "SUPPORTED_FIXED_SOURCE_CONFORMANCE",
+      "intake_variances_retained": [
+        "ADR0044 account-side trusted-publisher configuration and actual hosted OIDC success remain external qualification, not proven by source."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:C18:06",
+      "frozen_row_sha256": "39e2ac1d9003b016dfad79cd6d60cd3ca009e6c4513a88c2c9155abc50cff511",
+      "verdict": "SUPPORTED_FIXED_SOURCE_CONFORMANCE",
+      "intake_variances_retained": [
+        "No finite poll configuration proves actual registry availability or that all work finishes within600 wall seconds."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:C18:07",
+      "frozen_row_sha256": "d3b60465589b9a7e038d7c47a4dd36f62e3ce05b32372e7b694d1409c52ff660",
+      "verdict": "SUPPORTED_FIXED_SOURCE_CONFORMANCE",
+      "intake_variances_retained": []
+    },
+    {
+      "cell": "disposition:transitions:C18:08",
+      "frozen_row_sha256": "06f2ca18695c6637cf02c7e3db353e75c911b16841b7ef1568ec911847fe4519",
+      "verdict": "SUPPORTED_FIXED_SOURCE_CONFORMANCE",
+      "intake_variances_retained": []
+    },
+    {
+      "cell": "disposition:transitions:C18:09",
+      "frozen_row_sha256": "834a39473337f775e7c38dde2e2a35d4339633fc20c5999a9cf779400c771844",
+      "verdict": "SUPPORTED_FIXED_SOURCE_CONFORMANCE",
+      "intake_variances_retained": [
+        "ADR0040 defers Codex npm. No helper invocation, registry publication or account readiness is established here."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:C19:01",
+      "frozen_row_sha256": "a43fe985bd38202caeaf9debb749da4c8959f827520d8c07e46f3d621d1e0278",
+      "verdict": "SUPPORTED_FIXED_SOURCE_CONFORMANCE",
+      "intake_variances_retained": []
+    },
+    {
+      "cell": "disposition:transitions:C19:02",
+      "frozen_row_sha256": "978bf56508efff250c03c66f1aa7e4e635e72854889bc6cdedc6982d7a4dba5f",
+      "verdict": "SUPPORTED_FIXED_SOURCE_CONFORMANCE",
+      "intake_variances_retained": [
+        "The owner explicitly excludes hostile same-user rename races; source conformance does not assert stronger atomic path containment."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:C19:03",
+      "frozen_row_sha256": "b9dc5f649ca23b0755d5b03b4fdb60ff913aa81e396462e3594f120b786b01ef",
+      "verdict": "SUPPORTED_FIXED_SOURCE_CONFORMANCE",
+      "intake_variances_retained": []
+    },
+    {
+      "cell": "disposition:transitions:C20:01",
+      "frozen_row_sha256": "a8cfbef1f832e21836825c72872edfb485b4589c0e448f38b65e13b693871414",
+      "verdict": "SUPPORTED_FIXED_SOURCE_CONFORMANCE",
+      "intake_variances_retained": []
+    },
+    {
+      "cell": "disposition:transitions:C20:02",
+      "frozen_row_sha256": "9405a71aa9cae98868556b25a6d5c16ba0b76356d173fd33c2314f7179d0df5f",
+      "verdict": "SUPPORTED_FIXED_SOURCE_CONFORMANCE",
+      "intake_variances_retained": []
+    },
+    {
+      "cell": "disposition:transitions:C20:03",
+      "frozen_row_sha256": "8a43097533b955a3577d9b35a6d353a145366ffaffe0e97705b61d4bf18c65df",
+      "verdict": "SUPPORTED_FIXED_SOURCE_CONFORMANCE",
+      "intake_variances_retained": []
+    },
+    {
+      "cell": "disposition:transitions:C20:04",
+      "frozen_row_sha256": "745b763466180c38c9aa937eaa126780d75c09d947c6541ad7e192d30cb62870",
+      "verdict": "SUPPORTED_FIXED_SOURCE_CONFORMANCE",
+      "intake_variances_retained": []
+    }
+  ],
+  "joins": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release62-review-bca520d0\\joins.json",
+    "sha256": "a2d15c252ecb125895d1deb52894ffd4b8ec6ee5f0f2ec3d6d67e43adb91a9a2",
+    "sealed_files": 24,
+    "immutable_source_files": 37,
+    "direct_literal_clause_witness_spans_checked": 163,
+    "whole_row_CAS_and_current_selected_row_matches": true,
+    "all32_retained_rows_currently_exact": true,
+    "proof_disposition_set_exactly62": true,
+    "adoption_filemap_exact16files": true
+  },
+  "current_input_applicability": {
+    "state": "PARTIAL_SOURCE_DRIFT_NOT_ADOPTION_AUTHORITY",
+    "changed_inputs": {
+      ".github/workflows/ci.yml": {
+        "pinned": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f",
+        "current": "a5b6e922ae90e6b47095f9a1f8986b781e1a12866315d7513fda5daeb6672dcb"
+      }
+    },
+    "affected_proofs": {
+      "C01-preserved.json": {
+        "changed_inputs": [
+          ".github/workflows/ci.yml"
+        ],
+        "cells": [
+          "disposition:machines:C01",
+          "disposition:transitions:C01:01",
+          "disposition:transitions:C01:02",
+          "disposition:transitions:C01:03",
+          "disposition:transitions:C01:04",
+          "disposition:transitions:C01:05"
+        ]
+      },
+      "C02-preserved.json": {
+        "changed_inputs": [
+          ".github/workflows/ci.yml"
+        ],
+        "cells": [
+          "disposition:machines:C02",
+          "disposition:transitions:C02:01",
+          "disposition:transitions:C02:02",
+          "disposition:transitions:C02:03",
+          "disposition:transitions:C02:04"
+        ]
+      },
+      "C04-preserved.json": {
+        "changed_inputs": [
+          ".github/workflows/ci.yml"
+        ],
+        "cells": [
+          "disposition:machines:C04",
+          "disposition:transitions:C04:01",
+          "disposition:transitions:C04:02",
+          "disposition:transitions:C04:04",
+          "disposition:transitions:C04:05",
+          "disposition:transitions:C04:06",
+          "disposition:transitions:C04:07"
+        ]
+      },
+      "C13-preserved.json": {
+        "changed_inputs": [
+          ".github/workflows/ci.yml"
+        ],
+        "cells": [
+          "disposition:machines:C13",
+          "disposition:transitions:C13:01",
+          "disposition:transitions:C13:02",
+          "disposition:transitions:C13:03",
+          "disposition:transitions:C13:04"
+        ]
+      },
+      "C15-preserved.json": {
+        "changed_inputs": [
+          ".github/workflows/ci.yml"
+        ],
+        "cells": [
+          "disposition:machines:C15",
+          "disposition:transitions:C15:01",
+          "disposition:transitions:C15:02",
+          "disposition:transitions:C15:03"
+        ]
+      }
+    },
+    "affected_proposed_cells": 27,
+    "unchanged_declared_input_cells": 35,
+    "instruction": "Preserve immutable EA9 evidence/epochs. Do not present the27 ci.yml-dependent proposals as current; a justified successor/admission under the original owner is separate. Unchanged inputs for35 are a factual join, not strict-owner/runtime admission."
+  },
+  "policy": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\current-complete-security-policy.json",
+    "sha256": "02e5e721b039df9a54686cc9ec82b8b6baedacff8f78cbfac4da2caec7b382ec",
+    "scope": "Complete32 typed controls/notes reused from immediately preceding current security review, including accepted HTTPS/secret/publication boundaries."
+  },
+  "verification": {
+    "reviewer_execution": "Read-only immutable Git/JSON/source/hash/CAS inspection only. No tests, native/imported owner validation, hosted/API/network/provider/build/install execution.",
+    "strict_owner": "PENDING_ROOT",
+    "numeric_or_platform_coverage": "NOT_CLAIMED; source-only review is not a runtime coverage measurement."
+  },
+  "limits": [
+    "PRESERVED proposals map existing accepted current source semantics and named authorized changes; no product feature, whole task/program, runtime/installed/account/model/human/publication qualification follows.",
+    "All32 advanced transition rows, their statuses/evidence and every foreign row remain unmodified; candidate holds only CAS instructions for62 selected PLANNED rows.",
+    "C05-C10 and new/repaired unrelated producer behavior are outside this proposal.",
+    "No source/index/ref/marker/ledger/canonical writes; private review artifacts only. Parent1098/main/publication holds remain."
+  ]
+}

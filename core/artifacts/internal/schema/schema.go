@@ -151,6 +151,58 @@ func Get(name, fragment string) (any, error) {
 	}
 	return v, nil
 }
+
+// RecordKinds derives record ownership from the closed normative schema,
+// including nested collections. A tombstone's kind must name a real record
+// owner, not merely look like a collection name.
+func RecordKinds(name string) map[string]bool {
+	out, seen := map[string]bool{}, map[string]bool{}
+	root, err := Get(name, "/properties/normative")
+	if err != nil {
+		return out
+	}
+	var walk func(any, string)
+	walk = func(value any, owner string) {
+		s, ok := value.(map[string]any)
+		if !ok {
+			return
+		}
+		if ref, ok := s["$ref"].(string); ok {
+			key := owner + "#" + ref
+			if seen[key] {
+				return
+			}
+			seen[key] = true
+			resolved, err := resolve(ref)
+			if err == nil {
+				walk(resolved, owner)
+			}
+		}
+		if properties, ok := s["properties"].(map[string]any); ok {
+			if _, present := properties["id"]; present && owner != "retired_symbols" {
+				out[owner] = true
+			}
+			for field, child := range properties {
+				walk(child, field)
+			}
+		}
+		if items, ok := s["items"]; ok {
+			walk(items, owner)
+		}
+		// Alternatives describe the same field's shape. In particular a
+		// nullable criterion verification record is behind anyOf, so retain
+		// its actual collection owner while inspecting the closed branches.
+		for _, keyword := range []string{"anyOf", "oneOf", "allOf"} {
+			if branches, ok := s[keyword].([]any); ok {
+				for _, branch := range branches {
+					walk(branch, owner)
+				}
+			}
+		}
+	}
+	walk(root, "document")
+	return out
+}
 func Validate(kindName string, v any) []fault.Error {
 	once.Do(initRegistry)
 	if initialization != nil {

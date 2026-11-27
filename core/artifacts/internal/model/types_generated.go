@@ -160,6 +160,7 @@ type Retired struct {
 	RetiredInRevision int64   `json:"retired_in_revision"`
 	ReplacementRef    *string `json:"replacement_ref"`
 	Reason            string  `json:"reason"`
+	OriginalKind      string  `json:"original_kind,omitempty"`
 }
 type Intent struct {
 	ID         string   `json:"id"`

@@ -1,0 +1,47 @@
+{
+  "schema": "codearbiter-proof-command-shape-successor/1",
+  "state": "FROZEN_TEMP_ONLY_ROOT_POINTER_UPDATE_REQUIRED",
+  "source_commit": "9a26600f756bb48d26f9fe5a89bc043f73812c31",
+  "reason": "Producer omitted required top-level commands. Successor adds only the authentic executed Go argv/cwd/exit and retained source/tool/raw bindings. This was a proof-shape error, not product RED.",
+  "original_packet": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-closure-9a-ekehuwae\\delivery.json",
+    "sha256": "e1c181684dc79e8561752450181ebc7efd7c816769463fcd32c2b941be7f3882",
+    "proof_sha256": "a42a545266cff5b2bd9eb4a488d82a90d98daf5e5b013395c5d6748e8013995c",
+    "all_original_payload_and_CAS_bytes_preserved": true
+  },
+  "new_proof": {
+    "target": "docs/state-contracts-major/execution/evidence/native-reconcile-closure-9a26600f/command-successor-tested.json",
+    "source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-closure-9a-ekehuwae\\command-successor\\payload\\docs\\state-contracts-major\\execution\\evidence\\native-reconcile-closure-9a26600f\\command-successor-tested.json",
+    "sha256": "4ae8e6d2396a7db0793c4f635b642cc2b0ca2beccfbbfcf50cbe90811bdde74e",
+    "bytes": 36975
+  },
+  "filemap": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-closure-9a-ekehuwae\\command-successor\\filemap.json",
+    "sha256": "9565c65cf0c8559827a8057a3f58fe9ea7add042d2736a01b1416302f4832acf",
+    "files": 1
+  },
+  "CAS": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-closure-9a-ekehuwae\\command-successor\\cas-proposal.json",
+    "sha256": "7e7596d9293ef1a069a1462e1e1ad2ec318b2d6c5ca699824837034f1936eb9b",
+    "note": "Same original PLANNED preimage; corrected replacement evidence pointer only."
+  },
+  "currently_staged_pointer_addendum": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-closure-9a-ekehuwae\\command-successor\\staged-pointer-addendum.json",
+    "sha256": "0153a6d2ccaf6707a29d6c3a4db7cfdb7f869a861396af7d599a663091af76b9",
+    "note": "Root updates only its active N10 evidence ref/digest, preserving status/note/owner/tasks."
+  },
+  "full_owner_check": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-closure-9a-ekehuwae\\command-successor\\full-owner-authentication.json",
+    "sha256": "35d4b6326545b24502d36cfc791edfd0cdc2be469dd367f3549cae47a6144e47",
+    "function": "major_readiness.authenticate_recorded_disposition",
+    "result": "PASSED",
+    "source_inputs_literal_authenticated": 253,
+    "membership_authenticated": true,
+    "current_applicability": "APPLICABLE",
+    "changed_or_unavailable": [],
+    "overlay_limit": "Explicit private retention overlay; final committed index authentication remains Root-owned."
+  },
+  "gitleaks_repository_policy_exit": 0,
+  "tests_rerun": false,
+  "production_Gov_index_metadata_marker_Git_API_network_writes": false
+}

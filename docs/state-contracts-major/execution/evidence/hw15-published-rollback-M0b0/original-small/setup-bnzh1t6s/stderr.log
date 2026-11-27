@@ -1,0 +1,55 @@
+setUpClass (__main__.main.<locals>.RetainedLifecycle) ... ERROR
+
+======================================================================
+ERROR: setUpClass (__main__.main.<locals>.RetainedLifecycle)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\brenn\AppData\Local\Temp\ca-hw15-retained-rollback-2c0fd13010\characterization.py", line 58, in setUpClass
+    super().setUpClass()  # unchanged production verifier and bindings
+    ~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\brenn\.codex\worktrees\program-governance-prep\codeArbiter\.github\scripts\qualify_workflow_recovery_cohort.py", line 45, in setUpClass
+    cohort = packager.verify_artifact_release_packages(
+        package_root=cls.cohort_path.parent, source_repo=cli.ROOT,
+    ...<2 lines>...
+        promotion_receipt_sha256=cls.promotion_receipt_sha256,
+        stage=cls.release_package_stage, require_production=True)
+  File "C:\Users\brenn\.codex\worktrees\program-governance-prep\codeArbiter\tools\build-host-packages.py", line 1468, in verify_artifact_release_packages
+    or receipt.get("source_tree") != _source_identity(source_repo, source_commit)
+                                     ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\brenn\.codex\worktrees\program-governance-prep\codeArbiter\tools\build-host-packages.py", line 670, in _source_identity
+    resolved = _git_package_output(
+               ~~~~~~~~~~~~~~~~~~~^
+        "rev-parse", f"{source_commit}^{{commit}}", repo=source_repo
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ).strip()
+    ^
+  File "C:\Users\brenn\.codex\worktrees\program-governance-prep\codeArbiter\tools\build-host-packages.py", line 649, in _git_package_output
+    completed = subprocess.run(
+        ["git", *args], cwd=repo, check=False, capture_output=True,
+        text=not binary, encoding=None if binary else "utf-8",
+    )
+  File "C:\Python314\Lib\subprocess.py", line 555, in run
+    with Popen(*popenargs, **kwargs) as process:
+         ~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python314\Lib\subprocess.py", line 1039, in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                        pass_fds, cwd, env,
+                        ^^^^^^^^^^^^^^^^^^^
+    ...<5 lines>...
+                        gid, gids, uid, umask,
+                        ^^^^^^^^^^^^^^^^^^^^^^
+                        start_new_session, process_group)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python314\Lib\subprocess.py", line 1549, in _execute_child
+    sys.audit("subprocess.Popen", executable, args, cwd, env)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\brenn\AppData\Local\Temp\ca-run-hw15-retained-lifecycle.py", line 75, in audit
+    if not found:raise RuntimeError('unresolved characterization executable')
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: unresolved characterization executable
+
+----------------------------------------------------------------------
+Ran 0 tests in 0.033s
+
+FAILED (errors=1)

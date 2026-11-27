@@ -1,0 +1,8 @@
+{
+  "mode": "EXPLICIT_TEMP_DRAFT_PROJECTION_NOT_RETAINED_GIT_AUTHENTICITY",
+  "candidate_source": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+  "passed": 91,
+  "errors": [],
+  "actual_input_git_blobs_loaded": 118,
+  "note": "Only proposed retained proof paths are explicitly overlaid from Temp. Actual original source inputs and ancestry assertions use immutable Git and the unchanged owner. No verifier flags/guards/network auth are mocked or relaxed. Parent must commit/carry and authenticate actual Git retention separately."
+}

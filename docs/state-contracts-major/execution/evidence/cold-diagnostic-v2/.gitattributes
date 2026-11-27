@@ -1,0 +1,2 @@
+* -text whitespace=-blank-at-eol,cr-at-eol
+raw/*.stderr.log whitespace=-blank-at-eol,-blank-at-eof,cr-at-eol

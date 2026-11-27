@@ -1,0 +1,54 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "ac9b184a662b24cef088db186eeef5defcc410ac",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "disposition_ids": [
+    "disposition:transitions:S04:01",
+    "disposition:transitions:S04:06",
+    "disposition:transitions:S04:08"
+  ],
+  "producer": {
+    "class": "source-conformance",
+    "identity": "Bound Pi structured role redaction source delta"
+  },
+  "inputs": {
+    "plugins/ca-pi/tools/src/background-jobs.ts": "12d9b9d5e4dd2c71d5f5c9fe2a2009da49fc275fb8df3d4020b854493636ebb9",
+    "plugins/ca-pi/tools/test/background-jobs.test.ts": "b52ede11e88ab574ca6989841b96be274daecd7ddf611164bc35debb49063c3b",
+    "plugins/ca-pi/tools/src/contracts.ts": "ba8cb4ff16968f1f2eaf74309939d56a06c7d230b050058f9f3a35b0460444d0",
+    "plugins/ca-pi/tools/src/activity.ts": "06239371173598c3f20388c49ca36f4497befe27dbb5e93d3d91fa660c1ed8d1",
+    "plugins/ca-pi/tools/src/process-tree.ts": "c95c41d55cf73de5f4c4426228a42633d759203fc6ca0f590cfe884b33640f51",
+    "plugins/ca-pi/tools/src/windows-supervisor.ts": "9121289b6efc3145799cee64c4d98397825d5347b8b84bb871b352d1b75873d3"
+  },
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pi-role-redaction-source-ac9b184a/source-inspection.json",
+      "sha256": "e306160f0a90f27027c4b3bd313747ddab5d801debc8c78d3f81a2d045075596"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pi-background-manager-preservation/source-conformance.json",
+      "sha256": "339415ae5520637e7cc4f2fdb3f68ecb48202363cdbfb5088665ba690cf979bc"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pi-background-manager-preservation/source-and-assertion-traces.json",
+      "sha256": "fc3408bb4e610dbaf2a9fd209be6c32b7456185bfaf53b682e9d0cdf611740c9"
+    }
+  ],
+  "limits": [
+    "Only S04:01,06,08 proposed source-clause PRESERVED; no machine/task/scenario closure.",
+    "Original hosted tests support component assertions only; run43532123830 was pull_request/cancelled aggregate, so no final successful integration-push hosted gate promotion.",
+    "Runtime process-tree readiness, actual cleanup, cancel/timeout, file effects and installed package authoring remain separate from manager state erasure.",
+    "Source-conformance supplements manager-only assertions for S04:06 runtime duplicate cancel path; does not claim a newly executed race test.",
+    "Existing current3688 cold3/recovery10/RPC proof and old09038 diagnostic TUI are separate; none executes these manager scenarios by suite counters.",
+    "Scope is source conformance. The changed Pi runner and the reviewed C36 observations require their own exact runtime evidence."
+  ],
+  "prior_source_fingerprint": {
+    "path": "docs/state-contracts-major/execution/evidence/pi-background-manager-preservation/source-conformance.json",
+    "sha256": "339415ae5520637e7cc4f2fdb3f68ecb48202363cdbfb5088665ba690cf979bc",
+    "original_code": "3688ef7fcedce06561443c0b3a8c3186b9e6e7be",
+    "stored_at": "24ee1333a11f6ed07873f926c3593f56e879b4bb"
+  },
+  "changed_paths": [
+    "plugins/ca-pi/tools/src/contracts.ts"
+  ]
+}

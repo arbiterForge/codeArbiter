@@ -1,0 +1,6 @@
+{
+ "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-sandbox-finding-routes-jw9kezze\\legacy.stderr",
+ "original_sha256": "9ced4febbf66ab7cdfaaad11d386e479cdf33946ce5e746f807d7739a9f7af06",
+ "original_bytes": 989,
+ "utf8_text": "test_all_named_guards_and_effects_must_pass_under_original_bound_source_profile (test_major_qualification_report.SandboxOwnedEffectsRoutingTests.test_all_named_guards_and_effects_must_pass_under_original_bound_source_profile) ... ok\r\ntest_canonical_three_cells_require_complete_guard_and_real_effect_unions (test_major_qualification_report.SandboxOwnedEffectsRoutingTests.test_canonical_three_cells_require_complete_guard_and_real_effect_unions) ... ok\r\ntest_closed_profiles_stage_exact_consumed_members_and_admit_only_four_cells (test_major_qualification_report.VitestSourceProducerTests.test_closed_profiles_stage_exact_consumed_members_and_admit_only_four_cells) ... ok\r\ntest_final_ts_reports_authenticate_the_original_source_upload_and_owner (test_major_qualification_report.VitestSourceProducerTests.test_final_ts_reports_authenticate_the_original_source_upload_and_owner) ... ok\r\n\r\n----------------------------------------------------------------------\r\nRan 4 tests in 9.582s\r\n\r\nOK\r\n"
+}

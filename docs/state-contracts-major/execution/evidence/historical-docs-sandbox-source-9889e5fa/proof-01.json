@@ -1,0 +1,64 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "9889e5fa9d3adccd597c43e4f320ee773f251e62",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "Exact original C06 and C29 sources after bounded result-route additions"
+  },
+  "inputs": {
+    ".codearbiter/decisions/0032-hosted-static-codex-release-evidence.md": "96b28b262f0bff474a53383c9823c22fbe06ecc3f63f343d8c6a31993c97e4c9",
+    ".codearbiter/decisions/0034-establish-closed-legacy-published-tag-provenance-epoch.md": "caec3ca7d29942c143661cab268b49cb57bb1c403c55d1ac476ca02a7059e224",
+    ".codearbiter/decisions/0040-independent-per-target-release-with-consumer-safety-gates.md": "2dce2651ea067cc7bec25982ce23fdeb1528e9bfb003906c55be7e243a3a8964",
+    ".codearbiter/decisions/0041-admit-pi-host-that-strictly-reduces-audit-findings.md": "6a37a0cbfb33ee413d2409bee9e8318413bfe5635d5335d0734352584f4730be",
+    ".codearbiter/decisions/0043-assistive-state-engine.md": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+    ".codearbiter/decisions/0044-trusted-pi-npm-publication.md": "fda3c0194f83d41bcb169fae7c14d1b24bdaf3bace8d41780a88825e10fe30d6",
+    ".codearbiter/decisions/0049-require-https-outside-bounded-loopback.md": "c757cef9d5e318b75ff164d270b29a49255449360f0b7cde51e53775e6916ab8",
+    ".github/scripts/site_playwright_observation.py": "f4deae3abb20f9f38c3ae8743ae37151cf74cf406aae81d8ebe111609a0d9b6a",
+    ".github/scripts/site_vitest_observation.py": "03d2840061d1dedb383b38f6fb45b1ac5a605d79350113770da24b46a8c5db09",
+    ".github/workflows/docs.yml": "e66b8432409b34bc630a90e39c8c8cf5f675e651548c2147cbd824d116231c07",
+    "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+    "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+    "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+    "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+    "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e"
+  },
+  "disposition_ids": [
+    "disposition:machines:C29",
+    "disposition:transitions:C29:01",
+    "disposition:transitions:C29:02",
+    "disposition:transitions:C29:03",
+    "disposition:transitions:C29:04",
+    "disposition:transitions:C29:05"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/historical-docs-sandbox-source-9889e5fa/source-delta-review.json",
+      "sha256": "7827568bff8853304df0cde6d578881dd6b9fb9b564cfc3ca9d62ba68d10e65f"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/docs-named-observation-source-2c38e41c/proof-01.json",
+      "sha256": "1a635de384d8ce5702dfccc2a791e0b5fbef71976c5a04349407d9c42c8f7a91"
+    }
+  ],
+  "prior_source_fingerprint": {
+    "path": "docs/state-contracts-major/execution/evidence/docs-named-observation-source-2c38e41c/proof-01.json",
+    "sha256": "1a635de384d8ce5702dfccc2a791e0b5fbef71976c5a04349407d9c42c8f7a91",
+    "original_code": "2c38e41ca425974028119bbc6604e9735d450d0b",
+    "stored_at": "2e8671924c98d5ba5e7a0365be89522876935169"
+  },
+  "scope": "Finite, previously assessed owning source clauses.",
+  "changed_paths": [
+    ".github/scripts/site_playwright_observation.py",
+    ".github/scripts/site_vitest_observation.py"
+  ],
+  "limits": [
+    "Only evidence binding was renewed for unchanged finite predicates. C35 has explicit maintainer-authorized policy changes.",
+    "Source-only assessment. All execution and prior evidence retain their original epochs.",
+    "Static renewal preserves C29 owner, pass and refusal conditions. A refused observation belongs to the existing bounded failure-evidence path.",
+    "Source-only assessment. All execution and prior evidence retain their original epochs.",
+    "Source renewal preserves existing named authority and Docs lifecycle predicates. Prior execution or runtime evidence retains original trust and provenance.",
+    "Source-only assessment. All execution and prior evidence retain their original epochs."
+  ]
+}

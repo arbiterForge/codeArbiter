@@ -1,0 +1,16 @@
+{
+  "result": "NORMALIZED_ONLY_CURRENT_SELECTED_SOURCE",
+  "paths": [
+    {
+      "path": ".github/major-test-selections.json",
+      "before_physical_sha256": "ed1c9170052201816d11ffb863db919bdb28fa797dff2adc462445aafa512d56",
+      "canonical_index_sha256": "68adda1f50b166aa2f1ff8bf1747e18f9b063d28b9aced774111a9515f044f85",
+      "retained_preimage": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-acceptance-source-eol-preimages-zj64huno\\.github\\major-test-selections.json",
+      "bytes_before": 75180,
+      "bytes_after": 74167,
+      "change": "CRLF->LF only; parsed Python AST or JSON values unchanged"
+    }
+  ],
+  "raw_evidence_untouched": true,
+  "qualification": false
+}

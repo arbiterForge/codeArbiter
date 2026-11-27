@@ -1,0 +1,9 @@
+from pathlib import Path
+import sys,json,unittest,importlib,time,subprocess,hashlib
+r=Path(sys.argv[1]);o=Path(sys.argv[2]);sys.path.insert(0,str(r/'.github/scripts'));module=importlib.import_module('test_sync_core');selection=json.loads((o/'sync-selection.json').read_text(encoding='utf-8'));rows=[]
+class Result(unittest.TextTestResult):
+ def addSuccess(self,test):super().addSuccess(test);rows.append({'id':test.id(),'result':'PASSED'})
+ def addFailure(self,test,err):super().addFailure(test,err);rows.append({'id':test.id(),'result':'FAILED'})
+ def addError(self,test,err):super().addError(test,err);rows.append({'id':test.id(),'result':'ERROR'})
+ def addSkip(self,test,reason):super().addSkip(test,reason);rows.append({'id':test.id(),'result':'SKIPPED','reason':reason})
+t=time.monotonic();suite=unittest.TestSuite(unittest.defaultTestLoader.loadTestsFromName(s,module) for s in selection);result=unittest.TextTestRunner(verbosity=2,resultclass=Result).run(suite);sha=lambda b:hashlib.sha256(b).hexdigest();start=json.loads((o/'sync-start.json').read_text(encoding='utf-8'));after={p:sha((r/p).read_bytes()) for p in start['inputs_before']};assert after==start['inputs_before'];end={'source_after':subprocess.check_output([r'C:/Program Files/Git/cmd/git.exe','rev-parse','HEAD'],cwd=r,text=True).strip(),'inputs_after':after,'seconds':time.monotonic()-t,'testsRun':result.testsRun,'named_results':rows,'success':result.wasSuccessful() and not result.skipped,'imported_repository_modules':sorted({str(Path(x.__file__).resolve().relative_to(r)).replace('\\','/') for x in sys.modules.values() if getattr(x,'__file__',None) and Path(x.__file__).resolve().is_relative_to(r)})};(o/'sync-results.json').write_text(json.dumps(end,indent=2)+'\n',encoding='utf-8');sys.exit(0 if end['success'] else 1)

@@ -1,0 +1,633 @@
+{
+  "source": {
+    "positive_inputs": {
+      ".github/fixtures/context-onboarding/installed-cells.json": "40fdb795fc48a8b0d06a86fb0fb3ea497d754ca229d005e008cdb83c9f0789ba",
+      ".github/scripts/_boundedproc.py": "671458a00f178ac690e4d1f4e0458da7b3833353384f9cb7546be711bab15f51",
+      ".github/scripts/_contextverificationlib.py": "361b29a202f8ff3fe4f35c58a42d53cf77c4f8fe05985b1e91b721fc8f2a0707",
+      ".github/scripts/check_codex_skill_resources.py": "d9b66e6f9de71e8dcdf3c001141ac35abc350de1dc85b4d583c483be70b7bfb0",
+      ".github/scripts/check_codex_static_package.py": "7c0e43244ea71edcf8ecbb62dcd83209b152e6e63f796557f08027915d2c5618",
+      ".github/scripts/major_readiness.py": "a636eb4e73d1097735b810f1057cacb65f63e36e146ce36193687d3520ffe6fc",
+      ".github/scripts/qualify_workflow_recovery_cohort.py": "b477e0ac63d1a8717ce76e0de4f63920b9d7c485a13bfb06e8fb1c814a09f20d",
+      ".github/scripts/test_artifact_installed_host.py": "06ee6f3407ed4bc8016804794da9702dbdb7e54c9807d9a142805c34422398b5",
+      ".github/scripts/test_context_installed.py": "563efb67846280e1f33b2ae135ba6616e49cee8df96aa56ca30eb421f653bd19",
+      ".github/scripts/test_workflow_recovery_cli.py": "5e3af20417b589322cf2121be7df1697c4533f4052b40003d964f16a3acca4e7",
+      ".github/scripts/test_workflow_recovery_hosts.py": "c52a377ec888eac1142696be66afe983eb74583aad104d2159e76ae2b4cfff56",
+      "core/hosts.json": "3ea50fd2af1ed359e602210de3f0a9b661a567c45d08a5f947f0f4c2e24a8cd8",
+      "core/pysrc/_activationlib.py": "60c6391b4d8b143c5e59cf2320291a2d31063e8fbebe0fcf337dd83e07f8fd97",
+      "core/pysrc/_adrlifecycle.py": "cb1c3c3e39eb2e21f390026b3c336273660a4218e015621f76a18a60ddeaf4f1",
+      "core/pysrc/_adrlifecyclegit.py": "36877c5b94a11135c0b3a4ceb4776e36a94beba1dbd89c0c01be57235806ab24",
+      "core/pysrc/_adrlifecyclewrite.py": "689c79bebe37d412849de84dc3e2b00ba594298b44815effb66bdafbb1663176",
+      "core/pysrc/_appendonlyconflictlib.py": "8fbf10aeaad62bfb1d7da174d71fe354930d3c8a49224b96953b4b87ace687b0",
+      "core/pysrc/_approvallib.py": "fc71ec67a9c44ebbadd9897244da291b6b50768dbe19e59d576ee3f15505828b",
+      "core/pysrc/_arbiterstatelib.py": "19ebd7d82fa56d2a4535043d3a163cfe9f0475aa5d457d5ad8953980d57f71c1",
+      "core/pysrc/_artifactauthoritylib.py": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+      "core/pysrc/_artifactlib.py": "59dbf6c51cbbb824cf553aa38aeb9c543dcada14c6311e9393434d231babe03b",
+      "core/pysrc/_artifactmanifestlib.py": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054",
+      "core/pysrc/_artifactpromptlib.py": "03e0c4b32c806cc054ef34ae7ac58ed093cbe80521a8fea723b7ceb8ac72e1d9",
+      "core/pysrc/_babysitlib.py": "f52d87fb3497cc43262785a201c3f0ac10d3e28f2f2e037bc6cd4044d7206d94",
+      "core/pysrc/_bashguardlib.py": "28fb7a0875395a284df082722e13caa42c35d02bb77a4567bafbbc0e1c45d101",
+      "core/pysrc/_boxlib.py": "b523b1e6ec6753c05224486a0bc2f5d7a553b6628c91939b8462f6a78fa7be0e",
+      "core/pysrc/_cleanuplib.py": "66f099d21eebe2fd8d0eea472fb0f0b5fd62713d6d687eab88e0b74f42c4e03c",
+      "core/pysrc/_colorlib.py": "ff8d212dfc06de9b442330085162b2186a01336cbdc2f76d2f87a88f35f578df",
+      "core/pysrc/_contextmergelib.py": "8d4b990b58e075f01bd9efcb2efeb08705b7be0949af30f82e20a4a517c4653c",
+      "core/pysrc/_contextreportlib.py": "76669de01a426b83a841d439d92f82532923303097fa051c4d08c1a1d0bfb538",
+      "core/pysrc/_contextselectlib.py": "0609783e758b6d654c05eeda8c40ccf355641eaf51fb0d9e9978ae5bf4304706",
+      "core/pysrc/_contextsnapshotlib.py": "bef9c37c09abc39e6113baa39f51f261103c760db66ec8e4cdc5818a075c1afe",
+      "core/pysrc/_contextwriterlib.py": "1a2c1856a2ba17ac17b947e0823b1dece6f355a2de600f70e0d392b09263607f",
+      "core/pysrc/_debughandofflib.py": "1a25b13304f05054f7b3787068b937269066c7cb8c61ef0098f14dad48d78c5f",
+      "core/pysrc/_durabilitylib.py": "42e9d3ed6f6f43c76bef073e6edad2b8a119dfc154e2a497909422b4e4d28f9b",
+      "core/pysrc/_entrylib.py": "1f4f95d55502d022f60bc9754a629a3fd38f0914ad69903fb5aa4aa8c4da8f5a",
+      "core/pysrc/_fmtlib.py": "b5e55dccad28210a2781c883704a491d081264ca3f23993ecb815f76b82b2a85",
+      "core/pysrc/_gitexec.py": "a5935246028f506ef5ab13ba379b399cb7a754a077866fd39528545f30f4bef3",
+      "core/pysrc/_githooks.py": "450d3204c7895d7649c4bd7b1daf40b498b960df48de00138914559d41008e38",
+      "core/pysrc/_gitlib.py": "7b310f1946f358a77d6a9eab2333adb64ba9648d41c69c564b66fcb6ab4df276",
+      "core/pysrc/_hooklib.py": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+      "core/pysrc/_intentlib.py": "9712bed86854f405475958d07727bf21f58a0faa1bfd03c19d9ada8972007319",
+      "core/pysrc/_knowledgelib.py": "abc1f93667faf5241c52931d33fc992e5627bd2c406298937d587c373659eeb9",
+      "core/pysrc/_ledgerlib.py": "33fdd7e0ec5505e4faea7776c861a123206bb5c2c09315b09965ab4f92dda580",
+      "core/pysrc/_modelib.py": "d97433737654bbcad2051e62495e70ec006dc31d458514fa74e338e49d04a1db",
+      "core/pysrc/_overrideappendlib.py": "592f63ca6a6a5e51f5e315cd60f6d2d8a6565234835e0904bb422b74d20090b0",
+      "core/pysrc/_pathnorm.py": "f6a99cddf6277641316f5e8f9d86fb97691e535ba569aa6cb51c9e4f3ed52906",
+      "core/pysrc/_planfilelib.py": "038cf68ad85d022d22aab4da5f218f1ce5fb1bdec3bc60e329c607b806fd6fe0",
+      "core/pysrc/_prerequisitelib.py": "8263651e6f29f987b3cc935827c2f6a4b4745251ecddb87a3a7d51fd3d861479",
+      "core/pysrc/_protectedlib.py": "3156e9ad47cf577476dfcae27fde1d4ebfd71fe33b5e1976d351b8f833ea53d3",
+      "core/pysrc/_protectedstatelib.py": "9703e5e777ab286df820dd14da8c0118c24335d41007abfa6f536b5b0b3f14e0",
+      "core/pysrc/_provenancelib.py": "3cbd8d241ff6640e824ee2707ca1a3bd3202db83df371822201ceeabdd2657e4",
+      "core/pysrc/_prunelib.py": "f34aceae4140a7ff25dff91888cd3b9d7d2e5ddc2e1f084558218b22d1c1bdc4",
+      "core/pysrc/_prunepolicy.py": "13bc82c138975121c3dbd28379a0bc8dda183f09fa6e47fbe2bab2e9cc0faf35",
+      "core/pysrc/_readinjectlib.py": "a4d689293690beefa28e33834c7aa421145bab6547685f8d25e5c29425b61138",
+      "core/pysrc/_reconciliationlib.py": "7a281f3f4cdf7c29d62185d12ac24ebb26e3f1c01f42004aa99a1f8080ae2691",
+      "core/pysrc/_releaselib.py": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea",
+      "core/pysrc/_replylib.py": "127d9bcfd842bcea941f2d61b86963cd3e50fcb34a603e8a834fe18d2cc9bf0d",
+      "core/pysrc/_scopelib.py": "03d1f066863d08c952ebda8d9b6f1515813f53a4fd3fc0af560a735f63954e0b",
+      "core/pysrc/_segmentslib.py": "48faefd3a2134195781d821e46d7d7aa2439ef6f6bd950f4de19eff0d416ebe2",
+      "core/pysrc/_sensitivelib.py": "a3902997c16d367a3c7e6e7247a42ba35d962e2c885f9ed3e8e1ab0ce98ec506",
+      "core/pysrc/_sessionlib.py": "bc9ff7504329deee9b205a8d5e8abd7797b8e404152a5c0147c91c8dfd4b8fa1",
+      "core/pysrc/_sloplib.py": "568692fdecb4237ae961bdc3cdb0a3f1566f1630ba2f18ac0ea13fa4df40214e",
+      "core/pysrc/_sprintapprovallib.py": "5fe52f17bb36abe2bbdaa124bfb9f5f2e391af7de47d7cc6492e334765a5cac8",
+      "core/pysrc/_standuplib.py": "621d318ca6429c95bc45dadeb7fbebbfdd9bc3a5f94267d87fa692e69ef74169",
+      "core/pysrc/_subagentslib.py": "e2a6aaf737d02180fc5d464f8b28a0c723408a19774696f60ad0e8175e4b6529",
+      "core/pysrc/_taskboardlib.py": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+      "core/pysrc/_taskexcludelib.py": "dbe5ae4cbe72a2cdccfb4bdf78b4adbece144fed74703f2d2f403851ce3c39a0",
+      "core/pysrc/_tribunalinventorylib.py": "974533bbe66808475c0e64e3247ee5baf814f9f0762e731f904b924e696de251",
+      "core/pysrc/_tribunalrunlib.py": "c0381e0d22a0e25a22d7ac27adaf518724c322c92dd77b11014702d251fd2624",
+      "core/pysrc/_updatelib.py": "6a66e7bc681bf5c347529becbe6e5405165d59b336436183e4e7881d4d26d7b4",
+      "core/pysrc/_usagelib.py": "bed9730b7b21b382845e2389eead3458d07360c5c86e91ad3b0b9f17112cfff5",
+      "core/pysrc/_workadopt.py": "2691e5e61824ef58cf2e13463de8aaf44a99a831079595d906ce96f06aa320b7",
+      "core/pysrc/_workflowrecoverylib.py": "65003d177eb77827c3a9723cf1565ed86e8a9724d22fb19cd3a727471cd71dad",
+      "core/pysrc/_workgithub.py": "15bcc28b81e7cb87df912bedfc3688d0ec69866a2171aa2db80ba6fc3a3e2930",
+      "core/pysrc/_worklib.py": "4b08bdfdea85a96e1bde4bd7dc610bc61dd8ef31a42d530fb10437b1145818ce",
+      "core/pysrc/adr-acceptance.py": "0b04065fbb367c9da1e690dc622d478be59838949f80e583d730c55401db4f53",
+      "core/pysrc/adr-merge-method.py": "3dae85fb9b0d89ef9f24b95576ef481784739e667f7030dad79a2acc418d66a4",
+      "core/pysrc/append-override.py": "d6a14fef85401e11222737e02b5188c71143d63c396cdaf0f3aa24736502ad9e",
+      "core/pysrc/artifact-authority-hook.py": "783230e6cc6f27ee697797467cac092b8db0b257b6c408f5f7051f403a8d82d4",
+      "core/pysrc/artifact-authority.py": "0dc4fd27b25ec5ca9f38ab0a52301a480c44c87072b0ec92080738fc0db38010",
+      "core/pysrc/artifact-reconcile.py": "adc01569ed70ca46c4dd6d9201b25a32747b7ad413dd3a68a5676d1fdc1b502b",
+      "core/pysrc/babysit.py": "a7fbcb50898df63718f9705da0b69c7e7658932e859cad90710893603f0ff841",
+      "core/pysrc/boardsync.py": "b6e7b0b7e21bc838929593815a071c1418d35e30f1fa0b64410f5a9c2424023b",
+      "core/pysrc/debug-handoff.py": "c6d77fbd2ca05791b59669ce2685cd733afc2a221ebe1bd95801ddc91c26fff9",
+      "core/pysrc/doctor.py": "d3ebfd7a428d6c0664f2990f8d749ce6f514d4a75b582b5ac6ab6ed469ce18a7",
+      "core/pysrc/git-enforce.py": "41e0d0a2d5a08c55cde71441540d8717eee55914de62d3186d05f3de38ab8142",
+      "core/pysrc/hostapi.py": "2aea81ad167a458c6053cb52880952521159a367eaa5baa7df6e2e35fea574e4",
+      "core/pysrc/init-codearbiter.py": "641f0d04057ea22bff6fc39ce6fd95324901c4cc810617f4a783842cd31086b3",
+      "core/pysrc/knowledge.py": "c986978cae7c6cffcd1ce33b2ecf398ed187c16463d30ee598ba9ff05c758847",
+      "core/pysrc/migration-pass.py": "878db96323fefc73b65b6bff73f54bdffafb98af6f260789e79f9b9d3a954fcd",
+      "core/pysrc/post-write-edit.py": "691d3d3691a49d25c60749153a95488a63b31414db34145a719ed14522e9e7cd",
+      "core/pysrc/pre-bash.py": "b2cf1a875a6ec0aa4c36e59bfdc2c9f64a81a70dcc901a5bbc46465b087e4873",
+      "core/pysrc/pre-edit.py": "baa81cd615c6ef9d0df399f7c5a15e5f5cd7d0bdff84508ae22d62b4b9b047a3",
+      "core/pysrc/pre-read.py": "e8acb8b4901198cac202084b880605d7dd0a702781d650a47dad5d0214c491f3",
+      "core/pysrc/pre-write.py": "8f6cbdb29ecde96ab608fbafdfc0373c664686f89da9f21aa71129e9f72003f8",
+      "core/pysrc/prompt-submit.py": "34eeb237a4484224083e6b8e75f351041c28f5e22c57c8d9ca33ba9a9dc9743b",
+      "core/pysrc/prune-transcript.py": "697c844472240ac0440e4043d17eb7de832d70eadf6e21de0ab0684a07008977",
+      "core/pysrc/releasehash.py": "a9e806767403343937015026d544513985a6fb8d5cf7578f42d038797d9b0614",
+      "core/pysrc/resolve-append-only-conflict.py": "4f9c5e92f7dd3371edaee443997728fd4d86e93394aced542e4c1c934c0eacf0",
+      "core/pysrc/resolve-context-conflict.py": "e2ee12d67b0c4a1c7f786171ecd46d77d202e134b87c72a194a35e86eef483a1",
+      "core/pysrc/security-pass.py": "fc0e0a054cd36fbe3150dceacca2d603d106b36ae49db405d91109f016a211ed",
+      "core/pysrc/session-start.py": "4c3c1e9b8180aa571eda8fcacf24569f1fd16366a12c3aba5f76944cf1ba52cb",
+      "core/pysrc/statusline.py": "3cbe9248df153967c3e22d9d05fbf6ab01e668d8539e1defcf5ac7a55df2881c",
+      "core/pysrc/taskwrite.py": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25",
+      "core/pysrc/tribunal.py": "01322be9197fbd2ccaabad56ff7f7fa2dd64abda618d98d6194f528a028a343c",
+      "core/pysrc/update-refresh.py": "73ef43701475c700a34bd0ac22f18085e0c29fa72157c960232ae1ec8e0b282c",
+      "core/pysrc/wire-statusline.py": "216e3754cf0fb8f9c33d77a18c2ce26f85a1b0b025ef28675bfcd3785bfef1a4",
+      "core/pysrc/work.py": "fe51520ff1faa8d94740fde5a8d73c0a2626841abc7eae5397e6969055b95722",
+      "core/pysrc/workflow-recovery.py": "a9a971371d2be4ece6eebdce24f4e2ebeb1a2a9a23e16d3d6d5e39479ef2b482",
+      "tools/build-host-packages.py": "c2c812bf93e81b69cbf62c133c569a6bce07a56e8fc0edbe501a22f9f60d2225",
+      "tools/host_descriptors.py": "2c98ea82723f60879616469ec399cd81db0fb9cb98f4c943eea1dce852123601",
+      "tools/install-artifact-payload.py": "57d98c6db9a9a24431b42ab5e77907f8c94c10d7dbb4f7a273c9c55c90b5f985",
+      "tools/owned_output.py": "52ee664a00b4f66df8f585047cf38a839428c489762890208a9db1961060b22c"
+    },
+    "core_host_lookup": {
+      "path": "core/pysrc/_host.py",
+      "path_style": "windows",
+      "absent": true,
+      "physical_successful_directory_inventory": [
+        "_activationlib.py",
+        "_adrlifecycle.py",
+        "_adrlifecyclegit.py",
+        "_adrlifecyclewrite.py",
+        "_appendonlyconflictlib.py",
+        "_approvallib.py",
+        "_arbiterstatelib.py",
+        "_artifactauthoritylib.py",
+        "_artifactlib.py",
+        "_artifactmanifestlib.py",
+        "_artifactpromptlib.py",
+        "_babysitlib.py",
+        "_bashguardlib.py",
+        "_boxlib.py",
+        "_cleanuplib.py",
+        "_colorlib.py",
+        "_contextmergelib.py",
+        "_contextreportlib.py",
+        "_contextselectlib.py",
+        "_contextsnapshotlib.py",
+        "_contextwriterlib.py",
+        "_debughandofflib.py",
+        "_durabilitylib.py",
+        "_entrylib.py",
+        "_fmtlib.py",
+        "_gitexec.py",
+        "_githooks.py",
+        "_gitlib.py",
+        "_hooklib.py",
+        "_intentlib.py",
+        "_knowledgelib.py",
+        "_ledgerlib.py",
+        "_modelib.py",
+        "_overrideappendlib.py",
+        "_pathnorm.py",
+        "_planfilelib.py",
+        "_prerequisitelib.py",
+        "_protectedlib.py",
+        "_protectedstatelib.py",
+        "_provenancelib.py",
+        "_prunelib.py",
+        "_prunepolicy.py",
+        "_readinjectlib.py",
+        "_reconciliationlib.py",
+        "_releaselib.py",
+        "_replylib.py",
+        "_scopelib.py",
+        "_segmentslib.py",
+        "_sensitivelib.py",
+        "_sessionlib.py",
+        "_sloplib.py",
+        "_sprintapprovallib.py",
+        "_standuplib.py",
+        "_subagentslib.py",
+        "_taskboardlib.py",
+        "_taskexcludelib.py",
+        "_tribunalinventorylib.py",
+        "_tribunalrunlib.py",
+        "_updatelib.py",
+        "_usagelib.py",
+        "_workadopt.py",
+        "_workflowrecoverylib.py",
+        "_workgithub.py",
+        "_worklib.py",
+        "adr-acceptance.py",
+        "adr-merge-method.py",
+        "append-override.py",
+        "artifact-authority-hook.py",
+        "artifact-authority.py",
+        "artifact-reconcile.py",
+        "babysit.py",
+        "boardsync.py",
+        "debug-handoff.py",
+        "doctor.py",
+        "git-enforce.py",
+        "hostapi.py",
+        "init-codearbiter.py",
+        "knowledge.py",
+        "migration-pass.py",
+        "post-write-edit.py",
+        "pre-bash.py",
+        "pre-edit.py",
+        "pre-read.py",
+        "pre-write.py",
+        "prompt-submit.py",
+        "prune-transcript.py",
+        "releasehash.py",
+        "resolve-append-only-conflict.py",
+        "resolve-context-conflict.py",
+        "security-pass.py",
+        "session-start.py",
+        "statusline.py",
+        "taskwrite.py",
+        "tribunal.py",
+        "update-refresh.py",
+        "wire-statusline.py",
+        "work.py",
+        "workflow-recovery.py"
+      ],
+      "immutable_successful_directory_inventory": [
+        {
+          "header": "100644 blob 3e3875a454941317efb1f172d2861e407b1c6b4c   13390",
+          "name": "_activationlib.py"
+        },
+        {
+          "header": "100644 blob ba8cc2bdd08911b501d4e3e97c5ac52788b53bfd   31496",
+          "name": "_adrlifecycle.py"
+        },
+        {
+          "header": "100644 blob c762d9a12103e25d747904b923e2357e19b74004    9331",
+          "name": "_adrlifecyclegit.py"
+        },
+        {
+          "header": "100644 blob 46e59f0be15c25e39efa4d58380daab615483c76   11339",
+          "name": "_adrlifecyclewrite.py"
+        },
+        {
+          "header": "100644 blob e7b541afea6765c9fed282eb68610e2367b3d77e   19780",
+          "name": "_appendonlyconflictlib.py"
+        },
+        {
+          "header": "100644 blob f73bf5d4fdd423114a8ed465d7d1a96a1d00ba13   25093",
+          "name": "_approvallib.py"
+        },
+        {
+          "header": "100644 blob be9ed277e3cc84936dd1cc2fbe41e5142c48d06e   14372",
+          "name": "_arbiterstatelib.py"
+        },
+        {
+          "header": "100644 blob fb3089e12ddb95242a511cb7754f1e744f7bf53d  251805",
+          "name": "_artifactauthoritylib.py"
+        },
+        {
+          "header": "100644 blob 4ebc16010335c0288a65ff8721068717d4212d78   64937",
+          "name": "_artifactlib.py"
+        },
+        {
+          "header": "100644 blob 1e84d812031a969be1decaa73ee8ea0bf8c613cb    4249",
+          "name": "_artifactmanifestlib.py"
+        },
+        {
+          "header": "100644 blob e9f2faeef57008fc202ef05f1693f9afdaaed099   12221",
+          "name": "_artifactpromptlib.py"
+        },
+        {
+          "header": "100644 blob bbdbe552f371e1268f4a208d3d11ddf0c0cfdf07    3172",
+          "name": "_babysitlib.py"
+        },
+        {
+          "header": "100644 blob 0f899bc13543ac3832e8bc8e488e6a96391a8e24  155665",
+          "name": "_bashguardlib.py"
+        },
+        {
+          "header": "100644 blob 65d29531fcdfa1ac364acdebc3e45438b1064519    4881",
+          "name": "_boxlib.py"
+        },
+        {
+          "header": "100644 blob 4d92635ec4245ad0b9c77bf275f704b909fee9ca   75586",
+          "name": "_cleanuplib.py"
+        },
+        {
+          "header": "100644 blob 13b37ec8329c2f8bd01bc662d95df2fa3b1ff925   11895",
+          "name": "_colorlib.py"
+        },
+        {
+          "header": "100644 blob b4fd6fe36b38e9821b3c65888392b9df67a88f11   23111",
+          "name": "_contextmergelib.py"
+        },
+        {
+          "header": "100644 blob 000a03764987f7bb45db3093b1ae9c0da713650a   46687",
+          "name": "_contextreportlib.py"
+        },
+        {
+          "header": "100644 blob 4bc5bc87f540dd12ece5d0914e78bbfe26e5c532   22879",
+          "name": "_contextselectlib.py"
+        },
+        {
+          "header": "100644 blob cc89a71aa784b109fbdfe123a787b30dab957134   47301",
+          "name": "_contextsnapshotlib.py"
+        },
+        {
+          "header": "100644 blob 0d66d9ba1b72fdbef2045bc00b8a1945a8059af3    6174",
+          "name": "_contextwriterlib.py"
+        },
+        {
+          "header": "100644 blob ea1b8f3f36456e7364923dd1d4373a953831c736   30345",
+          "name": "_debughandofflib.py"
+        },
+        {
+          "header": "100644 blob eb0c3815bee5a039b3643ba059a1ccb44ff986a6    8561",
+          "name": "_durabilitylib.py"
+        },
+        {
+          "header": "100644 blob 14f5b7f68a60430df9c87a0395be1ca47d9aa70c    2418",
+          "name": "_entrylib.py"
+        },
+        {
+          "header": "100644 blob 76ab33d684c69833756b05c6eea3f0612acbf344    5520",
+          "name": "_fmtlib.py"
+        },
+        {
+          "header": "100644 blob 492afd199f317dac3624164bc65dae9da6ca8fae   23619",
+          "name": "_gitexec.py"
+        },
+        {
+          "header": "100644 blob c30c2fbebdc49d481126adc2fd3994eb416c9ecf   64758",
+          "name": "_githooks.py"
+        },
+        {
+          "header": "100644 blob c870e393c0416b23b1f997232dd5f36d3f5705fe    4641",
+          "name": "_gitlib.py"
+        },
+        {
+          "header": "100644 blob ef7b48317f0875ac0dc0189326206f5fef8e3050   49147",
+          "name": "_hooklib.py"
+        },
+        {
+          "header": "100644 blob 5b88d6e66c7f41f251a822d5238a62e2ce991427   12928",
+          "name": "_intentlib.py"
+        },
+        {
+          "header": "100644 blob 5248c4c87fdf47d9587a82abab876b60a10f011c    3073",
+          "name": "_knowledgelib.py"
+        },
+        {
+          "header": "100644 blob 48a66da46a8b33e9b56df5934a97be931a33adf1   65565",
+          "name": "_ledgerlib.py"
+        },
+        {
+          "header": "100644 blob 9593bb119d8a85eea0291ad45d1edaf9dc7e405f   44894",
+          "name": "_modelib.py"
+        },
+        {
+          "header": "100644 blob dc3e310b65cf5c0438f7d5441b60d4684a17df3c    6815",
+          "name": "_overrideappendlib.py"
+        },
+        {
+          "header": "100644 blob a4ca0fcc856c80c175b221465b577ccf70591784    3712",
+          "name": "_pathnorm.py"
+        },
+        {
+          "header": "100644 blob e3825a54039985bd4b6f13a4b280445f5a9b3cfd   28296",
+          "name": "_planfilelib.py"
+        },
+        {
+          "header": "100644 blob 124e82479efdf836aebfcd00746d94a84fbd8a48   40617",
+          "name": "_prerequisitelib.py"
+        },
+        {
+          "header": "100644 blob 9daeaf94103e8fb6d935eccbd55347d45818da6c   18440",
+          "name": "_protectedlib.py"
+        },
+        {
+          "header": "100644 blob 1d90335465271ba4920fb119bb564a94ca56e8f1   35433",
+          "name": "_protectedstatelib.py"
+        },
+        {
+          "header": "100644 blob 790ec8470991180dacace9455d22da59fb16faec   76910",
+          "name": "_provenancelib.py"
+        },
+        {
+          "header": "100644 blob ed0626c34ca98efecb4049f9321deb8bb263ace3   58271",
+          "name": "_prunelib.py"
+        },
+        {
+          "header": "100644 blob 0ae81c9e5e6ab086061d82d24bc3ae7fe0c09be6   10440",
+          "name": "_prunepolicy.py"
+        },
+        {
+          "header": "100644 blob eb9ac0c2ed4516450ec8607327790e3edaab8252   62081",
+          "name": "_readinjectlib.py"
+        },
+        {
+          "header": "100644 blob 394a2212fac91ea597a9989414cae10ee004e915   36207",
+          "name": "_reconciliationlib.py"
+        },
+        {
+          "header": "100644 blob 7cf0e15740304100bad69c5b20e1ed1bfa6c0ec8  211540",
+          "name": "_releaselib.py"
+        },
+        {
+          "header": "100644 blob 01091fb370347018a2b38a2e2e1176d9ba266f51   25320",
+          "name": "_replylib.py"
+        },
+        {
+          "header": "100644 blob 53994a0d077cba7ec461a3b103766c5f077704d1   10966",
+          "name": "_scopelib.py"
+        },
+        {
+          "header": "100644 blob 1cae4b76e7baa3e2af2081bfedf66d9ae2289fbf   14615",
+          "name": "_segmentslib.py"
+        },
+        {
+          "header": "100644 blob e9671658cc8f2ce1ccb27277848de601641b6f90   35303",
+          "name": "_sensitivelib.py"
+        },
+        {
+          "header": "100644 blob 2f66a623db10c277af9a33f9edeb8c99b5dc16cc    3122",
+          "name": "_sessionlib.py"
+        },
+        {
+          "header": "100644 blob fe429cca7fca219da512faad06dd0bfc15846a52   11969",
+          "name": "_sloplib.py"
+        },
+        {
+          "header": "100644 blob 7219fd881b203b917d2bec192c3c274d08c83fda   21346",
+          "name": "_sprintapprovallib.py"
+        },
+        {
+          "header": "100644 blob 0906f3eb5087ba0d15182581cbe3d24c319b1ef7    9547",
+          "name": "_standuplib.py"
+        },
+        {
+          "header": "100644 blob eef3178da2580558be6e6bf84cba276b4f355cdc    7795",
+          "name": "_subagentslib.py"
+        },
+        {
+          "header": "100644 blob 85511a724f3de7a8cf84c069814d0605e72f3395   69125",
+          "name": "_taskboardlib.py"
+        },
+        {
+          "header": "100644 blob df2300611bfc7ca9aa945900d53c7b6c5032eda9   10102",
+          "name": "_taskexcludelib.py"
+        },
+        {
+          "header": "100644 blob 8103dfb8e48ae62c3b36fb5557c71075bd409577   33101",
+          "name": "_tribunalinventorylib.py"
+        },
+        {
+          "header": "100644 blob c2db7a2b082e005e0be9dd637a853c6ee096a01f   40445",
+          "name": "_tribunalrunlib.py"
+        },
+        {
+          "header": "100644 blob 7de5c411dd17a443d57ad7df13d8c6e6309e601b   21120",
+          "name": "_updatelib.py"
+        },
+        {
+          "header": "100644 blob 62ed503ae24522500162a7a307b024b9d958ff26   18663",
+          "name": "_usagelib.py"
+        },
+        {
+          "header": "100644 blob 8c1d380094a66b4de42d5d96ffc6f75eb90a0334    9946",
+          "name": "_workadopt.py"
+        },
+        {
+          "header": "100644 blob 1926007b7b414790f1d986ea94c58a332dac1040  104156",
+          "name": "_workflowrecoverylib.py"
+        },
+        {
+          "header": "100644 blob e05526d2d00d05f3d9bd54aafe2c91786fd1a987   82821",
+          "name": "_workgithub.py"
+        },
+        {
+          "header": "100644 blob 7f118b7ae057b89017e1c1ec7c779c7687740330   18760",
+          "name": "_worklib.py"
+        },
+        {
+          "header": "100644 blob e2754ecae806b0c45653cd506a3423a00c936c8b     192",
+          "name": "adr-acceptance.py"
+        },
+        {
+          "header": "100644 blob 183d7739639adfcaff2267c183445c1d311e8503    1140",
+          "name": "adr-merge-method.py"
+        },
+        {
+          "header": "100644 blob 0add80319167c6760f43cfc3a7b494f0b0155287     188",
+          "name": "append-override.py"
+        },
+        {
+          "header": "100644 blob a8087a07c199db1a36ee8f59b23c866958abb6a2    6076",
+          "name": "artifact-authority-hook.py"
+        },
+        {
+          "header": "100644 blob 9ecd8bb20f843b9b97069f0289f898747eade725    6960",
+          "name": "artifact-authority.py"
+        },
+        {
+          "header": "100644 blob d80602a85ea9e79a64523bfbc8014bd2ca97f538    3990",
+          "name": "artifact-reconcile.py"
+        },
+        {
+          "header": "100644 blob bd3b7612bbf233112cae9a23c3d551a24494830d    1957",
+          "name": "babysit.py"
+        },
+        {
+          "header": "100644 blob 06290bcb50929cf147c08b47cad276c5f73fe55c    6077",
+          "name": "boardsync.py"
+        },
+        {
+          "header": "100644 blob 14d301010a576f009f052dc2fbc3328e88484598    2897",
+          "name": "debug-handoff.py"
+        },
+        {
+          "header": "100644 blob d3b81bdcc21fb02977936ac51151db9086ad3397   28315",
+          "name": "doctor.py"
+        },
+        {
+          "header": "100644 blob bf26b26b73f5db048b3e21126a131938c962c06e   19608",
+          "name": "git-enforce.py"
+        },
+        {
+          "header": "100644 blob 1a7db1792ef432615a47a7cf4aed7714b16045dc   38083",
+          "name": "hostapi.py"
+        },
+        {
+          "header": "100644 blob f10d1d619733dbf1e7bf8fe9bbdae21e613e38c4   27811",
+          "name": "init-codearbiter.py"
+        },
+        {
+          "header": "100644 blob 91bd9d4bb5077b5980d0e2559b5fe793718feb65   24672",
+          "name": "knowledge.py"
+        },
+        {
+          "header": "100644 blob aca17a32b2f311164db80e44dda76bb8b736d869    6375",
+          "name": "migration-pass.py"
+        },
+        {
+          "header": "100644 blob 797cbe9b01a976fc8740534bc837be49ea128f06   11232",
+          "name": "post-write-edit.py"
+        },
+        {
+          "header": "100644 blob 85d6f488dea32761a9a6c1bbb929ff5eb67d8e9f    4251",
+          "name": "pre-bash.py"
+        },
+        {
+          "header": "100644 blob 7e74f13f6fdb6257d86ca63924bd8e7362d75aae   17466",
+          "name": "pre-edit.py"
+        },
+        {
+          "header": "100644 blob 08f4467a9895d81eff1a71b9a1c57b5682a311f8    3640",
+          "name": "pre-read.py"
+        },
+        {
+          "header": "100644 blob 858679550a2ec79003a02e5e208665049ccb3de2   13386",
+          "name": "pre-write.py"
+        },
+        {
+          "header": "100644 blob 5a92b48650a9b5beb056e0d01cc6af997ff98acd   29719",
+          "name": "prompt-submit.py"
+        },
+        {
+          "header": "100644 blob f6a8bfb89b12d225a323c327d8792442ea28af8f   10814",
+          "name": "prune-transcript.py"
+        },
+        {
+          "header": "100644 blob 0cf9ac47e7e3e18b60646807e24915beeddf5c03   11348",
+          "name": "releasehash.py"
+        },
+        {
+          "header": "100644 blob 8dbb1604c21d0f09f3c9b4c615b419e1d2c17962     200",
+          "name": "resolve-append-only-conflict.py"
+        },
+        {
+          "header": "100644 blob 4e9a9555ba0f708557d76a231cbf88ce4a36ce41     196",
+          "name": "resolve-context-conflict.py"
+        },
+        {
+          "header": "100644 blob 6cd472e73368b9e0609b18ebc3f805f231570b59    9466",
+          "name": "security-pass.py"
+        },
+        {
+          "header": "100644 blob 9f14a960219746ec7632c2afbecf0238e215cc51   71640",
+          "name": "session-start.py"
+        },
+        {
+          "header": "100644 blob 41692a6903478ab6ca253865efb86e387b089692   33706",
+          "name": "statusline.py"
+        },
+        {
+          "header": "100644 blob 2243e3bfed634f496c70f815c54d5208ed321032   22686",
+          "name": "taskwrite.py"
+        },
+        {
+          "header": "100644 blob c3f6ca2ab5ec9a6717878de32fa277d354ca6f84    6336",
+          "name": "tribunal.py"
+        },
+        {
+          "header": "100644 blob 0dda6d1b20d8e4328fc19108968095e646ab65e2    2072",
+          "name": "update-refresh.py"
+        },
+        {
+          "header": "100644 blob e50c0f12cb7960dd6a960c30669ebbf2ef672b51   20976",
+          "name": "wire-statusline.py"
+        },
+        {
+          "header": "100644 blob fce39a305e86c19675af0e1f664b886949a86c53   30378",
+          "name": "work.py"
+        },
+        {
+          "header": "100644 blob 41f0ade6ae5ade17915dda699ef6432fe9079739    5038",
+          "name": "workflow-recovery.py"
+        }
+      ],
+      "immutable_raw_sha256": "03413021c1572fa8f260a07ed3d25ba35529d6b096bcaa717913d50ad2e46376"
+    },
+    "note": "Full retained package members include their own positive per-plugin _host.py; bare-core absence is separate."
+  },
+  "runtime": {
+    "C:/Python314/python.exe": "03168c01b7b7491423350e82c26fee71f35b43694d1319d3c668bda6903a0c38",
+    "C:/Users/brenn/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node.exe": "c0b01496cf3da5cceca86eb6e1b2ef5d088cd46ad4e97cf502e2c937fa7f56b9",
+    "C:/Program Files/Git/cmd/git.exe": "7b7971dd13f0c3a284e538601f2f9770b3a87dfaccb5fb52d68141c67ed22364"
+  },
+  "checkout": {
+    "actual_HEAD": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+    "index_raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "note": "Actual checkout metadata captured separately from selected immutableM; no whole-checkout-clean assumption."
+  },
+  "python_version": "3.14.6 (tags/v3.14.6:c63aec6, Jun 10 2026, 10:26:10) [MSC v.1944 64 bit (AMD64)]"
+}

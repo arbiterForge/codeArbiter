@@ -1,0 +1,261 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "ea9da763b33708c8533623568b7241eaaea0d153",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "/root/ci_repair_review: literal80-clause Release/CI current/pinned source inspection; no execution"
+ },
+ "inputs": {
+  ".codearbiter/decisions/0040-independent-per-target-release-with-consumer-safety-gates.md": "2dce2651ea067cc7bec25982ce23fdeb1528e9bfb003906c55be7e243a3a8964",
+  ".codearbiter/decisions/0043-assistive-state-engine.md": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+  ".codearbiter/decisions/0044-trusted-pi-npm-publication.md": "fda3c0194f83d41bcb169fae7c14d1b24bdaf3bace8d41780a88825e10fe30d6",
+  ".codearbiter/decisions/0049-require-https-outside-bounded-loopback.md": "c757cef9d5e318b75ff164d270b29a49255449360f0b7cde51e53775e6916ab8",
+  ".github/workflows/ci.yml": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f",
+  "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e"
+ },
+ "disposition_ids": [
+  "disposition:machines:C01",
+  "disposition:transitions:C01:01",
+  "disposition:transitions:C01:02",
+  "disposition:transitions:C01:03",
+  "disposition:transitions:C01:04",
+  "disposition:transitions:C01:05"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/release-fourteen-source-ea9/source-bindings.json",
+   "sha256": "e0d46104538361ca98ef02148b9cc499edce928cdd83f1a936277f2a7a8e1425"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/release-fourteen-source-ea9/clause-inspection.json",
+   "sha256": "d838b0dd41af96e04fadb1d976401b69f67c12e69c7e2c4e5c01a1d1cfa61140"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:C01",
+   "frozen_row_sha256": "5b7d24fc60bed33d24b2a04cc84ff3f3f18830d7ea6b28dc0dfa448bbbcfa12a",
+   "clause_ids": [
+    "disposition:transitions:C01:01",
+    "disposition:transitions:C01:02",
+    "disposition:transitions:C01:03",
+    "disposition:transitions:C01:04",
+    "disposition:transitions:C01:05"
+   ],
+   "witnesses": [
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 17,
+     "end": 56,
+     "file_sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f",
+     "span_sha256": "d143446cb7ceaa6bffe21fd89bd638d34ecc8d8acfa955724c18b741f65d6bee"
+    },
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 156,
+     "end": 210,
+     "file_sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f",
+     "span_sha256": "8a9e52fde65c485df56fa5d062bfb20cbe96edaf8903aadfb56e7e22f31b28b4"
+    },
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 53,
+     "end": 142,
+     "file_sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f",
+     "span_sha256": "f8cf1fdc58e31b9017ca5c176a91fd0f51be3d1484d02e582775536d0c657e1c"
+    },
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 156,
+     "end": 178,
+     "file_sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f",
+     "span_sha256": "1bc6759f456cce4a15ee268f9f40a0d15bd1c6824f513c2aaf63ce71466906c7"
+    },
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 147,
+     "end": 153,
+     "file_sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f",
+     "span_sha256": "63b19aff3f5a555ec2eda9916ff0bae49210321b854deaf811a2573642b50384"
+    },
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 5052,
+     "end": 5057,
+     "file_sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f",
+     "span_sha256": "067307221caf7c64e83208da961f4bc229548dfa11bda057902812c5f4a90b7f"
+    },
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 545,
+     "end": 606,
+     "file_sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f",
+     "span_sha256": "9b6a3a44861ed5aaeb155d6180ddac3eba53ca2535ba88fc0d718ddccce37873"
+    },
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 610,
+     "end": 613,
+     "file_sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f",
+     "span_sha256": "a924cdff3b3e6db3f1234b296c907c5d313d3ba6226289dfe5d7dba0c5805f6e"
+    },
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 4910,
+     "end": 4927,
+     "file_sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f",
+     "span_sha256": "13e876799663d25e56bf70085fc6880912260889bb623ef3ed50a5bae28d8222"
+    },
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 5031,
+     "end": 5058,
+     "file_sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f",
+     "span_sha256": "3c2ff5d09f0d00b94f9adec65624f96379b8d4c06dab99f7d4d3cbcaa1967a01"
+    }
+   ],
+   "semantic_assessment": "Every literal clause is assessed in shared source inspection, including retained advanced rows. Current supported guards/effects/retry paths and named accepted repairs are mapped; analytical baseline defects/overstatements are not claimed preserved. Existing advanced N/A/status/evidence histories are untouched. No runtime or whole-task acceptance follows.",
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C01:01",
+   "frozen_row_sha256": "9c92e9de645a5e3f4a96db900ae69a311d9545bbaff951311952d8ba53811c9c",
+   "witnesses": [
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 17,
+     "end": 56,
+     "file_sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f",
+     "span_sha256": "d143446cb7ceaa6bffe21fd89bd638d34ecc8d8acfa955724c18b741f65d6bee"
+    },
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 156,
+     "end": 210,
+     "file_sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f",
+     "span_sha256": "8a9e52fde65c485df56fa5d062bfb20cbe96edaf8903aadfb56e7e22f31b28b4"
+    }
+   ],
+   "semantic_assessment": "PRs targeting declared branches and merge_group/checks_requested enter without path filtering. The changes prerequisite reads Pi policy and computes domain outputs; failed evaluation is not verified selection.",
+   "intake_variances": [
+    "P-01 adds major/state-contracts to PR/push admission for integration qualification; release admission remains main-only."
+   ],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C01:02",
+   "frozen_row_sha256": "a2dfea41998eb06e8eab0ab1f3ebf24c7c4515f41cec5ffefa3a0d09ec65612d",
+   "witnesses": [
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 53,
+     "end": 142,
+     "file_sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f",
+     "span_sha256": "f8cf1fdc58e31b9017ca5c176a91fd0f51be3d1484d02e582775536d0c657e1c"
+    },
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 156,
+     "end": 178,
+     "file_sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f",
+     "span_sha256": "1bc6759f456cce4a15ee268f9f40a0d15bd1c6824f513c2aaf63ce71466906c7"
+    }
+   ],
+   "semantic_assessment": "Main pushes require a declared path match and force artifact selection. Integration pushes also require trigger admission, then force all domains. An entirely unlisted push starts no evidence-producing run.",
+   "intake_variances": [
+    "Accepted P-01 extends the original main-only trigger with integration qualification. No integration push becomes a release event."
+   ],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C01:03",
+   "frozen_row_sha256": "8fa134f75260aeb887682b21f7cc323d3862645e9117744c22c3a1d08f947bd5",
+   "witnesses": [
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 147,
+     "end": 153,
+     "file_sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f",
+     "span_sha256": "63b19aff3f5a555ec2eda9916ff0bae49210321b854deaf811a2573642b50384"
+    },
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 5052,
+     "end": 5057,
+     "file_sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f",
+     "span_sha256": "067307221caf7c64e83208da961f4bc229548dfa11bda057902812c5f4a90b7f"
+    }
+   ],
+   "semantic_assessment": "Concurrency includes workflow/event plus PR number for PRs and run_id otherwise. Only pull_request enables cancel-in-progress. Cancellation is not converted to success.",
+   "intake_variances": [],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C01:04",
+   "frozen_row_sha256": "31699d7458083fbb45f7d29860e66f8dc1cc578200c30cb73d6b6392580695e1",
+   "witnesses": [
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 156,
+     "end": 210,
+     "file_sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f",
+     "span_sha256": "8a9e52fde65c485df56fa5d062bfb20cbe96edaf8903aadfb56e7e22f31b28b4"
+    },
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 545,
+     "end": 606,
+     "file_sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f",
+     "span_sha256": "9b6a3a44861ed5aaeb155d6180ddac3eba53ca2535ba88fc0d718ddccce37873"
+    }
+   ],
+   "semantic_assessment": "Finite paths-filter declarations feed per-domain string outputs, with explicit main/integration overrides. The impact tool writes a receipt that is uploaded exclusively; failure of changes cannot be substituted with verified selection.",
+   "intake_variances": [],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C01:05",
+   "frozen_row_sha256": "55e35b3fed530b425db88957c15e5632ad123ae26887a0c21c2141b1dbb7c722",
+   "witnesses": [
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 610,
+     "end": 613,
+     "file_sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f",
+     "span_sha256": "a924cdff3b3e6db3f1234b296c907c5d313d3ba6226289dfe5d7dba0c5805f6e"
+    },
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 4910,
+     "end": 4927,
+     "file_sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f",
+     "span_sha256": "13e876799663d25e56bf70085fc6880912260889bb623ef3ed50a5bae28d8222"
+    },
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 5031,
+     "end": 5058,
+     "file_sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f",
+     "span_sha256": "3c2ff5d09f0d00b94f9adec65624f96379b8d4c06dab99f7d4d3cbcaa1967a01"
+    }
+   ],
+   "semantic_assessment": "Unselected jobs use their declared output predicates; the aggregate normally accepts explicit skipped results. Selected native coverage, selected program integrity and candidate readiness have stricter success checks. A skip is not an executed domain observation.",
+   "intake_variances": [],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  }
+ ],
+ "scope": "Current source-only Release/CI preservation and explicit accepted repair deltas; no hosted/publication/account/installed qualification.",
+ "limits": [
+  "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification.",
+  "PROGRAM current source and accepted task direction govern. All frozen clauses remain literal; named accepted repairs/intake variances are explicit, not failed tests relabeled N/A.",
+  "No automatic task, runtime epoch, installed capability, actual hosted/platform, release/account or public-readback qualification follows from source PRESERVED.",
+  "Only14 selected machines and their48 still-PLANNED transitions are proposed; all32 advanced transitions and every other row/history remain untouched. C05-C10 are excluded.",
+  "No canonical/index/ref/marker/ledger/status/progress writes, runtime tests, provider/API/network calls, builds, installs or review fleet. Root owns independent review and strict prospective admission."
+ ]
+}

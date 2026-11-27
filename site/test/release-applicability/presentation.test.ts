@@ -28,12 +28,12 @@ describe("release applicability presentation", () => {
 
     expect(publishedMismatch).toEqual({
       isMismatch: true,
-      message: "Digest mismatch: the exact latest published ca artifact does not match the replay source",
+      message: "Digest mismatch: the selected ca tag (publication unknown) does not match the replay source",
     });
     expect(currentMismatch).toEqual({
       isMismatch: true,
       message:
-        "Replay source matches the exact latest published ca artifact, but differs from the current hook source",
+        "Replay source matches the selected ca tag (publication unknown), but differs from the current hook source",
     });
     expect(publishedMismatch.message).not.toBe(currentMismatch.message);
   });
@@ -45,7 +45,7 @@ describe("release applicability presentation", () => {
       currentSource: { matchesReplay: true },
     })).toEqual({
       isMismatch: false,
-      message: "Replay source applies to the exact latest published ca artifact",
+      message: "Replay source applies to the selected ca tag (publication unknown)",
     });
   });
 

@@ -1,0 +1,55 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+  "kind": "conformance-check",
+  "result": "NOT_APPLICABLE",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "Bounded current instruction/function-clause conformance review; no runtime/provider/host-session result inferred."
+  },
+  "inputs": {
+    "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md": "67064779a9c2079db862fdf162b9c38bef6254147bf8a06e1a259d9ea8edab01"
+  },
+  "disposition_ids": [
+    "disposition:transitions:SW02:01"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/raw/selected-named-observations.json",
+      "sha256": "9ba86136b2d49dc599cacb783f37420d0a40c97d65c9b4d71750db10c62095d4"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/execution-origins.json",
+      "sha256": "c9b9e4e096ebaf6d203a34af09fa4dc4cdfa5f7e52fdc96fe3b048e46af66ac3"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/source-clause-catalog.json",
+      "sha256": "444ae0dd6cc088826de5802d552220b80bb40c2ea3be1953910a5390451d1a8a"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/input-cones.json",
+      "sha256": "ae0a3897b943158cca7b3079573e24559ab4d17c1422235968335c1704c51c0e"
+    }
+  ],
+  "semantic_mapping": [
+    {
+      "cell": "disposition:transitions:SW02:01",
+      "frozen_contract_sha256": "2fbe9afcdeacfe78cbff749bbeeabb56aef1081028a7d67072c5501f4ed53d67",
+      "event": "preflight references",
+      "guard": "consumer PROJECT_DIR has both named sandbox spike files and ADR 0007",
+      "current_contract_review": "Consumer-root maintainer spike/ADR prerequisite is explicitly replaced with packaged current prerequisites.",
+      "assertion_refs": [],
+      "source_paths": [
+        "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md"
+      ],
+      "classification": "RETIRED_INSTRUCTION_UNDER_MAINTAINED_TASK"
+    }
+  ],
+  "limits": [
+    "Finite named software/source contracts only. No whole-task/whole-program promotion, paid provider, all-crash/partial-compensation, unexecuted platform or new installed runtime claim.",
+    "Actual old execution epochs/raw producer classes remain unchanged. Retaining an extract/current source hash is not another execution.",
+    "Exact callback/declaration hashes and line anchors are in selected-named-observations; full source files are captured inputs, never replaced by AST/function equality."
+  ],
+  "contract": "frozen-task:SBX-D04",
+  "rationale": "Consumer-root maintainer spike/ADR prerequisite is explicitly replaced with packaged current prerequisites."
+}

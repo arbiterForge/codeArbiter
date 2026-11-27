@@ -1,0 +1,33 @@
+{
+  "argv": [
+    "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sw-shell-root-vt-capture\\product\\sandbox.js",
+    "shell",
+    "833f5338-1fe3-402f-bfe0-2f8b0e60cb28",
+    "--shell",
+    "sh"
+  ],
+  "expected_exit": 0,
+  "exit_code": 0,
+  "timed_out": false,
+  "containment": "exited",
+  "elapsed_seconds": 15.72565599999507,
+  "before_identity": {
+    "pid": 55316,
+    "creation_100ns": 134393087630847072,
+    "image": "D:\\dev\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe"
+  },
+  "after_identity": {
+    "pid": 55316,
+    "creation_100ns": 134393087630847072,
+    "exit_100ns": 134393087787650091,
+    "image_query": "not requested after verified exit; original HANDLE retained"
+  },
+  "identity_same": true,
+  "setup_error": null,
+  "tty": {
+    "stdin": true,
+    "stdout": true
+  },
+  "scope": "Windows process-group/taskkill finite owner, not JobObject/full-tree proof. Root supplies actual complete tool transcript separately."
+}

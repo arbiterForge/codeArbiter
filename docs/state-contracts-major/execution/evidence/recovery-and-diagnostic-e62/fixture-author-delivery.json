@@ -1,0 +1,44 @@
+{
+  "format": "recovery-fixture-isolation-test-delivery/1",
+  "state": "GENUINE_TWO_ASSERTION_RED_READY_FOR_ROOT_FIX",
+  "source_commit": "b7729344550faf5f962fe82cc75ef6c2b1f129bb",
+  "source_freeze": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-recovery-fixture-isolation-test\\source-freeze.json",
+    "sha256": "cdc7b1d9b4b7bba6224ab940c784f10789c2bd80157703372f700fd2d5bdcc26",
+    "bytes": 1842
+  },
+  "patch": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-recovery-fixture-isolation-test\\test-only.patch",
+    "sha256": "40ce475903e5c3965527921bf577fade49383a36738e6e81b5378961b9fc6795",
+    "bytes": 2369
+  },
+  "filemap": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-recovery-fixture-isolation-test\\filemap.json",
+    "sha256": "88d1892828c4142045e25ba45121f81d7a8016de7ec2d9540227f18825957f8d",
+    "bytes": 2109
+  },
+  "result": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-recovery-fixture-isolation-test\\red-result.json",
+    "sha256": "08346269d4740c036fba3db3e286497e8f0840e756d25c9b2833f324de84123d",
+    "bytes": 2853
+  },
+  "apply_files": [
+    {
+      "path": ".github/scripts/test_workflow_recovery.py",
+      "from": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-recovery-fixture-isolation-test\\candidate\\.github\\scripts\\test_workflow_recovery.py",
+      "preimage_sha256": "02969342b40c2f2e17ee68b8623aeb7cce5479deb012e0266450402772da77c7",
+      "sha256": "4a5276c4793749d1bfb0954417748f14970fcdd5ea4272c808fe20dff3c25167"
+    }
+  ],
+  "target": "test_workflow_recovery.RecoveryRuntimeTest.test_real_child_uses_fixture_private_cache_and_disables_user_site",
+  "actual": {
+    "named_methods": 1,
+    "target_assertion_failures": 2,
+    "seconds": 1.1353888000012375,
+    "prefix_before_project_import": null,
+    "no_user_site_before_project_import": 0,
+    "setup_import_errors": 0,
+    "HEAD_index_source_stable": true
+  },
+  "limits": "Test-only Temp source and owned child/Git fixture. No setUp/env injection by producer; original source untouched. Recovery22 capture awaits committed fixture correction."
+}

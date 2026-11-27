@@ -1,0 +1,106 @@
+{
+  "schema": "codearbiter.current-finite-source-inspection/1",
+  "source_commit": "562c6170c010eedbef93a4216b4baa971fd6b9a6",
+  "original_semantic_inspection_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+  "group": "source-group-028",
+  "positive_input_join": {
+    "tools/codex-parity-fixture.py": {
+      "sha256": "2b5a0f0354dc475be6946949408498520033e795871a0fd4a3a76832f46f0dea",
+      "bytes": 6671,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "2b5a0f0354dc475be6946949408498520033e795871a0fd4a3a76832f46f0dea",
+        "bytes": 6671
+      }
+    },
+    "docs/codex-parity-testing.md": {
+      "sha256": "fd1f1d2e000346f3cd5461bcb51605dac340f8d903f55a6e2633d938f791dbf6",
+      "bytes": 37774,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "fd1f1d2e000346f3cd5461bcb51605dac340f8d903f55a6e2633d938f791dbf6",
+        "bytes": 37774
+      }
+    }
+  },
+  "current_input_membership": [
+    {
+      "profile": "python-import-directory-v1",
+      "root": "tools",
+      "path_order": "windows",
+      "sha256": "10c81f10b65668b6620241a721151872bd51a7c350722bee46217e02801f7c2a"
+    }
+  ],
+  "semantic_rows": [
+    {
+      "cell": "disposition:transitions:T05:03",
+      "frozen_record": {
+        "transition_id": "T05:03",
+        "machine_id": "T05",
+        "owner": "release-and-tooling",
+        "baseline": {
+          "from_state": "seeded commit",
+          "from": "seeded commit",
+          "event": "print next steps",
+          "guard": "fixture mode known",
+          "to": "manual verification pending",
+          "effects": "Tell operator to open hosts and perform guided parity/onboarding checks.",
+          "failure_retry": "Creation does not prove enforcement or host parity. Governed-mode next step still says persona session-start injection; root audit covers documentation drift.",
+          "source": [
+            {
+              "path": "tools/codex-parity-fixture.py",
+              "symbol": "main",
+              "lines": [
+                117,
+                177
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/codex-parity-fixture.py"
+            }
+          ],
+          "transition_id": "T05:03"
+        },
+        "task_ids": [
+          "Q-01"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "96bdcaff6cf1283be7e6332a6b0026e185ab1a961c2885039e05c2881202b02b",
+      "group": "source-group-028",
+      "assessment": "Full literal guard/effect/retry read in original349 checkpoint; retain prior scoped meaning together with the attached current helper effects and negative-scope notes.",
+      "literal_inspection": "349-checkpoint",
+      "changed_helper_interpretation_ids": [
+        "parity-manual-hint"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/packaging-baseline-local-fca-0830/parity-instruction-preserved.json",
+          "sha256": "1a8e3042be8718d6fffe637efd80ff7d436a7117bb81ea0b9e434d81d9922817",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "0830b95752a05343563be027e513a2845a6c57df"
+        }
+      ]
+    }
+  ],
+  "verified_literal_witnesses": [],
+  "changed_old_literals": [],
+  "reused_helper_assessments": [
+    {
+      "id": "parity-manual-hint",
+      "paths": [
+        "tools/codex-parity-fixture.py"
+      ],
+      "assessment": "Only the printed hint changes: persona delivery is prompt-submit when due; SessionStart startup state/daily briefing are separate. Fixture creation/Git operations/target refusal are unchanged. T05:03 frozen stale session-start-injection detail needs an explicit corrected current contract note, not a claim the old hint is preserved or live host parity passed."
+    }
+  ],
+  "negative_scope": "Static finite guarded claims only, with inherited scope/limits. No execution, qualification or unchecked new source claim."
+}

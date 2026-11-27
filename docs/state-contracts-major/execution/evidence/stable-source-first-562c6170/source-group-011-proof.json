@@ -1,0 +1,51 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "562c6170c010eedbef93a4216b4baa971fd6b9a6",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "Exact prepared finite clauses with immutable current witness and namespace join"
+  },
+  "inputs": {
+    "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md": "67064779a9c2079db862fdf162b9c38bef6254147bf8a06e1a259d9ea8edab01",
+    "plugins/ca-sandbox/tools/claude-inside-cli.ts": "06b3b1c5b1955007d9e2cc3ed1ecb2cce4b91d7c2444f63b56b4bcd61c5a4a94",
+    "plugins/ca-sandbox/README.md": "1761ea9c07c32010f3c21e47d56a0faf50cc115da865a7238acc01f6f64fa38b"
+  },
+  "disposition_ids": [
+    "disposition:transitions:SW02:02",
+    "disposition:transitions:SW02:03",
+    "disposition:transitions:SW02:04",
+    "disposition:transitions:SW02:05",
+    "disposition:transitions:SW02:06",
+    "disposition:transitions:SW02:07",
+    "disposition:transitions:SW02:08",
+    "disposition:transitions:SW02:10",
+    "disposition:transitions:SW02:11",
+    "disposition:transitions:SW02:12",
+    "disposition:transitions:SW02:13",
+    "disposition:transitions:SW02:14"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/stable-source-first-562c6170/source-group-011-inspection.json",
+      "sha256": "50905506f5e902ecba2b769b8debe30b601dc23c33c7328c645bec0f0cc2d8a2"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw02-current-instruction-contracts-preserved.json",
+      "sha256": "d88f52145f856cd212e17e91172743ae34ab43578313794fd044ed3b781ced2a"
+    }
+  ],
+  "retained_prior_proof": {
+    "path": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw02-current-instruction-contracts-preserved.json",
+    "sha256": "d88f52145f856cd212e17e91172743ae34ab43578313794fd044ed3b781ced2a",
+    "source_commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+    "retained_at": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca"
+  },
+  "semantic_mapping_ref": "docs/state-contracts-major/execution/evidence/stable-source-first-562c6170/source-group-011-inspection.json",
+  "scope": "Finite declared guard, effect and retry source conformance with inherited limits.",
+  "limits": [
+    "No run, platform, package, task, provider, user or installed evidence was renewed.",
+    "All prior original source epochs and raw evidence remain exact."
+  ]
+}

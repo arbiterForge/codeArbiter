@@ -1,0 +1,82 @@
+{
+ "schema": "bounded-independent-code-review/1",
+ "scope": "Native NATIVE-DIAG-PRIMARY-01 successor delta; unchanged predecessor review reused",
+ "verdict": "PASS",
+ "findings": [],
+ "closed_findings": [
+  "NATIVE-DIAG-PRIMARY-01"
+ ],
+ "proposal_delivery_sha256": "0c5fe9bcc57a2d02c54e454138333e8ec74d140ff9e165e29da20fde1e016fdb",
+ "delta_patch_sha256": "5ac0ea24f2544636a5eca7b6cd5446fa0189202c2a8b6199027fe0510a07e4bb",
+ "full_subjects": [
+  {
+   "path": ".github/scripts/_windows_rpc_timeout.py",
+   "predecessor": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-transport-diagnostic-fix-8psky15c\\repo\\.github\\scripts\\_windows_rpc_timeout.py",
+    "sha256": "dbdcb85576315b1024b58484a7b03f90aeb6d9d8298fdb1e9ea61621cd2292ce",
+    "bytes": 32777
+   },
+   "candidate": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-primary-successor-h7wybo8h\\repo\\.github\\scripts\\_windows_rpc_timeout.py",
+    "sha256": "675c6c0c210c1975a4b1411c6d8ab2e813be9bc95f0129001cbab92f36eb6367",
+    "bytes": 32975
+   },
+   "binding": "SEALED_PRIVATE_NOT_STAGED"
+  },
+  {
+   "path": ".github/scripts/test_pi_package.py",
+   "predecessor": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-transport-diagnostic-fix-8psky15c\\repo\\.github\\scripts\\test_pi_package.py",
+    "sha256": "9a064598aa2f0b197086fe558d23a19de9e79da38bba8f367cd19bfc0b261f33",
+    "bytes": 328069
+   },
+   "candidate": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-closed-primary-successor-h7wybo8h\\repo\\.github\\scripts\\test_pi_package.py",
+    "sha256": "9788156e60ce919b7b535d551ecbc5cf788749981b49716cb8956725afc26092",
+    "bytes": 331763
+   },
+   "binding": "SEALED_PRIVATE_NOT_STAGED"
+  }
+ ],
+ "prior_native_review": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-parent-native-code-peer-ed98wpn2\\native-review.json",
+  "sha256": "a8eee7aefd8ed34b107edde54cba2dbf3a6a25751038b2be3686018286febbef",
+  "disposition": "Sole finding closed by exact successor"
+ },
+ "parent_review": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-parent-native-code-peer-ed98wpn2\\parent-review.json",
+  "sha256": "a5ecf4147d8377d409c8498f4427e7c350a81ad26bbcfe37d8181814eecd3dbc",
+  "verdict": "PASS_UNCHANGED_DARWIN_EXCLUDED"
+ },
+ "review_reasoning": [
+  "Collector stores established noncaptured primaryStatus before final poll/kill/wait; cleanup error now enters cleanupFailure without replacing that outcome",
+  "Returned cleanup_unknown remains final cleanup authority; primary failure and truncation derive from original deadline/output_limit/debugger_failed",
+  "Real inert collector regression covers all three outcomes times OSError/TimeoutExpired, exact closed cleanup details, privacy, cap and no target kill",
+  "No category/cap/provider/decode/environment/ownership relaxation; unchanged predecessor semantics and privacy review reused by exact hashes",
+  "All prior test method ASTs unchanged; source changes limited to _collect and _debugger; original failed oracle retained with honest correction history"
+ ],
+ "retained_results_not_replayed": {
+  "corrected_predecessor_red": {
+   "tests_run": 1,
+   "failures": 6,
+   "errors": 0,
+   "skips": 0,
+   "successful": false,
+   "seconds": 0.03983429999789223
+  },
+  "final_green": {
+   "tests_run": 17,
+   "failures": 0,
+   "errors": 0,
+   "skips": 0,
+   "successful": true,
+   "seconds": 0.13672939999378286
+  },
+  "initial_oracle_failure_retained": true
+ },
+ "limits": [
+  "No tests/runtime/API replay or canonical/index/ref/marker writes",
+  "Private subject identities only, no staged OIDs",
+  "Actual Node4260 exit cause UNKNOWN; no native/runtime qualification claim"
+ ]
+}

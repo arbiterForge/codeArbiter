@@ -1,0 +1,428 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "f5dff55e71530806c58a5dd6c352935d369ac5ae",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "/root/ci_repair_review: literal47-clause current Pi source/caller inspection; no execution"
+ },
+ "inputs": {
+  ".codearbiter/decisions/0043-assistive-state-engine.md": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+  ".codearbiter/decisions/0049-require-https-outside-bounded-loopback.md": "c757cef9d5e318b75ff164d270b29a49255449360f0b7cde51e53775e6916ab8",
+  "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+  "docs/state-contracts-major/surfaces-tasks.json": "5a68b14cdc637e369fa5298d3f566b950dec9fb8056e4f1fa77baf40cb4b0d97",
+  "plugins/ca-pi/tools/src/child-env.ts": "a3a42fe6c0f2555b47901e2282c8ad619dfd034683f565e8e5752b19ddb4f0f7",
+  "plugins/ca-pi/tools/src/inference-broker.ts": "9d10532e0b6af73cd7f641ce066151860e6c3213387b17222a01333137c271f4",
+  "plugins/ca-pi/tools/src/runner.ts": "4b41ee58a0dabc79232bf2971d6ad5fe2f33488e25b3e7dc61c2d07768cb9b04"
+ },
+ "disposition_ids": [
+  "disposition:machines:S10",
+  "disposition:transitions:S10:01",
+  "disposition:transitions:S10:02",
+  "disposition:transitions:S10:03",
+  "disposition:transitions:S10:04",
+  "disposition:transitions:S10:05",
+  "disposition:transitions:S10:06",
+  "disposition:transitions:S10:07"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/pi-nextfive-source-f5/clause-inspection.json",
+   "sha256": "f5e00c8018474f0ac90e62529aa59e94eba6e06009665435ecae8518affda102"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/pi-nextfive-source-f5/source-bindings.json",
+   "sha256": "9c2baf70473957bd4adbdd180f477f193a950467e3c57428bb559427dab63a67"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:S10",
+   "frozen_row_sha256": "8f1c4f175e05a0e88019ef7bc7455665eeb6e029e4cfc7665a98529d2bdb45bd",
+   "clause_ids": [
+    "disposition:transitions:S10:01",
+    "disposition:transitions:S10:02",
+    "disposition:transitions:S10:03",
+    "disposition:transitions:S10:04",
+    "disposition:transitions:S10:05",
+    "disposition:transitions:S10:06",
+    "disposition:transitions:S10:07"
+   ],
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/runner.ts",
+     "start": 179,
+     "end": 253,
+     "file_sha256": "4b41ee58a0dabc79232bf2971d6ad5fe2f33488e25b3e7dc61c2d07768cb9b04",
+     "span_sha256": "b4c46e42efca48bf97f793ae1265e23753e75027bb089f3062f611cf6505f125"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/child-env.ts",
+     "start": 503,
+     "end": 552,
+     "file_sha256": "a3a42fe6c0f2555b47901e2282c8ad619dfd034683f565e8e5752b19ddb4f0f7",
+     "span_sha256": "253370ce515e5587d3723162e9e20d2ea0bfaa7a06a923bc5d4361c2cc916757"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/child-env.ts",
+     "start": 786,
+     "end": 807,
+     "file_sha256": "a3a42fe6c0f2555b47901e2282c8ad619dfd034683f565e8e5752b19ddb4f0f7",
+     "span_sha256": "cf6e7d5d9ce4deb827b62cff0698a86de3a3d36629a9f42d54576519a4574e41"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/child-env.ts",
+     "start": 321,
+     "end": 345,
+     "file_sha256": "a3a42fe6c0f2555b47901e2282c8ad619dfd034683f565e8e5752b19ddb4f0f7",
+     "span_sha256": "1ccb8fa67b0378ed0a622bae2f483e4c0ee8df1ebdea877d4a1ad53734a2638a"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/child-env.ts",
+     "start": 635,
+     "end": 672,
+     "file_sha256": "a3a42fe6c0f2555b47901e2282c8ad619dfd034683f565e8e5752b19ddb4f0f7",
+     "span_sha256": "7a2dcca7efcf9bc22db87d94e24c2d54f8c9b56827ad9efd7ed11c60325ee2a8"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/child-env.ts",
+     "start": 693,
+     "end": 771,
+     "file_sha256": "a3a42fe6c0f2555b47901e2282c8ad619dfd034683f565e8e5752b19ddb4f0f7",
+     "span_sha256": "ca9ebdb28f65aac7680797949716e6313b8be83c484a86e836196ecdd65b058f"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/child-env.ts",
+     "start": 852,
+     "end": 882,
+     "file_sha256": "a3a42fe6c0f2555b47901e2282c8ad619dfd034683f565e8e5752b19ddb4f0f7",
+     "span_sha256": "ff6bbd2c19156eab86c934b3a5b0abfe8e8aa2907a1929cae0133f7f593920af"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/inference-broker.ts",
+     "start": 57,
+     "end": 64,
+     "file_sha256": "9d10532e0b6af73cd7f641ce066151860e6c3213387b17222a01333137c271f4",
+     "span_sha256": "dc25499f2cfe5dc09cc4308fab13741443bd4857ac4224e999e2600c7f8cd1fe"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/inference-broker.ts",
+     "start": 507,
+     "end": 525,
+     "file_sha256": "9d10532e0b6af73cd7f641ce066151860e6c3213387b17222a01333137c271f4",
+     "span_sha256": "80b3318e6be307ad4fdcfca4a28a09b0c20c1aae62802a558f0f6a96529e9dd9"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/child-env.ts",
+     "start": 265,
+     "end": 271,
+     "file_sha256": "a3a42fe6c0f2555b47901e2282c8ad619dfd034683f565e8e5752b19ddb4f0f7",
+     "span_sha256": "0be3fe33d0894ce8f54238517dba3938aa422f49aaafc7db540374594d9ca3cd"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/child-env.ts",
+     "start": 842,
+     "end": 886,
+     "file_sha256": "a3a42fe6c0f2555b47901e2282c8ad619dfd034683f565e8e5752b19ddb4f0f7",
+     "span_sha256": "9d2bdd9ca4375469b72736525a0b8fea4637e47923f220ad1ef70cc61043cdcc"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/child-env.ts",
+     "start": 858,
+     "end": 882,
+     "file_sha256": "a3a42fe6c0f2555b47901e2282c8ad619dfd034683f565e8e5752b19ddb4f0f7",
+     "span_sha256": "f8f59b40428f7eeec476568fa499b82aa82919f35d8de2833f5ac1c3928e59ac"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/child-env.ts",
+     "start": 811,
+     "end": 840,
+     "file_sha256": "a3a42fe6c0f2555b47901e2282c8ad619dfd034683f565e8e5752b19ddb4f0f7",
+     "span_sha256": "87239e28a4d01cd759dde0941b8d8ef3139f25e259dec53dab4fbc0f356fd9ea"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/runner.ts",
+     "start": 818,
+     "end": 843,
+     "file_sha256": "4b41ee58a0dabc79232bf2971d6ad5fe2f33488e25b3e7dc61c2d07768cb9b04",
+     "span_sha256": "c329b12f9a9b12a1686c0fd06de182c3bc73f790c81ad4aa17c0873c81dcb39a"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/runner.ts",
+     "start": 1061,
+     "end": 1076,
+     "file_sha256": "4b41ee58a0dabc79232bf2971d6ad5fe2f33488e25b3e7dc61c2d07768cb9b04",
+     "span_sha256": "8ca1da030e6f7c59169e50510bdb322d29286ca3ac4469a5b13e6a0570863d0b"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/inference-broker.ts",
+     "start": 526,
+     "end": 539,
+     "file_sha256": "9d10532e0b6af73cd7f641ce066151860e6c3213387b17222a01333137c271f4",
+     "span_sha256": "4d5a8c7154450b839a0f49d2480db09d65f0628d95dbf34901912ef6f7f29ca6"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/child-env.ts",
+     "start": 823,
+     "end": 840,
+     "file_sha256": "a3a42fe6c0f2555b47901e2282c8ad619dfd034683f565e8e5752b19ddb4f0f7",
+     "span_sha256": "7468b9fb7e38aae88d60af1f0d51c659bffa1525ffcb49a8bb54d71108f1065a"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/runner.ts",
+     "start": 682,
+     "end": 710,
+     "file_sha256": "4b41ee58a0dabc79232bf2971d6ad5fe2f33488e25b3e7dc61c2d07768cb9b04",
+     "span_sha256": "cd2c4ce49bfb49ea0bc87bfe7dd668d7ff6f5e78f23780bdc26302f805a2ce04"
+    }
+   ],
+   "semantic_assessment": "Every real owner guard/effect/retry clause separately mapped with explicit accepted/intake corrections. No nonexistent effect asserted. S03 analytical edit composite separately N/A; S08 scope only current1.5 optional unavailable. No machine runtime/task closure."
+  },
+  {
+   "cell": "disposition:transitions:S10:01",
+   "frozen_row_sha256": "f7d1edead377042c72d50324e4241ed1a6ebfbfe8d1f2eea8e3b5a922ff11ebe",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/runner.ts",
+     "start": 179,
+     "end": 253,
+     "file_sha256": "4b41ee58a0dabc79232bf2971d6ad5fe2f33488e25b3e7dc61c2d07768cb9b04",
+     "span_sha256": "b4c46e42efca48bf97f793ae1265e23753e75027bb089f3062f611cf6505f125"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/child-env.ts",
+     "start": 503,
+     "end": 552,
+     "file_sha256": "a3a42fe6c0f2555b47901e2282c8ad619dfd034683f565e8e5752b19ddb4f0f7",
+     "span_sha256": "253370ce515e5587d3723162e9e20d2ea0bfaa7a06a923bc5d4361c2cc916757"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/child-env.ts",
+     "start": 786,
+     "end": 807,
+     "file_sha256": "a3a42fe6c0f2555b47901e2282c8ad619dfd034683f565e8e5752b19ddb4f0f7",
+     "span_sha256": "cf6e7d5d9ce4deb827b62cff0698a86de3a3d36629a9f42d54576519a4574e41"
+    }
+   ],
+   "semantic_assessment": "Actual runner first validates canonical launch resources; environment owner mints private mkdtemp and constructs allowlisted OS env/private home/agent/session paths. No stronger OS isolation or extra canonicalization beyond source is claimed.",
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only; no runtime/user-consent/OS/provider/model/installed/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S10:02",
+   "frozen_row_sha256": "e246432a78eda8bf8e07c52e3facdc0cbb892ec5de4c8e4bb4efe3a5e2169773",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/child-env.ts",
+     "start": 321,
+     "end": 345,
+     "file_sha256": "a3a42fe6c0f2555b47901e2282c8ad619dfd034683f565e8e5752b19ddb4f0f7",
+     "span_sha256": "1ccb8fa67b0378ed0a622bae2f483e4c0ee8df1ebdea877d4a1ad53734a2638a"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/child-env.ts",
+     "start": 635,
+     "end": 672,
+     "file_sha256": "a3a42fe6c0f2555b47901e2282c8ad619dfd034683f565e8e5752b19ddb4f0f7",
+     "span_sha256": "7a2dcca7efcf9bc22db87d94e24c2d54f8c9b56827ad9efd7ed11c60325ee2a8"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/child-env.ts",
+     "start": 693,
+     "end": 771,
+     "file_sha256": "a3a42fe6c0f2555b47901e2282c8ad619dfd034683f565e8e5752b19ddb4f0f7",
+     "span_sha256": "ca9ebdb28f65aac7680797949716e6313b8be83c484a86e836196ecdd65b058f"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/child-env.ts",
+     "start": 852,
+     "end": 882,
+     "file_sha256": "a3a42fe6c0f2555b47901e2282c8ad619dfd034683f565e8e5752b19ddb4f0f7",
+     "span_sha256": "ff6bbd2c19156eab86c934b3a5b0abfe8e8aa2907a1929cae0133f7f593920af"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/inference-broker.ts",
+     "start": 57,
+     "end": 64,
+     "file_sha256": "9d10532e0b6af73cd7f641ce066151860e6c3213387b17222a01333137c271f4",
+     "span_sha256": "dc25499f2cfe5dc09cc4308fab13741443bd4857ac4224e999e2600c7f8cd1fe"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/inference-broker.ts",
+     "start": 507,
+     "end": 525,
+     "file_sha256": "9d10532e0b6af73cd7f641ce066151860e6c3213387b17222a01333137c271f4",
+     "span_sha256": "80b3318e6be307ad4fdcfca4a28a09b0c20c1aae62802a558f0f6a96529e9dd9"
+    }
+   ],
+   "semantic_assessment": "Bounded parent readers select only requested provider; structural/template/header shapes refuse unsafe values. Real endpoint/key/headers remain parent-only; child gets loopback base and per-child opaque token. ADR0049 narrows external endpoints to HTTPS, literal numeric127.0.0.1 HTTP only.",
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only; no runtime/user-consent/OS/provider/model/installed/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S10:03",
+   "frozen_row_sha256": "f9dd172ff3b632d142cae6e2e4fb20bc2b3099fc90f3492ddfe8013edb0666a5",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/child-env.ts",
+     "start": 265,
+     "end": 271,
+     "file_sha256": "a3a42fe6c0f2555b47901e2282c8ad619dfd034683f565e8e5752b19ddb4f0f7",
+     "span_sha256": "0be3fe33d0894ce8f54238517dba3938aa422f49aaafc7db540374594d9ca3cd"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/child-env.ts",
+     "start": 503,
+     "end": 552,
+     "file_sha256": "a3a42fe6c0f2555b47901e2282c8ad619dfd034683f565e8e5752b19ddb4f0f7",
+     "span_sha256": "253370ce515e5587d3723162e9e20d2ea0bfaa7a06a923bc5d4361c2cc916757"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/child-env.ts",
+     "start": 786,
+     "end": 807,
+     "file_sha256": "a3a42fe6c0f2555b47901e2282c8ad619dfd034683f565e8e5752b19ddb4f0f7",
+     "span_sha256": "cf6e7d5d9ce4deb827b62cff0698a86de3a3d36629a9f42d54576519a4574e41"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/child-env.ts",
+     "start": 842,
+     "end": 886,
+     "file_sha256": "a3a42fe6c0f2555b47901e2282c8ad619dfd034683f565e8e5752b19ddb4f0f7",
+     "span_sha256": "9d2bdd9ca4375469b72736525a0b8fea4637e47923f220ad1ef70cc61043cdcc"
+    }
+   ],
+   "semantic_assessment": "Unsupported/OAuth/Bedrock/Vertex/Copilot/Codex routes or malformed models refuse without credential passthrough. mkdtemp/buildChildEnv precede cleanup try and can leave empty root on early validation failure; later failure suppresses cleanup exception while rethrowing original. Residual remains explicit.",
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only; no runtime/user-consent/OS/provider/model/installed/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S10:04",
+   "frozen_row_sha256": "ea3f66b103fc5df446a6603f72b2e4cb7f34420711e87e94eca68973e2ed80e9",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/child-env.ts",
+     "start": 503,
+     "end": 552,
+     "file_sha256": "a3a42fe6c0f2555b47901e2282c8ad619dfd034683f565e8e5752b19ddb4f0f7",
+     "span_sha256": "253370ce515e5587d3723162e9e20d2ea0bfaa7a06a923bc5d4361c2cc916757"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/child-env.ts",
+     "start": 858,
+     "end": 882,
+     "file_sha256": "a3a42fe6c0f2555b47901e2282c8ad619dfd034683f565e8e5752b19ddb4f0f7",
+     "span_sha256": "f8f59b40428f7eeec476568fa499b82aa82919f35d8de2833f5ac1c3928e59ac"
+    }
+   ],
+   "semantic_assessment": "Exclusive wx0600 models.json retains handle and contains only selected minimal provider config, forced loopback endpoint and token env reference. Upstream reusable credential stays parent-only; private discovery/home/session settings explicit.",
+   "intake_variances": [
+    "Historical credential-bearing-file wording differs from current token-reference config; retained-handle scrub remains, no reusable provider secret is projected."
+   ],
+   "limits": "Reasoned source conformance/inapplicability only; no runtime/user-consent/OS/provider/model/installed/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S10:05",
+   "frozen_row_sha256": "3a89eb4e5b606b2f9770f5e850b3a933d8242b6360d0a8b1116e39ce101f7eda",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/child-env.ts",
+     "start": 811,
+     "end": 840,
+     "file_sha256": "a3a42fe6c0f2555b47901e2282c8ad619dfd034683f565e8e5752b19ddb4f0f7",
+     "span_sha256": "87239e28a4d01cd759dde0941b8d8ef3139f25e259dec53dab4fbc0f356fd9ea"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/runner.ts",
+     "start": 818,
+     "end": 843,
+     "file_sha256": "4b41ee58a0dabc79232bf2971d6ad5fe2f33488e25b3e7dc61c2d07768cb9b04",
+     "span_sha256": "c329b12f9a9b12a1686c0fd06de182c3bc73f790c81ad4aa17c0873c81dcb39a"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/runner.ts",
+     "start": 1061,
+     "end": 1076,
+     "file_sha256": "4b41ee58a0dabc79232bf2971d6ad5fe2f33488e25b3e7dc61c2d07768cb9b04",
+     "span_sha256": "8ca1da030e6f7c59169e50510bdb322d29286ca3ac4469a5b13e6a0570863d0b"
+    }
+   ],
+   "semantic_assessment": "Cleanup clears mutable handle slot, truncates and closes saved handle, removes named config, then owned root with maxRetries5/retryDelay50. Truncation does not resolve a swapped path; delegation/broker closure remains separately owned.",
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only; no runtime/user-consent/OS/provider/model/installed/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S10:06",
+   "frozen_row_sha256": "863834e4b85f2c16ac18a848c8e162c14cc70dd24a397afd70e5a71cf8d84c92",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/child-env.ts",
+     "start": 811,
+     "end": 840,
+     "file_sha256": "a3a42fe6c0f2555b47901e2282c8ad619dfd034683f565e8e5752b19ddb4f0f7",
+     "span_sha256": "87239e28a4d01cd759dde0941b8d8ef3139f25e259dec53dab4fbc0f356fd9ea"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/inference-broker.ts",
+     "start": 526,
+     "end": 539,
+     "file_sha256": "9d10532e0b6af73cd7f641ce066151860e6c3213387b17222a01333137c271f4",
+     "span_sha256": "4d5a8c7154450b839a0f49d2480db09d65f0628d95dbf34901912ef6f7f29ca6"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/runner.ts",
+     "start": 818,
+     "end": 843,
+     "file_sha256": "4b41ee58a0dabc79232bf2971d6ad5fe2f33488e25b3e7dc61c2d07768cb9b04",
+     "span_sha256": "c329b12f9a9b12a1686c0fd06de182c3bc73f790c81ad4aa17c0873c81dcb39a"
+    }
+   ],
+   "semantic_assessment": "Returns only when handle scrub and recursive root removal succeed. Broker revoke clears parent upstream and closes owned sockets; cleanup refusal degrades runner. This is source ordering, not installed/kernel sanitization evidence.",
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only; no runtime/user-consent/OS/provider/model/installed/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S10:07",
+   "frozen_row_sha256": "8c1233617700622e67b0eace6d8c3b3dfd31206bf4124e9340d8a9ec5581a20b",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/child-env.ts",
+     "start": 823,
+     "end": 840,
+     "file_sha256": "a3a42fe6c0f2555b47901e2282c8ad619dfd034683f565e8e5752b19ddb4f0f7",
+     "span_sha256": "7468b9fb7e38aae88d60af1f0d51c659bffa1525ffcb49a8bb54d71108f1065a"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/runner.ts",
+     "start": 682,
+     "end": 710,
+     "file_sha256": "4b41ee58a0dabc79232bf2971d6ad5fe2f33488e25b3e7dc61c2d07768cb9b04",
+     "span_sha256": "cd2c4ce49bfb49ea0bc87bfe7dd668d7ff6f5e78f23780bdc26302f805a2ce04"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/runner.ts",
+     "start": 818,
+     "end": 843,
+     "file_sha256": "4b41ee58a0dabc79232bf2971d6ad5fe2f33488e25b3e7dc61c2d07768cb9b04",
+     "span_sha256": "c329b12f9a9b12a1686c0fd06de182c3bc73f790c81ad4aa17c0873c81dcb39a"
+    }
+   ],
+   "semantic_assessment": "Exhausted removal/truncate failure throws fixed cleanup error; runner reports fixed isolation-cleanup degradation. Process exit is not sanitization, and no credential/path value is reflected in generic diagnosis.",
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only; no runtime/user-consent/OS/provider/model/installed/task/scenario/publication qualification."
+  }
+ ],
+ "scope": "Source-only actual owner behavior under accepted PROGRAM/ADR0043/0049 and Pi task criteria; no runtime, installed, model, human or task qualification.",
+ "limits": [
+  "S08 N/A is limited to current supported Pi1.5 host; old legacy1.0.2 code/conditional guards/tests remain retained, not failed evidence relabeled.",
+  "PROGRAM/PI-D05/06 S09:10 maps actual signal cancellation, effect grant retirement and owned settlement; no nonexistent universal post-await model-report discard is claimed.",
+  "S03:03 exact unsupported analytical public-edit/hash/revision composite differs from actual CAS helper/state return/disk restore. S03 machine preserves only real owner behavior, with this correction explicit.",
+  "Only40 PLANNED rows proposed; all old source/test/host epochs and foreign rows retained. No runtime or test execution.",
+  "Per-row CAS expected rows bind actual current untouched subjects, not whole ledger hash. Relevant production/frozen positives are literal immutable f5, even if Root HEAD moves."
+ ]
+}

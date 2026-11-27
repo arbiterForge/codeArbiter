@@ -390,12 +390,13 @@ func Changes(d *model.Document, changes []any) (*model.Document, []string, error
 		if strings.TrimSpace(reason) == "" {
 			return nil, nil, fault.New("RETIREMENT_REASON_REQUIRED", "removing nested records requires an explicit retirement reason")
 		}
-		n["retired_symbols"] = append(model.A(n["retired_symbols"]), object{"id": id, "retired_in_revision": d.Revision() + 1, "reason": reason, "replacement_ref": replacements[id]})
+		// The original kind comes from the pre-removal index, never from an ID
+		// prefix, so retained history keeps a typed owner (N-F10).
+		n["retired_symbols"] = append(model.A(n["retired_symbols"]), object{"id": id, "retired_in_revision": d.Revision() + 1, "reason": reason, "replacement_ref": replacements[id], "original_kind": observed[id].Kind})
 	}
 	syncExecution(copy.Data)
-	if model.HasAssistiveFields(copy.Data) {
-		copy.Data["schema_version"] = model.SchemaVersion
-	}
+	// Raise the label only as far as the present features need; never lower it.
+	copy.Data["schema_version"] = model.RequiredVersion(copy.Data)
 	copy.Data["revision"] = d.Revision() + 1
 	sealed, e := render.Prepare(copy.Data)
 	if e != nil {

@@ -1,0 +1,17 @@
+{
+  "schema": "codearbiter.citation-input-inspection/1",
+  "source_commit": "483d0d34e43176dda01496db21201cac3e611ccd",
+  "current_checked_at": "31e200feffac4179cf6782b70a5c683a436b345d",
+  "affected": [
+    "S64:02",
+    "S64:05",
+    "S67:04",
+    "S67:06"
+  ],
+  "original_proof_sha256": "70a060d13ade140dc8a142e7995ceb666f16fe54f214aae20b287ff874b1b685",
+  "added_input": {
+    "site/scripts/academy-source.ts": "6f5e2447e3e065f09d12f6d62e9af3292e4131430bb4761a6feec641a122aa9c"
+  },
+  "basis": "Owning P02 citation completeness identified academy-source as additional family input for S67:04/06. This exact input was already inspected and bound by the same original packet complete14input join and academy-preserved proof. Both original/current literalGit and physical bytes match.",
+  "scope": "Expose the full cited input only. Retired BUILD-G01 edge mapping and all behavior claims unchanged; no new test/execution or source-conformance claim."
+}

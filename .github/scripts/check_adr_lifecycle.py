@@ -335,7 +335,7 @@ def _local_binding_transition_error(root, events, blobs):
         expected_event_fields = {
             "schema", "event", "adr", "recorded_at", "source_commit",
             "blob_sha256", "body_sha256", "obligations",
-            "obligations_sha256", "obligations_sealed",
+            "obligations_sha256", "obligations_sealed", "reviewed_by",
         }
         if (set(packet) != expected_packet_fields or
                 set(event) != expected_event_fields or
@@ -357,6 +357,7 @@ def _local_binding_transition_error(root, events, blobs):
                 not packet.get("reviewed_by") or
                 any(not isinstance(item, str) or not item.strip()
                     for item in packet.get("reviewed_by")) or
+                event.get("reviewed_by") not in packet.get("reviewed_by") or
                 packet.get("obligations_sha256") != al.obligation_set_digest(
                     packet.get("obligations")) or
                 event.get("schema") != "adr-lifecycle/v1" or

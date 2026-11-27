@@ -1,0 +1,3 @@
+plugins/ca-pi/tools/test/benchmark-boundary.ts
+plugins/ca-pi/tools/test/live-pi-host.ts
+plugins/ca-pi/tools/test/setup-disposable-home.ts

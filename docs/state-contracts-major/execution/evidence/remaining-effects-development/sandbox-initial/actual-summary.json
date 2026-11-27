@@ -1,0 +1,98 @@
+{
+  "format": "codearbiter.private-runtime-result/1",
+  "state": "PARTIAL_FIRST_REAL_LIMITATION_STOPPED_NO_RETRY",
+  "source_epoch_context": "f65f1e7543f2934a274909cb0d157b94ee909e61",
+  "observed_head_before": "2f65fda443816d84b0ee4283f9fc237df728b663",
+  "observed_head_after": "2f65fda443816d84b0ee4283f9fc237df728b663",
+  "actual_command_count": 1,
+  "selected_outcomes": [
+    {
+      "file": "C:/Users/brenn/AppData/Local/Temp/ca-sandbox-real-effects-prepare-nohd52d5/project-tracked/plugins/ca-sandbox/tools/cp.test.ts",
+      "fullName": "owned offline effect acceptance [docker] prepares a credential-blind owned home and retains its bytes across restart",
+      "status": "passed"
+    },
+    {
+      "file": "C:/Users/brenn/AppData/Local/Temp/ca-sandbox-real-effects-prepare-nohd52d5/project-tracked/plugins/ca-sandbox/tools/cp.test.ts",
+      "fullName": "owned offline effect acceptance [docker] runs the real Claude builder offline with scoped dummy env and effective hardening",
+      "status": "passed"
+    },
+    {
+      "file": "C:/Users/brenn/AppData/Local/Temp/ca-sandbox-real-effects-prepare-nohd52d5/project-tracked/plugins/ca-sandbox/tools/cp.test.ts",
+      "fullName": "owned offline effect acceptance [docker] retains real partial docker cp bytes after cancellation without rollback metadata",
+      "status": "failed"
+    }
+  ],
+  "old_cases_filtered": 7,
+  "old_cases_actually_run": 0,
+  "fixture_readbacks": [
+    {
+      "format": "sandbox-owned-effect/1",
+      "case": "home",
+      "id": "7fdca73d6856a536dd75f16367772a24bc7382d1f08a2e4d5e65eb3a4be51ba4",
+      "volume": "ca-sbx-effect-51c383bc-28b3-4bc3-9858-52e13d62abed-home",
+      "uid": 1000,
+      "homeOwner": 1000,
+      "hostAuthCopied": false,
+      "sameContainerRestarted": true,
+      "persistedNonceMatches": true
+    },
+    {
+      "format": "sandbox-owned-effect/1",
+      "case": "offline",
+      "id": "f9e6d4441fbd3e8dbb4d270baa4008f53fb6eed773909806d1af8d303cd32a09",
+      "uid": 1000,
+      "interfaces": [
+        "lo"
+      ],
+      "dummyOnly": true,
+      "foreignCredentialPresent": false,
+      "capEff": "0000000000000000",
+      "noNewPrivs": "1",
+      "networkMode": "none",
+      "readOnly": true
+    },
+    {
+      "format": "sandbox-owned-effect/1",
+      "case": "partial-copy",
+      "id": "894fb3cc6f5c795818595ae55700c73964054044ec57cf688f430e30fd14adf5",
+      "observedPartial": 0,
+      "retained": 0,
+      "expectedBytes": 67108864,
+      "code": 1,
+      "aborted": false,
+      "timedOut": false,
+      "overflowed": false,
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSha256": "c6c977b1a8e5ad97a2d97134a23f9b9fee7158cdb3b05b2f7fc8fd82f590935c",
+      "prefixMatches": false
+    }
+  ],
+  "process": {
+    "exit_code": 1,
+    "seconds": 7.2357919000060065,
+    "timed_out": false,
+    "containment": "exited",
+    "stdout_sha256": "e2a035a320a38fecbe2dd849596776f96a95516bc47d23ace532ce1d2a945dce",
+    "stderr_sha256": "552e9160a7528e988d76f10c08fc7da1599d50ff08a77e8883070bdac7ff9b39",
+    "windows_containment_limit": "Existing process-group/taskkill contract; no stronger Job Object rundown claim.",
+    "product_source_stable": true,
+    "private_source_stable": true,
+    "runtime_stable": true,
+    "tools_stable": true,
+    "transport_stable": true
+  },
+  "runtime_inventory": {
+    "entries": 1719,
+    "regular_files": 1474,
+    "directories": 245,
+    "links": 0
+  },
+  "cleanup_basis": "All three withOwnedOfflineEffect finally blocks completed without a cleanup exception. The last reported error is the original partial-oracle AssertionError, not AggregateError; current exact candidate requires owned label/full-ID checks, real rm and post-removal ps/volume absence before returning. Individual Docker cleanup command outputs were not retained separately; no independent global absence/stronger tree guarantee is claimed.",
+  "limits": [
+    "No qualification/status/proof/ledger/task/machine change requested. Two effect observations are real local source-fixture facts, not installed/Claude/provider/hosted acceptance.",
+    "S52:06 is unproved: original Docker cp returned code1 before observed partial output. No cancellation occurred and destination retained zero bytes. Only stderr SHA was retained by the planned closed fixture, so exact engine error/cause is unknown.",
+    "The container file was created on /tmp tmpfs by an actual successful exec. Its role in the cp error is a source-backed hypothesis only; no replay or workaround was run.",
+    "Seven original cp cases were explicitly name-filtered, including the old pull case. The eager-building Claude integration file was never collected.",
+    "No image pull/build/install, real credentials/provider/model/SDK/Go/native subject, remote Docker context or global configuration writes. Cached runtime and source hashes remained stable."
+  ]
+}

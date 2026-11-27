@@ -1,0 +1,426 @@
+{
+ "observed_utc": "2026-11-17T10:39:50.449569+00:00",
+ "active_unique_proofs": 327,
+ "active_hosted_artifact_ids": 8,
+ "artifact_to_active_claims": {
+  "14116138817": {
+   "raw_identities": [
+    {
+     "source_commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "run_id": 43599120794,
+     "job_id": 132463972537,
+     "artifact_id": 14116138817,
+     "sha256": "3ed85ca22ad796ae4ca4fa3b803cf7ef01e704629054222a7eb19fda49006cbf"
+    }
+   ],
+   "proofs": [
+    "docs/state-contracts-major/execution/evidence/native-M94-R43599120794/native-go120-hosted.json",
+    "docs/state-contracts-major/execution/evidence/nf05-native-M94-six-platform/tested.json",
+    "docs/state-contracts-major/execution/evidence/native-remaining-M94-6fe3/binding-tested.json"
+   ],
+   "active_cells": [
+    "disposition:findings:N-F01",
+    "disposition:findings:N-F02",
+    "disposition:findings:N-F04",
+    "disposition:findings:N-F05",
+    "disposition:findings:N-F06",
+    "disposition:findings:N-F07",
+    "disposition:findings:N-F08",
+    "disposition:findings:N-F10",
+    "disposition:machines:N09",
+    "disposition:machines:N11",
+    "disposition:machines:N13",
+    "disposition:machines:N14",
+    "disposition:machines:N16",
+    "disposition:machines:N21",
+    "disposition:machines:N22",
+    "disposition:machines:N23",
+    "disposition:machines:N24",
+    "disposition:machines:N28",
+    "disposition:machines:N30",
+    "disposition:machines:N31",
+    "disposition:machines:N34",
+    "disposition:machines:N35",
+    "disposition:machines:N39",
+    "disposition:transitions:N01:01",
+    "disposition:transitions:N01:03",
+    "disposition:transitions:N01:04",
+    "disposition:transitions:N01:05",
+    "disposition:transitions:N01:06",
+    "disposition:transitions:N02:01",
+    "disposition:transitions:N02:02",
+    "disposition:transitions:N02:03",
+    "disposition:transitions:N02:04",
+    "disposition:transitions:N02:05",
+    "disposition:transitions:N02:06",
+    "disposition:transitions:N02:07",
+    "disposition:transitions:N02:08",
+    "disposition:transitions:N03:01",
+    "disposition:transitions:N03:02",
+    "disposition:transitions:N03:03",
+    "disposition:transitions:N03:04",
+    "disposition:transitions:N03:05",
+    "disposition:transitions:N04:02",
+    "disposition:transitions:N04:03",
+    "disposition:transitions:N06:02",
+    "disposition:transitions:N06:03",
+    "disposition:transitions:N06:04",
+    "disposition:transitions:N08:03",
+    "disposition:transitions:N09:01",
+    "disposition:transitions:N09:02",
+    "disposition:transitions:N09:03",
+    "disposition:transitions:N09:04",
+    "disposition:transitions:N09:05",
+    "disposition:transitions:N11:01",
+    "disposition:transitions:N11:02",
+    "disposition:transitions:N11:03",
+    "disposition:transitions:N11:04",
+    "disposition:transitions:N12:01",
+    "disposition:transitions:N12:02",
+    "disposition:transitions:N13:01",
+    "disposition:transitions:N13:02",
+    "disposition:transitions:N13:03",
+    "disposition:transitions:N13:04",
+    "disposition:transitions:N14:01",
+    "disposition:transitions:N14:02",
+    "disposition:transitions:N14:03",
+    "disposition:transitions:N14:04",
+    "disposition:transitions:N14:05",
+    "disposition:transitions:N16:01",
+    "disposition:transitions:N16:02",
+    "disposition:transitions:N16:03",
+    "disposition:transitions:N16:04",
+    "disposition:transitions:N20:03",
+    "disposition:transitions:N21:01",
+    "disposition:transitions:N21:02",
+    "disposition:transitions:N21:03",
+    "disposition:transitions:N21:04",
+    "disposition:transitions:N21:05",
+    "disposition:transitions:N21:06",
+    "disposition:transitions:N22:01",
+    "disposition:transitions:N22:02",
+    "disposition:transitions:N22:03",
+    "disposition:transitions:N23:01",
+    "disposition:transitions:N23:02",
+    "disposition:transitions:N23:03",
+    "disposition:transitions:N24:01",
+    "disposition:transitions:N24:02",
+    "disposition:transitions:N24:03",
+    "disposition:transitions:N27:01",
+    "disposition:transitions:N27:02",
+    "disposition:transitions:N27:03",
+    "disposition:transitions:N28:01",
+    "disposition:transitions:N28:02",
+    "disposition:transitions:N28:03",
+    "disposition:transitions:N28:04",
+    "disposition:transitions:N29:07",
+    "disposition:transitions:N30:01",
+    "disposition:transitions:N30:02",
+    "disposition:transitions:N30:03",
+    "disposition:transitions:N30:04",
+    "disposition:transitions:N31:01",
+    "disposition:transitions:N31:02",
+    "disposition:transitions:N31:03",
+    "disposition:transitions:N31:04",
+    "disposition:transitions:N31:05",
+    "disposition:transitions:N31:06",
+    "disposition:transitions:N34:01",
+    "disposition:transitions:N34:02",
+    "disposition:transitions:N34:03",
+    "disposition:transitions:N34:04",
+    "disposition:transitions:N34:05",
+    "disposition:transitions:N35:01",
+    "disposition:transitions:N35:02",
+    "disposition:transitions:N35:03",
+    "disposition:transitions:N36:01",
+    "disposition:transitions:N36:02",
+    "disposition:transitions:N37:01",
+    "disposition:transitions:N38:01",
+    "disposition:transitions:N38:04",
+    "disposition:transitions:N38:05",
+    "disposition:transitions:N39:01",
+    "disposition:transitions:N39:02",
+    "disposition:transitions:N39:03"
+   ]
+  },
+  "14116013510": {
+   "raw_identities": [
+    {
+     "source_commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "run_id": 43599120794,
+     "job_id": 132463972506,
+     "artifact_id": 14116013510,
+     "sha256": "aa45ed746caa286340e9dfe8052823b38feeceac0f14d4e278996a2cfbbbb0d2"
+    }
+   ],
+   "proofs": [
+    "docs/state-contracts-major/execution/evidence/nf05-native-M94-six-platform/tested.json",
+    "docs/state-contracts-major/execution/evidence/native-remaining-M94-6fe3/binding-tested.json",
+    "docs/state-contracts-major/execution/evidence/native-remaining-M94-6fe3/pair-tested.json",
+    "docs/state-contracts-major/execution/evidence/native-remaining-M94-6fe3/smarts-tested.json"
+   ],
+   "active_cells": [
+    "disposition:findings:N-F05",
+    "disposition:transitions:N08:03",
+    "disposition:transitions:N18:01",
+    "disposition:transitions:N18:02",
+    "disposition:transitions:N19:01"
+   ]
+  },
+  "14116655258": {
+   "raw_identities": [
+    {
+     "source_commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "run_id": 43599120794,
+     "job_id": 132463972557,
+     "artifact_id": 14116655258,
+     "sha256": "ed4c7b58187193a917d8b0eeef0fdd44f9f26ab19be1fd4554c14a68d6c5ba4f"
+    }
+   ],
+   "proofs": [
+    "docs/state-contracts-major/execution/evidence/nf05-native-M94-six-platform/tested.json",
+    "docs/state-contracts-major/execution/evidence/native-remaining-M94-6fe3/binding-tested.json",
+    "docs/state-contracts-major/execution/evidence/native-remaining-M94-6fe3/pair-tested.json",
+    "docs/state-contracts-major/execution/evidence/native-remaining-M94-6fe3/smarts-tested.json"
+   ],
+   "active_cells": [
+    "disposition:findings:N-F05",
+    "disposition:transitions:N08:03",
+    "disposition:transitions:N18:01",
+    "disposition:transitions:N18:02",
+    "disposition:transitions:N19:01"
+   ]
+  },
+  "14116259119": {
+   "raw_identities": [
+    {
+     "source_commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "run_id": 43599120794,
+     "job_id": 132463972516,
+     "artifact_id": 14116259119,
+     "sha256": "e4345dbb86a747451016f4834cc0c74f09dcc676317c96760b35b243c923869f"
+    }
+   ],
+   "proofs": [
+    "docs/state-contracts-major/execution/evidence/nf05-native-M94-six-platform/tested.json",
+    "docs/state-contracts-major/execution/evidence/native-remaining-M94-6fe3/binding-tested.json"
+   ],
+   "active_cells": [
+    "disposition:findings:N-F05",
+    "disposition:transitions:N08:03"
+   ]
+  },
+  "14115739497": {
+   "raw_identities": [
+    {
+     "source_commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "run_id": 43599120794,
+     "job_id": 132463972660,
+     "artifact_id": 14115739497,
+     "sha256": "40781aee10f14c34f06ff7c574053473a0080df987736960a36acf2da19c1e2b"
+    }
+   ],
+   "proofs": [
+    "docs/state-contracts-major/execution/evidence/nf05-native-M94-six-platform/tested.json",
+    "docs/state-contracts-major/execution/evidence/native-remaining-M94-6fe3/binding-tested.json"
+   ],
+   "active_cells": [
+    "disposition:findings:N-F05",
+    "disposition:transitions:N08:03"
+   ]
+  },
+  "14116009344": {
+   "raw_identities": [
+    {
+     "source_commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+     "run_id": 43599120794,
+     "job_id": 132463972608,
+     "artifact_id": 14116009344,
+     "sha256": "0931c0e3efe3cb914a4c818398798f2e5a280019fdd34e0ac39e0c875f0846a3"
+    }
+   ],
+   "proofs": [
+    "docs/state-contracts-major/execution/evidence/nf05-native-M94-six-platform/tested.json",
+    "docs/state-contracts-major/execution/evidence/native-remaining-M94-6fe3/binding-tested.json"
+   ],
+   "active_cells": [
+    "disposition:findings:N-F05",
+    "disposition:transitions:N08:03"
+   ]
+  },
+  "14108863344": {
+   "raw_identities": [
+    {
+     "source_commit": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+     "run_id": 43582198115,
+     "job_id": 132409162374,
+     "artifact_id": 14108863344,
+     "sha256": "521cbdef721f2f0e3491b88e3660cd6fa35487268541e35641ffa87a6c95aac8"
+    }
+   ],
+   "proofs": [
+    "docs/state-contracts-major/execution/evidence/native-eight-M46-components/hosted-Go-component.json"
+   ],
+   "active_cells": [
+    "disposition:findings:N-F09",
+    "disposition:machines:N17",
+    "disposition:transitions:N17:01",
+    "disposition:transitions:N17:02",
+    "disposition:transitions:N17:03",
+    "disposition:transitions:N17:04",
+    "disposition:transitions:N17:05",
+    "disposition:transitions:hooks:verifier:07"
+   ]
+  },
+  "14107944699": {
+   "raw_identities": [
+    {
+     "source_commit": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+     "run_id": 43582198099,
+     "job_id": 132409108684,
+     "artifact_id": 14107944699,
+     "sha256": "cf02b3ee3e04c09ba36f253506e4a9880cf19e28524651c56118c98dd558e76d"
+    }
+   ],
+   "proofs": [
+    "docs/state-contracts-major/execution/evidence/site-bookmark-directory-M-46e29a79/bookmark-hosted-tested.json",
+    "docs/state-contracts-major/execution/evidence/site-bookmark-directory-M-46e29a79/directory-hosted-tested.json"
+   ],
+   "active_cells": [
+    "disposition:transitions:S56:01",
+    "disposition:transitions:S56:02",
+    "disposition:transitions:S56:04",
+    "disposition:transitions:S56:05",
+    "disposition:transitions:S56:06",
+    "disposition:transitions:S58:01",
+    "disposition:transitions:S58:02"
+   ]
+  }
+ },
+ "cached_native_expiries": {
+  "14116013510": {
+   "cache": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-M94-R43599120794-21sd5dhf\\original-artifact-pages.json",
+   "cache_sha256": "247dfbd4a43d8e54503daa89813208e5c2f77a5da621293aa0290169556d6172",
+   "metadata": {
+    "id": 14116013510,
+    "name": "ci20-native-tested-ubuntu-24.04",
+    "created_at": "2026-11-14T13:37:04Z",
+    "expires_at": "2026-11-17T13:18:48Z",
+    "expired": false,
+    "digest": "sha256:aa45ed746caa286340e9dfe8052823b38feeceac0f14d4e278996a2cfbbbb0d2",
+    "size_in_bytes": 2701503
+   }
+  },
+  "14116655258": {
+   "cache": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-M94-R43599120794-21sd5dhf\\original-artifact-pages.json",
+   "cache_sha256": "247dfbd4a43d8e54503daa89813208e5c2f77a5da621293aa0290169556d6172",
+   "metadata": {
+    "id": 14116655258,
+    "name": "ci20-native-tested-ubuntu-24.04-arm",
+    "created_at": "2026-11-14T13:40:15Z",
+    "expires_at": "2026-11-17T13:18:48Z",
+    "expired": false,
+    "digest": "sha256:ed4c7b58187193a917d8b0eeef0fdd44f9f26ab19be1fd4554c14a68d6c5ba4f",
+    "size_in_bytes": 2391405
+   }
+  },
+  "14116138817": {
+   "cache": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-M94-R43599120794-21sd5dhf\\original-artifact-pages.json",
+   "cache_sha256": "247dfbd4a43d8e54503daa89813208e5c2f77a5da621293aa0290169556d6172",
+   "metadata": {
+    "id": 14116138817,
+    "name": "ci20-native-tested-windows-2025",
+    "created_at": "2026-11-14T13:40:44Z",
+    "expires_at": "2026-11-17T13:18:48Z",
+    "expired": false,
+    "digest": "sha256:3ed85ca22ad796ae4ca4fa3b803cf7ef01e704629054222a7eb19fda49006cbf",
+    "size_in_bytes": 2838476
+   }
+  },
+  "14116009344": {
+   "cache": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-M94-R43599120794-21sd5dhf\\original-artifact-pages.json",
+   "cache_sha256": "247dfbd4a43d8e54503daa89813208e5c2f77a5da621293aa0290169556d6172",
+   "metadata": {
+    "id": 14116009344,
+    "name": "ci20-native-tested-windows-11-arm",
+    "created_at": "2026-11-14T13:43:18Z",
+    "expires_at": "2026-11-17T13:18:48Z",
+    "expired": false,
+    "digest": "sha256:0931c0e3efe3cb914a4c818398798f2e5a280019fdd34e0ac39e0c875f0846a3",
+    "size_in_bytes": 2490321
+   }
+  },
+  "14116259119": {
+   "cache": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-M94-R43599120794-21sd5dhf\\original-artifact-pages.json",
+   "cache_sha256": "247dfbd4a43d8e54503daa89813208e5c2f77a5da621293aa0290169556d6172",
+   "metadata": {
+    "id": 14116259119,
+    "name": "ci20-native-tested-macos-15-intel",
+    "created_at": "2026-11-14T13:44:15Z",
+    "expires_at": "2026-11-17T13:18:48Z",
+    "expired": false,
+    "digest": "sha256:e4345dbb86a747451016f4834cc0c74f09dcc676317c96760b35b243c923869f",
+    "size_in_bytes": 2718895
+   }
+  },
+  "14115739497": {
+   "cache": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-M94-R43599120794-21sd5dhf\\original-artifact-pages.json",
+   "cache_sha256": "247dfbd4a43d8e54503daa89813208e5c2f77a5da621293aa0290169556d6172",
+   "metadata": {
+    "id": 14115739497,
+    "name": "ci20-native-tested-macos-26",
+    "created_at": "2026-11-14T13:40:08Z",
+    "expires_at": "2026-11-17T13:18:48Z",
+    "expired": false,
+    "digest": "sha256:40781aee10f14c34f06ff7c574053473a0080df987736960a36acf2da19c1e2b",
+    "size_in_bytes": 2455620
+   }
+  },
+  "14108863344": {
+   "cache": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-M46e29-R43582198115-v3\\original-artifact-pages.json",
+   "cache_sha256": "2aa0b991545e8d0953c18c3b6aaeb42d73dbade33dc98c810f0f79b3d2a199c6",
+   "metadata": {
+    "id": 14108863344,
+    "name": "ci20-native-tested-windows-2025",
+    "created_at": "2026-11-14T09:59:33Z",
+    "expires_at": "2026-11-17T09:47:21Z",
+    "expired": false,
+    "digest": "sha256:521cbdef721f2f0e3491b88e3660cd6fa35487268541e35641ffa87a6c95aac8",
+    "size_in_bytes": 2838443
+   }
+  }
+ },
+ "known_live_M94_reads": {
+  "source": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\observer-wording-owner-api-continuation.json",
+   "sha256": "54440bf3f1a1513dbc4cf8cd7e8b15f413285afbc9de287b53c095ec6bf153f6",
+   "bytes": 9706
+  },
+  "meaning": "Six actual artifact metadata/ZIP reads succeeded before first oldM46 refusal; this is not a future availability guarantee."
+ },
+ "native_M46_actual404": {
+  "endpoint": "repos/arbiterForge/codeArbiter/actions/artifacts/14108863344",
+  "started": true,
+  "exit_code": 1,
+  "stdout_bytes": 123,
+  "stderr_bytes": 25,
+  "stderr_sha256": "d2c8985c89b29a842ac4946d13bdbc297709f44f20bb968faf9682664b211db6",
+  "http_status": 404,
+  "connection_failure_phrase": false
+ },
+ "pages_M46_actual404": {
+  "artifact_id": 14107944699,
+  "exit_code": 1,
+  "stdout_sha256": "706afc3b2c7b96e18bb0e38cba9855b65a4d7417718585377e793912fe51b1a2",
+  "stderr_sha256": "d2c8985c89b29a842ac4946d13bdbc297709f44f20bb968faf9682664b211db6",
+  "http_status": 404
+ },
+ "old_M46_original_zip": {
+  "external_path": "C:/Users/brenn/AppData/Local/Temp/ca-native-M46e29-R43582198115-v3/original-builder-artifact.zip",
+  "sha256": "521cbdef721f2f0e3491b88e3660cd6fa35487268541e35641ffa87a6c95aac8",
+  "history_only": "Retained historical bytes do not substitute for live hosted artifact availability."
+ },
+ "backend_mechanism": "UNKNOWN; scheduled retention deadline passed consistently with404, no deletion-mechanism assertion.",
+ "fresh_D482_expiry": "2026-11-20T08:22:06Z (actual API metadata, effective3days despite requested14)",
+ "remaining_non_native_gap": "Expired Pages14107944699 affects7cells in two separate proofs; ci_repair_review owns actual Docs attempt2 recovery."
+}

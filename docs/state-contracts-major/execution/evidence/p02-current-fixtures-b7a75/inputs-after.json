@@ -1,0 +1,37 @@
+{
+  ".github/scripts/check_state_contracts_integration.py": {
+    "sha256": "0913c941f25461ccb34f602e89e96bfedadb5eedca6adbaaca2f4a38100a1067",
+    "size_bytes": 10415,
+    "literal_Git_equals_physical": true
+  },
+  ".github/scripts/test_state_contracts_integration.py": {
+    "sha256": "8681aa43a81b9aca7a5a85f4e3d42d25d299da3d639fd50e9eb044bd6e9885c0",
+    "size_bytes": 19487,
+    "literal_Git_equals_physical": true
+  },
+  ".github/scripts/major_readiness.py": {
+    "sha256": "3bc43e5765ae067368fe2d7ae258c4c7ab47bb0081081f0db9b0ed1d79745b84",
+    "size_bytes": 41882,
+    "literal_Git_equals_physical": true
+  },
+  ".github/scripts/_boundedproc.py": {
+    "sha256": "671458a00f178ac690e4d1f4e0458da7b3833353384f9cb7546be711bab15f51",
+    "size_bytes": 12673,
+    "literal_Git_equals_physical": true
+  },
+  ".github/workflows/ci.yml": {
+    "sha256": "119a7708523aa65253387091fb85f41a272bf90632d8da096e10c15d3fb59358",
+    "size_bytes": 224834,
+    "literal_Git_equals_physical": true
+  },
+  "docs/state-contracts-major/execution/tools/coverage_ledger.py": {
+    "sha256": "6c0f728fa54b38a2d093c1ef7b091e9496f915ac7028932bf0b7d3ae62eacb4a",
+    "size_bytes": 7704,
+    "literal_Git_equals_physical": true
+  },
+  "docs/state-contracts-major/MANIFEST.json": {
+    "sha256": "86be15f1b12dc7f9e052268a1c627f47af99713020449593a2c57b4cb3fc58f4",
+    "size_bytes": 17765,
+    "literal_Git_equals_physical": true
+  }
+}

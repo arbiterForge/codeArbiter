@@ -1,0 +1,32 @@
+{
+  "head": "bb66e3fca9fa0b87b5a983ccd1e930b691f22861",
+  "run": 43881612076,
+  "attempt": 1,
+  "verdict": "PASS",
+  "controls": [
+    {
+      "original_program_job": 133348957066,
+      "original_log_sha256": "5ef2e71bc15c16fa1caf11a8ed7b034b2c9347671862d907004401975d72822b",
+      "job_id": 133348654303,
+      "bytes": 206447,
+      "sha256": "3a083e563717fded5a731b0574d864f69853bc52f4415401e866beb7411e4b7e",
+      "state": "READ"
+    },
+    {
+      "original_program_job": 133348956912,
+      "original_log_sha256": "842a3b20395964da1d0316ea83bdb793f4f57e8b1a2306c17377de5529f38db2",
+      "job_id": 133348654303,
+      "bytes": 206447,
+      "sha256": "3a083e563717fded5a731b0574d864f69853bc52f4415401e866beb7411e4b7e",
+      "state": "READ"
+    },
+    {
+      "original_program_job": 133348956644,
+      "original_log_sha256": "8167c3e6bdcc0ecc9617184f0d81a63e07f37c06ae0235086f0b8fe866aea8ff",
+      "job_id": 133348654303,
+      "bytes": 206447,
+      "sha256": "3a083e563717fded5a731b0574d864f69853bc52f4415401e866beb7411e4b7e",
+      "state": "READ"
+    }
+  ]
+}

@@ -1,0 +1,119 @@
+WIRED codeArbiter statusline -> "python" "C:\Users\brenn\AppData\Local\Temp\tmpy1rfm9df\.claude\plugins\cache\codearbiter\ca\9.9.9\hooks\statusline.py"
+backed up prior statusLine: my-custom-statusline
+RESTORED prior statusLine: my-custom-statusline
+WIRED codeArbiter statusline -> "python" "C:\Users\brenn\AppData\Local\Temp\tmptn6ugiae\.claude\plugins\cache\codearbiter\ca\9.9.9\hooks\statusline.py"
+backed up prior statusLine: my-custom-statusline
+codeArbiter statusline is not wired here; preserved the current setting.
+codeArbiter statusline is not wired here; preserved the current setting.
+codeArbiter statusline is not wired here; preserved the current setting.
+codeArbiter statusline is not wired here; preserved the current setting.
+spinner ownership ended: spinnerVerbs was changed after install; preserved the current value.
+codeArbiter statusline is not wired here; preserved the current setting.
+codeArbiter statusline is not wired here; preserved the current setting.
+codeArbiter statusline is not wired here; preserved the current setting.
+codeArbiter statusline is not wired here; preserved the current setting.
+codeArbiter statusline is not wired here; preserved the current setting.
+codeArbiter statusline is not wired here; preserved the current setting.
+spinner ownership ended: spinnerVerbs was changed after install; preserved the current value.
+codeArbiter statusline is not wired here; preserved the current setting.
+codeArbiter statusline is not wired here; preserved the current setting.
+codeArbiter statusline is not wired here; preserved the current setting.
+codeArbiter statusline is not wired here; preserved the current setting.
+codeArbiter statusline is not wired here; preserved the current setting.
+codeArbiter statusline is not wired here; preserved the current setting.
+spinner ownership ended: spinnerVerbs was changed after install; preserved the current value.
+codeArbiter statusline is not wired here; preserved the current setting.
+codeArbiter statusline is not wired here; preserved the current setting.
+codeArbiter statusline is not wired here; preserved the current setting.
+codeArbiter statusline is not wired here; preserved the current setting.
+codeArbiter statusline is not wired here; preserved the current setting.
+codeArbiter statusline is not wired here; preserved the current setting.
+spinner ownership ended: spinnerVerbs was changed after install; preserved the current value.
+codeArbiter statusline is not wired here; preserved the current setting.
+codeArbiter statusline is not wired here; preserved the current setting.
+WIRED codeArbiter statusline -> "python" "C:\Users\brenn\AppData\Local\Temp\tmpyic3wsbb\.claude\plugins\cache\codearbiter\ca\9.9.9\hooks\statusline.py"
+backed up prior statusLine: my-custom-statusline
+RESTORED prior statusLine: exact-prior
+RESTORED prior statusLine: exact-prior
+RESTORED prior statusLine: exact-prior
+RESTORED prior statusLine: exact-prior
+WIRED codeArbiter statusline -> "python" "C:\Users\brenn\AppData\Local\Temp\tmpa8_z6fi1\.claude\plugins\cache\codearbiter\ca\9.9.9\hooks\statusline.py"
+backed up prior statusLine: my-custom-statusline
+WIRED codeArbiter statusline -> "python" "C:\Users\brenn\AppData\Local\Temp\tmpa8_z6fi1\.claude\plugins\cache\codearbiter\ca\9.9.9\hooks\statusline.py"
+backed up prior statusLine: third-party --tick
+RESTORED prior statusLine: third-party --tick
+WIRED codeArbiter statusline -> "python" "C:\Users\brenn\AppData\Local\Temp\tmp94rdoju5\.claude\plugins\cache\codearbiter\ca\9.9.9\hooks\statusline.py"
+backed up prior statusLine: my-custom-statusline
+RESTORED prior statusLine: my-custom-statusline
+WIRED codeArbiter statusline -> "python" "C:\Users\brenn\AppData\Local\Temp\tmpoq1shhqx\.claude\plugins\cache\codearbiter\ca\9.9.9\hooks\statusline.py"
+backed up prior statusLine: my-custom-statusline
+WIRED codeArbiter statusline -> "python" "C:\Users\brenn\AppData\Local\Temp\tmpoq1shhqx\.claude\plugins\cache\codearbiter\ca\9.9.9\hooks\statusline.py"
+backed up prior statusLine: "python" "/opt/acme/statusline.py" --label codearbiter/ca/2.0.1/hooks/statusline.py
+RESTORED prior statusLine: "python" "/opt/acme/statusline.py" --label codearbiter/ca/2.0.1/hooks/statusline.py
+WIRED codeArbiter statusline -> "python" "C:\Users\brenn\AppData\Local\Temp\tmp_nq2xd74\.claude\plugins\cache\codearbiter\ca\9.9.9\hooks\statusline.py"
+backed up prior statusLine: my-custom-statusline
+RESTORED prior statusLine: my-custom-statusline
+WIRED codeArbiter statusline -> "python" "C:\Users\brenn\AppData\Local\Temp\tmpinlc_pds\.claude\plugins\cache\codearbiter\ca\9.9.9\hooks\statusline.py"
+backed up prior statusLine: my-custom-statusline
+WIRED codeArbiter statusline -> "python" "C:\Users\brenn\AppData\Local\Temp\tmpinlc_pds\.claude\plugins\cache\codearbiter\ca\9.9.9\hooks\statusline.py"
+backed up prior statusLine: third-party --exact
+REFRESHED codeArbiter statusline path -> "python" "C:\Users\brenn\AppData\Local\Temp\tmpinlc_pds\codeArbiter\plugins\ca\hooks\statusline.py"
+RESTORED prior statusLine: third-party --exact
+WIRED codeArbiter statusline -> "python" "C:\Users\brenn\AppData\Local\Temp\tmp_r125lh7\.claude\plugins\cache\codearbiter\ca\9.9.9\hooks\statusline.py"
+backed up prior statusLine: my-custom-statusline
+codeArbiter statusline was replaced; preserved the current line.
+WIRED codeArbiter statusline -> "python" "C:\Users\brenn\AppData\Local\Temp\tmpgtczsabz\.claude\plugins\cache\codearbiter\ca\9.9.9\hooks\statusline.py"
+backed up prior statusLine: my-custom-statusline
+codeArbiter statusline was replaced; preserved the current line.
+REFRESHED codeArbiter statusline path -> "python" "C:\Users\brenn\AppData\Local\Temp\tmpe3ek9j08\.claude\plugins\cache\codearbiter\ca\9.9.9\hooks\statusline.py"
+RESTORED prior statusLine: "node" "C:\custom\line.js" --theme exact
+REFRESHED codeArbiter statusline path -> "python" "C:\Users\brenn\AppData\Local\Temp\tmpjst3dzqu\.claude\plugins\cache\codearbiter\ca\9.9.9\hooks\statusline.py"
+REMOVED codeArbiter statusline.
+REFRESHED stale codeArbiter statusline path -> "python" "C:\Users\brenn\AppData\Local\Temp\tmpxcfaflx3\.claude\plugins\cache\codearbiter\ca\9.9.9\hooks\statusline.py"
+RESTORED prior statusLine: "node" "C:\custom\line.js" --theme exact
+WIRED codeArbiter statusline -> "python" "C:\Users\brenn\AppData\Local\Temp\tmp4pa861uh\.claude\plugins\cache\codearbiter\ca\9.9.9\hooks\statusline.py"
+no prior statusLine existed; uninstall will simply remove ours.
+WIRED codeArbiter statusline -> "python" "C:\Users\brenn\AppData\Local\Temp\tmpm_a0os64\.claude\plugins\cache\codearbiter\ca\9.9.9\hooks\statusline.py"
+no prior statusLine existed; uninstall will simply remove ours.
+REFRESHED codeArbiter statusline path -> "python" "C:\Users\brenn\AppData\Local\Temp\tmpm_a0os64\.claude\plugins\cache\codearbiter\ca\9.9.9\hooks\statusline.py"
+WIRED codeArbiter statusline -> "python" "C:\Users\brenn\AppData\Local\Temp\tmp0om24are\.claude\plugins\cache\codearbiter\ca\9.9.9\hooks\statusline.py"
+no prior statusLine existed; uninstall will simply remove ours.
+WIRED codeArbiter statusline -> "python" "C:\Users\brenn\AppData\Local\Temp\tmpehe1pxxq\.claude\plugins\cache\codearbiter\ca\9.9.9\hooks\statusline.py"
+no prior statusLine existed; uninstall will simply remove ours.
+WIRED codeArbiter statusline -> "python" "C:\Users\brenn\AppData\Local\Temp\tmp1giauet2\.claude\plugins\cache\codearbiter\ca\9.9.9\hooks\statusline.py"
+no prior statusLine existed; uninstall will simply remove ours.
+WIRED codeArbiter statusline -> "python" "C:\Users\brenn\AppData\Local\Temp\tmpod7gku05\.claude\plugins\cache\codearbiter\ca\9.9.9\hooks\statusline.py"
+no prior statusLine existed; uninstall will simply remove ours.
+WIRED codeArbiter statusline -> "python" "C:\Users\brenn\AppData\Local\Temp\tmpzhblolh3\.claude\plugins\cache\codearbiter\ca\9.9.9\hooks\statusline.py"
+no prior statusLine existed; uninstall will simply remove ours.
+WIRED codeArbiter statusline -> "python" "C:\Users\brenn\AppData\Local\Temp\tmpg3kkiofz\.claude\plugins\cache\codearbiter\ca\9.9.9\hooks\statusline.py"
+no prior statusLine existed; uninstall will simply remove ours.
+REFRESHED codeArbiter statusline path -> "python" "C:\Users\brenn\AppData\Local\Temp\tmpg3kkiofz\.claude\plugins\cache\codearbiter\ca\9.9.9\hooks\statusline.py"
+WIRED codeArbiter statusline -> "python" "C:\Users\brenn\AppData\Local\Temp\tmppumhm5uu\.claude\plugins\cache\codearbiter\ca\9.9.9\hooks\statusline.py"
+no prior statusLine existed; uninstall will simply remove ours.
+REFRESHED codeArbiter statusline path -> "python" "C:\Users\brenn\AppData\Local\Temp\tmppumhm5uu\.claude\plugins\cache\codearbiter\ca\9.9.9\hooks\statusline.py"
+WIRED codeArbiter statusline -> "python" "C:\Users\brenn\AppData\Local\Temp\tmppi05suka\.claude\plugins\cache\codearbiter\ca\9.9.9\hooks\statusline.py"
+backed up prior statusLine: my-custom-statusline --foo
+WIRED codeArbiter statusline -> "python" "C:\Users\brenn\AppData\Local\Temp\tmpcj6pb01l\.claude\plugins\cache\codearbiter\ca\9.9.9\hooks\statusline.py"
+backed up prior statusLine: my-custom-statusline --foo
+REFRESHED codeArbiter statusline path -> "python" "C:\Users\brenn\AppData\Local\Temp\tmpcj6pb01l\.claude\plugins\cache\codearbiter\ca\9.9.9\hooks\statusline.py"
+RESTORED prior statusLine: my-custom-statusline --foo
+WIRED codeArbiter statusline -> "python" "C:\Users\brenn\AppData\Local\Temp\tmpgxd1yh8k\.claude\plugins\cache\codearbiter\ca\9.9.9\hooks\statusline.py"
+backed up prior statusLine: my-custom-statusline --foo
+WIRED codeArbiter statusline -> "python" "C:\Users\brenn\AppData\Local\Temp\tmpmt69wkmf\.claude\plugins\cache\codearbiter\ca\9.9.9\hooks\statusline.py"
+backed up prior statusLine: "python" "C:\tools\statusline.py" --theme ca
+WIRED codeArbiter statusline -> "python" "C:\Users\brenn\AppData\Local\Temp\tmp0veqkta5\.claude\plugins\cache\codearbiter\ca\9.9.9\hooks\statusline.py"
+no prior statusLine existed; uninstall will simply remove ours.
+WIRED codeArbiter statusline -> "python" "C:\Users\brenn\AppData\Local\Temp\tmp550x99az\.claude\plugins\cache\codearbiter\ca\9.9.9\hooks\statusline.py"
+no prior statusLine existed; uninstall will simply remove ours.
+WIRED codeArbiter statusline -> "python" "C:\Users\brenn\AppData\Local\Temp\tmp5cn9i0tk\.claude\plugins\cache\codearbiter\ca\9.9.9\hooks\statusline.py"
+no prior statusLine existed; uninstall will simply remove ours.
+WIRED codeArbiter statusline -> "python" "C:\Users\brenn\AppData\Local\Temp\tmppkq7plxi\.claude\plugins\cache\codearbiter\ca\9.9.9\hooks\statusline.py"
+no prior statusLine existed; uninstall will simply remove ours.
+WIRED codeArbiter statusline -> "python" "C:\Users\brenn\AppData\Local\Temp\tmpkgh7h3a1\.claude\plugins\cache\codearbiter\ca\9.9.9\hooks\statusline.py"
+no prior statusLine existed; uninstall will simply remove ours.
+REMOVED codeArbiter statusline; no prior line to restore.
+REFRESHED stale codeArbiter statusline path -> "python" "C:\Users\brenn\AppData\Local\Temp\tmpeny5ubri\.claude\plugins\cache\codearbiter\ca\9.9.9\hooks\statusline.py"
+REFRESHED stale codeArbiter statusline path -> "python" "C:\Users\brenn\AppData\Local\Temp\tmp_xf73agp\.claude\plugins\cache\codearbiter\ca\9.9.9\hooks\statusline.py"
+REFRESHED stale codeArbiter statusline path -> "python" "C:\Users\brenn\AppData\Local\Temp\tmplq8r93vv\.claude\plugins\cache\codearbiter\ca\9.9.9\hooks\statusline.py"
+REFRESHED stale codeArbiter statusline path -> "python" "C:\Users\brenn\AppData\Local\Temp\tmpvz44zc5y\.claude\plugins\cache\codearbiter\ca\9.9.9\hooks\statusline.py"

@@ -1,0 +1,19 @@
+{
+  "same_python_method_ids": true,
+  "python_methods": 29,
+  "changed_python_method_bodies": [
+    [
+      "ProducerBoundaryTests",
+      "test_original_python_producer_exports_opt_in_consumed_identities"
+    ],
+    [
+      "IdentityLimitTests",
+      "test_closed_progress_refuses_extra_payload_malformed_links_and_budgets"
+    ]
+  ],
+  "all_original_producer_assertions_AST_equal": true,
+  "journal_titles_unchanged": true,
+  "journal_expectation_lines_unchanged": true,
+  "real_4097_batch64_setup_literal_moved_once": true,
+  "production_sources_and_embedded_go_unchanged": true
+}

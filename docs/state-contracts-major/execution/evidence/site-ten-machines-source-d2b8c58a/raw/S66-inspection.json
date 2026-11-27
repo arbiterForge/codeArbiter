@@ -1,0 +1,638 @@
+{
+  "format": "codearbiter.site-machine-source-inspection/1",
+  "source_commit": "d2b8c58a650277eeab25d21272c086b19a25c4f2",
+  "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "machine": "S66",
+  "full_frozen_machine": {
+    "machine_id": "S66",
+    "name": "Site evidence capture, cleanup and freshness gate",
+    "domain": "Pi, farm, sandbox, site and packaging",
+    "kind": "implemented",
+    "owner": "site",
+    "closure_task": "Q-01",
+    "task_ids": [
+      "Q-01"
+    ],
+    "explicit_machine_task_ids": [],
+    "source_intersection_task_ids": [],
+    "mapping_basis": "Owner assignment uses the inspected audit domain and explicit owner ledger; source intersections flag review impact, not a claim every edge changes.",
+    "treatment": "PRESERVE_BASELINE_CONTRACT",
+    "status": "NOT_RUN",
+    "transition_count": 8,
+    "source_refs": [
+      "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/capture/harness.ts",
+      "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/capture/run.ts",
+      "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/capture/verify.ts"
+    ],
+    "proposed_composed_scenario_ids": [],
+    "required_disposition": "Read the pinned/current owner, preserve each existing guard/effect/retry boundary except a named authorized change, map meaningful executed tests or reasoned conformance review to the row IDs, and add new rows for introduced events.",
+    "evidence": []
+  },
+  "assessment": "Eight-clause SOURCE-ONLY capture validation/failure/disposal-control conformance. Disposal is invoked with bounded retries; successful physical cleanup and actual target/media/runtime freshness are not observed.",
+  "clauses": [
+    {
+      "cell": "disposition:transitions:S66:01",
+      "baseline": {
+        "event": "prune obsolete",
+        "guard": "target inventory known",
+        "to": "old captures pruning",
+        "effects": "Remove captures no longer declared before new capture generation.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "site/scripts/capture/run.ts",
+            "symbol": "capture runner",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/capture/run.ts",
+            "lines": "1-40"
+          },
+          {
+            "path": "site/scripts/capture/harness.ts",
+            "symbol": "captureOne and process",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/capture/harness.ts",
+            "lines": "1-191"
+          },
+          {
+            "path": "site/scripts/capture/verify.ts",
+            "symbol": "freshness verification",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/capture/verify.ts",
+            "lines": "1-155"
+          }
+        ],
+        "from": "start capture",
+        "transition_id": "S66:01"
+      },
+      "frozen_row_sha256": "a3ee8b6b5b9a4f54be75cc8bb6b6bae78662186bd90f8ecfb559edaea2cc5bc6",
+      "current_edge_status": "PRESERVED",
+      "current_edge_row_sha256": "89a31fb24d6adba48e69b0d2754e1cbd16002d897f0d33a421f325651c6fbd1c",
+      "current_contract_note": "Source-clause-only; Wanted target IDs define retained JSON names; obsolete JSON files are pruned before generation. Non-JSON retained; later failures do not restore deleted assets. Conditional source-only capture controller/fixture/runner/freshness contract. Trusted target callbacks and returned outputs are inputs, not observed helper behavior. No actual capture/build/host discovery, complete subprocess imports, media encoding or physical cleanup acceptance. No whole-directory transaction.",
+      "guard_effect_retry_assessment": "The declared target inventory prunes obsolete JSON captures before the loop, while preserving non-JSON files. This is not a whole-directory atomic update.",
+      "witnesses": [
+        {
+          "path": "site/scripts/capture/run.ts",
+          "start": 20,
+          "end": 28,
+          "file_sha256": "5b795d00f67bce0e1b8e3e5727642cef05499c250c7e6afa5f8617bfab928e32"
+        }
+      ],
+      "retained_conformance_mappings": [
+        {
+          "proof": "docs/state-contracts-major/execution/evidence/capture-source-d594/capture-pipeline-preserved.json",
+          "proof_sha256": "7944aca26c8069e395348ed933e06a786b7b90c6aadc41f4a0b5e756728cfa44",
+          "mapping": {
+            "cell": "disposition:transitions:S66:01",
+            "witnesses": [
+              {
+                "path": "site/scripts/capture/run.ts",
+                "start": 20,
+                "end": 28,
+                "file_sha256": "5b795d00f67bce0e1b8e3e5727642cef05499c250c7e6afa5f8617bfab928e32"
+              }
+            ],
+            "semantic_assessment": "Wanted target IDs define retained JSON names; obsolete JSON files are pruned before generation. Non-JSON retained; later failures do not restore deleted assets.",
+            "limits": "Conditional source-only capture controller/fixture/runner/freshness contract. Trusted target callbacks and returned outputs are inputs, not observed helper behavior. No actual capture/build/host discovery, complete subprocess imports, media encoding or physical cleanup acceptance. No whole-directory transaction."
+          }
+        }
+      ],
+      "new_edge_disposition": null
+    },
+    {
+      "cell": "disposition:transitions:S66:02",
+      "baseline": {
+        "event": "create fixture",
+        "guard": "isolated fixture setup succeeds",
+        "to": "fixture ready",
+        "effects": "Create deterministic test repository/context for concrete tool behavior.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "site/scripts/capture/run.ts",
+            "symbol": "capture runner",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/capture/run.ts",
+            "lines": "1-40"
+          },
+          {
+            "path": "site/scripts/capture/harness.ts",
+            "symbol": "captureOne and process",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/capture/harness.ts",
+            "lines": "1-191"
+          },
+          {
+            "path": "site/scripts/capture/verify.ts",
+            "symbol": "freshness verification",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/capture/verify.ts",
+            "lines": "1-155"
+          }
+        ],
+        "from": "per target",
+        "transition_id": "S66:02"
+      },
+      "frozen_row_sha256": "bceb2cab6adf20e4aa75e8bca9d6d1525a1ec1198dfc5d7112d5b44761f7c57b",
+      "current_edge_status": "PRESERVED",
+      "current_edge_row_sha256": "2e0808bd070772025f89b9629b0e70f43971c4e5f9676cb98f307fc23bfed2ed",
+      "current_contract_note": "Source-clause-only; Prefixed owned OS-temp root resolves real spelling; project/home/tmp and explicit allowlisted hook environment are created. Trusted target setup initializes fixed example Git identity and files; success is conditional on these operations returning. Conditional source-only capture controller/fixture/runner/freshness contract. Trusted target callbacks and returned outputs are inputs, not observed helper behavior. No actual capture/build/host discovery, complete subprocess imports, media encoding or physical cleanup acceptance. No whole-directory transaction.",
+      "guard_effect_retry_assessment": "Each capture acquires a fresh owned project/HOME/TEMP fixture with credential-blind allowlisted environment and fixed Git identity; conditional setup remains explicit.",
+      "witnesses": [
+        {
+          "path": "site/scripts/capture/fixture.ts",
+          "start": 96,
+          "end": 147,
+          "file_sha256": "330eb3b4b057fee88d237d32933fa9cdac2128cf8bc8866eb010ad57e105b275"
+        }
+      ],
+      "retained_conformance_mappings": [
+        {
+          "proof": "docs/state-contracts-major/execution/evidence/capture-source-d594/capture-pipeline-preserved.json",
+          "proof_sha256": "7944aca26c8069e395348ed933e06a786b7b90c6aadc41f4a0b5e756728cfa44",
+          "mapping": {
+            "cell": "disposition:transitions:S66:02",
+            "witnesses": [
+              {
+                "path": "site/scripts/capture/fixture.ts",
+                "start": 96,
+                "end": 147,
+                "file_sha256": "330eb3b4b057fee88d237d32933fa9cdac2128cf8bc8866eb010ad57e105b275"
+              }
+            ],
+            "semantic_assessment": "Prefixed owned OS-temp root resolves real spelling; project/home/tmp and explicit allowlisted hook environment are created. Trusted target setup initializes fixed example Git identity and files; success is conditional on these operations returning.",
+            "limits": "Conditional source-only capture controller/fixture/runner/freshness contract. Trusted target callbacks and returned outputs are inputs, not observed helper behavior. No actual capture/build/host discovery, complete subprocess imports, media encoding or physical cleanup acceptance. No whole-directory transaction."
+          }
+        }
+      ],
+      "new_edge_disposition": null
+    },
+    {
+      "cell": "disposition:transitions:S66:03",
+      "baseline": {
+        "event": "run Python entry",
+        "guard": "available interpreter",
+        "to": "entry running",
+        "effects": "Run with 60s bound; only ENOENT selects alternate Python interpreter; collect imported module paths/hashes and output.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "site/scripts/capture/run.ts",
+            "symbol": "capture runner",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/capture/run.ts",
+            "lines": "1-40"
+          },
+          {
+            "path": "site/scripts/capture/harness.ts",
+            "symbol": "captureOne and process",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/capture/harness.ts",
+            "lines": "1-191"
+          },
+          {
+            "path": "site/scripts/capture/verify.ts",
+            "symbol": "freshness verification",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/capture/verify.ts",
+            "lines": "1-155"
+          }
+        ],
+        "from": "fixture ready",
+        "transition_id": "S66:03"
+      },
+      "frozen_row_sha256": "cd613baf66a3c18abca06d2c2c5cc15331df020c35608552367c5fa74f1e7814",
+      "current_edge_status": "PRESERVED",
+      "current_edge_row_sha256": "fae040d19713bca0e8d9db3c2678a4cbea9bffd36aebeda940cab86b3333b389",
+      "current_contract_note": "Source-clause-only; Explicit Python override alone, Windows python, POSIX python3 then python; only ENOENT retries next candidate.60-second process bound; missing side list/status/error refuses. Runner records in-process entry/registered/executed Python files; child process imports are explicitly unseen. Conditional source-only capture controller/fixture/runner/freshness contract. Trusted target callbacks and returned outputs are inputs, not observed helper behavior. No actual capture/build/host discovery, complete subprocess imports, media encoding or physical cleanup acceptance. No whole-directory transaction.",
+      "guard_effect_retry_assessment": "An explicit Python executable is authoritative; otherwise Windows uses python and POSIX tries python3 then python only for ENOENT. Each invocation is bounded60 seconds and records in-process project imports through its sidefile.",
+      "witnesses": [
+        {
+          "path": "site/scripts/capture/harness.ts",
+          "start": 65,
+          "end": 131,
+          "file_sha256": "c24461ad291ce1567ccf2348655fd231ca86625a2b223615d54031d3a8a12f1d"
+        }
+      ],
+      "retained_conformance_mappings": [
+        {
+          "proof": "docs/state-contracts-major/execution/evidence/capture-source-d594/capture-pipeline-preserved.json",
+          "proof_sha256": "7944aca26c8069e395348ed933e06a786b7b90c6aadc41f4a0b5e756728cfa44",
+          "mapping": {
+            "cell": "disposition:transitions:S66:03",
+            "witnesses": [
+              {
+                "path": "site/scripts/capture/harness.ts",
+                "start": 65,
+                "end": 131,
+                "file_sha256": "c24461ad291ce1567ccf2348655fd231ca86625a2b223615d54031d3a8a12f1d"
+              }
+            ],
+            "semantic_assessment": "Explicit Python override alone, Windows python, POSIX python3 then python; only ENOENT retries next candidate.60-second process bound; missing side list/status/error refuses. Runner records in-process entry/registered/executed Python files; child process imports are explicitly unseen.",
+            "limits": "Conditional source-only capture controller/fixture/runner/freshness contract. Trusted target callbacks and returned outputs are inputs, not observed helper behavior. No actual capture/build/host discovery, complete subprocess imports, media encoding or physical cleanup acceptance. No whole-directory transaction."
+          }
+        }
+      ],
+      "new_edge_disposition": null
+    },
+    {
+      "cell": "disposition:transitions:S66:04",
+      "baseline": {
+        "event": "result received",
+        "guard": "expected exit, nonempty normalized output, no fixture-path leak",
+        "to": "capture validated",
+        "effects": "Record concrete output plus source/module digests.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "site/scripts/capture/run.ts",
+            "symbol": "capture runner",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/capture/run.ts",
+            "lines": "1-40"
+          },
+          {
+            "path": "site/scripts/capture/harness.ts",
+            "symbol": "captureOne and process",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/capture/harness.ts",
+            "lines": "1-191"
+          },
+          {
+            "path": "site/scripts/capture/verify.ts",
+            "symbol": "freshness verification",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/capture/verify.ts",
+            "lines": "1-155"
+          }
+        ],
+        "from": "entry running",
+        "transition_id": "S66:04"
+      },
+      "frozen_row_sha256": "2e8b84cae3b84f6428135ccb3337af9906bca95632277605994030c3366c000f",
+      "current_edge_status": "PRESERVED",
+      "current_edge_row_sha256": "fecaca2111bda6ec73af8e405a6bebe11c4adcc87430bbcccd1f68565f623eb0",
+      "current_contract_note": "Source-clause-only; Requires declared process exit, selects fixed stream/file, normalizes paths/timestamps/commits/LF and refuses empty output or remaining fixture prefix. Output/argv and LF hashes for reported imports are recorded, not fabricated. Conditional source-only capture controller/fixture/runner/freshness contract. Trusted target callbacks and returned outputs are inputs, not observed helper behavior. No actual capture/build/host discovery, complete subprocess imports, media encoding or physical cleanup acceptance. No whole-directory transaction.",
+      "guard_effect_retry_assessment": "Expected exit, nonempty normalized output and absence of private fixture-path leakage are checked before constructing output/source-hash records; failed checks throw.",
+      "witnesses": [
+        {
+          "path": "site/scripts/capture/harness.ts",
+          "start": 151,
+          "end": 187,
+          "file_sha256": "c24461ad291ce1567ccf2348655fd231ca86625a2b223615d54031d3a8a12f1d"
+        }
+      ],
+      "retained_conformance_mappings": [
+        {
+          "proof": "docs/state-contracts-major/execution/evidence/capture-source-d594/capture-pipeline-preserved.json",
+          "proof_sha256": "7944aca26c8069e395348ed933e06a786b7b90c6aadc41f4a0b5e756728cfa44",
+          "mapping": {
+            "cell": "disposition:transitions:S66:04",
+            "witnesses": [
+              {
+                "path": "site/scripts/capture/harness.ts",
+                "start": 151,
+                "end": 187,
+                "file_sha256": "c24461ad291ce1567ccf2348655fd231ca86625a2b223615d54031d3a8a12f1d"
+              }
+            ],
+            "semantic_assessment": "Requires declared process exit, selects fixed stream/file, normalizes paths/timestamps/commits/LF and refuses empty output or remaining fixture prefix. Output/argv and LF hashes for reported imports are recorded, not fabricated.",
+            "limits": "Conditional source-only capture controller/fixture/runner/freshness contract. Trusted target callbacks and returned outputs are inputs, not observed helper behavior. No actual capture/build/host discovery, complete subprocess imports, media encoding or physical cleanup acceptance. No whole-directory transaction."
+          }
+        }
+      ],
+      "new_edge_disposition": null
+    },
+    {
+      "cell": "disposition:transitions:S66:05",
+      "baseline": {
+        "event": "compare/write",
+        "guard": "bytes differ from stored artifact",
+        "to": "written",
+        "effects": "Write changed capture only; unchanged bytes retained.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "site/scripts/capture/run.ts",
+            "symbol": "capture runner",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/capture/run.ts",
+            "lines": "1-40"
+          },
+          {
+            "path": "site/scripts/capture/harness.ts",
+            "symbol": "captureOne and process",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/capture/harness.ts",
+            "lines": "1-191"
+          },
+          {
+            "path": "site/scripts/capture/verify.ts",
+            "symbol": "freshness verification",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/capture/verify.ts",
+            "lines": "1-155"
+          }
+        ],
+        "from": "capture validated",
+        "transition_id": "S66:05"
+      },
+      "frozen_row_sha256": "a0b8e1af8aa4ec5a8c9bfa3ce2cf2357969be6cb4e11a7775980c880e7c037b6",
+      "current_edge_status": "PRESERVED",
+      "current_edge_row_sha256": "cec7b0e0857efdfa7f3166f17b1c1d2682ecf3cd74e6324a16b51949faadb9f6",
+      "current_contract_note": "Source-clause-only; Each completed record serializes deterministically; absent/different UTF-8 bytes alone trigger write. Identical old bytes retained; later failure may leave earlier updates. Conditional source-only capture controller/fixture/runner/freshness contract. Trusted target callbacks and returned outputs are inputs, not observed helper behavior. No actual capture/build/host discovery, complete subprocess imports, media encoding or physical cleanup acceptance. No whole-directory transaction.",
+      "guard_effect_retry_assessment": "Each normalized UTF8 capture writes only when bytes differ; equal bytes retain the existing file. Earlier successful writes may remain after a later failure.",
+      "witnesses": [
+        {
+          "path": "site/scripts/capture/run.ts",
+          "start": 30,
+          "end": 37,
+          "file_sha256": "5b795d00f67bce0e1b8e3e5727642cef05499c250c7e6afa5f8617bfab928e32"
+        }
+      ],
+      "retained_conformance_mappings": [
+        {
+          "proof": "docs/state-contracts-major/execution/evidence/capture-source-d594/capture-pipeline-preserved.json",
+          "proof_sha256": "7944aca26c8069e395348ed933e06a786b7b90c6aadc41f4a0b5e756728cfa44",
+          "mapping": {
+            "cell": "disposition:transitions:S66:05",
+            "witnesses": [
+              {
+                "path": "site/scripts/capture/run.ts",
+                "start": 30,
+                "end": 37,
+                "file_sha256": "5b795d00f67bce0e1b8e3e5727642cef05499c250c7e6afa5f8617bfab928e32"
+              }
+            ],
+            "semantic_assessment": "Each completed record serializes deterministically; absent/different UTF-8 bytes alone trigger write. Identical old bytes retained; later failure may leave earlier updates.",
+            "limits": "Conditional source-only capture controller/fixture/runner/freshness contract. Trusted target callbacks and returned outputs are inputs, not observed helper behavior. No actual capture/build/host discovery, complete subprocess imports, media encoding or physical cleanup acceptance. No whole-directory transaction."
+          }
+        }
+      ],
+      "new_edge_disposition": null
+    },
+    {
+      "cell": "disposition:transitions:S66:06",
+      "baseline": {
+        "event": "finally",
+        "guard": "fixture acquired",
+        "to": "fixture disposed",
+        "effects": "Always dispose fixture resource.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "site/scripts/capture/run.ts",
+            "symbol": "capture runner",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/capture/run.ts",
+            "lines": "1-40"
+          },
+          {
+            "path": "site/scripts/capture/harness.ts",
+            "symbol": "captureOne and process",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/capture/harness.ts",
+            "lines": "1-191"
+          },
+          {
+            "path": "site/scripts/capture/verify.ts",
+            "symbol": "freshness verification",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/capture/verify.ts",
+            "lines": "1-155"
+          }
+        ],
+        "from": "per target any phase",
+        "transition_id": "S66:06"
+      },
+      "frozen_row_sha256": "b020233448ed92ea82346baf79c8b9375b442f1aa957d227ffa0318bd0f305ce",
+      "current_edge_status": "PRESERVED",
+      "current_edge_row_sha256": "3763d16dff6b99007b3bc7714145e5eddb388a1bada65b49f3cb5ea1711480a1",
+      "current_contract_note": "Source-clause-only; After fixture acquisition, setup/execution/return is in try and finally invokes dispose. Owned prefix/direct-temp-parent deletion guard inspected; cleanup failures propagate, no successful physical removal inferred. Conditional source-only capture controller/fixture/runner/freshness contract. Trusted target callbacks and returned outputs are inputs, not observed helper behavior. No actual capture/build/host discovery, complete subprocess imports, media encoding or physical cleanup acceptance. No whole-directory transaction.",
+      "guard_effect_retry_assessment": "Once a fixture is acquired, try/finally invokes guarded disposal, including failure paths. This is source control-flow evidence, not observed physical deletion or a theorem that filesystem retries always succeed.",
+      "witnesses": [
+        {
+          "path": "site/scripts/capture/harness.ts",
+          "start": 151,
+          "end": 190,
+          "file_sha256": "c24461ad291ce1567ccf2348655fd231ca86625a2b223615d54031d3a8a12f1d"
+        }
+      ],
+      "retained_conformance_mappings": [
+        {
+          "proof": "docs/state-contracts-major/execution/evidence/capture-source-d594/capture-pipeline-preserved.json",
+          "proof_sha256": "7944aca26c8069e395348ed933e06a786b7b90c6aadc41f4a0b5e756728cfa44",
+          "mapping": {
+            "cell": "disposition:transitions:S66:06",
+            "witnesses": [
+              {
+                "path": "site/scripts/capture/harness.ts",
+                "start": 151,
+                "end": 190,
+                "file_sha256": "c24461ad291ce1567ccf2348655fd231ca86625a2b223615d54031d3a8a12f1d"
+              }
+            ],
+            "semantic_assessment": "After fixture acquisition, setup/execution/return is in try and finally invokes dispose. Owned prefix/direct-temp-parent deletion guard inspected; cleanup failures propagate, no successful physical removal inferred.",
+            "limits": "Conditional source-only capture controller/fixture/runner/freshness contract. Trusted target callbacks and returned outputs are inputs, not observed helper behavior. No actual capture/build/host discovery, complete subprocess imports, media encoding or physical cleanup acceptance. No whole-directory transaction."
+          }
+        }
+      ],
+      "new_edge_disposition": null
+    },
+    {
+      "cell": "disposition:transitions:S66:07",
+      "baseline": {
+        "event": "freshness check",
+        "guard": "nonempty records, safe paths, tool included, each recorded hash matches current source",
+        "to": "freshness verified",
+        "effects": "Then generate hook proof.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "site/scripts/capture/run.ts",
+            "symbol": "capture runner",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/capture/run.ts",
+            "lines": "1-40"
+          },
+          {
+            "path": "site/scripts/capture/harness.ts",
+            "symbol": "captureOne and process",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/capture/harness.ts",
+            "lines": "1-191"
+          },
+          {
+            "path": "site/scripts/capture/verify.ts",
+            "symbol": "freshness verification",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/capture/verify.ts",
+            "lines": "1-155"
+          }
+        ],
+        "from": "all targets",
+        "transition_id": "S66:07"
+      },
+      "frozen_row_sha256": "b81947c8b3223fe7c2fcd4d4cc6b2e207040c37d6a10159bf691d6be4aced829",
+      "current_edge_status": "PRESERVED",
+      "current_edge_row_sha256": "cfa686a079642874d59adbf7dcb6a0eb232f26bc6206d36866e36263ecb9075b",
+      "current_contract_note": "Source-clause-only; Nonempty inventory and record id/tool/source list required; contained paths/canonical hashes/current LF digests and entry inclusion checked. Findings throw. Runner invokes freshness before hook proof; reported source set is not complete child-process membership. Conditional source-only capture controller/fixture/runner/freshness contract. Trusted target callbacks and returned outputs are inputs, not observed helper behavior. No actual capture/build/host discovery, complete subprocess imports, media encoding or physical cleanup acceptance. No whole-directory transaction.",
+      "guard_effect_retry_assessment": "Freshness rejects empty captures, unsafe relative paths, malformed hashes or a missing entry source; required captured sources must match before hook-proof work.",
+      "witnesses": [
+        {
+          "path": "site/scripts/capture/verify.ts",
+          "start": 46,
+          "end": 131,
+          "file_sha256": "ce088dd96d3d056ed1234d5bb27932b748aeb300c2a863f7c7590a1d022e32f8"
+        }
+      ],
+      "retained_conformance_mappings": [
+        {
+          "proof": "docs/state-contracts-major/execution/evidence/capture-source-d594/capture-pipeline-preserved.json",
+          "proof_sha256": "7944aca26c8069e395348ed933e06a786b7b90c6aadc41f4a0b5e756728cfa44",
+          "mapping": {
+            "cell": "disposition:transitions:S66:07",
+            "witnesses": [
+              {
+                "path": "site/scripts/capture/verify.ts",
+                "start": 46,
+                "end": 131,
+                "file_sha256": "ce088dd96d3d056ed1234d5bb27932b748aeb300c2a863f7c7590a1d022e32f8"
+              }
+            ],
+            "semantic_assessment": "Nonempty inventory and record id/tool/source list required; contained paths/canonical hashes/current LF digests and entry inclusion checked. Findings throw. Runner invokes freshness before hook proof; reported source set is not complete child-process membership.",
+            "limits": "Conditional source-only capture controller/fixture/runner/freshness contract. Trusted target callbacks and returned outputs are inputs, not observed helper behavior. No actual capture/build/host discovery, complete subprocess imports, media encoding or physical cleanup acceptance. No whole-directory transaction."
+          }
+        }
+      ],
+      "new_edge_disposition": null
+    },
+    {
+      "cell": "disposition:transitions:S66:08",
+      "baseline": {
+        "event": "execution/validation/write/freshness failure",
+        "guard": "earlier captures may already be updated",
+        "to": "failed partial",
+        "effects": "Fail pipeline; no whole-directory transaction or restoration of obsolete captures.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "site/scripts/capture/run.ts",
+            "symbol": "capture runner",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/capture/run.ts",
+            "lines": "1-40"
+          },
+          {
+            "path": "site/scripts/capture/harness.ts",
+            "symbol": "captureOne and process",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/capture/harness.ts",
+            "lines": "1-191"
+          },
+          {
+            "path": "site/scripts/capture/verify.ts",
+            "symbol": "freshness verification",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/capture/verify.ts",
+            "lines": "1-155"
+          }
+        ],
+        "from": "any phase",
+        "transition_id": "S66:08"
+      },
+      "frozen_row_sha256": "306c7bb3c375666a64e0341f6c7a64da1e12989ef721bd3c1a932b98238342c5",
+      "current_edge_status": "PRESERVED",
+      "current_edge_row_sha256": "77cf1f42cde508ac6f3f9d5e7c694285a7e4073c508802a89e0883d429a224f7",
+      "current_contract_note": "Source-clause-only; Prune and captures/writes are sequential, then freshness and awaited proof generation. Exceptions stop without rollback or global success catch; partial earlier writes are allowed. Conditional source-only capture controller/fixture/runner/freshness contract. Trusted target callbacks and returned outputs are inputs, not observed helper behavior. No actual capture/build/host discovery, complete subprocess imports, media encoding or physical cleanup acceptance. No whole-directory transaction.",
+      "guard_effect_retry_assessment": "Errors stop the capture pipeline and leave failure visible; there is no whole-directory rollback, and no current hook/media/native/model execution is inferred.",
+      "witnesses": [
+        {
+          "path": "site/scripts/capture/run.ts",
+          "start": 20,
+          "end": 40,
+          "file_sha256": "5b795d00f67bce0e1b8e3e5727642cef05499c250c7e6afa5f8617bfab928e32"
+        }
+      ],
+      "retained_conformance_mappings": [
+        {
+          "proof": "docs/state-contracts-major/execution/evidence/capture-source-d594/capture-pipeline-preserved.json",
+          "proof_sha256": "7944aca26c8069e395348ed933e06a786b7b90c6aadc41f4a0b5e756728cfa44",
+          "mapping": {
+            "cell": "disposition:transitions:S66:08",
+            "witnesses": [
+              {
+                "path": "site/scripts/capture/run.ts",
+                "start": 20,
+                "end": 40,
+                "file_sha256": "5b795d00f67bce0e1b8e3e5727642cef05499c250c7e6afa5f8617bfab928e32"
+              }
+            ],
+            "semantic_assessment": "Prune and captures/writes are sequential, then freshness and awaited proof generation. Exceptions stop without rollback or global success catch; partial earlier writes are allowed.",
+            "limits": "Conditional source-only capture controller/fixture/runner/freshness contract. Trusted target callbacks and returned outputs are inputs, not observed helper behavior. No actual capture/build/host discovery, complete subprocess imports, media encoding or physical cleanup acceptance. No whole-directory transaction."
+          }
+        }
+      ],
+      "new_edge_disposition": null
+    }
+  ],
+  "input_join_ref": {
+    "path": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/source-joins.json",
+    "sha256": "8e328271fc2116902ef90cd4d9e7f9ead1a21e83144a0d6b8d2f2d7150cf91fa"
+  },
+  "existing_conformance_reuse": [
+    {
+      "ref": "docs/state-contracts-major/execution/evidence/capture-source-d594/capture-pipeline-preserved.json",
+      "sha256": "7944aca26c8069e395348ed933e06a786b7b90c6aadc41f4a0b5e756728cfa44",
+      "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+      "result": "PRESERVED",
+      "all_declared_inputs_equal_current": true,
+      "input_comparisons": [
+        {
+          "path": "docs/state-contracts-major/contracts/machine-coverage.json",
+          "recorded_sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+          "actual_sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+          "equal": true
+        },
+        {
+          "path": "docs/state-contracts-major/contracts/tasks.json",
+          "recorded_sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+          "actual_sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+          "equal": true
+        },
+        {
+          "path": "docs/state-contracts-major/contracts/transition-coverage.json",
+          "recorded_sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+          "actual_sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+          "equal": true
+        },
+        {
+          "path": "site/scripts/capture-hook-proof.ts",
+          "recorded_sha256": "d7dcde34689667eef70602be01aa8548a38564e168504a9a26bf62a63e60b287",
+          "actual_sha256": "d7dcde34689667eef70602be01aa8548a38564e168504a9a26bf62a63e60b287",
+          "equal": true
+        },
+        {
+          "path": "site/scripts/capture/fixture.ts",
+          "recorded_sha256": "330eb3b4b057fee88d237d32933fa9cdac2128cf8bc8866eb010ad57e105b275",
+          "actual_sha256": "330eb3b4b057fee88d237d32933fa9cdac2128cf8bc8866eb010ad57e105b275",
+          "equal": true
+        },
+        {
+          "path": "site/scripts/capture/harness.ts",
+          "recorded_sha256": "c24461ad291ce1567ccf2348655fd231ca86625a2b223615d54031d3a8a12f1d",
+          "actual_sha256": "c24461ad291ce1567ccf2348655fd231ca86625a2b223615d54031d3a8a12f1d",
+          "equal": true
+        },
+        {
+          "path": "site/scripts/capture/normalize.ts",
+          "recorded_sha256": "41fe12095320d57c409bf95f50a0c98408d23fd56f83d3a2c570fb3dec11bd73",
+          "actual_sha256": "41fe12095320d57c409bf95f50a0c98408d23fd56f83d3a2c570fb3dec11bd73",
+          "equal": true
+        },
+        {
+          "path": "site/scripts/capture/py-runner.py",
+          "recorded_sha256": "5444e4fdd7eb605c7caed7cc9fb70a181abe55f58e65f56250b53d5d963efa30",
+          "actual_sha256": "5444e4fdd7eb605c7caed7cc9fb70a181abe55f58e65f56250b53d5d963efa30",
+          "equal": true
+        },
+        {
+          "path": "site/scripts/capture/run.ts",
+          "recorded_sha256": "5b795d00f67bce0e1b8e3e5727642cef05499c250c7e6afa5f8617bfab928e32",
+          "actual_sha256": "5b795d00f67bce0e1b8e3e5727642cef05499c250c7e6afa5f8617bfab928e32",
+          "equal": true
+        },
+        {
+          "path": "site/scripts/capture/targets.ts",
+          "recorded_sha256": "44c63c3ebd909eeffa46a172faaf47a4cc6992dcd11f6fb32576044310dfd9e1",
+          "actual_sha256": "44c63c3ebd909eeffa46a172faaf47a4cc6992dcd11f6fb32576044310dfd9e1",
+          "equal": true
+        },
+        {
+          "path": "site/scripts/capture/verify.ts",
+          "recorded_sha256": "ce088dd96d3d056ed1234d5bb27932b748aeb300c2a863f7c7590a1d022e32f8",
+          "actual_sha256": "ce088dd96d3d056ed1234d5bb27932b748aeb300c2a863f7c7590a1d022e32f8",
+          "equal": true
+        }
+      ]
+    }
+  ],
+  "accepted_changes": "BUILD-G01 replaces delete-first with complete staged owned publication for S64/S67. Existing analytical corrections stay exactly as committed. gen.ts now forwards skipped-call-site annotations; serial stage ordering is unchanged.",
+  "dependency_boundary": "Conditional control flow given valid declared DOM/content/model inputs; no particular corpus, generated build or external Academy checkout was admitted or executed.",
+  "observation": "Source inspection/hash comparison only. No tests, validators, browser, commands under test, build, runtime, network or provider were executed."
+}

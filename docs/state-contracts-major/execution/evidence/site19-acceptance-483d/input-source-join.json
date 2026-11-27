@@ -1,0 +1,93 @@
+{
+  "source_commit": "483d0d34e43176dda01496db21201cac3e611ccd",
+  "inputs": {
+    "docs/state-contracts-major/contracts/machine-coverage.json": {
+      "sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+      "bytes": 385316,
+      "git_blob": "e8454acad91b8a9f3931826a2db4bd8893ae2dfb",
+      "physical_equals_immutable_git": true
+    },
+    "docs/state-contracts-major/contracts/tasks.json": {
+      "sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+      "bytes": 331224,
+      "git_blob": "3f52ff13e833b002a9759706dd6f5f48e499cc63",
+      "physical_equals_immutable_git": true
+    },
+    "docs/state-contracts-major/contracts/transition-coverage.json": {
+      "sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+      "bytes": 3185278,
+      "git_blob": "cf092ff8ef7776f81a23377eb8946f941a6cd1a9",
+      "physical_equals_immutable_git": true
+    },
+    "site/src/components/ExecutionMap.astro": {
+      "sha256": "3640d7182dc62e40b4e93b2493c96c9ff5f40f62e05d195161ad2de8e6075e8a",
+      "bytes": 13504,
+      "git_blob": "a897be7852fdeddc6aa6f782c7eed40308bd7726",
+      "physical_equals_immutable_git": true
+    },
+    "site/src/scripts/execution-map-navigation.ts": {
+      "sha256": "7f0a27f56602618dd58781d6ca3c08cfca456c8483c0407e67a94cb4fb4a3dc5",
+      "bytes": 4497,
+      "git_blob": "4004371b1bc41db018d082ff62c376e905358c5f",
+      "physical_equals_immutable_git": true
+    },
+    "site/scripts/capture/normalize.ts": {
+      "sha256": "41fe12095320d57c409bf95f50a0c98408d23fd56f83d3a2c570fb3dec11bd73",
+      "bytes": 5051,
+      "git_blob": "f75dc1c1c200f08651b9c60730c9904b0e7b6ad3",
+      "physical_equals_immutable_git": true
+    },
+    "site/scripts/capture/verify.ts": {
+      "sha256": "ce088dd96d3d056ed1234d5bb27932b748aeb300c2a863f7c7590a1d022e32f8",
+      "bytes": 6608,
+      "git_blob": "f53ca6f54c932bcf236dc1aa1cde9fd7b5127e06",
+      "physical_equals_immutable_git": true
+    },
+    "site/scripts/gen.ts": {
+      "sha256": "ab090b29ff4d165dbabfd87043c8038596fa1afb810c53b40c062db0d7896fb0",
+      "bytes": 6440,
+      "git_blob": "727c9636f5d1e7f2219c368376d02b2ec72c3cdc",
+      "physical_equals_immutable_git": true
+    },
+    "site/scripts/generator/generate.ts": {
+      "sha256": "782922efc0b6bb050bc8e91ddeec0bb4b7339776df1c868d527ac28f243681ed",
+      "bytes": 21649,
+      "git_blob": "c7e141f156cdd96bed50418d52af3088cb50dc77",
+      "physical_equals_immutable_git": true
+    },
+    "site/scripts/owned-output.ts": {
+      "sha256": "13ec4068eea8d6af7afaa8ca7e96b288a2aa8ca9991b7fb42a6901804f70fb3f",
+      "bytes": 4866,
+      "git_blob": "6266939fd7e99d5560fe8877f14115ac290288f4",
+      "physical_equals_immutable_git": true
+    },
+    "site/scripts/academy-source.ts": {
+      "sha256": "6f5e2447e3e065f09d12f6d62e9af3292e4131430bb4761a6feec641a122aa9c",
+      "bytes": 14683,
+      "git_blob": "a5f9951e6ed797ff0cbecbffbfbda4a6f3b6b4f4",
+      "physical_equals_immutable_git": true
+    },
+    "site/scripts/academy-wayfinding.ts": {
+      "sha256": "834239f0853c91950f60bc7061c5459d1de4abf148de6857be051d706a34ff31",
+      "bytes": 2494,
+      "git_blob": "0f944c840dda3b9d4ec2f586cbecfd84921612e5",
+      "physical_equals_immutable_git": true
+    },
+    "site/scripts/generate-academy.ts": {
+      "sha256": "bd59c53b0654d213929b60cfe43614806d906d33687d55d0d27227f95892516e",
+      "bytes": 13889,
+      "git_blob": "92d188479fa8bf955f7be2d19b4b7a3b4e5a0d48",
+      "physical_equals_immutable_git": true
+    },
+    "site/scripts/topic-map.ts": {
+      "sha256": "1da65d67cea4a240d18212b185f89095ebfa799e541e4bbc226b73f14de113c1",
+      "bytes": 6126,
+      "git_blob": "73387077666623d4e8a783cb40fde3698fcc3cd0",
+      "physical_equals_immutable_git": true
+    }
+  },
+  "notes": [
+    "Literal immutable Git and physical byte comparison; no new test execution or runtime import attestation.",
+    "All9 affirmative source clauses and4 retired rows include both frozen owner files. Additional paths support guard/publisher declarations; broader dynamic data remains a stated precondition."
+  ]
+}

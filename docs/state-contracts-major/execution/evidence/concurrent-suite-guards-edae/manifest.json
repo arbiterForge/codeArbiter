@@ -1,0 +1,77 @@
+{
+  "format": "concurrent-suite-guard-repair/1",
+  "source_commit": "edae1b98d8e9b783f71f43b031f862ca99a126c1",
+  "executed_source_epoch": "HEAD8d04 plus final three-file physical patch, subsequently committed byte-identically asedae; postcommit formal qualification retained separately.",
+  "source_sha256": {
+    ".github/scripts/run_concurrent_suites.py": "bf1ea7abcfc00d25c8dbdb9135a42ec860e525a007ff61d024a766c037601614",
+    ".github/scripts/test_run_concurrent_suites.py": "6b58d5b2ed97e3daae9ebf33c36176b989ff84b7f0eb3bebe65ec87b21b638be",
+    "CHANGELOG.md": "4948022c70933a801a774b0c6b7742b000ebe3ac8aad18399e8061ffc0c6972c"
+  },
+  "staged_candidate": "candidate-v1:5a0d9e6edb306821709401f8cbb5e7c6859205218eb91f1e17c9e50d58bb3648",
+  "tests": {
+    "verdict_regression_RED": {
+      "named_methods": 1,
+      "real_two_runner_child_cases": 7,
+      "incorrect_passes": 3,
+      "seconds": 0.45
+    },
+    "preflight_regression_RED": {
+      "named_methods": 1,
+      "invalid_input_cases": 6,
+      "incorrect_launches_intercepted": 6,
+      "real_invalid_deadline_children": 0
+    },
+    "final_GREEN": {
+      "named_methods": 11,
+      "seconds": 2.012,
+      "actual_outer_runner": "1of1passed"
+    },
+    "old_class_methods_unchanged": 13,
+    "changed_python_syntax": "PASS2"
+  },
+  "security_verification_peer": "PASS; reuse prior verdict pairing conclusion, affected deadline/interpreter validation reviewed at final candidate.",
+  "coverage_policy": "CTX-TECH-STACK#FACT-005 Python direct behavioral/no-tooling exemption. No numeric coverage metrics claimed.",
+  "limits": [
+    "No process-tree containment claim; existing direct-child timeout/kill retained.",
+    "Interpreter availability validation does not establish immutable executable identity or prevent later filesystem races.",
+    "Component checks only; no installed host, provider, publication or parent/user acceptance inferred.",
+    "#1098 remains draft and held from main."
+  ],
+  "retained_files": [
+    {
+      "path": "logs.json",
+      "sha256": "9a338b34d9e8552e9453a832b3d6afb862937dc7359f9da9d84d7a707514cc30",
+      "bytes": 32746
+    },
+    {
+      "path": "peer-review.json",
+      "sha256": "c7fac6b828b9f844cdac5f72153b0fca595a84b9cebb82a688b6b6dea1b69d6d",
+      "bytes": 6527
+    },
+    {
+      "path": "preflight-red.json",
+      "sha256": "d43e8cf7657c8980b062bce182aa41b63ee40c7eceff0fcffa9c28739967ce6b",
+      "bytes": 2343
+    },
+    {
+      "path": "preflight-source-freeze.json",
+      "sha256": "0d3fce196a2819a5c64deeb1a114ccd6257e0e3072e6b567b4327490a3b9abca",
+      "bytes": 3061
+    },
+    {
+      "path": "source-guards.json",
+      "sha256": "d613d5e0c5e5b47f38fed97d8706ac203be2142612982838874d7aa9b48a54c5",
+      "bytes": 687
+    },
+    {
+      "path": "verdict-red.json",
+      "sha256": "2ca52df4b7eed7ab061f50fece33ba3075e3177719e144df4226d431106d0884",
+      "bytes": 2214
+    },
+    {
+      "path": "verdict-source-freeze.json",
+      "sha256": "34ddf4da8480a947ab1d7ca898830d8f42f45d3a0f1729c7fc54c9f0bfcdbd7b",
+      "bytes": 3002
+    }
+  ]
+}

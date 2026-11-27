@@ -1,0 +1,18 @@
+{
+ "argv": [
+  "C:\\Python314\\python.exe",
+  "-X",
+  "utf8",
+  "-B",
+  "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-mode-exit-audit-fix-9ubezw5y\\run-prompt.py",
+  "TestClaudeFlipAndReport",
+  "TestFallbackPairIdempotent",
+  "TestPersonaFollowsRealTransitions",
+  "TestFlipMessagesReportTheActualOutcome"
+ ],
+ "exit": 0,
+ "seconds": 2.7643631000246387,
+ "source_sha256": "0cc96df9b44a0f4921399dfb0d28cb2600153f4d946ba24e51eb91e3ed2d24db",
+ "modelib_test_sha256": "d2b40141c36400c8518f081424920c7a02ade611f08c01a8fa1a2908776c005c",
+ "overlay": "child-only PYTHONPATH private core + canonical read-only helper fallback; no environment dump"
+}

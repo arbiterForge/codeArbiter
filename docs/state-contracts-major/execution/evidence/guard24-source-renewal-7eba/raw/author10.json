@@ -1,0 +1,21 @@
+{
+  "phase": "GREEN",
+  "tests": [
+    "CompoundReadRegression",
+    "LiteralPythonReadTest.test_literal_reads_in_both_shells_have_a_read_only_guard_view",
+    "LiteralPythonReadTest.test_literal_path_reads_and_batched_prints",
+    "LiteralPythonReadTest.test_unknown_code_and_import_shadowing_are_not_exempted",
+    "LiteralPythonReadTest.test_shell_boundaries_expansion_and_size_limits_remain_closed",
+    "LiteralPythonReadTest.test_complete_hook_preserves_read_access_and_actual_write_denials"
+  ],
+  "tests_run": 10,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "successful": true,
+  "seconds": 6.245722600026056,
+  "source_sha256": "34ed8f188b821b4f840f2d9ed5b601edfa502648129de914abb8694c412c244f",
+  "test_sha256": "a95105f4c4ed155c756d519e5428dd8dd77c867a52ca517b92693aba22013a53",
+  "log_sha256": "cbe2866aad0593621b939c072002ced78f74f755f20be9b88445c0c176482b1d",
+  "execution": "Candidate guard compiled with original owning file identity; original complete pre-bash entry receives fake hook JSON in local fixture, commands never executed. No installed host qualification."
+}

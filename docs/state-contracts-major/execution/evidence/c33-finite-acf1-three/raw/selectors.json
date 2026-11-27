@@ -1,0 +1,5 @@
+[
+  "CheckFailureModeTest.test_missing_artifact_file",
+  "CheckFailureModeTest.test_unparseable_json",
+  "PayloadDerivationTest.test_a_host_that_no_longer_renders_the_source_raises"
+]

@@ -1,0 +1,49 @@
+{
+  "argv": [
+    "C:\\Python314\\python.exe",
+    "-B",
+    "-X",
+    "utf8",
+    "-m",
+    "unittest",
+    "test_site_playwright_observation.DocsAuthorityTests.test_refusal_location_identifies_actual_guard_instead_of_shared_raise",
+    "test_site_playwright_observation.DocsAuthorityTests.test_emit_refusal_does_not_write_through_owned_directory_alias"
+  ],
+  "exit_code": 1,
+  "seconds": 0.19724479998694733,
+  "before": {
+    "head": "27d38a2ddc0f6fbf77671a86cad04cd1a02e43dd",
+    "index": "0e5b15f5cdd62703f0928bf750a85e5daf43b557a4d975dcd58ada9491479b5f",
+    "files": {
+      ".github/major-qualification-policy.json": "f08cec8861ed3cd9491e8805563c06865fb12d4420480d32ef492644abae9628",
+      ".github/major-test-selections.json": "eb2110fbf186e13730ddce78767051b3d150f95961c61af80a374c3fb3bb0a5f",
+      ".github/scripts/major_native_observation.py": "86706315dde6169df84732dc1b59b14e4c39afb1489245034c6ddec9700f22dc",
+      ".github/scripts/major_qualification_report.py": "af6f3ad5e5142d966dbd0cd292b3f9e80034945b525acf73ed9b1077f2d8cfb1",
+      ".github/scripts/site_playwright_observation.py": "9ea6aaa42211f271103e5eeec5bfffbd725eeb087ef62defc57f16edf3df1c3b",
+      ".github/scripts/test_major_native_observation.py": "c19fa6d3c6dd4a39bfd189c98640018ca6775d1d8b6cade1fa9d05c470ee38d1",
+      ".github/scripts/test_major_qualification_report.py": "1f83570c7100016d7b4e59f9fbae938d211f5aa631f704f62360e67107881e1c",
+      ".github/scripts/test_site_playwright_observation.py": "025b0bfab864b4097de865400376bf56ddf7848e049167840b4da64c220a80e9",
+      ".github/workflows/docs.yml": "166bb867925020a386ad4a313835f964e6165af6342699c064a9b65a25368b3c",
+      "plugins/ca-sandbox/tools/cp.test.ts": "92ebf2fb32b66df2c75e4e62b137deae868aa153cc3ef58fd85520c42c477180"
+    }
+  },
+  "after": {
+    "head": "27d38a2ddc0f6fbf77671a86cad04cd1a02e43dd",
+    "index": "0e5b15f5cdd62703f0928bf750a85e5daf43b557a4d975dcd58ada9491479b5f",
+    "files": {
+      ".github/major-qualification-policy.json": "f08cec8861ed3cd9491e8805563c06865fb12d4420480d32ef492644abae9628",
+      ".github/major-test-selections.json": "eb2110fbf186e13730ddce78767051b3d150f95961c61af80a374c3fb3bb0a5f",
+      ".github/scripts/major_native_observation.py": "86706315dde6169df84732dc1b59b14e4c39afb1489245034c6ddec9700f22dc",
+      ".github/scripts/major_qualification_report.py": "af6f3ad5e5142d966dbd0cd292b3f9e80034945b525acf73ed9b1077f2d8cfb1",
+      ".github/scripts/site_playwright_observation.py": "9ea6aaa42211f271103e5eeec5bfffbd725eeb087ef62defc57f16edf3df1c3b",
+      ".github/scripts/test_major_native_observation.py": "c19fa6d3c6dd4a39bfd189c98640018ca6775d1d8b6cade1fa9d05c470ee38d1",
+      ".github/scripts/test_major_qualification_report.py": "1f83570c7100016d7b4e59f9fbae938d211f5aa631f704f62360e67107881e1c",
+      ".github/scripts/test_site_playwright_observation.py": "025b0bfab864b4097de865400376bf56ddf7848e049167840b4da64c220a80e9",
+      ".github/workflows/docs.yml": "166bb867925020a386ad4a313835f964e6165af6342699c064a9b65a25368b3c",
+      "plugins/ca-sandbox/tools/cp.test.ts": "92ebf2fb32b66df2c75e4e62b137deae868aa153cc3ef58fd85520c42c477180"
+    }
+  },
+  "source_and_index_stable": true,
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "3b62b8178ffca6690b806031491f56262c7d7cd3ef7c7327ed6c843053d49129"
+}

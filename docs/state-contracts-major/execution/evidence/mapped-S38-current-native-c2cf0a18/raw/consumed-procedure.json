@@ -1,0 +1,140 @@
+{
+  "schema": "codearbiter-S38-supplied-native-procedure/1",
+  "state": "PREPARED_NOT_EXECUTED_WAITING_ROOT_AUTHENTIC_ARTIFACT",
+  "target_source": "c2cf0a18b020ef426d7df94f70fe9770fa102c32",
+  "scope": "One actual existing three-case S38 selection with supplied native tested installation; no build/full Go/CI replay/provider/host-user qualification.",
+  "source_join": [
+    {
+      "source_commit": "9a26600f756bb48d26f9fe5a89bc043f73812c31",
+      "module_members": 245,
+      "canonical_windows_go_module_sha256": "f79741ca03192962140efae78835b72d09c3eaf6167ea09d8b9fe6904b4495cf",
+      "intentional_change_test_sha256": "03885f8456f1a9b7e9db62fe70f880169a5fa362e05b6ba3bf45f30e1fe27061"
+    },
+    {
+      "source_commit": "c2cf0a18b020ef426d7df94f70fe9770fa102c32",
+      "module_members": 245,
+      "canonical_windows_go_module_sha256": "f79741ca03192962140efae78835b72d09c3eaf6167ea09d8b9fe6904b4495cf",
+      "intentional_change_test_sha256": "03885f8456f1a9b7e9db62fe70f880169a5fa362e05b6ba3bf45f30e1fe27061"
+    },
+    {
+      "source_commit": "bbba165ce513d5977ba11de7dd44d294658b67ca",
+      "module_members": 245,
+      "canonical_windows_go_module_sha256": "9e5ab665ce11bdb552c9f3dd56c87647f24fbf2994deba681e777255b7aec386",
+      "intentional_change_test_sha256": "f37d3438898dc96bc9f22303bc6b9aec3844933e4c7847e244b1fa4718418f6b"
+    }
+  ],
+  "required_artifact": {
+    "producer_job_id": "artifact-native-build",
+    "producer_job_name": "[CHECK] | [CORE] | Tested native candidate build <windows/amd64>",
+    "artifact_name": "ci20-native-tested-windows-2025",
+    "workflow": ".github/workflows/ci.yml",
+    "candidate_platform": "windows/amd64",
+    "module_members": 245,
+    "canonical_windows_module_sha256": "f79741ca03192962140efae78835b72d09c3eaf6167ea09d8b9fe6904b4495cf",
+    "archive_members": [
+      "artifact-candidate/release.json",
+      "artifact-candidate/ca-artifact-windows-amd64.exe",
+      "ci20-native-tested.json",
+      "native-tests.json",
+      "native-observation.json"
+    ],
+    "authority_needed_from_Root": [
+      "Authentic original run/job/artifact/upload identities, archive digest and bounded safe extraction. Verify original module-test/vet success and retain any later job/run failure separately. No identity inferred from artifact name or native_tested alone.",
+      "Retain actual producer checkout source and attempt from ci20 stamp. PR source may be a merge checkout rather than c2 head; never rewrite stamp to c2. Authenticate its actual producer/run relationship, then join complete native module bytes/framing to target f797. If maintained binding validation refuses source identity, stop; do not reinterpret it.",
+      "Normal bbba/43649759117 uses old9e5 module and is unsuitable for current f797 closure by source fingerprint. Wait for an actual matching source artifact."
+    ],
+    "final_qualified_alternative": {
+      "artifact_name": "artifact-native-windows-2025",
+      "producer_job_id": "artifact-engine",
+      "producer_job_name": "[CHECK] | [CORE] | Structured artifact qualification",
+      "archive_members": [
+        "artifact-candidate/release.json",
+        "artifact-candidate/ca-artifact-windows-amd64.exe",
+        "artifact-qualification.json"
+      ],
+      "condition": "Root authenticates actual final issuer/receipt/context_native source/run/module/binary identities; no substituted or locally issued qualification. Use original artifact-candidate bytes unchanged."
+    }
+  },
+  "maintained_validation": {
+    "local_read_only_bytes": "ci20_native_binding.candidate_identity(candidate_dir, \"windows/amd64\") checks exact two-file candidate shape, release schema, native_tested:true and real binary digest. This does not authenticate GitHub provenance by itself.",
+    "CI_scope": "ci20_native_binding.verify requires real declared CI consumer/GITHUB context and same source/run/platform/Go bytes. recorded/qualify-recorded are issuer-gated. Never spoof local GITHUB_ACTIONS/GITHUB_JOB/run/source to satisfy them. Root must provide authenticated original source binding.",
+    "normal_execution_boundary": "Unmodified ArtifactClient._open_binary checks pinned ordinary manifest/native_tested/platform/binary bytes before native launch. Never patch manifest, SourceFingerprint, hash framing or helper gates.",
+    "manifest_schema": {
+      "format": "codearbiter.artifact-release/0.1.0",
+      "version": "0.1.0",
+      "protocol": "codearbiter.artifact-api/0.1.0",
+      "schema_version": "0.3.2",
+      "binaries": {
+        "windows/amd64": {
+          "file": "ca-artifact-windows-amd64.exe",
+          "sha256": "ACTUAL_ADMITTED_BINARY_DIGEST",
+          "native_tested": true
+        }
+      }
+    },
+    "manifest_note": "Schema description only, NOT a manifest to generate. Consume the authenticated original release.json unchanged."
+  },
+  "supplied_layout": {
+    "ARTIFACT_TEST_INSTALLATION": "<authenticated-extraction>/artifact-candidate",
+    "not_parent_or_plugin_root": true,
+    "fixture_path": "Existing build_installation copies selected plugins/ca-codex source resources, excludes stale helpers/artifacts and then copies the supplied two-file payload into its fresh ca-codex/helpers/artifacts. No builder is invoked when this environment path exists.",
+    "assert_before_future_run": "Absolute existing ordinary supplied directory, candidate_identity accepted unchanged bytes, correct bound source module. A missing/invalid artifact holds the run; never drop the variable and fall through to default build."
+  },
+  "existing_future_command": {
+    "argv": [
+      "C:/Python314/python.exe",
+      "-B",
+      "-X",
+      "utf8",
+      "-m",
+      "unittest",
+      "-v",
+      "test_work_github.GithubWorkTest.test_mapped_preclaim_transport_failure_keeps_pending_and_continues_independent_target",
+      "test_work_github.GithubWorkTest.test_mapped_target_local_native_claim_conflict_keeps_pending_and_continues_independent_target",
+      "test_work_github.GithubWorkTest.test_mapped_target_local_remote_identity_failure_keeps_pending_and_continues_independent_target"
+    ],
+    "cwd": "<private exact-source tree>/.github/scripts",
+    "environment": {
+      "ARTIFACT_TEST_INSTALLATION": "<authenticated-extraction>/artifact-candidate",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "PYTHONNOUSERSITE": "1",
+      "GOTOOLCHAIN": "local",
+      "GOPROXY": "off",
+      "GOSUMDB": "off"
+    },
+    "remaining_environment": "Credential-blind system/PATH allowlist with real existing Git, all TEMP/HOME/config directories owned private Temp. No fake CI identity; no inherited provider credentials.",
+    "planned_exit": null,
+    "run_state": "NOT_RUN",
+    "selection_note": "Same exact three methods as original actual-focused.json; use current unmodified owning module and ordinary unittest loader, not obsolete candidate compile/registry preimage assertions in old run.py."
+  },
+  "closure_capture_points": [
+    "Before importing/running selected tests, compare all declared current helper/test/provider/resource inputs to literal selected Git source. Capture full actual native module names/sizes/content hashes using unchanged hash_go_module and immutable _module_membership(path_order=windows); require equal f797.",
+    "Before and after the actual Python command, successful canonical Windows owned lookup for core/pysrc/_host.py must report absent; inspect actual ancestor/sibling names and refuse case aliases/ambiguity/non-ASCII mismatch. Bind hostapi.py and all actual namespace inputs; a failed read is UNKNOWN, not absence.",
+    "Capture original admitted payload/stamp/manifest/binary hashes. Record fresh class installation copy hashes after setUpClass, before first case and before final tearDownClass cleanup using observation-only unittest result callbacks; do not replace build_installation or receipt/transport behavior.",
+    "Run the exact three methods once. Retain actual argv/cwd/exit, unique named results/skips, source/provider/native error codes and replay/no-resend assertions. No invented Go run occurs locally: Go tool/source identity comes from authenticated artifact producer and is labeled separately from local Python.",
+    "After all fixture/native subprocess cleanup, recapture full module membership and host lookup; require identical before/after and source inputs. Original artifact bytes stay unchanged; class-owned copy cleanup remains existing behavior.",
+    "Only after genuine results exist, create immutable test successor with top-level commands populated from actual invocation, input_membership go-module-v1, absent_inputs Windows _host.py owner binding, full raw/tool/source references and history-preserving CAS. Exercise full authenticate_recorded_disposition plus applicability on Temp overlay before Root admission. No prefilled passed receipt."
+  ],
+  "expected_finite_oracles": [
+    "Preclaim transport failure keeps exact issue effect pending, no issue patch, independent Project succeeds.",
+    "Real native stale expected hash returns REVISION_CONFLICT before issue effect; independent Project succeeds.",
+    "Actual issue marker verifier returns REMOTE_BINDING_UNVERIFIED; independent Project succeeds.",
+    "Explicit later issue retry occurs once; already successful Project is never resent. No distributed rollback."
+  ],
+  "source_bindings_at_c2": {
+    ".github/workflows/ci.yml": "89ef9bf4def293b554b5d2bbc5ccb061a2b2f0e5d140e613367e2b0b011366ee",
+    ".github/scripts/ci20_native_binding.py": "8a927974424c7c18d3e2e28db0173de07c65e2f1bb068e08dd11e14614284c3f",
+    ".github/scripts/test_artifact_authoring.py": "97c4b9b0dc903a187eb86cea3c5429b758073beb741299b50f618890e9c38555",
+    ".github/scripts/test_work_github.py": "226946f1d44825845d94fd0223d953d21346cc1afdaf8959455eac2fec5d1008",
+    ".github/scripts/_contextverificationlib.py": "361b29a202f8ff3fe4f35c58a42d53cf77c4f8fe05985b1e91b721fc8f2a0707",
+    ".github/scripts/major_readiness.py": "217ffe45e7a812b0a3613626600afe4d9d98c0277f45e532cd1e15b88f77e2d1",
+    "core/pysrc/_artifactlib.py": "59dbf6c51cbbb824cf553aa38aeb9c543dcada14c6311e9393434d231babe03b",
+    "core/pysrc/_workgithub.py": "79a1ce36cc360eb1eb095b45ab08ecc50c50fe10670dc10e2d9c5cd21be8ca1f",
+    "core/pysrc/hostapi.py": "2aea81ad167a458c6053cb52880952521159a367eaa5baa7df6e2e35fea574e4"
+  },
+  "current_non_actions": [
+    "No artifact was supplied/downloaded/authenticated yet. No test/build/native process was executed by this preparation.",
+    "No API polling, CI rerun, source/manifest/fingerprint changes, fake CI environment, home mutation or Gov/index writes.",
+    "S38 current runtime UNKNOWN remains. Parent1098/main/publication hold remains."
+  ]
+}

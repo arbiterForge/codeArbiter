@@ -1,0 +1,55 @@
+test_pi_publish_refuses_a_different_workflow_commit (test_release_workflow.ConsumerSafetyGateTest.test_pi_publish_refuses_a_different_workflow_commit) ... FAIL
+test_literal_extraction_refuses_missing_duplicate_and_unsupported_shapes (test_release_workflow.ReceiptShellBoundaryTest.test_literal_extraction_refuses_missing_duplicate_and_unsupported_shapes) ... FAIL
+test_missing_receipt_is_uploaded_once_and_replay_only_reads (test_release_workflow.ReceiptShellBoundaryTest.test_missing_receipt_is_uploaded_once_and_replay_only_reads) ... FAIL
+test_same_named_wrong_receipt_is_downloaded_and_refused_without_overwrite (test_release_workflow.ReceiptShellBoundaryTest.test_same_named_wrong_receipt_is_downloaded_and_refused_without_overwrite) ... FAIL
+test_uploaded_receipt_with_lost_response_is_observed_before_retry (test_release_workflow.ReceiptShellBoundaryTest.test_uploaded_receipt_with_lost_response_is_observed_before_retry) ... FAIL
+
+======================================================================
+FAIL: test_pi_publish_refuses_a_different_workflow_commit (test_release_workflow.ConsumerSafetyGateTest.test_pi_publish_refuses_a_different_workflow_commit)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\brenn\.codex\worktrees\program-governance-prep\codeArbiter\.github\scripts\test_release_workflow.py", line 321, in test_pi_publish_refuses_a_different_workflow_commit
+    self.assertTrue(bash and Path(bash).is_file(), "bash is required")
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: False is not true : bash is required
+
+======================================================================
+FAIL: test_literal_extraction_refuses_missing_duplicate_and_unsupported_shapes (test_release_workflow.ReceiptShellBoundaryTest.test_literal_extraction_refuses_missing_duplicate_and_unsupported_shapes)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\brenn\.codex\worktrees\program-governance-prep\codeArbiter\.github\scripts\test_release_workflow.py", line 544, in setUp
+    self.assertTrue(self.bash.is_file(), "real Bash is required; do not skip qualification")
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: False is not true : real Bash is required; do not skip qualification
+
+======================================================================
+FAIL: test_missing_receipt_is_uploaded_once_and_replay_only_reads (test_release_workflow.ReceiptShellBoundaryTest.test_missing_receipt_is_uploaded_once_and_replay_only_reads)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\brenn\.codex\worktrees\program-governance-prep\codeArbiter\.github\scripts\test_release_workflow.py", line 544, in setUp
+    self.assertTrue(self.bash.is_file(), "real Bash is required; do not skip qualification")
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: False is not true : real Bash is required; do not skip qualification
+
+======================================================================
+FAIL: test_same_named_wrong_receipt_is_downloaded_and_refused_without_overwrite (test_release_workflow.ReceiptShellBoundaryTest.test_same_named_wrong_receipt_is_downloaded_and_refused_without_overwrite)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\brenn\.codex\worktrees\program-governance-prep\codeArbiter\.github\scripts\test_release_workflow.py", line 544, in setUp
+    self.assertTrue(self.bash.is_file(), "real Bash is required; do not skip qualification")
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: False is not true : real Bash is required; do not skip qualification
+
+======================================================================
+FAIL: test_uploaded_receipt_with_lost_response_is_observed_before_retry (test_release_workflow.ReceiptShellBoundaryTest.test_uploaded_receipt_with_lost_response_is_observed_before_retry)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\brenn\.codex\worktrees\program-governance-prep\codeArbiter\.github\scripts\test_release_workflow.py", line 544, in setUp
+    self.assertTrue(self.bash.is_file(), "real Bash is required; do not skip qualification")
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: False is not true : real Bash is required; do not skip qualification
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.005s
+
+FAILED (failures=5)

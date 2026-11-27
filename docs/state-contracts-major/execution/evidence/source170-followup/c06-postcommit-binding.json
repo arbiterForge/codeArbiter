@@ -1,0 +1,96 @@
+{
+  "result": "PASS_COMMITTED_SOURCE_EQUALS_ACTUAL_PRECOMMIT_REVIEW",
+  "before": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+  "commit": "ea9da763b33708c8533623568b7241eaaea0d153",
+  "review_sha256": "a3013c3a90c355f6449d1e6610ab9d543c765d42201684d023b5dfb99996f9cd",
+  "candidate": "candidate-v1:cb1125933b54e2e0b1706960306f76471721b1cdfe910223bcf9c88f922b2782",
+  "patch_sha256": "948e1ca27ab614d2b3012b11eec0dee40aadd5f89b9fa32b29ee97cf3099eea8",
+  "subjects": {
+    ".codearbiter/sprint-log.md": {
+      "path": ".codearbiter/sprint-log.md",
+      "index_oid": "1d63ccf8ad2ccc1739ec5b2ba098f083e64b4ea2",
+      "sha256": "82a622b6bfa40862020c69fea21992dba0ad09dda9ec7057e9dc607e46d902d2",
+      "bytes": 268874,
+      "physical_sha256": "82a622b6bfa40862020c69fea21992dba0ad09dda9ec7057e9dc607e46d902d2",
+      "physical_bytes": 268874,
+      "physical_matches_index": true
+    },
+    ".github/scripts/run_artifact_authority_shard.py": {
+      "path": ".github/scripts/run_artifact_authority_shard.py",
+      "index_oid": "9826d91bc43e112f434438d3020579636a4f946b",
+      "sha256": "2a274ccc4704979acf8a1301567d897559425f32f04aae7cc1de3f8130423e1d",
+      "bytes": 25652,
+      "physical_sha256": "2a274ccc4704979acf8a1301567d897559425f32f04aae7cc1de3f8130423e1d",
+      "physical_bytes": 25652,
+      "physical_matches_index": true
+    },
+    ".github/scripts/test_ci20_native_pipeline.py": {
+      "path": ".github/scripts/test_ci20_native_pipeline.py",
+      "index_oid": "6db656473f92aaf73d7dbbafdebe0eb5cd0b2d49",
+      "sha256": "e50321586d52115a17d5ad64e4340181ecf0dd200fa447473f07bd4912cc4e89",
+      "bytes": 38285,
+      "physical_sha256": "e50321586d52115a17d5ad64e4340181ecf0dd200fa447473f07bd4912cc4e89",
+      "physical_bytes": 38285,
+      "physical_matches_index": true
+    },
+    "docs/state-contracts-major/execution/CHECKPOINT.md": {
+      "path": "docs/state-contracts-major/execution/CHECKPOINT.md",
+      "index_oid": "679c59f35f24530fd49c3dc9c9742203de108e55",
+      "sha256": "c562eeed28ce2a2d173d5d123ff47419eb79573f627c1f039d3d9cc51f01ec71",
+      "bytes": 28286,
+      "physical_sha256": "c562eeed28ce2a2d173d5d123ff47419eb79573f627c1f039d3d9cc51f01ec71",
+      "physical_bytes": 28286,
+      "physical_matches_index": true
+    },
+    "docs/state-contracts-major/execution/evidence/c06-owned-direct-child-cleanup/development.json": {
+      "path": "docs/state-contracts-major/execution/evidence/c06-owned-direct-child-cleanup/development.json",
+      "index_oid": "2f83907e33e9117a1bc4e9e1d84966fbf5744e1e",
+      "sha256": "dec3c105f9eed5f464ed4199b89e611c2dbc8c397066ab0e7e1abda65793d17b",
+      "bytes": 2601,
+      "physical_sha256": "dec3c105f9eed5f464ed4199b89e611c2dbc8c397066ab0e7e1abda65793d17b",
+      "physical_bytes": 2601,
+      "physical_matches_index": true
+    },
+    "docs/state-contracts-major/execution/evidence/c06-owned-direct-child-cleanup/fix-delivery.json": {
+      "path": "docs/state-contracts-major/execution/evidence/c06-owned-direct-child-cleanup/fix-delivery.json",
+      "index_oid": "7e5b537603d5c8e3015833a5fda6592927af58b9",
+      "sha256": "e6a6647abf6a382fbcff06e2105f4f441139f8933b8e5252b34511528f88dc19",
+      "bytes": 15100,
+      "physical_sha256": "e6a6647abf6a382fbcff06e2105f4f441139f8933b8e5252b34511528f88dc19",
+      "physical_bytes": 15100,
+      "physical_matches_index": true
+    },
+    "docs/state-contracts-major/execution/evidence/c06-owned-direct-child-cleanup/observations.json": {
+      "path": "docs/state-contracts-major/execution/evidence/c06-owned-direct-child-cleanup/observations.json",
+      "index_oid": "898aa4222920c853c1d7c14248444abf25e4d82a",
+      "sha256": "e71f4848d563f86669a85b3e862e07d445744f5ae01a82bd06d4521f63a92e88",
+      "bytes": 18949,
+      "physical_sha256": "e71f4848d563f86669a85b3e862e07d445744f5ae01a82bd06d4521f63a92e88",
+      "physical_bytes": 18949,
+      "physical_matches_index": true
+    },
+    "docs/state-contracts-major/execution/evidence/c06-owned-direct-child-cleanup/original-retention-positive.json": {
+      "path": "docs/state-contracts-major/execution/evidence/c06-owned-direct-child-cleanup/original-retention-positive.json",
+      "index_oid": "e3f878fe63f6f4fb2ce90e5b0b8fe2c7640ed8fd",
+      "sha256": "ef684fd7eb75a578a0914270230a53c35bfad7a13fd05d57460ceb050faab43a",
+      "bytes": 7834,
+      "physical_sha256": "ef684fd7eb75a578a0914270230a53c35bfad7a13fd05d57460ceb050faab43a",
+      "physical_bytes": 7834,
+      "physical_matches_index": true
+    },
+    "docs/state-contracts-major/execution/progress.json": {
+      "path": "docs/state-contracts-major/execution/progress.json",
+      "index_oid": "e6dcb766bb11a5359cd00fa0a84190a9eac4addd",
+      "sha256": "4cd8770a8925e17452838a28487a39af4bbcfc9214b820d0150c168e10ffd60d",
+      "bytes": 358764,
+      "physical_sha256": "4cd8770a8925e17452838a28487a39af4bbcfc9214b820d0150c168e10ffd60d",
+      "physical_bytes": 358764,
+      "physical_matches_index": true
+    }
+  },
+  "actual_staged_integrity_tree_equals_commit_tree": true,
+  "foreign_state_preserved": true,
+  "admission_timing": "Original independent PASS review and scans preceded commit. Temporary adapter failed because full_subjects was a list; Root mistakenly continued before inspecting its exit. This postcommit check binds all actual committed objects, patch and tree to the unchanged precommit evidence. It does not claim the adapter passed before commit.",
+  "remote_pushed": false,
+  "main_merge": "HELD_FOR_USER_TESTING"
+}

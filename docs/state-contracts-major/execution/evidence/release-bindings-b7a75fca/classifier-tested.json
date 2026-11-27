@@ -1,0 +1,122 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
+  "kind": "test",
+  "result": "PASSED",
+  "producer": {
+    "class": "local-host",
+    "identity": "/root: actual24 existing/new classifier methods and genuine17-vector RED; exact source subject joined to committedb7a75fca"
+  },
+  "inputs": {
+    "core/pysrc/_releaselib.py": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea",
+    ".github/scripts/test_release_lib.py": "2f9ac6af5a32da6901dd38ffb5440b4e4e18e4c29de8506d9e6b090c313e956f",
+    ".github/scripts/_releaselib.py": "59ffb55276bf3a0b873861be71c6d286ddf25b035db35715e34c8929bccc6c21"
+  },
+  "disposition_ids": [
+    "disposition:transitions:S44:01",
+    "disposition:transitions:S44:02",
+    "disposition:transitions:S44:03",
+    "disposition:transitions:S44:04",
+    "disposition:transitions:S44:05",
+    "disposition:transitions:S44:06",
+    "disposition:transitions:S44:07",
+    "disposition:transitions:S44:08",
+    "disposition:transitions:S44:09",
+    "disposition:added_transitions:RELEASE-READINESS-BINDING:01",
+    "disposition:added_transitions:RELEASE-READINESS-BINDING:02"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/release-bindings-b7a75fca/raw/original-green.stderr.log",
+      "sha256": "449977609f7cb4c8db235e9a51cbeed30258f1e99568b3fb1405fbb19cbe7f73"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/release-bindings-b7a75fca/raw/original-red.stderr.log",
+      "sha256": "53977b9af9d15d6a82efc84dad905605af8e9364d7520f315c768f329bf23f38"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/release-bindings-b7a75fca/raw/original-counterexamples.json",
+      "sha256": "74d1481532c1e45e6d5a9a42bf793c1d60cbcd6e372feaa899d2c53b07d2f0e8"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/release-bindings-b7a75fca/raw/execution-origin.json",
+      "sha256": "f28cbb8ecdcb509ec45fff13b2113266f71607b94fa1f9a6a32f00d84675c5da"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/release-bindings-b7a75fca/raw/source-assertions.json",
+      "sha256": "29dd16ef385365eeb45fce4c92df79f621e23ab2618958a2226ec5bdd0dd9929"
+    }
+  ],
+  "commands": [
+    {
+      "argv": [
+        "C:/Python314/python.exe",
+        "-X",
+        "utf8",
+        ".github/scripts/test_release_lib.py",
+        "CoreClassifyPublishStateTest",
+        "CoreMergeReadinessArmsTest",
+        "MergeReadinessTest",
+        "-v"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.22670390002895147,
+      "selected_tests": 24,
+      "skipped": 0,
+      "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter"
+    }
+  ],
+  "per_disposition_assertions": {
+    "S44:01": [
+      "test_release_lib.CoreClassifyPublishStateTest.test_no_tag_is_publish_fresh"
+    ],
+    "S44:02": [
+      "test_release_lib.CoreClassifyPublishStateTest.test_tag_points_elsewhere_is_abort",
+      "test_release_lib.CoreClassifyPublishStateTest.test_version_mismatch_is_abort",
+      "test_release_lib.CoreClassifyPublishStateTest.test_nondraft_release_on_a_tag_at_another_commit_is_abort"
+    ],
+    "S44:03": [
+      "test_release_lib.CoreClassifyPublishStateTest.test_nondraft_release_is_already_published"
+    ],
+    "S44:04": [
+      "test_release_lib.CoreClassifyPublishStateTest.test_tag_at_head_version_match_no_release_is_resume"
+    ],
+    "S44:05": [
+      "test_release_lib.CoreMergeReadinessArmsTest.test_missing_when_no_run_matches_the_name",
+      "test_release_lib.CoreMergeReadinessArmsTest.test_missing_on_empty_check_runs",
+      "test_release_lib.MergeReadinessTest.test_unrelated_checks_do_not_stand_in_for_the_gate",
+      "test_release_lib.MergeReadinessTest.test_never_raises_on_garbage"
+    ],
+    "S44:06": [
+      "test_release_lib.CoreMergeReadinessArmsTest.test_sha_mismatch_on_a_different_commit",
+      "test_release_lib.MergeReadinessTest.test_success_on_another_commit_is_rejected"
+    ],
+    "S44:07": [
+      "test_release_lib.CoreMergeReadinessArmsTest.test_pending_when_not_completed",
+      "test_release_lib.MergeReadinessTest.test_queued_and_in_progress_are_pending"
+    ],
+    "S44:08": [
+      "test_release_lib.CoreMergeReadinessArmsTest.test_not_successful_on_a_failed_conclusion",
+      "test_release_lib.MergeReadinessTest.test_every_non_success_conclusion_is_rejected",
+      "test_release_lib.MergeReadinessTest.test_a_green_rerun_alongside_a_red_one_is_rejected"
+    ],
+    "S44:09": [
+      "test_release_lib.CoreMergeReadinessArmsTest.test_green_is_still_reachable",
+      "test_release_lib.MergeReadinessTest.test_completed_success_is_green",
+      "test_release_lib.CoreMergeReadinessArmsTest.test_complete_64_character_commit_identity_is_supported"
+    ],
+    "RELEASE-READINESS-BINDING:01": [
+      "test_release_lib.CoreMergeReadinessArmsTest.test_invalid_candidate_identity_cannot_match_an_invalid_reported_identity"
+    ],
+    "RELEASE-READINESS-BINDING:02": [
+      "test_release_lib.CoreMergeReadinessArmsTest.test_invalid_required_name_cannot_match_an_unnamed_or_invalid_run",
+      "test_release_lib.CoreMergeReadinessArmsTest.test_missing_required_binding_fields_never_form_green_evidence"
+    ]
+  },
+  "scope": "Canonical publish/merge classifiers and stable CI shim; invalid binding refusals carry no new authority",
+  "limits": [
+    "Pure classification over synthetic fields, not actual hosted status, merged approval, publication, TLS or installed host acceptance.",
+    "Existing duplicate-red refusal is executed; a separate duplicate-green-plus-pending fixture was not run and its all-match conjunction is source-inspected.",
+    "No whole release task or machine promotion."
+  ]
+}

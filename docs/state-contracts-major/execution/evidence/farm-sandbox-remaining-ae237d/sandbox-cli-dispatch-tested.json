@@ -1,0 +1,126 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "ef40ab5f33f4430a3650c225909801094acabbb4",
+  "kind": "test",
+  "result": "PASSED",
+  "producer": {
+    "class": "local-host",
+    "identity": "Actual retained named local outcomes with literal whole-file original/current input joins."
+  },
+  "inputs": {
+    "plugins/ca-sandbox/tools/build.ts": "14f0bada473d9fab480ab56ad7527e12a8dde2f8ce02cb985c2755a20d774ea2",
+    "plugins/ca-sandbox/tools/cli.test.ts": "93f892b6ece601a3597e5ec24823905409e6f7e53ec6fab0d6d4c1e5e4e31eb2",
+    "plugins/ca-sandbox/tools/cli.ts": "f5a004a68aa2ab6da7432ee6d6b5a216ae22d0c79a993b4ca3587e5bd5de209c",
+    "plugins/ca-sandbox/tools/cp.ts": "fd83506733aecf21534c824e4928d2962fd369ba51dc94d5bb096a073b6d0d42",
+    "plugins/ca-sandbox/tools/create.ts": "670edcdbeb9de04467101d3a78992258bcd9e35b606b000334e551888e16d0ea",
+    "plugins/ca-sandbox/tools/dephash.ts": "4eb0ffdbc5d66eeb47409a43a04ccec81f1ea41dc391074be44488028f23139c",
+    "plugins/ca-sandbox/tools/destroy.ts": "6afde8b498f4db671dfffe90a5086ad64ff9e28b67a3a4da4a22c008d66d2ce9",
+    "plugins/ca-sandbox/tools/docker.ts": "ac2127a49446d7794bb7b8b2b20cf786c56f8d4a318ade2e56b354fc7a068fc0",
+    "plugins/ca-sandbox/tools/exec.ts": "31b0297d6bf0288c4d16bfd6c8604b31141ddf887cd8103c63b2e9ac0343458e",
+    "plugins/ca-sandbox/tools/mounts.ts": "15a89e0d2b08a57bc82139f1af267d250cc2bb3380f134df56dc55dcfe92b81d",
+    "plugins/ca-sandbox/tools/package-lock.json": "815b4523f446b39c6eb078a2e7249601432240582a444d0c48e2aff02179ef67",
+    "plugins/ca-sandbox/tools/package.json": "cf3b87fea39148d3b3bee0db60c84b8fcbf353f4b0565d513141fd2937ae3138",
+    "plugins/ca-sandbox/tools/registry.ts": "3778f8fd9cafdc5dfa48da14de7597db3110bc1a578adf03b4c136e1504a07a7",
+    "plugins/ca-sandbox/tools/run.ts": "ccc40123e2594539925e3bbcba2f8f9a4d574509349c25f047d298e275dc595a",
+    "plugins/ca-sandbox/tools/tsconfig.json": "006a5145157df0bf27f79f2bb00dee8cf9df85720b01d88675510e13770deab7",
+    "plugins/ca-sandbox/tools/vitest.config.ts": "bb1c82a13ca1af089ef3db4af843da2bfef3def0733b812ccd5fb36f6460dd5e",
+    "plugins/ca-sandbox/tools/claude-inside-cli.ts": "c90cdf6009a6002b60da08efdf1b1521a7a3d61807d95cc631f3a779e1daa988",
+    "plugins/ca-sandbox/tools/docker-gate.ts": "0f4929feb9b5e41224cd1a276fb0a1aa3b2b6fb064dd0a7c7c28309e35f70e5b"
+  },
+  "disposition_ids": [
+    "disposition:transitions:S54:01"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/raw/selected-named-observations.json",
+      "sha256": "9ba86136b2d49dc599cacb783f37420d0a40c97d65c9b4d71750db10c62095d4"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/execution-origins.json",
+      "sha256": "c9b9e4e096ebaf6d203a34af09fa4dc4cdfa5f7e52fdc96fe3b048e46af66ac3"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/source-clause-catalog.json",
+      "sha256": "444ae0dd6cc088826de5802d552220b80bb40c2ea3be1953910a5390451d1a8a"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/input-cones.json",
+      "sha256": "ae0a3897b943158cca7b3079573e24559ab4d17c1422235968335c1704c51c0e"
+    }
+  ],
+  "semantic_mapping": [
+    {
+      "cell": "disposition:transitions:S54:01",
+      "frozen_contract_sha256": "b3b6b8c14b0829584f159b3eaa35a354b00dcc513f5887c1de79c3aad9ff87be",
+      "event": "valid create/shell/exec/cp/destroy/prune",
+      "guard": "command-specific options valid",
+      "current_contract_review": "Valid imported CLI grammar invokes one selected handler, preserves exit codes and separates explicit prune from missing-ID destroy. Direct signal-entry execution is a separate source-only group.",
+      "assertion_refs": [
+        "A-0049",
+        "A-0050",
+        "A-0051",
+        "A-0052",
+        "A-0053",
+        "A-0054",
+        "A-0055",
+        "A-0056",
+        "A-0057",
+        "A-0058",
+        "A-0059",
+        "A-0060",
+        "A-0061",
+        "A-0062",
+        "A-0063",
+        "A-0064",
+        "A-0065",
+        "A-0066",
+        "A-0067",
+        "A-0068",
+        "A-0069",
+        "A-0070",
+        "A-0071",
+        "A-0072",
+        "A-0073",
+        "A-0074",
+        "A-0075",
+        "A-0076",
+        "A-0077",
+        "A-0078",
+        "A-0079",
+        "A-0080",
+        "A-0081",
+        "A-0082",
+        "A-0083",
+        "A-0084"
+      ],
+      "source_paths": [
+        "plugins/ca-sandbox/tools/cli.ts",
+        "plugins/ca-sandbox/tools/claude-inside-cli.ts",
+        "plugins/ca-sandbox/tools/docker-gate.ts"
+      ],
+      "classification": "TESTED_FINITE_SOFTWARE"
+    }
+  ],
+  "limits": [
+    "Finite named software/source contracts only. No whole-task/whole-program promotion, paid provider, all-crash/partial-compensation, unexecuted platform or new installed runtime claim.",
+    "Actual old execution epochs/raw producer classes remain unchanged. Retaining an extract/current source hash is not another execution.",
+    "Exact callback/declaration hashes and line anchors are in selected-named-observations; full source files are captured inputs, never replaced by AST/function equality."
+  ],
+  "commands": [
+    {
+      "argv": [
+        "C:/Users/brenn/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node.exe",
+        "C:/Program Files/nodejs/node_modules/npm/bin/npm-cli.js",
+        "run",
+        "coverage",
+        "--",
+        "--reporter=json",
+        "--outputFile=C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sbx-builder-admission-w_0306cr\\coverage-tests.json"
+      ],
+      "exit_code": 0,
+      "seconds": 13.790526866912842,
+      "input_drift": []
+    }
+  ],
+  "original_execution_origin": "sandbox357"
+}

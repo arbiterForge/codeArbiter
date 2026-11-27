@@ -1,0 +1,345 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "/root/ci_repair_review: literal53clause/currentguidance/callee/baselineinspection; noexecution"
+ },
+ "inputs": {
+  ".codearbiter/decisions/0043-assistive-state-engine.md": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+  "core/pysrc/_workflowrecoverylib.py": "a37291b659cdc1ae94482f7591e50b0e869a87c4a16fdf427bd1373c2e7ade9e",
+  "core/pysrc/workflow-recovery.py": "a9a971371d2be4ece6eebdce24f4e2ebeb1a2a9a23e16d3d6d5e39479ef2b482",
+  "core/surface/SPRINT.md": "d3d469e9f741985493a1a391d1d9239a59f6995acd1c2b45463a2978c5146aa6",
+  "core/surface/commands/standup.md": "7e509ae3354c4c8db7365812991806efe467420844cbdb35635b283d686a96cb",
+  "core/surface/includes/harvest.md": "a3798c8362d1ee3b0f699503022f91a49a88daa2d9ccda44b1eaf7620f719388",
+  "core/surface/skills/brainstorming/SKILL.md": "77f658b30ac9842b0f052ff16563075142d0ab25ac5a0bf895072c40dcd64c2b",
+  "core/surface/skills/tdd/SKILL.md": "c430cc5f6f20ab36f4fe1efc5ab52ec14f752abd49d6eb3d79f074f4c378ecc7",
+  "core/surface/skills/writing-plans/SKILL.md": "7284798238e8f98fdd47b8e9ef4a7d9b6dc0e88f36e21e26a27606287df60bf7",
+  "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e"
+ },
+ "disposition_ids": [
+  "disposition:machines:WF-14",
+  "disposition:transitions:WF-14:01",
+  "disposition:transitions:WF-14:02",
+  "disposition:transitions:WF-14:03",
+  "disposition:transitions:WF-14:04"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/workflow-ten-source-384/source-bindings.json",
+   "sha256": "3103212963370e3d7c1ff6e84a8e3852e55a1401987e528dcd60b3e13d282cfc"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/workflow-ten-source-384/clause-inspection.json",
+   "sha256": "4f0a656b05f94b18669093b3387d1319b591ea56d809dba57a8211f2b2bade8f"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:WF-14",
+   "frozen_row_sha256": "a218bb0167dc35dc6151ed817e1b52e4deb73082174fa97ad9ac895275591a02",
+   "clause_ids": [
+    "disposition:transitions:WF-14:01",
+    "disposition:transitions:WF-14:02",
+    "disposition:transitions:WF-14:03",
+    "disposition:transitions:WF-14:04"
+   ],
+   "witnesses": [
+    {
+     "path": "core/surface/includes/harvest.md",
+     "start": 9,
+     "end": 61,
+     "file_sha256": "a3798c8362d1ee3b0f699503022f91a49a88daa2d9ccda44b1eaf7620f719388",
+     "span_sha256": "f7db12bdafbeb25107d04dacc1a819fccb86dd066f67dc3644a00a11c66d9665"
+    },
+    {
+     "path": "core/surface/skills/tdd/SKILL.md",
+     "start": 85,
+     "end": 90,
+     "file_sha256": "c430cc5f6f20ab36f4fe1efc5ab52ec14f752abd49d6eb3d79f074f4c378ecc7",
+     "span_sha256": "42da1152a324dc6f74dc69a87ff712a1b9dfef149f9ff636a48765e4df333e19"
+    },
+    {
+     "path": "core/surface/skills/brainstorming/SKILL.md",
+     "start": 74,
+     "end": 83,
+     "file_sha256": "77f658b30ac9842b0f052ff16563075142d0ab25ac5a0bf895072c40dcd64c2b",
+     "span_sha256": "599a2ffb6df140d224e82a74427466061c32dafb0d49341766b8ba06c5a699bd"
+    },
+    {
+     "path": "core/surface/skills/writing-plans/SKILL.md",
+     "start": 122,
+     "end": 131,
+     "file_sha256": "7284798238e8f98fdd47b8e9ef4a7d9b6dc0e88f36e21e26a27606287df60bf7",
+     "span_sha256": "39b1af6a86bbd30312c7826018a3ece29225e1c93bc63ac374098820a191993a"
+    },
+    {
+     "path": "core/surface/SPRINT.md",
+     "start": 68,
+     "end": 89,
+     "file_sha256": "d3d469e9f741985493a1a391d1d9239a59f6995acd1c2b45463a2978c5146aa6",
+     "span_sha256": "7ea01a2eb8fd35b395fa4a85e5a62533b655431428f9cd97d622655bee15c32c"
+    },
+    {
+     "path": "core/surface/includes/harvest.md",
+     "start": 110,
+     "end": 155,
+     "file_sha256": "a3798c8362d1ee3b0f699503022f91a49a88daa2d9ccda44b1eaf7620f719388",
+     "span_sha256": "f9e06d9a3b2d91b758f1724ae693d7107ba81fa3aa981802705d35dc21aa42fb"
+    },
+    {
+     "path": "core/surface/commands/standup.md",
+     "start": 147,
+     "end": 157,
+     "file_sha256": "7e509ae3354c4c8db7365812991806efe467420844cbdb35635b283d686a96cb",
+     "span_sha256": "ec26069f4873156ac87dbcc3f2ebd8fb43746eb4e255078ee2ecf659cdceaa37"
+    },
+    {
+     "path": "core/surface/includes/harvest.md",
+     "start": 63,
+     "end": 108,
+     "file_sha256": "a3798c8362d1ee3b0f699503022f91a49a88daa2d9ccda44b1eaf7620f719388",
+     "span_sha256": "81f7033a4f4a829d5ea112a3b756dc1be20ef4cddbc83fbafce0174c4937973b"
+    },
+    {
+     "path": "core/surface/includes/harvest.md",
+     "start": 150,
+     "end": 187,
+     "file_sha256": "a3798c8362d1ee3b0f699503022f91a49a88daa2d9ccda44b1eaf7620f719388",
+     "span_sha256": "aeaaea5dadab5907a63038e308c53a2c08df11cf8047d45c45a5091102e1f483"
+    },
+    {
+     "path": "core/pysrc/_workflowrecoverylib.py",
+     "start": 2030,
+     "end": 2084,
+     "file_sha256": "a37291b659cdc1ae94482f7591e50b0e869a87c4a16fdf427bd1373c2e7ade9e",
+     "span_sha256": "6452286d076e8eb9a55bf56e79793cb8cb25ac000d9969d1b52badf8be65b1ab"
+    },
+    {
+     "path": "core/surface/includes/harvest.md",
+     "start": 9,
+     "end": 14,
+     "file_sha256": "a3798c8362d1ee3b0f699503022f91a49a88daa2d9ccda44b1eaf7620f719388",
+     "span_sha256": "eeac7c89e028cb2d347fd073c321d3174279e7391d6b863deb52cb7875bdc14b"
+    },
+    {
+     "path": "core/surface/includes/harvest.md",
+     "start": 16,
+     "end": 108,
+     "file_sha256": "a3798c8362d1ee3b0f699503022f91a49a88daa2d9ccda44b1eaf7620f719388",
+     "span_sha256": "9c77901ab1be6a3bbd8eee1ff4db7d067fcd0bba3c47bb276056611a49d3e0d5"
+    },
+    {
+     "path": "core/pysrc/workflow-recovery.py",
+     "start": 15,
+     "end": 62,
+     "file_sha256": "a9a971371d2be4ece6eebdce24f4e2ebeb1a2a9a23e16d3d6d5e39479ef2b482",
+     "span_sha256": "9c6a3fd69e0920ecc3f61cb917be26fd9c42aa39a95c503335c5ed9776925eda"
+    },
+    {
+     "path": "core/pysrc/_workflowrecoverylib.py",
+     "start": 1573,
+     "end": 1660,
+     "file_sha256": "a37291b659cdc1ae94482f7591e50b0e869a87c4a16fdf427bd1373c2e7ade9e",
+     "span_sha256": "442b015877ec1964871301dd83b480df3b06255cd96ae7a914e98fe52477ce76"
+    },
+    {
+     "path": "core/pysrc/_workflowrecoverylib.py",
+     "start": 1663,
+     "end": 1712,
+     "file_sha256": "a37291b659cdc1ae94482f7591e50b0e869a87c4a16fdf427bd1373c2e7ade9e",
+     "span_sha256": "f53f3f9e8da9d65f4c74e926209df9b1af3ac73c83f193f4ba80c3b21adf4935"
+    },
+    {
+     "path": "core/pysrc/_workflowrecoverylib.py",
+     "start": 2148,
+     "end": 2195,
+     "file_sha256": "a37291b659cdc1ae94482f7591e50b0e869a87c4a16fdf427bd1373c2e7ade9e",
+     "span_sha256": "e459ada3b7037510c0a0878b83c8fcc3b0f0085463777c0fd30ed50e107bf1cc"
+    }
+   ],
+   "semantic_assessment": "Everyliteralguard/effect/retryclause separatelymappedtoactualguidance/callee, includingnamedacceptedreplacementsandintakecorrections. No actualagentexecution, commandresult, taskcompletionoruniversalruntimeguard asserted.",
+   "limits": "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:WF-14:01",
+   "frozen_row_sha256": "1d59208cd9d43e32eb61a78f66f111518c6c73f65cfd8c3f2f76072233b427f5",
+   "witnesses": [
+    {
+     "path": "core/surface/includes/harvest.md",
+     "start": 9,
+     "end": 61,
+     "file_sha256": "a3798c8362d1ee3b0f699503022f91a49a88daa2d9ccda44b1eaf7620f719388",
+     "span_sha256": "f7db12bdafbeb25107d04dacc1a819fccb86dd066f67dc3644a00a11c66d9665"
+    },
+    {
+     "path": "core/surface/skills/tdd/SKILL.md",
+     "start": 85,
+     "end": 90,
+     "file_sha256": "c430cc5f6f20ab36f4fe1efc5ab52ec14f752abd49d6eb3d79f074f4c378ecc7",
+     "span_sha256": "42da1152a324dc6f74dc69a87ff712a1b9dfef149f9ff636a48765e4df333e19"
+    },
+    {
+     "path": "core/surface/skills/brainstorming/SKILL.md",
+     "start": 74,
+     "end": 83,
+     "file_sha256": "77f658b30ac9842b0f052ff16563075142d0ab25ac5a0bf895072c40dcd64c2b",
+     "span_sha256": "599a2ffb6df140d224e82a74427466061c32dafb0d49341766b8ba06c5a699bd"
+    },
+    {
+     "path": "core/surface/skills/writing-plans/SKILL.md",
+     "start": 122,
+     "end": 131,
+     "file_sha256": "7284798238e8f98fdd47b8e9ef4a7d9b6dc0e88f36e21e26a27606287df60bf7",
+     "span_sha256": "39b1af6a86bbd30312c7826018a3ece29225e1c93bc63ac374098820a191993a"
+    },
+    {
+     "path": "core/surface/SPRINT.md",
+     "start": 68,
+     "end": 89,
+     "file_sha256": "d3d469e9f741985493a1a391d1d9239a59f6995acd1c2b45463a2978c5146aa6",
+     "span_sha256": "7ea01a2eb8fd35b395fa4a85e5a62533b655431428f9cd97d622655bee15c32c"
+    }
+   ],
+   "semantic_assessment": "Qualifyingsanitizedfollowupcapturedatdiscoverywithstableworkflow/workrun, exactextractororigin/sourcefingerprint andboundedschema. Failedcapturevisible durablefalse; blockingdecisions/userstopsnotdowngradedintobacklog.",
+   "intake_variances": [
+    "AcceptedHW11-14 replaceterminal-onlyresidueexposurewithregister-at-discovery; no claimunregisteredconversationrecovered."
+   ],
+   "limits": "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:WF-14:02",
+   "frozen_row_sha256": "a2b1d802ccf91c0b51f79118ccdb8b7a23e34f488c9d2156af0a05eb6eba9fe2",
+   "witnesses": [
+    {
+     "path": "core/surface/includes/harvest.md",
+     "start": 110,
+     "end": 155,
+     "file_sha256": "a3798c8362d1ee3b0f699503022f91a49a88daa2d9ccda44b1eaf7620f719388",
+     "span_sha256": "f9e06d9a3b2d91b758f1724ae693d7107ba81fa3aa981802705d35dc21aa42fb"
+    },
+    {
+     "path": "core/surface/commands/standup.md",
+     "start": 147,
+     "end": 157,
+     "file_sha256": "7e509ae3354c4c8db7365812991806efe467420844cbdb35635b283d686a96cb",
+     "span_sha256": "ec26069f4873156ac87dbcc3f2ebd8fb43746eb4e255078ee2ecf659cdceaa37"
+    }
+   ],
+   "semantic_assessment": "Terminalpreviewreusesregisteredcandidates, sourceorigin\u2014not title\u2014dedup acrossactive/archive selectedowner; bounded32originqueryandfailedquerynopartialpreview. Interactiveonebatchneedsactualchoice; noreadsideautomaticremoteeffect.",
+   "intake_variances": [],
+   "limits": "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:WF-14:03",
+   "frozen_row_sha256": "ecfe7228fe57b16e806da2675b197e1a0943157e77a2b99b67232f996b18103c",
+   "witnesses": [
+    {
+     "path": "core/surface/includes/harvest.md",
+     "start": 63,
+     "end": 108,
+     "file_sha256": "a3798c8362d1ee3b0f699503022f91a49a88daa2d9ccda44b1eaf7620f719388",
+     "span_sha256": "81f7033a4f4a829d5ea112a3b756dc1be20ef4cddbc83fbafce0174c4937973b"
+    },
+    {
+     "path": "core/surface/includes/harvest.md",
+     "start": 150,
+     "end": 187,
+     "file_sha256": "a3798c8362d1ee3b0f699503022f91a49a88daa2d9ccda44b1eaf7620f719388",
+     "span_sha256": "aeaaea5dadab5907a63038e308c53a2c08df11cf8047d45c45a5091102e1f483"
+    },
+    {
+     "path": "core/pysrc/_workflowrecoverylib.py",
+     "start": 2030,
+     "end": 2084,
+     "file_sha256": "a37291b659cdc1ae94482f7591e50b0e869a87c4a16fdf427bd1373c2e7ade9e",
+     "span_sha256": "6452286d076e8eb9a55bf56e79793cb8cb25ac000d9969d1b52badf8be65b1ab"
+    }
+   ],
+   "semantic_assessment": "Onlyactualinteractiveconsentorcoveredin-scopesprintpromotion callsselectedobligationresume andexacttargetreadback. WorkownerstableIDs/operationIDs anduncertaineffectlookup/reconcileprecederetry; explicitdeclinekeepsaudit; blockingdecisionremainsactualownerquestion.",
+   "intake_variances": [],
+   "limits": "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:WF-14:04",
+   "frozen_row_sha256": "c532c0c95b703383c81221a2ff3bd43973b33d87c23cba3a315c1fab5c3ced4c",
+   "witnesses": [
+    {
+     "path": "core/surface/includes/harvest.md",
+     "start": 9,
+     "end": 14,
+     "file_sha256": "a3798c8362d1ee3b0f699503022f91a49a88daa2d9ccda44b1eaf7620f719388",
+     "span_sha256": "eeac7c89e028cb2d347fd073c321d3174279e7391d6b863deb52cb7875bdc14b"
+    },
+    {
+     "path": "core/surface/includes/harvest.md",
+     "start": 16,
+     "end": 108,
+     "file_sha256": "a3798c8362d1ee3b0f699503022f91a49a88daa2d9ccda44b1eaf7620f719388",
+     "span_sha256": "9c77901ab1be6a3bbd8eee1ff4db7d067fcd0bba3c47bb276056611a49d3e0d5"
+    },
+    {
+     "path": "core/surface/commands/standup.md",
+     "start": 147,
+     "end": 157,
+     "file_sha256": "7e509ae3354c4c8db7365812991806efe467420844cbdb35635b283d686a96cb",
+     "span_sha256": "ec26069f4873156ac87dbcc3f2ebd8fb43746eb4e255078ee2ecf659cdceaa37"
+    },
+    {
+     "path": "core/pysrc/workflow-recovery.py",
+     "start": 15,
+     "end": 62,
+     "file_sha256": "a9a971371d2be4ece6eebdce24f4e2ebeb1a2a9a23e16d3d6d5e39479ef2b482",
+     "span_sha256": "9c6a3fd69e0920ecc3f61cb917be26fd9c42aa39a95c503335c5ed9776925eda"
+    },
+    {
+     "path": "core/pysrc/_workflowrecoverylib.py",
+     "start": 1573,
+     "end": 1660,
+     "file_sha256": "a37291b659cdc1ae94482f7591e50b0e869a87c4a16fdf427bd1373c2e7ade9e",
+     "span_sha256": "442b015877ec1964871301dd83b480df3b06255cd96ae7a914e98fe52477ce76"
+    },
+    {
+     "path": "core/pysrc/_workflowrecoverylib.py",
+     "start": 1663,
+     "end": 1712,
+     "file_sha256": "a37291b659cdc1ae94482f7591e50b0e869a87c4a16fdf427bd1373c2e7ade9e",
+     "span_sha256": "f53f3f9e8da9d65f4c74e926209df9b1af3ac73c83f193f4ba80c3b21adf4935"
+    },
+    {
+     "path": "core/pysrc/_workflowrecoverylib.py",
+     "start": 2030,
+     "end": 2084,
+     "file_sha256": "a37291b659cdc1ae94482f7591e50b0e869a87c4a16fdf427bd1373c2e7ade9e",
+     "span_sha256": "6452286d076e8eb9a55bf56e79793cb8cb25ac000d9969d1b52badf8be65b1ab"
+    },
+    {
+     "path": "core/pysrc/_workflowrecoverylib.py",
+     "start": 2148,
+     "end": 2195,
+     "file_sha256": "a37291b659cdc1ae94482f7591e50b0e869a87c4a16fdf427bd1373c2e7ade9e",
+     "span_sha256": "e459ada3b7037510c0a0878b83c8fcc3b0f0085463777c0fd30ed50e107bf1cc"
+    }
+   ],
+   "semantic_assessment": "AcceptedHW11-14 replacement suppliesboundedregisteredrecord/indexrecoveryandreadonlystartup/standupscan. Emptyregistercreatesnoobligation, matchingregisterreusesidentity, changedbindingrefuses; interruptedknownrecordreconcilesbeforeselectedresume. Unregisteredconversationremainsunrecoverableandpartial/unavailablescansarenotemptyorautomaticpermission.",
+   "intake_variances": [
+    "Frozen no-startup/recoveryloop isoldconfirmedgapintentionallychanged; proofmapsactualboundedcapture/recoveryroute, notclaimseveryfindingdurable/actualrecoveryexecuted. Startupreadneverpromotes/repairs/launchesatarget."
+   ],
+   "limits": "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification."
+  }
+ ],
+ "scope": "Source-only actualguidanceconformance withnamedacceptedchanges; notagent/tool/runtime/taskqualification.",
+ "limits": [
+  "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification.",
+  "CurrentPROGRAM/ADR43 acceptedassistive direction and scopedHW07/HW09/HW11-14/HW18 changes are explicit; no artifactcode/reviewerfleet/secondpermissionbarrier invented.",
+  "Real userstops/hostpermissions/security/source-store integrity/CAS/journal failures remain binding; source guidance or a validproof never grantsauthority.",
+  "Exactly54 currentPLANNED rowproposals;9advancededges untouched withfullhistory, allunrelated/WF02/WF03 records preserved.",
+  "Sourceepoch384269 isliteralinspectionbasis. Per-rowCAS bindsactualselectedrows, wholeledgerhashadvisoryonly. Rootalone owns strictprospectiveauthentication/adoption."
+ ]
+}

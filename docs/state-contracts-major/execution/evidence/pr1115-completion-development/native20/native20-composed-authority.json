@@ -1,0 +1,48 @@
+{
+  "argv": [
+    "C:\\Python314\\python.exe",
+    "-B",
+    "-X",
+    "utf8",
+    "-m",
+    "unittest",
+    "test_major_native_observation.NativeCompositeAuthorityTests",
+    "test_major_readiness.CompletedPopulationTest.test_complete_reviewed_population_preserves_local_origin_and_non_circularity",
+    "test_major_readiness.CompletedPopulationTest.test_complete_population_does_not_reopen_resolved_history_prose"
+  ],
+  "exit_code": 1,
+  "seconds": 15.326153700007126,
+  "before": {
+    "head": "a980c220ca4d66be552d06b84596dd56e8822eca",
+    "index": "697ff64daaaae90a56cfebccac003b1755af351c674b952c85e36d4ce5e05f0c",
+    "files": {
+      ".github/major-qualification-policy.json": "2c3789ccd3f9441ae9be4c87ae12735d34a35a873d788505f68022395a849f7f",
+      ".github/scripts/major_native_observation.py": "843fcbed655c36ff5b474d6a48bdf1d70568fe6fa149bb8a135b5f345d81a76f",
+      ".github/scripts/test_major_native_observation.py": "8cc4f2bfff3ef4fd5094808f57ab9b0776b73f963a45df8809c20addb9ae366b",
+      "plugins/ca-sandbox/CHANGELOG.md": "9817d86049632b5fe506fa0560336071c85b20b8df3cae8ab2fda2de44bf821c",
+      "plugins/ca-sandbox/README.md": "ab0b34e2a340141672d54176227b9cbd03db9595aafad2b782f920eab63adb5c",
+      "plugins/ca-sandbox/tools/claude-inside-cli.test.ts": "c1f72c336cec531b0543cf958939751d3c9732c8aab5903c8146d9676c9657bf",
+      "plugins/ca-sandbox/tools/claude-inside-cli.ts": "06b3b1c5b1955007d9e2cc3ed1ecb2cce4b91d7c2444f63b56b4bcd61c5a4a94",
+      "plugins/ca-sandbox/tools/claude-inside.js": "b5f962b4b435de3d5b4d86680b0939314ea1307780072d0e8c29f2a279876521",
+      "plugins/ca/tools/farm-cleanup-observation.test.ts": "a2a26811ea0b6890065a285772df8f92969ec12b7ec659ca285b9ec6ce86f164"
+    }
+  },
+  "after": {
+    "head": "a980c220ca4d66be552d06b84596dd56e8822eca",
+    "index": "697ff64daaaae90a56cfebccac003b1755af351c674b952c85e36d4ce5e05f0c",
+    "files": {
+      ".github/major-qualification-policy.json": "2c3789ccd3f9441ae9be4c87ae12735d34a35a873d788505f68022395a849f7f",
+      ".github/scripts/major_native_observation.py": "843fcbed655c36ff5b474d6a48bdf1d70568fe6fa149bb8a135b5f345d81a76f",
+      ".github/scripts/test_major_native_observation.py": "8cc4f2bfff3ef4fd5094808f57ab9b0776b73f963a45df8809c20addb9ae366b",
+      "plugins/ca-sandbox/CHANGELOG.md": "9817d86049632b5fe506fa0560336071c85b20b8df3cae8ab2fda2de44bf821c",
+      "plugins/ca-sandbox/README.md": "ab0b34e2a340141672d54176227b9cbd03db9595aafad2b782f920eab63adb5c",
+      "plugins/ca-sandbox/tools/claude-inside-cli.test.ts": "c1f72c336cec531b0543cf958939751d3c9732c8aab5903c8146d9676c9657bf",
+      "plugins/ca-sandbox/tools/claude-inside-cli.ts": "06b3b1c5b1955007d9e2cc3ed1ecb2cce4b91d7c2444f63b56b4bcd61c5a4a94",
+      "plugins/ca-sandbox/tools/claude-inside.js": "b5f962b4b435de3d5b4d86680b0939314ea1307780072d0e8c29f2a279876521",
+      "plugins/ca/tools/farm-cleanup-observation.test.ts": "a2a26811ea0b6890065a285772df8f92969ec12b7ec659ca285b9ec6ce86f164"
+    }
+  },
+  "source_and_index_stable": true,
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "31e0a05e9776870f6584b352785f80d5c62f64631ef4a713d9dfdb6b35a62aa4"
+}

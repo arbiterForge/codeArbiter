@@ -20,6 +20,7 @@ import sys
 import tarfile
 import tempfile
 import unittest
+from unittest import mock
 
 REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO / "core" / "pysrc"))
@@ -143,6 +144,27 @@ class ClaudeChannelTests(ChannelFixture):
                               remote_url=str(self.remote), version=version,
                               work=self.work(), push=True)
 
+    def test_unknown_current_channel_version_cannot_advance(self):
+        first = self.promote("2.0.0")
+        with mock.patch.object(CLAUDE, "_channel_version", return_value=None):
+            with self.assertRaisesRegex(ValueError, "current version is unknown"):
+                self.promote("2.1.0")
+        self.assertEqual(self.remote_ref(CLAUDE.MARKETPLACE_REF), first["marketplace_commit"])
+
+    def test_push_response_loss_recovers_only_by_readback_without_repush(self):
+        real = CLAUDE.CODEX._git
+        pushes = []
+        def lose_response(repo, *args, **kwargs):
+            result = real(repo, *args, **kwargs)
+            if args[0] == "push":
+                pushes.append(args[-1])
+                raise subprocess.CalledProcessError(1, ["git", *args], stderr="connection lost after server update")
+            return result
+        with mock.patch.object(CLAUDE.CODEX, "_git", side_effect=lose_response):
+            result = self.promote("2.0.0")
+        self.assertEqual(len(pushes), 2)  # immutable ref, then channel; each attempted once
+        self.assertEqual(self.remote_ref(CLAUDE.MARKETPLACE_REF), result["marketplace_commit"])
+
     def test_channel_carries_the_native_payload_under_the_git_subdir_path(self):
         result = self.promote("2.0.0")
         self.assertEqual(result["marketplace_commit"], self.remote_ref("refs/heads/ca-marketplace"))
@@ -181,6 +203,40 @@ class ClaudeChannelTests(ChannelFixture):
             CLAUDE.promote(package_root=root, cohort_sha256=digest, source_commit=self.source_commit,
                            remote_url=str(self.remote), version="2.0.1", work=self.work(), push=True)
 
+    def readback(self, version, **kwargs):
+        root, digest = self.package(version, **kwargs)
+        return CLAUDE.promote(package_root=root, cohort_sha256=digest,
+                              source_commit=self.source_commit,
+                              remote_url=str(self.remote), version=version,
+                              work=self.work(), push=False, readback=True)
+
+    def remote_refs(self):
+        return git(["for-each-ref", "--format=%(objectname) %(refname)"], cwd=self.remote)
+
+    def test_readback_finds_the_promotion_after_the_channel_moved_on(self):
+        # Receipt recovery (R-01) reads a completed channel effect back; it
+        # must not re-promote (a refused rollback once a newer version ships).
+        first = self.promote("2.0.0")
+        self.promote("2.1.0")
+        refs = self.remote_refs()
+        observed = self.readback("2.0.0")
+        self.assertEqual(observed["marketplace_commit"], first["marketplace_commit"])
+        self.assertEqual(self.remote_refs(), refs, "readback must not push")
+
+    def test_readback_refuses_an_unpromoted_or_substituted_version(self):
+        with self.assertRaisesRegex(ValueError, "does not name the qualified bytes"):
+            self.readback("2.0.0")
+        self.promote("2.0.0")
+        with self.assertRaisesRegex(ValueError, "different bytes"):
+            self.readback("2.0.0", binary=b"substituted-binary")
+
+    def test_readback_never_pushes(self):
+        root, digest = self.package("2.0.0")
+        with self.assertRaisesRegex(ValueError, "never pushes"):
+            CLAUDE.promote(package_root=root, cohort_sha256=digest, source_commit=self.source_commit,
+                           remote_url=str(self.remote), version="2.0.0", work=self.work(),
+                           push=True, readback=True)
+
     def test_package_without_native_payload_is_refused(self):
         root = self.root / "bare"
         root.mkdir()
@@ -189,6 +245,15 @@ class ClaudeChannelTests(ChannelFixture):
             del members["plugins/ca/helpers/artifacts/ca-artifact-linux-amd64"]
             self.members = lambda version, binary: members  # type: ignore[assignment]
             self.promote("2.0.0")
+
+
+class UncertainPushTests(unittest.TestCase):
+    def test_conflicting_or_unobservable_readback_never_retries(self):
+        for observed in [None, "b" * 40]:
+            with self.subTest(observed=observed), mock.patch.object(CODEX, "_git", side_effect=subprocess.CalledProcessError(1, "push")) as push, mock.patch.object(CODEX, "_remote_commit", return_value=observed):
+                with self.assertRaises(subprocess.CalledProcessError):
+                    CODEX._push_observed(Path("unused"), "refs/heads/channel", "a" * 40)
+                self.assertEqual(push.call_count, 1)
 
 
 class ClaudeCatalogTests(unittest.TestCase):
@@ -256,6 +321,29 @@ class CodexGitChannelTests(ChannelFixture):
         self.assertEqual(source["sha"], result["distribution_commit"])
         self.assertEqual(source["sha"], self.remote_ref("refs/tags/ca-codex-dist-v0.20.0"))
         self.assertEqual(CODEX._catalog_version(json.dumps(catalog).encode()), "0.20.0")
+
+    def test_readback_finds_the_channel_promotion_after_a_newer_release(self):
+        self.promote("0.20.0", advance=False)
+        first = self.promote("0.20.0", advance=True)
+        self.promote("0.21.0", advance=False)
+        self.promote("0.21.0", advance=True)
+        head = self.remote_ref("refs/heads/ca-codex-marketplace")
+        root, digest = self.package("0.20.0")
+        observed = CODEX.promote(package_root=root, cohort_sha256=digest, source_repo=self.source,
+                                 source_commit=self.source_commit, remote_url=str(self.remote),
+                                 catalog_url="https://github.com/arbiterForge/codeArbiter.git",
+                                 version="0.20.0", work=self.work(), push=False, readback=True)
+        self.assertEqual(observed["marketplace_commit"], first["marketplace_commit"])
+        self.assertEqual(self.remote_ref("refs/heads/ca-codex-marketplace"), head)
+
+    def test_readback_refuses_a_distribution_tag_the_channel_never_promoted(self):
+        self.promote("0.20.0", advance=False)
+        root, digest = self.package("0.20.0")
+        with self.assertRaisesRegex(ValueError, "does not exist|never promoted"):
+            CODEX.promote(package_root=root, cohort_sha256=digest, source_repo=self.source,
+                          source_commit=self.source_commit, remote_url=str(self.remote),
+                          catalog_url="https://github.com/arbiterForge/codeArbiter.git",
+                          version="0.20.0", work=self.work(), push=False, readback=True)
 
     def test_git_mode_needs_no_npm_package(self):
         result = self.promote("0.20.0", advance=False)

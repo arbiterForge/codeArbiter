@@ -1,0 +1,113 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "/root/packaging_site_tools: split-only successor reusing actual original d594 clause inspection; current physical bytes checked, no rerun"
+  },
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/site-tool-source-clauses-d594/inspection.json",
+      "sha256": "d0e65eb23208d15b31066e5d842fd8c4db2ffd6bed4e2fc8e0a3ee582f7eee56"
+    }
+  ],
+  "scope": "Original finite conditional source clauses only, narrowed to actual audit-exceptions control cone; no execution or broader task/machine claim.",
+  "dependency_boundary": "Same original inspected direct code/guard/data scope; unrelated CI source removed because this cone does not read it. No runtime observation or imported authority is created by splitting.",
+  "inputs": {
+    ".github/scripts/npm_audit_gate.py": "44a0bde630451fe30b627ed7068d4857c09719ef04dd7665e8fa4fbeeab851ea",
+    "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+    "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+    "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e"
+  },
+  "disposition_ids": [
+    "disposition:transitions:C35:01",
+    "disposition:transitions:C35:02",
+    "disposition:transitions:C35:03",
+    "disposition:transitions:C35:04"
+  ],
+  "semantic_mapping": [
+    {
+      "cell": "disposition:transitions:C35:01",
+      "witnesses": [
+        {
+          "path": ".github/scripts/npm_audit_gate.py",
+          "start": 28,
+          "end": 78,
+          "file_sha256": "44a0bde630451fe30b627ed7068d4857c09719ef04dd7665e8fa4fbeeab851ea"
+        }
+      ],
+      "semantic_assessment": "Exact exception schema/fields, GHSA+package grammar, nonblank reason/approver, supported severity, approval<=today and approval<=backstop<=approval+30days/today<=backstop guard every entry; duplicate GHSA/package pair rejects. This is policy-row validation, not authentication of approver identity.",
+      "failure_retry_boundary": "No execution observed; failures retain the named source path/branch and explicit retry remains caller-owned.",
+      "frozen_row_sha256": "a19e8093005641e3d9ab0eeeda50dd188ea89b8f48279d28124819e75af8ecd2",
+      "treatment": "PRESERVE_BASELINE_CONTRACT",
+      "guard_effect_retry_source_only": true
+    },
+    {
+      "cell": "disposition:transitions:C35:02",
+      "witnesses": [
+        {
+          "path": ".github/scripts/npm_audit_gate.py",
+          "start": 81,
+          "end": 107,
+          "file_sha256": "44a0bde630451fe30b627ed7068d4857c09719ef04dd7665e8fa4fbeeab851ea"
+        }
+      ],
+      "semantic_assessment": "JSON/root/error/vulnerability inventory and each via/advisory shape are checked; string via pointers add no independent finding; direct advisory URL tail, package and supported severity are collected. No network audit or transitive-pointer closure was executed.",
+      "failure_retry_boundary": "No execution observed; failures retain the named source path/branch and explicit retry remains caller-owned.",
+      "frozen_row_sha256": "1094076b1fe7d8525ae36b9317263f8f74ab64ba9ec8ae4a0aba2100107fd572",
+      "treatment": "PRESERVE_BASELINE_CONTRACT",
+      "guard_effect_retry_source_only": true
+    },
+    {
+      "cell": "disposition:transitions:C35:03",
+      "witnesses": [
+        {
+          "path": ".github/scripts/npm_audit_gate.py",
+          "start": 110,
+          "end": 126,
+          "file_sha256": "44a0bde630451fe30b627ed7068d4857c09719ef04dd7665e8fa4fbeeab851ea"
+        },
+        {
+          "path": ".github/scripts/npm_audit_gate.py",
+          "start": 129,
+          "end": 146,
+          "file_sha256": "44a0bde630451fe30b627ed7068d4857c09719ef04dd7665e8fa4fbeeab851ea"
+        }
+      ],
+      "semantic_assessment": "At-threshold direct finding blocks absent exact GHSA/package exception, or observed severity above accepted severity. CLI catches GateError and emits nonzero on malformed input/blockers; no unavailable registry report is relabelled clean.",
+      "failure_retry_boundary": "No execution observed; failures retain the named source path/branch and explicit retry remains caller-owned.",
+      "frozen_row_sha256": "e9f741afad1f0b77a2926a410caf77297ed191dbfaba17086027987c662f6ba1",
+      "treatment": "PRESERVE_BASELINE_CONTRACT",
+      "guard_effect_retry_source_only": true
+    },
+    {
+      "cell": "disposition:transitions:C35:04",
+      "witnesses": [
+        {
+          "path": ".github/scripts/npm_audit_gate.py",
+          "start": 67,
+          "end": 78,
+          "file_sha256": "44a0bde630451fe30b627ed7068d4857c09719ef04dd7665e8fa4fbeeab851ea"
+        },
+        {
+          "path": ".github/scripts/npm_audit_gate.py",
+          "start": 124,
+          "end": 126,
+          "file_sha256": "44a0bde630451fe30b627ed7068d4857c09719ef04dd7665e8fa4fbeeab851ea"
+        }
+      ],
+      "semantic_assessment": "Valid but unused exception pairs only emit a removal note; load still rejects expired/future/overlong approval windows before evaluate. No runtime date/advisory inventory acceptance is claimed.",
+      "failure_retry_boundary": "No execution observed; failures retain the named source path/branch and explicit retry remains caller-owned.",
+      "frozen_row_sha256": "0a308226af6738edb5e8683f122c9b2cda94c80e9719f2fb6e86873c946f9001",
+      "treatment": "PRESERVE_BASELINE_CONTRACT",
+      "guard_effect_retry_source_only": true
+    }
+  ],
+  "original_inspection": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-tool-source-clauses-d594\\inspection.json",
+    "sha256": "d0e65eb23208d15b31066e5d842fd8c4db2ffd6bed4e2fc8e0a3ee582f7eee56",
+    "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+  }
+}

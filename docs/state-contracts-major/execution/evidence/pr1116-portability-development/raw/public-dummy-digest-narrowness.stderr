@@ -1,0 +1,10 @@
+test_the_secret_scan_allowlist_stays_narrow_and_value_scoped (test_ci_impact.WorkflowContractTest.test_the_secret_scan_allowlist_stays_narrow_and_value_scoped) ... ok
+test_exact_quoted_secret_waivers_remain_single_values (test_ci_impact.WorkflowContractTest.test_exact_quoted_secret_waivers_remain_single_values) ... ok
+test_quoted_secret_waivers_cannot_leave_the_literal_scope (test_ci_impact.WorkflowContractTest.test_quoted_secret_waivers_cannot_leave_the_literal_scope) ... ok
+test_quoted_literal_does_not_allow_path_or_target_waivers (test_ci_impact.WorkflowContractTest.test_quoted_literal_does_not_allow_path_or_target_waivers) ... ok
+test_a_broad_secret_scan_waiver_is_rejected_by_the_narrowness_contract (test_ci_impact.WorkflowContractTest.test_a_broad_secret_scan_waiver_is_rejected_by_the_narrowness_contract) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.018s
+
+OK

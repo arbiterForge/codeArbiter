@@ -1,0 +1,102 @@
+{
+  "schema": "codearbiter.staged-review-reuse-binding/1",
+  "verdict": "PASS",
+  "findings": [],
+  "candidate": "candidate-v1:02754f88009c9ff999e90ef0e598e062bb6c933f63f9aa7136329b0965725120",
+  "patch_sha256": "9bf464c76ad877468934ad24e58354ed93c73ce797611a642abd5b3d09ed67bf",
+  "full_subjects": {
+    "core/pysrc/wire-statusline.py": {
+      "sha256": "aaed6ec530fd58778e77f30d81c9a8eb27d7dbd70068bb154ae825a385315a87",
+      "bytes": 22680,
+      "index_oid": "872016d0512e321067361abffa02e74e7cddc200"
+    },
+    "plugins/ca/hooks/tests/test_wire_statusline.py": {
+      "sha256": "942dd9546ebdf77b1a0352b6adac9eed7f6e1e99d87c5e648bc839835a1cc72b",
+      "bytes": 61907,
+      "index_oid": "f80696a1d9fdeda341967f1deca47bf18217a8cc"
+    },
+    "plugins/ca/hooks/wire-statusline.py": {
+      "sha256": "aaed6ec530fd58778e77f30d81c9a8eb27d7dbd70068bb154ae825a385315a87",
+      "bytes": 22680,
+      "index_oid": "872016d0512e321067361abffa02e74e7cddc200"
+    },
+    "plugins/ca-codex/hooks/wire-statusline.py": {
+      "sha256": "aaed6ec530fd58778e77f30d81c9a8eb27d7dbd70068bb154ae825a385315a87",
+      "bytes": 22680,
+      "index_oid": "872016d0512e321067361abffa02e74e7cddc200"
+    },
+    "plugins/ca-pi/hooks/wire-statusline.py": {
+      "sha256": "aaed6ec530fd58778e77f30d81c9a8eb27d7dbd70068bb154ae825a385315a87",
+      "bytes": 22680,
+      "index_oid": "872016d0512e321067361abffa02e74e7cddc200"
+    },
+    "site/scripts/link-audit/lib.ts": {
+      "sha256": "8724612673ad4d3489fbd74913cc5e0a9b1026adb7514fde878b849c73848074",
+      "bytes": 9643,
+      "index_oid": "60da19b572aff20bdd40996a981e51ce808050a2"
+    },
+    "site/test/link-audit/lib.test.ts": {
+      "sha256": "d167c00ff12386ae55be714628031d47264c1e6f683b848e45f2f95c700ded16",
+      "bytes": 16373,
+      "index_oid": "ad6f164ab68cb93c768114602e5238fac8b50722"
+    },
+    "CHANGELOG.md": {
+      "sha256": "a1111542d7f400fbb98f7679b66b0b75bad26e9a180d2588dcd3f81d1aefcd6c",
+      "bytes": 219259,
+      "index_oid": "a0a71eba6b82eba78674deac7771103c8c26ca0e",
+      "review_basis": "Root inspected factual changelog update for already-reviewed fix; independent code review is reused only for unchanged original seven subjects",
+      "preimage_sha256": "6ab7550ac2ba830a31f37df3b1f0fd8154f13bf9c5f48fb059ec51d82029dd3d"
+    },
+    "plugins/ca-codex/CHANGELOG.md": {
+      "sha256": "6f3ff1b16606d4d31aa9499aff4c899e3c6ba7948645463ac5b780b3cb509bc0",
+      "bytes": 93850,
+      "index_oid": "6ac9946bd2c5aa377f2000d4ddbb8e4acf00f39a",
+      "review_basis": "Root inspected factual changelog update for already-reviewed fix; independent code review is reused only for unchanged original seven subjects",
+      "preimage_sha256": "090d936e6f9206c6d6179d143e80b8709ae97fea515f48c1fab08299fce321d9"
+    },
+    "plugins/ca-pi/CHANGELOG.md": {
+      "sha256": "50467c44781d5471f01d7cf541fe8d5a694bc7ca5f4971c98d01ca6502a58776",
+      "bytes": 123345,
+      "index_oid": "1884d05282da91615ab192d5afbb9ffd7fb09ff6",
+      "review_basis": "Root inspected factual changelog update for already-reviewed fix; independent code review is reused only for unchanged original seven subjects",
+      "preimage_sha256": "1a4169c462f6e431bf7985c6e674ae8098becb0f4970312ca5522386c2f58027"
+    }
+  },
+  "reused_independent_reviews": [
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-independent-review-m6g_30p8\\review.json",
+      "sha256": "66c05c626153607f0ed7a6c1f614a10fc24fb6164e9a66cce991a6685d8f767a",
+      "reviewer": "/root/ci_repair_review"
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-containment-independent-review-v56zvds6\\review.json",
+      "sha256": "107bad87a7eaabecb4d72fe3943286a032b582868298c3bf6752ccee1dce4191",
+      "reviewer": "/root/ci_repair_review"
+    }
+  ],
+  "coordinator": "/root",
+  "scope": "Exact staged bytes match both independently reviewed private candidates. This binding is assembly verification, not an additional independent review. Three factual changelog entries were inspected by Root to bind changed payload intent; they carry no new independent-review claim.",
+  "verification": {
+    "root_wire_statusline_module": {
+      "command": [
+        "C:\\Python314\\python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "plugins/ca/hooks/tests",
+        "-p",
+        "test_wire_statusline.py"
+      ],
+      "tests": 82,
+      "result": "PASS",
+      "seconds": 0.9
+    },
+    "sync_core_check": "98 core files x 3 mirrors PASS",
+    "python_ast": "All five staged Python subjects parse",
+    "site": "Exact reviewed final 40 PASS, scoped typecheck PASS, Windows V8 line100/branch95.08 reused; no full site or other OS claim"
+  }
+}

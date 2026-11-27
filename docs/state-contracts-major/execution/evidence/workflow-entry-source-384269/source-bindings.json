@@ -1,0 +1,97 @@
+{
+ "source_commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+ "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+ "files": [
+  {
+   "path": "core/surface/commands/conflict.md",
+   "source_commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+   "current_sha256": "7a609162219b2404e7c530a6afeefc40e325ed8cdc34d15fc40c6b3b6e4b3736",
+   "current_bytes": 3653,
+   "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+   "baseline_sha256": "ea96bc18a20f8096211ffea954456d41593bdbdc139cafd3bf1a8a0bdb8e819b",
+   "baseline_relation": "changed_or_added",
+   "physical_current_equal": true
+  },
+  {
+   "path": "core/surface/includes/safety-core.md",
+   "source_commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+   "current_sha256": "a3356c9c306c2624b737f425565afa748d093015c0e968a421092b40bb8f9347",
+   "current_bytes": 4988,
+   "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+   "baseline_sha256": "a3356c9c306c2624b737f425565afa748d093015c0e968a421092b40bb8f9347",
+   "baseline_relation": "identical",
+   "physical_current_equal": true
+  },
+  {
+   "path": "core/surface/SPRINT.md",
+   "source_commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+   "current_sha256": "d3d469e9f741985493a1a391d1d9239a59f6995acd1c2b45463a2978c5146aa6",
+   "current_bytes": 13016,
+   "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+   "baseline_sha256": "e3bdb7df59616fa4014ffa8582e7eeecff7fcbec0f6b58cb686759b80d5fb237",
+   "baseline_relation": "changed_or_added",
+   "physical_current_equal": true
+  },
+  {
+   "path": "core/surface/commands/feature.md",
+   "source_commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+   "current_sha256": "3d930a47301161c9e6afb522881f1e14a853c5f10469bcd5f8c3dde8b400a916",
+   "current_bytes": 11992,
+   "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+   "baseline_sha256": "3d930a47301161c9e6afb522881f1e14a853c5f10469bcd5f8c3dde8b400a916",
+   "baseline_relation": "identical",
+   "physical_current_equal": true
+  },
+  {
+   "path": "core/surface/skills/brainstorming/SKILL.md",
+   "source_commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+   "current_sha256": "77f658b30ac9842b0f052ff16563075142d0ab25ac5a0bf895072c40dcd64c2b",
+   "current_bytes": 9619,
+   "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+   "baseline_sha256": "f2ae9944d12cc6be4469ff3be8350b36f3e334dec28d00ba3faa45c9da4ea716",
+   "baseline_relation": "changed_or_added",
+   "physical_current_equal": true
+  },
+  {
+   "path": "core/surface/skills/writing-plans/SKILL.md",
+   "source_commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+   "current_sha256": "7284798238e8f98fdd47b8e9ef4a7d9b6dc0e88f36e21e26a27606287df60bf7",
+   "current_bytes": 8037,
+   "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+   "baseline_sha256": "5229b532b424ad2bdf3d3205517986125f25f759d055fcfafe786a40ad4a436f",
+   "baseline_relation": "changed_or_added",
+   "physical_current_equal": true
+  },
+  {
+   "path": "core/surface/skills/executing-plans/SKILL.md",
+   "source_commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+   "current_sha256": "099cbe0fbddb5bde99e77b5eefaf5cb567563e6d6cbea1768fd3ab0290fa6c61",
+   "current_bytes": 7387,
+   "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+   "baseline_sha256": "099cbe0fbddb5bde99e77b5eefaf5cb567563e6d6cbea1768fd3ab0290fa6c61",
+   "baseline_relation": "identical",
+   "physical_current_equal": true
+  },
+  {
+   "path": ".codearbiter/decisions/0043-assistive-state-engine.md",
+   "source_commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+   "current_sha256": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+   "current_bytes": 6365,
+   "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+   "baseline_sha256": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+   "baseline_relation": "identical",
+   "physical_current_equal": true
+  },
+  {
+   "path": "docs/state-contracts-major/PROGRAM.md",
+   "source_commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+   "current_sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+   "current_bytes": 7910,
+   "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+   "baseline_sha256": null,
+   "baseline_relation": "changed_or_added",
+   "physical_current_equal": true
+  }
+ ],
+ "scope": "Immutable source bytes; differences are assessed per literal clause, not automatically declared conformant."
+}

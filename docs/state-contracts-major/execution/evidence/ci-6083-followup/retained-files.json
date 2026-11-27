@@ -1,0 +1,163 @@
+{
+  "native-freeze.json": {
+    "sha256": "b8da50e83fb4830d6e13a3a5e49485a258d2c95ed05a24469435c937b3e31d1e",
+    "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-worktree-create-debug-2afe3cac\\selector-isolation-final\\freeze.json"
+  },
+  "native-manifest.json": {
+    "sha256": "f86015acb2a6d3cb7fd70e08ed1a1f44e61118c40afe240513d89c00e0c28f7e",
+    "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-worktree-create-debug-2afe3cac\\selector-isolation-final\\manifest.json"
+  },
+  "native-red.jsonl": {
+    "sha256": "9a80ec55a6bab7f32af258aec194c3fb7e1195a7586c75fa0acae5429c785d9f",
+    "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-worktree-create-debug-2afe3cac\\selector-isolation-final\\red.jsonl"
+  },
+  "native-green.jsonl": {
+    "sha256": "0bf4805479699c4662172ea83b9acf10ae53180150bc6226cf21b86a17749f89",
+    "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-worktree-create-debug-2afe3cac\\selector-isolation-final\\green.jsonl"
+  },
+  "pi-companion-author-freeze.json": {
+    "sha256": "fab78d4aa98f28ca809e41b9a47e6504db138204520885f6e5eb7c5bf91aa1b6",
+    "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-6083-raw-rpc-diagnosis\\companion-author-freeze.json"
+  },
+  "pi-companion-partition-inventory.json": {
+    "sha256": "f21d8e01977559f64fd86874bfe4dd6ef4d197e76ccfeff1fe677c5b1f34e0f2",
+    "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-6083-raw-rpc-diagnosis\\companion-partition-inventory.json"
+  },
+  "pi-companion-result.json": {
+    "sha256": "9b446e119da7b1a2f94f76431f381afe1d78ccb4127d820862c5e88b30bf629b",
+    "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-6083-raw-rpc-diagnosis\\companion-result.json"
+  },
+  "pi-companion.stdout": {
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-6083-raw-rpc-diagnosis\\companion.stdout"
+  },
+  "pi-companion.stderr": {
+    "sha256": "b9168216432148f0b7cb465ad18de33df192f5ef44863df7b6de207ed201cadf",
+    "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-6083-raw-rpc-diagnosis\\companion.stderr"
+  },
+  "pi-companion-inputs-before.json": {
+    "sha256": "f4d29058a9abf01eef2abc8615bc50bd5d588a5df0333c69a024fdbb0665355e",
+    "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-6083-raw-rpc-diagnosis\\companion-inputs-before.json"
+  },
+  "pi-companion-inputs-after.json": {
+    "sha256": "f4d29058a9abf01eef2abc8615bc50bd5d588a5df0333c69a024fdbb0665355e",
+    "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-6083-raw-rpc-diagnosis\\companion-inputs-after.json"
+  },
+  "site-freeze.json": {
+    "sha256": "440c78f46b89652705b627903159ad10a0274841b18aa0f81282de7cd9eeb001",
+    "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-capture-refresh-gfzfrvpr\\freeze.json"
+  },
+  "site-checks.json": {
+    "sha256": "e9cda552551a8bef99a40a48bdea92993a11f4f2962f82dfbc49b9fc9f542ef3",
+    "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-capture-refresh-gfzfrvpr\\checks.json"
+  },
+  "site-red-verify.json": {
+    "sha256": "22ab2afff4151764fcc1ccc6b7e9ed399d6b8e780275a7827a8e906243455ee3",
+    "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-capture-refresh-gfzfrvpr\\red-verify.json"
+  },
+  "site-capture-tests-results.json": {
+    "sha256": "7d8451e6e544a2c7ab4726b4664ca2c4871a97f30672b597e44320df02235233",
+    "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-capture-refresh-gfzfrvpr\\capture-tests-results.json"
+  },
+  "site-fresh-verify.stdout.log": {
+    "sha256": "91f6e83213231dde4a7e6f7848e78b1dc942188b97afe5dc8e744468d77c1ca7",
+    "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-capture-refresh-gfzfrvpr\\fresh-verify.stdout.log"
+  },
+  "site-gen-source.stdout.log": {
+    "sha256": "d62b78b714bf324a1e9f3606414c6bf8a755b5ed72f86406baf1345b1bbd8b45",
+    "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-capture-refresh-gfzfrvpr\\gen-source.stdout.log"
+  },
+  "site-gen-atlas.stdout.log": {
+    "sha256": "e8ddf6b29d472ddb79cccf6bf6de9d1429aaa41bf9bacb5f0373b86d4b378b0e",
+    "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-capture-refresh-gfzfrvpr\\gen-atlas.stdout.log"
+  },
+  "site-gen-diagrams.stdout.log": {
+    "sha256": "ef8d29d5c291fd1fc42d6913b252ef2f70dae251673ccdd2af22aed75df6dcd9",
+    "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-capture-refresh-gfzfrvpr\\gen-diagrams.stdout.log"
+  },
+  "site-audit-diagrams.stdout.log": {
+    "sha256": "c564af8b5fed8d995a4c57cc81a1675575ccdab85a6aa907ae88f747f83b4831",
+    "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-capture-refresh-gfzfrvpr\\audit-diagrams.stdout.log"
+  },
+  "sandbox-final-author-freeze.json": {
+    "sha256": "61ad68c6b864a47da1659ff8b86e8060b29e7a4d472980bd2027b9cdc8a5e456",
+    "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sandbox-result-transport-90gqbg21\\final-author-freeze.json"
+  },
+  "sandbox-red.log": {
+    "sha256": "49addb8af4c7417c0e7df260d183d82b04c02b49692196a7cd90adf0ccdb08c5",
+    "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sandbox-result-transport-90gqbg21\\red.log"
+  },
+  "sandbox-green.log": {
+    "sha256": "2d030a79c37d9d0b25db0c63563590877e09fa924924cb16f2a17a9ef6bfcbd3",
+    "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sandbox-result-transport-90gqbg21\\green.log"
+  },
+  "sandbox-smoke.json": {
+    "sha256": "7221ed01fa5e7134fe7fca6f8084537b4461296503b5c823536c3cdedd3952ad",
+    "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sandbox-result-transport-90gqbg21\\smoke.json"
+  },
+  "sandbox-smoke.stdout.log": {
+    "sha256": "16eaea869ddf44eb1498a765f93c75c7b038b838e966a13308242d453cb1faa3",
+    "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sandbox-result-transport-90gqbg21\\smoke.stdout.log"
+  },
+  "sandbox-smoke.stderr.log": {
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sandbox-result-transport-90gqbg21\\smoke.stderr.log"
+  },
+  "sandbox-review-security-review.json": {
+    "sha256": "21013096f16383818d2d4512440c9566156aec0c972d8e6e90d0500aff0c54a0",
+    "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sbx-transport-peer-l8a7x3zv\\security-review.json"
+  },
+  "windows-isolation-job.json": {
+    "sha256": "4dd7828236ba1b41d80fe71d98a1e4eb88e94d0736169e4fd241f4bbe2b055ac",
+    "origin": "GitHub original job132323671933 run43554312132 API"
+  },
+  "budget-freeze.json": {
+    "sha256": "22ccaf69b4bb786b2c1d19dbff68f3acd47e40748ca12b60ed64c13db61dbda8",
+    "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-windows-contract-budget-b1m40vsk\\freeze.json"
+  },
+  "budget-red.log": {
+    "sha256": "5d99e51f0d9a0cdbfcb8b6a46c546c70b777b21eb1f6a9a87d9bc4870722886c",
+    "original_sha256": "4ded7033926c6238a89580103fbca2d9ca44b3b85ae59a3f720c544cdc9e80c4",
+    "origin": "Lossless Latin1-to-UTF8 transcript projection; actual original Temp/ca-windows-contract-budget-b1m40vsk/red.log remains unchanged. Original encoding is not asserted. All ASCII bytes unchanged; reverse by UTF8 decode then Latin1 encode. Not byte-identical original raw."
+  },
+  "budget-green.log": {
+    "sha256": "17f666a789081b4e9fda0037218aef0f173b946970933bea1fb785fa4fd1bad5",
+    "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-windows-contract-budget-b1m40vsk\\green.log"
+  },
+  "budget-independent-security-review.json": {
+    "sha256": "cecff00f7a7563baf0fd3f8c613a16ec0cf0cf05de1af09b98376c1b99c3007c",
+    "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-windows-contract-budget-b1m40vsk\\independent-security-review.json"
+  },
+  "pi-independent-auth-crypto-review.json": {
+    "sha256": "69af88d7967efe14cfd57e20762e2251e698ee17a74f36bd5b79b56b0c24ea6c",
+    "original_sha256": "26ec2d790de7ae6193bdefa3f8806f11b7024665e537adb128301fc2181b5163",
+    "origin": "Derived field-name projection of original Temp/ca-pi-passive-companion-auth-crypto-review.json; public charter checksum independently verified against exact installed source. Original raw unchanged in Temp."
+  },
+  "diagnostic-source-joins.json": {
+    "sha256": "7c8b4f0d9ee8b04ee1f9b59dbe074d5947a3c6985b31e77903cea98d06152445",
+    "origin": "Root retained exact source review/join, original execution epochs unchanged"
+  },
+  "p02-original-failed35.stderr.log": {
+    "sha256": "fc68997dbb38b9b76adde4b9bc4053d2d29e7faa7761446f4018024b1506c4e7",
+    "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-p02-final338-cqzt0_ph\\integration35.stderr.log"
+  },
+  "p02-original-failed35.json": {
+    "sha256": "6f87f2a17893dd84791c37b6cf2ffbba58a7dc65dfbed298cea9e15b80f20b10",
+    "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-p02-final338-cqzt0_ph\\integration35.json"
+  },
+  "p02-one-line-regression-green.json": {
+    "sha256": "e7f363cfbc1c2868be1e398be6f3037ea882206830b0c5b914d1e7dedc48c9d6",
+    "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-p02-final338-cqzt0_ph\\single-green.json"
+  },
+  "sandbox-catalog-freeze.json": {
+    "sha256": "1189b6336b5a21870f450884a7449f86b321f8edf7cb46cd53d4bb61754e1e89",
+    "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-sbx-remaining-qualified-abnsjdl_\\catalog-correction\\freeze.json"
+  },
+  "windows-contracts-transcript.json": {
+    "sha256": "fd8b97d1ae1a9501c66c9aa6a5467f1053a9da35b603133d6e1b6162f04a4f7a",
+    "original_sha256": "91067820d44f616b306df592f9160fbf617798e38465be8ab32248edc231d878",
+    "original_retention_commit": "38ec577c7fac71d4cf0c22b2c199d1e703c1bb4b",
+    "original_retention_path": "docs/state-contracts-major/execution/evidence/ci-6083-followup/windows-contracts-original.log",
+    "origin": "Lossless JSON-lines projection of original retained transcript; original bytes remain immutable in recorded Git commit and original Temp file."
+  }
+}

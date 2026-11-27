@@ -1,0 +1,3784 @@
+{
+ "schema": "codearbiter.literal-clause-source-inspection/1",
+ "actor": "/root/ci_repair_review",
+ "source_commit": "ea9da763b33708c8533623568b7241eaaea0d153",
+ "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+ "families": [
+  "C01",
+  "C02",
+  "C03",
+  "C04",
+  "C11",
+  "C12",
+  "C13",
+  "C14",
+  "C15",
+  "C16",
+  "C17",
+  "C18",
+  "C19",
+  "C20"
+ ],
+ "clause_count": 80,
+ "source_bindings_sha256": "e0d46104538361ca98ef02148b9cc499edce928cdd83f1a936277f2a7a8e1425",
+ "rows": [
+  {
+   "cell": "disposition:transitions:C01:01",
+   "frozen_row_sha256": "9c92e9de645a5e3f4a96db900ae69a311d9545bbaff951311952d8ba53811c9c",
+   "frozen_baseline": {
+    "from_state": "not triggered",
+    "from": "not triggered",
+    "event": "pull_request or merge_group",
+    "guard": "declared branch/event admission; PR and merge queue do not rely on push path filtering",
+    "to": "admitted",
+    "effects": "Create CI run; changes job computes path impact and Pi supported-version outputs.",
+    "failure_retry": "Invalid changes evaluation fails and downstream selection cannot be treated as verified.",
+    "source": [
+     {
+      "path": ".github/workflows/ci.yml",
+      "symbol": "143",
+      "lines": [
+       143,
+       143
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/workflows/ci.yml"
+     }
+    ],
+    "transition_id": "C01:01"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "PRs targeting declared branches and merge_group/checks_requested enter without path filtering. The changes prerequisite reads Pi policy and computes domain outputs; failed evaluation is not verified selection.",
+   "witnesses": [
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 17,
+     "end": 56,
+     "file_sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f",
+     "span_sha256": "d143446cb7ceaa6bffe21fd89bd638d34ecc8d8acfa955724c18b741f65d6bee"
+    },
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 156,
+     "end": 210,
+     "file_sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f",
+     "span_sha256": "8a9e52fde65c485df56fa5d062bfb20cbe96edaf8903aadfb56e7e22f31b28b4"
+    }
+   ],
+   "intake_variances": [
+    "P-01 adds major/state-contracts to PR/push admission for integration qualification; release admission remains main-only."
+   ],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C01:02",
+   "frozen_row_sha256": "a2dfea41998eb06e8eab0ab1f3ebf24c7c4515f41cec5ffefa3a0d09ec65612d",
+   "frozen_baseline": {
+    "from_state": "not triggered",
+    "from": "not triggered",
+    "event": "push to main",
+    "guard": "at least one declared push path matches",
+    "to": "admitted",
+    "effects": "Create distinct run keyed by run ID; artifact impact is forced true for admitted main pushes.",
+    "failure_retry": "A push entirely outside the trigger list has no run; no success evidence is produced.",
+    "source": [
+     {
+      "path": ".github/workflows/ci.yml",
+      "symbol": "143",
+      "lines": [
+       143,
+       143
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/workflows/ci.yml"
+     }
+    ],
+    "transition_id": "C01:02"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Main pushes require a declared path match and force artifact selection. Integration pushes also require trigger admission, then force all domains. An entirely unlisted push starts no evidence-producing run.",
+   "witnesses": [
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 53,
+     "end": 142,
+     "file_sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f",
+     "span_sha256": "f8cf1fdc58e31b9017ca5c176a91fd0f51be3d1484d02e582775536d0c657e1c"
+    },
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 156,
+     "end": 178,
+     "file_sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f",
+     "span_sha256": "1bc6759f456cce4a15ee268f9f40a0d15bd1c6824f513c2aaf63ce71466906c7"
+    }
+   ],
+   "intake_variances": [
+    "Accepted P-01 extends the original main-only trigger with integration qualification. No integration push becomes a release event."
+   ],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C01:03",
+   "frozen_row_sha256": "8fa134f75260aeb887682b21f7cc323d3862645e9117744c22c3a1d08f947bd5",
+   "frozen_baseline": {
+    "from_state": "running PR run",
+    "from": "running PR run",
+    "event": "new run for same pull request",
+    "guard": "concurrency key matches; event is pull_request",
+    "to": "superseded PR run",
+    "effects": "Cancel older run. Main push runs use distinct run IDs and are not canceled by this rule.",
+    "failure_retry": "Canceled jobs remain canceled, not successful checks.",
+    "source": [
+     {
+      "path": ".github/workflows/ci.yml",
+      "symbol": "135",
+      "lines": [
+       135,
+       135
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/workflows/ci.yml"
+     }
+    ],
+    "transition_id": "C01:03"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Concurrency includes workflow/event plus PR number for PRs and run_id otherwise. Only pull_request enables cancel-in-progress. Cancellation is not converted to success.",
+   "witnesses": [
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 147,
+     "end": 153,
+     "file_sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f",
+     "span_sha256": "63b19aff3f5a555ec2eda9916ff0bae49210321b854deaf811a2573642b50384"
+    },
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 5052,
+     "end": 5057,
+     "file_sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f",
+     "span_sha256": "067307221caf7c64e83208da961f4bc229548dfa11bda057902812c5f4a90b7f"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C01:04",
+   "frozen_row_sha256": "31699d7458083fbb45f7d29860e66f8dc1cc578200c30cb73d6b6392580695e1",
+   "frozen_baseline": {
+    "from_state": "admitted",
+    "from": "admitted",
+    "event": "paths-filter and derived impact evaluation",
+    "guard": "domain source/config/test paths match",
+    "to": "selected domain",
+    "effects": "Set string outputs consumed by job if conditions; upload the selection receipt.",
+    "failure_retry": "Failure is a failed changes prerequisite; downstream skips do not establish domain correctness.",
+    "source": [
+     {
+      "path": ".github/workflows/ci.yml",
+      "symbol": "143",
+      "lines": [
+       143,
+       143
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/workflows/ci.yml"
+     }
+    ],
+    "transition_id": "C01:04"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Finite paths-filter declarations feed per-domain string outputs, with explicit main/integration overrides. The impact tool writes a receipt that is uploaded exclusively; failure of changes cannot be substituted with verified selection.",
+   "witnesses": [
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 156,
+     "end": 210,
+     "file_sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f",
+     "span_sha256": "8a9e52fde65c485df56fa5d062bfb20cbe96edaf8903aadfb56e7e22f31b28b4"
+    },
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 545,
+     "end": 606,
+     "file_sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f",
+     "span_sha256": "9b6a3a44861ed5aaeb155d6180ddac3eba53ca2535ba88fc0d718ddccce37873"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C01:05",
+   "frozen_row_sha256": "55e35b3fed530b425db88957c15e5632ad123ae26887a0c21c2141b1dbb7c722",
+   "frozen_baseline": {
+    "from_state": "admitted",
+    "from": "admitted",
+    "event": "paths-filter evaluation",
+    "guard": "domain has no matching changes and no unconditional override",
+    "to": "skipped domain",
+    "effects": "Omit expensive job execution; aggregate generally permits the explicit skipped result.",
+    "failure_retry": "An intentional skip is not runtime evidence and cannot satisfy selected artifact stage checks.",
+    "source": [
+     {
+      "path": ".github/workflows/ci.yml",
+      "symbol": "143",
+      "lines": [
+       143,
+       143
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/workflows/ci.yml"
+     }
+    ],
+    "transition_id": "C01:05"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Unselected jobs use their declared output predicates; the aggregate normally accepts explicit skipped results. Selected native coverage, selected program integrity and candidate readiness have stricter success checks. A skip is not an executed domain observation.",
+   "witnesses": [
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 610,
+     "end": 613,
+     "file_sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f",
+     "span_sha256": "a924cdff3b3e6db3f1234b296c907c5d313d3ba6226289dfe5d7dba0c5805f6e"
+    },
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 4910,
+     "end": 4927,
+     "file_sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f",
+     "span_sha256": "13e876799663d25e56bf70085fc6880912260889bb623ef3ed50a5bae28d8222"
+    },
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 5031,
+     "end": 5058,
+     "file_sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f",
+     "span_sha256": "3c2ff5d09f0d00b94f9adec65624f96379b8d4c06dab99f7d4d3cbcaa1967a01"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C02:01",
+   "frozen_row_sha256": "c44ae62fc188d22a8c71cf94f6841279653269c71c789be7e2304d42382497b3",
+   "frozen_baseline": {
+    "from_state": "waiting",
+    "from": "waiting",
+    "event": "all declared dependencies settle",
+    "guard": "aggregate always condition admits evaluation",
+    "to": "evaluating",
+    "effects": "Collect required job results, selected artifact result, release candidate result and advisory results.",
+    "failure_retry": "Failure to evaluate the aggregator is not a pass.",
+    "source": [
+     {
+      "path": ".github/workflows/ci.yml",
+      "symbol": "3658",
+      "lines": [
+       3658,
+       3658
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/workflows/ci.yml"
+     }
+    ],
+    "transition_id": "C02:01"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "ci-passed uses always() and awaits its enumerated dependency population, including advisory lanes, before inspecting required_results and strict selected gates.",
+   "witnesses": [
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 4968,
+     "end": 5037,
+     "file_sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f",
+     "span_sha256": "ff42c7ec51002a80b60c7db946d05be312890d744f52e0f59a8f9592f3c62e0c"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C02:02",
+   "frozen_row_sha256": "7207eaae364d355c5da5cf4831ce51a5ead7b6d0b24ab8d65586315e97a3fb04",
+   "frozen_baseline": {
+    "from_state": "evaluating",
+    "from": "evaluating",
+    "event": "required job result inspected",
+    "guard": "every required result is success or skipped, auto-release-candidate is success, and selected artifact coverage is success",
+    "to": "aggregate pass",
+    "effects": "Return success for ci-passed; successful main CI can trigger release workflow.",
+    "failure_retry": "The additional strict candidate/artifact checks prevent generic skipped acceptance from bypassing those gates.",
+    "source": [
+     {
+      "path": ".github/workflows/ci.yml",
+      "symbol": "3719",
+      "lines": [
+       3719,
+       3719
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/workflows/ci.yml"
+     }
+    ],
+    "transition_id": "C02:02"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Required results accept only success/skipped, while candidate readiness must succeed unconditionally and selected native coverage/program integrity must succeed. The release workflow separately requires a successful same-repository main-push CI event.",
+   "witnesses": [
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 5031,
+     "end": 5058,
+     "file_sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f",
+     "span_sha256": "3c2ff5d09f0d00b94f9adec65624f96379b8d4c06dab99f7d4d3cbcaa1967a01"
+    },
+    {
+     "path": ".github/workflows/release.yml",
+     "start": 31,
+     "end": 63,
+     "file_sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126",
+     "span_sha256": "5105f6969e75baad3743f95b19291e0a7e6fd594ae1cf11a6aa32aede72b4a60"
+    }
+   ],
+   "intake_variances": [
+    "The current program adds a strict selected program-integrity result; generic skip acceptance does not bypass it."
+   ],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C02:03",
+   "frozen_row_sha256": "29eedc2bad486084c2143b9a2978852d55d5fb867ff4dee7302c67350481c148",
+   "frozen_baseline": {
+    "from_state": "evaluating",
+    "from": "evaluating",
+    "event": "required failure, cancellation, unexpected result, or strict gate skip",
+    "guard": "one required result violates acceptance predicates",
+    "to": "aggregate fail",
+    "effects": "Exit nonzero; no CI success authorization.",
+    "failure_retry": "Rerun after correcting cause; prior success on another commit/run is not substituted.",
+    "source": [
+     {
+      "path": ".github/workflows/ci.yml",
+      "symbol": "3719",
+      "lines": [
+       3719,
+       3719
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/workflows/ci.yml"
+     }
+    ],
+    "transition_id": "C02:03"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Required failure/cancellation/unexpected results or skipped strict gates exit nonzero. The workflow cannot replace a failed exact run with a different run through this aggregate.",
+   "witnesses": [
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 5040,
+     "end": 5058,
+     "file_sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f",
+     "span_sha256": "4d1857be2b41df6cc0609bcee2619dc631a0554c712193c7cdac6fa091acfbf3"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C02:04",
+   "frozen_row_sha256": "29fb84bff8a86c84a56d2879f6f5469ce986987ae3f755c2ecf1ff0b35c7e2ff",
+   "frozen_baseline": {
+    "from_state": "evaluating",
+    "from": "evaluating",
+    "event": "advisory lane settles",
+    "guard": "lane is Pi latest, Codex latest, Claude coverage cell/merge or Pi coverage cell/merge",
+    "to": "advisory result",
+    "effects": "Retain lane visibility/evidence; its status is excluded from required_results.",
+    "failure_retry": "Advisory failure does not veto ci-passed. Comment naming only Pi latest is stale.",
+    "source": [
+     {
+      "path": ".github/workflows/ci.yml",
+      "symbol": "3719",
+      "lines": [
+       3719,
+       3719
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/workflows/ci.yml"
+     }
+    ],
+    "transition_id": "C02:04"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Pi/Codex latest and the four Claude/Pi coverage-union lanes are awaited but omitted from required_results. Their outcomes remain visible; only the required set and strict gates decide this aggregate.",
+   "witnesses": [
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 4975,
+     "end": 5037,
+     "file_sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f",
+     "span_sha256": "34d74a8ead5ead44569392392dba83deb2a4573776ea91fba8fedfe60e362845"
+    }
+   ],
+   "intake_variances": [
+    "The single-canary registration comment is stale prose; literal needs and required_results describe the wider advisory population."
+   ],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C03:01",
+   "frozen_row_sha256": "1357429cb1b8fc14070d514207485d58237b9f8bbbe4359e0df7c0b316ac27a9",
+   "frozen_baseline": {
+    "from_state": "unbound build",
+    "from": "unbound build",
+    "event": "stamp",
+    "guard": "producer job artifact-native-build; repository, clean exact source/workflow SHA, run/attempt, Go toolchain and native target all match",
+    "to": "stamped candidate",
+    "effects": "Write candidate metadata exclusively with executable/module hashes and five-field candidate release manifest.",
+    "failure_retry": "Existing metadata, linked/wrong payload, mismatched platform/source/toolchain or dirty checkout fails; never replace another identity.",
+    "source": [
+     {
+      "path": ".github/scripts/ci20_native_binding.py",
+      "symbol": "stamp",
+      "lines": [
+       171,
+       181
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/ci20_native_binding.py"
+     }
+    ],
+    "transition_id": "C03:01"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Only artifact-native-build stamps a candidate. Admission requires the repository/workflow-reference/run/attempt, exact checked-out source, no tracked diff, pinned native Go target/toolchain, module/tool digests, exact five-key candidate manifest and exact binary population. Metadata is exclusively created.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/ci20_native_binding.py",
+     "start": 85,
+     "end": 181,
+     "file_sha256": "8a927974424c7c18d3e2e28db0173de07c65e2f1bb068e08dd11e14614284c3f",
+     "span_sha256": "8414365329943f0093fb188be0a3ce1c8df41b4172b32d674823e10632e39949"
+    }
+   ],
+   "intake_variances": [
+    "The existing clean-checkout check is git diff HEAD for tracked state, not an untracked namespace or hostile-worktree guarantee. Workflow identity is the admitted workflow path/ref plus source/run fields, not a separately computed workflow-file hash."
+   ],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C03:02",
+   "frozen_row_sha256": "a33bf4c44f4bf59658b186742ab2ef100b1ae7e40da83cc400c34b9488681c1a",
+   "frozen_baseline": {
+    "from_state": "stamped candidate",
+    "from": "stamped candidate",
+    "event": "verify at consumer",
+    "guard": "consumer is declared bridge, authority or engine job; same run/source/workflow; producer attempt no later than current attempt; payload digest exact",
+    "to": "valid same-run consumer",
+    "effects": "Validate receipt; restore POSIX executable bit only on verified binary if required.",
+    "failure_retry": "Cross-run, future-attempt, changed module/binary or unsupported consumer fails.",
+    "source": [
+     {
+      "path": ".github/scripts/ci20_native_binding.py",
+      "symbol": "verify",
+      "lines": [
+       184,
+       197
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/ci20_native_binding.py"
+     }
+    ],
+    "transition_id": "C03:02"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Only declared native consumer jobs verify. Candidate bytes and current native environment must equal the producer stamp; only an earlier-or-current attempt of the same immutable run may be reused. POSIX chmod applies after exact verification.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/ci20_native_binding.py",
+     "start": 184,
+     "end": 206,
+     "file_sha256": "8a927974424c7c18d3e2e28db0173de07c65e2f1bb068e08dd11e14614284c3f",
+     "span_sha256": "898a238138879f95ed57c188a63233f6cd2cd4663f6b05c91823a388975efde9"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C03:03",
+   "frozen_row_sha256": "4ae4df101b8008e00e9780f3dfd6d9dc5a3bbdabb55c47f5148ff641cfd5495a",
+   "frozen_baseline": {
+    "from_state": "stamped candidate from another runner",
+    "from": "stamped candidate from another runner",
+    "event": "recorded verification",
+    "guard": "recorded exact issuer identity, platform, source/module/toolchain and digests are valid",
+    "to": "recorded off-host candidate",
+    "effects": "Validate evidence without attempting to execute a foreign OS binary.",
+    "failure_retry": "This is recorded producer evidence, not a new local execution result.",
+    "source": [
+     {
+      "path": ".github/scripts/ci20_native_binding.py",
+      "symbol": "recorded",
+      "lines": [
+       209,
+       235
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/ci20_native_binding.py"
+     }
+    ],
+    "transition_id": "C03:03"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "The final issuer rechecks closed stamp fields, source/run/module/platform/toolchain and candidate bytes off-host, validates the earlier-attempt relation and syntax of the recorded Go digest. It does not execute a foreign binary or independently remeasure the foreign Go executable.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/ci20_native_binding.py",
+     "start": 209,
+     "end": 235,
+     "file_sha256": "8a927974424c7c18d3e2e28db0173de07c65e2f1bb068e08dd11e14614284c3f",
+     "span_sha256": "1b58d920312ea87dc59f3fe9477ae3ed68da9f9372332b9d100fd6050d8e8ab4"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C03:04",
+   "frozen_row_sha256": "fc62bf8bee7c302101759cb29f0f2b5c578330eb242e283225f2f2ba8215b4f5",
+   "frozen_baseline": {
+    "from_state": "any candidate state",
+    "from": "any candidate state",
+    "event": "malformed, missing, duplicate-key or linked identity input",
+    "guard": "closed shape and identity checks fail",
+    "to": "rejected identity",
+    "effects": "Raise diagnostic and stop promotion.",
+    "failure_retry": "Repair/rebuild the candidate; do not waive an identity mismatch by rerunning only a later stage.",
+    "source": [
+     {
+      "path": ".github/scripts/ci20_native_binding.py",
+      "symbol": "candidate_identity",
+      "lines": [
+       85,
+       116
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/ci20_native_binding.py"
+     }
+    ],
+    "transition_id": "C03:04"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Regular-file/size/reparse, duplicate-key, closed manifest/stamp, exact member/digest and run/platform checks reject malformed or substituted identity; no mismatch is waived by a later consumer.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/ci20_native_binding.py",
+     "start": 57,
+     "end": 116,
+     "file_sha256": "8a927974424c7c18d3e2e28db0173de07c65e2f1bb068e08dd11e14614284c3f",
+     "span_sha256": "6e0323f165f260a0fd609ed4794cec00663f4cb72340f417e2404b3780347507"
+    },
+    {
+     "path": ".github/scripts/ci20_native_binding.py",
+     "start": 119,
+     "end": 140,
+     "file_sha256": "8a927974424c7c18d3e2e28db0173de07c65e2f1bb068e08dd11e14614284c3f",
+     "span_sha256": "50ca160cc9dc0b74e96d4677e78aac552f6503d783efeefe06c1d9d6124eebd1"
+    },
+    {
+     "path": ".github/scripts/ci20_native_binding.py",
+     "start": 184,
+     "end": 235,
+     "file_sha256": "8a927974424c7c18d3e2e28db0173de07c65e2f1bb068e08dd11e14614284c3f",
+     "span_sha256": "54146510192353e324b2ff810b527f02cd551f4072befbbd0b8144be5a1386dd"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C04:01",
+   "frozen_row_sha256": "3da9b80e6bee16bfe75f09cd33825934cf4d0422563de9741811e17df84be96e",
+   "frozen_baseline": {
+    "from_state": "selected",
+    "from": "selected",
+    "event": "six platform native build jobs",
+    "guard": "matching native runners and pinned toolchain; test/build succeeds",
+    "to": "candidate built",
+    "effects": "Publish platform candidates and associated test evidence; later bridges/authority consume these exact candidates.",
+    "failure_retry": "Matrix failure does not authorize a subset as the complete cohort.",
+    "source": [
+     {
+      "path": ".github/workflows/ci.yml",
+      "symbol": "629",
+      "lines": [
+       629,
+       629
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/workflows/ci.yml"
+     }
+    ],
+    "transition_id": "C04:01"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Six explicit native OS/architecture runners use pinned Go1.27.1 and Python3.14, run the producer unit, then build/test and stamp the exact candidate. Raw named outcomes and binding are retained with that candidate. A partial matrix is not the full cohort.",
+   "witnesses": [
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 709,
+     "end": 803,
+     "file_sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f",
+     "span_sha256": "e179a4265579647a605d14e5f32dfc58940bfaacabdfc319eeb289f17a924b5b"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C04:02",
+   "frozen_row_sha256": "391188a5c39fa3f16d61d1aef453ab7e6c032afa99a75871e16583f67608d11a",
+   "frozen_baseline": {
+    "from_state": "candidate built",
+    "from": "candidate built",
+    "event": "default, coverage, bridges and authority suites finish",
+    "guard": "each selected required stage succeeds; coverage join meets 70% statement threshold and six-platform integration population",
+    "to": "native stages passed",
+    "effects": "Collect checked stage results and coverage observations.",
+    "failure_retry": "Any failure or skipped required selected stage blocks engine qualification.",
+    "source": [
+     {
+      "path": ".github/workflows/ci.yml",
+      "symbol": "1135",
+      "lines": [
+       1135,
+       1135
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/workflows/ci.yml"
+     }
+    ],
+    "transition_id": "C04:02"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Native build/default/coverage/bridges/authority dependencies feed the issuer. Coverage requires native coverage success and invokes the statement summarizer with minimum70 and require-integration. Source wiring declares the population; no six-platform execution is claimed by this inspection.",
+   "witnesses": [
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 610,
+     "end": 641,
+     "file_sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f",
+     "span_sha256": "f7b3f04996b19b8fac8220a9dcc47d79691f966cd6db51e1ff27095366c246e1"
+    },
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 1385,
+     "end": 1447,
+     "file_sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f",
+     "span_sha256": "da1ae78430a31b8346cd16bd3253944786022dfa0759b64837b35cab88e95c55"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C04:03",
+   "frozen_row_sha256": "93a847e27d98f790cba8bd360b4221e8ede3652552d0f87f3c87ff4269c1cabf",
+   "frozen_baseline": {
+    "from_state": "native stages passed",
+    "from": "native stages passed",
+    "event": "require-stages",
+    "guard": "exact seven-stage population, all success, changes artifacts selection true",
+    "to": "engine qualified",
+    "effects": "Accept result only under closed stage list; no success-by-omission.",
+    "failure_retry": "Unknown, missing, duplicate, skipped or failed required stage rejects.",
+    "source": [
+     {
+      "path": ".github/scripts/ci20_native_binding.py",
+      "symbol": "require_stages",
+      "lines": [
+       264,
+       276
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/ci20_native_binding.py"
+     }
+    ],
+    "transition_id": "C04:03"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "require_stages enforces a closed exact required-stage object, every result success and changes.artifacts=true. Missing/extra/duplicate, failed or skipped selected stages reject.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/ci20_native_binding.py",
+     "start": 264,
+     "end": 276,
+     "file_sha256": "8a927974424c7c18d3e2e28db0173de07c65e2f1bb068e08dd11e14614284c3f",
+     "span_sha256": "ab93f6afce12a96752ff789217771c70690e94a20169e4032c735a70ae3e1d46"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C04:04",
+   "frozen_row_sha256": "f9d49f81feb49601738f64dd79198a6e0472bdeb10c4fd6f6955fda4dfc2c627",
+   "frozen_baseline": {
+    "from_state": "engine qualified",
+    "from": "engine qualified",
+    "event": "qualify-recorded",
+    "guard": "exact 12 tested/context directories cover six platform candidates with bound identities",
+    "to": "engine qualified with receipts",
+    "effects": "Run builder qualification sequentially and write platform qualification receipts.",
+    "failure_retry": "A later failure may leave earlier scratch receipts; workflow uploads qualification only after the successful step.",
+    "source": [
+     {
+      "path": ".github/scripts/ci20_native_binding.py",
+      "symbol": "qualify_recorded",
+      "lines": [
+       238,
+       261
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/ci20_native_binding.py"
+     }
+    ],
+    "transition_id": "C04:04"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Only the final issuer accepts exactly one tested and one context directory for each of six runners, then invokes qualification sequentially. Each receipt binds source/candidate/context observations; uploads follow the successful step, so earlier scratch receipts do not qualify a failed whole step.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/ci20_native_binding.py",
+     "start": 238,
+     "end": 261,
+     "file_sha256": "8a927974424c7c18d3e2e28db0173de07c65e2f1bb068e08dd11e14614284c3f",
+     "span_sha256": "516ade8dfbe4b8207dc731b9cd692f7594e6f762ff9b23cd8d300e7209d8fa30"
+    },
+    {
+     "path": "tools/build-artifacts.py",
+     "start": 40,
+     "end": 99,
+     "file_sha256": "74f4d1a73dcee6731b8d6211d8c715f518d4582ad8083485519b0dafb9389db4",
+     "span_sha256": "8fb633a1b587d943f2ccd9c17f2fe1c1d0b4b38c1543c35a19fd71d8d49d2cf4"
+    },
+    {
+     "path": "tools/build-artifacts.py",
+     "start": 116,
+     "end": 189,
+     "file_sha256": "74f4d1a73dcee6731b8d6211d8c715f518d4582ad8083485519b0dafb9389db4",
+     "span_sha256": "689450ff7436347b3fedb17c9493537d4266a28372fe802bad6ca14dda31fe7f"
+    },
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 633,
+     "end": 707,
+     "file_sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f",
+     "span_sha256": "ad1324bc0e27c6458a679879d7b5c2b6b92bcc034e894e0dc00585bf63d3c691"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C04:05",
+   "frozen_row_sha256": "852995b746de96ee3481e66fe31e743e2bb2df9e9fd22e847abb2386d35a7e2b",
+   "frozen_baseline": {
+    "from_state": "engine qualified with receipts",
+    "from": "engine qualified with receipts",
+    "event": "package assembly",
+    "guard": "all engine prerequisites succeeded",
+    "to": "package assembled",
+    "effects": "Build qualified Claude/Codex/Pi archives and release cohort from exact native payloads.",
+    "failure_retry": "Packaging or digest failure prevents downstream cold-install jobs.",
+    "source": [
+     {
+      "path": ".github/workflows/ci.yml",
+      "symbol": "1210",
+      "lines": [
+       1210,
+       1210
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/workflows/ci.yml"
+     }
+    ],
+    "transition_id": "C04:05"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Assembly depends on successful engine qualification, requires exactly six platform receipts, builds the source/run-bound payload overlay, then builds/verifies normal host packages and uploads the cohort only on success.",
+   "witnesses": [
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 1460,
+     "end": 1520,
+     "file_sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f",
+     "span_sha256": "502ae938007d53250cf1c014d56bd12491e2a736c55e78f7624fa136fb31cda9"
+    },
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 1594,
+     "end": 1614,
+     "file_sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f",
+     "span_sha256": "06e1b5afb1de2e63ad7f7c9c874c38282f33f46f70ea1241c873064e3c2f0566"
+    }
+   ],
+   "intake_variances": [
+    "This is a source-level producer/DAG assertion, not a new build or archive-member observation."
+   ],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C04:06",
+   "frozen_row_sha256": "bc2daeb7f278d3268389e569cc883d45ba786ca5fa6903e5fe8dd8f07ee8ac8a",
+   "frozen_baseline": {
+    "from_state": "package assembled",
+    "from": "package assembled",
+    "event": "cold-install three hosts on six platforms",
+    "guard": "artifact identity checks pass; each host install, offline capability and workflow proof succeeds",
+    "to": "host cold-verified",
+    "effects": "Emit one bound receipt per host/platform; receipts distinguish host-observed from synthetic policy evidence.",
+    "failure_retry": "Host failures remain failures; !cancelled continuation retains later independent host diagnostics without inventing missing receipts.",
+    "source": [
+     {
+      "path": ".github/workflows/ci.yml",
+      "symbol": "1366",
+      "lines": [
+       1366,
+       1366
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/workflows/ci.yml"
+     }
+    ],
+    "transition_id": "C04:06"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Cold matrix names all six platforms. Same-head payload/package downloads feed each host proof; independent later Codex/Pi stages use !cancelled. Receipts upload only after that host succeeds. The observed Claude path preserves its original package authority and retains separate observations without treating failures as qualification.",
+   "witnesses": [
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 1616,
+     "end": 1671,
+     "file_sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f",
+     "span_sha256": "54c61947880db766130c6c81567b9a1016594094753a169d38af358d36a55832"
+    },
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 1697,
+     "end": 1821,
+     "file_sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f",
+     "span_sha256": "0bfd5fda857a83ea81b5f0f6cb18a0c6415534f4c59b8ca6df5af2b4f2485ddc"
+    },
+    {
+     "path": ".github/scripts/_npm_publishlib.py",
+     "start": 266,
+     "end": 298,
+     "file_sha256": "7ff29182306d065369610d83e7ecba8450a2444340d05580fb03f7afaccfae6a",
+     "span_sha256": "49dfc0223e76536e2ac56373e3f2398fb1eeb6adef5887e251a63223e38b1c1d"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C04:07",
+   "frozen_row_sha256": "b442f1f3f42b863a9378a1048df0e6b6ee0c956ff5044b234a41eaf6542a31bf",
+   "frozen_baseline": {
+    "from_state": "host cold-verified",
+    "from": "host cold-verified",
+    "event": "release cohort verification",
+    "guard": "exact unique population of 18 receipts, hashes/source/run and required proof fields match",
+    "to": "releasable cohort",
+    "effects": "Authorize publication consumer to use packages. Context qualifier, when present, additionally requires its declared proof.",
+    "failure_retry": "Missing/duplicate receipts, shadow/native runtime download, or weak proof rejects.",
+    "source": [
+     {
+      "path": ".github/scripts/_npm_publishlib.py",
+      "symbol": "verify_release_cohort",
+      "lines": [
+       219,
+       332
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/_npm_publishlib.py"
+     }
+    ],
+    "transition_id": "C04:07"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "The publication verifier first checks the qualified package cohort, then exactly18 unique host/platform cold receipts. Closed fields bind source/workflow/run/promotion/package/manifest/binary and required installed-workflow outcomes; Pi synthetic-policy modes differ from Claude/Codex host-observed modes. Optional context qualification requires exact declared context proof fields.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/_npm_publishlib.py",
+     "start": 221,
+     "end": 334,
+     "file_sha256": "7ff29182306d065369610d83e7ecba8450a2444340d05580fb03f7afaccfae6a",
+     "span_sha256": "8d1d4d3cee2c10fc6a67eed19ad3ef0113cd5351ef630fadb970f3909fbeb2a6"
+    },
+    {
+     "path": "core/pysrc/_artifactmanifestlib.py",
+     "start": 24,
+     "end": 63,
+     "file_sha256": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054",
+     "span_sha256": "83195b16ca6388737e6fab773e2c42105470088deb16dfdf6e1723d580972829"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C11:01",
+   "frozen_row_sha256": "2a8ce4ed2fcfc5dea65fd23d4aad5811d0ed70e49b5c7c13f3c19305ae67e110",
+   "frozen_baseline": {
+    "from_state": "runtime unchecked",
+    "from": "runtime unchecked",
+    "event": "codex --version admission",
+    "guard": "runtime unavailable or unusable and CA_REQUIRE_CODEX is not 1",
+    "to": "optional skip",
+    "effects": "Emit explicit status=skip with no checks; exit zero.",
+    "failure_retry": "A successful exit with skip is not host installation or enforcement evidence.",
+    "source": [
+     {
+      "path": ".github/scripts/check_codex_host.py",
+      "symbol": "main",
+      "lines": [
+       346,
+       437
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/check_codex_host.py"
+     }
+    ],
+    "transition_id": "C11:01"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Optional absent/unusable Codex emits schema/status=skip, runtime null and empty results, exits0, and may append a typed skipped verdict. Version probing has its own120second bound. Skip is not host proof.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/check_codex_host.py",
+     "start": 95,
+     "end": 106,
+     "file_sha256": "ced71d6b20fe30c25ec7b5cb8cde191cd8ef7e72008b904bfa8dcbd3c4adc6b4",
+     "span_sha256": "588e79b6d310ef13ebf03ee57f5b47f2e65753cb2bb7163e6baab88741cd53b6"
+    },
+    {
+     "path": ".github/scripts/check_codex_host.py",
+     "start": 425,
+     "end": 460,
+     "file_sha256": "ced71d6b20fe30c25ec7b5cb8cde191cd8ef7e72008b904bfa8dcbd3c4adc6b4",
+     "span_sha256": "13d7dbfb16f07bddb0ee2a2f3f9afccc20d2c8f4ad53a79f5aa495a2d45063d8"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C11:02",
+   "frozen_row_sha256": "090aae181a5212a3df97c0fc49dcd8d5391ce58683b6b3f38aa1cb03e157faa3",
+   "frozen_baseline": {
+    "from_state": "runtime unchecked",
+    "from": "runtime unchecked",
+    "event": "codex --version admission",
+    "guard": "runtime unavailable or unusable and CA_REQUIRE_CODEX=1",
+    "to": "required fail",
+    "effects": "Emit status=fail and nonzero error.",
+    "failure_retry": "Install usable runtime, then rerun.",
+    "source": [
+     {
+      "path": ".github/scripts/check_codex_host.py",
+      "symbol": "main",
+      "lines": [
+       346,
+       437
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/check_codex_host.py"
+     }
+    ],
+    "transition_id": "C11:02"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "CA_REQUIRE_CODEX=1 turns absent/unusable runtime into status=fail, nonzero exit and unavailable typed outcome when requested; an optional skip cannot satisfy that required admission.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/check_codex_host.py",
+     "start": 446,
+     "end": 460,
+     "file_sha256": "ced71d6b20fe30c25ec7b5cb8cde191cd8ef7e72008b904bfa8dcbd3c4adc6b4",
+     "span_sha256": "100ed0c9a783a87d8f7e3fe9a413e147509ed72cc3a912a6fcee0bdfe549aaeb"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C11:03",
+   "frozen_row_sha256": "89a229283f23123bc5bc0c65d7d13cddda7a611b2c3acc3207e0d8cf6b2c8ed7",
+   "frozen_baseline": {
+    "from_state": "usable runtime",
+    "from": "usable runtime",
+    "event": "prepare check",
+    "guard": "npm mode, if requested, matches checkout version and includes member receipt",
+    "to": "fresh home",
+    "effects": "Remove previous disposable home, recreate it; npm mode writes exact-version temporary marketplace catalog.",
+    "failure_retry": "Invalid mode arguments fail before installation; cleanup uses ignore_errors and does not itself prove deletion.",
+    "source": [
+     {
+      "path": ".github/scripts/check_codex_host.py",
+      "symbol": "main",
+      "lines": [
+       346,
+       437
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/check_codex_host.py"
+     }
+    ],
+    "transition_id": "C11:03"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Npm mode must match the checked-out version and supply qualified metadata before live install; it forces capability checking. Disposable workspace home is removed best-effort and recreated, with exact-version npm catalog only in npm mode.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/check_codex_host.py",
+     "start": 437,
+     "end": 494,
+     "file_sha256": "ced71d6b20fe30c25ec7b5cb8cde191cd8ef7e72008b904bfa8dcbd3c4adc6b4",
+     "span_sha256": "8cc6cdae6374b633211b37fd3f4d5ef374d8d2309c2f881d353e2cf2e08dbc0d"
+    }
+   ],
+   "intake_variances": [
+    "Ignore-errors cleanup is an attempt, not proof of successful deletion or hostile-state isolation."
+   ],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C11:04",
+   "frozen_row_sha256": "d8a8dde1dd5d5cc9b85e910ca2a2f9531bef808b7f26d8c2c40872dab0107ece",
+   "frozen_baseline": {
+    "from_state": "fresh home",
+    "from": "fresh home",
+    "event": "marketplace add",
+    "guard": "host command returns zero",
+    "to": "marketplace added",
+    "effects": "Real Codex registers the provided local marketplace.",
+    "failure_retry": "Nonzero records failure and ends check_install early; finally attempts home removal.",
+    "source": [
+     {
+      "path": ".github/scripts/check_codex_host.py",
+      "symbol": "check_install",
+      "lines": [
+       155,
+       343
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/check_codex_host.py"
+     }
+    ],
+    "transition_id": "C11:04"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "The real host marketplace-add result is recorded; nonzero returns immediately before plugin install. All _run calls now use the bounded subprocess owner.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/check_codex_host.py",
+     "start": 74,
+     "end": 92,
+     "file_sha256": "ced71d6b20fe30c25ec7b5cb8cde191cd8ef7e72008b904bfa8dcbd3c4adc6b4",
+     "span_sha256": "345695e2c6783e99b1cf1b959d8bb74ac0c4bcccb05d81c5cf6178cc80624161"
+    },
+    {
+     "path": ".github/scripts/check_codex_host.py",
+     "start": 169,
+     "end": 188,
+     "file_sha256": "ced71d6b20fe30c25ec7b5cb8cde191cd8ef7e72008b904bfa8dcbd3c4adc6b4",
+     "span_sha256": "4dcb4b1b400fa22c74113c413f918c6954bfe59d71e6bd55e2124908686b0b1b"
+    }
+   ],
+   "intake_variances": [
+    "R-07 replaces the baseline unbounded host command wait with a300second command bound and reported cleanup outcome; no provider turn is introduced."
+   ],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C11:05",
+   "frozen_row_sha256": "b360abec97b52c1c67246e26173cd9ec69af6038426cc035b2fe3e1212b0db88",
+   "frozen_baseline": {
+    "from_state": "marketplace added",
+    "from": "marketplace added",
+    "event": "plugin add ca-codex@codearbiter",
+    "guard": "host command returns zero",
+    "to": "installed",
+    "effects": "Real host installs plugin into its cache.",
+    "failure_retry": "Nonzero records failure and stops later checks; no fake source copy used as install proof.",
+    "source": [
+     {
+      "path": ".github/scripts/check_codex_host.py",
+      "symbol": "check_install",
+      "lines": [
+       155,
+       343
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/check_codex_host.py"
+     }
+    ],
+    "transition_id": "C11:05"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Real codex plugin add ca-codex@codearbiter is executed through _run; nonzero records failure and prevents later readback. Source copying is not substituted for host installation.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/check_codex_host.py",
+     "start": 81,
+     "end": 92,
+     "file_sha256": "ced71d6b20fe30c25ec7b5cb8cde191cd8ef7e72008b904bfa8dcbd3c4adc6b4",
+     "span_sha256": "e28e9677441ab3e7efc74785df9be3291b1b9083dc753833dd64f42fde8fcfad"
+    },
+    {
+     "path": ".github/scripts/check_codex_host.py",
+     "start": 190,
+     "end": 199,
+     "file_sha256": "ced71d6b20fe30c25ec7b5cb8cde191cd8ef7e72008b904bfa8dcbd3c4adc6b4",
+     "span_sha256": "d74e7aa003912248f9771872800b0b357ced704151f091071e2d47f916fa9b45"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C11:06",
+   "frozen_row_sha256": "307a92ab69b6de1a61c455a89793c8d5439c9a3c732f72283cd1cf771b55ee6f",
+   "frozen_baseline": {
+    "from_state": "installed",
+    "from": "installed",
+    "event": "plugin list and cache inspection",
+    "guard": "one exact enabled installed identity, manifest version and single cache version match; hooks, scripts and indexed literal/generic routes intact",
+    "to": "read-back verified",
+    "effects": "Record individual result codes and inspect installed cache resources.",
+    "failure_retry": "Ambiguous/missing/disabled/wrong-version or missing-target state records failure. Hook event-key parity alone is not hook execution proof.",
+    "source": [
+     {
+      "path": ".github/scripts/check_codex_host.py",
+      "symbol": "check_install",
+      "lines": [
+       155,
+       343
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/check_codex_host.py"
+     }
+    ],
+    "transition_id": "C11:06"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Readback requires exactly one installed/enabled listing and expected version, one matching cache version, installed hook inventory/target scripts and literal/generic agent resources. Source-copy version parity does not prove enforcement or a live hook event.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/check_codex_host.py",
+     "start": 196,
+     "end": 326,
+     "file_sha256": "ced71d6b20fe30c25ec7b5cb8cde191cd8ef7e72008b904bfa8dcbd3c4adc6b4",
+     "span_sha256": "c9a5ddb69e74d36539682aa18abcfd3f15ce94c4b0c0f55092a4613c5da6ddb5"
+    },
+    {
+     "path": ".github/scripts/codex_agent_routes.py",
+     "start": 221,
+     "end": 271,
+     "file_sha256": "756a4a53059853fe85bbb846dd0bf87acf8c556506f4f5b0f7476897b2471092",
+     "span_sha256": "3968a07a93f012307e09a8a4496842a5d63d1243fe0660281504f575c8442e51"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C11:07",
+   "frozen_row_sha256": "9abcdacf2a8516d61054928253c68db635095513b7992738ba31de92dc822929",
+   "frozen_baseline": {
+    "from_state": "read-back verified",
+    "from": "read-back verified",
+    "event": "qualified npm member check / capability check",
+    "guard": "requested flags; exact installed member size/hash set and offline native capabilities required",
+    "to": "qualified installation verified",
+    "effects": "Load installed bridge and call native capabilities; require operations/default enabled and runtime_downloads=false.",
+    "failure_retry": "Missing/substituted/linked engine or bad capability response fails.",
+    "source": [
+     {
+      "path": ".github/scripts/check_codex_host.py",
+      "symbol": "_installed_member_errors",
+      "lines": [
+       99,
+       152
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/check_codex_host.py"
+     }
+    ],
+    "transition_id": "C11:07"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Requested qualified metadata checks the complete installed member set and each size/SHA256. Capability mode loads the installed bridge/parser, restores caller module state, and requires repository operations/default enabled with runtime_downloads=false. The optional exchange observer is transparent and reentrant.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/check_codex_host.py",
+     "start": 113,
+     "end": 166,
+     "file_sha256": "ced71d6b20fe30c25ec7b5cb8cde191cd8ef7e72008b904bfa8dcbd3c4adc6b4",
+     "span_sha256": "43b44c977c87f7dba592a61f31f3726ec9d5cf36d261d81eeea73114f01cf265"
+    },
+    {
+     "path": ".github/scripts/check_codex_host.py",
+     "start": 318,
+     "end": 400,
+     "file_sha256": "ced71d6b20fe30c25ec7b5cb8cde191cd8ef7e72008b904bfa8dcbd3c4adc6b4",
+     "span_sha256": "ef34b7ca8341a7ab1a3b617fadd0563fb386619d30df456efbaaed478bb7077c"
+    }
+   ],
+   "intake_variances": [
+    "Accepted R-06 verdict separation and the reviewed Codex nested-observer correction preserve actual installed dependency/capability ownership; source inspection is not installed execution."
+   ],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C11:08",
+   "frozen_row_sha256": "2aee331d446e10d39a5c2ba53842314df74be57f67f969301dde241ed2f2a6af",
+   "frozen_baseline": {
+    "from_state": "any live check state",
+    "from": "any live check state",
+    "event": "normal return or exception",
+    "guard": "finally block reached",
+    "to": "cleaned / cleanup attempted",
+    "effects": "Attempt recursive removal of disposable host home; then emit overall pass/fail for accumulated results.",
+    "failure_retry": "Installation subcommands have no _run timeout; unexpected exception can escape before final JSON. No provider turn is invoked.",
+    "source": [
+     {
+      "path": ".github/scripts/check_codex_host.py",
+      "symbol": "main",
+      "lines": [
+       346,
+       437
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/check_codex_host.py"
+     }
+    ],
+    "transition_id": "C11:08"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Finally attempts recursive home removal with ignore_errors. Accumulated failures emit fail/rejected, successful checks emit pass/verified; unexpected exceptions may still escape before final JSON. Host subprocess waits are now bounded and retain partial timeout/containment diagnostics; no provider turn is invoked.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/check_codex_host.py",
+     "start": 74,
+     "end": 106,
+     "file_sha256": "ced71d6b20fe30c25ec7b5cb8cde191cd8ef7e72008b904bfa8dcbd3c4adc6b4",
+     "span_sha256": "6d4a1171f4c45e84783c2e89a360d9ec396dc5e1d813c537cd757446025c8a2e"
+    },
+    {
+     "path": ".github/scripts/check_codex_host.py",
+     "start": 495,
+     "end": 510,
+     "file_sha256": "ced71d6b20fe30c25ec7b5cb8cde191cd8ef7e72008b904bfa8dcbd3c4adc6b4",
+     "span_sha256": "c8a671fe9814f37fb51cd35264be71f3c4de80306989af6ab323a947ee4077db"
+    },
+    {
+     "path": ".github/scripts/_boundedproc.py",
+     "start": 144,
+     "end": 164,
+     "file_sha256": "671458a00f178ac690e4d1f4e0458da7b3833353384f9cb7546be711bab15f51",
+     "span_sha256": "3dc1519ef0ddcdb2a70bbec3ced57d03aa2b493f5e3626228ca0eada5bcb37ba"
+    }
+   ],
+   "intake_variances": [
+    "The frozen no-timeout fact is replaced by accepted R-07, not preserved. Cleanup outcomes are reported; a timeout or best-effort directory removal does not prove descendant quiescence."
+   ],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C12:01",
+   "frozen_row_sha256": "7ed94d23d7f8da5827aa4460bbb13d45fcf1cec58fa424865b162f633f778582",
+   "frozen_baseline": {
+    "from_state": "candidate untrusted data",
+    "from": "candidate untrusted data",
+    "event": "verify exact final-ref",
+    "guard": "lowercase 40-character commit resolves exactly; existing candidate checkout",
+    "to": "exact commit archived",
+    "effects": "Git-archive only plugins/ca-codex into temporary zip; load executable verifier only from trusted checker location.",
+    "failure_retry": "Bad ref/tree or archive failure rejects; candidate scripts are not executed.",
+    "source": [
+     {
+      "path": ".github/scripts/verify_codex_static_candidate.py",
+      "symbol": "verify_static_candidate",
+      "lines": [
+       93,
+       132
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/verify_codex_static_candidate.py"
+     }
+    ],
+    "transition_id": "C12:01"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Exact lowercase40 commit must resolve to itself. Only the selected plugin tree is Git-archived, and the executable checker is loaded from the trusted verifier location, not candidate scripts.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/verify_codex_static_candidate.py",
+     "start": 25,
+     "end": 76,
+     "file_sha256": "c79f32e90453805d5b5c724110d53beb96752de8d8a512f3d8dd215feb937725",
+     "span_sha256": "f321d148e87fc650edd53769da470ab15e2738af8e37c9e767b5542cafb158b5"
+    },
+    {
+     "path": ".github/scripts/verify_codex_static_candidate.py",
+     "start": 93,
+     "end": 112,
+     "file_sha256": "c79f32e90453805d5b5c724110d53beb96752de8d8a512f3d8dd215feb937725",
+     "span_sha256": "2d85a5341fd7481de509b9a46fe138b52ad95eda0f179af2f57065a395967905"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C12:02",
+   "frozen_row_sha256": "556dd85d015150418b48c35be38bc57de33946f6706c7ba34a5fce3feab0e0e7",
+   "frozen_baseline": {
+    "from_state": "exact commit archived",
+    "from": "exact commit archived",
+    "event": "static package validation",
+    "guard": "archive bound; safe file population and frontmatter; ca-codex SemVer manifest; approved canonical hook-manifest digest and present target scripts",
+    "to": "bounded package validated",
+    "effects": "Validate declarative package/resource closure and compute deterministic package/resource hashes.",
+    "failure_retry": "Unknown hook inventory, unsafe package, malformed duplicate JSON/frontmatter or missing resource rejects.",
+    "source": [
+     {
+      "path": ".github/scripts/check_codex_static_package.py",
+      "symbol": "candidate_static_contract",
+      "lines": [
+       229,
+       296
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/check_codex_static_package.py"
+     }
+    ],
+    "transition_id": "C12:02"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Trusted static checker loads bounded safe package resources, validates duplicate-free JSON/frontmatter, ca-codex SemVer, finite hook grammar and approved canonical hook-manifest digest, plus every hook target and declarative resource closure. No candidate executable is run.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/check_codex_static_package.py",
+     "start": 89,
+     "end": 167,
+     "file_sha256": "7c0e43244ea71edcf8ecbb62dcd83209b152e6e63f796557f08027915d2c5618",
+     "span_sha256": "1434c48606d055a60174760b98e6b7fd5697613da5c39ec2862074792117b6b5"
+    },
+    {
+     "path": ".github/scripts/check_codex_static_package.py",
+     "start": 170,
+     "end": 296,
+     "file_sha256": "7c0e43244ea71edcf8ecbb62dcd83209b152e6e63f796557f08027915d2c5618",
+     "span_sha256": "b8ca4afc281c37d250a9352ebf7defa745be9de85087050c8bf40a0af925ae50"
+    },
+    {
+     "path": ".github/scripts/check_codex_skill_resources.py",
+     "start": 2148,
+     "end": 2179,
+     "file_sha256": "d9b66e6f9de71e8dcdf3c001141ac35abc350de1dc85b4d583c483be70b7bfb0",
+     "span_sha256": "5b1c16262393bd4873640e6ff07c330aeba1a6309d7971ca3ced1eeb3e670749"
+    },
+    {
+     "path": ".github/scripts/check_codex_skill_resources.py",
+     "start": 2930,
+     "end": 3024,
+     "file_sha256": "d9b66e6f9de71e8dcdf3c001141ac35abc350de1dc85b4d583c483be70b7bfb0",
+     "span_sha256": "d077948697e6dafd8790bf9b7d33e3ce4ce154f9412bdad5accfd3d27496e976"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C12:03",
+   "frozen_row_sha256": "4fcb11c62200cf156ae78c2a3db06b87290bd38a525d9d504e560a3e779d0f12",
+   "frozen_baseline": {
+    "from_state": "bounded package validated",
+    "from": "bounded package validated",
+    "event": "expected hash comparison",
+    "guard": "every supplied lowercase SHA-256 equals observed archive/package/resource hash",
+    "to": "static pass",
+    "effects": "Emit PASS with source commit/tree, archive/package/resource identities, version and resource/read counts; delete temporary archive.",
+    "failure_retry": "Mismatch returns FAIL/nonzero; static pass is not a live hook execution proof.",
+    "source": [
+     {
+      "path": ".github/scripts/verify_codex_static_candidate.py",
+      "symbol": "verify_static_candidate",
+      "lines": [
+       93,
+       132
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/verify_codex_static_candidate.py"
+     }
+    ],
+    "transition_id": "C12:03"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Archive/package/resource SHA256 expectations are optional but must have exact lowercase grammar and equal actual values when supplied. Temporary archive is removed before a structured static PASS is returned; static PASS is not host/hook behavior.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/verify_codex_static_candidate.py",
+     "start": 87,
+     "end": 132,
+     "file_sha256": "c79f32e90453805d5b5c724110d53beb96752de8d8a512f3d8dd215feb937725",
+     "span_sha256": "099981768005f7ce7d44986b2698bd41a4118009319f0aabc2bc1e045fc5d038"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C12:04",
+   "frozen_row_sha256": "f440a839018ab3cc3b9379c9959f0fd2eeb9fc52dd833c4a6d18ea31131e075e",
+   "frozen_baseline": {
+    "from_state": "candidate untrusted data",
+    "from": "candidate untrusted data",
+    "event": "legacy verify-candidate-provenance wrapper",
+    "guard": "same exact Git-commit/archive/hash binding; trusted resource checker candidate_static_contract",
+    "to": "static provenance pass",
+    "effects": "Return source/archive/package/resource identities from the resource-checker contract.",
+    "failure_retry": "Retained distinct wrapper uses the resource checker rather than the newer dedicated static-package checker; no candidate executable is loaded.",
+    "source": [
+     {
+      "path": ".github/scripts/verify_codex_candidate_provenance.py",
+      "symbol": "verify_static_candidate",
+      "lines": [
+       110,
+       151
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/verify_codex_candidate_provenance.py"
+     }
+    ],
+    "transition_id": "C12:04"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "The retained provenance wrapper uses the same exact-ref/archive and expected-digest binding but calls its trusted resource checker. It remains distinct from the newer static-package owner and executes no candidate source.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/verify_codex_candidate_provenance.py",
+     "start": 29,
+     "end": 93,
+     "file_sha256": "302d5d7e3d639cf315f784a4c576cc90ae808c068a8f5c41bc3b983c7ac3c9f0",
+     "span_sha256": "5477d09c83055032e062dc117025acd045aeef56ae995763b40d32bf046f30bb"
+    },
+    {
+     "path": ".github/scripts/verify_codex_candidate_provenance.py",
+     "start": 110,
+     "end": 151,
+     "file_sha256": "302d5d7e3d639cf315f784a4c576cc90ae808c068a8f5c41bc3b983c7ac3c9f0",
+     "span_sha256": "14fbd3c337fb210a487061498d90b99a55c26638001a802fa18e57765b582fc2"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C12:05",
+   "frozen_row_sha256": "2b67815708febf119b8bddb3367691eb456a548679c9ae0aac5dfd4806e9057e",
+   "frozen_baseline": {
+    "from_state": "any candidate stage",
+    "from": "any candidate stage",
+    "event": "invalid schema, digest or source identity",
+    "guard": "validation exception",
+    "to": "reject",
+    "effects": "Emit FAIL errors and nonzero exit; no publication effect.",
+    "failure_retry": "Fix package or use exact expected candidate; no acceptance-by-retry of mismatched identity.",
+    "source": [
+     {
+      "path": ".github/scripts/verify_codex_static_candidate.py",
+      "symbol": "main",
+      "lines": [
+       146,
+       167
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/verify_codex_static_candidate.py"
+     }
+    ],
+    "transition_id": "C12:05"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Input/schema/source/digest exceptions emit a failed static result and nonzero status. Neither wrapper grants a publication effect or turns a changed identity into success.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/verify_codex_static_candidate.py",
+     "start": 146,
+     "end": 167,
+     "file_sha256": "c79f32e90453805d5b5c724110d53beb96752de8d8a512f3d8dd215feb937725",
+     "span_sha256": "3d1993689e842c497f5517c4e6564282f10107e4fd5d283fea6eb2066dbc90a1"
+    },
+    {
+     "path": ".github/scripts/verify_codex_candidate_provenance.py",
+     "start": 167,
+     "end": 189,
+     "file_sha256": "302d5d7e3d639cf315f784a4c576cc90ae808c068a8f5c41bc3b983c7ac3c9f0",
+     "span_sha256": "13ec5fd2de4c4133c1bc34e96a13c90fdd29d9da9d83fe41b77697c9c22e19cc"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C13:01",
+   "frozen_row_sha256": "7ee4af5d2ee2ef470fbbb385ed460a482e4d3ac425418bb324b49c9f4bb1eb33",
+   "frozen_baseline": {
+    "from_state": "selected Pi canary",
+    "from": "selected Pi canary",
+    "event": "install latest upstream and run admission/platform probes",
+    "guard": "declared baseline harness/toolchain available",
+    "to": "probe pass or compatibility warning",
+    "effects": "Execute compatibility checks; probe failures are captured for later summary.",
+    "failure_retry": "Harness/setup failures can fail job; semantic probe failures are absorbed at step level.",
+    "source": [
+     {
+      "path": ".github/workflows/ci.yml",
+      "symbol": "2328",
+      "lines": [
+       2328,
+       2328
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/workflows/ci.yml"
+     }
+    ],
+    "transition_id": "C13:01"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Pi latest runs the declared reviewed harness and installs the external latest runtime with scripts disabled. Admission/platform probe steps absorb their own failure, while harness/setup failures remain visible as job failure.",
+   "witnesses": [
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 2932,
+     "end": 2995,
+     "file_sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f",
+     "span_sha256": "37579e2345b47a25539b8fad287b7c10fefbeba31386759b8439248e8506ba6c"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C13:02",
+   "frozen_row_sha256": "7e0367840e2947dc9e752f693371f372c08edb56203343c628823840e7b27592",
+   "frozen_baseline": {
+    "from_state": "Pi probe outcomes",
+    "from": "Pi probe outcomes",
+    "event": "always summary step",
+    "guard": "summary harness can evaluate outcomes",
+    "to": "advisory published",
+    "effects": "Emit compatible or warning receipt in step summary.",
+    "failure_retry": "Receipt-production failure remains visible; aggregator excludes the lane from required set.",
+    "source": [
+     {
+      "path": ".github/workflows/ci.yml",
+      "symbol": "2385",
+      "lines": [
+       2385,
+       2385
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/workflows/ci.yml"
+     }
+    ],
+    "transition_id": "C13:02"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "An always summary prints the two actual probe outcomes and either compatibility or warning. Summary failure remains visible; aggregate excludes this advisory lane from required results.",
+   "witnesses": [
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 2996,
+     "end": 3024,
+     "file_sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f",
+     "span_sha256": "60269166d68cbdc20877a91b98c20653827cce5b4ef6de0d2acfe3b71ce1fd70"
+    },
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 4975,
+     "end": 5037,
+     "file_sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f",
+     "span_sha256": "34d74a8ead5ead44569392392dba83deb2a4573776ea91fba8fedfe60e362845"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C13:03",
+   "frozen_row_sha256": "c6fb3b45c3ea021716b04530fe77fa1ad4a155d7ddff032b3f5eea008bedfd42",
+   "frozen_baseline": {
+    "from_state": "selected Codex canary",
+    "from": "selected Codex canary",
+    "event": "install latest host and probe",
+    "guard": "install and probe steps are configured continue-on-error",
+    "to": "probe pass or compatibility warning",
+    "effects": "Record install/probe outcomes and always print advisory summary.",
+    "failure_retry": "Checker can return explicit skip without CA_REQUIRE_CODEX; install outcome must be read alongside exit code.",
+    "source": [
+     {
+      "path": ".github/workflows/ci.yml",
+      "symbol": "3100",
+      "lines": [
+       3100,
+       3100
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/workflows/ci.yml"
+     }
+    ],
+    "transition_id": "C13:03"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Latest Codex install and host probe both continue-on-error, and an always summary names install/probe outcomes. CA_REQUIRE_CODEX is deliberately absent, so host skip can exit0; the reader must distinguish that from installed compatibility.",
+   "witnesses": [
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 4022,
+     "end": 4087,
+     "file_sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f",
+     "span_sha256": "370b38b60b8821bc134c3e3e0efadebd707ede8a16f2fe5ce5c45cd0374e72f1"
+    },
+    {
+     "path": ".github/scripts/check_codex_host.py",
+     "start": 446,
+     "end": 460,
+     "file_sha256": "ced71d6b20fe30c25ec7b5cb8cde191cd8ef7e72008b904bfa8dcbd3c4adc6b4",
+     "span_sha256": "100ed0c9a783a87d8f7e3fe9a413e147509ed72cc3a912a6fcee0bdfe549aaeb"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C13:04",
+   "frozen_row_sha256": "5e4d3b0d4ea4118c4da90fabab47aa0d423cdd988d2fe6719f80de872f2fe65f",
+   "frozen_baseline": {
+    "from_state": "any canary result",
+    "from": "any canary result",
+    "event": "CI aggregate",
+    "guard": "lane is declared advisory",
+    "to": "advisory only",
+    "effects": "Preserve evidence without vetoing ci-passed.",
+    "failure_retry": "No promotion of baseline compatibility merely because latest-watch did not block merge.",
+    "source": [
+     {
+      "path": ".github/workflows/ci.yml",
+      "symbol": "3719",
+      "lines": [
+       3719,
+       3719
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/workflows/ci.yml"
+     }
+    ],
+    "transition_id": "C13:04"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Latest lanes are awaited but not enforced by required_results. Visibility is preserved without promoting a canary that did not block merge into supported-window/runtime qualification.",
+   "witnesses": [
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 4975,
+     "end": 5037,
+     "file_sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f",
+     "span_sha256": "34d74a8ead5ead44569392392dba83deb2a4573776ea91fba8fedfe60e362845"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C14:01",
+   "frozen_row_sha256": "c70904c55bdb3dd874e936b0b4ea27f23c93aaf905ea29e331f5b6942e8b97b4",
+   "frozen_baseline": {
+    "from_state": "unchecked",
+    "from": "unchecked",
+    "event": "resolve base and compute shipped diff",
+    "guard": "base resolves; plugin is declared",
+    "to": "unchanged or changed",
+    "effects": "Diff plugin excluding tools build directory, then separately include declared committed bundles.",
+    "failure_retry": "Unresolvable base/Git errors fail; unknown plugin is usage error.",
+    "source": [
+     {
+      "path": ".github/scripts/payload_scope.py",
+      "symbol": "payload_changed",
+      "lines": [
+       84,
+       96
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/payload_scope.py"
+     }
+    ],
+    "transition_id": "C14:01"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Shipped payload uses two bounded read-only diffs: plugin tree excluding tools, then explicit committed tool bundles. Git errors refuse; declarations keep bundle ownership separate from build-only files.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/payload_scope.py",
+     "start": 43,
+     "end": 96,
+     "file_sha256": "e4cb1fc915489df8c642ae13d38e3f8c1b9dfba94f511ac8a72f5481de08cbea",
+     "span_sha256": "c919526fd8d08c578b26f4eac82966f293c631e9f2eff17234a04e2f0c99df4e"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C14:02",
+   "frozen_row_sha256": "9cb66695711d94c5f53c27d3d3fe866601d273a6eaeac04217d97c87aaae56b7",
+   "frozen_baseline": {
+    "from_state": "unchanged",
+    "from": "unchanged",
+    "event": "payload gate",
+    "guard": "no shipped files changed",
+    "to": "pass unchanged",
+    "effects": "Return success without demanding version increment.",
+    "failure_retry": "No release side effect.",
+    "source": [
+     {
+      "path": ".github/scripts/payload_version_gate.py",
+      "symbol": "gate",
+      "lines": [
+       187,
+       270
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/payload_version_gate.py"
+     }
+    ],
+    "transition_id": "C14:02"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "After resolving the base, unchanged shipped payload exits success without requiring a version increment or publishing anything. Integration-candidate mode similarly measures from its declared baseline.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/payload_version_gate.py",
+     "start": 212,
+     "end": 225,
+     "file_sha256": "713ab821fedf797cc0be4b2fee335d1c71a18ef6a6104503d4e7388eea9868d5",
+     "span_sha256": "2da5ff832f57f2120cdf2f695c7d2dc810d4881d011262f8c931e04b33e0c833"
+    },
+    {
+     "path": ".github/scripts/payload_version_gate.py",
+     "start": 305,
+     "end": 323,
+     "file_sha256": "713ab821fedf797cc0be4b2fee335d1c71a18ef6a6104503d4e7388eea9868d5",
+     "span_sha256": "ed34fab56dcf797d4d70703f6c3005b2127caf758960dd6b9269fd5b93a3a547"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C14:03",
+   "frozen_row_sha256": "6fbc4d0ce7d3f20d5c23f30d9b1128eb5e18dabcc17863d6f99599da06152186",
+   "frozen_baseline": {
+    "from_state": "changed",
+    "from": "changed",
+    "event": "manifest admission",
+    "guard": "HEAD version exists and strict SemVer parses; base version read returns None",
+    "to": "first introduction",
+    "effects": "Return success as first-introduction case.",
+    "failure_retry": "base_version also returns None for malformed/missing base version, so this branch conflates absence with invalid base manifest.",
+    "source": [
+     {
+      "path": ".github/scripts/payload_version_gate.py",
+      "symbol": "base_version",
+      "lines": [
+       170,
+       180
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/payload_version_gate.py"
+     }
+    ],
+    "transition_id": "C14:03"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Changed payload requires a usable strict-SemVer current version. Only a genuinely absent base manifest permits first introduction; present-but-unreadable/malformed/no-version base data now fails.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/payload_version_gate.py",
+     "start": 154,
+     "end": 205,
+     "file_sha256": "713ab821fedf797cc0be4b2fee335d1c71a18ef6a6104503d4e7388eea9868d5",
+     "span_sha256": "139d6868b31115e550eb224cd36bc2903c592dc2a0a09e94deba4fab94d8f233"
+    },
+    {
+     "path": ".github/scripts/payload_version_gate.py",
+     "start": 227,
+     "end": 252,
+     "file_sha256": "713ab821fedf797cc0be4b2fee335d1c71a18ef6a6104503d4e7388eea9868d5",
+     "span_sha256": "676176728ee0ba4a6d36f5bbc77d9c8f3ccb645bbaf2a4766aea5e52cdf71314"
+    }
+   ],
+   "intake_variances": [
+    "R-06/C-F07 replaces the old base_version(None) conflation with explicit absent/valid/invalid states. The compatibility base_version reader remains but the gate does not use None as admission."
+   ],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C14:04",
+   "frozen_row_sha256": "3e59f8a73a383d236941e082b37d930d83f80cea0f3da06b0e75a54b52e3f03c",
+   "frozen_baseline": {
+    "from_state": "changed with base version",
+    "from": "changed with base version",
+    "event": "version comparison",
+    "guard": "current strictly greater than base; declared namespace unique/present; current tag absent",
+    "to": "advanced unused version",
+    "effects": "Return success authorizing changed payload under new version.",
+    "failure_retry": "Malformed declaration, basename collision, missing namespace or already-existing version tag rejects.",
+    "source": [
+     {
+      "path": ".github/scripts/payload_version_gate.py",
+      "symbol": "gate",
+      "lines": [
+       187,
+       270
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/payload_version_gate.py"
+     }
+    ],
+    "transition_id": "C14:04"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Ordinary changed payload must strictly advance the valid base, derive one unambiguous declared namespace and use an absent tag. Integration mode requires the exact declared candidate to advance recorded baseline and current main, with the same unspent namespace check.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/payload_version_gate.py",
+     "start": 254,
+     "end": 302,
+     "file_sha256": "713ab821fedf797cc0be4b2fee335d1c71a18ef6a6104503d4e7388eea9868d5",
+     "span_sha256": "1d180b589667ed75c1d7b0676eaa929992ea06fbbda0aab40c6489d26a46869e"
+    },
+    {
+     "path": ".github/scripts/payload_version_gate.py",
+     "start": 305,
+     "end": 359,
+     "file_sha256": "713ab821fedf797cc0be4b2fee335d1c71a18ef6a6104503d4e7388eea9868d5",
+     "span_sha256": "be09b8e572806bd3311a3bd8f9a8e800403c67210e7b49eac529a8f68e29449b"
+    },
+    {
+     "path": ".github/scripts/integration_candidate.py",
+     "start": 61,
+     "end": 119,
+     "file_sha256": "9ab38e8706167714514d1e18f4b609901c88a84673de55ea53de271c13b60b3b",
+     "span_sha256": "30e9454fbb64aabb34979b33e036b3996b18e87101c08d20dfd870ed43fef5b0"
+    }
+   ],
+   "intake_variances": [
+    "P-01 integration candidate version ownership is an explicit additional route, not a weakening of main/release version spending."
+   ],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C14:05",
+   "frozen_row_sha256": "61346657e2fa2e1a6152950ad1e770c1dc38545a13fc6d9b7ae9ba9cecc1c8bb",
+   "frozen_baseline": {
+    "from_state": "changed with base version",
+    "from": "changed with base version",
+    "event": "same/lower version or reused tag",
+    "guard": "version does not strictly advance, or tag already exists",
+    "to": "spent version",
+    "effects": "Return blocking diagnostic requiring unused advanced version.",
+    "failure_retry": "A missing public tag does not rescue a version already present on base; bump and merge new intent.",
+    "source": [
+     {
+      "path": ".github/scripts/payload_version_gate.py",
+      "symbol": "gate",
+      "lines": [
+       187,
+       270
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/payload_version_gate.py"
+     }
+    ],
+    "transition_id": "C14:05"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Same/lower version, malformed/missing namespace, collision or existing target tag returns blocking diagnostics. An absent tag does not rescue a version already carrying changed payload on the base; integration errors also remain blocking.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/payload_version_gate.py",
+     "start": 254,
+     "end": 302,
+     "file_sha256": "713ab821fedf797cc0be4b2fee335d1c71a18ef6a6104503d4e7388eea9868d5",
+     "span_sha256": "1d180b589667ed75c1d7b0676eaa929992ea06fbbda0aab40c6489d26a46869e"
+    },
+    {
+     "path": ".github/scripts/payload_version_gate.py",
+     "start": 327,
+     "end": 355,
+     "file_sha256": "713ab821fedf797cc0be4b2fee335d1c71a18ef6a6104503d4e7388eea9868d5",
+     "span_sha256": "50e9b6c8342d6fd09734d36203102207642f6b44787fcd579dde4478f08d5d7d"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C15:01",
+   "frozen_row_sha256": "8d758a684aaa9687d907772f0013e8239cd6a94bf8883cd60f2dd50780fc8881",
+   "frozen_baseline": {
+    "from_state": "candidate",
+    "from": "candidate",
+    "event": "evaluate target declarations and versions",
+    "guard": "complete declarations, manifests agree at exact commit; no manifest behind latest stable tag",
+    "to": "already-current target or new target intent",
+    "effects": "Compute per-target eligibility from tag precedence.",
+    "failure_retry": "Missing surface, malformed declaration, inconsistent manifests or behind-tag version rejects entire check.",
+    "source": [
+     {
+      "path": ".github/scripts/check_auto_release_candidate.py",
+      "symbol": "evaluate_candidate",
+      "lines": [
+       122,
+       187
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/check_auto_release_candidate.py"
+     }
+    ],
+    "transition_id": "C15:01"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Candidate checker resolves the exact commit and complete target declarations, requires manifest agreement, and rejects a version behind the highest stable target tag. New-version eligibility is computed per target.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/check_auto_release_candidate.py",
+     "start": 200,
+     "end": 237,
+     "file_sha256": "b00914befa56089cf633d0327f35e88166bdfcb05b45aff36c1ae4786c9f5d07",
+     "span_sha256": "967e8ff21047827a9b545587e376f70ddae905a8d1f5ce6fb963b04f3ef1f8be"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C15:02",
+   "frozen_row_sha256": "cdc844114b8302b05c5a82681390984cd51f51f92331cd426e40ab0daa4d9611",
+   "frozen_baseline": {
+    "from_state": "already-current target",
+    "from": "already-current target",
+    "event": "evaluate intent",
+    "guard": "manifest not newer than latest target tag",
+    "to": "ineligible but accepted check",
+    "effects": "Skip new-intent checks for that target.",
+    "failure_retry": "No publication authorization is created by this row.",
+    "source": [
+     {
+      "path": ".github/scripts/check_auto_release_candidate.py",
+      "symbol": "evaluate_candidate",
+      "lines": [
+       122,
+       187
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/check_auto_release_candidate.py"
+     }
+    ],
+    "transition_id": "C15:02"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "A target not newer than its latest stable tag skips new-intent checks and returns an ineligible TargetResult. This accepts the candidate check, not a publication or readiness record.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/check_auto_release_candidate.py",
+     "start": 224,
+     "end": 239,
+     "file_sha256": "b00914befa56089cf633d0327f35e88166bdfcb05b45aff36c1ae4786c9f5d07",
+     "span_sha256": "eb4d1f561f58df848a668b9e13f7c8ce313da5042e18cba17039b01c47f58589"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C15:03",
+   "frozen_row_sha256": "29c6a2247ad773c01e83624d29001f4139e95ddce8b26728524b1d3a50541be7",
+   "frozen_baseline": {
+    "from_state": "new target intent",
+    "from": "new target intent",
+    "event": "bind changelog intent",
+    "guard": "latest first-parent changelog change carries same version and declared release surfaces unchanged through candidate",
+    "to": "eligible",
+    "effects": "Authorize candidate as bound release intent.",
+    "failure_retry": "Payload/artifact/manifest drift after intent rejects; need new committed intent.",
+    "source": [
+     {
+      "path": ".github/scripts/check_auto_release_candidate.py",
+      "symbol": "evaluate_candidate",
+      "lines": [
+       122,
+       187
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/check_auto_release_candidate.py"
+     }
+    ],
+    "transition_id": "C15:03"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Eligible target binds the latest first-parent changelog change, same version, and an unchanged declared manifest/generated/changelog/payload/artifact surface through the candidate, including declared exclusions. Drift rejects and requires a new intent commit.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/check_auto_release_candidate.py",
+     "start": 89,
+     "end": 98,
+     "file_sha256": "b00914befa56089cf633d0327f35e88166bdfcb05b45aff36c1ae4786c9f5d07",
+     "span_sha256": "158d6baf5c359e8cb23c378b593b5a860008e1b2281f6247f2e406bf4752b5a5"
+    },
+    {
+     "path": ".github/scripts/check_auto_release_candidate.py",
+     "start": 241,
+     "end": 265,
+     "file_sha256": "b00914befa56089cf633d0327f35e88166bdfcb05b45aff36c1ae4786c9f5d07",
+     "span_sha256": "f65f6fb8c9b6f5d0714a125c91bb49a971a71b7f6d0270550ee023f3fe4a2dde"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C15:04",
+   "frozen_row_sha256": "c76cf3958f5fd8be7c518bac6db266dcade003e2fb5914d3e1eb130d160fd9ec",
+   "frozen_baseline": {
+    "from_state": "eligible",
+    "from": "eligible",
+    "event": "--run-pre-tag in required CI",
+    "guard": "all declared pre-tag commands exit zero within timeout",
+    "to": "candidate check success",
+    "effects": "Run declared commands in restricted environment; ci-passed explicitly requires this job success.",
+    "failure_retry": "Any pre-tag nonzero raises CandidateError and blocks required CI.",
+    "source": [
+     {
+      "path": ".github/scripts/check_auto_release_candidate.py",
+      "symbol": "_run_pre_tag",
+      "lines": [
+       101,
+       119
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/check_auto_release_candidate.py"
+     }
+    ],
+    "transition_id": "C15:04"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Required CI runs declared pre-tag commands through restricted PATH/PY/SystemRoot environment with600second subprocess bound; nonzero is CandidateError. CHECK_POLICY names enforcement classes and concrete owners; declarations alone are not proof.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/check_auto_release_candidate.py",
+     "start": 101,
+     "end": 197,
+     "file_sha256": "b00914befa56089cf633d0327f35e88166bdfcb05b45aff36c1ae4786c9f5d07",
+     "span_sha256": "e5507260c47b087ef4730dcb01f7d2720e2df6857aa92a02abb7b0382a5e683a"
+    },
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 4910,
+     "end": 4927,
+     "file_sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f",
+     "span_sha256": "13e876799663d25e56bf70085fc6880912260889bb623ef3ed50a5bae28d8222"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C15:05",
+   "frozen_row_sha256": "c1454c27fe6eb3ef9313df5e75e4a8a348380f312de05b972ce55aed7028ac1f",
+   "frozen_baseline": {
+    "from_state": "eligible",
+    "from": "eligible",
+    "event": "release workflow advisory pre-tag invocation",
+    "guard": "release preflight invokes same declared checks with warning fallback",
+    "to": "warning or pass",
+    "effects": "Collect warning on failure while release job can continue.",
+    "failure_retry": "This does not undo the earlier required CI gate; ADR 40 advisory policy is not implemented consistently across both entry points.",
+    "source": [
+     {
+      "path": ".github/workflows/release.yml",
+      "symbol": "113",
+      "lines": [
+       113,
+       113
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/workflows/release.yml"
+     }
+    ],
+    "transition_id": "C15:05"
+   },
+   "current_status": "NOT_APPLICABLE",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "The old warning-fallback release pre-tag route is not active. Current planning runs the same required owner for eligible new tags, holds only a failing target, and does not rerun pre-tag for finishing an existing tag.",
+   "witnesses": [
+    {
+     "path": ".github/workflows/release.yml",
+     "start": 178,
+     "end": 191,
+     "file_sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126",
+     "span_sha256": "476cf91bb6bb8341e04ce2217aa983ec6750be1b69fbf2e8105e0ea98359afdb"
+    },
+    {
+     "path": ".github/scripts/check_auto_release_candidate.py",
+     "start": 101,
+     "end": 122,
+     "file_sha256": "b00914befa56089cf633d0327f35e88166bdfcb05b45aff36c1ae4786c9f5d07",
+     "span_sha256": "f75d3674cc8762d245161a9357ea267e55c53c9ff8a7bfaa771adf019e3333c4"
+    },
+    {
+     "path": ".github/scripts/check_auto_release_candidate.py",
+     "start": 174,
+     "end": 197,
+     "file_sha256": "b00914befa56089cf633d0327f35e88166bdfcb05b45aff36c1ae4786c9f5d07",
+     "span_sha256": "1f368a27f371bf0973ca8c302a5ad15399da2cd069bca046afa5c6042e9ebe3c"
+    }
+   ],
+   "intake_variances": [
+    "Already-dispositioned N/A edge stays unchanged. Accepted R-03 preserves current required enforcement while the ADR0040 advisory wording awaits its governed successor; this proof does not ratify or edit that ADR."
+   ],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C16:01",
+   "frozen_row_sha256": "0539bdf3e9496e3d4c0661b917d7c14d38e35de26a50d475d318b8e824009ee8",
+   "frozen_baseline": {
+    "from_state": "event untrusted",
+    "from": "event untrusted",
+    "event": "successful main-push CI workflow_run",
+    "guard": "successful named CI, push/main, same repository owner and source ancestry",
+    "to": "bound CI source",
+    "effects": "Select exact workflow_run head SHA/run ID and detached checkout; later main advance is allowed if source remains ancestor.",
+    "failure_retry": "Wrong event/repository/ref/conclusion or missing identity rejects.",
+    "source": [
+     {
+      "path": ".github/workflows/release.yml",
+      "symbol": "72",
+      "lines": [
+       72,
+       72
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/workflows/release.yml"
+     }
+    ],
+    "transition_id": "C16:01"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Release preflight admits only the named successful same-repository main-push CI workflow_run or a main-only dispatch. It selects that event run/source, checks source ancestry, records artifact retention and detaches to the selected source.",
+   "witnesses": [
+    {
+     "path": ".github/workflows/release.yml",
+     "start": 31,
+     "end": 127,
+     "file_sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126",
+     "span_sha256": "7bfb37c0a57e90c19ab360a50343019bb52ecff051849a81fd3e58f5f8de50f1"
+    },
+    {
+     "path": ".github/scripts/release_source.py",
+     "start": 49,
+     "end": 119,
+     "file_sha256": "aa37a86177d236a072bb2ba366e2c00ef6296df83bf5a9b367abb56e7532c2d3",
+     "span_sha256": "a3a9798357ecf5ee7a6da90bb8de273f565a76b651d8c871843c788306034260"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C16:02",
+   "frozen_row_sha256": "5c275f35b9a2f321fe37869187727d11b3a38b0e2d0b0781b511dfb62b8cba71",
+   "frozen_baseline": {
+    "from_state": "manual dispatch",
+    "from": "manual dispatch",
+    "event": "resolve source",
+    "guard": "workflow runs on main; latest successful push CI for main exists and its SHA is ancestor of current origin/main",
+    "to": "bound CI source",
+    "effects": "Select that successful run\u2019s source and artifacts, which may be older than main current head.",
+    "failure_retry": "Workflow input description says current head; implementation does not enforce equality.",
+    "source": [
+     {
+      "path": ".github/workflows/release.yml",
+      "symbol": "72",
+      "lines": [
+       72,
+       72
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/workflows/release.yml"
+     }
+    ],
+    "transition_id": "C16:02"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Manual dispatch explicitly selects the newest successful main-push CI source, possibly older than main HEAD. Optional approved expected-source/run must match exactly; summary shows source, build, main head/equality and retention. Missing retained hosted artifacts blocks that target.",
+   "witnesses": [
+    {
+     "path": ".github/workflows/release.yml",
+     "start": 36,
+     "end": 50,
+     "file_sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126",
+     "span_sha256": "3c13a830af7ad322f0d5c2ebe95b33dcc00a25c49db7d6f732f4d61bdb0ea9fb"
+    },
+    {
+     "path": ".github/workflows/release.yml",
+     "start": 95,
+     "end": 127,
+     "file_sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126",
+     "span_sha256": "143e38e014b3568e01e222882850738fef06a140e0bf2e0c66fa6a177b47dcff"
+    },
+    {
+     "path": ".github/workflows/release.yml",
+     "start": 171,
+     "end": 176,
+     "file_sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126",
+     "span_sha256": "3c8ffa787b3e9e4e5a3a1addd7fdd88bcce0b439911cfc23e43e51ae131f1693"
+    },
+    {
+     "path": ".github/scripts/release_source.py",
+     "start": 49,
+     "end": 138,
+     "file_sha256": "aa37a86177d236a072bb2ba366e2c00ef6296df83bf5a9b367abb56e7532c2d3",
+     "span_sha256": "c6416e3697124d54b3308c451469285a1784216fbe24670875f9b139ec0a9485"
+    }
+   ],
+   "intake_variances": [
+    "R-02 corrects the old current-head description while retaining useful original-run recovery. No later/older successful run silently substitutes when explicit expected identity is supplied."
+   ],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C16:03",
+   "frozen_row_sha256": "278ede2e3414e545c39fbf53e600938c4fd556904246c0f32bf35607028de7e9",
+   "frozen_baseline": {
+    "from_state": "bound CI source",
+    "from": "bound CI source",
+    "event": "per-target eligible()",
+    "guard": "no previous stable tag, or version is newer, or own tag exists with unpublished release",
+    "to": "target eligible",
+    "effects": "Set target output true; filter optional manual target; siblings remain independent.",
+    "failure_retry": "Observation/parse error marks target false and contributes separate failure job while eligible siblings continue.",
+    "source": [
+     {
+      "path": ".github/scripts/release_target.py",
+      "symbol": "eligible",
+      "lines": [
+       71,
+       78
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/release_target.py"
+     }
+    ],
+    "transition_id": "C16:03"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Current eligible and plan share observe. A new higher version or exact-source incomplete publication is eligible; complete publication is a no-op. Foreign-source complete history is false, and foreign-source incomplete publication conflicts rather than stealing recovery.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/release_target.py",
+     "start": 186,
+     "end": 278,
+     "file_sha256": "1161d997e00605651e80f572b0c66445ada185165793f15bb8ba9a76b5c8fe51",
+     "span_sha256": "7b6f398706d5ed91a28d9805fabe3d6a262454039e98f4f6271e3a19e410526c"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C16:04",
+   "frozen_row_sha256": "f938f068880af4f04e2c6f0fe9055c26098683483a27209084c9cad0d5f0f19e",
+   "frozen_baseline": {
+    "from_state": "bound CI source",
+    "from": "bound CI source",
+    "event": "per-target eligible()",
+    "guard": "same version has an already-public release",
+    "to": "target complete/ineligible",
+    "effects": "Skip target job even if publication receipt is missing.",
+    "failure_retry": "This predicate lacks completeness information; see reproduced recovery hole C-F01.",
+    "source": [
+     {
+      "path": ".github/scripts/release_target.py",
+      "symbol": "eligible",
+      "lines": [
+       71,
+       78
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/release_target.py"
+     }
+    ],
+    "transition_id": "C16:04"
+   },
+   "current_status": "NOT_APPLICABLE",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "The old public-without-receipt ineligibility predicate is no longer supported. Missing required assets/receipt make observe incomplete and preserve same-source recovery eligibility; source identity conflicts still refuse.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/release_target.py",
+     "start": 155,
+     "end": 238,
+     "file_sha256": "1161d997e00605651e80f572b0c66445ada185165793f15bb8ba9a76b5c8fe51",
+     "span_sha256": "d8f229a04fee9e95eaf2501eff18b7afa546d3ba47f40c4cb8bffdde47476416"
+    },
+    {
+     "path": ".github/scripts/release_target.py",
+     "start": 250,
+     "end": 299,
+     "file_sha256": "1161d997e00605651e80f572b0c66445ada185165793f15bb8ba9a76b5c8fe51",
+     "span_sha256": "40193951520178fb2b7fcfed57ec2b2189e55b06259061e62891c48ed0ca432b"
+    }
+   ],
+   "intake_variances": [
+    "Existing N/A row remains byte-exact. Accepted R-01 intentionally repairs the public-incomplete recovery hole; no claim that the old failure is preserved."
+   ],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C16:05",
+   "frozen_row_sha256": "a99aac728169c19662bdccfd5fabbcba6c2aec7dc8c74f851b39a8d1f9a38be1",
+   "frozen_baseline": {
+    "from_state": "target eligible",
+    "from": "target eligible",
+    "event": "job enters target concurrency group",
+    "guard": "previous job for same target completes; cancel-in-progress=false",
+    "to": "serialized recheck",
+    "effects": "Refetch tags/release state immediately before invoking publisher.",
+    "failure_retry": "Freshly published version becomes no-op; failed/rejected observation prevents publication.",
+    "source": [
+     {
+      "path": ".github/workflows/release.yml",
+      "symbol": "183",
+      "lines": [
+       183,
+       183
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/workflows/release.yml"
+     }
+    ],
+    "transition_id": "C16:05"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Every target job serializes with cancel-in-progress:false and then freshly reads tags/releases before calling eligible with exact target/source. A completed publication becomes no-op; unavailable/conflicting observations do not authorize publication.",
+   "witnesses": [
+    {
+     "path": ".github/workflows/release.yml",
+     "start": 207,
+     "end": 256,
+     "file_sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126",
+     "span_sha256": "0879dc931f237f89f01b9cfe9f5039800425d594b36df6e45831bad2f7584864"
+    },
+    {
+     "path": ".github/workflows/release.yml",
+     "start": 258,
+     "end": 275,
+     "file_sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126",
+     "span_sha256": "430fc82e502547e75d231341164caea1677e668a3561d7ec600cecdf6f140dc6"
+    },
+    {
+     "path": ".github/workflows/release.yml",
+     "start": 334,
+     "end": 367,
+     "file_sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126",
+     "span_sha256": "bf72d78a44364a2bc6cef19593be853235d08dd690339c4c4d2ede07ff1ad6c6"
+    },
+    {
+     "path": ".github/workflows/release.yml",
+     "start": 369,
+     "end": 419,
+     "file_sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126",
+     "span_sha256": "c8aec0ebc571d459bb473f0bd28ee432d8745e2ab531330de5e7a52b7a3df9ce"
+    },
+    {
+     "path": ".github/workflows/release.yml",
+     "start": 421,
+     "end": 468,
+     "file_sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126",
+     "span_sha256": "88f4397575abae2474b1dd24da4956f4028c216c961b107d37e5515e2348df6e"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C16:06",
+   "frozen_row_sha256": "691e3b67747435e1bec8456224053cd8b3926754d732d6813979ab93132a23c9",
+   "frozen_baseline": {
+    "from_state": "serialized recheck",
+    "from": "serialized recheck",
+    "event": "eligible still true",
+    "guard": "exact source and target declarations retained",
+    "to": "publisher admitted",
+    "effects": "Invoke composite with source commit, successful CI run and target-specific credentials.",
+    "failure_retry": "A matching tag at a different source is rejected by publisher as spent, not moved.",
+    "source": [
+     {
+      "path": ".github/workflows/release.yml",
+      "symbol": "183",
+      "lines": [
+       183,
+       183
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/workflows/release.yml"
+     }
+    ],
+    "transition_id": "C16:06"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Only a true per-target recheck calls the composite with selected source/build and target-specific credentials. Composite planning refuses a present tag at another source, verifies cohort identity and invokes the marker-scoped major-readiness barrier before first effects.",
+   "witnesses": [
+    {
+     "path": ".github/workflows/release.yml",
+     "start": 239,
+     "end": 256,
+     "file_sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126",
+     "span_sha256": "064ac926a3f74a5d6b6e727d6ade7c091132e62c821f58e93c3f0851aa438fab"
+    },
+    {
+     "path": ".github/actions/publish-target/action.yml",
+     "start": 133,
+     "end": 222,
+     "file_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+     "span_sha256": "8c3592253f7932774fcc32b078e006534246a066f7f5d170487c5b66c5208981"
+    },
+    {
+     "path": ".github/actions/publish-target/action.yml",
+     "start": 253,
+     "end": 286,
+     "file_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+     "span_sha256": "99212c6b081b083f7f91d394f52012549d4f5a0892c368f788ccc3ffd93e03d8"
+    },
+    {
+     "path": ".github/scripts/release_target.py",
+     "start": 281,
+     "end": 299,
+     "file_sha256": "1161d997e00605651e80f572b0c66445ada185165793f15bb8ba9a76b5c8fe51",
+     "span_sha256": "a6b7184cc89a34158a3600f700360aeda31ff0aadd7742600df69ea0806a7e61"
+    }
+   ],
+   "intake_variances": [
+    "Q-02 adds a release-specific noncircular prepublication requirement while the integration marker exists; no actual readiness or publication is asserted here."
+   ],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C17:01",
+   "frozen_row_sha256": "bc323d16ba3a5f2b3646e835e7c5cee5ee99cbcca1593d9e9d81914528e3c2b7",
+   "frozen_baseline": {
+    "from_state": "publisher admitted",
+    "from": "publisher admitted",
+    "event": "verify inputs and observe remote plan",
+    "guard": "manifest/companion/changelog versions agree; CI cohort and source match; existing tag, if any, peels to exact source",
+    "to": "absent/tag-only/draft/public plan",
+    "effects": "Download same-run artifacts; verify hashes/cold matrix; select missing assets and create/present states.",
+    "failure_retry": "Duplicate release, spent tag or bad package rejects before additional publishing.",
+    "source": [
+     {
+      "path": ".github/scripts/release_target.py",
+      "symbol": "plan",
+      "lines": [
+       81,
+       98
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/release_target.py"
+     }
+    ],
+    "transition_id": "C17:01"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Remote-first plan verifies exact tag/source and required package asset naming, rejects duplicate releases/assets or conflicting upload/digest state, and derives remaining effects from the shared completion model. Composite verifies same-run cohort and matching manifests/changelog first.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/release_target.py",
+     "start": 155,
+     "end": 238,
+     "file_sha256": "1161d997e00605651e80f572b0c66445ada185165793f15bb8ba9a76b5c8fe51",
+     "span_sha256": "d8f229a04fee9e95eaf2501eff18b7afa546d3ba47f40c4cb8bffdde47476416"
+    },
+    {
+     "path": ".github/scripts/release_target.py",
+     "start": 281,
+     "end": 299,
+     "file_sha256": "1161d997e00605651e80f572b0c66445ada185165793f15bb8ba9a76b5c8fe51",
+     "span_sha256": "a6b7184cc89a34158a3600f700360aeda31ff0aadd7742600df69ea0806a7e61"
+    },
+    {
+     "path": ".github/actions/publish-target/action.yml",
+     "start": 133,
+     "end": 222,
+     "file_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+     "span_sha256": "8c3592253f7932774fcc32b078e006534246a066f7f5d170487c5b66c5208981"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C17:02",
+   "frozen_row_sha256": "51a8f2141d42abc4928f139b55f0b59d40d618a4c4d1ab6f6ee7d8af9a249283",
+   "frozen_baseline": {
+    "from_state": "absent tag",
+    "from": "absent tag",
+    "event": "create annotated tag",
+    "guard": "plan says create and exact source is bound",
+    "to": "tag-only",
+    "effects": "Create annotated version tag with changelog-derived release date and push.",
+    "failure_retry": "Push error may be indeterminate remote state; next attempt observes first. Never move an existing tag.",
+    "source": [
+     {
+      "path": ".github/actions/publish-target/action.yml",
+      "symbol": "Create and push the annotated tag",
+      "lines": [
+       261,
+       261
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/actions/publish-target/action.yml"
+     }
+    ],
+    "transition_id": "C17:02"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Only tag=create creates an annotated version tag at SOURCE_COMMIT with changelog-derived date and pushes it. Existing tags are never moved; uncertain push outcome requires original-source observation on a later authorized attempt.",
+   "witnesses": [
+    {
+     "path": ".github/actions/publish-target/action.yml",
+     "start": 174,
+     "end": 196,
+     "file_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+     "span_sha256": "a6727afd22d18cdc25520a2a36c5235ae67b7354ecef44af8466c1af3c54a047"
+    },
+    {
+     "path": ".github/actions/publish-target/action.yml",
+     "start": 288,
+     "end": 301,
+     "file_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+     "span_sha256": "a6afbc02e55b8ed8044e2b022689bc6299b6a9b9be1e3f1f1d6efd30c40e06e2"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C17:03",
+   "frozen_row_sha256": "fb3d9cf19ba32b125958d8d286bcfae66ecf18563c17b220edc6e8ced4a0fb1b",
+   "frozen_baseline": {
+    "from_state": "present tag",
+    "from": "present tag",
+    "event": "read back and capture tag identity",
+    "guard": "remote peel equals exact intended source",
+    "to": "tag verified",
+    "effects": "Read tag and attempt exclusive identity receipt; retain artifact even on later failure.",
+    "failure_retry": "Mismatch fails; receipt is current observation, not automatically original-publication history.",
+    "source": [
+     {
+      "path": ".github/actions/publish-target/action.yml",
+      "symbol": "Read back the tag",
+      "lines": [
+       277,
+       277
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/actions/publish-target/action.yml"
+     }
+    ],
+    "transition_id": "C17:03"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Fresh remote tag readback must peel to exact source. Separate current tag-observation capture runs under its own arguments and is retained even after later failure; it is not automatically original-publication history.",
+   "witnesses": [
+    {
+     "path": ".github/actions/publish-target/action.yml",
+     "start": 303,
+     "end": 340,
+     "file_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+     "span_sha256": "1e8b566f3675eaa54fee5adec6f049f2fe604f20dba13794c0b9175538413452"
+    },
+    {
+     "path": ".github/scripts/tag_publication_receipt.py",
+     "start": 137,
+     "end": 170,
+     "file_sha256": "6c866f210551a648d92358c94c2fda702f9862e4b490416b65b1f0ff1f0cf7f6",
+     "span_sha256": "f17657b8597ae4e7dfeaf341bea75c4782a432d8cef5a8dfb029360f763539f6"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C17:04",
+   "frozen_row_sha256": "02871aacdd2aeb5c4a9b458d09da79da7d14d3dc33c1342c875ea2f8a189f3be",
+   "frozen_baseline": {
+    "from_state": "tag-only",
+    "from": "tag-only",
+    "event": "create draft release",
+    "guard": "no release exists for target tag",
+    "to": "draft",
+    "effects": "POST draft=true non-prerelease with extracted notes; existing draft/public release ID is reused.",
+    "failure_retry": "API failure leaves tag; rerun observes whether draft was created.",
+    "source": [
+     {
+      "path": ".github/actions/publish-target/action.yml",
+      "symbol": "Create the draft Release",
+      "lines": [
+       315,
+       315
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/actions/publish-target/action.yml"
+     }
+    ],
+    "transition_id": "C17:04"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Create draft is conditional on no existing release. Existing release id is reused. POST failure can leave a tag/draft indeterminate; planning re-observes rather than assuming no effect.",
+   "witnesses": [
+    {
+     "path": ".github/actions/publish-target/action.yml",
+     "start": 342,
+     "end": 358,
+     "file_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+     "span_sha256": "fa7de73866265da50043d8ce7ba45c17c6b21abf040d4197eb11b101725392f4"
+    },
+    {
+     "path": ".github/scripts/release_target.py",
+     "start": 143,
+     "end": 152,
+     "file_sha256": "1161d997e00605651e80f572b0c66445ada185165793f15bb8ba9a76b5c8fe51",
+     "span_sha256": "8596753120ef2edde033e10370cdc2e41612c4b5bfcc5a01fb4bc7b60c597b5e"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C17:05",
+   "frozen_row_sha256": "d41dae675165f2b5b5d34691df3832e9f0266e3c10001bdf9dc2914e08260d1e",
+   "frozen_baseline": {
+    "from_state": "draft or existing release",
+    "from": "draft or existing release",
+    "event": "upload package asset / read back",
+    "guard": "required package asset missing or already present",
+    "to": "asset verified",
+    "effects": "Upload only missing asset; download remote asset and verify exact SHA-256.",
+    "failure_retry": "Existing wrong bytes fail; no overwrite. Partial network failure resolved by fresh observation.",
+    "source": [
+     {
+      "path": ".github/actions/publish-target/action.yml",
+      "symbol": "Upload and read back the package asset",
+      "lines": [
+       336,
+       336
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/actions/publish-target/action.yml"
+     }
+    ],
+    "transition_id": "C17:05"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Only missing package asset uploads. Whether newly uploaded or present, the asset is downloaded and its exact expected SHA256 verified. Conflicting existing bytes/upload state are refused, never overwritten.",
+   "witnesses": [
+    {
+     "path": ".github/actions/publish-target/action.yml",
+     "start": 360,
+     "end": 383,
+     "file_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+     "span_sha256": "463030119de0e4bd2ca093f6d9901c7e2e4cfff50227be9e495c5a6360aea203"
+    },
+    {
+     "path": ".github/scripts/release_target.py",
+     "start": 155,
+     "end": 183,
+     "file_sha256": "1161d997e00605651e80f572b0c66445ada185165793f15bb8ba9a76b5c8fe51",
+     "span_sha256": "6a31eb6af2e84cb163c57e0105c8fb3fbac733fda7257de6420f7255e7bd6c01"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C17:06",
+   "frozen_row_sha256": "639437a9bb6d51f5a2dd4c2e62160f6a6d6ffba7afe7de8e80eb148b079aa1c8",
+   "frozen_baseline": {
+    "from_state": "asset verified for Claude/Codex",
+    "from": "asset verified for Claude/Codex",
+    "event": "publish distribution channel",
+    "guard": "qualified package and immutable distribution identity pass host publisher checks",
+    "to": "channel verified",
+    "effects": "Claude pushes immutable distribution and marketplace channel; Codex publishes immutable distribution then advances marketplace separately.",
+    "failure_retry": "Partial remote refs remain and are observed by subsequent helper invocation; host helper ledger details are separate.",
+    "source": [
+     {
+      "path": ".github/actions/publish-target/action.yml",
+      "symbol": "Publish the Claude marketplace channel",
+      "lines": [
+       358,
+       358
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/actions/publish-target/action.yml"
+     }
+    ],
+    "transition_id": "C17:06"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Claude and Codex channel helpers retain their distinct immutable-distribution sequencing. A public release without remaining channel effect uses helper readback instead of repromotion, preserving recovery after the channel later advances. This maps invocation authority, not actual remote ref success.",
+   "witnesses": [
+    {
+     "path": ".github/actions/publish-target/action.yml",
+     "start": 385,
+     "end": 451,
+     "file_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+     "span_sha256": "3b40b1f9f85c450f895ca5ffbe1ca1bca5e84290cc072bb52c7684b7e67ed4dc"
+    }
+   ],
+   "intake_variances": [
+    "R-01 now performs channel readback for receipt recovery; no repeated completed channel effect is required."
+   ],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C17:07",
+   "frozen_row_sha256": "c452c4921fdd19553c4225249d47197f9a8532aeb965ddfa0aba52b8c8aa66db",
+   "frozen_baseline": {
+    "from_state": "asset verified for Pi",
+    "from": "asset verified for Pi",
+    "event": "publish/read back npm",
+    "guard": "exact package and trusted source commit; integrity, signature and repository/workflow/source provenance verified",
+    "to": "channel verified",
+    "effects": "Publish exact tarball if absent; otherwise reuse exact version; verify public registry identity.",
+    "failure_retry": "An accepted npm version can remain while GitHub release is draft; no republish of different bytes.",
+    "source": [
+     {
+      "path": ".github/actions/publish-target/action.yml",
+      "symbol": "Read back the npm publication",
+      "lines": [
+       430,
+       430
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/actions/publish-target/action.yml"
+     }
+    ],
+    "transition_id": "C17:07"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Pi uses exact CI tarball integrity and strict registry identity/provenance checks. Publish happens only for absent version plus remaining channel effect and matching event/source SHA. Existing exact version is reused/read back rather than republished with different bytes.",
+   "witnesses": [
+    {
+     "path": ".github/actions/publish-target/action.yml",
+     "start": 224,
+     "end": 251,
+     "file_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+     "span_sha256": "217437a769f117e1ad82c4db0466d623eb4d32df7975cbb8d47dee509f045ee3"
+    },
+    {
+     "path": ".github/actions/publish-target/action.yml",
+     "start": 273,
+     "end": 286,
+     "file_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+     "span_sha256": "ecb7222a6e93ae35bb0f3349bc10bbbb1bf5e314fb23591c6492b4866aae4b88"
+    },
+    {
+     "path": ".github/actions/publish-target/action.yml",
+     "start": 453,
+     "end": 505,
+     "file_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+     "span_sha256": "8fadb1333660a3564af67b5e84fc4f0e7aa3792f603908f144a63d4f93311e40"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C17:08",
+   "frozen_row_sha256": "d43a037a9d9c77d72a487d3541f704e0d4a76befde2fd4769cb7a15ea334efb3",
+   "frozen_baseline": {
+    "from_state": "channel verified or sandbox no channel",
+    "from": "channel verified or sandbox no channel",
+    "event": "finish release",
+    "guard": "all preceding required target steps pass",
+    "to": "public without receipt",
+    "effects": "PATCH draft=false when needed; read back public state and matching tag; output release-state=published.",
+    "failure_retry": "Public state is externally visible before final receipt upload. Readback failure may be indeterminate and requires observation.",
+    "source": [
+     {
+      "path": ".github/actions/publish-target/action.yml",
+      "symbol": "Publish the Release",
+      "lines": [
+       466,
+       466
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/actions/publish-target/action.yml"
+     }
+    ],
+    "transition_id": "C17:08"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Only after prior required channel/readback steps succeed does the composite make a draft public. Fresh public/tag readback must match before published output; an indeterminate network failure is not assumed to undo the public effect.",
+   "witnesses": [
+    {
+     "path": ".github/actions/publish-target/action.yml",
+     "start": 507,
+     "end": 526,
+     "file_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+     "span_sha256": "c9c43d74152c72034540f9ca9d77b94a73636cc1f1f447d9d06b22dad8432fda"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C17:09",
+   "frozen_row_sha256": "df4c452c87e17a43c844ac7371f2e8cc1663560c2e36050f30d5449e88c1934c",
+   "frozen_baseline": {
+    "from_state": "public without receipt",
+    "from": "public without receipt",
+    "event": "attach publication receipt",
+    "guard": "planner listed codearbiter-publication.json missing",
+    "to": "public with receipt",
+    "effects": "Build metadata receipt and POST final JSON asset.",
+    "failure_retry": "Upload failure leaves a public incomplete release. Outer eligibility and per-job recheck then skip it, despite plan() seeing the missing asset.",
+    "source": [
+     {
+      "path": ".github/actions/publish-target/action.yml",
+      "symbol": "Attach the publication receipt",
+      "lines": [
+       487,
+       487
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/actions/publish-target/action.yml"
+     }
+    ],
+    "transition_id": "C17:09"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "If receipt is missing, build and attach it after public transition. Current shared completion keeps this public-incomplete source eligible, schedules receipt only when other effects finished, then verifies downloaded receipt content.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/release_target.py",
+     "start": 186,
+     "end": 238,
+     "file_sha256": "1161d997e00605651e80f572b0c66445ada185165793f15bb8ba9a76b5c8fe51",
+     "span_sha256": "faf383657492895ff8f2a51da1a3c884ccc058b76a2580d2fdcaa7331449aa62"
+    },
+    {
+     "path": ".github/actions/publish-target/action.yml",
+     "start": 528,
+     "end": 573,
+     "file_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+     "span_sha256": "43bbbb15205a0bb58bb02ac5235fe562eb39252283f007d35f83fd4e9889c7d5"
+    }
+   ],
+   "intake_variances": [
+    "Accepted R-01 replaces the frozen outer-eligibility recovery hole. Existing advanced edge history stays untouched."
+   ],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C17:10",
+   "frozen_row_sha256": "756bac54e8e1c979afeb7cc26dce9c144d4680e0ade2248986264ceb4391d885",
+   "frozen_baseline": {
+    "from_state": "existing receipt name",
+    "from": "existing receipt name",
+    "event": "attach publication receipt",
+    "guard": "planner did not list receipt as missing",
+    "to": "existing receipt accepted",
+    "effects": "Print already attached and return without read-back of receipt bytes.",
+    "failure_retry": "Presence by name is not receipt-content verification.",
+    "source": [
+     {
+      "path": ".github/actions/publish-target/action.yml",
+      "symbol": "Attach the publication receipt",
+      "lines": [
+       487,
+       487
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/actions/publish-target/action.yml"
+     }
+    ],
+    "transition_id": "C17:10"
+   },
+   "current_status": "NOT_APPLICABLE",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "A same-named receipt is never sufficient by name in current code: after optional attach, it is downloaded and verify_receipt compares exact format/expected target/source/package/channel fields and published state.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/release_target.py",
+     "start": 302,
+     "end": 311,
+     "file_sha256": "1161d997e00605651e80f572b0c66445ada185165793f15bb8ba9a76b5c8fe51",
+     "span_sha256": "5f25c28cec7c2c37b8b5a5d70ffa2b984c2a8e7dae063c2b22a2e44d72726848"
+    },
+    {
+     "path": ".github/actions/publish-target/action.yml",
+     "start": 551,
+     "end": 573,
+     "file_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+     "span_sha256": "0b460572530cfdac386eb5a30c04d41779025188b28f9dd9ad3a66a0b21eb873"
+    }
+   ],
+   "intake_variances": [
+    "Existing N/A edge remains unchanged. The absent content-readback route was intentionally repaired under R-01."
+   ],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C17:11",
+   "frozen_row_sha256": "fa56b1e442c5175fed604e8618918c7b09f60caaaa6940b54d606bd91f682673",
+   "frozen_baseline": {
+    "from_state": "any partial state",
+    "from": "any partial state",
+    "event": "rerun original failed job",
+    "guard": "target remains eligible and exact original source/artifacts retained",
+    "to": "resume missing steps",
+    "effects": "Remote-first planner avoids duplicate tag/asset/channel writes.",
+    "failure_retry": "Recovery is blocked for already-public incomplete state by C16; no automatic rollback of published effects exists.",
+    "source": [
+     {
+      "path": ".github/scripts/release_target.py",
+      "symbol": "plan",
+      "lines": [
+       81,
+       98
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/release_target.py"
+     }
+    ],
+    "transition_id": "C17:11"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Original-source rerun observes remaining effects, preserves immutable tag/assets and reads existing channel effects. Public receipt-only incompleteness now remains recoverable. No automatic rollback of published effects is inferred.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/release_target.py",
+     "start": 186,
+     "end": 299,
+     "file_sha256": "1161d997e00605651e80f572b0c66445ada185165793f15bb8ba9a76b5c8fe51",
+     "span_sha256": "1c4be3c459bc5b426967e8a8ea46bbf3f0599ae175593483baf784b5a7ee97f3"
+    },
+    {
+     "path": ".github/actions/publish-target/action.yml",
+     "start": 385,
+     "end": 451,
+     "file_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+     "span_sha256": "3b40b1f9f85c450f895ca5ffbe1ca1bca5e84290cc072bb52c7684b7e67ed4dc"
+    },
+    {
+     "path": ".github/actions/publish-target/action.yml",
+     "start": 528,
+     "end": 573,
+     "file_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+     "span_sha256": "43bbbb15205a0bb58bb02ac5235fe562eb39252283f007d35f83fd4e9889c7d5"
+    }
+   ],
+   "intake_variances": [
+    "R-01 intentionally changes the old public-incomplete block; original retained source/artifacts and exact identities remain required."
+   ],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C18:01",
+   "frozen_row_sha256": "84fc4aa45ad6590c11b91c16bec2845cf275101ef3215cd629d34f3c68123558",
+   "frozen_baseline": {
+    "from_state": "unknown",
+    "from": "unknown",
+    "event": "registry lookup nonzero",
+    "guard": "exact E404 package/version-not-found response",
+    "to": "absent",
+    "effects": "Authorize publish path for an unclaimed version.",
+    "failure_retry": "Other errors are not absence; do not publish on ambiguous lookup failure.",
+    "source": [
+     {
+      "path": ".github/scripts/_npm_publishlib.py",
+      "symbol": "classify_registry_lookup",
+      "lines": [
+       377,
+       448
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/_npm_publishlib.py"
+     }
+    ],
+    "transition_id": "C18:01"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "A nonzero lookup is absence only when parsed JSON error.code is E404 and the finite extracted error-code set is exactly E404. Other failures do not authorize publish.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/_npm_publishlib.py",
+     "start": 379,
+     "end": 404,
+     "file_sha256": "7ff29182306d065369610d83e7ecba8450a2444340d05580fb03f7afaccfae6a",
+     "span_sha256": "b449d953c417e5c5d1a169dc261755e38a1990438aa48428d644bbe85486c716"
+    }
+   ],
+   "intake_variances": [
+    "The classifier checks the exact E404 shape/code, not an independently authenticated package identity inside the error text. Success identity is checked separately."
+   ],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C18:02",
+   "frozen_row_sha256": "89be25f8c2191c7befc97b8741f579a5a3ae2a8cf1bbe430f34a7c9efb43d013",
+   "frozen_baseline": {
+    "from_state": "unknown",
+    "from": "unknown",
+    "event": "registry lookup transient error",
+    "guard": "declared rate-limit/server/network error",
+    "to": "registry unavailable",
+    "effects": "Raise RegistryUnavailable so bounded readback may retry.",
+    "failure_retry": "Non-retryable or malformed response fails immediately.",
+    "source": [
+     {
+      "path": ".github/scripts/_npm_publishlib.py",
+      "symbol": "classify_registry_lookup",
+      "lines": [
+       377,
+       448
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/_npm_publishlib.py"
+     }
+    ],
+    "transition_id": "C18:02"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Declared retryable npm network/rate/server codes, or a bounded recognized429/5xx status without conflicting npm codes, raise RegistryUnavailable. Other malformed/nonretryable failures raise ValueError.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/_npm_publishlib.py",
+     "start": 392,
+     "end": 428,
+     "file_sha256": "7ff29182306d065369610d83e7ecba8450a2444340d05580fb03f7afaccfae6a",
+     "span_sha256": "6ba03cbb9ab2dac050d78f1ccb946548d21473266719d2a49adbe493ac05fcf9"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C18:03",
+   "frozen_row_sha256": "1f3d09cdcd07ce5049e40cb175df6e7dc75fdc4bca79f5af84fbb7e001a72ccf",
+   "frozen_baseline": {
+    "from_state": "unknown",
+    "from": "unknown",
+    "event": "registry lookup success",
+    "guard": "exact requested version and expected integrity; valid trusted attestation metadata",
+    "to": "present exact",
+    "effects": "Skip duplicate publish and proceed to independent authenticity verification.",
+    "failure_retry": "Version/integrity mismatch fails as immutable identity conflict.",
+    "source": [
+     {
+      "path": ".github/scripts/_npm_publishlib.py",
+      "symbol": "classify_registry_lookup",
+      "lines": [
+       377,
+       448
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/_npm_publishlib.py"
+     }
+    ],
+    "transition_id": "C18:03"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Successful lookup requires exact requested version/integrity and the trusted registry attestation URL/SLSA metadata to return present. This state skips duplicate publish but is followed by independent npm signature/provenance verification.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/_npm_publishlib.py",
+     "start": 429,
+     "end": 450,
+     "file_sha256": "7ff29182306d065369610d83e7ecba8450a2444340d05580fb03f7afaccfae6a",
+     "span_sha256": "4d3acfd727d1aeab290a4ca91b7b11dcc8e75b59c9ada0aa4d8d6142a8f601d8"
+    },
+    {
+     "path": ".github/actions/publish-target/action.yml",
+     "start": 243,
+     "end": 250,
+     "file_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+     "span_sha256": "cc66315853fae13d7fb697db143b7659f56a54cf3061ce6ae2d718f60f7bcac8"
+    },
+    {
+     "path": ".github/actions/publish-target/action.yml",
+     "start": 500,
+     "end": 504,
+     "file_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+     "span_sha256": "4ad652554df1ae302d99418bd7134d38aee3c1018ef0cce23bc51546b8c5ea12"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C18:04",
+   "frozen_row_sha256": "ff7b073a42dfabd57ade2691a5683b35000e32a456e7bb5593c75e3e4c516abc",
+   "frozen_baseline": {
+    "from_state": "unknown",
+    "from": "unknown",
+    "event": "registry lookup success without required attestation metadata",
+    "guard": "version/integrity exact but attestation unavailable",
+    "to": "present-unattested or reject",
+    "effects": "Return present-unattested only when caller explicitly permits pending attestation; default lookup rejects.",
+    "failure_retry": "Initial existing-version path can fail until attestation appears; post-publish poll permits temporary pending state.",
+    "source": [
+     {
+      "path": ".github/scripts/_npm_publishlib.py",
+      "symbol": "classify_registry_lookup",
+      "lines": [
+       377,
+       448
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/_npm_publishlib.py"
+     }
+    ],
+    "transition_id": "C18:04"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Exact version/integrity without valid attestation metadata returns present-unattested only when require_attestation is explicitly false. Default/initial lookup rejects; the post-publish polling caller permits pending metadata without weakening integrity.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/_npm_publishlib.py",
+     "start": 429,
+     "end": 450,
+     "file_sha256": "7ff29182306d065369610d83e7ecba8450a2444340d05580fb03f7afaccfae6a",
+     "span_sha256": "4d3acfd727d1aeab290a4ca91b7b11dcc8e75b59c9ada0aa4d8d6142a8f601d8"
+    },
+    {
+     "path": ".github/actions/publish-target/action.yml",
+     "start": 486,
+     "end": 499,
+     "file_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+     "span_sha256": "a840e61211a856d7316752919fad07af74552e8ee40ddbc88899b4a0de220069"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C18:05",
+   "frozen_row_sha256": "6a2b97b91eca4a13170861861dd31f422a3006eae0acbc3898cd35dd663f78c1",
+   "frozen_baseline": {
+    "from_state": "absent",
+    "from": "absent",
+    "event": "Pi npm publish",
+    "guard": "GITHUB_SHA equals source commit; reviewed npm CLI; workflow OIDC configured",
+    "to": "publication attempted",
+    "effects": "Publish exact prebuilt tarball with ignore-scripts, provenance and public access; no static token fallback.",
+    "failure_retry": "Trust failure stops; if registry accepted bytes before failure, rerun observes same immutable version.",
+    "source": [
+     {
+      "path": ".github/actions/publish-target/action.yml",
+      "symbol": "Publish @arbiterforge/ca-pi to npm",
+      "lines": [
+       414,
+       414
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/actions/publish-target/action.yml"
+     }
+    ],
+    "transition_id": "C18:05"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Pi publish uses reviewed pinned npm CLI, exact tarball, ignore-scripts/provenance/public flags and declared OIDC job permission. Both pre-effect and publish invocation require GITHUB_SHA==SOURCE_COMMIT. No static npm token fallback is passed in this lane.",
+   "witnesses": [
+    {
+     "path": ".github/actions/publish-target/action.yml",
+     "start": 98,
+     "end": 131,
+     "file_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+     "span_sha256": "b79adc2f87bfa36e6b8dd773b3ea6b44d9fe80829bdcb803e395a4a6f4a3363e"
+    },
+    {
+     "path": ".github/actions/publish-target/action.yml",
+     "start": 273,
+     "end": 286,
+     "file_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+     "span_sha256": "ecb7222a6e93ae35bb0f3349bc10bbbb1bf5e314fb23591c6492b4866aae4b88"
+    },
+    {
+     "path": ".github/actions/publish-target/action.yml",
+     "start": 453,
+     "end": 468,
+     "file_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+     "span_sha256": "bd5af28f468622775b6b6edd6c0cf93bfab78247da9e2c360f17501efbaf65d5"
+    },
+    {
+     "path": ".github/workflows/release.yml",
+     "start": 369,
+     "end": 379,
+     "file_sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126",
+     "span_sha256": "e18f841bcfcb4eac131fc28766944b599e15bccf1e93661279ff88f000f522f0"
+    }
+   ],
+   "intake_variances": [
+    "ADR0044 account-side trusted-publisher configuration and actual hosted OIDC success remain external qualification, not proven by source."
+   ],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C18:06",
+   "frozen_row_sha256": "39e2ac1d9003b016dfad79cd6d60cd3ca009e6c4513a88c2c9155abc50cff511",
+   "frozen_baseline": {
+    "from_state": "publication attempted / pending metadata",
+    "from": "publication attempted / pending metadata",
+    "event": "poll readback",
+    "guard": "within 600-second deadline",
+    "to": "present exact or still pending",
+    "effects": "Every 15 seconds retry absent, unavailable or present-unattested states.",
+    "failure_retry": "Integrity/identity mismatch is immediate failure; deadline expiry leaves GitHub release unpublished.",
+    "source": [
+     {
+      "path": ".github/actions/publish-target/action.yml",
+      "symbol": "Read back the npm publication",
+      "lines": [
+       430,
+       430
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/actions/publish-target/action.yml"
+     }
+    ],
+    "transition_id": "C18:06"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Readback polls absent/unavailable/present-unattested at15second intervals against the configured600second evidence deadline, with immediate integrity/identity refusal; each lookup/signature call also has its own bound. The deadline is checked after a lookup, not a strict total wall-clock cap.",
+   "witnesses": [
+    {
+     "path": ".github/actions/publish-target/action.yml",
+     "start": 470,
+     "end": 505,
+     "file_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+     "span_sha256": "2ec32454634d8f0658a413b30b8a72db3d1086daca8813f7a8fb5ffb378abdcb"
+    },
+    {
+     "path": ".github/scripts/_npm_publishlib.py",
+     "start": 732,
+     "end": 757,
+     "file_sha256": "7ff29182306d065369610d83e7ecba8450a2444340d05580fb03f7afaccfae6a",
+     "span_sha256": "af6b7b2ef55e489ec0a9df556ea0ee5ebc42ace2077b697054875002fb003222"
+    }
+   ],
+   "intake_variances": [
+    "No finite poll configuration proves actual registry availability or that all work finishes within600 wall seconds."
+   ],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C18:07",
+   "frozen_row_sha256": "d3b60465589b9a7e038d7c47a4dd36f62e3ce05b32372e7b694d1409c52ff660",
+   "frozen_baseline": {
+    "from_state": "present exact",
+    "from": "present exact",
+    "event": "verify registry authenticity",
+    "guard": "isolated install/audit signatures succeeds with exact package identity and one verified provenance",
+    "to": "signature verified",
+    "effects": "Create temporary clean npm config/cache, strip token/config env, install with ignore-scripts, run audit signatures.",
+    "failure_retry": "Missing/invalid signature/attestation or unexpected package fails; active inline publish lane has no internal signature retry.",
+    "source": [
+     {
+      "path": ".github/scripts/_npm_publishlib.py",
+      "symbol": "verify_registry_authenticity",
+      "lines": [
+       589,
+       705
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/_npm_publishlib.py"
+     }
+    ],
+    "transition_id": "C18:07"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Signature verification uses a new temporary package/config/cache and removes npm-config/token variables before ignore-scripts install and audit-signatures. Both subprocesses have60second bounds. Exact one verified package and one SLSA bundle, with no invalid/missing items, are required; active Pi signature failure has no internal retry.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/_npm_publishlib.py",
+     "start": 591,
+     "end": 707,
+     "file_sha256": "7ff29182306d065369610d83e7ecba8450a2444340d05580fb03f7afaccfae6a",
+     "span_sha256": "93c3a28d10cd0e0d024649d58467647285961937a1765e23ed4d3346bf6603bf"
+    },
+    {
+     "path": ".github/actions/publish-target/action.yml",
+     "start": 500,
+     "end": 504,
+     "file_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+     "span_sha256": "4ad652554df1ae302d99418bd7134d38aee3c1018ef0cce23bc51546b8c5ea12"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C18:08",
+   "frozen_row_sha256": "06f2ca18695c6637cf02c7e3db353e75c911b16841b7ef1568ec911847fe4519",
+   "frozen_baseline": {
+    "from_state": "signature verified",
+    "from": "signature verified",
+    "event": "validate SLSA attestation",
+    "guard": "bounded exactly-one provenance binds expected tarball SHA-512, repository, main workflow path, source commit and hosted builder",
+    "to": "published verified",
+    "effects": "Authorize completing Pi release.",
+    "failure_retry": "Different source/workflow/repository/subject or malformed attestation rejects even if integrity alone matches.",
+    "source": [
+     {
+      "path": ".github/scripts/_npm_publishlib.py",
+      "symbol": "validate_publication_attestation",
+      "lines": [
+       538,
+       560
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/_npm_publishlib.py"
+     }
+    ],
+    "transition_id": "C18:08"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Bounded provenance metadata must contain exactly one SLSA statement, exact tarball SHA512 subject, approved repository/main workflow and source commit, and GitHub-hosted builder. Active Pi disables continuation and supplies only release workflow paths; crypto verification remains with npm.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/_npm_publishlib.py",
+     "start": 465,
+     "end": 562,
+     "file_sha256": "7ff29182306d065369610d83e7ecba8450a2444340d05580fb03f7afaccfae6a",
+     "span_sha256": "16436e9aca2e8e734dc69f0198d18426982dea999980c1ff2dacbf1f9436de00"
+    },
+    {
+     "path": ".github/actions/publish-target/action.yml",
+     "start": 500,
+     "end": 504,
+     "file_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+     "span_sha256": "4ad652554df1ae302d99418bd7134d38aee3c1018ef0cce23bc51546b8c5ea12"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C18:09",
+   "frozen_row_sha256": "834a39473337f775e7c38dde2e2a35d4339633fc20c5999a9cf779400c771844",
+   "frozen_baseline": {
+    "from_state": "dormant Codex npm helper invoked explicitly",
+    "from": "dormant Codex npm helper invoked explicitly",
+    "event": "prepare/verify Codex package",
+    "guard": "helper-specific exact candidate and package identity gates",
+    "to": "prepared/verified helper result",
+    "effects": "Retained CLI can perform Codex npm validation; active ADR 40 release path remains Git distribution.",
+    "failure_retry": "Do not infer an active npm channel from executable helper presence.",
+    "source": [
+     {
+      "path": ".github/scripts/_npm_publishlib.py",
+      "symbol": "prepare_codex",
+      "lines": [
+       833,
+       873
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/_npm_publishlib.py"
+     }
+    ],
+    "transition_id": "C18:09"
+   },
+   "current_status": "PLANNED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Dormant Codex npm prepare/verify entrypoints keep exact metadata/cohort/source/registry identity gates. Their presence does not create an active publication lane: current release composite routes Codex through Git distribution and Pi through npm.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/_npm_publishlib.py",
+     "start": 799,
+     "end": 930,
+     "file_sha256": "7ff29182306d065369610d83e7ecba8450a2444340d05580fb03f7afaccfae6a",
+     "span_sha256": "a2aeab260c924fe690c67158d04cae4c52efafec36729a3a3edf3ebcf7cd8b20"
+    },
+    {
+     "path": ".github/actions/publish-target/action.yml",
+     "start": 422,
+     "end": 468,
+     "file_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+     "span_sha256": "649a8066dfa2e89b7c19bb321bf91493b76d2791d9ff464487c2e547e4cf90b8"
+    }
+   ],
+   "intake_variances": [
+    "ADR0040 defers Codex npm. No helper invocation, registry publication or account readiness is established here."
+   ],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C19:01",
+   "frozen_row_sha256": "a43fe985bd38202caeaf9debb749da4c8959f827520d8c07e46f3d621d1e0278",
+   "frozen_baseline": {
+    "from_state": "unobserved",
+    "from": "unobserved",
+    "event": "parse remote tag refs",
+    "guard": "governed strict version tag; exactly one direct ref plus optional matching peeled ref; expected commit match",
+    "to": "exact remote identity",
+    "effects": "Build receipt identity with source/workflow/run/attempt supplied by caller.",
+    "failure_retry": "Duplicate/unexpected refs, malformed SHA or wrong peel rejects.",
+    "source": [
+     {
+      "path": ".github/scripts/tag_publication_receipt.py",
+      "symbol": "parse_remote_refs",
+      "lines": [
+       49,
+       76
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/tag_publication_receipt.py"
+     }
+    ],
+    "transition_id": "C19:01"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Capture validates strict governed tag/commit/run arguments and at most4096characters of remote refs: one direct ref with optional peeled ref, no duplicates/foreign refs, and exact expected commit. Caller-supplied run/workflow fields describe the observation, not authenticated original history.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/tag_publication_receipt.py",
+     "start": 22,
+     "end": 76,
+     "file_sha256": "6c866f210551a648d92358c94c2fda702f9862e4b490416b65b1f0ff1f0cf7f6",
+     "span_sha256": "abcdbbeb640648edfd14c56458974bdf58eded2b581ba531e7da333ea145c04a"
+    },
+    {
+     "path": ".github/scripts/tag_publication_receipt.py",
+     "start": 119,
+     "end": 170,
+     "file_sha256": "6c866f210551a648d92358c94c2fda702f9862e4b490416b65b1f0ff1f0cf7f6",
+     "span_sha256": "58c918c692171a7b52bfa91d1210bc90f7d2152c352d35e1ca3c53ea96bd7e66"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C19:02",
+   "frozen_row_sha256": "978bf56508efff250c03c66f1aa7e4e635e72854889bc6cdedc6982d7a4dba5f",
+   "frozen_baseline": {
+    "from_state": "exact remote identity",
+    "from": "exact remote identity",
+    "event": "write receipt",
+    "guard": "safe existing parent chain and absent final regular path",
+    "to": "receipt created",
+    "effects": "Write temp file, fsync, hardlink to destination with no replacement, remove temp.",
+    "failure_retry": "Existing file or redirect path rejects; cleanup failure warns while valid installed receipt remains.",
+    "source": [
+     {
+      "path": ".github/scripts/tag_publication_receipt.py",
+      "symbol": "_write_exclusive",
+      "lines": [
+       94,
+       110
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/tag_publication_receipt.py"
+     }
+    ],
+    "transition_id": "C19:02"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Output requires absent final path and existing real non-reparse ancestors. A temporary file is written/fsynced then linked without replacement; unsupported hardlink semantics fail rather than downgrade to overwrite. Temp unlink failure only warns after valid publication.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/tag_publication_receipt.py",
+     "start": 79,
+     "end": 110,
+     "file_sha256": "6c866f210551a648d92358c94c2fda702f9862e4b490416b65b1f0ff1f0cf7f6",
+     "span_sha256": "0971b80e46472951093f85698059176953ffd1908744d63dbb937691e3ac7882"
+    }
+   ],
+   "intake_variances": [
+    "The owner explicitly excludes hostile same-user rename races; source conformance does not assert stronger atomic path containment."
+   ],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C19:03",
+   "frozen_row_sha256": "b9dc5f649ca23b0755d5b03b4fdb60ff913aa81e396462e3594f120b786b01ef",
+   "frozen_baseline": {
+    "from_state": "receipt exists",
+    "from": "receipt exists",
+    "event": "capture again to same path",
+    "guard": "exclusive output already present",
+    "to": "already exists / rejected",
+    "effects": "Do not overwrite evidence.",
+    "failure_retry": "Use a new owned output or reconcile exact existing identity deliberately.",
+    "source": [
+     {
+      "path": ".github/scripts/tag_publication_receipt.py",
+      "symbol": "_output_path",
+      "lines": [
+       79,
+       91
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/tag_publication_receipt.py"
+     }
+    ],
+    "transition_id": "C19:03"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Existing output path refuses before capture/write, so historical evidence is not overwritten. Any reconciliation/new destination remains a separate deliberate caller action.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/tag_publication_receipt.py",
+     "start": 79,
+     "end": 91,
+     "file_sha256": "6c866f210551a648d92358c94c2fda702f9862e4b490416b65b1f0ff1f0cf7f6",
+     "span_sha256": "b712bc0fb48c045c2b64a566320a1d5e444a2b062fa348fd9025d73a4b454846"
+    },
+    {
+     "path": ".github/scripts/tag_publication_receipt.py",
+     "start": 137,
+     "end": 170,
+     "file_sha256": "6c866f210551a648d92358c94c2fda702f9862e4b490416b65b1f0ff1f0cf7f6",
+     "span_sha256": "f17657b8597ae4e7dfeaf341bea75c4782a432d8cef5a8dfb029360f763539f6"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C20:01",
+   "frozen_row_sha256": "a8cfbef1f832e21836825c72872edfb485b4589c0e448f38b65e13b693871414",
+   "frozen_baseline": {
+    "from_state": "unchecked inputs",
+    "from": "unchecked inputs",
+    "event": "load and bind inputs",
+    "guard": "bounded regular duplicate-free finite JSON; exact caller-provided repository/tag/commit/run/attempt/workflow and both ledger hashes",
+    "to": "bound inputs",
+    "effects": "Validate original and closed legacy inventories, disjointness and receipt identity.",
+    "failure_retry": "Any missing independent binding or legacy conflict rejects before writing.",
+    "source": [
+     {
+      "path": ".github/scripts/reconcile_tag_receipt.py",
+      "symbol": "reconcile",
+      "lines": [
+       66,
+       95
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/reconcile_tag_receipt.py"
+     }
+    ],
+    "transition_id": "C20:01"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Offline tool requires bounded regular duplicate-free finite JSON, independent expected repository/tag/commit/run/attempt/workflow and both ledger digests. It validates exact receipt shape and closed disjoint legacy/original inventories before considering append. JSON claims do not authenticate their own provenance.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/reconcile_tag_receipt.py",
+     "start": 1,
+     "end": 7,
+     "file_sha256": "e0455c5a550b45ff127aebbd835d54ae3a1b3841fcf869c9082c99c30eef2722",
+     "span_sha256": "f2d5372fe0153536c0c9468c2da28af9daf1ce385d982bd8718710404ab64111"
+    },
+    {
+     "path": ".github/scripts/reconcile_tag_receipt.py",
+     "start": 26,
+     "end": 143,
+     "file_sha256": "e0455c5a550b45ff127aebbd835d54ae3a1b3841fcf869c9082c99c30eef2722",
+     "span_sha256": "93a6980575e88436d1e70f94a4f4b5a66d4836878206a3e2ca16b1f56422ce6f"
+    },
+    {
+     "path": ".github/scripts/reconcile_tag_receipt.py",
+     "start": 184,
+     "end": 212,
+     "file_sha256": "e0455c5a550b45ff127aebbd835d54ae3a1b3841fcf869c9082c99c30eef2722",
+     "span_sha256": "6e07bdda7c07f841b2b4c3391d2b8c43d7650f489f458630076b8766df7ed475"
+    },
+    {
+     "path": ".github/scripts/check_tag_immutability.py",
+     "start": 189,
+     "end": 205,
+     "file_sha256": "862a1b3ef2d0f171172c5e3f11856f96bfc8b234dc7b4c1110c75182d84d4d31",
+     "span_sha256": "b2dd0946e03df767fbb3fcba02f1171eb60dcd1c11805a033a8e28f5c708e9e3"
+    },
+    {
+     "path": ".github/scripts/check_tag_immutability.py",
+     "start": 228,
+     "end": 283,
+     "file_sha256": "862a1b3ef2d0f171172c5e3f11856f96bfc8b234dc7b4c1110c75182d84d4d31",
+     "span_sha256": "99cad1fe93abc39f062ade106db13f134aac682580844fb5e3e9f30b09dd52c1"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C20:02",
+   "frozen_row_sha256": "9405a71aa9cae98868556b25a6d5c16ba0b76356d173fd33c2314f7179d0df5f",
+   "frozen_baseline": {
+    "from_state": "bound inputs",
+    "from": "bound inputs",
+    "event": "reconcile already-recorded tag",
+    "guard": "existing original entry has identical identity",
+    "to": "existing same identity",
+    "effects": "Return idempotent no-change result; no new output required.",
+    "failure_retry": "Different identity rejects replacement of recorded history.",
+    "source": [
+     {
+      "path": ".github/scripts/reconcile_tag_receipt.py",
+      "symbol": "reconcile",
+      "lines": [
+       66,
+       95
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/reconcile_tag_receipt.py"
+     }
+    ],
+    "transition_id": "C20:02"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Already-recorded exact identity returns no-change; different identity refuses replacement. Main rechecks original inputs even on idempotent no-output success.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/reconcile_tag_receipt.py",
+     "start": 66,
+     "end": 95,
+     "file_sha256": "e0455c5a550b45ff127aebbd835d54ae3a1b3841fcf869c9082c99c30eef2722",
+     "span_sha256": "7fcc1d3d5e203ddaa95fa0c98ee14e1d574c71ba0cce421a297bfbfc582bc468"
+    },
+    {
+     "path": ".github/scripts/reconcile_tag_receipt.py",
+     "start": 214,
+     "end": 222,
+     "file_sha256": "e0455c5a550b45ff127aebbd835d54ae3a1b3841fcf869c9082c99c30eef2722",
+     "span_sha256": "44aba0688d5cd2daf9118ab210f613ab334e7ffd98a715cfdb3a35b53e65c247"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C20:03",
+   "frozen_row_sha256": "8a43097533b955a3577d9b35a6d353a145366ffaffe0e97705b61d4bf18c65df",
+   "frozen_baseline": {
+    "from_state": "bound inputs",
+    "from": "bound inputs",
+    "event": "reconcile new original publication",
+    "guard": "tag absent from both ledgers and receipt passes binding checks",
+    "to": "new admissible receipt",
+    "effects": "Deep-copy original ledger and append candidate identity in memory.",
+    "failure_retry": "Cannot add a legacy tag as new original evidence.",
+    "source": [
+     {
+      "path": ".github/scripts/reconcile_tag_receipt.py",
+      "symbol": "reconcile",
+      "lines": [
+       66,
+       95
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/reconcile_tag_receipt.py"
+     }
+    ],
+    "transition_id": "C20:03"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "A tag absent from both ledgers and matching every independent binding is appended only to a deep-copied in-memory manifest. Legacy tags cannot be laundered into original-publication evidence.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/reconcile_tag_receipt.py",
+     "start": 66,
+     "end": 95,
+     "file_sha256": "e0455c5a550b45ff127aebbd835d54ae3a1b3841fcf869c9082c99c30eef2722",
+     "span_sha256": "7fcc1d3d5e203ddaa95fa0c98ee14e1d574c71ba0cce421a297bfbfc582bc468"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C20:04",
+   "frozen_row_sha256": "745b763466180c38c9aa937eaa126780d75c09d947c6541ad7e192d30cb62870",
+   "frozen_baseline": {
+    "from_state": "new admissible receipt",
+    "from": "new admissible receipt",
+    "event": "emit candidate",
+    "guard": "both source byte digests rechecked immediately before output",
+    "to": "candidate emitted",
+    "effects": "Write new candidate ledger exclusively; leave source ledgers unchanged.",
+    "failure_retry": "Concurrent input mutation or existing output fails; human/source-controlled adoption remains separate.",
+    "source": [
+     {
+      "path": ".github/scripts/reconcile_tag_receipt.py",
+      "symbol": "main",
+      "lines": [
+       184,
+       230
+      ],
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/reconcile_tag_receipt.py"
+     }
+    ],
+    "transition_id": "C20:04"
+   },
+   "current_status": "PRESERVED",
+   "source_conformance_result": "PRESERVED",
+   "assessment": "Candidate output is new/exclusive, written/fsynced before rechecking both original source byte arrays immediately before hardlink publication. Source ledgers remain unchanged and adoption separate. This detects cooperative input drift, not hostile lock-free filesystem races.",
+   "witnesses": [
+    {
+     "path": ".github/scripts/reconcile_tag_receipt.py",
+     "start": 146,
+     "end": 162,
+     "file_sha256": "e0455c5a550b45ff127aebbd835d54ae3a1b3841fcf869c9082c99c30eef2722",
+     "span_sha256": "65033c21fda54d5e31920f66c11cd2cf4c8f9259c558aba846491e7a3097dc97"
+    },
+    {
+     "path": ".github/scripts/reconcile_tag_receipt.py",
+     "start": 184,
+     "end": 230,
+     "file_sha256": "e0455c5a550b45ff127aebbd835d54ae3a1b3841fcf869c9082c99c30eef2722",
+     "span_sha256": "5c229748488278c8821c7d256b6f4979263b61df68db42b8933810215ecf4e0a"
+    }
+   ],
+   "intake_variances": [],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  }
+ ],
+ "intake_interpretations": [
+  "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification.",
+  "PROGRAM current source and accepted task direction govern. All frozen clauses remain literal; named accepted repairs/intake variances are explicit, not failed tests relabeled N/A.",
+  "No automatic task, runtime epoch, installed capability, actual hosted/platform, release/account or public-readback qualification follows from source PRESERVED.",
+  "Only14 selected machines and their48 still-PLANNED transitions are proposed; all32 advanced transitions and every other row/history remain untouched. C05-C10 are excluded.",
+  "No canonical/index/ref/marker/ledger/status/progress writes, runtime tests, provider/API/network calls, builds, installs or review fleet. Root owns independent review and strict prospective admission."
+ ]
+}

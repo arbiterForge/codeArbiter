@@ -1,0 +1,624 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "kind": "test",
+  "source_commit": "1e06da1b6483591350b090c8eed4a6f37f277d55",
+  "result": "PASSED",
+  "producer": {
+    "class": "local-host",
+    "identity": "/root/packaging_site_tools one actual full Windows canonical recovery run on committed1e06da1b, disposable HOME before imports; literal100 inputs and successful physical+immutable owned lookup inventories captured before/after"
+  },
+  "platform": "windows-amd64",
+  "inputs": {
+    "core/pysrc/adr-acceptance.py": "0b04065fbb367c9da1e690dc622d478be59838949f80e583d730c55401db4f53",
+    "core/pysrc/adr-merge-method.py": "3dae85fb9b0d89ef9f24b95576ef481784739e667f7030dad79a2acc418d66a4",
+    "core/pysrc/append-override.py": "d6a14fef85401e11222737e02b5188c71143d63c396cdaf0f3aa24736502ad9e",
+    "core/pysrc/artifact-authority-hook.py": "783230e6cc6f27ee697797467cac092b8db0b257b6c408f5f7051f403a8d82d4",
+    "core/pysrc/artifact-authority.py": "0dc4fd27b25ec5ca9f38ab0a52301a480c44c87072b0ec92080738fc0db38010",
+    "core/pysrc/artifact-reconcile.py": "adc01569ed70ca46c4dd6d9201b25a32747b7ad413dd3a68a5676d1fdc1b502b",
+    "core/pysrc/babysit.py": "a7fbcb50898df63718f9705da0b69c7e7658932e859cad90710893603f0ff841",
+    "core/pysrc/boardsync.py": "b6e7b0b7e21bc838929593815a071c1418d35e30f1fa0b64410f5a9c2424023b",
+    "core/pysrc/debug-handoff.py": "c6d77fbd2ca05791b59669ce2685cd733afc2a221ebe1bd95801ddc91c26fff9",
+    "core/pysrc/doctor.py": "d3ebfd7a428d6c0664f2990f8d749ce6f514d4a75b582b5ac6ab6ed469ce18a7",
+    "core/pysrc/git-enforce.py": "41e0d0a2d5a08c55cde71441540d8717eee55914de62d3186d05f3de38ab8142",
+    "core/pysrc/hostapi.py": "2aea81ad167a458c6053cb52880952521159a367eaa5baa7df6e2e35fea574e4",
+    "core/pysrc/init-codearbiter.py": "641f0d04057ea22bff6fc39ce6fd95324901c4cc810617f4a783842cd31086b3",
+    "core/pysrc/knowledge.py": "c986978cae7c6cffcd1ce33b2ecf398ed187c16463d30ee598ba9ff05c758847",
+    "core/pysrc/migration-pass.py": "878db96323fefc73b65b6bff73f54bdffafb98af6f260789e79f9b9d3a954fcd",
+    "core/pysrc/post-write-edit.py": "691d3d3691a49d25c60749153a95488a63b31414db34145a719ed14522e9e7cd",
+    "core/pysrc/pre-bash.py": "b2cf1a875a6ec0aa4c36e59bfdc2c9f64a81a70dcc901a5bbc46465b087e4873",
+    "core/pysrc/pre-edit.py": "baa81cd615c6ef9d0df399f7c5a15e5f5cd7d0bdff84508ae22d62b4b9b047a3",
+    "core/pysrc/pre-read.py": "e8acb8b4901198cac202084b880605d7dd0a702781d650a47dad5d0214c491f3",
+    "core/pysrc/pre-write.py": "8f6cbdb29ecde96ab608fbafdfc0373c664686f89da9f21aa71129e9f72003f8",
+    "core/pysrc/prompt-submit.py": "34eeb237a4484224083e6b8e75f351041c28f5e22c57c8d9ca33ba9a9dc9743b",
+    "core/pysrc/prune-transcript.py": "697c844472240ac0440e4043d17eb7de832d70eadf6e21de0ab0684a07008977",
+    "core/pysrc/releasehash.py": "a9e806767403343937015026d544513985a6fb8d5cf7578f42d038797d9b0614",
+    "core/pysrc/resolve-append-only-conflict.py": "4f9c5e92f7dd3371edaee443997728fd4d86e93394aced542e4c1c934c0eacf0",
+    "core/pysrc/resolve-context-conflict.py": "e2ee12d67b0c4a1c7f786171ecd46d77d202e134b87c72a194a35e86eef483a1",
+    "core/pysrc/security-pass.py": "fc0e0a054cd36fbe3150dceacca2d603d106b36ae49db405d91109f016a211ed",
+    "core/pysrc/session-start.py": "4c3c1e9b8180aa571eda8fcacf24569f1fd16366a12c3aba5f76944cf1ba52cb",
+    "core/pysrc/statusline.py": "3cbe9248df153967c3e22d9d05fbf6ab01e668d8539e1defcf5ac7a55df2881c",
+    "core/pysrc/taskwrite.py": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25",
+    "core/pysrc/tribunal.py": "01322be9197fbd2ccaabad56ff7f7fa2dd64abda618d98d6194f528a028a343c",
+    "core/pysrc/update-refresh.py": "73ef43701475c700a34bd0ac22f18085e0c29fa72157c960232ae1ec8e0b282c",
+    "core/pysrc/wire-statusline.py": "216e3754cf0fb8f9c33d77a18c2ce26f85a1b0b025ef28675bfcd3785bfef1a4",
+    "core/pysrc/work.py": "fe51520ff1faa8d94740fde5a8d73c0a2626841abc7eae5397e6969055b95722",
+    "core/pysrc/workflow-recovery.py": "a9a971371d2be4ece6eebdce24f4e2ebeb1a2a9a23e16d3d6d5e39479ef2b482",
+    "core/pysrc/_activationlib.py": "60c6391b4d8b143c5e59cf2320291a2d31063e8fbebe0fcf337dd83e07f8fd97",
+    "core/pysrc/_adrlifecycle.py": "cb1c3c3e39eb2e21f390026b3c336273660a4218e015621f76a18a60ddeaf4f1",
+    "core/pysrc/_adrlifecyclegit.py": "36877c5b94a11135c0b3a4ceb4776e36a94beba1dbd89c0c01be57235806ab24",
+    "core/pysrc/_adrlifecyclewrite.py": "689c79bebe37d412849de84dc3e2b00ba594298b44815effb66bdafbb1663176",
+    "core/pysrc/_appendonlyconflictlib.py": "8fbf10aeaad62bfb1d7da174d71fe354930d3c8a49224b96953b4b87ace687b0",
+    "core/pysrc/_approvallib.py": "fc71ec67a9c44ebbadd9897244da291b6b50768dbe19e59d576ee3f15505828b",
+    "core/pysrc/_arbiterstatelib.py": "19ebd7d82fa56d2a4535043d3a163cfe9f0475aa5d457d5ad8953980d57f71c1",
+    "core/pysrc/_artifactauthoritylib.py": "05098751d619dd1335c9ccb79ec1a22546c5c5c0d90cce0c0bf657d54e0ae50e",
+    "core/pysrc/_artifactlib.py": "59dbf6c51cbbb824cf553aa38aeb9c543dcada14c6311e9393434d231babe03b",
+    "core/pysrc/_artifactmanifestlib.py": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054",
+    "core/pysrc/_artifactpromptlib.py": "03e0c4b32c806cc054ef34ae7ac58ed093cbe80521a8fea723b7ceb8ac72e1d9",
+    "core/pysrc/_babysitlib.py": "f52d87fb3497cc43262785a201c3f0ac10d3e28f2f2e037bc6cd4044d7206d94",
+    "core/pysrc/_bashguardlib.py": "28fb7a0875395a284df082722e13caa42c35d02bb77a4567bafbbc0e1c45d101",
+    "core/pysrc/_boxlib.py": "b523b1e6ec6753c05224486a0bc2f5d7a553b6628c91939b8462f6a78fa7be0e",
+    "core/pysrc/_cleanuplib.py": "66f099d21eebe2fd8d0eea472fb0f0b5fd62713d6d687eab88e0b74f42c4e03c",
+    "core/pysrc/_colorlib.py": "ff8d212dfc06de9b442330085162b2186a01336cbdc2f76d2f87a88f35f578df",
+    "core/pysrc/_contextmergelib.py": "8d4b990b58e075f01bd9efcb2efeb08705b7be0949af30f82e20a4a517c4653c",
+    "core/pysrc/_contextreportlib.py": "76669de01a426b83a841d439d92f82532923303097fa051c4d08c1a1d0bfb538",
+    "core/pysrc/_contextselectlib.py": "0609783e758b6d654c05eeda8c40ccf355641eaf51fb0d9e9978ae5bf4304706",
+    "core/pysrc/_contextsnapshotlib.py": "bef9c37c09abc39e6113baa39f51f261103c760db66ec8e4cdc5818a075c1afe",
+    "core/pysrc/_contextwriterlib.py": "1a2c1856a2ba17ac17b947e0823b1dece6f355a2de600f70e0d392b09263607f",
+    "core/pysrc/_debughandofflib.py": "1a25b13304f05054f7b3787068b937269066c7cb8c61ef0098f14dad48d78c5f",
+    "core/pysrc/_durabilitylib.py": "42e9d3ed6f6f43c76bef073e6edad2b8a119dfc154e2a497909422b4e4d28f9b",
+    "core/pysrc/_entrylib.py": "1f4f95d55502d022f60bc9754a629a3fd38f0914ad69903fb5aa4aa8c4da8f5a",
+    "core/pysrc/_fmtlib.py": "b5e55dccad28210a2781c883704a491d081264ca3f23993ecb815f76b82b2a85",
+    "core/pysrc/_gitexec.py": "a5935246028f506ef5ab13ba379b399cb7a754a077866fd39528545f30f4bef3",
+    "core/pysrc/_githooks.py": "450d3204c7895d7649c4bd7b1daf40b498b960df48de00138914559d41008e38",
+    "core/pysrc/_gitlib.py": "7b310f1946f358a77d6a9eab2333adb64ba9648d41c69c564b66fcb6ab4df276",
+    "core/pysrc/_hooklib.py": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+    "core/pysrc/_intentlib.py": "9712bed86854f405475958d07727bf21f58a0faa1bfd03c19d9ada8972007319",
+    "core/pysrc/_knowledgelib.py": "abc1f93667faf5241c52931d33fc992e5627bd2c406298937d587c373659eeb9",
+    "core/pysrc/_ledgerlib.py": "33fdd7e0ec5505e4faea7776c861a123206bb5c2c09315b09965ab4f92dda580",
+    "core/pysrc/_modelib.py": "d97433737654bbcad2051e62495e70ec006dc31d458514fa74e338e49d04a1db",
+    "core/pysrc/_overrideappendlib.py": "592f63ca6a6a5e51f5e315cd60f6d2d8a6565234835e0904bb422b74d20090b0",
+    "core/pysrc/_pathnorm.py": "f6a99cddf6277641316f5e8f9d86fb97691e535ba569aa6cb51c9e4f3ed52906",
+    "core/pysrc/_planfilelib.py": "038cf68ad85d022d22aab4da5f218f1ce5fb1bdec3bc60e329c607b806fd6fe0",
+    "core/pysrc/_prerequisitelib.py": "8263651e6f29f987b3cc935827c2f6a4b4745251ecddb87a3a7d51fd3d861479",
+    "core/pysrc/_protectedlib.py": "3156e9ad47cf577476dfcae27fde1d4ebfd71fe33b5e1976d351b8f833ea53d3",
+    "core/pysrc/_protectedstatelib.py": "9703e5e777ab286df820dd14da8c0118c24335d41007abfa6f536b5b0b3f14e0",
+    "core/pysrc/_provenancelib.py": "3cbd8d241ff6640e824ee2707ca1a3bd3202db83df371822201ceeabdd2657e4",
+    "core/pysrc/_prunelib.py": "f34aceae4140a7ff25dff91888cd3b9d7d2e5ddc2e1f084558218b22d1c1bdc4",
+    "core/pysrc/_prunepolicy.py": "13bc82c138975121c3dbd28379a0bc8dda183f09fa6e47fbe2bab2e9cc0faf35",
+    "core/pysrc/_readinjectlib.py": "a4d689293690beefa28e33834c7aa421145bab6547685f8d25e5c29425b61138",
+    "core/pysrc/_reconciliationlib.py": "7a281f3f4cdf7c29d62185d12ac24ebb26e3f1c01f42004aa99a1f8080ae2691",
+    "core/pysrc/_releaselib.py": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea",
+    "core/pysrc/_replylib.py": "127d9bcfd842bcea941f2d61b86963cd3e50fcb34a603e8a834fe18d2cc9bf0d",
+    "core/pysrc/_scopelib.py": "03d1f066863d08c952ebda8d9b6f1515813f53a4fd3fc0af560a735f63954e0b",
+    "core/pysrc/_segmentslib.py": "48faefd3a2134195781d821e46d7d7aa2439ef6f6bd950f4de19eff0d416ebe2",
+    "core/pysrc/_sensitivelib.py": "a3902997c16d367a3c7e6e7247a42ba35d962e2c885f9ed3e8e1ab0ce98ec506",
+    "core/pysrc/_sessionlib.py": "bc9ff7504329deee9b205a8d5e8abd7797b8e404152a5c0147c91c8dfd4b8fa1",
+    "core/pysrc/_sloplib.py": "568692fdecb4237ae961bdc3cdb0a3f1566f1630ba2f18ac0ea13fa4df40214e",
+    "core/pysrc/_sprintapprovallib.py": "5fe52f17bb36abe2bbdaa124bfb9f5f2e391af7de47d7cc6492e334765a5cac8",
+    "core/pysrc/_standuplib.py": "621d318ca6429c95bc45dadeb7fbebbfdd9bc3a5f94267d87fa692e69ef74169",
+    "core/pysrc/_subagentslib.py": "e2a6aaf737d02180fc5d464f8b28a0c723408a19774696f60ad0e8175e4b6529",
+    "core/pysrc/_taskboardlib.py": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+    "core/pysrc/_taskexcludelib.py": "dbe5ae4cbe72a2cdccfb4bdf78b4adbece144fed74703f2d2f403851ce3c39a0",
+    "core/pysrc/_tribunalinventorylib.py": "974533bbe66808475c0e64e3247ee5baf814f9f0762e731f904b924e696de251",
+    "core/pysrc/_tribunalrunlib.py": "c0381e0d22a0e25a22d7ac27adaf518724c322c92dd77b11014702d251fd2624",
+    "core/pysrc/_updatelib.py": "6a66e7bc681bf5c347529becbe6e5405165d59b336436183e4e7881d4d26d7b4",
+    "core/pysrc/_usagelib.py": "bed9730b7b21b382845e2389eead3458d07360c5c86e91ad3b0b9f17112cfff5",
+    "core/pysrc/_workadopt.py": "2691e5e61824ef58cf2e13463de8aaf44a99a831079595d906ce96f06aa320b7",
+    "core/pysrc/_workflowrecoverylib.py": "65003d177eb77827c3a9723cf1565ed86e8a9724d22fb19cd3a727471cd71dad",
+    "core/pysrc/_workgithub.py": "15bcc28b81e7cb87df912bedfc3688d0ec69866a2171aa2db80ba6fc3a3e2930",
+    "core/pysrc/_worklib.py": "4b08bdfdea85a96e1bde4bd7dc610bc61dd8ef31a42d530fb10437b1145818ce",
+    ".github/scripts/test_workflow_recovery.py": "80f3e8ae1b231fbbfb7e5b2354d6ea1b6cceef2f59a8d07458ddb510f270b766",
+    "core/workflow-recovery-contract.json": "2b3bcd49600605fc5a49785c8df98fa3ef3d0704a2831b00d83a16752825dc72"
+  },
+  "commands": [
+    {
+      "argv": [
+        "C:/Python314/python.exe",
+        "-B",
+        "-m",
+        "unittest",
+        "-v",
+        "test_workflow_recovery"
+      ],
+      "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\.github\\scripts",
+      "exit_code": 0,
+      "seconds": 21.51912099996116
+    }
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/workflow-recovery-final-1e06da1b/raw/original-full-result.json",
+      "sha256": "45b6a3fd6cf38b79d9f228b8d53b872a32949461cef6f6d81ee0d21faf3313f4"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/workflow-recovery-final-1e06da1b/raw/original-full.stderr.log",
+      "sha256": "1b64ac56104caf745f8d3d622d8bd4648b79a116a6757f1bf41b421d552808f8"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/workflow-recovery-final-1e06da1b/raw/observer.py",
+      "sha256": "47a2c577f0efdd81c6a2fdcb665e0192a2b70dafe83dabad402831da85a86727"
+    }
+  ],
+  "disposition_ids": [
+    "disposition:added_transitions:WR-01",
+    "disposition:added_transitions:WR-02",
+    "disposition:added_transitions:WR-03",
+    "disposition:added_transitions:WR-04",
+    "disposition:added_transitions:WR-05",
+    "disposition:added_transitions:WR-06",
+    "disposition:added_transitions:WR-07",
+    "disposition:added_transitions:WR-08",
+    "disposition:added_transitions:WR-09",
+    "disposition:added_transitions:WR-10",
+    "disposition:added_transitions:WR-11",
+    "disposition:added_transitions:WR-12",
+    "disposition:added_transitions:WR-13",
+    "disposition:added_transitions:WR-14",
+    "disposition:added_transitions:WR-15",
+    "disposition:added_transitions:WR-16",
+    "disposition:added_transitions:WR-17",
+    "disposition:added_transitions:WR-18",
+    "disposition:added_transitions:WR-19",
+    "disposition:added_transitions:WR-20",
+    "disposition:added_transitions:WR-21",
+    "disposition:added_transitions:WR-22"
+  ],
+  "original_named_results": [
+    {
+      "id": "test_workflow_recovery.RecoveryRuntimeTest.test_actual_owner_lift_is_explicit_bookkeeping_and_never_a_target_effect",
+      "status": "passed"
+    },
+    {
+      "id": "test_workflow_recovery.RecoveryRuntimeTest.test_blocking_decision_is_not_demoted_or_confirmed",
+      "status": "passed"
+    },
+    {
+      "id": "test_workflow_recovery.RecoveryRuntimeTest.test_cancel_and_linked_supersession_are_explicit_and_never_touch_target",
+      "status": "passed"
+    },
+    {
+      "id": "test_workflow_recovery.RecoveryRuntimeTest.test_changed_source_is_held_without_touching_target",
+      "status": "passed"
+    },
+    {
+      "id": "test_workflow_recovery.RecoveryRuntimeTest.test_compacted_terminal_record_preserves_exact_dedup_and_old_history",
+      "status": "passed"
+    },
+    {
+      "id": "test_workflow_recovery.RecoveryRuntimeTest.test_corrected_candidate_cas_preserves_original_and_unknown_effect",
+      "status": "passed"
+    },
+    {
+      "id": "test_workflow_recovery.RecoveryRuntimeTest.test_corrupt_record_and_future_store_are_unavailable_without_repair_write",
+      "status": "passed"
+    },
+    {
+      "id": "test_workflow_recovery.RecoveryRuntimeTest.test_crash_after_history_keeps_old_version_and_recoverable_claim",
+      "status": "passed"
+    },
+    {
+      "id": "test_workflow_recovery.RecoveryRuntimeTest.test_crash_after_record_cannot_look_empty_and_explicit_repair_recovers",
+      "status": "passed"
+    },
+    {
+      "id": "test_workflow_recovery.RecoveryRuntimeTest.test_deferred_decision_and_decline_commit_once_after_response_loss",
+      "status": "passed"
+    },
+    {
+      "id": "test_workflow_recovery.RecoveryRuntimeTest.test_denial_and_explicit_stop_are_not_cleared_by_correction",
+      "status": "passed"
+    },
+    {
+      "id": "test_workflow_recovery.RecoveryRuntimeTest.test_direct_child_mutation_needs_parent_and_creates_no_shared_state",
+      "status": "passed"
+    },
+    {
+      "id": "test_workflow_recovery.RecoveryRuntimeTest.test_empty_registration_and_dormant_scan_do_not_create_storage",
+      "status": "passed"
+    },
+    {
+      "id": "test_workflow_recovery.RecoveryRuntimeTest.test_every_declared_producer_captures_before_terminal_effect",
+      "status": "passed"
+    },
+    {
+      "id": "test_workflow_recovery.RecoveryRuntimeTest.test_hardlink_record_path_is_not_followed",
+      "status": "passed"
+    },
+    {
+      "id": "test_workflow_recovery.RecoveryRuntimeTest.test_invalid_unknown_and_oversize_input_leave_no_registered_store",
+      "status": "passed"
+    },
+    {
+      "id": "test_workflow_recovery.RecoveryRuntimeTest.test_larger_records_continue_mid_page_without_history_enumeration",
+      "status": "passed"
+    },
+    {
+      "id": "test_workflow_recovery.RecoveryRuntimeTest.test_legacy_origin_in_archive_is_reused_without_recreating_work",
+      "status": "passed"
+    },
+    {
+      "id": "test_workflow_recovery.RecoveryRuntimeTest.test_linked_followup_uses_existing_fields_without_reopening_settled_history",
+      "status": "passed"
+    },
+    {
+      "id": "test_workflow_recovery.RecoveryRuntimeTest.test_live_os_lock_is_not_stolen_and_stale_cas_cannot_overwrite",
+      "status": "passed"
+    },
+    {
+      "id": "test_workflow_recovery.RecoveryRuntimeTest.test_malformed_record_and_unsafe_intent_never_overwrite_owned_targets",
+      "status": "passed"
+    },
+    {
+      "id": "test_workflow_recovery.RecoveryRuntimeTest.test_multiprocess_claim_correct_and_settle_races_preserve_one_winner",
+      "status": "passed"
+    },
+    {
+      "id": "test_workflow_recovery.RecoveryRuntimeTest.test_new_grant_cannot_clear_unknown_effect_or_reconciliation_clear_denial",
+      "status": "passed"
+    },
+    {
+      "id": "test_workflow_recovery.RecoveryRuntimeTest.test_pages_and_stale_cursor_never_claim_a_complete_empty_scan",
+      "status": "passed"
+    },
+    {
+      "id": "test_workflow_recovery.RecoveryRuntimeTest.test_partial_registration_retains_exact_completed_and_remaining_ids",
+      "status": "passed"
+    },
+    {
+      "id": "test_workflow_recovery.RecoveryRuntimeTest.test_post_commit_failure_reports_observed_record_without_false_no_effect",
+      "status": "passed"
+    },
+    {
+      "id": "test_workflow_recovery.RecoveryRuntimeTest.test_process_crash_after_target_and_during_settlement_never_duplicates",
+      "status": "passed"
+    },
+    {
+      "id": "test_workflow_recovery.RecoveryRuntimeTest.test_process_crash_at_each_registration_commit_boundary",
+      "status": "passed"
+    },
+    {
+      "id": "test_workflow_recovery.RecoveryRuntimeTest.test_projection_refuses_cross_field_corruption_and_notice_failure_is_nonblocking",
+      "status": "passed"
+    },
+    {
+      "id": "test_workflow_recovery.RecoveryRuntimeTest.test_real_append_between_decision_preparation_and_publication_is_never_lost",
+      "status": "passed"
+    },
+    {
+      "id": "test_workflow_recovery.RecoveryRuntimeTest.test_real_legacy_target_response_loss_reconciles_without_duplicate",
+      "status": "passed"
+    },
+    {
+      "id": "test_workflow_recovery.RecoveryRuntimeTest.test_real_linked_worktree_reads_shared_inventory_but_cannot_inherit_effect_binding",
+      "status": "passed"
+    },
+    {
+      "id": "test_workflow_recovery.RecoveryRuntimeTest.test_replaced_git_anchor_cannot_reuse_previous_obligation_binding",
+      "status": "passed"
+    },
+    {
+      "id": "test_workflow_recovery.RecoveryRuntimeTest.test_same_title_different_origin_is_not_reused_and_branch_change_holds",
+      "status": "passed"
+    },
+    {
+      "id": "test_workflow_recovery.RecoveryRuntimeTest.test_scan_is_physically_readonly_and_registration_replay_is_exact",
+      "status": "passed"
+    },
+    {
+      "id": "test_workflow_recovery.RecoveryRuntimeTest.test_symlink_record_path_is_not_followed",
+      "status": "passed"
+    },
+    {
+      "id": "test_workflow_recovery.RecoveryRuntimeTest.test_unavailable_scan_and_notice_show_bounded_reason_specific_recovery",
+      "status": "passed"
+    },
+    {
+      "id": "test_workflow_recovery.RecoveryRuntimeTest.test_unavailable_summary_cannot_substitute_a_different_recovery_reason",
+      "status": "passed"
+    }
+  ],
+  "semantic_mapping": [
+    {
+      "transition_id": "WR-01",
+      "proposed_status": "TESTED",
+      "observed_assertions": "Eight real child exits across payload/intent/record/slot/page/index/clear/commit boundaries never manufacture registration; explicit repair+same registration yields one pending record, board untouched.",
+      "limits": "Canonical Python recovery runtime with real disposable Git/legacy board files on Windows only. Trusted parent invocation is fixture context; no released install/native adapter/host producer/physical user consent/provider/TUI acceptance.",
+      "source_commit": "1e06da1b6483591350b090c8eed4a6f37f277d55",
+      "observed_named_assertions": [
+        "test_workflow_recovery.RecoveryRuntimeTest.test_process_crash_at_each_registration_commit_boundary",
+        "test_workflow_recovery.RecoveryRuntimeTest.test_scan_is_physically_readonly_and_registration_replay_is_exact"
+      ]
+    },
+    {
+      "transition_id": "WR-02",
+      "proposed_status": "TESTED",
+      "observed_assertions": "Closed invalid/unknown-kind/oversize requests report durable:false and create no registered store; partial failure retains exact completed/remaining IDs; child mutation refuses without shared state.",
+      "limits": "Canonical Python recovery runtime with real disposable Git/legacy board files on Windows only. Trusted parent invocation is fixture context; no released install/native adapter/host producer/physical user consent/provider/TUI acceptance. Capacity/numeric field limits other than exercised33batch/65536description are source-defined, not all separately executed here.",
+      "source_commit": "1e06da1b6483591350b090c8eed4a6f37f277d55",
+      "observed_named_assertions": [
+        "test_workflow_recovery.RecoveryRuntimeTest.test_invalid_unknown_and_oversize_input_leave_no_registered_store",
+        "test_workflow_recovery.RecoveryRuntimeTest.test_partial_registration_retains_exact_completed_and_remaining_ids",
+        "test_workflow_recovery.RecoveryRuntimeTest.test_direct_child_mutation_needs_parent_and_creates_no_shared_state"
+      ]
+    },
+    {
+      "transition_id": "WR-03",
+      "proposed_status": "TESTED",
+      "observed_assertions": "Exact registration returns stable obligation identity and entire store snapshot remains identical; settled replay covered separatelyWR20.",
+      "limits": "Canonical Python recovery runtime with real disposable Git/legacy board files on Windows only. Trusted parent invocation is fixture context; no released install/native adapter/host producer/physical user consent/provider/TUI acceptance.",
+      "source_commit": "1e06da1b6483591350b090c8eed4a6f37f277d55",
+      "observed_named_assertions": [
+        "test_workflow_recovery.RecoveryRuntimeTest.test_scan_is_physically_readonly_and_registration_replay_is_exact"
+      ]
+    },
+    {
+      "transition_id": "WR-04",
+      "proposed_status": "TESTED",
+      "observed_assertions": "Correction keeps old candidate in actual history; stale revision conflicts unchanged; unknown effect refuses correction; after proven absence correction succeeds without effect; two real correction processes yield exactly one winner.",
+      "limits": "Canonical Python recovery runtime with real disposable Git/legacy board files on Windows only. Trusted parent invocation is fixture context; no released install/native adapter/host producer/physical user consent/provider/TUI acceptance.",
+      "source_commit": "1e06da1b6483591350b090c8eed4a6f37f277d55",
+      "observed_named_assertions": [
+        "test_workflow_recovery.RecoveryRuntimeTest.test_corrected_candidate_cas_preserves_original_and_unknown_effect",
+        "test_workflow_recovery.RecoveryRuntimeTest.test_multiprocess_claim_correct_and_settle_races_preserve_one_winner"
+      ]
+    },
+    {
+      "transition_id": "WR-05",
+      "proposed_status": "TESTED",
+      "observed_assertions": "Absence scan creates nothing; registered scan is physically unchanged;37items split32+5within262144B; changed generation cursor refuses; malformed projection/nonblocking notice failure never creates marker or discards obligations.",
+      "limits": "Canonical Python recovery runtime with real disposable Git/legacy board files on Windows only. Trusted parent invocation is fixture context; no released install/native adapter/host producer/physical user consent/provider/TUI acceptance.",
+      "source_commit": "1e06da1b6483591350b090c8eed4a6f37f277d55",
+      "observed_named_assertions": [
+        "test_workflow_recovery.RecoveryRuntimeTest.test_scan_is_physically_readonly_and_registration_replay_is_exact",
+        "test_workflow_recovery.RecoveryRuntimeTest.test_pages_and_stale_cursor_never_claim_a_complete_empty_scan",
+        "test_workflow_recovery.RecoveryRuntimeTest.test_projection_refuses_cross_field_corruption_and_notice_failure_is_nonblocking"
+      ]
+    },
+    {
+      "transition_id": "WR-06",
+      "proposed_status": "TESTED",
+      "observed_assertions": "Real OS lock held in another child blocks claim without changed store; released lock permits claimed state then stale expected revision conflicts; two real claimants produce one winner.",
+      "limits": "Canonical Python recovery runtime with real disposable Git/legacy board files on Windows only. Trusted parent invocation is fixture context; no released install/native adapter/host producer/physical user consent/provider/TUI acceptance. Canonical claim persistence/identity/CAS only; caller actual host delegation grant not inferred.",
+      "source_commit": "1e06da1b6483591350b090c8eed4a6f37f277d55",
+      "observed_named_assertions": [
+        "test_workflow_recovery.RecoveryRuntimeTest.test_live_os_lock_is_not_stolen_and_stale_cas_cannot_overwrite",
+        "test_workflow_recovery.RecoveryRuntimeTest.test_multiprocess_claim_correct_and_settle_races_preserve_one_winner"
+      ]
+    },
+    {
+      "transition_id": "WR-07",
+      "proposed_status": "TESTED",
+      "observed_assertions": "Changed source persists source-stale unavailable while target bytes exact; denied/stopped state cannot be cleared by ordinary correction; blocking decision waits for user without question/audit publication; child direct mutation refuses.",
+      "limits": "Canonical Python recovery runtime with real disposable Git/legacy board files on Windows only. Trusted parent invocation is fixture context; no released install/native adapter/host producer/physical user consent/provider/TUI acceptance. Actual Pi revocation/physical scope denial and every owner-ambiguity variant are separate host/native boundaries.",
+      "source_commit": "1e06da1b6483591350b090c8eed4a6f37f277d55",
+      "observed_named_assertions": [
+        "test_workflow_recovery.RecoveryRuntimeTest.test_changed_source_is_held_without_touching_target",
+        "test_workflow_recovery.RecoveryRuntimeTest.test_denial_and_explicit_stop_are_not_cleared_by_correction",
+        "test_workflow_recovery.RecoveryRuntimeTest.test_blocking_decision_is_not_demoted_or_confirmed",
+        "test_workflow_recovery.RecoveryRuntimeTest.test_direct_child_mutation_needs_parent_and_creates_no_shared_state"
+      ]
+    },
+    {
+      "transition_id": "WR-08",
+      "proposed_status": "TESTED",
+      "observed_assertions": "Actual decision/decline response-loss test asserts durableWR06 claim and claimed uncertainty, then recoveredWR11 settlement; declined outcome is explicitly admitted by its corrected owner disposition and the audit effect occurs exactlyonce. Runtime events remainWR06/WR09/WR11 as owningWR08 composite text declares.",
+      "limits": "Canonical explicit caller decline/audit composite only. No actual interactive preview/physical user denial or host grant authentication; unknown effect remainsclaimed for reconciliation.",
+      "source_commit": "1e06da1b6483591350b090c8eed4a6f37f277d55",
+      "observed_named_assertions": [
+        "test_workflow_recovery.RecoveryRuntimeTest.test_deferred_decision_and_decline_commit_once_after_response_loss",
+        "test_workflow_recovery.RecoveryRuntimeTest.test_real_append_between_decision_preparation_and_publication_is_never_lost"
+      ]
+    },
+    {
+      "transition_id": "WR-09",
+      "proposed_status": "TESTED",
+      "observed_assertions": "Actual fresh canonical legacy-work effect settles and stores receipt; concurrent resume yields exactly one origin; archived exact-origin lookup reuses independently named target without recreating open work.",
+      "limits": "Canonical Python recovery runtime with real disposable Git/legacy board files on Windows only. Trusted parent invocation is fixture context; no released install/native adapter/host producer/physical user consent/provider/TUI acceptance. Legacy runtime board owner only; installed native-work adapter and parent completion/review remain separate.",
+      "source_commit": "1e06da1b6483591350b090c8eed4a6f37f277d55",
+      "observed_named_assertions": [
+        "test_workflow_recovery.RecoveryRuntimeTest.test_compacted_terminal_record_preserves_exact_dedup_and_old_history",
+        "test_workflow_recovery.RecoveryRuntimeTest.test_multiprocess_claim_correct_and_settle_races_preserve_one_winner",
+        "test_workflow_recovery.RecoveryRuntimeTest.test_legacy_origin_in_archive_is_reused_without_recreating_work"
+      ]
+    },
+    {
+      "transition_id": "WR-10",
+      "proposed_status": "TESTED",
+      "observed_assertions": "Actual child exits79 after target/during settlement preserve exact one target; later explicit reconcile reads current record/origin before settlement; no blind duplicate replay.",
+      "limits": "Canonical Python recovery runtime with real disposable Git/legacy board files on Windows only. Trusted parent invocation is fixture context; no released install/native adapter/host producer/physical user consent/provider/TUI acceptance.",
+      "source_commit": "1e06da1b6483591350b090c8eed4a6f37f277d55",
+      "observed_named_assertions": [
+        "test_workflow_recovery.RecoveryRuntimeTest.test_process_crash_after_target_and_during_settlement_never_duplicates",
+        "test_workflow_recovery.RecoveryRuntimeTest.test_real_legacy_target_response_loss_reconciles_without_duplicate"
+      ]
+    },
+    {
+      "transition_id": "WR-11",
+      "proposed_status": "TESTED",
+      "observed_assertions": "Exact-origin readback recovers already committed effect with reused disposition, board byte-identical; terminal resume repeats no effect; archived target content not overwritten.",
+      "limits": "Canonical Python recovery runtime with real disposable Git/legacy board files on Windows only. Trusted parent invocation is fixture context; no released install/native adapter/host producer/physical user consent/provider/TUI acceptance.",
+      "source_commit": "1e06da1b6483591350b090c8eed4a6f37f277d55",
+      "observed_named_assertions": [
+        "test_workflow_recovery.RecoveryRuntimeTest.test_process_crash_after_target_and_during_settlement_never_duplicates",
+        "test_workflow_recovery.RecoveryRuntimeTest.test_real_legacy_target_response_loss_reconciles_without_duplicate",
+        "test_workflow_recovery.RecoveryRuntimeTest.test_legacy_origin_in_archive_is_reused_without_recreating_work"
+      ]
+    },
+    {
+      "transition_id": "WR-12",
+      "proposed_status": "TESTED",
+      "observed_assertions": "Real separate process holds OS obligation lock; resume reports busy and snapshot exactly unchanged, then released lock permits laterclaim. No age/TTL theft path.",
+      "limits": "Canonical Python recovery runtime with real disposable Git/legacy board files on Windows only. Trusted parent invocation is fixture context; no released install/native adapter/host producer/physical user consent/provider/TUI acceptance.",
+      "source_commit": "1e06da1b6483591350b090c8eed4a6f37f277d55",
+      "observed_named_assertions": [
+        "test_workflow_recovery.RecoveryRuntimeTest.test_live_os_lock_is_not_stolen_and_stale_cas_cannot_overwrite"
+      ]
+    },
+    {
+      "transition_id": "WR-13",
+      "proposed_status": "TESTED",
+      "observed_assertions": "Claim without target reconciles absent-effect; candidate correction then allowed. Reconcile of denied unknown effect proves absence while state remains unavailable and denial persists; it performs no target write.",
+      "limits": "Canonical Python recovery runtime with real disposable Git/legacy board files on Windows only. Trusted parent invocation is fixture context; no released install/native adapter/host producer/physical user consent/provider/TUI acceptance. Fixture authority context is never a real grant; inspected runtime retains immutable effect identity for exact retry until explicit correction, not implied permission.",
+      "source_commit": "1e06da1b6483591350b090c8eed4a6f37f277d55",
+      "observed_named_assertions": [
+        "test_workflow_recovery.RecoveryRuntimeTest.test_corrected_candidate_cas_preserves_original_and_unknown_effect",
+        "test_workflow_recovery.RecoveryRuntimeTest.test_multiprocess_claim_correct_and_settle_races_preserve_one_winner",
+        "test_workflow_recovery.RecoveryRuntimeTest.test_new_grant_cannot_clear_unknown_effect_or_reconciliation_clear_denial"
+      ]
+    },
+    {
+      "transition_id": "WR-14",
+      "proposed_status": "TESTED",
+      "observed_assertions": "For decision/decline with missing/existing targets, actual concurrent subprocess append makes publication refuse changed-binding; unavailable record retains unresolved effect; reconcile proves absence before same-origin retry. Unknown effect also blocks new lift context.",
+      "limits": "Canonical Python recovery runtime with real disposable Git/legacy board files on Windows only. Trusted parent invocation is fixture context; no released install/native adapter/host producer/physical user consent/provider/TUI acceptance. Real append/CAS boundary exercised; arbitrary provider unavailable/actual grant revocation remain unexecuted.",
+      "source_commit": "1e06da1b6483591350b090c8eed4a6f37f277d55",
+      "observed_named_assertions": [
+        "test_workflow_recovery.RecoveryRuntimeTest.test_real_append_between_decision_preparation_and_publication_is_never_lost",
+        "test_workflow_recovery.RecoveryRuntimeTest.test_new_grant_cannot_clear_unknown_effect_or_reconciliation_clear_denial"
+      ]
+    },
+    {
+      "transition_id": "WR-15",
+      "proposed_status": "TESTED",
+      "observed_assertions": "For every14known reason, real unavailable records scan complete with matching trustedreason_recovery guidance in existingresume field; notice includes whole routes within768chars and directs to scan for remaining advice; arbitrary private title never becomes guidance. Entire ledger and board snapshot stayexact. A substituted summary reason refuses corrupt-record without writes.",
+      "limits": "Canonical actual Python projection/scan only; no visible parent/TUI/installed host delivery proof or automatic authorization from guidance.",
+      "source_commit": "1e06da1b6483591350b090c8eed4a6f37f277d55",
+      "observed_named_assertions": [
+        "test_workflow_recovery.RecoveryRuntimeTest.test_unavailable_scan_and_notice_show_bounded_reason_specific_recovery",
+        "test_workflow_recovery.RecoveryRuntimeTest.test_unavailable_summary_cannot_substitute_a_different_recovery_reason",
+        "test_workflow_recovery.RecoveryRuntimeTest.test_projection_refuses_cross_field_corruption_and_notice_failure_is_nonblocking"
+      ]
+    },
+    {
+      "transition_id": "WR-16",
+      "proposed_status": "TESTED",
+      "observed_assertions": "Ordinary restore/correction cannot clear explicit stop/denial; unsupported authority_source rejects; explicit same-owner lift context recordsWR16 and prior exact history but no authorized field or target effect. Unknown effect blocks lift; proven absence retains denial until explicit lift.",
+      "limits": "Canonical Python recovery runtime with real disposable Git/legacy board files on Windows only. Trusted parent invocation is fixture context; no released install/native adapter/host producer/physical user consent/provider/TUI acceptance. TESTED is only canonical bookkeeping/trusted-caller admission. user:/host: fixture references are not actual user/host grant authentication; physical consent and scoped producer observation remain pending.",
+      "source_commit": "1e06da1b6483591350b090c8eed4a6f37f277d55",
+      "observed_named_assertions": [
+        "test_workflow_recovery.RecoveryRuntimeTest.test_denial_and_explicit_stop_are_not_cleared_by_correction",
+        "test_workflow_recovery.RecoveryRuntimeTest.test_actual_owner_lift_is_explicit_bookkeeping_and_never_a_target_effect",
+        "test_workflow_recovery.RecoveryRuntimeTest.test_new_grant_cannot_clear_unknown_effect_or_reconciliation_clear_denial"
+      ]
+    },
+    {
+      "transition_id": "WR-17",
+      "proposed_status": "TESTED",
+      "observed_assertions": "Actual persisted future record/store format and corrupt cross-field projection yield unavailable safe bounded metadata, and raw store remains exact; explicit repair refuses unsupported store.",
+      "limits": "Canonical Python recovery runtime with real disposable Git/legacy board files on Windows only. Trusted parent invocation is fixture context; no released install/native adapter/host producer/physical user consent/provider/TUI acceptance. Persisted unknown-kind classifier is source-inspected; no downgrade/deletion/power-loss repair or all malformed encodings claimed.",
+      "source_commit": "1e06da1b6483591350b090c8eed4a6f37f277d55",
+      "observed_named_assertions": [
+        "test_workflow_recovery.RecoveryRuntimeTest.test_corrupt_record_and_future_store_are_unavailable_without_repair_write",
+        "test_workflow_recovery.RecoveryRuntimeTest.test_projection_refuses_cross_field_corruption_and_notice_failure_is_nonblocking"
+      ]
+    },
+    {
+      "transition_id": "WR-18",
+      "proposed_status": "TESTED",
+      "observed_assertions": "Explicit canonical cancel settles cancelled with target board unchanged; an existing unreconciled claimed effect refuses cancel uncertain-effect.",
+      "limits": "Canonical Python recovery runtime with real disposable Git/legacy board files on Windows only. Trusted parent invocation is fixture context; no released install/native adapter/host producer/physical user consent/provider/TUI acceptance. Trusted caller cancellation only, not physical UI consent or shared-state child authorization.",
+      "source_commit": "1e06da1b6483591350b090c8eed4a6f37f277d55",
+      "observed_named_assertions": [
+        "test_workflow_recovery.RecoveryRuntimeTest.test_cancel_and_linked_supersession_are_explicit_and_never_touch_target"
+      ]
+    },
+    {
+      "transition_id": "WR-19",
+      "proposed_status": "TESTED",
+      "observed_assertions": "Self-replacement refuses; selected distinct existing obligation linked in superseded outcome; replacement remains pending and target board unchanged.",
+      "limits": "Canonical Python recovery runtime with real disposable Git/legacy board files on Windows only. Trusted parent invocation is fixture context; no released install/native adapter/host producer/physical user consent/provider/TUI acceptance. Trusted caller supersession only; no host/user UI acceptance claim.",
+      "source_commit": "1e06da1b6483591350b090c8eed4a6f37f277d55",
+      "observed_named_assertions": [
+        "test_workflow_recovery.RecoveryRuntimeTest.test_cancel_and_linked_supersession_are_explicit_and_never_touch_target"
+      ]
+    },
+    {
+      "transition_id": "WR-20",
+      "proposed_status": "TESTED",
+      "observed_assertions": "Compaction retains terminal receipt/tombstone identity and old history; exact registration reports same settled identity; subsequent resume returns settled with board exact, no duplicate effect or authority prompt.",
+      "limits": "Canonical Python recovery runtime with real disposable Git/legacy board files on Windows only. Trusted parent invocation is fixture context; no released install/native adapter/host producer/physical user consent/provider/TUI acceptance.",
+      "source_commit": "1e06da1b6483591350b090c8eed4a6f37f277d55",
+      "observed_named_assertions": [
+        "test_workflow_recovery.RecoveryRuntimeTest.test_compacted_terminal_record_preserves_exact_dedup_and_old_history",
+        "test_workflow_recovery.RecoveryRuntimeTest.test_real_legacy_target_response_loss_reconciles_without_duplicate"
+      ]
+    },
+    {
+      "transition_id": "WR-21",
+      "proposed_status": "TESTED",
+      "observed_assertions": "After actual predecessor settles, caller registers a newrun/distinct predecessor-naming boundedorigin and candidate.provenance with currentchanged sourcefingerprint. New ID is distinct and pending with inspectedpersisted link, no effect; oldrecord/history rawbytes and canonical targetboard remainexact. Exactnew registration replay reusesID and leaves entireledger unchanged.",
+      "limits": "Existing v1 register/get fields encode caller-declared link; testdoesnot authenticate arbitrary prose/past authority or add a newCLI/API/recordfield. Trusted parent authorization and physical consent are external boundaries.",
+      "source_commit": "1e06da1b6483591350b090c8eed4a6f37f277d55",
+      "observed_named_assertions": [
+        "test_workflow_recovery.RecoveryRuntimeTest.test_linked_followup_uses_existing_fields_without_reopening_settled_history"
+      ]
+    },
+    {
+      "transition_id": "WR-22",
+      "proposed_status": "TESTED",
+      "observed_assertions": "Actual failure after commit returns durable:false/commit uncertain separately from observed pending/no pending transaction/not-attempted effect; exactretry later confirms durable; partial registration completed/remaining exact; actual concurrent target append preserved under refusal.",
+      "limits": "Canonical Python recovery runtime with real disposable Git/legacy board files on Windows only. Trusted parent invocation is fixture context; no released install/native adapter/host producer/physical user consent/provider/TUI acceptance. Observation readback is canonical runtime; no remote write commit, host receipt, or blind rollback inference.",
+      "source_commit": "1e06da1b6483591350b090c8eed4a6f37f277d55",
+      "observed_named_assertions": [
+        "test_workflow_recovery.RecoveryRuntimeTest.test_partial_registration_retains_exact_completed_and_remaining_ids",
+        "test_workflow_recovery.RecoveryRuntimeTest.test_post_commit_failure_reports_observed_record_without_false_no_effect",
+        "test_workflow_recovery.RecoveryRuntimeTest.test_real_append_between_decision_preparation_and_publication_is_never_lost"
+      ]
+    }
+  ],
+  "scope": "Canonical local Python recovery/legacy-board component acceptance only. Actual38PASS0skip/error/fail at committed1e06da1b; literal100 inputs match Git and working bytes before/after, including changed imported _sensitivelib.py. Fresh successful physical directory enumeration excluding every Windows case variant and immutable tree enumeration establish declared ASCII Windows core/pysrc/_host.py absence before/after. No native build, installed/hosted/cohort/TUI/provider/physical user consent/release or new task/machine/ID qualification.",
+  "runtime": {
+    "executable": "C:\\Python314\\python.exe",
+    "version": "3.14.6 (tags/v3.14.6:c63aec6, Jun 10 2026, 10:26:10) [MSC v.1944 64 bit (AMD64)]",
+    "platform": "win32"
+  },
+  "environment_keys": [
+    "HOME",
+    "PATH",
+    "PYTHONDONTWRITEBYTECODE",
+    "PYTHONIOENCODING",
+    "SystemRoot",
+    "TEMP",
+    "TMP",
+    "USERPROFILE",
+    "WINDIR"
+  ],
+  "disposable_HOME_before_import": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-wr-final-1e06-4oxaqac0\\disposable-home",
+  "historical_evidence_not_relabelled": [
+    {
+      "original_source": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+      "original14": "hooks-current-proposed/recovery-canonical-task-qualification.json"
+    },
+    {
+      "original_source": "3688ef7fcedce06561443c0b3a8c3186b9e6e7be",
+      "original10": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-workflow-recovery-introduced-x280lkg6\\named-result.json"
+    },
+    {
+      "source_commit": "8a108552b83447f2170956dfe6aa8a99cfe4a3d3",
+      "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c",
+      "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-8a108552/canonical-runtime.json",
+      "sha256": "bf99f903f92314395abd0a5727e63434777aee4773b19f12e98271bedba7aa7f",
+      "status": "Original 38-test 8a108552 observation remains retained unchanged; this b7 run is a distinct successor after one declared helper dependency changed."
+    },
+    {
+      "source_commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
+      "ref_commit": "6a636870bc23f5079700faf58a234d19f6823eca",
+      "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-b7a75fca/canonical-runtime.json",
+      "sha256": "51940323426cf29e699d0ab0473319853589fdc94f58a821b913de98a8309881",
+      "status": "Genuinely committed prior b7 canonical observation retained unchanged. No uncommitted6a successor is represented as a committed6a ref."
+    }
+  ],
+  "refresh_reason": {
+    "changed_declared_import": "core/pysrc/_sensitivelib.py",
+    "original_b7_sha256": "de8b2255bad1a78f4779406e35114ebc596ee280912d3ba68e559a06da098458",
+    "tested_1e06_sha256": "a3902997c16d367a3c7e6e7247a42ba35d962e2c885f9ed3e8e1ab0ce98ec506",
+    "actual_one_new_execution": true,
+    "earlier_6a_observation": "Original6a run/raw remain untouched in separate Temp folder; no execution or committed retention identity relabelled."
+  },
+  "absent_inputs": [
+    {
+      "path": "core/pysrc/_host.py",
+      "path_style": "windows"
+    }
+  ]
+}

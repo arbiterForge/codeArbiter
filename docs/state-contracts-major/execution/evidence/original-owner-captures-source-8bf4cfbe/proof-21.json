@@ -1,0 +1,91 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "8bf4cfbe62806a78fd750f01108037c69b611e98",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "Original-owner route delta and literal finite source/applicability preservation"
+  },
+  "inputs": {
+    ".github/scripts/test_work_github.py": "226946f1d44825845d94fd0223d953d21346cc1afdaf8959455eac2fec5d1008",
+    "core/pysrc/_activationlib.py": "60c6391b4d8b143c5e59cf2320291a2d31063e8fbebe0fcf337dd83e07f8fd97",
+    "core/pysrc/_arbiterstatelib.py": "19ebd7d82fa56d2a4535043d3a163cfe9f0475aa5d457d5ad8953980d57f71c1",
+    "core/pysrc/_artifactlib.py": "db10153f438023ca6eb7e32f77e1898fbd2f806cdc5ef98bdffb078e27e65187",
+    "core/pysrc/_hooklib.py": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+    "core/pysrc/_modelib.py": "1988af5a7b374bc796a0d6744a85d50a8b1213a4039bc91b6fa5d434b3464a03",
+    "core/pysrc/_taskboardlib.py": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+    "core/pysrc/_workadopt.py": "5931ac77ec7ce695bf35daac6a93a889f5ce65b6fd8df8c150c0f9a3f6564078",
+    "core/pysrc/_workgithub.py": "79a1ce36cc360eb1eb095b45ab08ecc50c50fe10670dc10e2d9c5cd21be8ca1f",
+    "core/pysrc/_worklib.py": "4b08bdfdea85a96e1bde4bd7dc610bc61dd8ef31a42d530fb10437b1145818ce",
+    "core/pysrc/hostapi.py": "2aea81ad167a458c6053cb52880952521159a367eaa5baa7df6e2e35fea574e4",
+    "core/pysrc/taskwrite.py": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25",
+    "core/pysrc/work.py": "fe51520ff1faa8d94740fde5a8d73c0a2626841abc7eae5397e6969055b95722",
+    "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+    "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+    "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+    "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/work-owner-taskwrite/preserved.json": "96a85dac5706030d09e52bd9dada79960bd607d4461e96af35e8febda69ddbac",
+    "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/work-owner-taskwrite/source-inspection.json": "88082d609f36b2c52a7b336b84ee3456ce36c0ccf92173d6b95227d07038c64b"
+  },
+  "disposition_ids": [
+    "disposition:machines:hooks:taskwrite",
+    "disposition:transitions:hooks:taskwrite:01",
+    "disposition:transitions:hooks:taskwrite:02",
+    "disposition:transitions:hooks:taskwrite:03",
+    "disposition:transitions:hooks:taskwrite:04",
+    "disposition:transitions:hooks:taskwrite:05",
+    "disposition:transitions:hooks:taskwrite:06",
+    "disposition:transitions:hooks:taskwrite:07",
+    "disposition:transitions:hooks:taskwrite:08",
+    "disposition:transitions:hooks:work-owner:01",
+    "disposition:transitions:hooks:work-owner:02",
+    "disposition:transitions:hooks:work-owner:04",
+    "disposition:transitions:hooks:work-owner:05",
+    "disposition:transitions:hooks:work-owner:06",
+    "disposition:transitions:hooks:work-owner:07",
+    "disposition:transitions:hooks:work-owner:08",
+    "disposition:transitions:hooks:work-owner:09",
+    "disposition:transitions:hooks:work-owner:10"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-owner-captures-source-8bf4cfbe/source-delta-review.json",
+      "sha256": "05938adb97a326d4f877382e44599484331bbd3de369b90acd2dabda5fb77d5f"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/stable-source-closed-python-namespace-2d594847/source-group-022-proof.json",
+      "sha256": "45ab61d239eb8be381cbef2ff60ea38e4a844cf6b85d56caa40a2cbfff45b896"
+    }
+  ],
+  "prior_source_fingerprint": {
+    "path": "docs/state-contracts-major/execution/evidence/stable-source-closed-python-namespace-2d594847/source-group-022-proof.json",
+    "sha256": "45ab61d239eb8be381cbef2ff60ea38e4a844cf6b85d56caa40a2cbfff45b896",
+    "original_code": "2d594847888619a98aa964ad1757a31a788aa5c4",
+    "stored_at": "00fd5fff97189598083e762e9c54fba8b01c1f62"
+  },
+  "scope": "17 complete transition clauses and 1 exact constituent machines; current source PRESERVED only. Original6 parser,7 unchanged-path,3 native identity observations remain separately sourced corroboration, not unique-count or fresh-runtime qualification. S38 and all unselected rows untouched.",
+  "changed_paths": [
+    "membership:.github/scripts"
+  ],
+  "limits": [
+    "No run, platform, package, task, provider, user or installed evidence was renewed.",
+    "All prior original source epochs and raw evidence remain exact.",
+    "New file names are bound in the exact full Python namespace; the disjoint entry points are not a claim of newly executed tests.",
+    "Preserve frozen exact owners and scoped guard/effect/retry. Changed CI/test paths add observer-only routes or inspected read-only Doc evidence alongside unchanged bound control blocks.",
+    "No execution, installation, release, task or hosted result is changed or established."
+  ],
+  "input_membership": [
+    {
+      "profile": "python-import-directory-v1",
+      "root": "core/pysrc",
+      "path_order": "windows",
+      "sha256": "47866d8dbbe83d269b0c3311e9bb1df44111bd8596c4c9808865eabf6d10ff9d"
+    },
+    {
+      "profile": "python-import-directory-v1",
+      "root": ".github/scripts",
+      "path_order": "windows",
+      "sha256": "aceb12697eca7d0fd2b4637bf8416ea30fdecfeb12a29b9f85684c16ad0d6bdd"
+    }
+  ]
+}

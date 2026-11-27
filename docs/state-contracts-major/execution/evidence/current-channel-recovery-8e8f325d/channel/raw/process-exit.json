@@ -1,0 +1,15 @@
+{
+  "argv": [
+    "C:/Python314/python.exe",
+    "-B",
+    "-X",
+    "utf8",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-8e8f-channel-recovery-lc0n92_1\\channel\\observe-channel.py"
+  ],
+  "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\.github\\scripts",
+  "exit_code": 0,
+  "timed_out": false,
+  "seconds": 25.880488499999046,
+  "stdout_sha256": "93297042e37ae18cb2345480e0a7d92c9484e8c14108f9e97e98d3cf12dc59fb",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

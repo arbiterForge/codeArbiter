@@ -76,6 +76,7 @@
 #                                         protected-state file
 
 from bisect import bisect_left
+import getopt
 import json
 import os
 import re
@@ -1160,9 +1161,9 @@ _INTERP_EXECUTABLE = r"(?<![\w.])\.*(" + _INTERP_TOKENS + r")\b"
 # unambiguous abbreviation, so `-Comm`, `-Co` and `-C` are all valid and a
 # literal `-Command|-c` alternation would miss them.
 #
-# Residual, stated rather than left to fall out of the regex: a script
-# piped into an interpreter on stdin (`echo … | python3`) puts the
-# filename BEFORE the interpreter token and is not reached here, and
+# This regex alone cannot see a piped stdin script before its interpreter.
+# run_guards exposes literal PowerShell here-string consumers before their
+# intact bodies; other dynamic stdin sources remain outside that projection.
 # `deno eval` is covered only in its subcommand spelling.
 _INTERP_INLINE_CODE = (
     r"(?:-{1,2}(?:c(?:o(?:m(?:m(?:a(?:n(?:d)?)?)?)?)?)?|e|E|r|p"
@@ -1290,29 +1291,56 @@ def _at_command_position(cmd, start):
     return word.lower() in _COMMAND_PREFIXES or "=" in word
 
 
+def _interp_statement_boundaries(cmd):
+    """Narrow only simple, quote-balanced top-level command ownership.
+
+    The existing PowerShell layout also owns simple POSIX quote boundaries.
+    Escapes, here documents/strings, nested expressions and another shell's
+    command syntax retain the original whole-command conservative scan.
+    """
+    if len(cmd) > 32768 or any(marker in cmd for marker in (
+            "\\", "`", "^", "$(", "<", ">", "@'", '@"', "--%", "\u2018", "\u2019", "\u201c", "\u201d")):
+        return ()
+    if re.search(r"(?<![\w.])cmd(?:\.exe)?\b", cmd, re.I) or any(
+            match.group(1).lower() in ("sh", "bash", "zsh", "pwsh", "powershell")
+            for match in re.finditer(_INTERP_EXECUTABLE, cmd, re.I)):
+        return ()
+    try:
+        shlex.split(cmd, posix=False)
+    except ValueError:
+        return ()
+    layout = _powershell_layout(cmd)
+    if any(layout[5][index] and char in "()[]{}" for index, char in enumerate(cmd)):
+        return ()
+    return layout[3].get(0, ())
+
+
 def _interp_protected_write(cmd, interp_re, name_re):
     """True when an interpreter invocation can write the protected `name_re`
-    target: `interp_re` (token then name) matched, and after some interpreter
-    token that precedes the name either write intent appears, or the code it
+    target: `interp_re` (token then name) matched, and within a safely bounded
+    invocation after its interpreter either write intent appears, or the code it
     runs is not visible on the command line (a script, module or file, piped
     stdin, or a dotless argument in command position)."""
     if not interp_re.search(cmd):
         return False
     names = [m.start() for m in name_re.finditer(cmd)]
+    boundaries = _interp_statement_boundaries(cmd)
     for m in re.finditer(_INTERP_EXECUTABLE, cmd, re.I):
-        if not any(n >= m.end() for n in names):
+        boundary = bisect_left(boundaries, m.end())
+        end = boundaries[boundary] if boundary < len(boundaries) else len(cmd)
+        if not any(m.end() <= n < end for n in names):
             continue
         # Perl and Ruby calls need no parentheses (`open F, ">", p`,
         # `File.write p, ""`), which the lexical intent scan cannot see, so
         # they keep the conservative pre-#997 behavior.
         if m.group(1).lower() in ("perl", "ruby"):
             return True
-        if INTERP_WRITE_INTENT_RE.search(cmd, m.start()):
+        if INTERP_WRITE_INTENT_RE.search(cmd, m.start(), end):
             return True
-        operand = _interp_operand(cmd, m.end())
+        operand = _interp_operand(cmd[:end], m.end())
         if operand == "script":
             return True
-        if operand == "stdin" and "<<" not in cmd[m.end():]:
+        if operand == "stdin" and "<<" not in cmd[m.end():end]:
             return True
         if operand in ("word", "bare") and _at_command_position(cmd, m.start()):
             return True
@@ -2640,6 +2668,7 @@ def _check_h09b_h10b_crypto_secret(commit, add, cwd, root):
         exact_binary = binary_candidate_binding(candidate_root, preserve_index=True)
         expected = binary_override_binding(exact_binary)
         if (worktree_marker_binding(candidate_root) not in approved
+                or binaries[0].candidate not in approved
                 or expected is None or expected not in approved):
             block("H-09b", "No audited binary override is recorded for this exact staged "
                            "candidate. " + recovery)
@@ -2882,6 +2911,60 @@ def _literal_python_read_view(cmd):
     return "\n".join(reads) if reads else fallback
 
 
+def _powershell_stdin_interpreter_view(cmd):
+    """Expose a literal here-string's interpreter before its intact body.
+
+    This only adds a conservative execution view; it never hides source or
+    grants a read exemption. The closed isolated-read grammar runs first.
+    Unknown flags therefore cannot make a visible earlier write disappear
+    from the interpreter-before-protected-path guards.
+    """
+    opening = re.match(r"\A[ \t]*@(['\"])\r?\n", cmd)
+    if opening is None:
+        return cmd
+    closing = re.search(r"(?m)^[ \t]*" + re.escape(opening.group(1)) + "@",
+                        cmd[opening.end():])
+    if closing is None:
+        return cmd
+    tail = cmd[opening.end() + closing.end():]
+    consumer = re.match(
+        r'''[ \t]*\|[ \t]*(?:&[ \t]+)?(?P<exe>"[^"\r\n]+"|'[^'\r\n]+'|[^\s;&|<>]+)''',
+        tail)
+    if consumer is None:
+        return cmd
+    executable = consumer['exe']
+    basename = executable.strip("\"'").replace("\\", "/").rsplit("/", 1)[-1]
+    if re.match(_INTERP_EXECUTABLE, basename, re.I) is None:
+        return cmd
+    mode = "-"
+    if re.fullmatch(r"\.*(?:python(?:[23](?:\.\d+)*)?|py)(?:\.exe)?", basename, re.I):
+        mode = "-c"  # No script/code/module means the visible body is code.
+        try:
+            arguments = tail[consumer.end():]
+            layout = _powershell_layout(arguments)
+            boundaries = layout[3].get(0, ())
+            if boundaries:
+                arguments = arguments[:boundaries[0]]
+            if (re.search(r"[`$\u2018-\u201d]", arguments)
+                    or any(layout[5][index] and char in "()[]{}<>"
+                           for index, char in enumerate(arguments))
+                    or any(layout[-2][:len(arguments)])):
+                raise ValueError("uncertain consumer argv ownership")
+            args = [value.strip("\"'") for value in
+                    shlex.split(arguments, posix=False)]
+            options, positional = getopt.getopt(
+                args, "bBc:dEhiIm:OPqRsSuvVW:xX:", ["check-hash-based-pycs="])
+        except (ValueError, getopt.GetoptError):
+            pass  # Unknown option grammar stays conservative, never a data exemption.
+        else:
+            if (any(option in ("-c", "-m") for option, _ in options)
+                    or positional and positional[0] != "-"):
+                mode = "-"  # Script/module/code argv must not inherit stdin data.
+    # These synthetic views are for guards only. Keep every original byte
+    # for write/redirect/continuation checks; do not parse or execute the body.
+    return executable + " " + mode + "\n" + cmd
+
+
 def _debug_validation_command_view(cmd):
     """Exclude literal stdin data only for this package's read-only validator.
 
@@ -2981,6 +3064,7 @@ def run_guards(payload, root, ti):
     gate, each still carrying its H-NN ID."""
     cmd = _debug_validation_command_view(ti.get("command", "") or "")
     cmd = _literal_python_read_view(cmd)
+    cmd = _powershell_stdin_interpreter_view(cmd)
     cmd = _literal_ps_here_string_view(cmd)
     cmd = _read_only_rg_pattern_view(cmd)
 

@@ -1,0 +1,2495 @@
+{
+  "schema": "codearbiter-original-assertion-extract/1",
+  "original_report_sha256": "bce24651170e5b2a9588065a33fa11269f4c161ffcf797a9a6b05f3f5e4bc595",
+  "original_report_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-fixture-alias-75a8f10e\\qualified-coverage-tests.json",
+  "original_startTime": 1794621020975,
+  "extract_scope": "Exact actual assertion objects and UTF8 source ranges, not a rerun or manufactured current execution.",
+  "observations": [
+    {
+      "id": "vitest:plugins/ca/tools/exec.test.ts:run() \u2014 containment failure is distinguishable from a clean timeout reports EXIT_TIMEOUT and no cleanupFailed when the tree is verified gone",
+      "status": "passed",
+      "source_byte_start": 4165,
+      "source_byte_end": 4584,
+      "assertion": {
+        "ancestorTitles": [
+          "run() \u2014 containment failure is distinguishable from a clean timeout"
+        ],
+        "fullName": "run() \u2014 containment failure is distinguishable from a clean timeout reports EXIT_TIMEOUT and no cleanupFailed when the tree is verified gone",
+        "status": "passed",
+        "title": "reports EXIT_TIMEOUT and no cleanupFailed when the tree is verified gone",
+        "duration": 80.63999999999999,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/exec.test.ts:run() \u2014 containment failure is distinguishable from a clean timeout reports EXIT_TIMEOUT_UNCLEAN and carries the reason when the tree is NOT verified gone",
+      "status": "passed",
+      "source_byte_start": 4585,
+      "source_byte_end": 5032,
+      "assertion": {
+        "ancestorTitles": [
+          "run() \u2014 containment failure is distinguishable from a clean timeout"
+        ],
+        "fullName": "run() \u2014 containment failure is distinguishable from a clean timeout reports EXIT_TIMEOUT_UNCLEAN and carries the reason when the tree is NOT verified gone",
+        "status": "passed",
+        "title": "reports EXIT_TIMEOUT_UNCLEAN and carries the reason when the tree is NOT verified gone",
+        "duration": 76.28519999999997,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation refuses EACCES with absent Git registration without prune or destructive retry",
+      "status": "passed",
+      "source_byte_start": 11006,
+      "source_byte_end": 11367,
+      "assertion": {
+        "ancestorTitles": [
+          "worktree cleanup filesystem observation"
+        ],
+        "fullName": "worktree cleanup filesystem observation refuses EACCES with absent Git registration without prune or destructive retry",
+        "status": "passed",
+        "title": "refuses EACCES with absent Git registration without prune or destructive retry",
+        "duration": 510.257,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation refuses EACCES with retained Git registration without prune or destructive retry",
+      "status": "passed",
+      "source_byte_start": 11368,
+      "source_byte_end": 11744,
+      "assertion": {
+        "ancestorTitles": [
+          "worktree cleanup filesystem observation"
+        ],
+        "fullName": "worktree cleanup filesystem observation refuses EACCES with retained Git registration without prune or destructive retry",
+        "status": "passed",
+        "title": "refuses EACCES with retained Git registration without prune or destructive retry",
+        "duration": 1081.5907000000002,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation refuses EIO with absent Git registration without prune or destructive retry",
+      "status": "passed",
+      "source_byte_start": 11745,
+      "source_byte_end": 12111,
+      "assertion": {
+        "ancestorTitles": [
+          "worktree cleanup filesystem observation"
+        ],
+        "fullName": "worktree cleanup filesystem observation refuses EIO with absent Git registration without prune or destructive retry",
+        "status": "passed",
+        "title": "refuses EIO with absent Git registration without prune or destructive retry",
+        "duration": 497.18150000000014,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation refuses EIO with retained Git registration without prune or destructive retry",
+      "status": "passed",
+      "source_byte_start": 12112,
+      "source_byte_end": 12481,
+      "assertion": {
+        "ancestorTitles": [
+          "worktree cleanup filesystem observation"
+        ],
+        "fullName": "worktree cleanup filesystem observation refuses EIO with retained Git registration without prune or destructive retry",
+        "status": "passed",
+        "title": "refuses EIO with retained Git registration without prune or destructive retry",
+        "duration": 458.4960000000001,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation accepts ENOENT only after real Git removal and an absent registration",
+      "status": "passed",
+      "source_byte_start": 12482,
+      "source_byte_end": 12835,
+      "assertion": {
+        "ancestorTitles": [
+          "worktree cleanup filesystem observation"
+        ],
+        "fullName": "worktree cleanup filesystem observation accepts ENOENT only after real Git removal and an absent registration",
+        "status": "passed",
+        "title": "accepts ENOENT only after real Git removal and an absent registration",
+        "duration": 392.7625000000003,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation retains known-present paths and the existing bounded retry policy",
+      "status": "passed",
+      "source_byte_start": 12836,
+      "source_byte_end": 13181,
+      "assertion": {
+        "ancestorTitles": [
+          "worktree cleanup filesystem observation"
+        ],
+        "fullName": "worktree cleanup filesystem observation retains known-present paths and the existing bounded retry policy",
+        "status": "passed",
+        "title": "retains known-present paths and the existing bounded retry policy",
+        "duration": 366.3234000000002,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation does not mistake a dangling directory link for an absent owned path",
+      "status": "passed",
+      "source_byte_start": 13182,
+      "source_byte_end": 13531,
+      "assertion": {
+        "ancestorTitles": [
+          "worktree cleanup filesystem observation"
+        ],
+        "fullName": "worktree cleanup filesystem observation does not mistake a dangling directory link for an absent owned path",
+        "status": "passed",
+        "title": "does not mistake a dangling directory link for an absent owned path",
+        "duration": 364.0971999999997,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation refuses cleanup success through an admitted alias while a locked missing worktree remains registered",
+      "status": "passed",
+      "source_byte_start": 13532,
+      "source_byte_end": 13947,
+      "assertion": {
+        "ancestorTitles": [
+          "worktree cleanup filesystem observation"
+        ],
+        "fullName": "worktree cleanup filesystem observation refuses cleanup success through an admitted alias while a locked missing worktree remains registered",
+        "status": "passed",
+        "title": "refuses cleanup success through an admitted alias while a locked missing worktree remains registered",
+        "duration": 904.6612000000005,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation accepts actual Git removal and verified absence through an admitted alias",
+      "status": "passed",
+      "source_byte_start": 13948,
+      "source_byte_end": 14310,
+      "assertion": {
+        "ancestorTitles": [
+          "worktree cleanup filesystem observation"
+        ],
+        "fullName": "worktree cleanup filesystem observation accepts actual Git removal and verified absence through an admitted alias",
+        "status": "passed",
+        "title": "accepts actual Git removal and verified absence through an admitted alias",
+        "duration": 405.77279999999973,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation keeps alias registration EACCES canonicalization unknown without prune or destructive retry",
+      "status": "passed",
+      "source_byte_start": 14311,
+      "source_byte_end": 14708,
+      "assertion": {
+        "ancestorTitles": [
+          "worktree cleanup filesystem observation"
+        ],
+        "fullName": "worktree cleanup filesystem observation keeps alias registration EACCES canonicalization unknown without prune or destructive retry",
+        "status": "passed",
+        "title": "keeps alias registration EACCES canonicalization unknown without prune or destructive retry",
+        "duration": 433.9453000000003,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation keeps alias registration EIO canonicalization unknown without prune or destructive retry",
+      "status": "passed",
+      "source_byte_start": 14709,
+      "source_byte_end": 15100,
+      "assertion": {
+        "ancestorTitles": [
+          "worktree cleanup filesystem observation"
+        ],
+        "fullName": "worktree cleanup filesystem observation keeps alias registration EIO canonicalization unknown without prune or destructive retry",
+        "status": "passed",
+        "title": "keeps alias registration EIO canonicalization unknown without prune or destructive retry",
+        "duration": 443.5511999999999,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation keeps unavailable registry observation unknown without another destructive attempt",
+      "status": "passed",
+      "source_byte_start": 15101,
+      "source_byte_end": 15480,
+      "assertion": {
+        "ancestorTitles": [
+          "worktree cleanup filesystem observation"
+        ],
+        "fullName": "worktree cleanup filesystem observation keeps unavailable registry observation unknown without another destructive attempt",
+        "status": "passed",
+        "title": "keeps unavailable registry observation unknown without another destructive attempt",
+        "duration": 345.8745999999992,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation keeps unavailable registry readback unknown without another destructive attempt",
+      "status": "passed",
+      "source_byte_start": 15481,
+      "source_byte_end": 15854,
+      "assertion": {
+        "ancestorTitles": [
+          "worktree cleanup filesystem observation"
+        ],
+        "fullName": "worktree cleanup filesystem observation keeps unavailable registry readback unknown without another destructive attempt",
+        "status": "passed",
+        "title": "keeps unavailable registry readback unknown without another destructive attempt",
+        "duration": 554.8168999999998,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation keeps a registry comparison unknown when no physical ancestor can be observed",
+      "status": "passed",
+      "source_byte_start": 15855,
+      "source_byte_end": 16224,
+      "assertion": {
+        "ancestorTitles": [
+          "worktree cleanup filesystem observation"
+        ],
+        "fullName": "worktree cleanup filesystem observation keeps a registry comparison unknown when no physical ancestor can be observed",
+        "status": "passed",
+        "title": "keeps a registry comparison unknown when no physical ancestor can be observed",
+        "duration": 436.1243000000004,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests canary isolates every model and preserves existing refs, samples=1 (source)",
+      "status": "passed",
+      "source_byte_start": 88698,
+      "source_byte_end": 89024,
+      "assertion": {
+        "ancestorTitles": [
+          "farm.ts smoke tests"
+        ],
+        "fullName": "farm.ts smoke tests canary isolates every model and preserves existing refs, samples=1 (source)",
+        "status": "passed",
+        "title": "canary isolates every model and preserves existing refs, samples=1 (source)",
+        "duration": 1408.0450999999885,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests canary isolates every model and preserves existing refs, samples=1 (bundle)",
+      "status": "passed",
+      "source_byte_start": 89025,
+      "source_byte_end": 89351,
+      "assertion": {
+        "ancestorTitles": [
+          "farm.ts smoke tests"
+        ],
+        "fullName": "farm.ts smoke tests canary isolates every model and preserves existing refs, samples=1 (bundle)",
+        "status": "passed",
+        "title": "canary isolates every model and preserves existing refs, samples=1 (bundle)",
+        "duration": 1308.2419000000227,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests canary isolates every model and preserves existing refs, samples=2 (source)",
+      "status": "passed",
+      "source_byte_start": 89352,
+      "source_byte_end": 89677,
+      "assertion": {
+        "ancestorTitles": [
+          "farm.ts smoke tests"
+        ],
+        "fullName": "farm.ts smoke tests canary isolates every model and preserves existing refs, samples=2 (source)",
+        "status": "passed",
+        "title": "canary isolates every model and preserves existing refs, samples=2 (source)",
+        "duration": 2103.442800000019,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests canary isolates every model and preserves existing refs, samples=2 (bundle)",
+      "status": "passed",
+      "source_byte_start": 89678,
+      "source_byte_end": 90004,
+      "assertion": {
+        "ancestorTitles": [
+          "farm.ts smoke tests"
+        ],
+        "fullName": "farm.ts smoke tests canary isolates every model and preserves existing refs, samples=2 (bundle)",
+        "status": "passed",
+        "title": "canary isolates every model and preserves existing refs, samples=2 (bundle)",
+        "duration": 1914.1431999999913,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.test.ts:verified merge recovery CLI source: single retains merge evidence and uses the verified baseline",
+      "status": "passed",
+      "source_byte_start": 102740,
+      "source_byte_end": 103068,
+      "assertion": {
+        "ancestorTitles": [
+          "verified merge recovery CLI"
+        ],
+        "fullName": "verified merge recovery CLI source: single retains merge evidence and uses the verified baseline",
+        "status": "passed",
+        "title": "source: single retains merge evidence and uses the verified baseline",
+        "duration": 2215.1105999999854,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.test.ts:verified merge recovery CLI source: samples retains merge evidence and uses the verified baseline",
+      "status": "passed",
+      "source_byte_start": 103069,
+      "source_byte_end": 103398,
+      "assertion": {
+        "ancestorTitles": [
+          "verified merge recovery CLI"
+        ],
+        "fullName": "verified merge recovery CLI source: samples retains merge evidence and uses the verified baseline",
+        "status": "passed",
+        "title": "source: samples retains merge evidence and uses the verified baseline",
+        "duration": 2947.920299999998,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.test.ts:verified merge recovery CLI source: reset-refusal retains merge evidence and uses the verified baseline",
+      "status": "passed",
+      "source_byte_start": 103399,
+      "source_byte_end": 103741,
+      "assertion": {
+        "ancestorTitles": [
+          "verified merge recovery CLI"
+        ],
+        "fullName": "verified merge recovery CLI source: reset-refusal retains merge evidence and uses the verified baseline",
+        "status": "passed",
+        "title": "source: reset-refusal retains merge evidence and uses the verified baseline",
+        "duration": 1782.0426000000152,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.test.ts:verified merge recovery CLI bundle: single retains merge evidence and uses the verified baseline",
+      "status": "passed",
+      "source_byte_start": 103742,
+      "source_byte_end": 104070,
+      "assertion": {
+        "ancestorTitles": [
+          "verified merge recovery CLI"
+        ],
+        "fullName": "verified merge recovery CLI bundle: single retains merge evidence and uses the verified baseline",
+        "status": "passed",
+        "title": "bundle: single retains merge evidence and uses the verified baseline",
+        "duration": 2442.4731999999785,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.test.ts:verified merge recovery CLI bundle: samples retains merge evidence and uses the verified baseline",
+      "status": "passed",
+      "source_byte_start": 104071,
+      "source_byte_end": 104401,
+      "assertion": {
+        "ancestorTitles": [
+          "verified merge recovery CLI"
+        ],
+        "fullName": "verified merge recovery CLI bundle: samples retains merge evidence and uses the verified baseline",
+        "status": "passed",
+        "title": "bundle: samples retains merge evidence and uses the verified baseline",
+        "duration": 2979.1008999999904,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.test.ts:verified merge recovery CLI bundle: reset-refusal retains merge evidence and uses the verified baseline",
+      "status": "passed",
+      "source_byte_start": 104402,
+      "source_byte_end": 104744,
+      "assertion": {
+        "ancestorTitles": [
+          "verified merge recovery CLI"
+        ],
+        "fullName": "verified merge recovery CLI bundle: reset-refusal retains merge evidence and uses the verified baseline",
+        "status": "passed",
+        "title": "bundle: reset-refusal retains merge evidence and uses the verified baseline",
+        "duration": 1661.5057999999844,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:farm worktree write containment escalates single-worker directory-link writes with a bounded error and stages nothing",
+      "status": "passed",
+      "source_byte_start": 137687,
+      "source_byte_end": 138056,
+      "assertion": {
+        "ancestorTitles": [
+          "farm worktree write containment"
+        ],
+        "fullName": "farm worktree write containment escalates single-worker directory-link writes with a bounded error and stages nothing",
+        "status": "passed",
+        "title": "escalates single-worker directory-link writes with a bounded error and stages nothing",
+        "duration": 6.374400000000037,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:farm worktree write containment escalates best-of-N winner materialization through a directory link and stages nothing",
+      "status": "passed",
+      "source_byte_start": 138057,
+      "source_byte_end": 138419,
+      "assertion": {
+        "ancestorTitles": [
+          "farm worktree write containment"
+        ],
+        "fullName": "farm worktree write containment escalates best-of-N winner materialization through a directory link and stages nothing",
+        "status": "passed",
+        "title": "escalates best-of-N winner materialization through a directory link and stages nothing",
+        "duration": 957.0597,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:farm worktree write containment escalates unsafe mutation write/finally-restore paths without touching or staging the external file",
+      "status": "passed",
+      "source_byte_start": 138420,
+      "source_byte_end": 138817,
+      "assertion": {
+        "ancestorTitles": [
+          "farm worktree write containment"
+        ],
+        "fullName": "farm worktree write containment escalates unsafe mutation write/finally-restore paths without touching or staging the external file",
+        "status": "passed",
+        "title": "escalates unsafe mutation write/finally-restore paths without touching or staging the external file",
+        "duration": 5.074299999999994,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:farm worktree write containment escalates when the mutation command swaps an ancestor before immediate and final restore",
+      "status": "passed",
+      "source_byte_start": 138818,
+      "source_byte_end": 139194,
+      "assertion": {
+        "ancestorTitles": [
+          "farm worktree write containment"
+        ],
+        "fullName": "farm worktree write containment escalates when the mutation command swaps an ancestor before immediate and final restore",
+        "status": "passed",
+        "title": "escalates when the mutation command swaps an ancestor before immediate and final restore",
+        "duration": 57.563899999999876,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:Regenerate-on-conflict \u2014 merge conflict re-enters regeneration (AC-07) re-runs the worker after a conflict and ends green when the second merge succeeds",
+      "status": "passed",
+      "source_byte_start": 144312,
+      "source_byte_end": 144756,
+      "assertion": {
+        "ancestorTitles": [
+          "Regenerate-on-conflict \u2014 merge conflict re-enters regeneration (AC-07)"
+        ],
+        "fullName": "Regenerate-on-conflict \u2014 merge conflict re-enters regeneration (AC-07) re-runs the worker after a conflict and ends green when the second merge succeeds",
+        "status": "passed",
+        "title": "re-runs the worker after a conflict and ends green when the second merge succeeds",
+        "duration": 0.9475999999999658,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:Regenerate-on-conflict \u2014 merge conflict re-enters regeneration (AC-07) escalates with a merge-related note when every merge conflicts and retries are spent (no infinite loop)",
+      "status": "passed",
+      "source_byte_start": 144757,
+      "source_byte_end": 145245,
+      "assertion": {
+        "ancestorTitles": [
+          "Regenerate-on-conflict \u2014 merge conflict re-enters regeneration (AC-07)"
+        ],
+        "fullName": "Regenerate-on-conflict \u2014 merge conflict re-enters regeneration (AC-07) escalates with a merge-related note when every merge conflicts and retries are spent (no infinite loop)",
+        "status": "passed",
+        "title": "escalates with a merge-related note when every merge conflicts and retries are spent (no infinite loop)",
+        "duration": 0.6088999999999487,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:Regenerate-on-conflict \u2014 merge conflict re-enters regeneration (AC-07) escalates instantly (no regeneration) on conflict when maxRetries is 0",
+      "status": "passed",
+      "source_byte_start": 145246,
+      "source_byte_end": 145669,
+      "assertion": {
+        "ancestorTitles": [
+          "Regenerate-on-conflict \u2014 merge conflict re-enters regeneration (AC-07)"
+        ],
+        "fullName": "Regenerate-on-conflict \u2014 merge conflict re-enters regeneration (AC-07) escalates instantly (no regeneration) on conflict when maxRetries is 0",
+        "status": "passed",
+        "title": "escalates instantly (no regeneration) on conflict when maxRetries is 0",
+        "duration": 0.27939999999989595,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:#92 per-worktree setup hook runs setup commands in the worktree BEFORE the worker",
+      "status": "passed",
+      "source_byte_start": 152130,
+      "source_byte_end": 152428,
+      "assertion": {
+        "ancestorTitles": [
+          "#92 per-worktree setup hook"
+        ],
+        "fullName": "#92 per-worktree setup hook runs setup commands in the worktree BEFORE the worker",
+        "status": "passed",
+        "title": "runs setup commands in the worktree BEFORE the worker",
+        "duration": 1.2029999999999745,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:#92 per-worktree setup hook escalates immediately when a setup command fails \u2014 worker never runs",
+      "status": "passed",
+      "source_byte_start": 152429,
+      "source_byte_end": 152761,
+      "assertion": {
+        "ancestorTitles": [
+          "#92 per-worktree setup hook"
+        ],
+        "fullName": "#92 per-worktree setup hook escalates immediately when a setup command fails \u2014 worker never runs",
+        "status": "passed",
+        "title": "escalates immediately when a setup command fails \u2014 worker never runs",
+        "duration": 0.2747999999999138,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:#92 per-worktree setup hook is a no-op when no setup is configured (worker runs, runGate only for the gate)",
+      "status": "passed",
+      "source_byte_start": 152762,
+      "source_byte_end": 153112,
+      "assertion": {
+        "ancestorTitles": [
+          "#92 per-worktree setup hook"
+        ],
+        "fullName": "#92 per-worktree setup hook is a no-op when no setup is configured (worker runs, runGate only for the gate)",
+        "status": "passed",
+        "title": "is a no-op when no setup is configured (worker runs, runGate only for the gate)",
+        "duration": 0.3876000000000204,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:#92 per-worktree setup hook validate() rejects an empty or oversized setup command (meta and task)",
+      "status": "passed",
+      "source_byte_start": 153113,
+      "source_byte_end": 153445,
+      "assertion": {
+        "ancestorTitles": [
+          "#92 per-worktree setup hook"
+        ],
+        "fullName": "#92 per-worktree setup hook validate() rejects an empty or oversized setup command (meta and task)",
+        "status": "passed",
+        "title": "validate() rejects an empty or oversized setup command (meta and task)",
+        "duration": 0.3432000000000244,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:F1 \u2014 best-of-N in runTask accepts the FIRST green sample by index and reports its files (AC-F1.2)",
+      "status": "passed",
+      "source_byte_start": 165827,
+      "source_byte_end": 166160,
+      "assertion": {
+        "ancestorTitles": [
+          "F1 \u2014 best-of-N in runTask"
+        ],
+        "fullName": "F1 \u2014 best-of-N in runTask accepts the FIRST green sample by index and reports its files (AC-F1.2)",
+        "status": "passed",
+        "title": "accepts the FIRST green sample by index and reports its files (AC-F1.2)",
+        "duration": 1.583400000000438,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:F1 \u2014 best-of-N in runTask sums token spend across ALL samples and records the accepted candidate's separately (AC-F1.6)",
+      "status": "passed",
+      "source_byte_start": 166161,
+      "source_byte_end": 166539,
+      "assertion": {
+        "ancestorTitles": [
+          "F1 \u2014 best-of-N in runTask"
+        ],
+        "fullName": "F1 \u2014 best-of-N in runTask sums token spend across ALL samples and records the accepted candidate's separately (AC-F1.6)",
+        "status": "passed",
+        "title": "sums token spend across ALL samples and records the accepted candidate's separately (AC-F1.6)",
+        "duration": 0.6811999999999898,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:F1 \u2014 best-of-N in runTask escalates when no sample passes the gate and retries are spent (AC-F1.5)",
+      "status": "passed",
+      "source_byte_start": 166540,
+      "source_byte_end": 166876,
+      "assertion": {
+        "ancestorTitles": [
+          "F1 \u2014 best-of-N in runTask"
+        ],
+        "fullName": "F1 \u2014 best-of-N in runTask escalates when no sample passes the gate and retries are spent (AC-F1.5)",
+        "status": "passed",
+        "title": "escalates when no sample passes the gate and retries are spent (AC-F1.5)",
+        "duration": 0.5727000000001681,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:F1 \u2014 best-of-N in runTask auto-bumps temperature to 0.7 when FARM_SAMPLES>1 and FARM_TEMPERATURE is unset (AC-F1.3)",
+      "status": "passed",
+      "source_byte_start": 166877,
+      "source_byte_end": 167247,
+      "assertion": {
+        "ancestorTitles": [
+          "F1 \u2014 best-of-N in runTask"
+        ],
+        "fullName": "F1 \u2014 best-of-N in runTask auto-bumps temperature to 0.7 when FARM_SAMPLES>1 and FARM_TEMPERATURE is unset (AC-F1.3)",
+        "status": "passed",
+        "title": "auto-bumps temperature to 0.7 when FARM_SAMPLES>1 and FARM_TEMPERATURE is unset (AC-F1.3)",
+        "duration": 0.5708999999997104,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:F1 \u2014 best-of-N in runTask does NOT bump temperature when the operator set FARM_TEMPERATURE explicitly (incl. an explicit 0)",
+      "status": "passed",
+      "source_byte_start": 167248,
+      "source_byte_end": 167634,
+      "assertion": {
+        "ancestorTitles": [
+          "F1 \u2014 best-of-N in runTask"
+        ],
+        "fullName": "F1 \u2014 best-of-N in runTask does NOT bump temperature when the operator set FARM_TEMPERATURE explicitly (incl. an explicit 0)",
+        "status": "passed",
+        "title": "does NOT bump temperature when the operator set FARM_TEMPERATURE explicitly (incl. an explicit 0)",
+        "duration": 0.6970000000001164,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:F1 \u2014 best-of-N in runTask treats a non-numeric FARM_SAMPLES as 1 (no NaN mass-escalation) (L1)",
+      "status": "passed",
+      "source_byte_start": 167635,
+      "source_byte_end": 167964,
+      "assertion": {
+        "ancestorTitles": [
+          "F1 \u2014 best-of-N in runTask"
+        ],
+        "fullName": "F1 \u2014 best-of-N in runTask treats a non-numeric FARM_SAMPLES as 1 (no NaN mass-escalation) (L1)",
+        "status": "passed",
+        "title": "treats a non-numeric FARM_SAMPLES as 1 (no NaN mass-escalation) (L1)",
+        "duration": 0.49870000000009895,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:F1 \u2014 best-of-N in runTask survives a sample that THROWS \u2014 it resolves to a failure and a green sibling still wins (M1)",
+      "status": "passed",
+      "source_byte_start": 167965,
+      "source_byte_end": 168345,
+      "assertion": {
+        "ancestorTitles": [
+          "F1 \u2014 best-of-N in runTask"
+        ],
+        "fullName": "F1 \u2014 best-of-N in runTask survives a sample that THROWS \u2014 it resolves to a failure and a green sibling still wins (M1)",
+        "status": "passed",
+        "title": "survives a sample that THROWS \u2014 it resolves to a failure and a green sibling still wins (M1)",
+        "duration": 0.6337000000003172,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:F1 \u2014 best-of-N in runTask REGRESSION: FARM_SAMPLES=1 runs one worker call into the TASK worktree, not a sample (AC-F1.1)",
+      "status": "passed",
+      "source_byte_start": 168346,
+      "source_byte_end": 168727,
+      "assertion": {
+        "ancestorTitles": [
+          "F1 \u2014 best-of-N in runTask"
+        ],
+        "fullName": "F1 \u2014 best-of-N in runTask REGRESSION: FARM_SAMPLES=1 runs one worker call into the TASK worktree, not a sample (AC-F1.1)",
+        "status": "passed",
+        "title": "REGRESSION: FARM_SAMPLES=1 runs one worker call into the TASK worktree, not a sample (AC-F1.1)",
+        "duration": 0.43499999999994543,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:#398 \u2014 verified, retried, reported worktree teardown retries a transient remove failure and confirms git no longer registers the worktree",
+      "status": "passed",
+      "source_byte_start": 186311,
+      "source_byte_end": 186725,
+      "assertion": {
+        "ancestorTitles": [
+          "#398 \u2014 verified, retried, reported worktree teardown"
+        ],
+        "fullName": "#398 \u2014 verified, retried, reported worktree teardown retries a transient remove failure and confirms git no longer registers the worktree",
+        "status": "passed",
+        "title": "retries a transient remove failure and confirms git no longer registers the worktree",
+        "duration": 13.427499999999782,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:#398 \u2014 verified, retried, reported worktree teardown returns ok:false with diagnostics when git still registers the worktree after every attempt",
+      "status": "passed",
+      "source_byte_start": 186726,
+      "source_byte_end": 187154,
+      "assertion": {
+        "ancestorTitles": [
+          "#398 \u2014 verified, retried, reported worktree teardown"
+        ],
+        "fullName": "#398 \u2014 verified, retried, reported worktree teardown returns ok:false with diagnostics when git still registers the worktree after every attempt",
+        "status": "passed",
+        "title": "returns ok:false with diagnostics when git still registers the worktree after every attempt",
+        "duration": 15.939000000000306,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:#398 \u2014 verified, retried, reported worktree teardown #515 worktree registry serialization never runs two registry commands at once across concurrent removals",
+      "status": "passed",
+      "source_byte_start": 187155,
+      "source_byte_end": 187611,
+      "assertion": {
+        "ancestorTitles": [
+          "#398 \u2014 verified, retried, reported worktree teardown",
+          "#515 worktree registry serialization"
+        ],
+        "fullName": "#398 \u2014 verified, retried, reported worktree teardown #515 worktree registry serialization never runs two registry commands at once across concurrent removals",
+        "status": "passed",
+        "title": "never runs two registry commands at once across concurrent removals",
+        "duration": 186.03880000000026,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:#398 \u2014 verified, retried, reported worktree teardown #515 worktree registry serialization serializes callers in the order they arrive",
+      "status": "passed",
+      "source_byte_start": 187612,
+      "source_byte_end": 188019,
+      "assertion": {
+        "ancestorTitles": [
+          "#398 \u2014 verified, retried, reported worktree teardown",
+          "#515 worktree registry serialization"
+        ],
+        "fullName": "#398 \u2014 verified, retried, reported worktree teardown #515 worktree registry serialization serializes callers in the order they arrive",
+        "status": "passed",
+        "title": "serializes callers in the order they arrive",
+        "duration": 77.95529999999962,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:#398 \u2014 verified, retried, reported worktree teardown #515 worktree registry serialization never runs two registry commands at once across concurrent PREPARES",
+      "status": "passed",
+      "source_byte_start": 188020,
+      "source_byte_end": 188476,
+      "assertion": {
+        "ancestorTitles": [
+          "#398 \u2014 verified, retried, reported worktree teardown",
+          "#515 worktree registry serialization"
+        ],
+        "fullName": "#398 \u2014 verified, retried, reported worktree teardown #515 worktree registry serialization never runs two registry commands at once across concurrent PREPARES",
+        "status": "passed",
+        "title": "never runs two registry commands at once across concurrent PREPARES",
+        "duration": 109.38110000000052,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:#398 \u2014 verified, retried, reported worktree teardown #515 worktree registry serialization a rejecting caller does not wedge the lock, and does not let the queue reorder",
+      "status": "passed",
+      "source_byte_start": 188477,
+      "source_byte_end": 188955,
+      "assertion": {
+        "ancestorTitles": [
+          "#398 \u2014 verified, retried, reported worktree teardown",
+          "#515 worktree registry serialization"
+        ],
+        "fullName": "#398 \u2014 verified, retried, reported worktree teardown #515 worktree registry serialization a rejecting caller does not wedge the lock, and does not let the queue reorder",
+        "status": "passed",
+        "title": "a rejecting caller does not wedge the lock, and does not let the queue reorder",
+        "duration": 0.3944000000010419,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:#398 \u2014 verified, retried, reported worktree teardown deleteBranchVerified reports a branch git still lists",
+      "status": "passed",
+      "source_byte_start": 188956,
+      "source_byte_end": 189308,
+      "assertion": {
+        "ancestorTitles": [
+          "#398 \u2014 verified, retried, reported worktree teardown"
+        ],
+        "fullName": "#398 \u2014 verified, retried, reported worktree teardown deleteBranchVerified reports a branch git still lists",
+        "status": "passed",
+        "title": "deleteBranchVerified reports a branch git still lists",
+        "duration": 14.741700000000492,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:#398 \u2014 verified, retried, reported worktree teardown a task whose worktree removal cannot be verified carries the failure \u2014 green is never unqualified",
+      "status": "passed",
+      "source_byte_start": 189309,
+      "source_byte_end": 189753,
+      "assertion": {
+        "ancestorTitles": [
+          "#398 \u2014 verified, retried, reported worktree teardown"
+        ],
+        "fullName": "#398 \u2014 verified, retried, reported worktree teardown a task whose worktree removal cannot be verified carries the failure \u2014 green is never unqualified",
+        "status": "passed",
+        "title": "a task whose worktree removal cannot be verified carries the failure \u2014 green is never unqualified",
+        "duration": 470.73319999999876,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:#398 \u2014 verified, retried, reported worktree teardown best-of-N attempts EVERY sample's teardown even when an earlier one fails, and reports all leftovers",
+      "status": "passed",
+      "source_byte_start": 189754,
+      "source_byte_end": 190199,
+      "assertion": {
+        "ancestorTitles": [
+          "#398 \u2014 verified, retried, reported worktree teardown"
+        ],
+        "fullName": "#398 \u2014 verified, retried, reported worktree teardown best-of-N attempts EVERY sample's teardown even when an earlier one fails, and reports all leftovers",
+        "status": "passed",
+        "title": "best-of-N attempts EVERY sample's teardown even when an earlier one fails, and reports all leftovers",
+        "duration": 474.5540999999994,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:#398 \u2014 verified, retried, reported worktree teardown run exit code is non-zero when ownership could not be released, zero otherwise",
+      "status": "passed",
+      "source_byte_start": 190200,
+      "source_byte_end": 190603,
+      "assertion": {
+        "ancestorTitles": [
+          "#398 \u2014 verified, retried, reported worktree teardown"
+        ],
+        "fullName": "#398 \u2014 verified, retried, reported worktree teardown run exit code is non-zero when ownership could not be released, zero otherwise",
+        "status": "passed",
+        "title": "run exit code is non-zero when ownership could not be released, zero otherwise",
+        "duration": 0.15680000000065775,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:#398 \u2014 verified, retried, reported worktree teardown integration-worktree teardown failure is carried on the run health and lands in the receipt",
+      "status": "passed",
+      "source_byte_start": 190604,
+      "source_byte_end": 191032,
+      "assertion": {
+        "ancestorTitles": [
+          "#398 \u2014 verified, retried, reported worktree teardown"
+        ],
+        "fullName": "#398 \u2014 verified, retried, reported worktree teardown integration-worktree teardown failure is carried on the run health and lands in the receipt",
+        "status": "passed",
+        "title": "integration-worktree teardown failure is carried on the run health and lands in the receipt",
+        "duration": 0.2507999999997992,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:qualified best-of-N alternatives uses the next retained candidate after high risk with no new worker round",
+      "status": "passed",
+      "source_byte_start": 193686,
+      "source_byte_end": 194025,
+      "assertion": {
+        "ancestorTitles": [
+          "qualified best-of-N alternatives"
+        ],
+        "fullName": "qualified best-of-N alternatives uses the next retained candidate after high risk with no new worker round",
+        "status": "passed",
+        "title": "uses the next retained candidate after high risk with no new worker round",
+        "duration": 1435.6983,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:qualified best-of-N alternatives retains an alternative until the materialized task gate passes",
+      "status": "passed",
+      "source_byte_start": 194026,
+      "source_byte_end": 194352,
+      "assertion": {
+        "ancestorTitles": [
+          "qualified best-of-N alternatives"
+        ],
+        "fullName": "qualified best-of-N alternatives retains an alternative until the materialized task gate passes",
+        "status": "passed",
+        "title": "retains an alternative until the materialized task gate passes",
+        "duration": 1425.5249000000003,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:qualified best-of-N alternatives applies the unchanged mutation evidence floor before accepting an alternative",
+      "status": "passed",
+      "source_byte_start": 194353,
+      "source_byte_end": 194709,
+      "assertion": {
+        "ancestorTitles": [
+          "qualified best-of-N alternatives"
+        ],
+        "fullName": "qualified best-of-N alternatives applies the unchanged mutation evidence floor before accepting an alternative",
+        "status": "passed",
+        "title": "applies the unchanged mutation evidence floor before accepting an alternative",
+        "duration": 1418.6810000000005,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:qualified best-of-N alternatives checks both candidates before spending the configured next retry",
+      "status": "passed",
+      "source_byte_start": 194710,
+      "source_byte_end": 195040,
+      "assertion": {
+        "ancestorTitles": [
+          "qualified best-of-N alternatives"
+        ],
+        "fullName": "qualified best-of-N alternatives checks both candidates before spending the configured next retry",
+        "status": "passed",
+        "title": "checks both candidates before spending the configured next retry",
+        "duration": 1904.5772000000015,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:qualified best-of-N alternatives does not penalize a candidate for missing mutation count beyond the existing warning policy",
+      "status": "passed",
+      "source_byte_start": 195041,
+      "source_byte_end": 195425,
+      "assertion": {
+        "ancestorTitles": [
+          "qualified best-of-N alternatives"
+        ],
+        "fullName": "qualified best-of-N alternatives does not penalize a candidate for missing mutation count beyond the existing warning policy",
+        "status": "passed",
+        "title": "does not penalize a candidate for missing mutation count beyond the existing warning policy",
+        "duration": 1424.5530999999992,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:qualified best-of-N alternatives retains mutation-hook infrastructure warnings rather than inventing an escalation rule",
+      "status": "passed",
+      "source_byte_start": 195426,
+      "source_byte_end": 195799,
+      "assertion": {
+        "ancestorTitles": [
+          "qualified best-of-N alternatives"
+        ],
+        "fullName": "qualified best-of-N alternatives retains mutation-hook infrastructure warnings rather than inventing an escalation rule",
+        "status": "passed",
+        "title": "retains mutation-hook infrastructure warnings rather than inventing an escalation rule",
+        "duration": 1419.519900000003,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:qualified best-of-N alternatives retains the adverse-report count floor without publishing failed scores",
+      "status": "passed",
+      "source_byte_start": 195800,
+      "source_byte_end": 196144,
+      "assertion": {
+        "ancestorTitles": [
+          "qualified best-of-N alternatives"
+        ],
+        "fullName": "qualified best-of-N alternatives retains the adverse-report count floor without publishing failed scores",
+        "status": "passed",
+        "title": "retains the adverse-report count floor without publishing failed scores",
+        "duration": 1423.9903999999988,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:qualified best-of-N alternatives does not invent a blocking count from a failed hook (undefined)",
+      "status": "passed",
+      "source_byte_start": 196145,
+      "source_byte_end": 196473,
+      "assertion": {
+        "ancestorTitles": [
+          "qualified best-of-N alternatives"
+        ],
+        "fullName": "qualified best-of-N alternatives does not invent a blocking count from a failed hook (undefined)",
+        "status": "passed",
+        "title": "does not invent a blocking count from a failed hook (undefined)",
+        "duration": 1418.4043999999994,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:qualified best-of-N alternatives does not invent a blocking count from a failed hook (0)",
+      "status": "passed",
+      "source_byte_start": 196474,
+      "source_byte_end": 196786,
+      "assertion": {
+        "ancestorTitles": [
+          "qualified best-of-N alternatives"
+        ],
+        "fullName": "qualified best-of-N alternatives does not invent a blocking count from a failed hook (0)",
+        "status": "passed",
+        "title": "does not invent a blocking count from a failed hook (0)",
+        "duration": 1420.8754000000008,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:qualified best-of-N alternatives does not invent a blocking count from a failed hook (4)",
+      "status": "passed",
+      "source_byte_start": 196787,
+      "source_byte_end": 197099,
+      "assertion": {
+        "ancestorTitles": [
+          "qualified best-of-N alternatives"
+        ],
+        "fullName": "qualified best-of-N alternatives does not invent a blocking count from a failed hook (4)",
+        "status": "passed",
+        "title": "does not invent a blocking count from a failed hook (4)",
+        "duration": 1426.1038000000008,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:qualified best-of-N alternatives stops after mutation containment is unverified with 1 candidate(s)",
+      "status": "passed",
+      "source_byte_start": 197100,
+      "source_byte_end": 197433,
+      "assertion": {
+        "ancestorTitles": [
+          "qualified best-of-N alternatives"
+        ],
+        "fullName": "qualified best-of-N alternatives stops after mutation containment is unverified with 1 candidate(s)",
+        "status": "passed",
+        "title": "stops after mutation containment is unverified with 1 candidate(s)",
+        "duration": 4.783500000001368,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:qualified best-of-N alternatives stops after mutation containment is unverified with 2 candidate(s)",
+      "status": "passed",
+      "source_byte_start": 197434,
+      "source_byte_end": 197767,
+      "assertion": {
+        "ancestorTitles": [
+          "qualified best-of-N alternatives"
+        ],
+        "fullName": "qualified best-of-N alternatives stops after mutation containment is unverified with 2 candidate(s)",
+        "status": "passed",
+        "title": "stops after mutation containment is unverified with 2 candidate(s)",
+        "duration": 945.7808999999979,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:qualified best-of-N alternatives keeps unclassified nonzero outcomes diagnostic with 1 candidate(s)",
+      "status": "passed",
+      "source_byte_start": 197768,
+      "source_byte_end": 198101,
+      "assertion": {
+        "ancestorTitles": [
+          "qualified best-of-N alternatives"
+        ],
+        "fullName": "qualified best-of-N alternatives keeps unclassified nonzero outcomes diagnostic with 1 candidate(s)",
+        "status": "passed",
+        "title": "keeps unclassified nonzero outcomes diagnostic with 1 candidate(s)",
+        "duration": 480.6103000000003,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:qualified best-of-N alternatives keeps unclassified nonzero outcomes diagnostic with 2 candidate(s)",
+      "status": "passed",
+      "source_byte_start": 198102,
+      "source_byte_end": 198435,
+      "assertion": {
+        "ancestorTitles": [
+          "qualified best-of-N alternatives"
+        ],
+        "fullName": "qualified best-of-N alternatives keeps unclassified nonzero outcomes diagnostic with 2 candidate(s)",
+        "status": "passed",
+        "title": "keeps unclassified nonzero outcomes diagnostic with 2 candidate(s)",
+        "duration": 1424.401899999997,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:qualified best-of-N alternatives retains the upper-bound/count policy (0.1, 10) before buying another sample round",
+      "status": "passed",
+      "source_byte_start": 198436,
+      "source_byte_end": 198799,
+      "assertion": {
+        "ancestorTitles": [
+          "qualified best-of-N alternatives"
+        ],
+        "fullName": "qualified best-of-N alternatives retains the upper-bound/count policy (0.1, 10) before buying another sample round",
+        "status": "passed",
+        "title": "retains the upper-bound/count policy (0.1, 10) before buying another sample round",
+        "duration": 1413.281500000001,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:qualified best-of-N alternatives retains the upper-bound/count policy (0.2, 5) before buying another sample round",
+      "status": "passed",
+      "source_byte_start": 198800,
+      "source_byte_end": 199161,
+      "assertion": {
+        "ancestorTitles": [
+          "qualified best-of-N alternatives"
+        ],
+        "fullName": "qualified best-of-N alternatives retains the upper-bound/count policy (0.2, 5) before buying another sample round",
+        "status": "passed",
+        "title": "retains the upper-bound/count policy (0.2, 5) before buying another sample round",
+        "duration": 1421.234199999999,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:qualified best-of-N alternatives retains the upper-bound/count policy (0, 4) before buying another sample round",
+      "status": "passed",
+      "source_byte_start": 199162,
+      "source_byte_end": 199519,
+      "assertion": {
+        "ancestorTitles": [
+          "qualified best-of-N alternatives"
+        ],
+        "fullName": "qualified best-of-N alternatives retains the upper-bound/count policy (0, 4) before buying another sample round",
+        "status": "passed",
+        "title": "retains the upper-bound/count policy (0, 4) before buying another sample round",
+        "duration": 1422.508600000001,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:qualified best-of-N alternatives keeps a clean built-in timeout diagnostic without spending another model round",
+      "status": "passed",
+      "source_byte_start": 199520,
+      "source_byte_end": 199878,
+      "assertion": {
+        "ancestorTitles": [
+          "qualified best-of-N alternatives"
+        ],
+        "fullName": "qualified best-of-N alternatives keeps a clean built-in timeout diagnostic without spending another model round",
+        "status": "passed",
+        "title": "keeps a clean built-in timeout diagnostic without spending another model round",
+        "duration": 1422.0881000000008,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:qualified best-of-N alternatives retains a low completed built-in result before interruption and tries its sibling",
+      "status": "passed",
+      "source_byte_start": 199879,
+      "source_byte_end": 200243,
+      "assertion": {
+        "ancestorTitles": [
+          "qualified best-of-N alternatives"
+        ],
+        "fullName": "qualified best-of-N alternatives retains a low completed built-in result before interruption and tries its sibling",
+        "status": "passed",
+        "title": "retains a low completed built-in result before interruption and tries its sibling",
+        "duration": 1417.9747000000025,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:qualified best-of-N alternatives does not invent an adequate completed count for interrupted built-in screening",
+      "status": "passed",
+      "source_byte_start": 200244,
+      "source_byte_end": 200602,
+      "assertion": {
+        "ancestorTitles": [
+          "qualified best-of-N alternatives"
+        ],
+        "fullName": "qualified best-of-N alternatives does not invent an adequate completed count for interrupted built-in screening",
+        "status": "passed",
+        "title": "does not invent an adequate completed count for interrupted built-in screening",
+        "duration": 1426.7325999999957,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:qualified best-of-N alternatives retains the built-in containment refusal with 1 candidate(s)",
+      "status": "passed",
+      "source_byte_start": 200603,
+      "source_byte_end": 200924,
+      "assertion": {
+        "ancestorTitles": [
+          "qualified best-of-N alternatives"
+        ],
+        "fullName": "qualified best-of-N alternatives retains the built-in containment refusal with 1 candidate(s)",
+        "status": "passed",
+        "title": "retains the built-in containment refusal with 1 candidate(s)",
+        "duration": 5.228300000002491,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:qualified best-of-N alternatives retains the built-in containment refusal with 2 candidate(s)",
+      "status": "passed",
+      "source_byte_start": 200925,
+      "source_byte_end": 201246,
+      "assertion": {
+        "ancestorTitles": [
+          "qualified best-of-N alternatives"
+        ],
+        "fullName": "qualified best-of-N alternatives retains the built-in containment refusal with 2 candidate(s)",
+        "status": "passed",
+        "title": "retains the built-in containment refusal with 2 candidate(s)",
+        "duration": 949.3675999999978,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:qualified best-of-N alternatives records known tokens and cleans all sample resources when qualification throws",
+      "status": "passed",
+      "source_byte_start": 201247,
+      "source_byte_end": 201604,
+      "assertion": {
+        "ancestorTitles": [
+          "qualified best-of-N alternatives"
+        ],
+        "fullName": "qualified best-of-N alternatives records known tokens and cleans all sample resources when qualification throws",
+        "status": "passed",
+        "title": "records known tokens and cleans all sample resources when qualification throws",
+        "duration": 949.2505999999994,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:qualified best-of-N alternatives does not switch candidates across an unresolved task reset failure",
+      "status": "passed",
+      "source_byte_start": 201605,
+      "source_byte_end": 201938,
+      "assertion": {
+        "ancestorTitles": [
+          "qualified best-of-N alternatives"
+        ],
+        "fullName": "qualified best-of-N alternatives does not switch candidates across an unresolved task reset failure",
+        "status": "passed",
+        "title": "does not switch candidates across an unresolved task reset failure",
+        "duration": 954.4052999999985,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:qualified best-of-N alternatives preserves evidence when retry reset fails after 1 rejected sampling rounds",
+      "status": "passed",
+      "source_byte_start": 201939,
+      "source_byte_end": 202288,
+      "assertion": {
+        "ancestorTitles": [
+          "qualified best-of-N alternatives"
+        ],
+        "fullName": "qualified best-of-N alternatives preserves evidence when retry reset fails after 1 rejected sampling rounds",
+        "status": "passed",
+        "title": "preserves evidence when retry reset fails after 1 rejected sampling rounds",
+        "duration": 956.4618999999948,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:qualified best-of-N alternatives preserves evidence when retry reset fails after 2 rejected sampling rounds",
+      "status": "passed",
+      "source_byte_start": 202289,
+      "source_byte_end": 202638,
+      "assertion": {
+        "ancestorTitles": [
+          "qualified best-of-N alternatives"
+        ],
+        "fullName": "qualified best-of-N alternatives preserves evidence when retry reset fails after 2 rejected sampling rounds",
+        "status": "passed",
+        "title": "preserves evidence when retry reset fails after 2 rejected sampling rounds",
+        "duration": 1906.150999999998,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:qualified best-of-N alternatives preserves single-worker usage when retry reset fails without inventing cleanup",
+      "status": "passed",
+      "source_byte_start": 202639,
+      "source_byte_end": 202996,
+      "assertion": {
+        "ancestorTitles": [
+          "qualified best-of-N alternatives"
+        ],
+        "fullName": "qualified best-of-N alternatives preserves single-worker usage when retry reset fails without inventing cleanup",
+        "status": "passed",
+        "title": "preserves single-worker usage when retry reset fails without inventing cleanup",
+        "duration": 4.987499999995634,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:qualified best-of-N alternatives does not try a sibling after the task's immutable test changes",
+      "status": "passed",
+      "source_byte_start": 202997,
+      "source_byte_end": 203322,
+      "assertion": {
+        "ancestorTitles": [
+          "qualified best-of-N alternatives"
+        ],
+        "fullName": "qualified best-of-N alternatives does not try a sibling after the task's immutable test changes",
+        "status": "passed",
+        "title": "does not try a sibling after the task's immutable test changes",
+        "duration": 946.2033999999985,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:qualified best-of-N alternatives does not replace a failed between-candidate setup with a green sibling",
+      "status": "passed",
+      "source_byte_start": 203323,
+      "source_byte_end": 203664,
+      "assertion": {
+        "ancestorTitles": [
+          "qualified best-of-N alternatives"
+        ],
+        "fullName": "qualified best-of-N alternatives does not replace a failed between-candidate setup with a green sibling",
+        "status": "passed",
+        "title": "does not replace a failed between-candidate setup with a green sibling",
+        "duration": 951.0093999999954,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:qualified best-of-N alternatives retains known sample usage when a later sample check throws",
+      "status": "passed",
+      "source_byte_start": 203665,
+      "source_byte_end": 203985,
+      "assertion": {
+        "ancestorTitles": [
+          "qualified best-of-N alternatives"
+        ],
+        "fullName": "qualified best-of-N alternatives retains known sample usage when a later sample check throws",
+        "status": "passed",
+        "title": "retains known sample usage when a later sample check throws",
+        "duration": 1426.8561000000045,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:verified merge recovery recovers on the exact advanced baseline and keeps previous candidate with 1 samples, reversed arrival=false",
+      "status": "passed",
+      "source_byte_start": 235889,
+      "source_byte_end": 236286,
+      "assertion": {
+        "ancestorTitles": [
+          "verified merge recovery"
+        ],
+        "fullName": "verified merge recovery recovers on the exact advanced baseline and keeps previous candidate with 1 samples, reversed arrival=false",
+        "status": "passed",
+        "title": "recovers on the exact advanced baseline and keeps previous candidate with 1 samples, reversed arrival=false",
+        "duration": 479.1933999999965,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:verified merge recovery recovers on the exact advanced baseline and keeps previous candidate with 2 samples, reversed arrival=false",
+      "status": "passed",
+      "source_byte_start": 236287,
+      "source_byte_end": 236685,
+      "assertion": {
+        "ancestorTitles": [
+          "verified merge recovery"
+        ],
+        "fullName": "verified merge recovery recovers on the exact advanced baseline and keeps previous candidate with 2 samples, reversed arrival=false",
+        "status": "passed",
+        "title": "recovers on the exact advanced baseline and keeps previous candidate with 2 samples, reversed arrival=false",
+        "duration": 2366.5839999999953,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:verified merge recovery recovers on the exact advanced baseline and keeps previous candidate with 2 samples, reversed arrival=true",
+      "status": "passed",
+      "source_byte_start": 236686,
+      "source_byte_end": 237082,
+      "assertion": {
+        "ancestorTitles": [
+          "verified merge recovery"
+        ],
+        "fullName": "verified merge recovery recovers on the exact advanced baseline and keeps previous candidate with 2 samples, reversed arrival=true",
+        "status": "passed",
+        "title": "recovers on the exact advanced baseline and keeps previous candidate with 2 samples, reversed arrival=true",
+        "duration": 2384.0966999999946,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:verified merge recovery retains evidence and dispatches no new author when recovery fails: abort",
+      "status": "passed",
+      "source_byte_start": 237083,
+      "source_byte_end": 237409,
+      "assertion": {
+        "ancestorTitles": [
+          "verified merge recovery"
+        ],
+        "fullName": "verified merge recovery retains evidence and dispatches no new author when recovery fails: abort",
+        "status": "passed",
+        "title": "retains evidence and dispatches no new author when recovery fails: abort",
+        "duration": 4.55109999999695,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:verified merge recovery retains evidence and dispatches no new author when recovery fails: abort-throw",
+      "status": "passed",
+      "source_byte_start": 237410,
+      "source_byte_end": 237750,
+      "assertion": {
+        "ancestorTitles": [
+          "verified merge recovery"
+        ],
+        "fullName": "verified merge recovery retains evidence and dispatches no new author when recovery fails: abort-throw",
+        "status": "passed",
+        "title": "retains evidence and dispatches no new author when recovery fails: abort-throw",
+        "duration": 3.7876000000032946,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:verified merge recovery retains evidence and dispatches no new author when recovery fails: dirty-integration",
+      "status": "passed",
+      "source_byte_start": 237751,
+      "source_byte_end": 238102,
+      "assertion": {
+        "ancestorTitles": [
+          "verified merge recovery"
+        ],
+        "fullName": "verified merge recovery retains evidence and dispatches no new author when recovery fails: dirty-integration",
+        "status": "passed",
+        "title": "retains evidence and dispatches no new author when recovery fails: dirty-integration",
+        "duration": 4.226999999998952,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:verified merge recovery retains evidence and dispatches no new author when recovery fails: unreadable-head",
+      "status": "passed",
+      "source_byte_start": 238103,
+      "source_byte_end": 238451,
+      "assertion": {
+        "ancestorTitles": [
+          "verified merge recovery"
+        ],
+        "fullName": "verified merge recovery retains evidence and dispatches no new author when recovery fails: unreadable-head",
+        "status": "passed",
+        "title": "retains evidence and dispatches no new author when recovery fails: unreadable-head",
+        "duration": 4.4958000000042375,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:verified merge recovery retains evidence and dispatches no new author when recovery fails: reset",
+      "status": "passed",
+      "source_byte_start": 238452,
+      "source_byte_end": 238779,
+      "assertion": {
+        "ancestorTitles": [
+          "verified merge recovery"
+        ],
+        "fullName": "verified merge recovery retains evidence and dispatches no new author when recovery fails: reset",
+        "status": "passed",
+        "title": "retains evidence and dispatches no new author when recovery fails: reset",
+        "duration": 4.093300000000454,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:verified merge recovery retains evidence and dispatches no new author when recovery fails: reset-throw",
+      "status": "passed",
+      "source_byte_start": 238780,
+      "source_byte_end": 239119,
+      "assertion": {
+        "ancestorTitles": [
+          "verified merge recovery"
+        ],
+        "fullName": "verified merge recovery retains evidence and dispatches no new author when recovery fails: reset-throw",
+        "status": "passed",
+        "title": "retains evidence and dispatches no new author when recovery fails: reset-throw",
+        "duration": 4.374499999998079,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:verified merge recovery retains evidence and dispatches no new author when recovery fails: clean",
+      "status": "passed",
+      "source_byte_start": 239120,
+      "source_byte_end": 239447,
+      "assertion": {
+        "ancestorTitles": [
+          "verified merge recovery"
+        ],
+        "fullName": "verified merge recovery retains evidence and dispatches no new author when recovery fails: clean",
+        "status": "passed",
+        "title": "retains evidence and dispatches no new author when recovery fails: clean",
+        "duration": 4.893099999993865,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:verified merge recovery retains evidence and dispatches no new author when recovery fails: wrong-head",
+      "status": "passed",
+      "source_byte_start": 239448,
+      "source_byte_end": 239785,
+      "assertion": {
+        "ancestorTitles": [
+          "verified merge recovery"
+        ],
+        "fullName": "verified merge recovery retains evidence and dispatches no new author when recovery fails: wrong-head",
+        "status": "passed",
+        "title": "retains evidence and dispatches no new author when recovery fails: wrong-head",
+        "duration": 4.632799999999406,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:verified merge recovery retains evidence and dispatches no new author when recovery fails: missing-test",
+      "status": "passed",
+      "source_byte_start": 239786,
+      "source_byte_end": 240127,
+      "assertion": {
+        "ancestorTitles": [
+          "verified merge recovery"
+        ],
+        "fullName": "verified merge recovery retains evidence and dispatches no new author when recovery fails: missing-test",
+        "status": "passed",
+        "title": "retains evidence and dispatches no new author when recovery fails: missing-test",
+        "duration": 4.579399999995076,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:verified merge recovery does not turn a refused staging operation into a partial commit",
+      "status": "passed",
+      "source_byte_start": 240128,
+      "source_byte_end": 240438,
+      "assertion": {
+        "ancestorTitles": [
+          "verified merge recovery"
+        ],
+        "fullName": "verified merge recovery does not turn a refused staging operation into a partial commit",
+        "status": "passed",
+        "title": "does not turn a refused staging operation into a partial commit",
+        "duration": 472.56230000000505,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:verified merge recovery retries 1 transient stages without another worker or authoring allowance",
+      "status": "passed",
+      "source_byte_start": 240439,
+      "source_byte_end": 240766,
+      "assertion": {
+        "ancestorTitles": [
+          "verified merge recovery"
+        ],
+        "fullName": "verified merge recovery retries 1 transient stages without another worker or authoring allowance",
+        "status": "passed",
+        "title": "retries 1 transient stages without another worker or authoring allowance",
+        "duration": 628.5110999999961,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:verified merge recovery retries 2 transient stages without another worker or authoring allowance",
+      "status": "passed",
+      "source_byte_start": 240767,
+      "source_byte_end": 241094,
+      "assertion": {
+        "ancestorTitles": [
+          "verified merge recovery"
+        ],
+        "fullName": "verified merge recovery retries 2 transient stages without another worker or authoring allowance",
+        "status": "passed",
+        "title": "retries 2 transient stages without another worker or authoring allowance",
+        "duration": 939.7684000000008,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:verified merge recovery still rejects worker edits to the newly bound protected test",
+      "status": "passed",
+      "source_byte_start": 241095,
+      "source_byte_end": 241399,
+      "assertion": {
+        "ancestorTitles": [
+          "verified merge recovery"
+        ],
+        "fullName": "verified merge recovery still rejects worker edits to the newly bound protected test",
+        "status": "passed",
+        "title": "still rejects worker edits to the newly bound protected test",
+        "duration": 6.2488999999986845,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:verified merge recovery keeps the original retry budget at zero without rebasing",
+      "status": "passed",
+      "source_byte_start": 241400,
+      "source_byte_end": 241695,
+      "assertion": {
+        "ancestorTitles": [
+          "verified merge recovery"
+        ],
+        "fullName": "verified merge recovery keeps the original retry budget at zero without rebasing",
+        "status": "passed",
+        "title": "keeps the original retry budget at zero without rebasing",
+        "duration": 3.423000000002503,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:mutationCheck \u2014 built-in text mutation restores the original file through BOTH the in-loop and the final path",
+      "status": "passed",
+      "source_byte_start": 270364,
+      "source_byte_end": 270721,
+      "assertion": {
+        "ancestorTitles": [
+          "mutationCheck \u2014 built-in text mutation"
+        ],
+        "fullName": "mutationCheck \u2014 built-in text mutation restores the original file through BOTH the in-loop and the final path",
+        "status": "passed",
+        "title": "restores the original file through BOTH the in-loop and the final path",
+        "duration": 413.6516999999999,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:built-in mutation deadline and terminal evidence rejects incomplete trial {\"code\":124,\"timedOut\":true} without scoring or another launch",
+      "status": "passed",
+      "source_byte_start": 276228,
+      "source_byte_end": 276643,
+      "assertion": {
+        "ancestorTitles": [
+          "built-in mutation deadline and terminal evidence"
+        ],
+        "fullName": "built-in mutation deadline and terminal evidence rejects incomplete trial {\"code\":124,\"timedOut\":true} without scoring or another launch",
+        "status": "passed",
+        "title": "rejects incomplete trial {\"code\":124,\"timedOut\":true} without scoring or another launch",
+        "duration": 15.18939999999975,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:built-in mutation deadline and terminal evidence rejects incomplete trial {\"code\":125,\"timedOut\":true,\"cleanupFailed\":true} without scoring or another launch",
+      "status": "passed",
+      "source_byte_start": 276644,
+      "source_byte_end": 277106,
+      "assertion": {
+        "ancestorTitles": [
+          "built-in mutation deadline and terminal evidence"
+        ],
+        "fullName": "built-in mutation deadline and terminal evidence rejects incomplete trial {\"code\":125,\"timedOut\":true,\"cleanupFailed\":true} without scoring or another launch",
+        "status": "passed",
+        "title": "rejects incomplete trial {\"code\":125,\"timedOut\":true,\"cleanupFailed\":true} without scoring or another launch",
+        "duration": 14.838999999999942,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:built-in mutation deadline and terminal evidence rejects incomplete trial {\"code\":0,\"timedOut\":true} without scoring or another launch",
+      "status": "passed",
+      "source_byte_start": 277107,
+      "source_byte_end": 277518,
+      "assertion": {
+        "ancestorTitles": [
+          "built-in mutation deadline and terminal evidence"
+        ],
+        "fullName": "built-in mutation deadline and terminal evidence rejects incomplete trial {\"code\":0,\"timedOut\":true} without scoring or another launch",
+        "status": "passed",
+        "title": "rejects incomplete trial {\"code\":0,\"timedOut\":true} without scoring or another launch",
+        "duration": 8.839600000000246,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:built-in mutation deadline and terminal evidence rejects incomplete trial {\"code\":0,\"cleanupFailed\":true} without scoring or another launch",
+      "status": "passed",
+      "source_byte_start": 277519,
+      "source_byte_end": 277940,
+      "assertion": {
+        "ancestorTitles": [
+          "built-in mutation deadline and terminal evidence"
+        ],
+        "fullName": "built-in mutation deadline and terminal evidence rejects incomplete trial {\"code\":0,\"cleanupFailed\":true} without scoring or another launch",
+        "status": "passed",
+        "title": "rejects incomplete trial {\"code\":0,\"cleanupFailed\":true} without scoring or another launch",
+        "duration": 9.293699999999717,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:built-in mutation deadline and terminal evidence accounts for writing a mutant before calculating the remaining launch allowance",
+      "status": "passed",
+      "source_byte_start": 279055,
+      "source_byte_end": 279446,
+      "assertion": {
+        "ancestorTitles": [
+          "built-in mutation deadline and terminal evidence"
+        ],
+        "fullName": "built-in mutation deadline and terminal evidence accounts for writing a mutant before calculating the remaining launch allowance",
+        "status": "passed",
+        "title": "accounts for writing a mutant before calculating the remaining launch allowance",
+        "duration": 11.36369999999988,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/mutation.test.ts:built-in mutation deadline and terminal evidence restores without running the test when a mutant write consumes the whole budget",
+      "status": "passed",
+      "source_byte_start": 279447,
+      "source_byte_end": 279838,
+      "assertion": {
+        "ancestorTitles": [
+          "built-in mutation deadline and terminal evidence"
+        ],
+        "fullName": "built-in mutation deadline and terminal evidence restores without running the test when a mutant write consumes the whole budget",
+        "status": "passed",
+        "title": "restores without running the test when a mutant write consumes the whole budget",
+        "duration": 8.421800000000076,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/plan-contract.test.ts:#391 setup runs once per worktree; setupEachAttempt reruns invokes a dependency-only `npm ci` setup ONCE across two worker retries",
+      "status": "passed",
+      "source_byte_start": 301693,
+      "source_byte_end": 302089,
+      "assertion": {
+        "ancestorTitles": [
+          "#391 setup runs once per worktree; setupEachAttempt reruns"
+        ],
+        "fullName": "#391 setup runs once per worktree; setupEachAttempt reruns invokes a dependency-only `npm ci` setup ONCE across two worker retries",
+        "status": "passed",
+        "title": "invokes a dependency-only `npm ci` setup ONCE across two worker retries",
+        "duration": 5.3326999999999884,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/plan-contract.test.ts:#391 setup runs once per worktree; setupEachAttempt reruns reruns `setupEachAttempt` before every attempt",
+      "status": "passed",
+      "source_byte_start": 302090,
+      "source_byte_end": 302436,
+      "assertion": {
+        "ancestorTitles": [
+          "#391 setup runs once per worktree; setupEachAttempt reruns"
+        ],
+        "fullName": "#391 setup runs once per worktree; setupEachAttempt reruns reruns `setupEachAttempt` before every attempt",
+        "status": "passed",
+        "title": "reruns `setupEachAttempt` before every attempt",
+        "duration": 1.6610999999999763,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/plan-contract.test.ts:#391 setup runs once per worktree; setupEachAttempt reruns still runs setup BEFORE the worker on the first attempt",
+      "status": "passed",
+      "source_byte_start": 302437,
+      "source_byte_end": 302801,
+      "assertion": {
+        "ancestorTitles": [
+          "#391 setup runs once per worktree; setupEachAttempt reruns"
+        ],
+        "fullName": "#391 setup runs once per worktree; setupEachAttempt reruns still runs setup BEFORE the worker on the first attempt",
+        "status": "passed",
+        "title": "still runs setup BEFORE the worker on the first attempt",
+        "duration": 0.5314000000000192,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/plan-contract.test.ts:#391 setup runs once per worktree; setupEachAttempt reruns escalates immediately when setupEachAttempt fails",
+      "status": "passed",
+      "source_byte_start": 302802,
+      "source_byte_end": 303155,
+      "assertion": {
+        "ancestorTitles": [
+          "#391 setup runs once per worktree; setupEachAttempt reruns"
+        ],
+        "fullName": "#391 setup runs once per worktree; setupEachAttempt reruns escalates immediately when setupEachAttempt fails",
+        "status": "passed",
+        "title": "escalates immediately when setupEachAttempt fails",
+        "duration": 0.23900000000003274,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/plan-contract.test.ts:#391 setup runs once per worktree; setupEachAttempt reruns reruns cached setup when a declared setupInput changes under the worktree",
+      "status": "passed",
+      "source_byte_start": 303156,
+      "source_byte_end": 303555,
+      "assertion": {
+        "ancestorTitles": [
+          "#391 setup runs once per worktree; setupEachAttempt reruns"
+        ],
+        "fullName": "#391 setup runs once per worktree; setupEachAttempt reruns reruns cached setup when a declared setupInput changes under the worktree",
+        "status": "passed",
+        "title": "reruns cached setup when a declared setupInput changes under the worktree",
+        "duration": 1.081199999999967,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/plan-contract.test.ts:#391 setup runs once per worktree; setupEachAttempt reruns does NOT rerun setup when the declared setupInput is unchanged",
+      "status": "passed",
+      "source_byte_start": 303556,
+      "source_byte_end": 303934,
+      "assertion": {
+        "ancestorTitles": [
+          "#391 setup runs once per worktree; setupEachAttempt reruns"
+        ],
+        "fullName": "#391 setup runs once per worktree; setupEachAttempt reruns does NOT rerun setup when the declared setupInput is unchanged",
+        "status": "passed",
+        "title": "does NOT rerun setup when the declared setupInput is unchanged",
+        "duration": 0.8881000000000085,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/plan-contract.test.ts:#391 setup runs once per worktree; setupEachAttempt reruns is a no-op when neither setup phase is configured",
+      "status": "passed",
+      "source_byte_start": 303935,
+      "source_byte_end": 304287,
+      "assertion": {
+        "ancestorTitles": [
+          "#391 setup runs once per worktree; setupEachAttempt reruns"
+        ],
+        "fullName": "#391 setup runs once per worktree; setupEachAttempt reruns is a no-op when neither setup phase is configured",
+        "status": "passed",
+        "title": "is a no-op when neither setup phase is configured",
+        "duration": 0.6444999999999936,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R02 uncontained sample setup retains scratch resources without authoring or reset",
+      "status": "passed",
+      "source_byte_start": 319136,
+      "source_byte_end": 319443,
+      "assertion": {
+        "ancestorTitles": [],
+        "fullName": "FARM-R02 uncontained sample setup retains scratch resources without authoring or reset",
+        "status": "passed",
+        "title": "FARM-R02 uncontained sample setup retains scratch resources without authoring or reset",
+        "duration": 1.6792999999997846,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer writes a normal nested file beneath the canonical root",
+      "status": "passed",
+      "source_byte_start": 319671,
+      "source_byte_end": 319973,
+      "assertion": {
+        "ancestorTitles": [
+          "symlink-safe worktree writer"
+        ],
+        "fullName": "symlink-safe worktree writer writes a normal nested file beneath the canonical root",
+        "status": "passed",
+        "title": "writes a normal nested file beneath the canonical root",
+        "duration": 13.390099999999961,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer rejects a directory symlink or Windows junction without changing an external sentinel",
+      "status": "passed",
+      "source_byte_start": 319974,
+      "source_byte_end": 320337,
+      "assertion": {
+        "ancestorTitles": [
+          "symlink-safe worktree writer"
+        ],
+        "fullName": "symlink-safe worktree writer rejects a directory symlink or Windows junction without changing an external sentinel",
+        "status": "passed",
+        "title": "rejects a directory symlink or Windows junction without changing an external sentinel",
+        "duration": 6.206999999999994,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer rejects a multiply-linked existing destination",
+      "status": "passed",
+      "source_byte_start": 320622,
+      "source_byte_end": 320907,
+      "assertion": {
+        "ancestorTitles": [
+          "symlink-safe worktree writer"
+        ],
+        "fullName": "symlink-safe worktree writer rejects a multiply-linked existing destination",
+        "status": "passed",
+        "title": "rejects a multiply-linked existing destination",
+        "duration": 4.846000000000004,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer rejects a hard link introduced after initial destination validation",
+      "status": "passed",
+      "source_byte_start": 320908,
+      "source_byte_end": 321236,
+      "assertion": {
+        "ancestorTitles": [
+          "symlink-safe worktree writer"
+        ],
+        "fullName": "symlink-safe worktree writer rejects a hard link introduced after initial destination validation",
+        "status": "passed",
+        "title": "rejects a hard link introduced after initial destination validation",
+        "duration": 10.414299999999969,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer pins every farm and mutation write/restore path to the shared primitive",
+      "status": "passed",
+      "source_byte_start": 321237,
+      "source_byte_end": 321573,
+      "assertion": {
+        "ancestorTitles": [
+          "symlink-safe worktree writer"
+        ],
+        "fullName": "symlink-safe worktree writer pins every farm and mutation write/restore path to the shared primitive",
+        "status": "passed",
+        "title": "pins every farm and mutation write/restore path to the shared primitive",
+        "duration": 1.5488000000000284,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer \u2014 refusal paths refuses a worktree root that is itself a link",
+      "status": "passed",
+      "source_byte_start": 321574,
+      "source_byte_end": 321894,
+      "assertion": {
+        "ancestorTitles": [
+          "symlink-safe worktree writer \u2014 refusal paths"
+        ],
+        "fullName": "symlink-safe worktree writer \u2014 refusal paths refuses a worktree root that is itself a link",
+        "status": "passed",
+        "title": "refuses a worktree root that is itself a link",
+        "duration": 4.7818999999999505,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer \u2014 refusal paths refuses an escaping relative path and writes NOTHING outside the root",
+      "status": "passed",
+      "source_byte_start": 321895,
+      "source_byte_end": 322263,
+      "assertion": {
+        "ancestorTitles": [
+          "symlink-safe worktree writer \u2014 refusal paths"
+        ],
+        "fullName": "symlink-safe worktree writer \u2014 refusal paths refuses an escaping relative path and writes NOTHING outside the root",
+        "status": "passed",
+        "title": "refuses an escaping relative path and writes NOTHING outside the root",
+        "duration": 2.4250999999999863,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer \u2014 refusal paths judges an absolute destination by where it LANDS, not by its shape",
+      "status": "passed",
+      "source_byte_start": 322264,
+      "source_byte_end": 322626,
+      "assertion": {
+        "ancestorTitles": [
+          "symlink-safe worktree writer \u2014 refusal paths"
+        ],
+        "fullName": "symlink-safe worktree writer \u2014 refusal paths judges an absolute destination by where it LANDS, not by its shape",
+        "status": "passed",
+        "title": "judges an absolute destination by where it LANDS, not by its shape",
+        "duration": 11.645100000000014,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer \u2014 refusal paths accepts an absolute destination spelled through a link into the same root",
+      "status": "passed",
+      "source_byte_start": 322627,
+      "source_byte_end": 323003,
+      "assertion": {
+        "ancestorTitles": [
+          "symlink-safe worktree writer \u2014 refusal paths"
+        ],
+        "fullName": "symlink-safe worktree writer \u2014 refusal paths accepts an absolute destination spelled through a link into the same root",
+        "status": "passed",
+        "title": "accepts an absolute destination spelled through a link into the same root",
+        "duration": 18.413200000000018,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer \u2014 refusal paths does NOT pre-resolve the leaf, so a symlinked destination is still refused",
+      "status": "passed",
+      "source_byte_start": 323004,
+      "source_byte_end": 323381,
+      "assertion": {
+        "ancestorTitles": [
+          "symlink-safe worktree writer \u2014 refusal paths"
+        ],
+        "fullName": "symlink-safe worktree writer \u2014 refusal paths does NOT pre-resolve the leaf, so a symlinked destination is still refused",
+        "status": "passed",
+        "title": "does NOT pre-resolve the leaf, so a symlinked destination is still refused",
+        "duration": 6.170399999999972,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer \u2014 refusal paths REFUSES when an ancestor cannot be canonicalized for a reason other than absence",
+      "status": "passed",
+      "source_byte_start": 323382,
+      "source_byte_end": 323773,
+      "assertion": {
+        "ancestorTitles": [
+          "symlink-safe worktree writer \u2014 refusal paths"
+        ],
+        "fullName": "symlink-safe worktree writer \u2014 refusal paths REFUSES when an ancestor cannot be canonicalized for a reason other than absence",
+        "status": "passed",
+        "title": "REFUSES when an ancestor cannot be canonicalized for a reason other than absence",
+        "duration": 0.41339999999996735,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer \u2014 refusal paths treats a missing ancestor as normal and walks up to the deepest existing one",
+      "status": "passed",
+      "source_byte_start": 323774,
+      "source_byte_end": 324156,
+      "assertion": {
+        "ancestorTitles": [
+          "symlink-safe worktree writer \u2014 refusal paths"
+        ],
+        "fullName": "symlink-safe worktree writer \u2014 refusal paths treats a missing ancestor as normal and walks up to the deepest existing one",
+        "status": "passed",
+        "title": "treats a missing ancestor as normal and walks up to the deepest existing one",
+        "duration": 0.1693000000000211,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer \u2014 refusal paths still refuses an absolute destination whose ancestors link OUT of the root",
+      "status": "passed",
+      "source_byte_start": 324157,
+      "source_byte_end": 324534,
+      "assertion": {
+        "ancestorTitles": [
+          "symlink-safe worktree writer \u2014 refusal paths"
+        ],
+        "fullName": "symlink-safe worktree writer \u2014 refusal paths still refuses an absolute destination whose ancestors link OUT of the root",
+        "status": "passed",
+        "title": "still refuses an absolute destination whose ancestors link OUT of the root",
+        "duration": 4.407999999999959,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer \u2014 refusal paths refuses a NUL byte in the destination segment",
+      "status": "passed",
+      "source_byte_start": 324535,
+      "source_byte_end": 324854,
+      "assertion": {
+        "ancestorTitles": [
+          "symlink-safe worktree writer \u2014 refusal paths"
+        ],
+        "fullName": "symlink-safe worktree writer \u2014 refusal paths refuses a NUL byte in the destination segment",
+        "status": "passed",
+        "title": "refuses a NUL byte in the destination segment",
+        "duration": 3.523200000000031,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer \u2014 refusal paths refuses a NUL byte in an intermediate segment",
+      "status": "passed",
+      "source_byte_start": 324855,
+      "source_byte_end": 325174,
+      "assertion": {
+        "ancestorTitles": [
+          "symlink-safe worktree writer \u2014 refusal paths"
+        ],
+        "fullName": "symlink-safe worktree writer \u2014 refusal paths refuses a NUL byte in an intermediate segment",
+        "status": "passed",
+        "title": "refuses a NUL byte in an intermediate segment",
+        "duration": 3.595100000000002,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer \u2014 refusal paths absorbs a lost mkdir race between concurrent writers",
+      "status": "passed",
+      "source_byte_start": 325175,
+      "source_byte_end": 325508,
+      "assertion": {
+        "ancestorTitles": [
+          "symlink-safe worktree writer \u2014 refusal paths"
+        ],
+        "fullName": "symlink-safe worktree writer \u2014 refusal paths absorbs a lost mkdir race between concurrent writers",
+        "status": "passed",
+        "title": "absorbs a lost mkdir race between concurrent writers",
+        "duration": 82.72879999999998,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer \u2014 refusal paths funnels an unexpected filesystem error into the same refusal, leaking nothing",
+      "status": "passed",
+      "source_byte_start": 325509,
+      "source_byte_end": 325893,
+      "assertion": {
+        "ancestorTitles": [
+          "symlink-safe worktree writer \u2014 refusal paths"
+        ],
+        "fullName": "symlink-safe worktree writer \u2014 refusal paths funnels an unexpected filesystem error into the same refusal, leaking nothing",
+        "status": "passed",
+        "title": "funnels an unexpected filesystem error into the same refusal, leaking nothing",
+        "duration": 0.5305999999999926,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer \u2014 refusal paths leaves ancestor directories behind on a refusal \u2014 refusal is not a rollback",
+      "status": "passed",
+      "source_byte_start": 325894,
+      "source_byte_end": 326278,
+      "assertion": {
+        "ancestorTitles": [
+          "symlink-safe worktree writer \u2014 refusal paths"
+        ],
+        "fullName": "symlink-safe worktree writer \u2014 refusal paths leaves ancestor directories behind on a refusal \u2014 refusal is not a rollback",
+        "status": "passed",
+        "title": "leaves ancestor directories behind on a refusal \u2014 refusal is not a rollback",
+        "duration": 3.8951999999999884,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer \u2014 write contracts truncates rather than appends when rewriting a shorter payload",
+      "status": "passed",
+      "source_byte_start": 326279,
+      "source_byte_end": 326636,
+      "assertion": {
+        "ancestorTitles": [
+          "symlink-safe worktree writer \u2014 write contracts"
+        ],
+        "fullName": "symlink-safe worktree writer \u2014 write contracts truncates rather than appends when rewriting a shorter payload",
+        "status": "passed",
+        "title": "truncates rather than appends when rewriting a shorter payload",
+        "duration": 6.582900000000052,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer \u2014 write contracts round-trips non-ASCII content without re-encoding it",
+      "status": "passed",
+      "source_byte_start": 326637,
+      "source_byte_end": 326974,
+      "assertion": {
+        "ancestorTitles": [
+          "symlink-safe worktree writer \u2014 write contracts"
+        ],
+        "fullName": "symlink-safe worktree writer \u2014 write contracts round-trips non-ASCII content without re-encoding it",
+        "status": "passed",
+        "title": "round-trips non-ASCII content without re-encoding it",
+        "duration": 2.512299999999982,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    }
+  ]
+}

@@ -1,0 +1,71 @@
+{
+  "verdict": "PASS_WITH_LIMITS",
+  "reviewer": "/root/packaging_site_tools",
+  "roles": [
+    "Auth/Crypto",
+    "Secrets",
+    "Security",
+    "Coverage"
+  ],
+  "subject": {
+    "source_base": "6d4c858fff4df40cc14d71c19c0e4d5a0d6bf434",
+    "manager_sha256": "bcdc241808ed6b1faf778292702e374408afe1175e3b2768a84c3c1103e5be58",
+    "test_sha256": "ddd9c5cb0387bcf30d336a322143febe4c82f6d126e3916bce691410282babca",
+    "patch_sha256": "1972bc011bd3a969df468fb16e00e25ff09ede893cf288b550670c8dfbd0db40",
+    "freeze_sha256": "2ed48a2a3893dc7e3a3eefac33c6c5d8bd0d496e912dc14ae80b2ea61adf4fe5",
+    "kind": "Temp two-file source/test overlay, no staged/bundled/installed proof"
+  },
+  "policy": {
+    "html_sha256": "8630d1cad36de7b06a0a9360beea27a48b1642cc05a4547362a25ec8c9ec491e",
+    "reuse": "Complete32-record policy/operative stub and reviewer-contract/roles previously read; actual current HTML bytes rechecked unchanged. Current tech-stack FACT005 Coverage read via installed knowledge owner; stage2 frontmatter read.",
+    "controls": [
+      "CON-002",
+      "CON-003",
+      "CON-008",
+      "CON-009",
+      "CON-011",
+      "CON-015",
+      "CON-016"
+    ]
+  },
+  "analysis": [
+    "The only executable production delta increments the existing generation at the start of turnOff, before old compositor disposal. Pending install captured an older generation; after metrics settle the unchanged comparison returns before recording failure reason, reading live layout or installing hooks. Explicit user-off stays authoritative.",
+    "Registration/public-handler interactive-parent gate, runtime-scoped metrics cache, current-TUI/terminal reads, widths/health policy and all executor/provider/credential boundaries are unchanged. Late metrics may populate the existing runtime cache, as already documented; no Promise cancellation or execution-resource cleanup is claimed.",
+    "Actual source class installs/disposes only the UI compositor. New generation invalidation does not touch independent author/dispatch processes, native evidence or worker cleanup. No new network/subprocess/dependency/crypto or secret origin/sink/lifetime.",
+    "Both old-first and new-first completion order tests exercise real deferred loadMetrics callbacks through actual public on/off handlers. They assert native width/function identity after off, correct current installation after on, no stale renderer replacement and eventual native restoration. New session resets off state and permits its own current request.",
+    "All original22 manager method identities remain; four additional cases bring manager26, compositor13, renderer9. One existing disposal case gains two stronger native-layout/render assertions; no original assertion/skip/budget is removed. The exact target regression body from validated diagnosis remains source-bound."
+  ],
+  "evidence": {
+    "validated_debug_handoff_sha256": "7daeeabbcccc620bb325fd4f39fd41ec7eb303f20ff51ed6b58943cb458feee9",
+    "validation": "Original retained owner validator validtrue/errors[]; reviewer did not rerun validation.",
+    "original_target_RED": "1FAIL installedtrue/expectedfalse after original pending metrics resolves; existing post-install-off positive1PASS.",
+    "target_GREEN": "Exact original regression+unchanged positive2PASS, other24 unselected.",
+    "owning_component_run": "48PASS0fail0pending in0.83357s; manager26/compositor13/renderer9.",
+    "typecheck": "exit0 in1.86184s.",
+    "original138_other_inputs_Git_join_drift": 0,
+    "final140_input_before_after_drift": 0,
+    "candidate140_file_drift": 0,
+    "manifest_drift": 0,
+    "patch_reconstruction_exact": true,
+    "reviewer_test_reruns": 0
+  },
+  "coverage": {
+    "status": "PARTIAL",
+    "profile": "lines-branches",
+    "stage": 2,
+    "floor_percent": 70,
+    "measured_scope": "src/sidebar-manager.ts, src/sidebar-compositor.ts, src/sidebar.ts only; Windows Node24.22.1",
+    "scoped_lines_percent": 92.39,
+    "scoped_branches_percent": 84.79,
+    "scoped_metrics_above_floor": true,
+    "critical_path": "Original safeguard-absent RED plus restored GREEN, explicit off/native-hooks, both on-after-off resolution orders and new-session/disposal controls.",
+    "full_gate_limit": "Declared Pi production tree is src/**/*.ts with Ubuntu+Windows union. This scoped local figure is not a replacement for complete exact-head declared tree/host evidence before merge; Root owns final bundle/proof renewal."
+  },
+  "findings": [],
+  "limits": [
+    "No actual installed Pi parent/rendered TUI/physical consent, native cohort, external provider or supported-host union qualification.",
+    "Metrics Promise/resource cancellation and late advisory notification semantics are outside the single UI-install generation fix.",
+    "Root owns supported bundle rebuild, actual staged candidate gates and source delivery; reviewer produced no permission marker.",
+    "No source/index/ledger/Gov writes or test reruns/fleet by reviewer."
+  ]
+}

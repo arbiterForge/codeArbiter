@@ -1,0 +1,312 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "/root/ci_repair_review: literal62-clause immutable Pi/current-callee/baseline inspection; no execution"
+ },
+ "inputs": {
+  ".codearbiter/decisions/0043-assistive-state-engine.md": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+  ".codearbiter/decisions/0049-require-https-outside-bounded-loopback.md": "c757cef9d5e318b75ff164d270b29a49255449360f0b7cde51e53775e6916ab8",
+  "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+  "docs/state-contracts-major/surfaces-tasks.json": "5a68b14cdc637e369fa5298d3f566b950dec9fb8056e4f1fa77baf40cb4b0d97",
+  "plugins/ca-pi/tools/src/compatibility.ts": "f96831dae362754c9579a8303650888aa0a72f00341d6659b478ef8d8625cb83",
+  "plugins/ca-pi/tools/src/extension.ts": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532",
+  "plugins/ca-pi/tools/src/runtime-resolver.ts": "436c3f01ff53cbbfbb48f325d3639e07b23a1416ad30c4dcb1a314b1ec252e97"
+ },
+ "disposition_ids": [
+  "disposition:machines:S12",
+  "disposition:transitions:S12:01",
+  "disposition:transitions:S12:02",
+  "disposition:transitions:S12:03",
+  "disposition:transitions:S12:04",
+  "disposition:transitions:S12:05"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/source-bindings.json",
+   "sha256": "5ff5edd6e452412a3caec604eae002b4d10132d8321c3a991c99e8949bce025f"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/clause-inspection.json",
+   "sha256": "c64cc79bbe9a660bfe891b9af36197023a543a82c16bb4e333a96dc7cec32dfa"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:S12",
+   "frozen_row_sha256": "b724c474fb3b0124e04b8837d0907d4bd41858040edfce02df8fdf870153904a",
+   "clause_ids": [
+    "disposition:transitions:S12:01",
+    "disposition:transitions:S12:02",
+    "disposition:transitions:S12:03",
+    "disposition:transitions:S12:04",
+    "disposition:transitions:S12:05"
+   ],
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/runtime-resolver.ts",
+     "start": 54,
+     "end": 95,
+     "file_sha256": "436c3f01ff53cbbfbb48f325d3639e07b23a1416ad30c4dcb1a314b1ec252e97",
+     "span_sha256": "65b38f52dce7042b76540613a57b0dd0555397a1504ada7b9a6ca82389492b5f"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/runtime-resolver.ts",
+     "start": 106,
+     "end": 161,
+     "file_sha256": "436c3f01ff53cbbfbb48f325d3639e07b23a1416ad30c4dcb1a314b1ec252e97",
+     "span_sha256": "a45cc1df1286bbbbaf52631170f9ea5d498d7546153c952f3d7632c84ce4d0da"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/compatibility.ts",
+     "start": 9,
+     "end": 51,
+     "file_sha256": "f96831dae362754c9579a8303650888aa0a72f00341d6659b478ef8d8625cb83",
+     "span_sha256": "c8609eecd32f2df6f28bab8594f346ade994f7f3f9b7e74539d55b9a3a4da02b"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/extension.ts",
+     "start": 969,
+     "end": 979,
+     "file_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532",
+     "span_sha256": "02367b78be7d4e9cd2e2a61c1a59f5b73655a4ee527fe5b72cc1d925d2df704d"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/runtime-resolver.ts",
+     "start": 164,
+     "end": 170,
+     "file_sha256": "436c3f01ff53cbbfbb48f325d3639e07b23a1416ad30c4dcb1a314b1ec252e97",
+     "span_sha256": "24b11c82aa0c26c6ff0a7c0b95a152ce1a44acde748e6e91116f26afc645a911"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/extension.ts",
+     "start": 895,
+     "end": 928,
+     "file_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532",
+     "span_sha256": "f7ad10671288268b05b7638d611bfcb917d1dee299b26d92a462b48c4b58b067"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/runtime-resolver.ts",
+     "start": 170,
+     "end": 202,
+     "file_sha256": "436c3f01ff53cbbfbb48f325d3639e07b23a1416ad30c4dcb1a314b1ec252e97",
+     "span_sha256": "6b0b360c123b898efcb9a5c6dec7e73eaeaa252db4edd964967ee38c3df16505"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/extension.ts",
+     "start": 924,
+     "end": 955,
+     "file_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532",
+     "span_sha256": "9ef0c37e1c09ddb491f02a2b83df58c0f7539b6fd51fa31fd1d6c21c57327632"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/runtime-resolver.ts",
+     "start": 48,
+     "end": 52,
+     "file_sha256": "436c3f01ff53cbbfbb48f325d3639e07b23a1416ad30c4dcb1a314b1ec252e97",
+     "span_sha256": "8b87c72e9b9eb8db91b31c16efe953e38f2dfbe7d25f0aabadfb351e5c77ce5c"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/runtime-resolver.ts",
+     "start": 158,
+     "end": 202,
+     "file_sha256": "436c3f01ff53cbbfbb48f325d3639e07b23a1416ad30c4dcb1a314b1ec252e97",
+     "span_sha256": "6994037356955a24ec0062d48e22ea4b748a8019a56d0dc8a5e6fd739bca02bd"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/extension.ts",
+     "start": 956,
+     "end": 965,
+     "file_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532",
+     "span_sha256": "d95e9d83fae92216e124d3a110c51b4dec0968b12910fb7bc61acffe5dc84502"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/runtime-resolver.ts",
+     "start": 98,
+     "end": 104,
+     "file_sha256": "436c3f01ff53cbbfbb48f325d3639e07b23a1416ad30c4dcb1a314b1ec252e97",
+     "span_sha256": "3b75321d697df77b2dd75ecfd6db032b0189f08c39a0dd215845f4c4e60f5027"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/runtime-resolver.ts",
+     "start": 164,
+     "end": 202,
+     "file_sha256": "436c3f01ff53cbbfbb48f325d3639e07b23a1416ad30c4dcb1a314b1ec252e97",
+     "span_sha256": "86980426bc4fc85dce501617b250dfe1e73872a64eab4afc717f27cfddda3ad0"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/extension.ts",
+     "start": 895,
+     "end": 965,
+     "file_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532",
+     "span_sha256": "7d78632c998ede579403c841fc22bbdd04b938b66f1002402ab4f610af6ff34e"
+    }
+   ],
+   "semantic_assessment": "All actual current owner guards/effects/retry branches mapped individually. Explicit analytical corrections/accepted task deltas are incorporated; no literal nonexistent guard or bug preservation claimed. ",
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S12:01",
+   "frozen_row_sha256": "9b12e0bca876c84aa2f671f2e488a29ded10ff5ff5280ac8387c00ea5a9181c8",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/runtime-resolver.ts",
+     "start": 54,
+     "end": 95,
+     "file_sha256": "436c3f01ff53cbbfbb48f325d3639e07b23a1416ad30c4dcb1a314b1ec252e97",
+     "span_sha256": "65b38f52dce7042b76540613a57b0dd0555397a1504ada7b9a6ca82389492b5f"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/runtime-resolver.ts",
+     "start": 106,
+     "end": 161,
+     "file_sha256": "436c3f01ff53cbbfbb48f325d3639e07b23a1416ad30c4dcb1a314b1ec252e97",
+     "span_sha256": "a45cc1df1286bbbbaf52631170f9ea5d498d7546153c952f3d7632c84ce4d0da"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/compatibility.ts",
+     "start": 9,
+     "end": 51,
+     "file_sha256": "f96831dae362754c9579a8303650888aa0a72f00341d6659b478ef8d8625cb83",
+     "span_sha256": "c8609eecd32f2df6f28bab8594f346ade994f7f3f9b7e74539d55b9a3a4da02b"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/extension.ts",
+     "start": 969,
+     "end": 979,
+     "file_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532",
+     "span_sha256": "02367b78be7d4e9cd2e2a61c1a59f5b73655a4ee527fe5b72cc1d925d2df704d"
+    }
+   ],
+   "semantic_assessment": "Resolver anchors to absolute process.argv[1], canonical active CLI and shipped ca-pi package, exact Pi package/bin/export ownership; it issues a frozen WeakSet-recognized identity. Public entry applies exact supportedPi1.5.0 and Node>=22.19 compatibility before loading.",
+   "intake_variances": [
+    "Opaque identity is path/package/version identity, not cryptographic publisher authenticity or an executable hash. Active Node is process runtime plus compatibility; child runner has its separate launch check."
+   ],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S12:02",
+   "frozen_row_sha256": "fa76534b32948474d16a9c8d81406ad7af995beb76d22d15d98265e078d158f3",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/runtime-resolver.ts",
+     "start": 164,
+     "end": 170,
+     "file_sha256": "436c3f01ff53cbbfbb48f325d3639e07b23a1416ad30c4dcb1a314b1ec252e97",
+     "span_sha256": "24b11c82aa0c26c6ff0a7c0b95a152ce1a44acde748e6e91116f26afc645a911"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/extension.ts",
+     "start": 895,
+     "end": 928,
+     "file_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532",
+     "span_sha256": "f7ad10671288268b05b7638d611bfcb917d1dee299b26d92a462b48c4b58b067"
+    }
+   ],
+   "semantic_assessment": "loadPiRuntime requires an issued identity and repeats current resolution before importing its exact moduleURL. Runtime-scoped footer metrics loader uses a separate shared pending promise and exact package-local module.",
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S12:03",
+   "frozen_row_sha256": "5a6a345f7227437a5b3ea9cad9d5d67b39ee7b4b8d95f8da0f082708732efc61",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/runtime-resolver.ts",
+     "start": 170,
+     "end": 202,
+     "file_sha256": "436c3f01ff53cbbfbb48f325d3639e07b23a1416ad30c4dcb1a314b1ec252e97",
+     "span_sha256": "6b0b360c123b898efcb9a5c6dec7e73eaeaa252db4edd964967ee38c3df16505"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/extension.ts",
+     "start": 924,
+     "end": 955,
+     "file_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532",
+     "span_sha256": "9ef0c37e1c09ddb491f02a2b83df58c0f7539b6fd51fa31fd1d6c21c57327632"
+    }
+   ],
+   "semantic_assessment": "Pi API requires VERSION/ModelRegistry/SettingsManager/finite tool functions and post-import identity equality. Metrics import requires both width functions and pre/post directory/file identity equality before caching exports.",
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S12:04",
+   "frozen_row_sha256": "46ea28f74bab0c0481b49c259575f90cd60518a1afff4d7112345cfe637e96c8",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/runtime-resolver.ts",
+     "start": 48,
+     "end": 52,
+     "file_sha256": "436c3f01ff53cbbfbb48f325d3639e07b23a1416ad30c4dcb1a314b1ec252e97",
+     "span_sha256": "8b87c72e9b9eb8db91b31c16efe953e38f2dfbe7d25f0aabadfb351e5c77ce5c"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/runtime-resolver.ts",
+     "start": 158,
+     "end": 202,
+     "file_sha256": "436c3f01ff53cbbfbb48f325d3639e07b23a1416ad30c4dcb1a314b1ec252e97",
+     "span_sha256": "6994037356955a24ec0062d48e22ea4b748a8019a56d0dc8a5e6fd739bca02bd"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/extension.ts",
+     "start": 956,
+     "end": 965,
+     "file_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532",
+     "span_sha256": "d95e9d83fae92216e124d3a110c51b4dec0968b12910fb7bc61acffe5dc84502"
+    }
+   ],
+   "semantic_assessment": "Path/package/version/export mismatch raises the fixed owning diagnosis; no alternate runtime fallback. Metrics failure clears pending promise so later request can retry with the same strict ownership checks.",
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S12:05",
+   "frozen_row_sha256": "fe7ae18fb0db6bc2857848b4abe5ba5ace0c94e565ac430b7721a650113ee2fe",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/runtime-resolver.ts",
+     "start": 98,
+     "end": 104,
+     "file_sha256": "436c3f01ff53cbbfbb48f325d3639e07b23a1416ad30c4dcb1a314b1ec252e97",
+     "span_sha256": "3b75321d697df77b2dd75ecfd6db032b0189f08c39a0dd215845f4c4e60f5027"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/runtime-resolver.ts",
+     "start": 164,
+     "end": 202,
+     "file_sha256": "436c3f01ff53cbbfbb48f325d3639e07b23a1416ad30c4dcb1a314b1ec252e97",
+     "span_sha256": "86980426bc4fc85dce501617b250dfe1e73872a64eab4afc717f27cfddda3ad0"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/extension.ts",
+     "start": 895,
+     "end": 965,
+     "file_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532",
+     "span_sha256": "7d78632c998ede579403c841fc22bbdd04b938b66f1002402ab4f610af6ff34e"
+    }
+   ],
+   "semantic_assessment": "Runtime load re-resolves active CLI and compares all identity fields both sides of import; cached JS identity alone cannot be passed as newly issued authority. Lazy metrics cache is scoped to the admitted runtime and its own first-import identity checks.",
+   "intake_variances": [
+    "No per-call content hash or perpetual cache revalidation is present or claimed; source contract is the actual authority-boundary re-resolution, not universal read-time hashing."
+   ],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  }
+ ],
+ "scope": "Actual current source-only conformance underPROGRAM/ADR43/49/acceptedPi tasks; no strongerliteral/runtime/host/task claim.",
+ "limits": [
+  "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification.",
+  "PROGRAM actual-source/current accepted direction takes precedence over inaccurate analytical intake. Every variance is explicit; frozen rows remain unchanged.",
+  "PI-L02 intentionally replaces S19 resurrection bug; ADR49 narrows endpoint transports, ordinary artifact ceremony is separate from real host permissions underADR43.",
+  "S17:07 exact absent confirmation-dedup route is N/A only; retained proposal no-op/fingerprint checks and bounded best-effort audit remain supported.",
+  "Only47 PLANNED row proposals;24advanced edges and all other ledger records/history remain untouched. Whole ledgerhash advisory; exact per-rowCAS authoritative.",
+  "All proofs bind genuine immutable384269 source inspection, not futureCI or currentRoot staging. No stagedOIDs or fullowner authentication claimed."
+ ]
+}

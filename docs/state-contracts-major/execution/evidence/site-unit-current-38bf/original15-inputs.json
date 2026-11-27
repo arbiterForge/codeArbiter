@@ -1,0 +1,199 @@
+{
+  "before": {
+    "source": "38bf279799fa8e7ab72148dce9cee85177664947",
+    "input_count": 15,
+    "inputs": {
+      "site/astro.config.mjs": {
+        "sha256": "20d9902155edc22090f5d4929b8643684dc7d0ffa8e306158ee28bafe899e47f",
+        "bytes": 12501,
+        "git_blob_oid": "d1fea79420e31c8ca100309aab358471f24752ca",
+        "physical_equals_immutable_git": true
+      },
+      "site/package-lock.json": {
+        "sha256": "d81f1d4b54c0e2a0fc05815687fcb306e0a12f98c3e382032556e445c614787a",
+        "bytes": 282204,
+        "git_blob_oid": "8dbbdec31aca7a4a4792cb273e1683c32eab3d7c",
+        "physical_equals_immutable_git": true
+      },
+      "site/package.json": {
+        "sha256": "f5fc189cffe4dd4f4ba2de7ee1a31f36cacc017d0f4b598d69a3ffc4e1bdffd3",
+        "bytes": 2181,
+        "git_blob_oid": "517a9f55a870be90bce5062aa3844d46d626d451",
+        "physical_equals_immutable_git": true
+      },
+      "site/scripts/owned-output.test.ts": {
+        "sha256": "8d23c62e8900a5d7acdd4de4121ee39670ffa3886ea2c1296c2d7b799ede5775",
+        "bytes": 3344,
+        "git_blob_oid": "da3d64354d4b19b017135c14509fc08e58b4b200",
+        "physical_equals_immutable_git": true
+      },
+      "site/scripts/owned-output.ts": {
+        "sha256": "13ec4068eea8d6af7afaa8ca7e96b288a2aa8ca9991b7fb42a6901804f70fb3f",
+        "bytes": 4866,
+        "git_blob_oid": "6266939fd7e99d5560fe8877f14115ac290288f4",
+        "physical_equals_immutable_git": true
+      },
+      "site/scripts/pagefind-build.test.ts": {
+        "sha256": "9106dff87e4b00c138eab7570b458f8f05c90ba654c1e57f0a20cf913abecc03",
+        "bytes": 8230,
+        "git_blob_oid": "b9362892cc2111338690cfdac1f6e72c55097372",
+        "physical_equals_immutable_git": true
+      },
+      "site/scripts/pagefind-build.ts": {
+        "sha256": "ad1fbe88782aa8927024d7a405f4dd8244b79219ea4947415f4e66f512995b97",
+        "bytes": 6154,
+        "git_blob_oid": "2faef52c96bff86a339083e115c81f67f9ed5e76",
+        "physical_equals_immutable_git": true
+      },
+      "site/scripts/release-applicability.ts": {
+        "sha256": "272fbf607aa1376f999545d3b7f287438a22dc5f85fed4d9ccaf433d6ad555d9",
+        "bytes": 34817,
+        "git_blob_oid": "72c9eff75627cd683635813fcd435e7bb40160d5",
+        "physical_equals_immutable_git": true
+      },
+      "site/src/pages/release-applicability.json.ts": {
+        "sha256": "3a126d7972292d19202519fc82646d7a9f9fdf96ff3bca3e18d2fe4d50785d2a",
+        "bytes": 308,
+        "git_blob_oid": "e6126c41c1fb4433ce576dce615e0f6467abd799",
+        "physical_equals_immutable_git": true
+      },
+      "site/src/release-applicability-presentation.ts": {
+        "sha256": "a94a1f1a1c0b0ea28d00a90e8e49b77ed13e96534ed1dd841644cd5d4d7f4732",
+        "bytes": 1386,
+        "git_blob_oid": "34c13aafc20a03ae969230b3d9aeeed6be62f145",
+        "physical_equals_immutable_git": true
+      },
+      "site/test/release-applicability/presentation.test.ts": {
+        "sha256": "b12e5cabdb69f1bada9d5b9a35fea9577c2bc7c5f9514f995326fe39fd7926c1",
+        "bytes": 2366,
+        "git_blob_oid": "eb5fe66e8b4c1a93daabb748dd6288e7a81cb5f9",
+        "physical_equals_immutable_git": true
+      },
+      "site/test/release-applicability/publication.test.ts": {
+        "sha256": "15477eab3d6f5305e493b6388d12d3bd7db99d6e94e7445e22f0d6d98f383cdb",
+        "bytes": 2882,
+        "git_blob_oid": "ac9b2435662832cfcedabcfb4e666c6df4f87a94",
+        "physical_equals_immutable_git": true
+      },
+      "site/test/release-applicability/release-applicability.test.ts": {
+        "sha256": "98ef3086438d07f8de16eaae3799e6247fc03f2e286928252b3befd2cc98905b",
+        "bytes": 33832,
+        "git_blob_oid": "fc5b55ce71a6c09756823599f8550c081f62dbbc",
+        "physical_equals_immutable_git": true
+      },
+      "site/tsconfig.json": {
+        "sha256": "2313012ec43d254daf80ac76385fc550e3a472aa6a96affe8b9e1d4e2dd225f4",
+        "bytes": 463,
+        "git_blob_oid": "9308a694a6cf46ac39584cbc90bc6af1065c0f9a",
+        "physical_equals_immutable_git": true
+      },
+      "site/vitest.config.ts": {
+        "sha256": "a65a6dde53bb9bff5d5ee31569d97f2f76e3a6f51e672613d155e3121055ac59",
+        "bytes": 1594,
+        "git_blob_oid": "5c13f9f33ff3f0c4ee8e504e9b706f26bc361107",
+        "physical_equals_immutable_git": true
+      }
+    },
+    "index_sha256": "157197fba83f1fe3b76745a299f3160c470de13d6939487fb0c9874a03c23959",
+    "working_status": "?? .codearbiter/.artifacts/\n"
+  },
+  "after": {
+    "source": "38bf279799fa8e7ab72148dce9cee85177664947",
+    "input_count": 15,
+    "inputs": {
+      "site/astro.config.mjs": {
+        "sha256": "20d9902155edc22090f5d4929b8643684dc7d0ffa8e306158ee28bafe899e47f",
+        "bytes": 12501,
+        "git_blob_oid": "d1fea79420e31c8ca100309aab358471f24752ca",
+        "physical_equals_immutable_git": true
+      },
+      "site/package-lock.json": {
+        "sha256": "d81f1d4b54c0e2a0fc05815687fcb306e0a12f98c3e382032556e445c614787a",
+        "bytes": 282204,
+        "git_blob_oid": "8dbbdec31aca7a4a4792cb273e1683c32eab3d7c",
+        "physical_equals_immutable_git": true
+      },
+      "site/package.json": {
+        "sha256": "f5fc189cffe4dd4f4ba2de7ee1a31f36cacc017d0f4b598d69a3ffc4e1bdffd3",
+        "bytes": 2181,
+        "git_blob_oid": "517a9f55a870be90bce5062aa3844d46d626d451",
+        "physical_equals_immutable_git": true
+      },
+      "site/scripts/owned-output.test.ts": {
+        "sha256": "8d23c62e8900a5d7acdd4de4121ee39670ffa3886ea2c1296c2d7b799ede5775",
+        "bytes": 3344,
+        "git_blob_oid": "da3d64354d4b19b017135c14509fc08e58b4b200",
+        "physical_equals_immutable_git": true
+      },
+      "site/scripts/owned-output.ts": {
+        "sha256": "13ec4068eea8d6af7afaa8ca7e96b288a2aa8ca9991b7fb42a6901804f70fb3f",
+        "bytes": 4866,
+        "git_blob_oid": "6266939fd7e99d5560fe8877f14115ac290288f4",
+        "physical_equals_immutable_git": true
+      },
+      "site/scripts/pagefind-build.test.ts": {
+        "sha256": "9106dff87e4b00c138eab7570b458f8f05c90ba654c1e57f0a20cf913abecc03",
+        "bytes": 8230,
+        "git_blob_oid": "b9362892cc2111338690cfdac1f6e72c55097372",
+        "physical_equals_immutable_git": true
+      },
+      "site/scripts/pagefind-build.ts": {
+        "sha256": "ad1fbe88782aa8927024d7a405f4dd8244b79219ea4947415f4e66f512995b97",
+        "bytes": 6154,
+        "git_blob_oid": "2faef52c96bff86a339083e115c81f67f9ed5e76",
+        "physical_equals_immutable_git": true
+      },
+      "site/scripts/release-applicability.ts": {
+        "sha256": "272fbf607aa1376f999545d3b7f287438a22dc5f85fed4d9ccaf433d6ad555d9",
+        "bytes": 34817,
+        "git_blob_oid": "72c9eff75627cd683635813fcd435e7bb40160d5",
+        "physical_equals_immutable_git": true
+      },
+      "site/src/pages/release-applicability.json.ts": {
+        "sha256": "3a126d7972292d19202519fc82646d7a9f9fdf96ff3bca3e18d2fe4d50785d2a",
+        "bytes": 308,
+        "git_blob_oid": "e6126c41c1fb4433ce576dce615e0f6467abd799",
+        "physical_equals_immutable_git": true
+      },
+      "site/src/release-applicability-presentation.ts": {
+        "sha256": "a94a1f1a1c0b0ea28d00a90e8e49b77ed13e96534ed1dd841644cd5d4d7f4732",
+        "bytes": 1386,
+        "git_blob_oid": "34c13aafc20a03ae969230b3d9aeeed6be62f145",
+        "physical_equals_immutable_git": true
+      },
+      "site/test/release-applicability/presentation.test.ts": {
+        "sha256": "b12e5cabdb69f1bada9d5b9a35fea9577c2bc7c5f9514f995326fe39fd7926c1",
+        "bytes": 2366,
+        "git_blob_oid": "eb5fe66e8b4c1a93daabb748dd6288e7a81cb5f9",
+        "physical_equals_immutable_git": true
+      },
+      "site/test/release-applicability/publication.test.ts": {
+        "sha256": "15477eab3d6f5305e493b6388d12d3bd7db99d6e94e7445e22f0d6d98f383cdb",
+        "bytes": 2882,
+        "git_blob_oid": "ac9b2435662832cfcedabcfb4e666c6df4f87a94",
+        "physical_equals_immutable_git": true
+      },
+      "site/test/release-applicability/release-applicability.test.ts": {
+        "sha256": "98ef3086438d07f8de16eaae3799e6247fc03f2e286928252b3befd2cc98905b",
+        "bytes": 33832,
+        "git_blob_oid": "fc5b55ce71a6c09756823599f8550c081f62dbbc",
+        "physical_equals_immutable_git": true
+      },
+      "site/tsconfig.json": {
+        "sha256": "2313012ec43d254daf80ac76385fc550e3a472aa6a96affe8b9e1d4e2dd225f4",
+        "bytes": 463,
+        "git_blob_oid": "9308a694a6cf46ac39584cbc90bc6af1065c0f9a",
+        "physical_equals_immutable_git": true
+      },
+      "site/vitest.config.ts": {
+        "sha256": "a65a6dde53bb9bff5d5ee31569d97f2f76e3a6f51e672613d155e3121055ac59",
+        "bytes": 1594,
+        "git_blob_oid": "5c13f9f33ff3f0c4ee8e504e9b706f26bc361107",
+        "physical_equals_immutable_git": true
+      }
+    },
+    "index_sha256": "157197fba83f1fe3b76745a299f3160c470de13d6939487fb0c9874a03c23959",
+    "working_status": "?? .codearbiter/.artifacts/\n"
+  },
+  "comparison": "Complete declared source/config plus actual frozen owning-path union; physical immutable Git source15 identical before/after; HEAD/index stable."
+}

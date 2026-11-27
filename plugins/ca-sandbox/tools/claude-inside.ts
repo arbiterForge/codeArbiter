@@ -349,6 +349,39 @@ export type ClaudeRunResult = RunResult;
  *
  * @throws every guarantee of buildClaudeRunArgs, plus on a non-zero `docker run`.
  */
+type ClaudeCleanupObservation = {
+  containment: "verified-absent" | "unknown";
+  removeCode: number;
+  observationCode: number;
+};
+
+async function removeClaudeContainer(id: string, dockerRun: DockerRun, call: DockerCallOptions): Promise<ClaudeCleanupObservation> {
+  const { signal: _cancelled, ...cleanupCall } = call;
+  const removed = await dockerRun(["rm", "-f", id], cleanupCall);
+  const observed = await dockerRun(["ps", "-a", "-q", "--no-trunc", "--filter", `id=${id}`], cleanupCall);
+  return {
+    containment: observed.code === 0 && observed.stdout.trim() === "" ? "verified-absent" : "unknown",
+    removeCode: removed.code,
+    observationCode: observed.code,
+  };
+}
+
+export class ClaudeStartCancelledError extends Error {
+  readonly commandCode = 0;
+  constructor(readonly containerId: string, readonly phase: "run" | "firewall", readonly cleanup: ClaudeCleanupObservation) {
+    super(`ca-sandbox: --with-claude cancelled after successful ${phase} for ${containerId}; ` +
+      `cleanup ${cleanup.containment === "verified-absent" ? "verified absent" : "unknown; container may still be running"} ` +
+      `(remove exit ${cleanup.removeCode}); retain target ${containerId} for inspection.`);
+    this.name = "ClaudeStartCancelledError";
+  }
+}
+
+export class FirewallSetupFailure extends Error {
+  constructor(message:string,readonly containerId:string,readonly commandCode:number,
+    readonly cleanup:ClaudeCleanupObservation) {
+    super(message);this.name="FirewallSetupFailure";
+  }
+}
 export async function runClaudeInside(
   opts: ClaudeRunOptions,
   dockerRun: DockerRun = defaultDockerRun,
@@ -369,6 +402,9 @@ export async function runClaudeInside(
     );
   }
   const id = r.stdout.trim();
+  if (call.signal?.aborted) {
+    throw new ClaudeStartCancelledError(id, "run", await removeClaudeContainer(id, dockerRun, normalCall));
+  }
 
   // #377: install the allowlist INSIDE the box, or destroy it.
   //
@@ -384,16 +420,18 @@ export async function runClaudeInside(
 
   const applied = await dockerRun(["exec", "--user", "root", id, "sh", "-c", firewallScript], normalCall);
   if (applied.code !== 0) {
-    // Best effort, and deliberately not conditional on its own success: if the
-    // teardown ALSO fails there is nothing further this process can do, and the
-    // thrown error names the container so an operator can finish the job.
-    await dockerRun(["rm", "-f", id], normalCall);
-    throw new Error(
+    const cleanup = await removeClaudeContainer(id, dockerRun, normalCall);
+    const absent = cleanup.containment === "verified-absent";
+    throw new FirewallSetupFailure(
       `ca-sandbox: --with-claude could not apply the egress firewall to ${id} ` +
-        `(exit ${applied.code}); the container has been destroyed rather than left ` +
-        `running with NET_ADMIN and no rules around a live token.\n` +
-        `${(applied.stderr || applied.stdout).slice(-2000).split(opts.token).join("[REDACTED]")}`,
+      `(exit ${applied.code}); cleanup ${absent ? "verified absent" : "unknown; container may still be running"} ` +
+      `(remove exit ${cleanup.removeCode}); retain target ${id} for inspection.\n` +
+      `${(applied.stderr || applied.stdout).slice(-2000).split(opts.token).join("[REDACTED]")}`,
+      id,applied.code,cleanup,
     );
+  }
+  if (call.signal?.aborted) {
+    throw new ClaudeStartCancelledError(id, "firewall", await removeClaudeContainer(id, dockerRun, normalCall));
   }
   return id;
 }

@@ -1,0 +1,76 @@
+{
+  "schema": "codearbiter.independent-source-binding-repair-review/1",
+  "reviewer": "/root",
+  "author": "/root/ci_repair_review",
+  "independent_of_authorship": true,
+  "verdict": "PASS",
+  "findings": [],
+  "source_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+  "full_subjects": {
+    ".github/scripts/test_command_route_compatibility.py": {
+      "preimage": {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-init-binding-fix-186obdpf\\original\\.github\\scripts\\test_command_route_compatibility.py",
+        "sha256": "679f60b5c2f6f11bb8fc00a02e3e9924c4c60b3a1b0d9e7532c3f3a581b8687d",
+        "bytes": 20903
+      },
+      "candidate": {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-init-binding-fix-186obdpf\\candidate\\.github\\scripts\\test_command_route_compatibility.py",
+        "sha256": "f07ea4398074517321e69da61fbec703ea10eb209ca162c6e2b2f22d6855e936",
+        "bytes": 24755
+      }
+    },
+    ".github/scripts/test_state_contracts_integration.py": {
+      "preimage": {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-init-binding-fix-186obdpf\\original\\.github\\scripts\\test_state_contracts_integration.py",
+        "sha256": "fb6130709350e42f97bc66a135bc96b0dc3ce33571f0a1d17b7d85214184f268",
+        "bytes": 53090
+      },
+      "candidate": {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-init-binding-fix-186obdpf\\candidate\\.github\\scripts\\test_state_contracts_integration.py",
+        "sha256": "95ca140b3c18bc296e39982ad0dc271c1f88db6033a0a715e47af8a2c7fd95a4",
+        "bytes": 53445
+      }
+    },
+    "site/scripts/execution-maps/atlas-data/major-state-contracts-update.json": {
+      "preimage": {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-init-binding-fix-186obdpf\\original\\site\\scripts\\execution-maps\\atlas-data\\major-state-contracts-update.json",
+        "sha256": "62b14434c430453951747519def5a7c3a0efe11d137ce3b809b280654f28fbeb",
+        "bytes": 21915
+      },
+      "candidate": {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-init-binding-fix-186obdpf\\candidate\\site\\scripts\\execution-maps\\atlas-data\\major-state-contracts-update.json",
+        "sha256": "67a57e321d2101d1f283309dd96b2efedadac20e577b1a7d197f363cb1f22baf",
+        "bytes": 22280
+      }
+    },
+    "site/scripts/execution-maps/atlas-assistive.test.ts": {
+      "preimage": {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-init-binding-fix-186obdpf\\original\\site\\scripts\\execution-maps\\atlas-assistive.test.ts",
+        "sha256": "d6f067000f04a07c63a517b6842be41eadd1e73af73f860baf3b097d13788273",
+        "bytes": 13510
+      },
+      "candidate": {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-init-binding-fix-186obdpf\\candidate\\site\\scripts\\execution-maps\\atlas-assistive.test.ts",
+        "sha256": "9ecce3fb4a8a48510acfd8cc8f5ce99dfd7496414510fd1e70ed56926a786318",
+        "bytes": 14986
+      }
+    }
+  },
+  "proposal_sha256": "782a1a776b95b6ebe5ef4fbe98a610ae5f14ce4745171e2d3f46dc5774ed3f98",
+  "context_input": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\reviewed-bindings-root-peer-input.txt",
+  "assessment": [
+    "Actual original CI failures establish precise regression origin; no claim of production workflow execution from static owner checks.",
+    "117 effective source inputs checked; both special-case fallback paths already have higher-priority MAJOR pins, so reported precedence is exact for this inventory. Only two current major overrides change. Real committing revisions/blob contents and ancestry bind init and guard; all39 other rows/global revision and historical diagrams remain exact.",
+    "Reviewed init paragraph inverse is exact once-only and refuses old/duplicate/mutated inputs. Historical complete-default digest remains unchanged, freezing all other default bytes and existing mode policy. Six real mutation vectors exercise rejection.",
+    "Existing hook token-scope expectation now requires both added success conjuncts. All prior predicates, old assertions and five old mutants remain; two omission mutants reject incomplete guard. Production CI and token transport are unchanged.",
+    "All old compatibility methods except the exact init branch and all old integration ASTs except the exact stronger literal/additive mutants are preserved; additive Atlas test preserves all prior bytes.",
+    "Complete security policy and reviewer contract applied. No new secret source/primitive/egress/permission/owner, no source-reader bypass. Prior genuine binary/guard implementation reviews reused for unchanged source bytes."
+  ],
+  "verification": "Proper original CI REDs and new init checksum RED1; compatibility15PASS, token-scope1PASS with7mutants;23scoped Atlas methods eventuallyPASS plus3strictguards, with initial private-root adapter errors retained and only affected reruns. No full Atlas/site/build/browser claim.",
+  "coverage": "Production TS reader unchanged; exact JSON binding plus meaningful guard/link/refusal regression checks. Python no numeric tooling per FACT005/NOTE005; direct critical controls used.",
+  "limits": [
+    "Read-only Root review, no tests/API/runtime/build/browser/native/SDK/Pi/dependency effects.",
+    "Private peer has no index identity; Root separately binds stage/scanners/original owner.",
+    "Fresh hosted CI/Docs still required; main1098/publication held."
+  ]
+}

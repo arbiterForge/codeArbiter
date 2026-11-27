@@ -1,0 +1,560 @@
+{
+  "schema": "codearbiter-development-observations/1",
+  "source_anchor": "88c497128a498ff2a946cfc157d67913d47bcb89",
+  "recorded_at": "2026-11-16T03:23:39.431362+00:00",
+  "qualification": false,
+  "ci_run": 43791655604,
+  "docs_run": 43791655515,
+  "all_checks": {
+    "PASS": 88,
+    "FAIL": 4,
+    "SKIP": 6
+  },
+  "required_merge_readiness": "FAIL",
+  "terminal": {
+    "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1114-88c497-watch-dcmm3d_c\\terminal-failure-receipt.json",
+    "sha256": "f1ff07dd1e94b5f5596bfb039d27b13e281b24432e440619b562f57aac46b765",
+    "bytes": 12620,
+    "record": {
+      "schema": "exact-pr-watch-terminal-v1",
+      "recorded_utc": "2026-11-16T02:55:06.778869+00:00",
+      "pr": 1114,
+      "expected_head": "88c497128a498ff2a946cfc157d67913d47bcb89",
+      "observed_head": "88c497128a498ff2a946cfc157d67913d47bcb89",
+      "head_pin": true,
+      "base": "major/state-contracts",
+      "ci": {
+        "id": 43791655604,
+        "head_sha": "88c497128a498ff2a946cfc157d67913d47bcb89",
+        "event": "pull_request",
+        "run_attempt": 1,
+        "status": "completed",
+        "conclusion": "failure"
+      },
+      "docs": {
+        "id": 43791655515,
+        "head_sha": "88c497128a498ff2a946cfc157d67913d47bcb89",
+        "event": "pull_request",
+        "run_attempt": 1,
+        "status": "completed",
+        "conclusion": "success"
+      },
+      "ci_job_counts": {
+        "success": 86,
+        "failure": 4,
+        "skipped": 4
+      },
+      "all_check_counts": {
+        "skipping": 6,
+        "fail": 4,
+        "pass": 88
+      },
+      "required": [
+        {
+          "bucket": "fail",
+          "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43791655604/job/133060810313",
+          "name": "[GATE ] | [REPO] | Merge readiness",
+          "state": "FAILURE"
+        }
+      ],
+      "verdict": "BLOCK",
+      "failures": [
+        {
+          "id": 133051308557,
+          "case": "BoundSourcePayloadTests.test_source_binding_and_manifest_identity_fail_closed",
+          "facts": "40tests39PASS1ERROR. Private source payload fixture index preparation timedout15seconds before assertion body; exact underlying delayUNKNOWN.",
+          "source": "test_major_qualification_report.py:576"
+        },
+        {
+          "id": 133051308669,
+          "case": "Six new bounded Farm exclusive-open source+bundle fault cases",
+          "facts": "All6 injected open attemptcount0; permanent/unlisted expectedrefusal insteadresolved. Owned mock literal path likely disagrees with canonical production path; originalopenargunobserved. All7original registrycontrols and all146farm.test.tsPASS including#397 concurrentreceipts3554ms.",
+          "source": "farm-registry-lock.test.ts:19"
+        },
+        {
+          "id": 133051308707,
+          "case": "PiPackageTests.test_real_rpc_enabled_untrusted_global_session_stays_before_repository_boundary",
+          "facts": "13tests12PASS1FAIL. Original30sec naturalexitwait timeout after JSexitEvent/reallyExit wrapperentry. MatchedPID6468/creationidentity before+after kernelrunning; debuggerUNAVAILABLE. Underlying WindowsEOF class remainsUNRESOLVED.",
+          "original_artifact": 14193341001,
+          "diagnosis": "pi-windows-bounded-diagnosis.json"
+        },
+        {
+          "id": 133060810313,
+          "case": "Required Merge readiness",
+          "facts": "Correctly failed on selected requiredWindowsjobs."
+        }
+      ],
+      "positive_facts": {
+        "Docs": "BothselectedjobsSUCCESS,deploySKIPPED",
+        "ProgramIntegrity3OS": "SUCCESS; authentic exact same originaljoblogread controls in three-os-program-controls.json",
+        "native_six": [
+          {
+            "id": 133053607624,
+            "name": "[CHECK] | [CORE] | Native adapters and conformance <linux/amd64>",
+            "conclusion": "success"
+          },
+          {
+            "id": 133053607668,
+            "name": "[CHECK] | [CORE] | Native adapters and conformance <windows/amd64>",
+            "conclusion": "success"
+          },
+          {
+            "id": 133053607681,
+            "name": "[CHECK] | [CORE] | Native adapters and conformance <darwin/amd64>",
+            "conclusion": "success"
+          },
+          {
+            "id": 133053607721,
+            "name": "[CHECK] | [CORE] | Native adapters and conformance <linux/arm64>",
+            "conclusion": "success"
+          },
+          {
+            "id": 133053607740,
+            "name": "[CHECK] | [CORE] | Native adapters and conformance <darwin/arm64>",
+            "conclusion": "success"
+          },
+          {
+            "id": 133053607759,
+            "name": "[CHECK] | [CORE] | Native adapters and conformance <windows/arm64>",
+            "conclusion": "success"
+          }
+        ],
+        "farm397": "PASS actual3554ms, all146filetestsPASS",
+        "coverage": {
+          "CA": {
+            "lines": 74.94,
+            "branches": 74.15,
+            "job": 133055232282
+          },
+          "Pi": {
+            "lines": 86.93,
+            "branches": 81.92,
+            "job": 133053945597
+          },
+          "native": {
+            "statements": 84.2521,
+            "all6platformintegration": "COMPLETE",
+            "job": 133054077868
+          },
+          "limits": "Numericcoverage aggregatespass does not override actualWindowsCA testfailure."
+        }
+      },
+      "Windows_original_source176": {
+        "job": 133051308557,
+        "steps": [
+          {
+            "name": "Prepare Python source-test inputs",
+            "conclusion": "success"
+          },
+          {
+            "name": "Observe original interrupted output publication tests",
+            "conclusion": "success"
+          },
+          {
+            "name": "Observe original skill-proof freshness tests",
+            "conclusion": "skipped"
+          },
+          {
+            "name": "Upload Python source-test inputs",
+            "conclusion": "success"
+          },
+          {
+            "name": "Retain original Python source-test observations",
+            "conclusion": "success"
+          },
+          {
+            "name": "Emit original Python source qualification report",
+            "conclusion": "skipped"
+          }
+        ],
+        "end_to_end": "PARTIAL: prepare/publicationobserver/input+observationuploadsSUCCESS; skillproofobserverSKIPPEDafter reportsuiteERROR; normalpush emitterSKIPPED(PR). No sixcellqualification."
+      },
+      "watch": {
+        "one_foreground_owner": true,
+        "ended_naturally_exit": 1,
+        "active_watch": false,
+        "retry_cancel_or_APIwrites": false
+      },
+      "limits": [
+        "No installed/native qualification from a PR or failed wholeCI run.",
+        "Parent1098 remains heldfrommain; no merge/publication.",
+        "Original preceding7ac failure and localreviewPASS/followupBLOCK preserved.",
+        "No source/index/ref/marker changes or live product/native/SDK/CLI replay by watcher.",
+        "All failedoriginalproducer logs/artifact rawbytes retained privately; only closedfields projected."
+      ],
+      "files": {
+        "aggregate-job-133053945597.log": {
+          "sha256": "08e13074c45c8035f4bd27a22b6a0ee4ea63cccbb68c941bb3da86d36a060f6c",
+          "bytes": 43602
+        },
+        "aggregate-job-133054077868.log": {
+          "sha256": "f276a2e9f144e7fcde08af43e7494412da0cc7eb5c84c63e90b46282ebb88df2",
+          "bytes": 36600
+        },
+        "aggregate-job-133055232282.log": {
+          "sha256": "c1d77b9233f7b5a3c6e46a5bd3bedbe307300063936140ef9b71424d74bf8d6b",
+          "bytes": 101633
+        },
+        "aggregate-job-133060810313.log": {
+          "sha256": "99d06be56cfdc797c689e98abb776410ac7fcb999dd823785fa3585527b80536",
+          "bytes": 5400
+        },
+        "aggregate-outcomes.json": {
+          "sha256": "79e12219cf2848339cc62bbcc90ce82bc4aad2ba4f48a7255fa1a259ca53ef68",
+          "bytes": 2136
+        },
+        "artifacts-live.json": {
+          "sha256": "52fff7b906f1ca9564b70e6907785a2e210d0a2699d5354d9dacb8e22de2b1f5",
+          "bytes": 25610
+        },
+        "binding.json": {
+          "sha256": "1f615caf1d22a6b06f251eebd82254e3288bf21b0022ecc258e6c5a577923ad7",
+          "bytes": 306
+        },
+        "checks-terminal.json": {
+          "sha256": "5e731eb5c7600d1937e0b9191611851fe021a6234dd79ff13b42b253bfb63c22",
+          "bytes": 19050
+        },
+        "ci-initial.json": {
+          "sha256": "aa7e3198571738f79c961ee80e1ca5236101179ec698e5ac122a5d5771f135d1",
+          "bytes": 14023
+        },
+        "ci-jobs-latest.json": {
+          "sha256": "20fc42b9aa9ab89217bee3c854576db053ce9b58f7ad682077311f7a0891a424",
+          "bytes": 404789
+        },
+        "ci-jobs-terminal.json": {
+          "sha256": "d6d1286bb561fa0fd23103a5a9b68cd497d8ec205706a007b6a16e743226d6a2",
+          "bytes": 407821
+        },
+        "ci-run-terminal.json": {
+          "sha256": "013322c9d027c06f97f1c45ca398c14abebe94aeb1c5f42e2909ca13484a65e3",
+          "bytes": 14031
+        },
+        "docs-initial.json": {
+          "sha256": "d93d9c827fd44f0dee95eca209fd7806e7669305859f590d31ebfb5339fdd675",
+          "bytes": 14039
+        },
+        "docs-jobs-latest.json": {
+          "sha256": "aeee6e4175bee1b432b16fb83121540ee965aa55a98286608312f4157dd95930",
+          "bytes": 8107
+        },
+        "docs-jobs-terminal.json": {
+          "sha256": "aeee6e4175bee1b432b16fb83121540ee965aa55a98286608312f4157dd95930",
+          "bytes": 8107
+        },
+        "docs-run-terminal.json": {
+          "sha256": "3963cfb54f874b65847509fbb150f45618878ca0dde4fc63a7715a3f4425b07b",
+          "bytes": 14042
+        },
+        "failed-job-133051308557.json": {
+          "sha256": "35a8caa019a5ba7af61ebbf15b918dda59bfa6517fcf9228c8e842d933229c5c",
+          "bytes": 24337
+        },
+        "failed-job-133051308557.log": {
+          "sha256": "98f37e2f6d8a5488b31cad0a00056cc88ae796072504cc8867d870a257efa4ab",
+          "bytes": 187387
+        },
+        "failed-job-133051308669.json": {
+          "sha256": "7a4c302838d478060eed1ca36382ad91519783b09cba13d79445051cfd628e9d",
+          "bytes": 4363
+        },
+        "failed-job-133051308669.log": {
+          "sha256": "de353187e150065ebdbe0ef997df664590865021ab27ede76258ed743bb6ff5e",
+          "bytes": 82879
+        },
+        "failed-job-133051308707.json": {
+          "sha256": "72d1a4a1acfab08335130483e0bceed31790250ac929118349c2f79c644c1331",
+          "bytes": 5875
+        },
+        "failed-job-133051308707.log": {
+          "sha256": "18ab73e5d756e5665feac9a45ceeedaa4a00e789a86476cd57d46da6ecc3f512",
+          "bytes": 54155
+        },
+        "native-darwin-amd64-latest.json": {
+          "sha256": "e71758ba98fbe9b5c6029cc316ae7640e2c6b15c441631bf9c66162da40912fe",
+          "bytes": 6420
+        },
+        "pi-diag-rpc-native-exit-eekg6tq5.json": {
+          "sha256": "b0c6c5f44e0ecae9b05e0b8c12e60179be19b943891968c345617aeba7115a10",
+          "bytes": 485
+        },
+        "pi-diag-rpc-shutdown-6ketnijt.json": {
+          "sha256": "e3177aee7465beac44581a25f86fec4f0829bd1d56e0bfa4873cec98c22e5fa1",
+          "bytes": 1326
+        },
+        "pi-diag-rpc-shutdown-9qmgyej5.json": {
+          "sha256": "635fefbd5e965f03871033b5ff38296a939e6a74a9d442102e14346aa4c325fc",
+          "bytes": 409
+        },
+        "pi-diag-rpc-shutdown-f84dfy_2.json": {
+          "sha256": "2a8842e676fb8bb1665a761cff3d1dafcf1c9578b0f17c01bf96da4452ccce9b",
+          "bytes": 579
+        },
+        "pi-diag-rpc-shutdown-observed-1430wuhp.json": {
+          "sha256": "a27f3081862afe974f56f655cae9ad78dae127ada5f71b6debd28d21272e3383",
+          "bytes": 971
+        },
+        "pi-diag-rpc-shutdown-observed-k8l_drgb.json": {
+          "sha256": "e0cd47b31c177eef8c3e9e97ee947a6b0535fb44af6966990daf185ba03e2993",
+          "bytes": 971
+        },
+        "pi-diag-rpc-shutdown-observed-kufui374.json": {
+          "sha256": "72eacfdb5eba3a9d0c11bcd907f189e77c0cab7e93b35283b07df2b240445a73",
+          "bytes": 971
+        },
+        "pi-diag-rpc-shutdown-observed-vz81end4.json": {
+          "sha256": "0d71e59201f4d6314932ee59844dd4e2c0d55c7260fe0b063ff3847b371056f2",
+          "bytes": 971
+        },
+        "pi-windows-artifact-acquisition.json": {
+          "sha256": "ab3bf3842c10051d70b69881cd265857b591e60434fd8f4ee6f36ccba4fbffe5",
+          "bytes": 2525
+        },
+        "pi-windows-bounded-diagnosis.json": {
+          "sha256": "4944d59ef7a0f69490238b624d57cd75ad0eba84c1d4071036d1046aab0c16a5",
+          "bytes": 4088
+        },
+        "pi-windows-diagnostics-14193341001.zip": {
+          "sha256": "0e1e5bc4c50dc003fd75bfeef0ce3a15d04b257a0dcbb79ba30a66c02c0c7212",
+          "bytes": 4409
+        },
+        "pr-initial.json": {
+          "sha256": "730145a762a51da918b81d53fcfcb5688ce34113ba70a40022f87d1cee904115",
+          "bytes": 20830
+        },
+        "pr-terminal.json": {
+          "sha256": "e6c7ff39f6c1621c722fb62bffd7308330aa6afb56b9caf2012d35af5541e5b2",
+          "bytes": 20830
+        },
+        "program-integrity-job-133051308480.log": {
+          "sha256": "36282ef299f324bd7822a43d397e78c3d9c75ab6ca1594953efcb4c973d372d1",
+          "bytes": 563901
+        },
+        "program-integrity-job-133051308492.log": {
+          "sha256": "69b6081ecff97f7e27742ceb32ab93beaa27ff2ebfb573f5345f19582e12ead3",
+          "bytes": 573561
+        },
+        "program-integrity-job-133051308645.log": {
+          "sha256": "dfe1b0761f77f376e3d6c30cab149c05d0a7c1c61a72f5cf9c5b963c6d8551b9",
+          "bytes": 562955
+        },
+        "required-terminal.json": {
+          "sha256": "7ee6962def01fdb03f4ece833b33f6b6467f7c00cb19c9c5b9bca5bb98912030",
+          "bytes": 177
+        },
+        "three-os-program-controls.json": {
+          "sha256": "1ce31fd1a19dd373c6b0382422834000c822a8f106da0f81337526fdc12b23b5",
+          "bytes": 1281
+        },
+        "watch-terminal.json": {
+          "sha256": "77e7368316a1093341f88243f0734f234d3d2895e159c0e7853aad93edca244f",
+          "bytes": 63
+        },
+        "watch.log": {
+          "sha256": "b303d5c4773b3f429e2140d03c29bf67bd9314a4d02276e27af21a31aff08252",
+          "bytes": 2384100
+        }
+      }
+    }
+  },
+  "pi_artifact_acquisition": {
+    "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1114-88c497-watch-dcmm3d_c\\pi-windows-artifact-acquisition.json",
+    "sha256": "ab3bf3842c10051d70b69881cd265857b591e60434fd8f4ee6f36ccba4fbffe5",
+    "bytes": 2525,
+    "record": {
+      "source": "88c497128a498ff2a946cfc157d67913d47bcb89",
+      "run": 43791655604,
+      "job": 133051308707,
+      "artifact": {
+        "id": 14193341001,
+        "node_id": "MDg6QXJ0aWZhY3QxNDE5MzM0MTAwMQ==",
+        "name": "pi-rpc-diagnostics-windows-latest-1.5.0",
+        "size_in_bytes": 4409,
+        "url": "https://api.github.com/repos/arbiterForge/codeArbiter/actions/artifacts/14193341001",
+        "archive_download_url": "https://api.github.com/repos/arbiterForge/codeArbiter/actions/artifacts/14193341001/zip",
+        "expired": false,
+        "digest": "sha256:0e1e5bc4c50dc003fd75bfeef0ce3a15d04b257a0dcbb79ba30a66c02c0c7212",
+        "created_at": "2026-11-16T02:35:06Z",
+        "updated_at": "2026-11-16T02:35:06Z",
+        "expires_at": "2026-11-19T02:21:22Z",
+        "workflow_run": {
+          "id": 43791655604,
+          "repository_id": 1233366728,
+          "head_repository_id": 1233366728,
+          "head_branch": "codex/state-contracts-qualification-coverage",
+          "head_sha": "88c497128a498ff2a946cfc157d67913d47bcb89"
+        }
+      },
+      "archive_sha256": "0e1e5bc4c50dc003fd75bfeef0ce3a15d04b257a0dcbb79ba30a66c02c0c7212",
+      "original_uploader_log_join": true,
+      "members": [
+        {
+          "name": "rpc-native-exit-eekg6tq5.json",
+          "sha256": "b0c6c5f44e0ecae9b05e0b8c12e60179be19b943891968c345617aeba7115a10",
+          "bytes": 485
+        },
+        {
+          "name": "rpc-shutdown-9qmgyej5.json",
+          "sha256": "635fefbd5e965f03871033b5ff38296a939e6a74a9d442102e14346aa4c325fc",
+          "bytes": 409
+        },
+        {
+          "name": "rpc-shutdown-6ketnijt.json",
+          "sha256": "e3177aee7465beac44581a25f86fec4f0829bd1d56e0bfa4873cec98c22e5fa1",
+          "bytes": 1326
+        },
+        {
+          "name": "rpc-shutdown-f84dfy_2.json",
+          "sha256": "2a8842e676fb8bb1665a761cff3d1dafcf1c9578b0f17c01bf96da4452ccce9b",
+          "bytes": 579
+        },
+        {
+          "name": "rpc-shutdown-observed-1430wuhp.json",
+          "sha256": "a27f3081862afe974f56f655cae9ad78dae127ada5f71b6debd28d21272e3383",
+          "bytes": 971
+        },
+        {
+          "name": "rpc-shutdown-observed-k8l_drgb.json",
+          "sha256": "e0cd47b31c177eef8c3e9e97ee947a6b0535fb44af6966990daf185ba03e2993",
+          "bytes": 971
+        },
+        {
+          "name": "rpc-shutdown-observed-kufui374.json",
+          "sha256": "72eacfdb5eba3a9d0c11bcd907f189e77c0cab7e93b35283b07df2b240445a73",
+          "bytes": 971
+        },
+        {
+          "name": "rpc-shutdown-observed-vz81end4.json",
+          "sha256": "0d71e59201f4d6314932ee59844dd4e2c0d55c7260fe0b063ff3847b371056f2",
+          "bytes": 971
+        }
+      ]
+    }
+  },
+  "pi_bounded_diagnosis": {
+    "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1114-88c497-watch-dcmm3d_c\\pi-windows-bounded-diagnosis.json",
+    "sha256": "4944d59ef7a0f69490238b624d57cd75ad0eba84c1d4071036d1046aab0c16a5",
+    "bytes": 4088,
+    "record": {
+      "source": "88c497128a498ff2a946cfc157d67913d47bcb89",
+      "run": 43791655604,
+      "attempt": 1,
+      "job": 133051308707,
+      "case": "PiPackageTests.test_real_rpc_enabled_untrusted_global_session_stays_before_repository_boundary",
+      "verdict": "BOUNDED_UNRESOLVED_OS_EXIT",
+      "original_artifact": {
+        "id": 14193341001,
+        "name": "pi-rpc-diagnostics-windows-latest-1.5.0",
+        "sha256": "0e1e5bc4c50dc003fd75bfeef0ce3a15d04b257a0dcbb79ba30a66c02c0c7212",
+        "uploader_log_name_id_digest_and_API_run_source_join": true
+      },
+      "facts": {
+        "protocol": "19records; commands/settled/capture received; stdinclosed2058ms; parent30secwaitexpired32057ms; stderr empty",
+        "JS": "stdinend1099ms; shutdownobserver1099ms; exitEvent1101ms exitCode0; reallyExit wrapper entrytrue",
+        "kernel": "Original Popen handle and independently opened process handle bound samePID6468/creationTime134392700146530880 and expected NodeSHA995a3fb3cefad590cd3f4b321532a4b9582fb9c6575320ed2e3e894caac3e362. WaitForSingleObject(0) reports258 before+after; process handle not signaled; no exitcode observed.",
+        "debugger": "UNAVAILABLE,0frames, no nativewaitlocation;5299ms diagnostic observation.",
+        "companions": "Four distinct passive raw companions pass; they do not qualify failed original."
+      },
+      "source_semantics": {
+        "test_pi_package.py:125": "Entry into reallyExit wrapper explicitly not proof of native shutdown orOSexit; wrapper writes then delegates.",
+        "test_pi_package.py:139": "process_exit is JS exit-event observation only.",
+        "test_pi_package.py:239": "Original parentwait enforces remaining30sec naturalprocess bound fromEOF.",
+        "_windows_rpc_timeout.py:95": "running is zero-timeout WaitForSingleObject258 on query handle; signaled0 alone gets kernel exitcode.",
+        "_windows_rpc_timeout.py:257": "Popen original handle and independent query handle match PID+creationtime+expectedimage, excluding unrelatedPID/reuse claim.",
+        "_windows_rpc_timeout.py:294": "After-query repeats original handle identity andstate; diagnostic is failure-only before cleanup."
+      },
+      "unknown": [
+        "Exact native shutdown/RPC/OS mechanism and blockedthread location.",
+        "Whether JS reallyExit original callee has been reached or returned; entry is only boundarypreceding delegation.",
+        "No proof of compile-cache/hook/provider/trust-boundary/pipe-drain culprit."
+      ],
+      "recommendation": "Preserve current natural-exit assertion and original failure. A future original Windows producer with valid existing debugger evidence can locate native wait; no live replay, timeout-success relabeling, or childtermination may qualify the original. Root owns any narrow source fixture repairs separately.",
+      "source_sha256": {
+        ".github/scripts/test_pi_package.py": "6fd1035b6057132905471a79854bf628b0ba53d477702217c53b78f86009378c",
+        ".github/scripts/_windows_rpc_timeout.py": "286b952a5691b371cd94677c2601a40af051c3a6d826303dd5616957da6fad1a"
+      },
+      "raw_files": {
+        "pi-diag-rpc-native-exit-eekg6tq5.json": "b0c6c5f44e0ecae9b05e0b8c12e60179be19b943891968c345617aeba7115a10",
+        "pi-diag-rpc-shutdown-6ketnijt.json": "e3177aee7465beac44581a25f86fec4f0829bd1d56e0bfa4873cec98c22e5fa1",
+        "pi-diag-rpc-shutdown-9qmgyej5.json": "635fefbd5e965f03871033b5ff38296a939e6a74a9d442102e14346aa4c325fc",
+        "pi-diag-rpc-shutdown-f84dfy_2.json": "2a8842e676fb8bb1665a761cff3d1dafcf1c9578b0f17c01bf96da4452ccce9b",
+        "pi-diag-rpc-shutdown-observed-1430wuhp.json": "a27f3081862afe974f56f655cae9ad78dae127ada5f71b6debd28d21272e3383",
+        "pi-diag-rpc-shutdown-observed-k8l_drgb.json": "e0cd47b31c177eef8c3e9e97ee947a6b0535fb44af6966990daf185ba03e2993",
+        "pi-diag-rpc-shutdown-observed-kufui374.json": "72eacfdb5eba3a9d0c11bcd907f189e77c0cab7e93b35283b07df2b240445a73",
+        "pi-diag-rpc-shutdown-observed-vz81end4.json": "0d71e59201f4d6314932ee59844dd4e2c0d55c7260fe0b063ff3847b371056f2"
+      },
+      "limits": "Read-only original log/archive/source diagnosis; no live Pi/Node/native/SDK execution, no source/index/markers orAPI mutation."
+    }
+  },
+  "program_controls": {
+    "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1114-88c497-watch-dcmm3d_c\\three-os-program-controls.json",
+    "sha256": "1ce31fd1a19dd373c6b0382422834000c822a8f106da0f81337526fdc12b23b5",
+    "bytes": 1281,
+    "record": [
+      {
+        "job": 133051308480,
+        "name": "[CHECK] | [REPO] | Program integrity  <os: macos-latest>",
+        "conclusion": "success",
+        "log_sha256": "36282ef299f324bd7822a43d397e78c3d9c75ab6ca1594953efcb4c973d372d1",
+        "original_log_read": {
+          "job_id": 133051225588,
+          "bytes": 158565,
+          "sha256": "bd944a597386df7e2048f88c6318f5ed6b2c908b6adb64245dadcb21cae841a5",
+          "state": "READ"
+        }
+      },
+      {
+        "job": 133051308492,
+        "name": "[CHECK] | [REPO] | Program integrity  <os: windows-latest>",
+        "conclusion": "success",
+        "log_sha256": "69b6081ecff97f7e27742ceb32ab93beaa27ff2ebfb573f5345f19582e12ead3",
+        "original_log_read": {
+          "job_id": 133051225588,
+          "bytes": 158565,
+          "sha256": "bd944a597386df7e2048f88c6318f5ed6b2c908b6adb64245dadcb21cae841a5",
+          "state": "READ"
+        }
+      },
+      {
+        "job": 133051308645,
+        "name": "[CHECK] | [REPO] | Program integrity  <os: ubuntu-latest>",
+        "conclusion": "success",
+        "log_sha256": "dfe1b0761f77f376e3d6c30cab149c05d0a7c1c61a72f5cf9c5b963c6d8551b9",
+        "original_log_read": {
+          "job_id": 133051225588,
+          "bytes": 158565,
+          "sha256": "bd944a597386df7e2048f88c6318f5ed6b2c908b6adb64245dadcb21cae841a5",
+          "state": "READ"
+        }
+      }
+    ]
+  },
+  "primary_failures": [
+    {
+      "job_id": 133051308557,
+      "owner": "Hook contracts / original named-test reports",
+      "result": "39 PASS / 1 ERROR of40",
+      "observation": "Source fixture git add timed out at unchanged15s before the assertion; underlying Git delay UNKNOWN.",
+      "diagnostic_next_step": "Failure-only bounded sanitized Trace2 topology; same command, timeout and original exception."
+    },
+    {
+      "job_id": 133051308669,
+      "owner": "Windows Coverage / farm-registry-lock.test.ts",
+      "result": "6 new fault cases FAIL with zero injected opens; original Farm146 PASS including concurrent #397",
+      "observation": "Strict fixture compares lexical path while production canonicalizes physical common directory. Hosted actual open path unlogged. Owned-junction local reproducer confirms this zero-injection mechanism."
+    },
+    {
+      "job_id": 133051308707,
+      "owner": "Pi Windows / original real RPC shutdown",
+      "result": "12 PASS / 1 FAIL of13",
+      "observation": "Owned PID6468 creation134392700146530880 remained running on both independently identity-matched handles after stdin EOF and reallyExit entry. Debugger unavailable; no native frames. Cause/callee/cache/pipe/kernel UNKNOWN.",
+      "diagnostic_next_step": "Closed protected Windows inbox DLL profile when default SDK is absent; no new installation or relaxed timeout."
+    }
+  ],
+  "positive_limits": [
+    "Docs succeeded; all6 native conformance jobs and all3 OS Program Integrity jobs succeeded individually.",
+    "Original source preparation and publisher observer succeeded; later skill-proof observer/emitter skipped after failure.",
+    "Failed whole CI admits no installed/native/whole-run qualification. Numeric coverage passes do not override failed tests."
+  ]
+}

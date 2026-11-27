@@ -1,0 +1,16 @@
+{
+  "command": [
+    "C:\\Python314\\python.exe",
+    "-B",
+    "-X",
+    "utf8",
+    ".github/scripts/test_ci_impact.py",
+    "ArtifactEngineCIContractTest.test_candidate_suites_have_one_qualified_execution"
+  ],
+  "phase": "green",
+  "exit": 0,
+  "seconds": 0.235,
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "48c212784ffa8cdd569d8ed4f0008658c2988198266c7f6bbb1e99bd29c454b5",
+  "scope": "Actual preexisting static eight-suite AST/membership and owningCI wiring guard; no native child execution."
+}

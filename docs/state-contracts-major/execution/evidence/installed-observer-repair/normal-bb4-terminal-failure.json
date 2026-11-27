@@ -1,0 +1,265 @@
+{
+  "format": "codearbiter.reconstructible-public-api-receipt/1",
+  "original_sha256": "4f6e9b5beb4d3170bba89b249ec00f7edaead63a45ebb6ec7dc0afdd18df4e56",
+  "original_bytes": 9032,
+  "original_serialization": {
+    "indent": 2,
+    "newline": "\n"
+  },
+  "record": {
+    "format": "trusted-normal-installed-terminal-failure/1",
+    "source_commit": "bb4886b9ce9236870e80f8d1969df1c867a87be1",
+    "run_id": 43758478716,
+    "attempt": 1,
+    "event": "push",
+    "branch": "major/state-contracts",
+    "workflow": ".github/workflows/ci.yml",
+    "run_conclusion": "failure",
+    "watch_exit_code": 1,
+    "captured_utc": "2026-11-15T21:19:47.044553+00:00",
+    "job_counts": {
+      "success": 78,
+      "skipped": 7,
+      "failure": 12
+    },
+    "failed_jobs": [
+      {
+        "id": 132958013560,
+        "name": "[CHECK] | [PI  ] | Installed retained package <pi: darwin 1.5.0>",
+        "conclusion": "failure",
+        "failed_steps": [
+          "Observe the original retained Pi RPC installation"
+        ]
+      },
+      {
+        "id": 132958013561,
+        "name": "[CHECK] | [PI  ] | Installed retained package <pi: linux 1.5.0>",
+        "conclusion": "failure",
+        "failed_steps": [
+          "Observe the original retained Pi RPC installation"
+        ]
+      },
+      {
+        "id": 132958013603,
+        "name": "[CHECK] | [PI  ] | Installed retained package <pi: windows 1.5.0>",
+        "conclusion": "failure",
+        "failed_steps": [
+          "Observe the original retained Pi RPC installation"
+        ]
+      },
+      {
+        "id": 132958013615,
+        "name": "[CHECK] | [CDX ] | Installed retained package <codex: 0.143.0>",
+        "conclusion": "failure",
+        "failed_steps": [
+          "Observe the original retained Codex CLI installation"
+        ]
+      },
+      {
+        "id": 132958013629,
+        "name": "[CHECK] | [CDX ] | Installed retained package <codex: 0.145.0>",
+        "conclusion": "failure",
+        "failed_steps": [
+          "Observe the original retained Codex CLI installation"
+        ]
+      },
+      {
+        "id": 132958013649,
+        "name": "[CHECK] | [CORE] | Structured artifact cold package  <darwin/amd64>",
+        "conclusion": "failure",
+        "failed_steps": [
+          "Observe the original exact-package claude workflow"
+        ]
+      },
+      {
+        "id": 132958013659,
+        "name": "[CHECK] | [CORE] | Structured artifact cold package  <windows/amd64>",
+        "conclusion": "failure",
+        "failed_steps": [
+          "Observe the original exact-package claude workflow"
+        ]
+      },
+      {
+        "id": 132958013667,
+        "name": "[CHECK] | [CORE] | Structured artifact cold package  <windows/arm64>",
+        "conclusion": "failure",
+        "failed_steps": [
+          "Observe the original exact-package claude workflow"
+        ]
+      },
+      {
+        "id": 132958013718,
+        "name": "[CHECK] | [CORE] | Structured artifact cold package  <linux/arm64>",
+        "conclusion": "failure",
+        "failed_steps": [
+          "Observe the original exact-package claude workflow"
+        ]
+      },
+      {
+        "id": 132958013769,
+        "name": "[CHECK] | [CORE] | Structured artifact cold package  <linux/amd64>",
+        "conclusion": "failure",
+        "failed_steps": [
+          "Observe the original exact-package claude workflow"
+        ]
+      },
+      {
+        "id": 132958013819,
+        "name": "[CHECK] | [CORE] | Structured artifact cold package  <darwin/arm64>",
+        "conclusion": "failure",
+        "failed_steps": [
+          "Observe the original exact-package claude workflow"
+        ]
+      },
+      {
+        "id": 132958889131,
+        "name": "[GATE ] | [REPO] | Merge readiness",
+        "conclusion": "failure",
+        "failed_steps": [
+          "Require every required job to have succeeded or been skipped"
+        ]
+      }
+    ],
+    "qualification": "No installed13/native promotion: whole trusted run failed. All original source/run reports and diagnostics retained at their actual epoch.",
+    "positive_boundary": "Original owners advanced beyond prior upload-log failure; Sandbox owner succeeded. Pi Linux original installed RPC case passed but post-run membership refused; Windows Pi bootstrap clean-source check refused.",
+    "Pi_linux": {
+      "artifact_id": 14180851537,
+      "zip_sha256": "52ac98283099da14fddcb9a1edd3f1626b811ae168e6caf92816d60fb667c2bc",
+      "closed_inner_reason": "complete original installed Pi membership changed",
+      "original_test_passed": true,
+      "worker_exit": 1,
+      "worker_timed_out": false,
+      "cleanup_complete": true,
+      "specific_changed_member": "Not retained; no inferred path or EOF/native-hang cause."
+    },
+    "Pi_windows": {
+      "artifact_id": 14181051212,
+      "zip_sha256": "d01bf19757ff032f8f1a72de43a055b57c0abdc8ef22c16aa930bf2f5f6c5641",
+      "closed_inner_reason": "observer source checkout is not clean",
+      "dirty_entry": "Not retained; exact dirty status/path unknown."
+    },
+    "retained": {
+      "binding.json": {
+        "sha256": "d2ce2aa7e853c75e6ecfa63a07b716fd2dd643f564a9f4e1394f52f466e8fd44",
+        "bytes": 389
+      },
+      "coordinator-artifact-authentication.json": {
+        "sha256": "4aef6922d5b0d3c145ff88633178b184b59f2ff1c582faff5f46e6386e796297",
+        "bytes": 4983
+      },
+      "failed-job-132958013561.json": {
+        "sha256": "d5bd6f28b9c68f169b4296c2e33afc70ad67caa24731133664d6e5f8b6bc2617",
+        "bytes": 3618
+      },
+      "failed-job-132958013561.log": {
+        "sha256": "3335b2a378315e6fa3c6d2cc04db43f5b6e9357a4accb5d52dca63063af76d87",
+        "bytes": 86641
+      },
+      "failed-job-132958013561.log.stderr": {
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "failed-job-132958013769.json": {
+        "sha256": "61c09542c528239f0030217339e6b82d2779dcfa319e187c9205eec45d2860aa",
+        "bytes": 4951
+      },
+      "failed-job-132958013769.log": {
+        "sha256": "a76648473c73cf9d42cc1722558ab1ae15c1a01d252ec84d53d11d6bb1a2dac8",
+        "bytes": 39344
+      },
+      "failed-job-132958013769.log.stderr": {
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "failure-artifact-14180851537.stderr": {
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "failure-artifact-14180851537.zip": {
+        "sha256": "52ac98283099da14fddcb9a1edd3f1626b811ae168e6caf92816d60fb667c2bc",
+        "bytes": 753912
+      },
+      "failure-artifact-14181011157.stderr": {
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "failure-artifact-14181011157.zip": {
+        "sha256": "03f1c35a17833e8ea6b53519a85866ce8afb07356b7d65b31b80e9f866bbd141",
+        "bytes": 191965
+      },
+      "failure-artifact-14181051212.stderr": {
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "failure-artifact-14181051212.zip": {
+        "sha256": "d01bf19757ff032f8f1a72de43a055b57c0abdc8ef22c16aa930bf2f5f6c5641",
+        "bytes": 2097
+      },
+      "failure-artifacts-metadata.json": {
+        "sha256": "11c027051c4c8320639af72b4c40ec9e42c9a7bb60b66f30ad906ee2bc4d446c",
+        "bytes": 51129
+      },
+      "failure-artifacts-metadata.stderr": {
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "failure-closed-exception-readback.json": {
+        "sha256": "3efb498fae9e2d5a7ff3b25b0e2a005eff39e49a5cb192fcced7edc927f7fc65",
+        "bytes": 306
+      },
+      "first-installed-failure-readback.json": {
+        "sha256": "b55689b27f59782f990566be2b3e282f693f170dac9e9598646b0e65c0e15da6",
+        "bytes": 1143
+      },
+      "inner-failure-closed-projection.json": {
+        "sha256": "c56f043efac27b2b32f4c67d6b79ea6e1faaea3dea583c7a1c25b8db35629cdb",
+        "bytes": 17384
+      },
+      "jobs-terminal.json": {
+        "sha256": "c77a34e0cde45dbac19ea5cfeb1f5d2e0be3c58f6af7445a4f4fdb2974b2efbb",
+        "bytes": 411922
+      },
+      "jobs-terminal.json.stderr": {
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "pi-linux-worker-causal-readback.json": {
+        "sha256": "9bf4978fb265ab7f9b71915ac8ba8e038a917503e38bd36fdbae6b90a3dc67cd",
+        "bytes": 1361
+      },
+      "run-before.json": {
+        "sha256": "aca01b1504bd06b6cd8ae30e29574ebd61d2a63d6d9dced64aa3e3faf4954cf2",
+        "bytes": 13263
+      },
+      "run-before.stderr": {
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "run-terminal.json": {
+        "sha256": "9fc83a58611713870a453d395a75083662cbabc660902c11400083d4d7feb619",
+        "bytes": 13271
+      },
+      "run-terminal.json.stderr": {
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "watch-exit.txt": {
+        "sha256": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b",
+        "bytes": 1
+      },
+      "watch.log": {
+        "sha256": "a25d67dbf60d163388a652b24129b51f15bf5c92653ca05d0832e34ef31baece",
+        "bytes": 2658258
+      }
+    },
+    "mutations": {
+      "CI_retry": false,
+      "cancel": false,
+      "merge": false,
+      "Gov_source_index_refs": false,
+      "host_probe_model_provider": false
+    },
+    "limits": "Only original Actions read/download and bounded retained forensic/source inspection. No runtime replay, additional debugger attach, install, source fix or false qualification."
+  },
+  "representation_note": "Typed path/sha256 maps retain every original value. Restore path-sha256-pairs maps and serialize with the recorded indent/newline, ensure_ascii true, and final newline for exact original bytes. No scanner exemption."
+}

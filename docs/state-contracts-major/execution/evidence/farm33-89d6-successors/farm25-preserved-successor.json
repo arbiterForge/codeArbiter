@@ -1,0 +1,2280 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "Bounded current clause-applicability review by farm_sandbox_program, reusing prior accepted clause reviews and genuine current938 named corroboration; not an independent-review marker."
+  },
+  "inputs": {
+    "core/artifact-release-manifest.json": "3ae933456e1275040f1c36ef4a0eaefac7f49fbff2c36a47867066527f3cb23e",
+    "plugins/ca/tools/artifact-manifest.ts": "c52753ad9aa137876622281652641e67d94e5904f64d1f6d8565e64c2f2c88c0",
+    "plugins/ca/tools/exec.ts": "1a2fe067280c570d3d0c296f6795e642901bf546e873123b2d125da13444fc73",
+    "plugins/ca/tools/farm-recovery.ts": "1dbbbce56e7cda24d6016c7205f60b5bf758e24aed2a5a8132ff4ff336e49885",
+    "plugins/ca/tools/farm.js": "4f2c53b5fed25aa7d197d3cec9f1c97c552d4bb75a720b06984989b5749daafd",
+    "plugins/ca/tools/farm.test.ts": "395ec94484631ee6ffdb66b57b6b8241201592db3b081b218128ddee9758a15e",
+    "plugins/ca/tools/farm.ts": "9f94cf106a986d4005ae7f838592e33441c7c670b52a11bf18c19dc0640604d2",
+    "plugins/ca/tools/farm.unit.test.ts": "23ba125efe2493fe0839ec23120805b04866d472cc5705b78568788d7d2f151f",
+    "plugins/ca/tools/mutation.test.ts": "5985942832195d81674ed6604208756643282d4c040cd7a7c2f6f2b7547fe28e",
+    "plugins/ca/tools/mutation.ts": "27e5548419430e94ce9b892f478c5cb32da84791c5a07dac01e4393dce01e90d",
+    "plugins/ca/tools/package-lock.json": "81ac5a03620575fa6e1ccbe2343d59092a7d998aa0ed0419147ecc1353f5ab05",
+    "plugins/ca/tools/package.json": "e36527e252fe0b559c93c8b0501eccf93d168297f4a5c2da4f2ce2aa709c9972",
+    "plugins/ca/tools/redactor.ts": "ef6344cdbb5578e525173852e08e2b410a02238a622e548488daff48b9e30f03",
+    "plugins/ca/tools/tsconfig.json": "8930059661c9e911148eb53c7b96506313ef87c66239856d8ec6500cf6a8aa2e",
+    "plugins/ca/tools/vitest.config.ts": "830ac6df0919d2caae0c7cdda948d931fa2d2bc7c6c270704d5bd43ce495edf0",
+    "plugins/ca/tools/worktree-fs.test.ts": "11379a2c4661f38320c4a6f7e41f152d038d8dbdbb09d1c008506be4d6f53dda",
+    "plugins/ca/tools/worktree-fs.ts": "0b0f2af98c0f48cbbe4d3a53f5365c87c597d2fc0e702ca15a6af0e2ce618277"
+  },
+  "disposition_ids": [
+    "disposition:transitions:S28:01",
+    "disposition:transitions:S28:02",
+    "disposition:transitions:S28:03",
+    "disposition:transitions:S28:04",
+    "disposition:transitions:S28:05",
+    "disposition:transitions:S28:06",
+    "disposition:transitions:S28:07",
+    "disposition:transitions:S28:08",
+    "disposition:transitions:S28:09",
+    "disposition:transitions:S28:10",
+    "disposition:transitions:S28:12",
+    "disposition:transitions:S27:01",
+    "disposition:transitions:S27:02",
+    "disposition:transitions:S27:03",
+    "disposition:transitions:S27:04",
+    "disposition:transitions:S27:09",
+    "disposition:transitions:S27:05",
+    "disposition:transitions:S27:06",
+    "disposition:transitions:S27:07",
+    "disposition:transitions:S27:08",
+    "disposition:transitions:S31:01",
+    "disposition:transitions:S31:02",
+    "disposition:transitions:S31:03",
+    "disposition:transitions:S31:04",
+    "disposition:transitions:S31:05"
+  ],
+  "semantic_groups": [
+    {
+      "id": "mutation-eligibility-and-literal-risk",
+      "transition_cells": [
+        "disposition:transitions:S28:01",
+        "disposition:transitions:S28:02"
+      ],
+      "current_clauses": [
+        "mutationCheck returns null when disabled/no first gate/no eligible mutants; no score or test claim is invented.",
+        "antiGamingCheck inspects exact typed literal evidence and <=5 code-line implementations; returned risk is a heuristic, not proof of human intent."
+      ],
+      "selectors": [
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:antiGamingCheck returns none when the test file cannot be read",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 5.546299999999974,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:antiGamingCheck returns none when the test asserts no literal worth matching",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 5.203200000000038,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:antiGamingCheck skips the test file itself when it appears in filesInScope",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 8.49799999999999,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:antiGamingCheck skips an in-scope file that does not exist yet",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 3.9559000000000424,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:antiGamingCheck returns none when a real impl does not reproduce the literal",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 11.343200000000024,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:antiGamingCheck escalates to high when a TINY impl reproduces the literal verbatim",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 4.560600000000022,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:antiGamingCheck puts the trivial/substantial boundary at exactly five code lines",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 10.9255,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:antiGamingCheck names the FIRST hit in the warn note, not the last",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 10.802900000000022,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:antiGamingCheck ignores a single-character literal that ordinary code would trip over",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 8.004599999999982,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:antiGamingCheck counts only CODE lines, so a tiny impl padded with comments still escalates",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 10.958499999999958,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:antiGamingCheck escalates if ANY in-scope file is tiny, not merely the first hit",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 5.199299999999994,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:literal evidence boundaries does not hard-reject a longer number substring as a complete typed literal",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 3.936999999999955,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:literal evidence boundaries does not hard-reject a numeric suffix substring as a complete typed literal",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 7.592300000000023,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:literal evidence boundaries does not hard-reject a decimal part substring as a complete typed literal",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 3.377299999999991,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:literal evidence boundaries does not hard-reject a exponent part substring as a complete typed literal",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 2.9132999999999925,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:literal evidence boundaries does not hard-reject a hex digit substring substring as a complete typed literal",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 3.3711999999999875,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:literal evidence boundaries does not hard-reject a identifier suffix substring as a complete typed literal",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 6.217899999999986,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:literal evidence boundaries does not hard-reject a supplementary unicode identifier substring as a complete typed literal",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 3.0617000000000303,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:literal evidence boundaries does not hard-reject a unicode identifier substring as a complete typed literal",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 3.2875999999999976,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:literal evidence boundaries does not hard-reject a longer string substring as a complete typed literal",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 3.123199999999997,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:literal evidence boundaries does not hard-reject a number versus string substring as a complete typed literal",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 3.2199999999999704,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:literal evidence boundaries does not hard-reject a string versus number substring as a complete typed literal",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 2.8770999999999844,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:literal evidence boundaries does not hard-reject a line comment in implementation substring as a complete typed literal",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 2.6286999999999807,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:literal evidence boundaries does not hard-reject a block comment in implementation substring as a complete typed literal",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 2.718900000000019,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:literal evidence boundaries does not hard-reject a unclosed block comment substring as a complete typed literal",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 6.863300000000038,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:literal evidence boundaries does not hard-reject a comment-only test evidence substring as a complete typed literal",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 3.254700000000014,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:literal evidence boundaries does not hard-reject a inline Python comment substring as a complete typed literal",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 7.50830000000002,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:literal evidence boundaries does not hard-reject a Python floor division is not a comment substring as a complete typed literal",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 6.722000000000037,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:literal evidence boundaries does not hard-reject a regexp contents substring as a complete typed literal",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 6.106200000000001,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:literal evidence boundaries does not hard-reject a interpolated template is not a constant substring as a complete typed literal",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 2.7065000000000055,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:literal evidence boundaries preserves high risk for quoted comment markers",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 7.7226,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:literal evidence boundaries preserves high risk for Python floor division followed by exact value",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 4.095799999999997,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:literal evidence boundaries preserves high risk for closed block comment followed by exact value",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 3.5797000000000025,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:literal evidence boundaries preserves high risk for Python whole triple string",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 8.470700000000022,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:literal evidence boundaries preserves high risk for escaped quote",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 3.3337999999999965,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:literal evidence boundaries preserves high risk for static template",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 3.4709000000000287,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:mutationCheck \u2014 configuration gates returns null when mutation checking is disabled",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 2.9990999999999985,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:mutationCheck \u2014 configuration gates returns null when the task declares no gate command",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 2.3215999999999894,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:mutationCheck \u2014 built-in text mutation puts the trivial-file cutoff at exactly two code lines",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 295.9945999999999,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:mutationCheck \u2014 built-in text mutation returns null when the in-scope file does not exist",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 1.3631000000000313,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        }
+      ],
+      "limits": "Model intent is not observable. These are unchanged source decisions and controlled local fixtures."
+    },
+    {
+      "id": "mutation-hook-score-and-fatal-evidence",
+      "transition_cells": [
+        "disposition:transitions:S28:03",
+        "disposition:transitions:S28:04",
+        "disposition:transitions:S28:05",
+        "disposition:transitions:S28:06"
+      ],
+      "current_clauses": [
+        "Configured hook uses scrubbed env/process-group runner and finite gate timeout. interpretMutationHookResult admits score only for code0 with no timeout/cleanupFailed.",
+        "runTask assessment retains explicit evaluated>=5 and score<=configured default0.1 floor; missing counts are not invented.",
+        "Malformed/error/timeout retains warning/adverse unverified evidence instead of fabricating positive score. cleanupFailed yields fatal before candidate switch, reset, stage, integrate or another author."
+      ],
+      "selectors": [
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:qualified best-of-N alternatives does not penalize a candidate for missing mutation count beyond the existing warning policy",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 1424.5530999999992,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:qualified best-of-N alternatives retains mutation-hook infrastructure warnings rather than inventing an escalation rule",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 1419.519900000003,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:qualified best-of-N alternatives retains the adverse-report count floor without publishing failed scores",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 1423.9903999999988,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:qualified best-of-N alternatives does not invent a blocking count from a failed hook (undefined)",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 1418.4043999999994,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:qualified best-of-N alternatives does not invent a blocking count from a failed hook (0)",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 1420.8754000000008,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:qualified best-of-N alternatives does not invent a blocking count from a failed hook (4)",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 1426.1038000000008,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:qualified best-of-N alternatives stops after mutation containment is unverified with 1 candidate(s)",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 4.783500000001368,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:qualified best-of-N alternatives stops after mutation containment is unverified with 2 candidate(s)",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 945.7808999999979,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:qualified best-of-N alternatives retains the upper-bound/count policy (0.1, 10) before buying another sample round",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 1413.281500000001,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:qualified best-of-N alternatives retains the upper-bound/count policy (0.2, 5) before buying another sample round",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 1421.234199999999,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:qualified best-of-N alternatives retains the upper-bound/count policy (0, 4) before buying another sample round",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 1422.508600000001,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:qualified best-of-N alternatives does not invent an adequate completed count for interrupted built-in screening",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 1426.7325999999957,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:mutationCheck \u2014 pluggable FARM_MUTATION_CMD hook returns the hook's parsed score when it prints a trailing JSON line",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 17.609199999999987,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:mutationCheck \u2014 pluggable FARM_MUTATION_CMD hook falls back to `evaluated` when `total` is absent, and reports NOTHING when both are",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 30.253199999999993,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:mutationCheck \u2014 pluggable FARM_MUTATION_CMD hook reports a CONFIGURED-BUT-FAILED hook distinctly from an unconfigured one",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 30.15840000000003,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:mutationCheck \u2014 pluggable FARM_MUTATION_CMD hook says `(no output)` rather than dangling when a failing hook prints nothing",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 27.43100000000004,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:mutationCheck \u2014 pluggable FARM_MUTATION_CMD hook REDACTS a secret the hook prints before it reaches the task result",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 27.28869999999995,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:mutationCheck \u2014 pluggable FARM_MUTATION_CMD hook does not leak the dispatcher's API key into the hook's environment",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 104.87180000000001,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:mutationCheck \u2014 pluggable FARM_MUTATION_CMD hook passes the FARM_MUTATION_* contract vars through to the hook",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 30.8128999999999,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:mutationCheck \u2014 pluggable FARM_MUTATION_CMD hook runs the hook IN the worktree and keeps the TAIL of a long output",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 32.91159999999991,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:mutation measurement validity rejects a non-normalized hook score 1e309",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 1.373700000000099,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:mutation measurement validity rejects a non-normalized hook score -0.01",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 1.2350999999998749,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:mutation measurement validity rejects a non-normalized hook score 1.01",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 1.2309000000000196,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:mutation measurement validity rejects a failed hook even after stdout reports score 0",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 52.365800000000036,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:mutation measurement validity rejects a failed hook even after stdout reports score 1",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 44.2515999999996,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:mutation measurement validity does not treat stderr score text as a measurement",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 91.98050000000012,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:mutation measurement validity keeps valid stdout distinct from a misleading later stderr score",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 47.43679999999995,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:mutation hook terminal evidence never credits a positive score after {\"code\":7}",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 1.4497999999998683,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:mutation hook terminal evidence never credits a positive score after {\"code\":124,\"timedOut\":true}",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 1.4868999999998778,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:mutation hook terminal evidence never credits a positive score after {\"code\":125,\"timedOut\":true,\"cleanupFailed\":true}",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 1.5684999999998581,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:mutation hook terminal evidence never credits a positive score after {\"code\":0,\"timedOut\":true}",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 1.499699999999848,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:mutation hook terminal evidence never credits a positive score after {\"code\":0,\"cleanupFailed\":true}",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 1.212800000000243,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:mutation hook terminal evidence redacts complete diagnostics before taking a bounded tail",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 1.202600000000075,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:mutation hook terminal evidence keeps genuine completed low score/count and absent count as reported",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 1.1636999999996078,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        }
+      ],
+      "limits": "Real process containment on unsupported platforms remains separate. Hook diagnostics and failed stdout are not measured scores."
+    },
+    {
+      "id": "mutation-budget-restoration-and-score-validity",
+      "transition_cells": [
+        "disposition:transitions:S28:07",
+        "disposition:transitions:S28:08",
+        "disposition:transitions:S28:09",
+        "disposition:transitions:S28:10",
+        "disposition:transitions:S28:12"
+      ],
+      "current_clauses": [
+        "Original bytes are held in a Map. Default sample15 and launch budget30000ms remain configurable; guarded default-config edge does not claim hard maxima for operator overrides.",
+        "Mutant write precedes remaining-budget calculation; each gate launch is bounded by remaining time and shared gate limit. Immediate restore precedes next trial; finally restores all originals.",
+        "TimedOut/cleanupFailed stops launches, restores and excludes incomplete trials. Any ordinary nonzero is unclassified rejection, not a measured killed mutant. Earlier adverse upper-bound evidence remains.",
+        "All completed passes yield zero score only with >=3 evaluated trials; fewer returns null. Safe writer wraps unsafe/failed restoration as UnsafeWorktreePathError; assessment returns fatal without blind retry."
+      ],
+      "selectors": [
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:farm worktree write containment escalates unsafe mutation write/finally-restore paths without touching or staging the external file",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 5.074299999999994,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:farm worktree write containment escalates when the mutation command swaps an ancestor before immediate and final restore",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 57.563899999999876,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:mutationCheck \u2014 built-in text mutation puts the trivial-file cutoff at exactly two code lines",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 295.9945999999999,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:mutationCheck \u2014 built-in text mutation returns null when the in-scope file does not exist",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 1.3631000000000313,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:mutationCheck \u2014 built-in text mutation keeps all completed rejections unverified rather than claiming every mutant was killed",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 575.7428,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:mutationCheck \u2014 built-in text mutation scores 0 and names every survivor when the gate catches none",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 200.17050000000017,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:mutationCheck \u2014 built-in text mutation actually MUTATES the file, re-runs the gate, and classifies by the result",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 563.3066999999999,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:mutationCheck \u2014 built-in text mutation restores the original file through BOTH the in-loop and the final path",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 413.6516999999999,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:mutationCheck \u2014 built-in text mutation returns null rather than a score when too few mutants were evaluated",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 62.834100000000035,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:mutationCheck \u2014 built-in text mutation retains completed rejection evidence when the budget expires between launches",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 23.589300000000094,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:mutationCheck \u2014 built-in text mutation stops at the wall-clock budget and reports nothing when it expires first",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 6.178600000000188,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:built-in mutation deadline and terminal evidence rejects incomplete trial {\"code\":124,\"timedOut\":true} without scoring or another launch",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 15.18939999999975,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:built-in mutation deadline and terminal evidence rejects incomplete trial {\"code\":125,\"timedOut\":true,\"cleanupFailed\":true} without scoring or another launch",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 14.838999999999942,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:built-in mutation deadline and terminal evidence rejects incomplete trial {\"code\":0,\"timedOut\":true} without scoring or another launch",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 8.839600000000246,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:built-in mutation deadline and terminal evidence rejects incomplete trial {\"code\":0,\"cleanupFailed\":true} without scoring or another launch",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 9.293699999999717,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:built-in mutation deadline and terminal evidence preserves completed adverse observations without counting the interrupted trial",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 44.93349999999964,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:built-in mutation deadline and terminal evidence redacts terminal diagnostics before bounding the preserved tail",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 7.945300000000316,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:built-in mutation deadline and terminal evidence a zero budget launches no mutant and leaves worker output intact",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 6.635600000000068,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:built-in mutation deadline and terminal evidence accounts for writing a mutant before calculating the remaining launch allowance",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 11.36369999999988,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:built-in mutation deadline and terminal evidence restores without running the test when a mutant write consumes the whole budget",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 8.421800000000076,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:built-in mutation deadline and terminal evidence does not reinterpret an ordinary exit code as the runner's timeout flag",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 20.000299999999697,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:built-in rejection evidence is not a measured kill score redacts a complete synthetic PEM before labeling a rejected mutation",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 27.926500000000033,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:built-in rejection evidence is not a measured kill score does not infer a killed mutant from exit 1 and diagnostic SyntaxError: invalid mutant",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 16.33089999999993,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:built-in rejection evidence is not a measured kill score does not infer a killed mutant from exit 2 and diagnostic error TS2322: invalid type",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 14.782700000000204,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:built-in rejection evidence is not a measured kill score does not infer a killed mutant from exit 127 and diagnostic test runner not found",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 13.871200000000044,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:built-in rejection evidence is not a measured kill score does not infer a killed mutant from exit 1 and diagnostic AssertionError: expected value",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 13.472499999999854,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:built-in rejection evidence is not a measured kill score does not infer a killed mutant from exit 137 and diagnostic killed\n{\"score\":1,\"total\":99}",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 15.926500000000033,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:built-in rejection evidence is not a measured kill score records too-few completed rejections without inventing a usable count/score",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 14.740800000000036,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:built-in rejection evidence is not a measured kill score preserves a low completed upper bound and exact successful survivor identities",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 88.59840000000031,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:built-in rejection evidence is not a measured kill score keeps a timeout's earlier unclassified rejections out of the measured channel",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 37.7153000000003,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:built-in rejection evidence is not a measured kill score redacts the rejected-trial witness before truncation",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 21.192399999999907,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:built-in rejection evidence is not a measured kill score does not turn actual Node syntax failures into a positive built-in score",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 335.78110000000015,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:built-in rejection evidence is not a measured kill score does not turn actual Node assertion failures into a positive built-in score",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 317.3932,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        }
+      ],
+      "limits": "30 seconds bounds launch allowance, not completed cleanup latency. Windows POSIX permission/process-group branches remain unqualified; no compiler/assertion exit is promoted to mutation-kill proof."
+    },
+    {
+      "id": "http-deadline-transport-retry",
+      "transition_cells": [
+        "disposition:transitions:S27:01",
+        "disposition:transitions:S27:02",
+        "disposition:transitions:S27:03",
+        "disposition:transitions:S27:04",
+        "disposition:transitions:S27:09"
+      ],
+      "current_clauses": [
+        "callApi validates resolved HTTPS/loopback endpoint, creates fresh AbortController per attempt and default120000ms timer through response.text().",
+        "Pre-header network failures retry only within internal count; apiRetryDelay fallback caps at16000ms. Retry-After seconds/strict HTTP dates must fit local timer budget.",
+        "429/5xx excessive cooldown or exhausted internal retries returns retryable:false; runWorker preserves it and task policy does not buy another author request.",
+        "finally aborts active response stream and clears timer before return/backoff; identical request body is retained across internal retry."
+      ],
+      "selectors": [
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP retry delay policy uses bounded local fallback for null at attempt 0",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 0.1570999999967171,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP retry delay policy uses bounded local fallback for  at attempt 1",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 0.027999999998428393,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP retry delay policy uses bounded local fallback for garbage at attempt 2",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 0.2698999999993248,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP retry delay policy uses bounded local fallback for -1 at attempt 3",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 0.12039999999979045,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP retry delay policy uses bounded local fallback for 1.5 at attempt 4",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 0.019499999994877726,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP retry delay policy uses bounded local fallback for 1e9 at attempt 5",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 0.015299999999115244,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP retry delay policy uses bounded local fallback for Infinity at attempt 6",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 0.016700000000128057,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP retry delay policy uses bounded local fallback for 0x10 at attempt 0",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 0.015200000001641456,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP retry delay policy uses bounded local fallback for +1 at attempt 0",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 0.01629999999568099,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP retry delay policy uses bounded local fallback for 1, 2 at attempt 0",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 0.014999999999417923,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP retry delay policy uses bounded local fallback for 2026-09-24 at attempt 0",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 0.01959999999962747,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP retry delay policy uses bounded local fallback for Thu, 31 Sep 2026 12:00:01 GMT at attempt 0",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 0.034599999999045394,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP retry delay policy uses bounded local fallback for Thu, 24 Foo 2026 12:00:01 GMT at attempt 0",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 0.018000000003667083,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP retry delay policy uses bounded local fallback for Thu, 00 Sep 2026 12:00:01 GMT at attempt 0",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 0.01600000000325963,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP retry delay policy uses bounded local fallback for Thu, 24 Sep 2026 24:00:01 GMT at attempt 0",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 0.01630000000295695,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP retry delay policy uses bounded local fallback for Thu, 24 Sep 2026 12:60:01 GMT at attempt 0",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 0.01569999999628635,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP retry delay policy uses bounded local fallback for Thu, 24 Sep 2026 12:00:61 GMT at attempt 0",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 0.016400000000430737,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP retry delay policy uses bounded local fallback for Fri, 24 Sep 2026 12:00:01 GMT at attempt 0",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 0.01870000000053551,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP retry delay policy uses bounded local fallback for Thu, 30 Feb 2026 12:00:01 GMT at attempt 0",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 0.23809999999502907,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP retry delay policy uses bounded local fallback for Thu Sep 24 12:00:01 2026, 2 at attempt 0",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 0.025199999996402767,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP retry delay policy honors bounded HTTP delay/date 0",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 0.04290000000037253,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP retry delay policy honors bounded HTTP delay/date  2 ",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 0.016700000000128057,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP retry delay policy honors bounded HTTP delay/date 0003",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 0.017099999997299165,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP retry delay policy honors bounded HTTP delay/date 120",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 0.015099999996891711,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP retry delay policy honors bounded HTTP delay/date Thu, 24 Sep 2026 12:00:02 GMT",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 0.020300000003771856,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP retry delay policy honors bounded HTTP delay/date Thursday, 24-Sep-26 12:00:02 GMT",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 0.02710000000661239,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP retry delay policy honors bounded HTTP delay/date Thu Sep 24 12:00:02 2026",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 0.01969999999710126,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP retry delay policy honors bounded HTTP delay/date Sun, 06 Nov 1994 08:49:37 GMT",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 0.017599999999220017,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP retry delay policy honors bounded HTTP delay/date Sunday, 06-Nov-94 08:49:37 GMT",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 0.017400000004272442,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP retry delay policy honors bounded HTTP delay/date Sun Nov  6 08:49:37 1994",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 0.021099999998114072,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP retry delay policy defers an excessive valid wait rather than shortening it: 121",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 0.030400000003282912,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP retry delay policy defers an excessive valid wait rather than shortening it: 2147484",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 0.016499999997904524,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP retry delay policy defers an excessive valid wait rather than shortening it: 99999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 0.017699999996693805,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP retry delay policy defers an excessive valid wait rather than shortening it: Fri, 25 Sep 2026 12:00:00 GMT",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 0.01840000000083819,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP retry delay policy accepts the HTTP leap-second spelling without normalizing a different calendar day",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 0.028200000000651926,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP retry delay policy prevents timer overflow even when the configured local budget is larger",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 0.03080000000045402,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP transport retry lifecycle closes the discarded response before sleeping, then preserves final usage",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 2.2151000000012573,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP transport retry lifecycle defers excessive cooldown at HTTP 429 without another request",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 0.44020000000455184,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP transport retry lifecycle defers excessive cooldown at HTTP 503 without another request",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 0.2849999999962165,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP transport retry lifecycle keeps HTTP 429 exhaustion out of the authoring retry loop",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 0.992500000000291,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP transport retry lifecycle keeps HTTP 500 exhaustion out of the authoring retry loop",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 0.3864000000030501,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP transport retry lifecycle keeps HTTP 503 exhaustion out of the authoring retry loop",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 0.3123000000050524,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP transport retry lifecycle preserves the existing exponential fallback for a malformed header",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 0.3804000000018277,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP transport retry lifecycle closes a terminal error response without awaiting its unused body",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 0.22999999999592546,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:transport deferral preserves task retry boundaries does not start another authoring round after 1 deferred sample(s)",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 0.6027000000030966,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:transport deferral preserves task retry boundaries does not start another authoring round after 2 deferred sample(s)",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 0.7958999999973457,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:transport deferral preserves task retry boundaries retains ordinary custom-worker retries when no disposition was returned",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 0.8510999999998603,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP connection and body failure evidence retries connection errors with identical requests and fresh released signals",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 2.9597999999969034,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP connection and body failure evidence keeps exhausted network failures distinct from an HTTP cooldown: Error: fixture connection reset",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 1.7950999999957276,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP connection and body failure evidence keeps exhausted network failures distinct from an HTTP cooldown: fixture connection reset",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 1.7714000000050873,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP connection and body failure evidence keeps exhausted network failures distinct from an HTTP cooldown: null",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 1.6886000000013155,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP connection and body failure evidence keeps exhausted network failures distinct from an HTTP cooldown: undefined",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 1.4495999999999185,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP connection and body failure evidence times out stalled headers on each original deadline without leaking timers",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 1.9059999999954016,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP connection and body failure evidence does not replay a request after response headers when body consumption fails: Error: fixture stream reset",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 1.7563000000009197,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP connection and body failure evidence does not replay a request after response headers when body consumption fails: fixture stream reset",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 1.5027000000045518,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP connection and body failure evidence does not replay a request after response headers when body consumption fails: null",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 2.14429999999993,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP connection and body failure evidence does not replay a request after response headers when body consumption fails: undefined",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 1.4686000000001513,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP connection and body failure evidence keeps the body on the original deadline after headers arrive late",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 1.8887999999933527,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP connection and body failure evidence redacts and bounds fetch failure diagnostics without inventing usage",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 2.1275000000023283,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP connection and body failure evidence redacts and bounds body failure diagnostics without inventing usage",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 1.5291999999972177,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        }
+      ],
+      "limits": "Controlled fetch/local transport evidence only, no paid/live provider acceptance.120seconds is the configured default. No CLI external cancellation contract or response-byte cap is invented."
+    },
+    {
+      "id": "http-body-validation-and-sanitized-result",
+      "transition_cells": [
+        "disposition:transitions:S27:05",
+        "disposition:transitions:S27:06",
+        "disposition:transitions:S27:07",
+        "disposition:transitions:S27:08"
+      ],
+      "current_clauses": [
+        "Other non2xx returns sanitized status without consuming/reflection of upstream error body; it is not internally retried and ordinary outer policy may apply.",
+        "Successful body remains under the same temporal deadline. parseChatCompletion validates closed output shapes and safe nonnegative reported usage; runWorker validates contained/admitted files.",
+        "Post-header body failure is terminal for internal transport replay. Invalid shape/body returns bounded sanitized diagnostics; usage is preserved only when actually reported."
+      ],
+      "selectors": [
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:httpWorker secure request boundary rejects a direct external-http call before fetch",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 0.9026999999999816,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:httpWorker secure request boundary refuses automatic redirects on the worker request",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 14.412799999999947,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:httpWorker secure request boundary does not write an upstream response body to stderr",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 0.5952000000000908,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:qualified best-of-N alternatives preserves single-worker usage when retry reset fails without inventing cleanup",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 4.987499999995634,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:worker response evidence retains validated counters on missing choices without reflecting the body",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 0.33840000000054715,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:worker response evidence retains validated counters on non-array choices without reflecting the body",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 0.09930000000167638,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:worker response evidence retains validated counters on null choice without reflecting the body",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 0.05399999999644933,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:worker response evidence retains validated counters on missing message without reflecting the body",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 0.05380000000150176,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:worker response evidence retains validated counters on scalar message without reflecting the body",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 0.03689999999915017,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:worker response evidence retains validated counters on array message without reflecting the body",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 0.059900000000197906,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:worker response evidence retains validated counters on object content without reflecting the body",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 0.042399999998451676,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:worker response evidence retains validated counters on numeric content without reflecting the body",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 0.03529999999591382,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:worker response evidence retains validated counters on array content without reflecting the body",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 0.04579999999987194,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:worker response evidence retains validated counters on boolean content without reflecting the body",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 0.0334999999977299,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:worker response evidence keeps absent or empty text undefined on the no-output path",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 0.0944999999992433,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:worker response evidence keeps absent or empty text null on the no-output path",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 0.027900000000954606,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:worker response evidence keeps absent or empty text  on the no-output path",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 0.02599999999802094,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:worker response evidence preserves empty-choice and explicit-zero semantics",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 0.045700000002398156,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:worker response evidence does not coerce an invalid reported count -1 or discard its valid sibling",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 0.3643999999985681,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:worker response evidence does not coerce an invalid reported count 1.5 or discard its valid sibling",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 0.07639999999810243,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:worker response evidence does not coerce an invalid reported count \"3\" or discard its valid sibling",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 0.04559999999764841,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:worker response evidence does not coerce an invalid reported count true or discard its valid sibling",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 0.03730000000359723,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:worker response evidence does not coerce an invalid reported count null or discard its valid sibling",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 0.2698999999993248,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:worker response evidence does not coerce an invalid reported count {} or discard its valid sibling",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 0.05009999999310821,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:worker response evidence does not coerce an invalid reported count [] or discard its valid sibling",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 0.03930000000400469,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:worker response evidence does not coerce an invalid reported count 9007199254740992 or discard its valid sibling",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 0.03840000000491273,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:worker response evidence rejects infinite JSON counters independently in both directions",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 0.07499999999708962,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:worker response evidence leaves absent/malformed usage undefined unknown",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 0.04499999999825377,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:worker response evidence leaves absent/malformed usage null unknown",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 0.0202999999964959,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:worker response evidence leaves absent/malformed usage [] unknown",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 0.01939999999740394,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:worker response evidence leaves absent/malformed usage \"unknown\" unknown",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 0.015599999998812564,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:worker response evidence leaves absent/malformed usage {} unknown",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 0.017699999996693805,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:worker response evidence does not infer usage from an undecodable body",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 0.08060000000114087,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:worker rejection accounting preserves usage when refusing readonly.txt",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 1.1775000000052387,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:worker rejection accounting preserves usage when refusing ../outside.txt",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 0.8070999999981723,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:worker rejection accounting preserves usage when refusing /absolute-outside.txt",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 0.8437999999950989,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:worker rejection accounting returns partial-write evidence and usage when a later block is read-only",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 7.865000000005239,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:worker rejection accounting returns malformed text as a worker failure instead of throwing away usage",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 0.9384999999965657,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:worker rejection accounting does not mark unknown usage as measured zero on a successful write",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 2.601600000001781,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP transport retry lifecycle closes the discarded response before sleeping, then preserves final usage",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 2.2151000000012573,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP connection and body failure evidence retries connection errors with identical requests and fresh released signals",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 2.9597999999969034,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP connection and body failure evidence keeps exhausted network failures distinct from an HTTP cooldown: Error: fixture connection reset",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 1.7950999999957276,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP connection and body failure evidence keeps exhausted network failures distinct from an HTTP cooldown: fixture connection reset",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 1.7714000000050873,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP connection and body failure evidence keeps exhausted network failures distinct from an HTTP cooldown: null",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 1.6886000000013155,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP connection and body failure evidence keeps exhausted network failures distinct from an HTTP cooldown: undefined",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 1.4495999999999185,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP connection and body failure evidence times out stalled headers on each original deadline without leaking timers",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 1.9059999999954016,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP connection and body failure evidence does not replay a request after response headers when body consumption fails: Error: fixture stream reset",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 1.7563000000009197,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP connection and body failure evidence does not replay a request after response headers when body consumption fails: fixture stream reset",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 1.5027000000045518,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP connection and body failure evidence does not replay a request after response headers when body consumption fails: null",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 2.14429999999993,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP connection and body failure evidence does not replay a request after response headers when body consumption fails: undefined",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 1.4686000000001513,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP connection and body failure evidence keeps the body on the original deadline after headers arrive late",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 1.8887999999933527,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP connection and body failure evidence redacts and bounds fetch failure diagnostics without inventing usage",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 2.1275000000023283,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:HTTP connection and body failure evidence redacts and bounds body failure diagnostics without inventing usage",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 1.5291999999972177,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        }
+      ],
+      "limits": "Bounded body means the frozen row's same-request time deadline; response.text has no separate byte cap. No live provider/model capability, inferred billing or outer quality-retry success claim."
+    },
+    {
+      "id": "atomic-publication-and-independent-mirrors",
+      "transition_cells": [
+        "disposition:transitions:S31:01",
+        "disposition:transitions:S31:02",
+        "disposition:transitions:S31:03",
+        "disposition:transitions:S31:04",
+        "disposition:transitions:S31:05"
+      ],
+      "current_clauses": [
+        "atomicWriteFile creates random same-directory wx tempfile, writes full UTF8 bytes, fsyncs file, applies prior mode, closes then renameWithRetry.",
+        "renameWithRetry has four-attempt default and only EPERM/EACCES/EBUSY bounded backoff. No directory fsync/crash-durability guarantee is claimed.",
+        "writeReport preserves JSON-before-Markdown as separate atomic publications. Latest reports/diffs use caught bounded error observations; they cannot invalidate already-published authoritative receipts."
+      ],
+      "selectors": [
+        {
+          "id": "vitest:plugins/ca/tools/farm.test.ts:farm artifact publication (#397 / #387) #397: a run publishes its receipts under a run-scoped directory and still exposes the latest convenience copies",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 1707.6526000000013,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.test.ts:farm artifact publication (#397 / #387) #397: two concurrent farm processes on one repo both keep complete, independently parseable receipts",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 1911.8066000000108,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.test.ts:farm artifact publication (#397 / #387) #397: a failed report publication leaves the previous run's complete report intact \u2014 never a truncated one",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 3246.751199999999,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.test.ts:farm artifact publication (#397 / #387) #387: a failure to publish farm-report.md also fails the run",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 1627.2936000000045,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.test.ts:farm artifact publication (#397 / #387) #387: an unusable diffs directory marks every task's diff evidence unavailable",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 1557.5940999999875,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.test.ts:farm artifact publication (#397 / #387) #387: a single failed patch write marks only that task's diff evidence unavailable",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 1680.5022999999928,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.test.ts:farm artifact publication (#397 / #387) #387: a failed LATEST report pointer does not fail a run whose authoritative receipt landed",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 1714.6688999999897,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:atomicWriteFile \u2014 publish-or-preserve (#397) writes the full payload to the destination",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 8.754799999999705,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:atomicWriteFile \u2014 publish-or-preserve (#397) leaves no temporary residue behind on success",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 3.4675999999999476,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:atomicWriteFile \u2014 publish-or-preserve (#397) preserves the prior complete artifact and cleans up when publication fails",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 105.18250000000035,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:atomicWriteFile - mode preservation and write-path cleanup (#439) preserves a hardened destination's mode instead of resetting it to 0644",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 0.9624999999996362,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:atomicWriteFile - mode preservation and write-path cleanup (#439) leaves no temp residue when the WRITE fails, not just the rename",
+          "original_results": [
+            "passed"
+          ],
+          "selected_population": 1,
+          "duration_ms": 1.5691000000001623,
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json"
+        }
+      ],
+      "limits": "Source-conformance establishes fsync/rename ordering; this is not a power-loss test. POSIX mode enforcement and complete multi-host crash behavior are not measured by Windows success."
+    }
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/raw/selected-observations.json",
+      "sha256": "5ae107095b808352d03c10df20712ce0ec7615513d7e477a70c397b30f646fc6"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/execution-origin.json",
+      "sha256": "a12c1a10b15ba4e7fd8af24442e6dde3aaddc60b2111ca9efee2d6db0ff4b70c"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/farm-clause-bindings.json",
+      "sha256": "28ede2ccb2b471d080ea8d81fd7ae559c7d9d086bfc12b486a7c3c23d69dcd66"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/farm33-89d6-successors/clause-review.json",
+      "sha256": "51549e1d2b02242c07a28124448a8e54022221a9d717f5d3f5f6aaac26c20bfe"
+    }
+  ],
+  "nonclaims": [
+    "PRESERVED source clauses only, not a fresh runtime assertion from file/declaration equality.",
+    "Current938 named observations retain actual69b+wip provenance; old source/raws remain in69-anchored history.",
+    "No registry/cleanup guard, provider, physical Docker, nonroot, missing platform or whole-task closure is promoted."
+  ],
+  "scope": "The same25 previously preserved HTTP/mutation/publication source clauses, unchanged under the current89d6 source. Registration helper changes are not inferred preserved or used to promote any task/physical runtime.",
+  "tested_input_relation": "Current scoped source conformance plus literal17-input source/test/package/config join to the actual captured27; genuine938 observations are corroboration only. No test execution at89d6 or status promotion.",
+  "prior_evidence_identity": {
+    "ref": "docs/state-contracts-major/execution/evidence/farm-cleanup-followup/farm25-source-conformance.json",
+    "sha256": "9d17066289df26dd77e6840f92d8e6ea9be37f412415d1ef83d80478dbfb2967",
+    "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+  }
+}

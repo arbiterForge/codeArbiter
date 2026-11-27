@@ -1,0 +1,29 @@
+{
+  "schema": "hw26-missing-observation-plan/1",
+  "status": "PREPARED_NOT_EXECUTED",
+  "immediate_recommendation": "Reuse original benchmark/caller/isolation evidence; do not repeat identical fixtures for another receipt.",
+  "historical_unretained": [
+    "M benchmark raw ready/complete JSON and individual timing array",
+    "M benchmark-job exact Python/Node executable and emitted bundle SHA256 values",
+    "An actual abrupt-hard-kill residue observation for the disposable setup module"
+  ],
+  "capture_only_at_next_already_required_benchmark": {
+    "condition": "Only if stronger direct telemetry is required; not a new performance run now.",
+    "existing_owner_command": "python .github/scripts/pi_benchmark.py --samples 100",
+    "proposed_framework_capture": "Root may add reviewed sidecar retention of already-parsed ready/complete scalar counts, source/lock hashes, exact resolved tool hashes and bundle hash. Preserve the current three public result rows and fixture labels.",
+    "prohibition": "No invented existing flag, no fallback to another job's binary identity, and no claim that a later capture recovers historical unretained bytes."
+  },
+  "optional_single_abrupt_exit_characterization": {
+    "condition": "Only if actual forced-exit evidence is necessary beyond the original source/inert callback controls; Root supplies a fresh bounded actor context before execution.",
+    "tools": "Existing already-approved absolute Node and supervisor executable; record their current hashes. No install or dependency acquisition.",
+    "cases": 1,
+    "outer_seconds": 5,
+    "per_stream_bytes": 1048576,
+    "fixture": "One fresh owned temp parent, an owned fake operator-home sentinel, and an owned TMP/TEMP subtree; clear ambient provider/auth/Node options before importing the unchanged setup module.",
+    "observation": "The child retains its exact setup-created root and dummy-auth digest after readiness. The supervisor terminates only that owned child, waits for actual death, and records the exact remaining owned root plus unchanged fake-operator sentinel.",
+    "cleanup": "After recording observations, verify every resolved recursive-cleanup target remains within the explicitly owned fixture parent; remove only those owned paths.",
+    "limits": "No real operator auth access, real Pi/provider/model, global changes, or promise of complete cleanup. The new local tool/platform identity does not retrospectively qualify M."
+  },
+  "canonical_changes": false,
+  "actual_additional_execution": "NONE"
+}

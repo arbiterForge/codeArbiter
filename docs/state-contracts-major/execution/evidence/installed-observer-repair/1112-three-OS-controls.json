@@ -1,0 +1,49 @@
+{
+  "format": "exact-head-three-OS-Actions-log-transport-control/1",
+  "head": "9c1a21a7f7ca78964c1fae24dba256a6a4764311",
+  "run_id": 43755214499,
+  "attempt": 1,
+  "event": "pull_request",
+  "state": "THREE_CONTROLS_PASSED",
+  "controls": [
+    {
+      "platform": "macos",
+      "job_id": 132937787524,
+      "original_log_sha256": "b32bac53e7c99686f445b064838ef01ca476685cac0403850364fd6eabfdd737",
+      "control_result": {
+        "job_id": 132937705657,
+        "bytes": 122716,
+        "sha256": "ebe4e385bed1fbca16fd4db05fdd796ed4cf2247b5afa533c5e6e333889a5006",
+        "state": "READ"
+      },
+      "readback_receipt_sha256": "5da604817450ebe00a2ba9b6458a4755ebccc7000b340449ce58f576f2818810"
+    },
+    {
+      "platform": "windows",
+      "job_id": 132937787386,
+      "original_log_sha256": "6606ec8a89ef2b4c62398bee0fe20bb83027196785ce1d94a6fbab6b57535d19",
+      "control_result": {
+        "job_id": 132937705657,
+        "bytes": 122716,
+        "sha256": "ebe4e385bed1fbca16fd4db05fdd796ed4cf2247b5afa533c5e6e333889a5006",
+        "state": "READ"
+      },
+      "readback_receipt_sha256": "8800aaf2c9e562fd228dfff0e151975f892afeca41d4cb86dc8549e69a02e976"
+    },
+    {
+      "platform": "linux",
+      "job_id": 132937787522,
+      "original_log_sha256": "9cc15432b96044fdbcc5294c4aae2ef88c5cda4236eb7222d3426f2f52c43262",
+      "control_result": {
+        "job_id": 132937705657,
+        "bytes": 122716,
+        "sha256": "ebe4e385bed1fbca16fd4db05fdd796ed4cf2247b5afa533c5e6e333889a5006",
+        "state": "READ"
+      },
+      "readback_receipt_sha256": "8b441f7307c37ab1b53b5705da185a3f4ab7e464ffa2e88f734e95e94d257ceb"
+    }
+  ],
+  "all_checks_terminal": false,
+  "installed_or_publication_claim": false,
+  "limits": "Actual original completed dependency log read by isolated token/environment HTTP worker on each platform. Historical opaque gh failure cause remains unknown. Full exact-head CI watch continues."
+}

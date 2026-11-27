@@ -1,0 +1,6 @@
+{
+  "private_equal": true,
+  "source_equal": true,
+  "runtime_equal": true,
+  "forbidden_effect_attempts": []
+}

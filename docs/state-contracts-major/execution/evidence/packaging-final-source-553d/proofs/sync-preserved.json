@@ -1,0 +1,51 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "553d07fefa2195ee1f137be2b452981a330ce54f",
+  "source_tree": "201c662dee158a880d74ebb574f3320a95548b15",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "/root/packaging_site_tools finite sync clause inspection, current owner Git/physical joins"
+  },
+  "inputs": {
+    "LICENSE": "0d96a4ff68ad6d4b6f1f30f713b18d5184912ba8dd389f86aa7710db079abcb0",
+    "THIRD_PARTY_NOTICES.md": "988af357749400c2bee20459d7c74bafe7c6dbc0f14528b389fc1ae84772a05e",
+    "core/hosts.json": "3ea50fd2af1ed359e602210de3f0a9b661a567c45d08a5f947f0f4c2e24a8cd8",
+    "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+    "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+    "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+    "tools/host_descriptors.py": "2c98ea82723f60879616469ec399cd81db0fb9cb98f4c943eea1dce852123601",
+    "tools/owned_output.py": "52ee664a00b4f66df8f585047cf38a839428c489762890208a9db1961060b22c",
+    "tools/sync-core.py": "8d7de484c10e26c9e875ca44d3a1ea1d184eecef97dcefabc5ed9d413974062c"
+  },
+  "disposition_ids": [
+    "disposition:machines:S76"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/raw/inspection.json",
+      "sha256": "77f5d617c5e85ee9becc6fe2ef42d6a1e8b6367a7feae47ee3fe56916bfe1cd6"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/raw/source-joins.json",
+      "sha256": "ebbe4af65cb5c9feb18592adb9d3e63fbde8252b56157e1a7ce6e7cf48aaaf6b"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/sync-owner-current-a0/sync-tested.json",
+      "sha256": "95d8441c72915eab12e3a8922f6c2135186c1f70d5ac6cee420041e945cee4fa"
+    }
+  ],
+  "scope": "Whole finite S76 source contract and its individually mapped baseline guards/effects/retry, including explicitly accepted scoped corrections. Conditional source procedure only; no new runtime or installed/publication/task qualification.",
+  "limits": [
+    "No new test/build/API/download/native/Pi/npm/provider/publication/installed effect was executed.",
+    "PRESERVED means finite declared source guard/effect/retry conformance under accepted changes; no current runtime, whole task, model, platform union or release acceptance.",
+    "Payload/source/metadata supplied to these procedures are input parameters; no particular current cohort, emitted output or every generated instruction body is newly qualified.",
+    "Retained original raw/readsets are references at their own original epochs; no old runtime proof hash is refreshed."
+  ],
+  "accepted_change_basis": {
+    "S75:02": "HW21/BUILD-G02 structured closed removal metadata; no actual removal decision is created.",
+    "S75:05/S75:07/S75:08/S76:04/S76:06": "BUILD-G01 explicitly replaces unsafe partial per-host/per-file publication with complete owned staging, rollback or unusable marker."
+  },
+  "family_citation_exposure": "All exact frozen row owner paths bound; this does not claim an unrelated companion runtime branch was executed."
+}

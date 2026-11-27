@@ -1,0 +1,12 @@
+{
+  "argv": [
+    "C:/Users/brenn/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node.exe",
+    "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\tsx\\dist\\cli.mjs",
+    "scripts/capture/verify.ts"
+  ],
+  "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site",
+  "exit_code": 1,
+  "seconds": 0.15507640002761036,
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "d1719c0414587c13857e012ae17b424cb15b9d64c2771cce6dc4b6d7443a8aac"
+}

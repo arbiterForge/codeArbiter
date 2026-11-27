@@ -1,0 +1,44 @@
+{
+  "argv": [
+    "C:\\Python314\\python.exe",
+    "-I",
+    "-S",
+    "-B",
+    "-X",
+    "utf8",
+    "-c",
+    "import sys,unittest;sys.path.insert(0,'C:\\\\Users\\\\brenn\\\\AppData\\\\Local\\\\Temp\\\\ca-pi-native-warm-preflight-e4b86kn8\\\\candidate\\\\.github\\\\scripts');suite=unittest.defaultTestLoader.loadTestsFromNames(['test_pi_package.DebuggerInboxTests.test_observed_windows_warm_preflight_precedes_owned_target_without_effect_substitution']);r=unittest.TextTestRunner(verbosity=2).run(suite);raise SystemExit(0 if r.wasSuccessful() and not r.skipped else 1)"
+  ],
+  "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-warm-preflight-e4b86kn8\\candidate",
+  "env_keys": [
+    "APPDATA",
+    "COMSPEC",
+    "HOME",
+    "LOCALAPPDATA",
+    "PATH",
+    "PATHEXT",
+    "PYTHONDONTWRITEBYTECODE",
+    "PYTHONNOUSERSITE",
+    "PYTHONUTF8",
+    "SYSTEMROOT",
+    "TEMP",
+    "TMP",
+    "USERPROFILE",
+    "WINDIR"
+  ],
+  "exit_code": 1,
+  "duration_seconds": 0.19549539999570698,
+  "before": {
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-warm-preflight-e4b86kn8\\candidate\\.github\\scripts\\test_pi_package.py": "27b5fb4eb62c89c911bfe72059f4153af3746b5b9b61c1550ed2a8116a833439",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-warm-preflight-e4b86kn8\\candidate\\.github\\scripts\\_windows_rpc_timeout.py": "d7a3edcfecee163a97bd8689dbdbbbf9d5304ccea7c53175d1d571a560b7a3fa",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-warm-preflight-e4b86kn8\\candidate\\.github\\scripts\\_windows_dbgeng.py": "0e685a895b8467a7737a1f887bde5dd86e1288e4e87b93374938a6e6eb802b24",
+    "C:\\Python314\\python.exe": "03168c01b7b7491423350e82c26fee71f35b43694d1319d3c668bda6903a0c38"
+  },
+  "after": {
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-warm-preflight-e4b86kn8\\candidate\\.github\\scripts\\test_pi_package.py": "27b5fb4eb62c89c911bfe72059f4153af3746b5b9b61c1550ed2a8116a833439",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-warm-preflight-e4b86kn8\\candidate\\.github\\scripts\\_windows_rpc_timeout.py": "d7a3edcfecee163a97bd8689dbdbbbf9d5304ccea7c53175d1d571a560b7a3fa",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-warm-preflight-e4b86kn8\\candidate\\.github\\scripts\\_windows_dbgeng.py": "0e685a895b8467a7737a1f887bde5dd86e1288e4e87b93374938a6e6eb802b24",
+    "C:\\Python314\\python.exe": "03168c01b7b7491423350e82c26fee71f35b43694d1319d3c668bda6903a0c38"
+  },
+  "source_tool_stable": true
+}

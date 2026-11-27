@@ -1,0 +1,44 @@
+{
+  "schema": "private-native20-cli-route/1",
+  "source_epoch": "1984510402d8f662d27e6ecd5f3186da9bf71978",
+  "paths": [
+    ".github/scripts/major_native_observation.py",
+    ".github/scripts/test_major_native_observation.py",
+    ".github/major-qualification-policy.json",
+    "core/artifacts/cmd/ca-artifact/cli_boundary_contract_test.go"
+  ],
+  "candidate_paths": {
+    ".github/scripts/major_native_observation.py": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native20-cli-route-fix-fj92wr4m\\candidate\\.github\\scripts\\major_native_observation.py",
+    ".github/scripts/test_major_native_observation.py": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native20-cli-route-fix-fj92wr4m\\candidate\\.github\\scripts\\test_major_native_observation.py",
+    ".github/major-qualification-policy.json": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native20-cli-route-fix-fj92wr4m\\candidate\\.github\\major-qualification-policy.json",
+    "core/artifacts/cmd/ca-artifact/cli_boundary_contract_test.go": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native20-cli-route-fix-fj92wr4m\\candidate\\core\\artifacts\\cmd\\ca-artifact\\cli_boundary_contract_test.go"
+  },
+  "candidate_sha256": {
+    ".github/scripts/major_native_observation.py": "843fcbed655c36ff5b474d6a48bdf1d70568fe6fa149bb8a135b5f345d81a76f",
+    ".github/scripts/test_major_native_observation.py": "8cc4f2bfff3ef4fd5094808f57ab9b0776b73f963a45df8809c20addb9ae366b",
+    ".github/major-qualification-policy.json": "2c3789ccd3f9441ae9be4c87ae12735d34a35a873d788505f68022395a849f7f",
+    "core/artifacts/cmd/ca-artifact/cli_boundary_contract_test.go": "6d998a59593e736901895a5fe16b233bf56c4be4b88b696704a516805f1fcd4d"
+  },
+  "patch_sha256": "1db992d491a0a2d1477e02761dd215d9610fa0f9c19912c13f2e0aa2a9de8c11",
+  "filemap_sha256": "37c3c60c63f358ea05997a218b60511cc646cf42e48d9c4779869a4d09d0b2ad",
+  "RED": {
+    "tests": 1,
+    "assertion_failures": 1,
+    "errors": 0,
+    "seconds": 0.013792999990982935
+  },
+  "GREEN": {
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0,
+    "seconds": 0.4443860999890603
+  },
+  "native_recipe_count": 20,
+  "old19_unchanged": true,
+  "policy_global_sort": true,
+  "canonical_writes": false,
+  "Go_runtime_repeated": false,
+  "qualification": false,
+  "scope": "Two new pure authority controls and only affected old exact-set control; original inert six archives through actual producer/final reader. No provider/native/runtime execution or proof renewal."
+}

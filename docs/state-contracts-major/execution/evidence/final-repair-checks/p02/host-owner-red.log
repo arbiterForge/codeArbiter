@@ -1,0 +1,18 @@
+test_runtime_host_owner_without_positive_or_absent_lookup_is_unknown (test_state_contracts_integration.IntegrationIntegrityTest.test_runtime_host_owner_without_positive_or_absent_lookup_is_unknown) ... FAIL
+
+======================================================================
+FAIL: test_runtime_host_owner_without_positive_or_absent_lookup_is_unknown (test_state_contracts_integration.IntegrationIntegrityTest.test_runtime_host_owner_without_positive_or_absent_lookup_is_unknown)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\brenn\AppData\Local\Temp\ca-membership-fix-zipp3oqs\.github\scripts\test_state_contracts_integration.py", line 377, in test_runtime_host_owner_without_positive_or_absent_lookup_is_unknown
+    self.assertEqual(owner.validate(self.repo,current)["current_applicability"][self.cell]["status"], "UNKNOWN")
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'APPLICABLE' != 'UNKNOWN'
+- APPLICABLE
++ UNKNOWN
+
+
+----------------------------------------------------------------------
+Ran 1 test in 7.586s
+
+FAILED (failures=1)

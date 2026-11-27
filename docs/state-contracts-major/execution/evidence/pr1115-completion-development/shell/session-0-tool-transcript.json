@@ -1,0 +1,20 @@
+{
+  "expected_exit": 0,
+  "complete": true,
+  "chunks": [
+    {
+      "chunk_id": "5a5e0c",
+      "wall_time_seconds": 10.007785,
+      "session_id": 88539,
+      "original_token_count": 62,
+      "output": "\u001b[?9001h\u001b[?1004h\u001b[?25l\u001b[2J\u001b[m\u001b[HSW_SESSION_READY 19b60bfb-f34c-4475-b9aa-1fe80154b7f2 0\r\n\u001b]0;C:\\Program Files\\WindowsApps\\OpenAI.CodexPrimaryRuntime.v26-1111-574-0_26.1111.574.0_x64__3k8sg7r9htsxt\\dependencies\\native\\powershell\\pwsh.exe\u0007\u001b[?25h$ "
+    },
+    {
+      "chunk_id": "f8f6f7",
+      "wall_time_seconds": 0.0000323,
+      "exit_code": 0,
+      "original_token_count": 49,
+      "output": "\u001b[?25ltest -t 0 && test -t 1 || exit 65; printf '\\nSW_SHELL_19b60bfb-f34c-4475-b9aa-1fe80154b7f2_EXIT_0\\n'; exit 0\u001b[5;1HSW_SHELL_19b60bfb-f34c-4475-b9aa-1fe80154b7f2_EXIT_0\r\n\u001b[?25h\u001b[?9001l\u001b[?1004l"
+    }
+  ]
+}

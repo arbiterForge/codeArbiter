@@ -1,0 +1,24 @@
+{
+  "run_id": 43829498560,
+  "job_id": 133180187845,
+  "source_epoch": "27d38a2ddc0f6fbf77671a86cad04cd1a02e43dd",
+  "original_log_sha256": "3f9469d285b5eec516032b5e0fa4a5455fd7a6b13ed9e7a8390ad2d334bd3a53",
+  "original_log_bytes": 132133,
+  "failure_line": 1411,
+  "closed_fields": {
+    "phase": "author-dispatch",
+    "step": "enforce_runtime_event",
+    "error": "RuntimeError",
+    "code": "unclassified",
+    "host": "claude",
+    "family": "runtime",
+    "audit_event": "subprocess",
+    "audit_site": "launch-guard",
+    "audit_depth": "outer"
+  },
+  "stderr_bytes": 269,
+  "stderr_sha256": "3b493de1e6bb7ab85555d5fa18fc1274ea2a0a51dd146bf2cf7b454498ef6839",
+  "original_cause": "UNKNOWN",
+  "missing_discriminator": "Requested launch shape/target was not retained; no alias, Git, permission or unreviewed-process explanation is established.",
+  "log_binding_limit": "Run/job/source association uses Root retained authenticated normal-watch context; no provider fetch or new runtime replay here."
+}

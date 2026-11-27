@@ -1,0 +1,39 @@
+{
+  "argv": [
+    "C:\\Python314\\python.exe",
+    "-I",
+    "-S",
+    "-B",
+    "-X",
+    "utf8",
+    "-c",
+    "import sys,unittest;sys.path.insert(0,'C:\\\\Users\\\\brenn\\\\AppData\\\\Local\\\\Temp\\\\ca-npm-runtime-test-owner-_0rvdlk6\\\\candidate\\\\.github\\\\scripts'); suite=unittest.defaultTestLoader.loadTestsFromNames(['test_hook_ci_partition']);r=unittest.TextTestRunner(verbosity=2).run(suite);raise SystemExit(0 if r.wasSuccessful() and not r.skipped else 1)"
+  ],
+  "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-npm-runtime-test-owner-_0rvdlk6\\candidate",
+  "env_keys": [
+    "APPDATA",
+    "COMSPEC",
+    "HOME",
+    "LOCALAPPDATA",
+    "PATH",
+    "PATHEXT",
+    "PYTHONDONTWRITEBYTECODE",
+    "PYTHONNOUSERSITE",
+    "PYTHONPYCACHEPREFIX",
+    "PYTHONUTF8",
+    "SYSTEMROOT",
+    "TEMP",
+    "TMP",
+    "USERPROFILE",
+    "WINDIR"
+  ],
+  "exit_code": 0,
+  "duration_seconds": 0.2031004999880679,
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "cd1aadc47a5c9d6151742a66d80b97d767e74717df9ed5bd5383ddbdd2839449",
+  "subjects": {
+    ".github/workflows/ci.yml": "418d34e1a2ece703cd87c812d72149992a014a7910810189e5e69f275d992338",
+    ".github/scripts/test_hook_ci_partition.py": "a4039de1bf1434718fe6b8cc3d43232ff897b2d7767f33b46eee109bb3f7cbe7",
+    ".github/scripts/test_npm_binding_observation.py": "b7347574f4b32cd9f39f5408cc7c6d7ee716783be627b0a6989ca7831b8c7c3f"
+  }
+}

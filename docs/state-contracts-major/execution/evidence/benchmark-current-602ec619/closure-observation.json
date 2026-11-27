@@ -1,0 +1,222 @@
+{
+ "schema": "finite-C36-original-boundary-validation/1",
+ "source_commit": "602ec619325b85e5b37e079fda9e3f6a3f327100",
+ "source_tree": "7a59ccbfee227490fce7a03ed69b521ab5066521",
+ "capture_complete": {
+  "state": "ACTUAL_CAPTURE_SEALED",
+  "owner": "benchmark",
+  "source_commit": "602ec619325b85e5b37e079fda9e3f6a3f327100",
+  "source_tree": "7a59ccbfee227490fce7a03ed69b521ab5066521",
+  "exit_code": 0,
+  "seconds": 4.1944246999919415,
+  "PASS": "original --samples100 benchmark",
+  "positive_inputs": 30,
+  "runtime_records": 10795,
+  "actual_imports": 14,
+  "HEAD_index_source_runtime_namespaces_stable": true
+ },
+ "command": {
+  "argv": [
+   "C:/Python314/python.exe",
+   "-B",
+   "-X",
+   "utf8",
+   ".github/scripts/pi_benchmark.py",
+   "--samples",
+   "100"
+  ],
+  "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\cbm-t97d6xf9\\src",
+  "exit_code": 0,
+  "timed_out": false,
+  "seconds": 4.1944246999919415,
+  "stdout_sha256": "c30b1d3d2765fb1318e889efea7d317e1603f4fdc629798da64f3cbcbbe50c26",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+ },
+ "namespace_membership": [
+  {
+   "profile": "python-import-directory-v1",
+   "root": ".github/scripts",
+   "path_order": "windows",
+   "sha256": "aceb12697eca7d0fd2b4637bf8416ea30fdecfeb12a29b9f85684c16ad0d6bdd"
+  },
+  {
+   "profile": "python-import-directory-v1",
+   "root": "core/pysrc",
+   "path_order": "windows",
+   "sha256": "47866d8dbbe83d269b0c3311e9bb1df44111bd8596c4c9808865eabf6d10ff9d"
+  },
+  {
+   "profile": "python-import-directory-v1",
+   "root": "plugins/ca/hooks",
+   "path_order": "windows",
+   "sha256": "4e3ed0c3bf93d1c13c9772b861797449e3723c0175e989b506ec845713289cd4"
+  },
+  {
+   "profile": "python-import-directory-v1",
+   "root": "plugins/ca-codex/hooks",
+   "path_order": "windows",
+   "sha256": "a2d976f78e54c2eb652cb9a57ed3279af7cebc7b6cf0afc8256ddb84d3e2948c"
+  }
+ ],
+ "actual_imports": {
+  ".github/scripts/pi_benchmark.py": "1a224fc7625b00586e453d9f3cac878d5d2db1d68ac26b37c54b5002b1b8ee77",
+  "plugins/ca/hooks/_host.py": "9d04b88683d1deab03850ef1f2a169579f59756d3430079bdc6aa2160994bc1b",
+  "plugins/ca/hooks/hostapi.py": "2aea81ad167a458c6053cb52880952521159a367eaa5baa7df6e2e35fea574e4",
+  "plugins/ca/hooks/_gitexec.py": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5",
+  "core/pysrc/_hooklib.py": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+  "core/pysrc/hostapi.py": "2aea81ad167a458c6053cb52880952521159a367eaa5baa7df6e2e35fea574e4",
+  "core/pysrc/_pathnorm.py": "f6a99cddf6277641316f5e8f9d86fb97691e535ba569aa6cb51c9e4f3ed52906",
+  "core/pysrc/_activationlib.py": "60c6391b4d8b143c5e59cf2320291a2d31063e8fbebe0fcf337dd83e07f8fd97",
+  "core/pysrc/_scopelib.py": "03d1f066863d08c952ebda8d9b6f1515813f53a4fd3fc0af560a735f63954e0b",
+  "core/pysrc/_protectedlib.py": "3156e9ad47cf577476dfcae27fde1d4ebfd71fe33b5e1976d351b8f833ea53d3",
+  "core/pysrc/_sensitivelib.py": "a3902997c16d367a3c7e6e7247a42ba35d962e2c885f9ed3e8e1ab0ce98ec506",
+  "plugins/ca-codex/hooks/_host.py": "92b1977ada85436649380fdcf07651f586174efee76a8412beb3ae26bf1e457f",
+  "plugins/ca-codex/hooks/hostapi.py": "2aea81ad167a458c6053cb52880952521159a367eaa5baa7df6e2e35fea574e4",
+  ".github/scripts/_boundedproc.py": "671458a00f178ac690e4d1f4e0458da7b3833353384f9cb7546be711bab15f51"
+ },
+ "before_after_closure_equal": true,
+ "runtime_inventory": {
+  "count": 10795,
+  "before_sha256": "6a400bc21fa12703ba1eee2086466534396f60fe8a8e035b7101a7e3e3f14568",
+  "after_sha256": "6a400bc21fa12703ba1eee2086466534396f60fe8a8e035b7101a7e3e3f14568"
+ },
+ "node": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-node22.19-offline-repro-vtod7t5h\\node.EXE",
+  "sha256": "995a3fb3cefad590cd3f4b321532a4b9582fb9c6575320ed2e3e894caac3e362"
+ },
+ "esbuild": {
+  "esbuild.exe": {
+   "kind": "file",
+   "physical_mode": "0o777",
+   "sha256": "ec02ee9b14ab332416fedd10614dfb80eed5304d94f67745067c011934a8c3c3",
+   "bytes": 11670528
+  },
+  "package.json": {
+   "kind": "file",
+   "physical_mode": "0o666",
+   "sha256": "4a63b84fa1059fef348e29e3a39c26168213bb7f0aa1ac0174e439cc1e62a9f8",
+   "bytes": 374
+  },
+  "README.md": {
+   "kind": "file",
+   "physical_mode": "0o666",
+   "sha256": "29cf512fa580b72392176bf694933ae0decaf18116fdeee917511b445411ce16",
+   "bytes": 143
+  }
+ },
+ "boundary": {
+  "startup_ms": 36.8817,
+  "ready": {
+   "phase": "ready",
+   "wrapperCount": 4,
+   "registrationMs": 0.6189999999999998
+  },
+  "sample_count": 100,
+  "bridge_stub_calls": 105,
+  "synthetic_factory_calls": 105,
+  "child_exit_code": 0,
+  "bundle_sha256": "b325927033f3da9ae86db2f8fea2ed66bf04eb13c9cd9ea7334ded05c9f4c027",
+  "bundle_bytes": 40787,
+  "build_argv": [
+   "C:/Users/brenn/AppData/Local/Temp/ca-node22.19-offline-repro-vtod7t5h\\node.EXE",
+   "C:\\Users\\brenn\\AppData\\Local\\Temp\\cbm-t97d6xf9\\src\\plugins\\ca-pi\\tools\\node_modules\\esbuild\\bin\\esbuild",
+   "C:\\Users\\brenn\\AppData\\Local\\Temp\\cbm-t97d6xf9\\src\\plugins\\ca-pi\\tools\\test\\benchmark-boundary.ts",
+   "--bundle",
+   "--format=esm",
+   "--platform=node",
+   "--target=node22",
+   "--outfile=C:\\Users\\brenn\\AppData\\Local\\Temp\\cbm-t97d6xf9\\capture\\profile\\tmp\\ca pi boundary \u03c0 1wpe4xu4\\boundary.mjs"
+  ],
+  "build_exit_code": 0
+ },
+ "public_rows": [
+  {
+   "platform": "windows",
+   "host": "claude",
+   "sampleCount": 100,
+   "startupMs": 2112.5649,
+   "coreP50Ms": 0.7381,
+   "adapterP50Ms": 1.4756,
+   "adapterP95Ms": 2.0268
+  },
+  {
+   "platform": "windows",
+   "host": "codex",
+   "sampleCount": 100,
+   "startupMs": 20.3713,
+   "coreP50Ms": 0.6823,
+   "adapterP50Ms": 1.3437,
+   "adapterP95Ms": 2.0734
+  },
+  {
+   "platform": "windows",
+   "host": "pi",
+   "sampleCount": 100,
+   "startupMs": 36.8817,
+   "coreP50Ms": 0.7026,
+   "adapterP50Ms": 0.014900000000000801,
+   "adapterP95Ms": 0.05729999999999791
+  }
+ ],
+ "JS_config_lookups": {
+  "plugins/ca-pi/tools/src/package.json": null,
+  "plugins/ca-pi/tools/src/tsconfig.json": null,
+  "plugins/ca-pi/tools/package.json": "083e139a7a805f183e63e8be50e8ce7908d0c4748fe1ed474ee198734efaf560",
+  "plugins/ca-pi/tools/tsconfig.json": "558973c3547ee0cca6872c5c13e9b0f1bbf29f8bdccd4bc96b8039b89c60f7c5",
+  "plugins/ca-pi/package.json": "a6eaec07ab5b2f32ff61fcdae2adc8fc7914c5c7689ea97c2092493e15c0e657",
+  "plugins/ca-pi/tsconfig.json": null,
+  "plugins/package.json": null,
+  "plugins/tsconfig.json": null,
+  "package.json": "b43ba5459d1445cfc98e918288c450894a024377b7924b7243d9b252a8ba8143",
+  "tsconfig.json": null,
+  "plugins/ca-pi/tools/test/package.json": null,
+  "plugins/ca-pi/tools/test/tsconfig.json": null,
+  "plugins/ca/tools/package.json": "e36527e252fe0b559c93c8b0501eccf93d168297f4a5c2da4f2ce2aa709c9972",
+  "plugins/ca/tools/tsconfig.json": "8930059661c9e911148eb53c7b96506313ef87c66239856d8ec6500cf6a8aa2e",
+  "plugins/ca/package.json": null,
+  "plugins/ca/tsconfig.json": null
+ },
+ "namespace_projection": {
+  ".github/scripts": {
+   "Git_names_equal_physical_names": true,
+   "legacy_cache_entries_preserved": [],
+   "other_entries_preserved": [],
+   "causal_untracked_shadows": [],
+   "private_prefix_before_import": "Private cache prefix redirects import cache lookup; no legacy entry removed or assumed absent."
+  },
+  "core/pysrc": {
+   "Git_names_equal_physical_names": true,
+   "legacy_cache_entries_preserved": [],
+   "other_entries_preserved": [],
+   "causal_untracked_shadows": [],
+   "private_prefix_before_import": "Private cache prefix redirects import cache lookup; no legacy entry removed or assumed absent."
+  },
+  "plugins/ca/hooks": {
+   "Git_names_equal_physical_names": true,
+   "legacy_cache_entries_preserved": [],
+   "other_entries_preserved": [],
+   "causal_untracked_shadows": [],
+   "private_prefix_before_import": "Private cache prefix redirects import cache lookup; no legacy entry removed or assumed absent."
+  },
+  "plugins/ca-codex/hooks": {
+   "Git_names_equal_physical_names": true,
+   "legacy_cache_entries_preserved": [],
+   "other_entries_preserved": [],
+   "causal_untracked_shadows": [],
+   "private_prefix_before_import": "Private cache prefix redirects import cache lookup; no legacy entry removed or assumed absent."
+  }
+ },
+ "raw_archive": {
+  "state": "original-private-retention",
+  "sha256": "dedfd7101f29800d948ac4c864bc0527cb6b81ad13c8e7a03f30d347cf526bff",
+  "raw_files_manifest": "docs/state-contracts-major/execution/evidence/benchmark-current-602ec619/raw-manifest.json"
+ },
+ "limitations": [
+  "Local Windows/amd64 ordinary adapter benchmark only; no installed Pi, actual parent consent/UI, provider/model, native executable, Go, Docker, network, publication or task/machine qualification.",
+  "The105 nativeCallCount increments are the original in-memory factory invocations;105 bridgeCallCount increments are the original stub BridgePort. Actual production wrapBuiltins is bundled and executed, not real105 Go calls.",
+  "Python read-only profiling adds overhead; recorded absolute/relative performance is instrumented, not an uninstrumented performance or improvement claim. Node boundary timings are the original child's values.",
+  "Existing Windows process-group/taskkill bounded reader semantics retained; no stronger Job Object/native-rundown claim.",
+  "No fresh negative workload, installation, --real-spawn, source modification, test additions or extra group executed. Existing reader failure controls/history remain separate.",
+  "Authenticated f797 native artifact was not consumed or needed; no native input attestation is borrowed."
+ ]
+}

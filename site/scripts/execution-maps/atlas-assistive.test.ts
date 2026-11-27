@@ -3,7 +3,7 @@ import {createHash} from 'node:crypto';
 import {readFileSync} from 'node:fs';
 import {fileURLToPath} from 'node:url';
 import {beforeAll,describe,expect,it} from 'vitest';
-import {ASSISTIVE_SOURCE_BLOBS,COMMAND_REMOVAL_SOURCE_BLOBS,CONTEXT_KNOWLEDGE_SOURCE_BLOBS,MARKER_PREFLIGHT_BLOB,SCHEMA_CACHE_RENDER_BLOB,SED_READ_SOURCE_BLOBS,WORK_SYSTEM_SOURCE_BLOBS,NATIVE_FIRST_SOURCE_BLOBS,TRACKER_COORDINATION_SOURCE_BLOBS,CORRECTIVE_SOURCE_BLOBS,HOOK_RECOVERY_SOURCE_BLOBS,PERSONA_CONTEXT_SOURCE_BLOBS,PI_SUPPORT_SOURCE_BLOBS,loadAtlas,loadAtlasTheme,originalAtlas} from './atlas';
+import {MAJOR_SOURCE_BLOBS,ASSISTIVE_SOURCE_BLOBS,COMMAND_REMOVAL_SOURCE_BLOBS,CONTEXT_KNOWLEDGE_SOURCE_BLOBS,MARKER_PREFLIGHT_BLOB,SCHEMA_CACHE_RENDER_BLOB,SED_READ_SOURCE_BLOBS,WORK_SYSTEM_SOURCE_BLOBS,NATIVE_FIRST_SOURCE_BLOBS,TRACKER_COORDINATION_SOURCE_BLOBS,CORRECTIVE_SOURCE_BLOBS,HOOK_RECOVERY_SOURCE_BLOBS,PERSONA_CONTEXT_SOURCE_BLOBS,PI_SUPPORT_SOURCE_BLOBS,loadAtlas,loadAtlasTheme,originalAtlas} from './atlas';
 import {geometryRecord,REVIEWED_AT,validateAtlas} from './atlas-model';
 import {nodeDetails,renderAtlasHtml,renderAtlasSvg} from './atlas-render';
 
@@ -12,20 +12,38 @@ let atlas:ReturnType<typeof loadAtlas>;
 beforeAll(()=>{atlas=loadAtlas(root);});
 
 describe('assistive candidate versus retained historical routes',()=>{
+  it('binds reviewed init ownership and visible interpreter guards to their actual committed sources',()=>{
+    const expected=[
+      {path:'core/surface/commands/init.md',revision:'2ed6575320cc49b57186b997ed119789f7a754aa',blob:'74749ae037e276cda66cc6f90addf2d0ad88e914',phrases:['task-board writer retains its lock sidecar','initialization adds its exact Git-common info/exclude rule under an exclusive lock']},
+      {path:'core/pysrc/_bashguardlib.py',revision:'ddd98dc1ab7a5ceb9a13ffdb4a84c7d2131d094c',blob:'383ad7d3ead2cb2cd924b2ce815cdcfd79b8317f',phrases:['Binary overrides bind the actual staged candidate','dynamic or nested stdin remains outside that finite projection']},
+    ];
+    const html=renderAtlasHtml(atlas,loadAtlasTheme(root));
+    for(const reviewed of expected){
+      const change=atlas.sourceUpdate!.changes.find(change=>change.path===reviewed.path)!;
+      expect(change.blob).toBe(reviewed.blob);
+      expect(change.revision).toBe(reviewed.revision);
+      expect(execFileSync('git',['--no-replace-objects','--no-lazy-fetch','rev-parse',`${reviewed.revision}:${reviewed.path}`],{cwd:root,encoding:'utf8'}).trim()).toBe(reviewed.blob);
+      for(const phrase of reviewed.phrases)expect(change.summary).toContain(phrase);
+      expect(html).toContain(`https://github.com/arbiterForge/codeArbiter/blob/${reviewed.revision}/${reviewed.path}`);
+    }
+    expect(atlas.sourceUpdate!.revision).toBe('f65f1e7543f2934a274909cb0d157b94ee909e61');
+  });
+
   it('binds each current explanation to real tracked owner bytes, not a new release claim',()=>{
     const historical=readFileSync(new URL('./atlas-data/assistive-update.json',import.meta.url),'utf8').replace(/\r\n/g,'\n');
     expect(createHash('sha256').update(historical).digest('hex'))
       .toBe('13a52e112644d5698cd09afb74d7919ebb6f1d04e98a41d8f58304a4f744fb50');
     const update=atlas.sourceUpdate!;
-    expect(update.revision).toBe('3549ed56f5d5849116aef8d5e946423d8ee677fc');
-    expect(update.changes).toHaveLength(67);
-    expect(Object.keys(ASSISTIVE_SOURCE_BLOBS)).toEqual(update.changes.map(change=>change.path));
+    expect(update.revision).toBe('f65f1e7543f2934a274909cb0d157b94ee909e61');
+    expect(update.changes).toHaveLength(new Set([...Object.keys(ASSISTIVE_SOURCE_BLOBS),...Object.keys(MAJOR_SOURCE_BLOBS)]).size);
+    expect(update.changes.map(change=>change.path)).toEqual(expect.arrayContaining(Object.keys(ASSISTIVE_SOURCE_BLOBS)));
+    expect(update.changes.map(change=>change.path)).toEqual(expect.arrayContaining(Object.keys(MAJOR_SOURCE_BLOBS)));
     const objects=execFileSync('git',['--no-replace-objects','cat-file','--batch'],{
       cwd:root,input:update.changes.map(change=>`${change.blob}\n`).join(''),maxBuffer:4*1024*1024,
     });
     let offset=0;
     for(const change of update.changes) {
-      const later=PI_SUPPORT_SOURCE_BLOBS[change.path]??PERSONA_CONTEXT_SOURCE_BLOBS[change.path]??HOOK_RECOVERY_SOURCE_BLOBS[change.path]??CORRECTIVE_SOURCE_BLOBS[change.path]??TRACKER_COORDINATION_SOURCE_BLOBS[change.path]??NATIVE_FIRST_SOURCE_BLOBS[change.path]??SED_READ_SOURCE_BLOBS[change.path]??WORK_SYSTEM_SOURCE_BLOBS[change.path]??(change.path==='core/pysrc/_artifactauthoritylib.py'?MARKER_PREFLIGHT_BLOB:undefined)
+      const later=MAJOR_SOURCE_BLOBS[change.path]??PI_SUPPORT_SOURCE_BLOBS[change.path]??PERSONA_CONTEXT_SOURCE_BLOBS[change.path]??HOOK_RECOVERY_SOURCE_BLOBS[change.path]??CORRECTIVE_SOURCE_BLOBS[change.path]??TRACKER_COORDINATION_SOURCE_BLOBS[change.path]??NATIVE_FIRST_SOURCE_BLOBS[change.path]??SED_READ_SOURCE_BLOBS[change.path]??WORK_SYSTEM_SOURCE_BLOBS[change.path]??(change.path==='core/pysrc/_artifactauthoritylib.py'?MARKER_PREFLIGHT_BLOB:undefined)
         ??(change.path==='core/artifacts/internal/render/render.go'?SCHEMA_CACHE_RENDER_BLOB:undefined)
         ??CONTEXT_KNOWLEDGE_SOURCE_BLOBS[change.path]??COMMAND_REMOVAL_SOURCE_BLOBS[change.path];
       const current=readFileSync(new URL(`../../../${change.path}`,import.meta.url),'utf8').replace(/\r\n/g,'\n');
@@ -76,6 +94,9 @@ describe('assistive candidate versus retained historical routes',()=>{
       ['knowledge-operations','k-writer'],
       ['knowledge-operations','k-board'],
       ['debug-handoff','d-task'],
+      ['knowledge-operations','k-conflict'],
+      ['knowledge-operations','k-task'],
+      ['context-layers','c-harvest'],
     ]){
       const node=current.find(view=>view.id===viewId)?.nodes.find(item=>item.id===nodeId);
       const baseline=original.views.find(view=>view.id===viewId)?.nodes.find(item=>item.id===nodeId);
@@ -119,6 +140,17 @@ describe('assistive candidate versus retained historical routes',()=>{
     for(const view of atlas.views)expect(renderAtlasSvg(atlas,view,theme)).toContain('HISTORICAL ROUTES  /  CODEARBITER');
     const exported=new URL(`../../../site/public/workflow-atlas/${REVIEWED_AT}/sources.json`,import.meta.url);
     expect(JSON.parse(readFileSync(exported,'utf8')).sourceUpdate).toEqual(atlas.sourceUpdate);
+  });
+
+  it('shows trusted recovery guidance without replay, regrant or uncertain-decline settlement',()=>{
+    const summary=atlas.sourceUpdate!.changes.find(change=>change.path==='core/pysrc/_workflowrecoverylib.py')!.summary;
+    expect(summary).toContain('finite trusted reason codes');
+    expect(summary).toContain('uncertain decline stays claimed');
+    expect(summary).toContain('new linked obligation without reopening settled history');
+    const recovery=atlas.views.flatMap(view=>view.nodes).find(node=>node.id==='f-recovery')!;
+    expect(nodeDetails(atlas,recovery)).toContain('status never replays effects or regrants authority');
+    const html=renderAtlasHtml(atlas,loadAtlasTheme(root));
+    expect(html).toContain('An uncertain decline stays claimed until exact audit readback');
   });
 
   it('exposes current context callers and native writers at the historical permission and recovery nodes',()=>{

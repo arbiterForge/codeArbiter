@@ -27,13 +27,10 @@
  *      docker object is namespaced with the task id `t13` and the
  *      `ca.sandbox.build=1` label and removed in afterAll.
  *
- * Honest scope note: in an environment WITHOUT nixpacks, build.ts takes its
- * generated-Dockerfile fallback, which only specializes node/python; go/rust then
- * build as a valid base image with the source baked at /work/repo. The test
- * therefore asserts the image is RUNNABLE (a docker-generic, environment-stable
- * fact) rather than stack-specific compilation, which is a nixpacks concern outside
- * this task's control. When nixpacks IS installed the same assertions hold a
- * fortiori.
+ * Scope: the installed, reviewed Nixpacks profile supports all four fixtures.
+ * Without Nixpacks, only Node/Python fallback builds are supported; Go/Rust
+ * must fail explicitly rather than pass as generic base images. Required CI
+ * provisions the reviewed builder and executes all four runtime/cache cells.
  */
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import { dockerGate } from "./docker-gate.ts";
@@ -160,12 +157,13 @@ d("multistack [docker] — each fixture builds a runnable image; deterministic a
       async () => {
         const dir = fixtureDir(stack);
         const hash = t13Hash(stack);
-        const expectedTag = imageTag(dir, hash);
 
         // FIRST build — cache miss -> a real image is produced and tagged.
         const r1: BuildResult = await buildOrReuseImage(dir, hash);
         createdTags.add(r1.tag);
-        expect(r1.tag).toBe(expectedTag);
+        expect(r1.cacheKey).toMatch(/^[a-f0-9]{64}$/);
+        expect(r1.imageId).toMatch(/^sha256:[a-f0-9]{64}$/);
+        expect(r1.tag).toBe(imageTag(dir, r1.cacheKey!));
         expect(r1.built).toBe(true);
         expect(r1.reused).toBe(false);
 

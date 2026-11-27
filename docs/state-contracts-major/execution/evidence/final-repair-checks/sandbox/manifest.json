@@ -1,0 +1,73 @@
+{
+  "state": "FROZEN_TEST_ONLY_REAL_ACCEPTANCE_PENDING_HOSTED",
+  "HEAD": "0ea1984c0d9a823a7198cdccd09dd45e2a4d2aca",
+  "source": {
+    "path": "plugins/ca-sandbox/tools/deadline.test.ts",
+    "sha256": "d2b55475e25a3f1f51230c7dcd2b3fe6d03492c1e6d47ba7477d6091b412c65c"
+  },
+  "local_results": "16 unit PASS,2 Docker skips including new overflow;typecheck PASS;60 scoped inputs unchanged",
+  "production_runtime_policy_changes": false,
+  "qualification": "NO real Docker result; existing required hosted job must execute new case",
+  "files": [
+    {
+      "name": "check.py",
+      "sha256": "91435d706bf9014396b28c2f5f7d7b17e77d690c23f911389bfe399209c6e3b4"
+    },
+    {
+      "name": "deadline.before.ts",
+      "sha256": "04d5f58165ec7e3d2a0c3237951c5e9d6a777ad4a5f9571e2a4f11f4b39b288b"
+    },
+    {
+      "name": "obligations.json",
+      "sha256": "f7b421c847728699e4efa5d38fcafd7814a4fdd4744dd208740043d1fa26cf8c"
+    },
+    {
+      "name": "source.diff",
+      "sha256": "e156f2f9a62a5b2ddf1fba0623e8608c179ece29592f6a11193bdc12cb8ecece"
+    },
+    {
+      "name": "test-inputs-after.json",
+      "sha256": "dfba2e9554e26a5e5d6f12b64afd23e3cdd70f1f01545721641bc80c85a1bf3f"
+    },
+    {
+      "name": "test-inputs-before.json",
+      "sha256": "dfba2e9554e26a5e5d6f12b64afd23e3cdd70f1f01545721641bc80c85a1bf3f"
+    },
+    {
+      "name": "test-result.json",
+      "sha256": "0e80c6929f8c531c29c0e8b377ddfad78cddb18b1424fb522e542c0c3b22f0a2"
+    },
+    {
+      "name": "test.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "test.stdout.log",
+      "sha256": "d0d91f8519319f8def2e4a90bbd9b2ff52e8262aad5b33b0510c209933841708"
+    },
+    {
+      "name": "tests.json",
+      "sha256": "6018e7bd02fc32815be01f3ff18f9d7f3d310791797acf69654abc781c74c497"
+    },
+    {
+      "name": "typecheck-inputs-after.json",
+      "sha256": "dfba2e9554e26a5e5d6f12b64afd23e3cdd70f1f01545721641bc80c85a1bf3f"
+    },
+    {
+      "name": "typecheck-inputs-before.json",
+      "sha256": "dfba2e9554e26a5e5d6f12b64afd23e3cdd70f1f01545721641bc80c85a1bf3f"
+    },
+    {
+      "name": "typecheck-result.json",
+      "sha256": "3b65f1cbbc7098ae994668177df71fe29dceabe58c70c1888efbfbf7785d3766"
+    },
+    {
+      "name": "typecheck.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "typecheck.stdout.log",
+      "sha256": "ebe0eed4741b8e913103dbd30d637fda3c3336dc8dfe57330f6e17ad504d169a"
+    }
+  ]
+}

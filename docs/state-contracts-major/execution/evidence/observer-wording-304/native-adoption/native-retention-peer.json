@@ -1,0 +1,31 @@
+{
+ "schema": "codearbiter.native-retention-root-review/1",
+ "reviewer": "/root",
+ "independent_of_authorship": true,
+ "verdict": "PASS",
+ "findings": [],
+ "delivery": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-old-artifact-recovery-uyd5h_u0\\proposal\\delivery.json",
+  "sha256": "a9a9da1425af34f824328809dcf1d1769819d76e534048f04d7e549374438583"
+ },
+ "checks": {
+  "sealed_files": 13,
+  "unchanged_status_rows": 133,
+  "proofs": 6,
+  "explicit_cell_platform_selector_slots": 1137,
+  "original_mapping_reconstructed": true,
+  "exact_history_and_foreign_components_preserved": true
+ },
+ "reasoning": [
+  "Reconstructed pure120 exact recipe from historical22semantic groups,15machine compositions,7finding groups and28row-specific mappings; Windows-only scope stays Windows-only.",
+  "Mixed8 uses only original Go subcomponent selectors, not full-cell suite credit. CE3/local proof items remain exact active objects.",
+  "Other five cells use actual maintained platform-specific recipes; strict N08 complements are Linux-scoped, not falsely required on every platform.",
+  "Every original selected outcome and descendant passed in authenticated D482 data, all declared inputs bind actual immutable D482 and304 bytes, source identity never restamped.",
+  "Six old proof files stay unchanged; each selected evidence item alone is replaced, historical record appended without deleting prior history or changing status/tasks."
+ ],
+ "limits": [
+  "Genuine full original-record owner still pending; no API/ZIP/test replay or fabricated cache/pass.",
+  "No whole-program, human, real-provider, installed or final-main acceptance.",
+  "Actual D482 artifacts expire Nov20 despite requested14days; expired Pages7 remain separate pending repair."
+ ]
+}

@@ -1,0 +1,36 @@
+{
+  "argv": [
+    "C:\\Python314\\python.exe",
+    "-B",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-receipt-qualified-74057\\observer.py",
+    "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-receipt-qualified-74057"
+  ],
+  "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\.github\\scripts",
+  "exit_code": 0,
+  "started_at": "2026-11-14T18:16:33.469530+00:00",
+  "finished_at": "2026-11-14T18:16:34.061657+00:00",
+  "source_commit": "74057c377ae7934fe7074443b7ab71f378798ef2",
+  "inputs_stable": true,
+  "head_index_stable": true,
+  "python_executable_sha256": "03168c01b7b7491423350e82c26fee71f35b43694d1319d3c668bda6903a0c38",
+  "observer_sha256": "56845d250e4ee5785b22dd5b46e801420681b7847b95c474a2ca63ad6d96039c",
+  "env": {
+    "SYSTEMROOT": "C:\\WINDOWS",
+    "WINDIR": "C:\\WINDOWS",
+    "COMSPEC": "C:\\WINDOWS\\system32\\cmd.exe",
+    "PATH": "C:\\Python314;C:/Program Files/Git/cmd",
+    "HOME": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-receipt-qualified-74057\\private\\home",
+    "USERPROFILE": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-receipt-qualified-74057\\private\\home",
+    "APPDATA": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-receipt-qualified-74057\\private\\appdata",
+    "LOCALAPPDATA": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-receipt-qualified-74057\\private\\localappdata",
+    "TEMP": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-receipt-qualified-74057\\private\\temp",
+    "TMP": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-receipt-qualified-74057\\private\\temp",
+    "XDG_CONFIG_HOME": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-receipt-qualified-74057\\private\\xdg-config",
+    "XDG_CACHE_HOME": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-receipt-qualified-74057\\private\\xdg-cache",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONIOENCODING": "utf-8",
+    "PYTHONNOUSERSITE": "1"
+  },
+  "scope": "Fresh process, private HOME before imports; source CLI/model only. No native/build/npm/GH/API/publication command."
+}

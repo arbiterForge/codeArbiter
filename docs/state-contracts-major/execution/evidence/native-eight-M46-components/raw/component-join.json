@@ -1,0 +1,61 @@
+{
+  "scope": "Finite existing-ledger composition, not a codearbiter-major-qualification report",
+  "hosted_Go": {
+    "source_commit": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+    "run_id": 43582198115,
+    "uploader_attempt": 1,
+    "job_id": 132409162374,
+    "artifact_id": 14108863344,
+    "single_manifest_sha256": "b3dbea9eedb2917c07272ab20ec24116f424ee610bbfa3cd2b3eaf75f941417c",
+    "binary_sha256": "c36b4ca918f5f7e9568665ba894bc1e564a29183a0c5be7d7ea051f2e5e6f070"
+  },
+  "local_Python": {
+    "source_commit": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+    "ci_run_id": 0,
+    "producer": "python-test-result-observer",
+    "stage_artifact_id": 14109699644,
+    "merged_manifest_sha256": "55ae724da5997f93a255f26c6e0b238f93849cda989338e6b9e35e83f8f7bbdd",
+    "binary_sha256": "c36b4ca918f5f7e9568665ba894bc1e564a29183a0c5be7d7ea051f2e5e6f070",
+    "tests": [
+      {
+        "id": "python:.github/scripts/test_artifact_authority_adapter.py:__main__.ClaudeEndToEndTest.test_native_npm_verification_is_accepted_by_real_engine",
+        "result": "passed"
+      },
+      {
+        "id": "python:.github/scripts/test_artifact_authority_adapter.py:__main__.ClaudeEndToEndTest.test_native_npm_workspace_verification_is_accepted_by_real_engine",
+        "result": "passed"
+      }
+    ]
+  },
+  "ce3_actual_producer": {
+    "status": "APPLICABLE",
+    "original_source_commit": "ce3a4a91a3164e1b778e81d206ec76517633c518",
+    "original_sha256": "49f542696f31aaa4f3605da445e3a9966513b8626624943f72f7fc6a222ee51b",
+    "current_source": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+    "changed_inputs": [],
+    "unavailable_inputs": [],
+    "named_pass": [
+      "TestCompletionAdmitsActualProducerLaunchBindingCounts/workspaces-0",
+      "TestCompletionAdmitsActualProducerLaunchBindingCounts/workspaces-30",
+      "TestCompletionAdmitsActualProducerLaunchBindingCounts/workspaces-31",
+      "TestCompletionAdmitsActualProducerLaunchBindingCounts/workspaces-32",
+      "TestCompletionAdmitsActualProducerLaunchBindingCounts",
+      "TestCompletionLaunchFileBoundMatchesContract/33",
+      "TestCompletionLaunchFileBoundMatchesContract/34",
+      "TestCompletionLaunchFileBoundMatchesContract/37",
+      "TestCompletionLaunchFileBoundMatchesContract/38",
+      "TestCompletionLaunchFileBoundMatchesContract"
+    ],
+    "runtime_relabelled": false
+  },
+  "identity_rule": "Same Windows executable digest; manifests and artifact populations are different and never aliased.",
+  "C33_blockers": [
+    "Local ci_run_id0 is not hosted R",
+    "Two different payload names/manifests cannot satisfy one-cell single-payload guard"
+  ],
+  "publication_ready": false,
+  "authority_log_only": {
+    "retained_private_sha256": "12842682a52b17eabee702e151db9e6771109444b21007022f5cc4c46ad0d8ee",
+    "used_as_normalized_observation": false
+  }
+}

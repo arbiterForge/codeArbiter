@@ -1,0 +1,107 @@
+# Hook/runtime read manifest
+
+Commit: fd7eb34b2da439551443d09526ab48fd1d1bb9bf
+
+Complete executable source (all literals preserved), comments/docstrings/blank nonliteral lines omitted; ranges and SHA256 listed. This is not a claim to have read every prose comment. Earlier literal-line omission was repaired with token-aware reader and all23 omitted literal lines reread in hooks-literal-supplement.txt.
+
+All93 core Python files compared byte-for-byte against ca/ca-codex/ca-pi generated copies:279 equal comparisons, no mismatches. Nine canonical sources assigned to other agents; their behavior is not independently claimed here.
+
+TARGETED ONLY | .github/scripts/test_debug_handoff.py | lines 1-170 | sha256 08ec944e5156d4990e93c29d387ea35cb69a51adf08c07b348c196cfd9b860ac
+TARGETED ONLY | .github/scripts/test_modelib.py | lines 920-1044 | sha256 cd64331da8a1d79909caed8bcbd2d2c246623b9e4c5f15ff6c5d236fd8976726
+COMPLETE EXECUTABLE | .github/scripts/test_prompt_submit.py | lines 1-610 | sha256 cb5d68b3df70b880d7dac91f54a1621453c76969456f9de21ffede26d5e74719
+COMPLETE EXECUTABLE | core/pysrc/_activationlib.py | lines 1-280 | sha256 60c6391b4d8b143c5e59cf2320291a2d31063e8fbebe0fcf337dd83e07f8fd97
+COMPLETE EXECUTABLE | core/pysrc/_adrlifecycle.py | lines 1-496 | sha256 925e0602c2c1935edc0cdce9d03d5a549fb128b0de6279c7f9595717243609fe
+COMPLETE EXECUTABLE | core/pysrc/_adrlifecyclegit.py | lines 1-210 | sha256 e1592f34b3bcc4c7bdc30bbb8a021a4642e73218f9353a501022209c69f9d25b
+COMPLETE EXECUTABLE | core/pysrc/_appendonlyconflictlib.py | lines 1-461 | sha256 8fbf10aeaad62bfb1d7da174d71fe354930d3c8a49224b96953b4b87ace687b0
+COMPLETE EXECUTABLE | core/pysrc/_approvallib.py | lines 1-573 | sha256 fc71ec67a9c44ebbadd9897244da291b6b50768dbe19e59d576ee3f15505828b
+COMPLETE EXECUTABLE | core/pysrc/_arbiterstatelib.py | lines 1-290 | sha256 19ebd7d82fa56d2a4535043d3a163cfe9f0475aa5d457d5ad8953980d57f71c1
+COMPLETE EXECUTABLE | core/pysrc/_artifactauthoritylib.py | lines 1-4209 | sha256 cd77a9e9870b8a2f10722a958ff9da25ecf5c87aef72687f7f07c29450b84ba8
+COMPLETE EXECUTABLE | core/pysrc/_artifactlib.py | lines 1-1370 | sha256 24424a47249483eefce1f389041892273bd2950cce7213bb76458d953b394ce1
+COMPLETE EXECUTABLE | core/pysrc/_artifactpromptlib.py | lines 1-287 | sha256 03e0c4b32c806cc054ef34ae7ac58ed093cbe80521a8fea723b7ceb8ac72e1d9
+COMPLETE EXECUTABLE | core/pysrc/_babysitlib.py | lines 1-76 | sha256 f52d87fb3497cc43262785a201c3f0ac10d3e28f2f2e037bc6cd4044d7206d94
+COMPLETE EXECUTABLE | core/pysrc/_bashguardlib.py | lines 1-3065 | sha256 28fb7a0875395a284df082722e13caa42c35d02bb77a4567bafbbc0e1c45d101
+COMPLETE EXECUTABLE | core/pysrc/_cleanuplib.py | lines 1-1553 | sha256 66f099d21eebe2fd8d0eea472fb0f0b5fd62713d6d687eab88e0b74f42c4e03c
+COMPLETE EXECUTABLE | core/pysrc/_contextmergelib.py | lines 1-452 | sha256 8d4b990b58e075f01bd9efcb2efeb08705b7be0949af30f82e20a4a517c4653c
+COMPLETE EXECUTABLE | core/pysrc/_contextreportlib.py | lines 1-907 | sha256 76669de01a426b83a841d439d92f82532923303097fa051c4d08c1a1d0bfb538
+COMPLETE EXECUTABLE | core/pysrc/_contextselectlib.py | lines 1-467 | sha256 0609783e758b6d654c05eeda8c40ccf355641eaf51fb0d9e9978ae5bf4304706
+COMPLETE EXECUTABLE | core/pysrc/_contextsnapshotlib.py | lines 1-999 | sha256 bef9c37c09abc39e6113baa39f51f261103c760db66ec8e4cdc5818a075c1afe
+COMPLETE EXECUTABLE | core/pysrc/_contextwriterlib.py | lines 1-114 | sha256 1a2c1856a2ba17ac17b947e0823b1dece6f355a2de600f70e0d392b09263607f
+COMPLETE EXECUTABLE | core/pysrc/_debughandofflib.py | lines 1-767 | sha256 1a25b13304f05054f7b3787068b937269066c7cb8c61ef0098f14dad48d78c5f
+COMPLETE EXECUTABLE | core/pysrc/_durabilitylib.py | lines 1-186 | sha256 42e9d3ed6f6f43c76bef073e6edad2b8a119dfc154e2a497909422b4e4d28f9b
+COMPLETE EXECUTABLE | core/pysrc/_entrylib.py | lines 1-41 | sha256 1f4f95d55502d022f60bc9754a629a3fd38f0914ad69903fb5aa4aa8c4da8f5a
+COMPLETE EXECUTABLE | core/pysrc/_gitexec.py | lines 1-578 | sha256 a5935246028f506ef5ab13ba379b399cb7a754a077866fd39528545f30f4bef3
+COMPLETE EXECUTABLE | core/pysrc/_githooks.py | lines 1-1294 | sha256 450d3204c7895d7649c4bd7b1daf40b498b960df48de00138914559d41008e38
+COMPLETE EXECUTABLE | core/pysrc/_gitlib.py | lines 1-116 | sha256 7b310f1946f358a77d6a9eab2333adb64ba9648d41c69c564b66fcb6ab4df276
+COMPLETE EXECUTABLE | core/pysrc/_hooklib.py | lines 1-1020 | sha256 c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895
+COMPLETE EXECUTABLE | core/pysrc/_intentlib.py | lines 1-291 | sha256 9712bed86854f405475958d07727bf21f58a0faa1bfd03c19d9ada8972007319
+COMPLETE EXECUTABLE | core/pysrc/_knowledgelib.py | lines 1-79 | sha256 abc1f93667faf5241c52931d33fc992e5627bd2c406298937d587c373659eeb9
+COMPLETE EXECUTABLE | core/pysrc/_ledgerlib.py | lines 1-1702 | sha256 33fdd7e0ec5505e4faea7776c861a123206bb5c2c09315b09965ab4f92dda580
+COMPLETE EXECUTABLE | core/pysrc/_modelib.py | lines 1-777 | sha256 18160bf037e41b9b0f0e720fb3a9c997c08f9a59bfb7ac409716004c30b7a9de
+COMPLETE EXECUTABLE | core/pysrc/_overrideappendlib.py | lines 1-172 | sha256 592f63ca6a6a5e51f5e315cd60f6d2d8a6565234835e0904bb422b74d20090b0
+COMPLETE EXECUTABLE | core/pysrc/_pathnorm.py | lines 1-74 | sha256 f6a99cddf6277641316f5e8f9d86fb97691e535ba569aa6cb51c9e4f3ed52906
+COMPLETE EXECUTABLE | core/pysrc/_planfilelib.py | lines 1-697 | sha256 038cf68ad85d022d22aab4da5f218f1ce5fb1bdec3bc60e329c607b806fd6fe0
+COMPLETE EXECUTABLE | core/pysrc/_prerequisitelib.py | lines 1-1042 | sha256 8263651e6f29f987b3cc935827c2f6a4b4745251ecddb87a3a7d51fd3d861479
+COMPLETE EXECUTABLE | core/pysrc/_protectedlib.py | lines 1-321 | sha256 3156e9ad47cf577476dfcae27fde1d4ebfd71fe33b5e1976d351b8f833ea53d3
+COMPLETE EXECUTABLE | core/pysrc/_protectedstatelib.py | lines 1-625 | sha256 9703e5e777ab286df820dd14da8c0118c24335d41007abfa6f536b5b0b3f14e0
+COMPLETE EXECUTABLE | core/pysrc/_provenancelib.py | lines 1-1663 | sha256 3cbd8d241ff6640e824ee2707ca1a3bd3202db83df371822201ceeabdd2657e4
+COMPLETE EXECUTABLE | core/pysrc/_prunelib.py | lines 1-1437 | sha256 f34aceae4140a7ff25dff91888cd3b9d7d2e5ddc2e1f084558218b22d1c1bdc4
+COMPLETE EXECUTABLE | core/pysrc/_prunepolicy.py | lines 1-261 | sha256 13bc82c138975121c3dbd28379a0bc8dda183f09fa6e47fbe2bab2e9cc0faf35
+COMPLETE EXECUTABLE | core/pysrc/_readinjectlib.py | lines 1-1350 | sha256 a4d689293690beefa28e33834c7aa421145bab6547685f8d25e5c29425b61138
+COMPLETE EXECUTABLE | core/pysrc/_reconciliationlib.py | lines 1-718 | sha256 7a281f3f4cdf7c29d62185d12ac24ebb26e3f1c01f42004aa99a1f8080ae2691
+COMPLETE EXECUTABLE | core/pysrc/_replylib.py | lines 1-573 | sha256 127d9bcfd842bcea941f2d61b86963cd3e50fcb34a603e8a834fe18d2cc9bf0d
+COMPLETE EXECUTABLE | core/pysrc/_scopelib.py | lines 1-262 | sha256 03d1f066863d08c952ebda8d9b6f1515813f53a4fd3fc0af560a735f63954e0b
+COMPLETE EXECUTABLE | core/pysrc/_sensitivelib.py | lines 1-716 | sha256 de8b2255bad1a78f4779406e35114ebc596ee280912d3ba68e559a06da098458
+COMPLETE EXECUTABLE | core/pysrc/_sessionlib.py | lines 1-78 | sha256 bc9ff7504329deee9b205a8d5e8abd7797b8e404152a5c0147c91c8dfd4b8fa1
+COMPLETE EXECUTABLE | core/pysrc/_sloplib.py | lines 1-244 | sha256 568692fdecb4237ae961bdc3cdb0a3f1566f1630ba2f18ac0ea13fa4df40214e
+COMPLETE EXECUTABLE | core/pysrc/_sprintapprovallib.py | lines 1-358 | sha256 5fe52f17bb36abe2bbdaa124bfb9f5f2e391af7de47d7cc6492e334765a5cac8
+COMPLETE EXECUTABLE | core/pysrc/_standuplib.py | lines 1-242 | sha256 621d318ca6429c95bc45dadeb7fbebbfdd9bc3a5f94267d87fa692e69ef74169
+COMPLETE EXECUTABLE | core/pysrc/_subagentslib.py | lines 1-185 | sha256 e2a6aaf737d02180fc5d464f8b28a0c723408a19774696f60ad0e8175e4b6529
+COMPLETE EXECUTABLE | core/pysrc/_taskexcludelib.py | lines 1-223 | sha256 dbe5ae4cbe72a2cdccfb4bdf78b4adbece144fed74703f2d2f403851ce3c39a0
+COMPLETE EXECUTABLE | core/pysrc/_tribunalinventorylib.py | lines 1-653 | sha256 974533bbe66808475c0e64e3247ee5baf814f9f0762e731f904b924e696de251
+COMPLETE EXECUTABLE | core/pysrc/_tribunalrunlib.py | lines 1-840 | sha256 c0381e0d22a0e25a22d7ac27adaf518724c322c92dd77b11014702d251fd2624
+COMPLETE EXECUTABLE | core/pysrc/_updatelib.py | lines 1-458 | sha256 6a66e7bc681bf5c347529becbe6e5405165d59b336436183e4e7881d4d26d7b4
+COMPLETE EXECUTABLE | core/pysrc/_workadopt.py | lines 1-156 | sha256 89f4a7eaa38ee10657af1fcdc9b3f2abaf9ddbbe2cc794cfd8fdd1726cca97c8
+COMPLETE EXECUTABLE | core/pysrc/_worklib.py | lines 1-366 | sha256 4b08bdfdea85a96e1bde4bd7dc610bc61dd8ef31a42d530fb10437b1145818ce
+COMPLETE EXECUTABLE | core/pysrc/adr-merge-method.py | lines 1-34 | sha256 3dae85fb9b0d89ef9f24b95576ef481784739e667f7030dad79a2acc418d66a4
+COMPLETE EXECUTABLE | core/pysrc/append-override.py | lines 1-8 | sha256 d6a14fef85401e11222737e02b5188c71143d63c396cdaf0f3aa24736502ad9e
+COMPLETE EXECUTABLE | core/pysrc/artifact-authority-hook.py | lines 1-150 | sha256 783230e6cc6f27ee697797467cac092b8db0b257b6c408f5f7051f403a8d82d4
+COMPLETE EXECUTABLE | core/pysrc/artifact-authority.py | lines 1-129 | sha256 587a8a7646164a8e3aff223d48a95af5a72ac4093b0cc93974fe98b67423b405
+COMPLETE EXECUTABLE | core/pysrc/artifact-reconcile.py | lines 1-70 | sha256 adc01569ed70ca46c4dd6d9201b25a32747b7ad413dd3a68a5676d1fdc1b502b
+COMPLETE EXECUTABLE | core/pysrc/babysit.py | lines 1-47 | sha256 a7fbcb50898df63718f9705da0b69c7e7658932e859cad90710893603f0ff841
+COMPLETE EXECUTABLE | core/pysrc/boardsync.py | lines 1-139 | sha256 b6e7b0b7e21bc838929593815a071c1418d35e30f1fa0b64410f5a9c2424023b
+COMPLETE EXECUTABLE | core/pysrc/debug-handoff.py | lines 1-85 | sha256 c6d77fbd2ca05791b59669ce2685cd733afc2a221ebe1bd95801ddc91c26fff9
+COMPLETE EXECUTABLE | core/pysrc/doctor.py | lines 1-608 | sha256 fe65358e9ea7ac2968e6ed2bf60d3cdd9a762f1a494ef5316daa8102cce6eafa
+COMPLETE EXECUTABLE | core/pysrc/git-enforce.py | lines 1-417 | sha256 41e0d0a2d5a08c55cde71441540d8717eee55914de62d3186d05f3de38ab8142
+COMPLETE EXECUTABLE | core/pysrc/hostapi.py | lines 1-747 | sha256 3dbeeb6bfdfde3f082a773090ca47133f55fab1c1e30e17a59547e781c5eca18
+COMPLETE EXECUTABLE | core/pysrc/init-codearbiter.py | lines 1-498 | sha256 faaeaf09ccfcaa893ec6d2b9f966a86e58aea8a5eb8daec4f4760c0587cddc0b
+COMPLETE EXECUTABLE | core/pysrc/knowledge.py | lines 1-436 | sha256 522aa2424dd089d1285826fc391a1c916f37365ff1fd3228f08c3ffc68e716f0
+COMPLETE EXECUTABLE | core/pysrc/migration-pass.py | lines 1-140 | sha256 878db96323fefc73b65b6bff73f54bdffafb98af6f260789e79f9b9d3a954fcd
+COMPLETE EXECUTABLE | core/pysrc/post-write-edit.py | lines 1-231 | sha256 691d3d3691a49d25c60749153a95488a63b31414db34145a719ed14522e9e7cd
+COMPLETE EXECUTABLE | core/pysrc/pre-bash.py | lines 1-90 | sha256 b2cf1a875a6ec0aa4c36e59bfdc2c9f64a81a70dcc901a5bbc46465b087e4873
+COMPLETE EXECUTABLE | core/pysrc/pre-edit.py | lines 1-309 | sha256 baa81cd615c6ef9d0df399f7c5a15e5f5cd7d0bdff84508ae22d62b4b9b047a3
+COMPLETE EXECUTABLE | core/pysrc/pre-read.py | lines 1-81 | sha256 e8acb8b4901198cac202084b880605d7dd0a702781d650a47dad5d0214c491f3
+COMPLETE EXECUTABLE | core/pysrc/pre-write.py | lines 1-232 | sha256 8f6cbdb29ecde96ab608fbafdfc0373c664686f89da9f21aa71129e9f72003f8
+COMPLETE EXECUTABLE | core/pysrc/prompt-submit.py | lines 1-554 | sha256 1eaf3b2c464727e1af297cdf5f7c857547734eab7172c1daa03d75fe752ae171
+COMPLETE EXECUTABLE | core/pysrc/prune-transcript.py | lines 1-252 | sha256 697c844472240ac0440e4043d17eb7de832d70eadf6e21de0ab0684a07008977
+COMPLETE EXECUTABLE | core/pysrc/releasehash.py | lines 1-256 | sha256 a9e806767403343937015026d544513985a6fb8d5cf7578f42d038797d9b0614
+COMPLETE EXECUTABLE | core/pysrc/resolve-append-only-conflict.py | lines 1-8 | sha256 4f9c5e92f7dd3371edaee443997728fd4d86e93394aced542e4c1c934c0eacf0
+COMPLETE EXECUTABLE | core/pysrc/resolve-context-conflict.py | lines 1-8 | sha256 e2ee12d67b0c4a1c7f786171ecd46d77d202e134b87c72a194a35e86eef483a1
+COMPLETE EXECUTABLE | core/pysrc/security-pass.py | lines 1-204 | sha256 4d8171ce2d3f3c09ec2f3b9eb0da8221fc5611fa832eaa216670a52ec88d82d6
+COMPLETE EXECUTABLE | core/pysrc/session-start.py | lines 1-1385 | sha256 89a78459a87ef9ec45594fc8ba8783535c628889e38ed21d4c49f86a21c467e5
+COMPLETE EXECUTABLE | core/pysrc/taskwrite.py | lines 1-464 | sha256 c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25
+COMPLETE EXECUTABLE | core/pysrc/tribunal.py | lines 1-120 | sha256 01322be9197fbd2ccaabad56ff7f7fa2dd64abda618d98d6194f528a028a343c
+COMPLETE EXECUTABLE | core/pysrc/update-refresh.py | lines 1-51 | sha256 73ef43701475c700a34bd0ac22f18085e0c29fa72157c960232ae1ec8e0b282c
+COMPLETE EXECUTABLE | core/pysrc/wire-statusline.py | lines 1-440 | sha256 3ca9de6944a7911a126e1ae486c88a4c029b2684a7a24a3fa152f726f6cced92
+COMPLETE EXECUTABLE | core/pysrc/work.py | lines 1-510 | sha256 fe51520ff1faa8d94740fde5a8d73c0a2626841abc7eae5397e6969055b95722
+COMPLETE EXECUTABLE | plugins/ca-codex/hooks/_host.py | lines 1-314 | sha256 30fbef97ea3d72c30825b7ad43b589164b7cf587a8954d188344535f7f1c425d
+COMPLETE EXECUTABLE | plugins/ca-codex/hooks/pre-tool-adapter.py | lines 1-220 | sha256 8d7b45a967dc0750c748f3230624010ac6f8ffc854d98ecbf039733653b9abcb
+COMPLETE EXECUTABLE | plugins/ca-codex/hooks/tribunal-usage.py | lines 1-389 | sha256 cc8f16e283a5e6b4de997d93e07903081ff5058215f080586bc06dd5882bb40c
+COMPLETE EXECUTABLE | plugins/ca-pi/hooks/_host.py | lines 1-123 | sha256 d1946b8f366ca40b2fd84012e946239e172dc6486a3afb2d7280c716b72a959c
+COMPLETE EXECUTABLE | plugins/ca-pi/hooks/pi-approval.py | lines 1-94 | sha256 cd85ec3f6e6d3efed853f6baadcfc977bb3c189846cea5ef80aad00a7e97da5f
+COMPLETE EXECUTABLE | plugins/ca-pi/hooks/pi-bridge.py | lines 1-553 | sha256 19e2512a091bfca5c51e4e1701c091f6b6033052394adb11d98697e2d0705197
+COMPLETE EXECUTABLE | plugins/ca/hooks/_host.py | lines 1-40 | sha256 e7225f47e7bbc3626f6ae247d6776432dad6712f4249248d9a5d794555424ad1
+COMPLETE EXECUTABLE | plugins/ca/hooks/tribunal-usage.py | lines 1-266 | sha256 2e06d50e8aa74b07afe4fa5b13f1505350aea9924718576b55c4e63dc72bf92d
+
+Reassigned canonical sources: {"_boxlib.py": "root", "_colorlib.py": "root", "_fmtlib.py": "root", "_releaselib.py": "host_site_lifecycle", "_segmentslib.py": "root", "_taskboardlib.py": "host_site_lifecycle", "_usagelib.py": "root", "_workgithub.py": "host_site_lifecycle", "statusline.py": "root"}
+
+No unread owned behavioral files. No full-suite/live-host/release-artifact proof claimed.

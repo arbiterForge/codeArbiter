@@ -1,0 +1,31 @@
+{
+  "argv": [
+    "C:\\Python314\\python.exe",
+    "-I",
+    "-S",
+    "-B",
+    "-X",
+    "utf8",
+    "-c",
+    "import sys,unittest;sys.path.insert(0,'C:\\\\Users\\\\brenn\\\\.codex\\\\worktrees\\\\program-governance-prep\\\\codeArbiter\\\\.github\\\\scripts');s=unittest.TestSuite(unittest.defaultTestLoader.loadTestsFromName(n) for n in ['test_major_qualification_report.QualificationOutputFilenameTests', 'test_hook_ci_partition.SourceQualificationRoleTests', 'test_hook_ci_partition.PartitionContractTests', 'test_ci_impact.SdkFooterSourceWorkflowTests']);r=unittest.TextTestRunner(verbosity=2).run(s);sys.exit(not r.wasSuccessful())"
+  ],
+  "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
+  "exit_code": 0,
+  "seconds": 0.433,
+  "subjects_before": {
+    ".github/scripts/major_qualification_report.py": "b4c63453fedaaa964bad58b179ac0748e2967a45dc620024a16e9c1e9a5a2f4f",
+    ".github/scripts/test_major_qualification_report.py": "06d3be8d73964a7870f162456ac63a1af0ceb4d8a8375fc80487887a242017e4",
+    ".github/workflows/ci.yml": "99b0d1acef9996b68e0259dfaacd9a9ea4be91d8f98b108e230e71baeeb704d0",
+    ".github/scripts/test_ci_impact.py": "671118235de1877c4f8788b6da4d134db0019989c9a4fe105858bc37853504e1",
+    ".github/scripts/test_hook_ci_partition.py": "983e848b9234ffbaf2b7c797b2f734514583d3f34768dbc014eab5d561363daf"
+  },
+  "subjects_after": {
+    ".github/scripts/major_qualification_report.py": "b4c63453fedaaa964bad58b179ac0748e2967a45dc620024a16e9c1e9a5a2f4f",
+    ".github/scripts/test_major_qualification_report.py": "06d3be8d73964a7870f162456ac63a1af0ceb4d8a8375fc80487887a242017e4",
+    ".github/workflows/ci.yml": "99b0d1acef9996b68e0259dfaacd9a9ea4be91d8f98b108e230e71baeeb704d0",
+    ".github/scripts/test_ci_impact.py": "671118235de1877c4f8788b6da4d134db0019989c9a4fe105858bc37853504e1",
+    ".github/scripts/test_hook_ci_partition.py": "983e848b9234ffbaf2b7c797b2f734514583d3f34768dbc014eab5d561363daf"
+  },
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "3c32de1196d65e309d733ab3e8a37e4233f7e6d32b33532aa80887189e183773"
+}

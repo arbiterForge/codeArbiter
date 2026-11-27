@@ -1,0 +1,429 @@
+{
+  "baseline": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "source_base": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
+  "action": ".github/actions/publish-target/action.yml",
+  "baseline_file_sha256": "2ea5f22fcf9475de7ab5569074a6917b217056b5c61843d66cd0b98d3bd8b964",
+  "current_file_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+  "steps": [
+    {
+      "name": "Download promoted host payloads",
+      "baseline": {
+        "start": 72,
+        "end": 79,
+        "metadata": "    - name: Download promoted host payloads\n      if: ${{ inputs.host != '' }}\n      uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2\n      with:\n        name: artifact-host-payloads-${{ inputs.source-commit }}\n        path: ${{ runner.temp }}/artifact-publication-stage\n        run-id: ${{ inputs.ci-run-id }}\n        github-token: ${{ inputs.github-token }}\n",
+        "body": null
+      },
+      "current": {
+        "start": 72,
+        "end": 79,
+        "metadata": "    - name: Download promoted host payloads\n      if: ${{ inputs.host != '' }}\n      uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2\n      with:\n        name: artifact-host-payloads-${{ inputs.source-commit }}\n        path: ${{ runner.temp }}/artifact-publication-stage\n        run-id: ${{ inputs.ci-run-id }}\n        github-token: ${{ inputs.github-token }}\n",
+        "body": null
+      },
+      "same_metadata": true,
+      "same_body": true
+    },
+    {
+      "name": "Download release package cohort",
+      "baseline": {
+        "start": 80,
+        "end": 87,
+        "metadata": "    - name: Download release package cohort\n      if: ${{ inputs.host != '' }}\n      uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2\n      with:\n        name: artifact-release-packages-${{ inputs.source-commit }}\n        path: ${{ runner.temp }}/artifact-publication-packages\n        run-id: ${{ inputs.ci-run-id }}\n        github-token: ${{ inputs.github-token }}\n",
+        "body": null
+      },
+      "current": {
+        "start": 80,
+        "end": 87,
+        "metadata": "    - name: Download release package cohort\n      if: ${{ inputs.host != '' }}\n      uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2\n      with:\n        name: artifact-release-packages-${{ inputs.source-commit }}\n        path: ${{ runner.temp }}/artifact-publication-packages\n        run-id: ${{ inputs.ci-run-id }}\n        github-token: ${{ inputs.github-token }}\n",
+        "body": null
+      },
+      "same_metadata": true,
+      "same_body": true
+    },
+    {
+      "name": "Download cold-install receipt matrix",
+      "baseline": {
+        "start": 88,
+        "end": 97,
+        "metadata": "    - name: Download cold-install receipt matrix\n      if: ${{ inputs.host != '' }}\n      uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2\n      with:\n        pattern: artifact-package-cold-*-${{ inputs.source-commit }}\n        path: ${{ runner.temp }}/artifact-publication-cold\n        merge-multiple: false\n        run-id: ${{ inputs.ci-run-id }}\n        github-token: ${{ inputs.github-token }}\n",
+        "body": null
+      },
+      "current": {
+        "start": 88,
+        "end": 97,
+        "metadata": "    - name: Download cold-install receipt matrix\n      if: ${{ inputs.host != '' }}\n      uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2\n      with:\n        pattern: artifact-package-cold-*-${{ inputs.source-commit }}\n        path: ${{ runner.temp }}/artifact-publication-cold\n        merge-multiple: false\n        run-id: ${{ inputs.ci-run-id }}\n        github-token: ${{ inputs.github-token }}\n",
+        "body": null
+      },
+      "same_metadata": true,
+      "same_body": true
+    },
+    {
+      "name": "Configure Node and npm registry for Pi trusted publishing",
+      "baseline": {
+        "start": 98,
+        "end": 105,
+        "metadata": "    - name: Configure Node and npm registry for Pi trusted publishing\n      if: ${{ inputs.host == 'pi' }}\n      uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0\n      with:\n        node-version: '22.19.0'\n        registry-url: https://registry.npmjs.org\n        scope: '@arbiterforge'\n",
+        "body": null
+      },
+      "current": {
+        "start": 98,
+        "end": 105,
+        "metadata": "    - name: Configure Node and npm registry for Pi trusted publishing\n      if: ${{ inputs.host == 'pi' }}\n      uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0\n      with:\n        node-version: '22.19.0'\n        registry-url: https://registry.npmjs.org\n        scope: '@arbiterforge'\n",
+        "body": null
+      },
+      "same_metadata": true,
+      "same_body": true
+    },
+    {
+      "name": "Acquire reviewed npm@11.19.1 CLI",
+      "baseline": {
+        "start": 106,
+        "end": 134,
+        "metadata": "    - name: Acquire reviewed npm@11.19.1 CLI\n      id: npm-cli\n      if: ${{ inputs.host != '' }}\n      shell: bash\n",
+        "body": "set -euo pipefail\nroot=\"$(mktemp -d \"$RUNNER_TEMP/npm-cli.XXXXXXXX\")\"\narchive=\"$root/npm.tgz\"\ncurl --disable --fail --show-error --silent --proto '=https' --tlsv1.2 --max-redirs 0 \\\n  --output \"$archive\" \"https://registry.npmjs.org/npm/-/npm-11.19.1.tgz\"\nactual=\"sha512-$(openssl dgst -sha512 -binary \"$archive\" | openssl base64 -A)\"\ntest \"$actual\" = \"sha512-ztsxKxt/kkIaAs+2i0GU6I+DRmUdrNasxTZKJe9TCdSjKxlhah/4r/hl5ygMD6XAg1qZ9c2TNomR4qgOydp10g==\"\npython3 - \"$archive\" <<'PY'\nimport pathlib, sys, tarfile\nwith tarfile.open(sys.argv[1], \"r:gz\") as stream:\n    for member in stream.getmembers():\n        path = pathlib.PurePosixPath(member.name)\n        if (path.is_absolute() or \"..\" in path.parts or member.issym()\n                or member.islnk() or member.isdev() or member.isfifo()):\n            raise SystemExit(f\"unsafe npm CLI archive member: {member.name}\")\nPY\ntar --extract --gzip --no-same-owner --no-same-permissions --file \"$archive\" --directory \"$root\"\ncli=\"$(realpath \"$root/package/bin/npm-cli.js\")\"\ncase \"$cli\" in \"$root\"/*) ;; *) exit 1 ;; esac\ntest ! -L \"$cli\" && test \"$(\"$cli\" --version)\" = \"11.19.1\"\necho \"executable=$cli\" >> \"$GITHUB_OUTPUT\"\n"
+      },
+      "current": {
+        "start": 106,
+        "end": 134,
+        "metadata": "    - name: Acquire reviewed npm@11.19.1 CLI\n      id: npm-cli\n      if: ${{ inputs.host != '' }}\n      shell: bash\n",
+        "body": "set -euo pipefail\nroot=\"$(mktemp -d \"$RUNNER_TEMP/npm-cli.XXXXXXXX\")\"\narchive=\"$root/npm.tgz\"\ncurl --disable --fail --show-error --silent --proto '=https' --tlsv1.2 --max-redirs 0 \\\n  --output \"$archive\" \"https://registry.npmjs.org/npm/-/npm-11.19.1.tgz\"\nactual=\"sha512-$(openssl dgst -sha512 -binary \"$archive\" | openssl base64 -A)\"\ntest \"$actual\" = \"sha512-ztsxKxt/kkIaAs+2i0GU6I+DRmUdrNasxTZKJe9TCdSjKxlhah/4r/hl5ygMD6XAg1qZ9c2TNomR4qgOydp10g==\"\npython3 - \"$archive\" <<'PY'\nimport pathlib, sys, tarfile\nwith tarfile.open(sys.argv[1], \"r:gz\") as stream:\n    for member in stream.getmembers():\n        path = pathlib.PurePosixPath(member.name)\n        if (path.is_absolute() or \"..\" in path.parts or member.issym()\n                or member.islnk() or member.isdev() or member.isfifo()):\n            raise SystemExit(f\"unsafe npm CLI archive member: {member.name}\")\nPY\ntar --extract --gzip --no-same-owner --no-same-permissions --file \"$archive\" --directory \"$root\"\ncli=\"$(realpath \"$root/package/bin/npm-cli.js\")\"\ncase \"$cli\" in \"$root\"/*) ;; *) exit 1 ;; esac\ntest ! -L \"$cli\" && test \"$(\"$cli\" --version)\" = \"11.19.1\"\necho \"executable=$cli\" >> \"$GITHUB_OUTPUT\"\n"
+      },
+      "same_metadata": true,
+      "same_body": true
+    },
+    {
+      "name": "Verify the CI package cohort (payload digests + cold-install receipts)",
+      "baseline": {
+        "start": 135,
+        "end": 155,
+        "metadata": "    - name: Verify the CI package cohort (payload digests + cold-install receipts)\n      id: package\n      if: ${{ inputs.host != '' }}\n      shell: bash\n      env:\n        HOST: ${{ inputs.host }}\n        SOURCE_COMMIT: ${{ inputs.source-commit }}\n        CI_RUN_ID: ${{ inputs.ci-run-id }}\n        NPM_CLI: ${{ steps.npm-cli.outputs.executable }}\n",
+        "body": "set -euo pipefail\n[ \"$(git rev-parse HEAD)\" = \"$SOURCE_COMMIT\" ] || { echo \"::error::checkout is not the release commit\"; exit 1; }\npython3 .github/scripts/_npm_publishlib.py verify-cohort \\\n  --package-root \"$RUNNER_TEMP/artifact-publication-packages\" \\\n  --stage-root \"$RUNNER_TEMP/artifact-publication-stage\" \\\n  --cold-root \"$RUNNER_TEMP/artifact-publication-cold\" \\\n  --source-repo . --source-commit \"$SOURCE_COMMIT\" --ci-run-id \"$CI_RUN_ID\" \\\n  --workflow-sha \"$SOURCE_COMMIT\" --npm \"$NPM_CLI\" --trusted-repo . \\\n  --host \"$HOST\" --output \"$GITHUB_OUTPUT\"\n"
+      },
+      "current": {
+        "start": 135,
+        "end": 155,
+        "metadata": "    - name: Verify the CI package cohort (payload digests + cold-install receipts)\n      id: package\n      if: ${{ inputs.host != '' }}\n      shell: bash\n      env:\n        HOST: ${{ inputs.host }}\n        SOURCE_COMMIT: ${{ inputs.source-commit }}\n        CI_RUN_ID: ${{ inputs.ci-run-id }}\n        NPM_CLI: ${{ steps.npm-cli.outputs.executable }}\n",
+        "body": "set -euo pipefail\n[ \"$(git rev-parse HEAD)\" = \"$SOURCE_COMMIT\" ] || { echo \"::error::checkout is not the release commit\"; exit 1; }\npython3 .github/scripts/_npm_publishlib.py verify-cohort \\\n  --package-root \"$RUNNER_TEMP/artifact-publication-packages\" \\\n  --stage-root \"$RUNNER_TEMP/artifact-publication-stage\" \\\n  --cold-root \"$RUNNER_TEMP/artifact-publication-cold\" \\\n  --source-repo . --source-commit \"$SOURCE_COMMIT\" --ci-run-id \"$CI_RUN_ID\" \\\n  --workflow-sha \"$SOURCE_COMMIT\" --npm \"$NPM_CLI\" --trusted-repo . \\\n  --host \"$HOST\" --output \"$GITHUB_OUTPUT\"\n"
+      },
+      "same_metadata": true,
+      "same_body": true
+    },
+    {
+      "name": "Resolve version from the manifest",
+      "baseline": {
+        "start": 156,
+        "end": 174,
+        "metadata": "    - name: Resolve version from the manifest\n      id: v\n      shell: bash\n      env:\n        MANIFEST: ${{ inputs.manifest }}\n        COMPANION: ${{ inputs.companion-manifest }}\n        TAG_PREFIX: ${{ inputs.tag-prefix }}\n",
+        "body": "set -euo pipefail\nVERSION=$(node -p \"require('./$MANIFEST').version\")\nif [ -n \"$COMPANION\" ]; then\n  COMPANION_VERSION=$(node -p \"require('./$COMPANION').version\")\n  [ \"$COMPANION_VERSION\" = \"$VERSION\" ] || {\n    echo \"::error::$COMPANION says '$COMPANION_VERSION' but $MANIFEST says '$VERSION'\"; exit 1; }\nfi\necho \"version=$VERSION\" >> \"$GITHUB_OUTPUT\"\necho \"tag=${TAG_PREFIX}${VERSION}\" >> \"$GITHUB_OUTPUT\"\n"
+      },
+      "current": {
+        "start": 156,
+        "end": 174,
+        "metadata": "    - name: Resolve version from the manifest\n      id: v\n      shell: bash\n      env:\n        MANIFEST: ${{ inputs.manifest }}\n        COMPANION: ${{ inputs.companion-manifest }}\n        TAG_PREFIX: ${{ inputs.tag-prefix }}\n",
+        "body": "set -euo pipefail\nVERSION=$(node -p \"require('./$MANIFEST').version\")\nif [ -n \"$COMPANION\" ]; then\n  COMPANION_VERSION=$(node -p \"require('./$COMPANION').version\")\n  [ \"$COMPANION_VERSION\" = \"$VERSION\" ] || {\n    echo \"::error::$COMPANION says '$COMPANION_VERSION' but $MANIFEST says '$VERSION'\"; exit 1; }\nfi\necho \"version=$VERSION\" >> \"$GITHUB_OUTPUT\"\necho \"tag=${TAG_PREFIX}${VERSION}\" >> \"$GITHUB_OUTPUT\"\n"
+      },
+      "same_metadata": true,
+      "same_body": true
+    },
+    {
+      "name": "Extract the CHANGELOG section as release notes",
+      "baseline": {
+        "start": 175,
+        "end": 197,
+        "metadata": "    - name: Extract the CHANGELOG section as release notes\n      shell: bash\n      env:\n        VER: ${{ steps.v.outputs.version }}\n        TAG: ${{ steps.v.outputs.tag }}\n        CHANGELOG: ${{ inputs.changelog }}\n        SOURCE_COMMIT: ${{ inputs.source-commit }}\n",
+        "body": "set -euo pipefail\npython3 core/pysrc/_releaselib.py changelog-section \\\n  \"$GITHUB_WORKSPACE\" \"$SOURCE_COMMIT\" \"$CHANGELOG\" \"$VER\" semver \"\" > notes.md\npython3 core/pysrc/_releaselib.py notes-match \"$TAG\" notes.md semver \"\"\nRELEASE_DATE=$(python3 - <<'PY'\nimport re\nheading=open(\"notes.md\",encoding=\"utf-8\").readline().rstrip(\"\\n\")\nmatch=re.search(r\"(?: - | \u2014 )(\\d{4}-\\d{2}-\\d{2})(?:[ \\t]*(?: - | \u2014 ).*)?$\",heading)\nif not match: raise SystemExit(\"changelog section has no release date\")\nprint(match.group(1))\nPY\n)\nprintf '%s\\nReleased-at: %s\\n' \"$(cat notes.md)\" \"$RELEASE_DATE\" > tagmsg.txt\necho \"RELEASED_AT=$RELEASE_DATE\" >> \"$GITHUB_ENV\"\n"
+      },
+      "current": {
+        "start": 175,
+        "end": 202,
+        "metadata": "    - name: Extract the CHANGELOG section as release notes\n      shell: bash\n      env:\n        VER: ${{ steps.v.outputs.version }}\n        TAG: ${{ steps.v.outputs.tag }}\n        CHANGELOG: ${{ inputs.changelog }}\n        SOURCE_COMMIT: ${{ inputs.source-commit }}\n",
+        "body": "set -euo pipefail\npython3 core/pysrc/_releaselib.py changelog-section \\\n  \"$GITHUB_WORKSPACE\" \"$SOURCE_COMMIT\" \"$CHANGELOG\" \"$VER\" semver \"\" > notes.md\npython3 core/pysrc/_releaselib.py notes-match \"$TAG\" notes.md semver \"\"\nRELEASE_DATE=$(python3 - <<'PY'\nimport re\nheading=open(\"notes.md\",encoding=\"utf-8\").readline().rstrip(\"\\n\")\nmatch=re.search(r\"(?: - | \u2014 )(\\d{4}-\\d{2}-\\d{2})(?:[ \\t]*(?: - | \u2014 ).*)?$\",heading)\nif not match: raise SystemExit(\"changelog section has no release date\")\nprint(match.group(1))\nPY\n)\nprintf '%s\\nReleased-at: %s\\n' \"$(cat notes.md)\" \"$RELEASE_DATE\" > tagmsg.txt\necho \"RELEASED_AT=$RELEASE_DATE\" >> \"$GITHUB_ENV\"\n"
+      },
+      "same_metadata": true,
+      "same_body": true
+    },
+    {
+      "name": "Observe remote state and plan",
+      "baseline": {
+        "start": 198,
+        "end": 216,
+        "metadata": "    - name: Observe remote state and plan\n      id: plan\n      shell: bash\n      env:\n        GH_TOKEN: ${{ inputs.github-token }}\n        TAG: ${{ steps.v.outputs.tag }}\n        SOURCE_COMMIT: ${{ inputs.source-commit }}\n        ASSET: ${{ steps.package.outputs.file }}\n",
+        "body": "set -euo pipefail\ngh auth setup-git\ngit ls-remote --tags origin \"refs/tags/$TAG\" \"refs/tags/$TAG^{}\" > \"$RUNNER_TEMP/remote-tag.txt\"\ngh api --paginate --slurp \"repos/$GITHUB_REPOSITORY/releases?per_page=100\" > \"$RUNNER_TEMP/releases.json\"\nextra=()\n[ -z \"$ASSET\" ] || extra+=(--asset \"$ASSET\")\npython3 .github/scripts/release_target.py plan --tag \"$TAG\" --source \"$SOURCE_COMMIT\" \\\n  --remote-tag \"$RUNNER_TEMP/remote-tag.txt\" --releases \"$RUNNER_TEMP/releases.json\" \\\n  --asset codearbiter-publication.json \"${extra[@]}\" --output \"$GITHUB_OUTPUT\"\n"
+      },
+      "current": {
+        "start": 203,
+        "end": 223,
+        "metadata": "    - name: Observe remote state and plan\n      id: plan\n      shell: bash\n      env:\n        GH_TOKEN: ${{ inputs.github-token }}\n        TARGET: ${{ inputs.target }}\n        VERSION: ${{ steps.v.outputs.version }}\n        TAG: ${{ steps.v.outputs.tag }}\n        SOURCE_COMMIT: ${{ inputs.source-commit }}\n        ASSET: ${{ steps.package.outputs.file }}\n        ASSET_SHA256: ${{ steps.package.outputs.sha256 }}\n",
+        "body": "set -euo pipefail\ngh auth setup-git\ngit ls-remote --tags origin \"refs/tags/$TAG\" \"refs/tags/$TAG^{}\" > \"$RUNNER_TEMP/remote-tag.txt\"\ngh api --paginate --slurp \"repos/$GITHUB_REPOSITORY/releases?per_page=100\" > \"$RUNNER_TEMP/releases.json\"\npython3 .github/scripts/release_target.py plan --tag \"$TAG\" --source \"$SOURCE_COMMIT\" \\\n  --remote-tag \"$RUNNER_TEMP/remote-tag.txt\" --releases \"$RUNNER_TEMP/releases.json\" \\\n  --target \"$TARGET\" --version \"$VERSION\" \\\n  --package-file \"$ASSET\" --package-sha256 \"$ASSET_SHA256\" --output \"$GITHUB_OUTPUT\"\n"
+      },
+      "same_metadata": false,
+      "same_body": false
+    },
+    {
+      "name": "Select the exact Pi npm tarball",
+      "baseline": {
+        "start": 217,
+        "end": 248,
+        "metadata": "    - name: Select the exact Pi npm tarball\n      id: pi\n      if: ${{ inputs.host == 'pi' }}\n      shell: bash\n      env:\n        VERSION: ${{ steps.v.outputs.version }}\n        SOURCE_COMMIT: ${{ inputs.source-commit }}\n        CI_RUN_ID: ${{ inputs.ci-run-id }}\n        NPM_CLI: ${{ steps.npm-cli.outputs.executable }}\n",
+        "body": "set -euo pipefail\npython3 - <<'PY' >> \"$GITHUB_OUTPUT\"\nimport json, os, sys\nfrom pathlib import Path\nsys.path.insert(0, \".github/scripts\")\nimport _npm_publishlib as lib\nroot = Path(os.environ[\"RUNNER_TEMP\"]) / \"artifact-publication-packages\"\ncohort = root / \"artifact-package-cohort.json\"\nname = json.loads(cohort.read_text(encoding=\"utf-8\"))[\"packages\"][\"pi\"][\"file\"]\ntarball, integrity = lib.load_prebuilt_pi_package(\n    cohort, root / name, version=os.environ[\"VERSION\"],\n    expected_sha=os.environ[\"SOURCE_COMMIT\"], ci_run_id=os.environ[\"CI_RUN_ID\"])\nlookup = lib.registry_lookup(os.environ[\"NPM_CLI\"], os.environ[\"VERSION\"])\nstate = lib.classify_registry_lookup(lookup.returncode, lookup.stdout, lookup.stderr,\n                                     os.environ[\"VERSION\"], integrity)\nprint(f\"tarball={tarball}\"); print(f\"integrity={integrity}\")\nprint(f\"skip={'true' if state == 'present' else 'false'}\")\nPY\n"
+      },
+      "current": {
+        "start": 224,
+        "end": 256,
+        "metadata": "    - name: Select the exact Pi npm tarball\n      id: pi\n      if: ${{ inputs.host == 'pi' }}\n      shell: bash\n      env:\n        VERSION: ${{ steps.v.outputs.version }}\n        SOURCE_COMMIT: ${{ inputs.source-commit }}\n        CI_RUN_ID: ${{ inputs.ci-run-id }}\n        NPM_CLI: ${{ steps.npm-cli.outputs.executable }}\n",
+        "body": "set -euo pipefail\npython3 - <<'PY' >> \"$GITHUB_OUTPUT\"\nimport json, os, sys\nfrom pathlib import Path\nsys.path.insert(0, \".github/scripts\")\nimport _npm_publishlib as lib\nroot = Path(os.environ[\"RUNNER_TEMP\"]) / \"artifact-publication-packages\"\ncohort = root / \"artifact-package-cohort.json\"\nname = json.loads(cohort.read_text(encoding=\"utf-8\"))[\"packages\"][\"pi\"][\"file\"]\ntarball, integrity = lib.load_prebuilt_pi_package(\n    cohort, root / name, version=os.environ[\"VERSION\"],\n    expected_sha=os.environ[\"SOURCE_COMMIT\"], ci_run_id=os.environ[\"CI_RUN_ID\"])\nlookup = lib.registry_lookup(os.environ[\"NPM_CLI\"], os.environ[\"VERSION\"])\nstate = lib.classify_registry_lookup(lookup.returncode, lookup.stdout, lookup.stderr,\n                                     os.environ[\"VERSION\"], integrity)\nprint(f\"tarball={tarball}\"); print(f\"integrity={integrity}\")\nprint(f\"skip={'true' if state == 'present' else 'false'}\")\nPY\n"
+      },
+      "same_metadata": true,
+      "same_body": true
+    },
+    {
+      "name": "Require exact major-program readiness before publication effects",
+      "baseline": null,
+      "current": {
+        "start": 257,
+        "end": 275,
+        "metadata": "    - name: Require exact major-program readiness before publication effects\n      shell: bash\n      env:\n        GH_TOKEN: ${{ inputs.github-token }}\n        SOURCE_COMMIT: ${{ inputs.source-commit }}\n        CI_RUN_ID: ${{ inputs.ci-run-id }}\n        TARGET: ${{ inputs.target }}\n        VERSION: ${{ steps.v.outputs.version }}\n        EFFECTS: ${{ steps.plan.outputs.effects }}\n",
+        "body": "set -euo pipefail\nif [ -f .github/integration-candidate.json ]; then\n  python3 .github/scripts/major_readiness.py verify --source \"$SOURCE_COMMIT\" \\\n    --ci-run-id \"$CI_RUN_ID\" --target \"$TARGET\" --version \"$VERSION\" --effects \"$EFFECTS\"\nfi\n"
+      },
+      "same_metadata": false,
+      "same_body": false
+    },
+    {
+      "name": "Require matching Pi npm provenance commit",
+      "baseline": {
+        "start": 249,
+        "end": 260,
+        "metadata": "    - name: Require matching Pi npm provenance commit\n      if: ${{ inputs.host == 'pi' && steps.pi.outputs.skip != 'true' }}\n      shell: bash\n      env:\n        SOURCE_COMMIT: ${{ inputs.source-commit }}\n",
+        "body": "set -euo pipefail\nif [ \"$GITHUB_SHA\" != \"$SOURCE_COMMIT\" ]; then\n  echo \"::error::npm provenance workflow commit differs from selected CI source; refusing publish\"\n  exit 1\nfi\n"
+      },
+      "current": {
+        "start": 276,
+        "end": 287,
+        "metadata": "    - name: Require matching Pi npm provenance commit\n      if: ${{ inputs.host == 'pi' && steps.pi.outputs.skip != 'true' }}\n      shell: bash\n      env:\n        SOURCE_COMMIT: ${{ inputs.source-commit }}\n",
+        "body": "set -euo pipefail\nif [ \"$GITHUB_SHA\" != \"$SOURCE_COMMIT\" ]; then\n  echo \"::error::npm provenance workflow commit differs from selected CI source; refusing publish\"\n  exit 1\nfi\n"
+      },
+      "same_metadata": true,
+      "same_body": true
+    },
+    {
+      "name": "Create and push the annotated tag",
+      "baseline": {
+        "start": 261,
+        "end": 276,
+        "metadata": "    - name: Create and push the annotated tag\n      if: ${{ steps.plan.outputs.tag == 'create' }}\n      shell: bash\n      env:\n        GH_TOKEN: ${{ inputs.github-token }}\n        TAG: ${{ steps.v.outputs.tag }}\n        SOURCE_COMMIT: ${{ inputs.source-commit }}\n",
+        "body": "set -euo pipefail\ngit config user.name \"github-actions[bot]\"\ngit config user.email \"41898282+github-actions[bot]@users.noreply.github.com\"\nGIT_COMMITTER_DATE=\"$RELEASED_AT 00:00:00 +0000\" \\\n  git tag -a \"$TAG\" -F tagmsg.txt --cleanup=verbatim \"$SOURCE_COMMIT\"\ngit push origin \"refs/tags/$TAG\"\n"
+      },
+      "current": {
+        "start": 288,
+        "end": 303,
+        "metadata": "    - name: Create and push the annotated tag\n      if: ${{ steps.plan.outputs.tag == 'create' }}\n      shell: bash\n      env:\n        GH_TOKEN: ${{ inputs.github-token }}\n        TAG: ${{ steps.v.outputs.tag }}\n        SOURCE_COMMIT: ${{ inputs.source-commit }}\n",
+        "body": "set -euo pipefail\ngit config user.name \"github-actions[bot]\"\ngit config user.email \"41898282+github-actions[bot]@users.noreply.github.com\"\nGIT_COMMITTER_DATE=\"$RELEASED_AT 00:00:00 +0000\" \\\n  git tag -a \"$TAG\" -F tagmsg.txt --cleanup=verbatim \"$SOURCE_COMMIT\"\ngit push origin \"refs/tags/$TAG\"\n"
+      },
+      "same_metadata": true,
+      "same_body": true
+    },
+    {
+      "name": "Read back the tag",
+      "baseline": {
+        "start": 277,
+        "end": 289,
+        "metadata": "    - name: Read back the tag\n      shell: bash\n      env:\n        TAG: ${{ steps.v.outputs.tag }}\n        SOURCE_COMMIT: ${{ inputs.source-commit }}\n",
+        "body": "set -euo pipefail\nTAG_SHA=$(git ls-remote --tags origin \"refs/tags/$TAG\" \"refs/tags/$TAG^{}\" \\\n  | python3 .github/scripts/_releaselib.py peel-tag \"$TAG\")\n[ \"$TAG_SHA\" = \"$SOURCE_COMMIT\" ] || { echo \"::error::$TAG resolves to '$TAG_SHA', not $SOURCE_COMMIT\"; exit 1; }\n"
+      },
+      "current": {
+        "start": 304,
+        "end": 316,
+        "metadata": "    - name: Read back the tag\n      shell: bash\n      env:\n        TAG: ${{ steps.v.outputs.tag }}\n        SOURCE_COMMIT: ${{ inputs.source-commit }}\n",
+        "body": "set -euo pipefail\nTAG_SHA=$(git ls-remote --tags origin \"refs/tags/$TAG\" \"refs/tags/$TAG^{}\" \\\n  | python3 .github/scripts/_releaselib.py peel-tag \"$TAG\")\n[ \"$TAG_SHA\" = \"$SOURCE_COMMIT\" ] || { echo \"::error::$TAG resolves to '$TAG_SHA', not $SOURCE_COMMIT\"; exit 1; }\n"
+      },
+      "same_metadata": true,
+      "same_body": true
+    },
+    {
+      "name": "Capture published tag identity receipt",
+      "baseline": {
+        "start": 290,
+        "end": 305,
+        "metadata": "    - name: Capture published tag identity receipt\n      id: receipt\n      if: ${{ always() && steps.v.outputs.tag != '' && steps.plan.outcome != 'skipped' }}\n      shell: bash\n      env:\n        TAG: ${{ steps.v.outputs.tag }}\n        SOURCE_COMMIT: ${{ inputs.source-commit }}\n        RECEIPT_PATH: ${{ runner.temp }}/tag-publication-${{ github.job }}-${{ github.run_attempt }}.json\n",
+        "body": "set -euo pipefail\npython3 .github/scripts/tag_publication_receipt.py capture \\\n  --repo \"$GITHUB_REPOSITORY\" --tag \"$TAG\" \\\n  --expected-commit \"$SOURCE_COMMIT\" --workflow-sha \"$SOURCE_COMMIT\" \\\n  --run-id \"$GITHUB_RUN_ID\" --run-attempt \"$GITHUB_RUN_ATTEMPT\" \\\n  --output \"$RECEIPT_PATH\"\n"
+      },
+      "current": {
+        "start": 317,
+        "end": 332,
+        "metadata": "    - name: Capture published tag identity receipt\n      id: receipt\n      if: ${{ always() && steps.v.outputs.tag != '' && steps.plan.outcome != 'skipped' }}\n      shell: bash\n      env:\n        TAG: ${{ steps.v.outputs.tag }}\n        SOURCE_COMMIT: ${{ inputs.source-commit }}\n        RECEIPT_PATH: ${{ runner.temp }}/tag-publication-${{ github.job }}-${{ github.run_attempt }}.json\n",
+        "body": "set -euo pipefail\npython3 .github/scripts/tag_publication_receipt.py capture \\\n  --repo \"$GITHUB_REPOSITORY\" --tag \"$TAG\" \\\n  --expected-commit \"$SOURCE_COMMIT\" --workflow-sha \"$SOURCE_COMMIT\" \\\n  --run-id \"$GITHUB_RUN_ID\" --run-attempt \"$GITHUB_RUN_ATTEMPT\" \\\n  --output \"$RECEIPT_PATH\"\n"
+      },
+      "same_metadata": true,
+      "same_body": true
+    },
+    {
+      "name": "Retain published tag identity receipt",
+      "baseline": {
+        "start": 306,
+        "end": 314,
+        "metadata": "    - name: Retain published tag identity receipt\n      if: ${{ always() && steps.receipt.outcome != 'skipped' }}\n      uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2\n      with:\n        name: tag-publication-${{ github.job }}-${{ github.run_id }}-${{ github.run_attempt }}\n        path: ${{ runner.temp }}/tag-publication-${{ github.job }}-${{ github.run_attempt }}.json\n        if-no-files-found: error\n        retention-days: 90\n",
+        "body": null
+      },
+      "current": {
+        "start": 333,
+        "end": 341,
+        "metadata": "    - name: Retain published tag identity receipt\n      if: ${{ always() && steps.receipt.outcome != 'skipped' }}\n      uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2\n      with:\n        name: tag-publication-${{ github.job }}-${{ github.run_id }}-${{ github.run_attempt }}\n        path: ${{ runner.temp }}/tag-publication-${{ github.job }}-${{ github.run_attempt }}.json\n        if-no-files-found: error\n        retention-days: 90\n",
+        "body": null
+      },
+      "same_metadata": true,
+      "same_body": true
+    },
+    {
+      "name": "Create the draft Release",
+      "baseline": {
+        "start": 315,
+        "end": 335,
+        "metadata": "    - name: Create the draft Release\n      id: draft\n      shell: bash\n      env:\n        GH_TOKEN: ${{ inputs.github-token }}\n        TAG: ${{ steps.v.outputs.tag }}\n        TITLE: ${{ inputs.title-prefix }} ${{ steps.v.outputs.version }}\n        STATE: ${{ steps.plan.outputs.release }}\n        RELEASE_ID: ${{ steps.plan.outputs.release-id }}\n",
+        "body": "set -euo pipefail\nif [ \"$STATE\" = create ]; then\n  RELEASE_ID=$(gh api --method POST \"repos/$GITHUB_REPOSITORY/releases\" \\\n    -f tag_name=\"$TAG\" -f name=\"$TITLE\" -F body=@notes.md \\\n    -F draft=true -F prerelease=false --jq .id)\nfi\necho \"release-id=$RELEASE_ID\" >> \"$GITHUB_OUTPUT\"\n"
+      },
+      "current": {
+        "start": 342,
+        "end": 362,
+        "metadata": "    - name: Create the draft Release\n      id: draft\n      shell: bash\n      env:\n        GH_TOKEN: ${{ inputs.github-token }}\n        TAG: ${{ steps.v.outputs.tag }}\n        TITLE: ${{ inputs.title-prefix }} ${{ steps.v.outputs.version }}\n        STATE: ${{ steps.plan.outputs.release }}\n        RELEASE_ID: ${{ steps.plan.outputs.release-id }}\n",
+        "body": "set -euo pipefail\nif [ \"$STATE\" = create ]; then\n  RELEASE_ID=$(gh api --method POST \"repos/$GITHUB_REPOSITORY/releases\" \\\n    -f tag_name=\"$TAG\" -f name=\"$TITLE\" -F body=@notes.md \\\n    -F draft=true -F prerelease=false --jq .id)\nfi\necho \"release-id=$RELEASE_ID\" >> \"$GITHUB_OUTPUT\"\n"
+      },
+      "same_metadata": true,
+      "same_body": true
+    },
+    {
+      "name": "Upload and read back the package asset",
+      "baseline": {
+        "start": 336,
+        "end": 357,
+        "metadata": "    - name: Upload and read back the package asset\n      if: ${{ inputs.host == 'claude' || inputs.host == 'codex' || inputs.host == 'pi' }}\n      shell: bash\n      env:\n        GH_TOKEN: ${{ inputs.github-token }}\n        RELEASE_ID: ${{ steps.draft.outputs.release-id }}\n        MISSING: ${{ steps.plan.outputs.missing-assets }}\n        ASSET_FILE: ${{ steps.package.outputs.file }}\n        ASSET_PATH: ${{ steps.package.outputs.path }}\n        ASSET_SHA256: ${{ steps.package.outputs.sha256 }}\n",
+        "body": "set -euo pipefail\ncase \" $MISSING \" in *\" $ASSET_FILE \"*)\n  gh api --method POST -H \"Content-Type: application/gzip\" --input \"$ASSET_PATH\" \\\n    \"https://uploads.github.com/repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID/assets?name=$ASSET_FILE\" >/dev/null ;;\nesac\nURL=$(gh api \"repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID/assets\" \\\n  --jq \".[] | select(.name == \\\"$ASSET_FILE\\\") | .url\")\n[ -n \"$URL\" ] || { echo \"::error::$ASSET_FILE is missing after upload\"; exit 1; }\ngh api -H \"Accept: application/octet-stream\" \"$URL\" > \"$RUNNER_TEMP/readback-$ASSET_FILE\"\nprintf '%s  %s\\n' \"$ASSET_SHA256\" \"$RUNNER_TEMP/readback-$ASSET_FILE\" | sha256sum --check --strict\n"
+      },
+      "current": {
+        "start": 363,
+        "end": 387,
+        "metadata": "    - name: Upload and read back the package asset\n      if: ${{ inputs.host == 'claude' || inputs.host == 'codex' || inputs.host == 'pi' }}\n      shell: bash\n      env:\n        GH_TOKEN: ${{ inputs.github-token }}\n        RELEASE_ID: ${{ steps.draft.outputs.release-id }}\n        MISSING: ${{ steps.plan.outputs.missing-assets }}\n        ASSET_FILE: ${{ steps.package.outputs.file }}\n        ASSET_PATH: ${{ steps.package.outputs.path }}\n        ASSET_SHA256: ${{ steps.package.outputs.sha256 }}\n",
+        "body": "set -euo pipefail\ncase \" $MISSING \" in *\" $ASSET_FILE \"*)\n  gh api --method POST -H \"Content-Type: application/gzip\" --input \"$ASSET_PATH\" \\\n    \"https://uploads.github.com/repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID/assets?name=$ASSET_FILE\" >/dev/null ;;\nesac\nURL=$(gh api \"repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID/assets\" \\\n  --jq \".[] | select(.name == \\\"$ASSET_FILE\\\") | .url\")\n[ -n \"$URL\" ] || { echo \"::error::$ASSET_FILE is missing after upload\"; exit 1; }\ngh api -H \"Accept: application/octet-stream\" \"$URL\" > \"$RUNNER_TEMP/readback-$ASSET_FILE\"\nprintf '%s  %s\\n' \"$ASSET_SHA256\" \"$RUNNER_TEMP/readback-$ASSET_FILE\" | sha256sum --check --strict\n"
+      },
+      "same_metadata": true,
+      "same_body": true
+    },
+    {
+      "name": "Publish the Claude marketplace channel",
+      "baseline": {
+        "start": 358,
+        "end": 376,
+        "metadata": "    - name: Publish the Claude marketplace channel\n      id: claude-channel\n      if: ${{ inputs.host == 'claude' }}\n      shell: bash\n      env:\n        GH_TOKEN: ${{ inputs.github-token }}\n        SOURCE_COMMIT: ${{ inputs.source-commit }}\n        COHORT_SHA256: ${{ steps.package.outputs.cohort-sha256 }}\n        VERSION: ${{ steps.v.outputs.version }}\n",
+        "body": "set -euo pipefail\npython3 tools/promote-claude-marketplace.py \\\n  --package-root \"$RUNNER_TEMP/artifact-publication-packages\" \\\n  --cohort-sha256 \"$COHORT_SHA256\" --source-commit \"$SOURCE_COMMIT\" \\\n  --remote-url \"$(git remote get-url origin)\" --version \"$VERSION\" \\\n  --work \"$RUNNER_TEMP/claude-channel-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT\" \\\n  --push > \"$RUNNER_TEMP/claude-channel.json\"\necho \"ref=$(python3 -c 'import json,sys;print(json.load(open(sys.argv[1]))[\"marketplace_commit\"])' \"$RUNNER_TEMP/claude-channel.json\")\" >> \"$GITHUB_OUTPUT\"\n"
+      },
+      "current": {
+        "start": 388,
+        "end": 408,
+        "metadata": "    - name: Publish the Claude marketplace channel\n      id: claude-channel\n      if: ${{ inputs.host == 'claude' }}\n      shell: bash\n      env:\n        GH_TOKEN: ${{ inputs.github-token }}\n        SOURCE_COMMIT: ${{ inputs.source-commit }}\n        COHORT_SHA256: ${{ steps.package.outputs.cohort-sha256 }}\n        VERSION: ${{ steps.v.outputs.version }}\n        EFFECTS: ${{ steps.plan.outputs.effects }}\n",
+        "body": "set -euo pipefail\ncase \" $EFFECTS \" in *\" channel \"*) MODE=--push ;; *) MODE=--readback ;; esac\npython3 tools/promote-claude-marketplace.py \\\n  --package-root \"$RUNNER_TEMP/artifact-publication-packages\" \\\n  --cohort-sha256 \"$COHORT_SHA256\" --source-commit \"$SOURCE_COMMIT\" \\\n  --remote-url \"$(git remote get-url origin)\" --version \"$VERSION\" \\\n  --work \"$RUNNER_TEMP/claude-channel-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT\" \\\n  \"$MODE\" > \"$RUNNER_TEMP/claude-channel.json\"\necho \"ref=$(python3 -c 'import json,sys;print(json.load(open(sys.argv[1]))[\"marketplace_commit\"])' \"$RUNNER_TEMP/claude-channel.json\")\" >> \"$GITHUB_OUTPUT\"\n"
+      },
+      "same_metadata": false,
+      "same_body": false
+    },
+    {
+      "name": "Audit Codex distribution rulesets (advisory)",
+      "baseline": {
+        "start": 377,
+        "end": 389,
+        "metadata": "    - name: Audit Codex distribution rulesets (advisory)\n      if: ${{ inputs.host == 'codex' && inputs.codex-ruleset-verifier-token != '' }}\n      continue-on-error: true\n      shell: bash\n      env:\n        GH_TOKEN: ${{ inputs.codex-ruleset-verifier-token }}\n",
+        "body": "python3 .github/scripts/verify_codex_distribution_rulesets.py \\\n  --repository \"$GITHUB_REPOSITORY\" \\\n  --publisher-actor-id \"${{ inputs.codex-publisher-actor-id }}\" \\\n  --verifier-actor-id \"${{ inputs.codex-ruleset-verifier-actor-id }}\" \\\n  || echo \"::warning::Codex distribution ruleset audit did not pass\"\n"
+      },
+      "current": {
+        "start": 409,
+        "end": 421,
+        "metadata": "    - name: Audit Codex distribution rulesets (advisory)\n      if: ${{ inputs.host == 'codex' && inputs.codex-ruleset-verifier-token != '' }}\n      continue-on-error: true\n      shell: bash\n      env:\n        GH_TOKEN: ${{ inputs.codex-ruleset-verifier-token }}\n",
+        "body": "python3 .github/scripts/verify_codex_distribution_rulesets.py \\\n  --repository \"$GITHUB_REPOSITORY\" \\\n  --publisher-actor-id \"${{ inputs.codex-publisher-actor-id }}\" \\\n  --verifier-actor-id \"${{ inputs.codex-ruleset-verifier-actor-id }}\" \\\n  || echo \"::warning::Codex distribution ruleset audit did not pass\"\n"
+      },
+      "same_metadata": true,
+      "same_body": true
+    },
+    {
+      "name": "Publish the Codex marketplace channel",
+      "baseline": {
+        "start": 390,
+        "end": 413,
+        "metadata": "    - name: Publish the Codex marketplace channel\n      id: codex-channel\n      if: ${{ inputs.host == 'codex' }}\n      shell: bash\n      env:\n        GH_TOKEN: ${{ inputs.github-token }}\n        SOURCE_COMMIT: ${{ inputs.source-commit }}\n        COHORT_SHA256: ${{ steps.package.outputs.cohort-sha256 }}\n        VERSION: ${{ steps.v.outputs.version }}\n",
+        "body": "set -euo pipefail\npromote() {\n  python3 tools/promote-codex-marketplace.py \\\n    --package-root \"$RUNNER_TEMP/artifact-publication-packages\" \\\n    --cohort-sha256 \"$COHORT_SHA256\" --source-repo . --source-commit \"$SOURCE_COMMIT\" \\\n    --remote-url \"$(git remote get-url origin)\" \\\n    --catalog-url \"https://github.com/$GITHUB_REPOSITORY.git\" \\\n    --version \"$VERSION\" --catalog-mode git --push \"$@\"\n}\npromote --work \"$RUNNER_TEMP/codex-dist-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT\" > /dev/null\npromote --work \"$RUNNER_TEMP/codex-channel-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT\" \\\n  --advance-channel > \"$RUNNER_TEMP/codex-channel.json\"\necho \"ref=$(python3 -c 'import json,sys;print(json.load(open(sys.argv[1]))[\"marketplace_commit\"])' \"$RUNNER_TEMP/codex-channel.json\")\" >> \"$GITHUB_OUTPUT\"\n"
+      },
+      "current": {
+        "start": 422,
+        "end": 454,
+        "metadata": "    - name: Publish the Codex marketplace channel\n      id: codex-channel\n      if: ${{ inputs.host == 'codex' }}\n      shell: bash\n      env:\n        GH_TOKEN: ${{ inputs.github-token }}\n        SOURCE_COMMIT: ${{ inputs.source-commit }}\n        COHORT_SHA256: ${{ steps.package.outputs.cohort-sha256 }}\n        VERSION: ${{ steps.v.outputs.version }}\n        EFFECTS: ${{ steps.plan.outputs.effects }}\n",
+        "body": "set -euo pipefail\npromote() {\n  python3 tools/promote-codex-marketplace.py \\\n    --package-root \"$RUNNER_TEMP/artifact-publication-packages\" \\\n    --cohort-sha256 \"$COHORT_SHA256\" --source-repo . --source-commit \"$SOURCE_COMMIT\" \\\n    --remote-url \"$(git remote get-url origin)\" \\\n    --catalog-url \"https://github.com/$GITHUB_REPOSITORY.git\" \\\n    --version \"$VERSION\" --catalog-mode git \"$@\"\n}\ncase \" $EFFECTS \" in\n  *\" channel \"*)\n    promote --push --work \"$RUNNER_TEMP/codex-dist-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT\" > /dev/null\n    promote --push --work \"$RUNNER_TEMP/codex-channel-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT\" \\\n      --advance-channel > \"$RUNNER_TEMP/codex-channel.json\" ;;\n  *)\n    promote --readback --work \"$RUNNER_TEMP/codex-channel-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT\" \\\n      > \"$RUNNER_TEMP/codex-channel.json\" ;;\nesac\necho \"ref=$(python3 -c 'import json,sys;print(json.load(open(sys.argv[1]))[\"marketplace_commit\"])' \"$RUNNER_TEMP/codex-channel.json\")\" >> \"$GITHUB_OUTPUT\"\n"
+      },
+      "same_metadata": false,
+      "same_body": false
+    },
+    {
+      "name": "Publish @arbiterforge/ca-pi to npm",
+      "baseline": {
+        "start": 414,
+        "end": 429,
+        "metadata": "    - name: Publish @arbiterforge/ca-pi to npm\n      if: ${{ inputs.host == 'pi' && steps.pi.outputs.skip != 'true' }}\n      shell: bash\n      env:\n        NPM_CLI: ${{ steps.npm-cli.outputs.executable }}\n        TARBALL: ${{ steps.pi.outputs.tarball }}\n        SOURCE_COMMIT: ${{ inputs.source-commit }}\n",
+        "body": "set -euo pipefail\nif [ \"$GITHUB_SHA\" != \"$SOURCE_COMMIT\" ]; then\n  echo \"::error::npm provenance workflow commit differs from selected CI source; refusing publish\"\n  exit 1\nfi\n\"$NPM_CLI\" publish \"$TARBALL\" --ignore-scripts --provenance --access public --registry=https://registry.npmjs.org/ --@arbiterforge:registry=https://registry.npmjs.org/\n"
+      },
+      "current": {
+        "start": 455,
+        "end": 470,
+        "metadata": "    - name: Publish @arbiterforge/ca-pi to npm\n      if: ${{ inputs.host == 'pi' && steps.pi.outputs.skip != 'true' && contains(steps.plan.outputs.effects, 'channel') }}\n      shell: bash\n      env:\n        NPM_CLI: ${{ steps.npm-cli.outputs.executable }}\n        TARBALL: ${{ steps.pi.outputs.tarball }}\n        SOURCE_COMMIT: ${{ inputs.source-commit }}\n",
+        "body": "set -euo pipefail\nif [ \"$GITHUB_SHA\" != \"$SOURCE_COMMIT\" ]; then\n  echo \"::error::npm provenance workflow commit differs from selected CI source; refusing publish\"\n  exit 1\nfi\n\"$NPM_CLI\" publish \"$TARBALL\" --ignore-scripts --provenance --access public --registry=https://registry.npmjs.org/ --@arbiterforge:registry=https://registry.npmjs.org/\n"
+      },
+      "same_metadata": false,
+      "same_body": true
+    },
+    {
+      "name": "Read back the npm publication",
+      "baseline": {
+        "start": 430,
+        "end": 465,
+        "metadata": "    - name: Read back the npm publication\n      if: ${{ inputs.host == 'pi' }}\n      shell: bash\n      env:\n        VERSION: ${{ steps.v.outputs.version }}\n        INTEGRITY: ${{ steps.pi.outputs.integrity }}\n        NPM_CLI: ${{ steps.npm-cli.outputs.executable }}\n        SOURCE_COMMIT: ${{ inputs.source-commit }}\n",
+        "body": "set -euo pipefail\npython3 - <<'PY'\nimport os, sys, time\nsys.path.insert(0, \".github/scripts\")\nimport _npm_publishlib as lib\nversion, integrity, npm = os.environ[\"VERSION\"], os.environ[\"INTEGRITY\"], os.environ[\"NPM_CLI\"]\ndeadline = time.monotonic() + lib.REGISTRY_READBACK_SECONDS\nwhile True:\n    try:\n        lookup = lib.registry_lookup(npm, version)\n        state = lib.classify_registry_lookup(lookup.returncode, lookup.stdout,\n                                             lookup.stderr, version, integrity,\n                                             require_attestation=False)\n    except lib.RegistryUnavailable:\n        state = \"unavailable\"\n    if state == \"present\":\n        print(f\"read back {lib.PACKAGE}@{version} with the expected integrity\"); break\n    if time.monotonic() > deadline:\n        raise SystemExit(f\"npm publication not observable with expected integrity (last: {state})\")\n    time.sleep(15)\nevidence = lib.verify_registry_authenticity(npm, version)\nlib.validate_publication_attestation(\n    evidence, version, integrity, release_source_sha=os.environ[\"SOURCE_COMMIT\"],\n    trusted_sha=os.environ[\"SOURCE_COMMIT\"], trusted_repo=lib.Path.cwd(),\n    allow_continuation=False, source_workflows=lib.PI_RELEASE_WORKFLOWS)\nPY\n"
+      },
+      "current": {
+        "start": 471,
+        "end": 506,
+        "metadata": "    - name: Read back the npm publication\n      if: ${{ inputs.host == 'pi' }}\n      shell: bash\n      env:\n        VERSION: ${{ steps.v.outputs.version }}\n        INTEGRITY: ${{ steps.pi.outputs.integrity }}\n        NPM_CLI: ${{ steps.npm-cli.outputs.executable }}\n        SOURCE_COMMIT: ${{ inputs.source-commit }}\n",
+        "body": "set -euo pipefail\npython3 - <<'PY'\nimport os, sys, time\nsys.path.insert(0, \".github/scripts\")\nimport _npm_publishlib as lib\nversion, integrity, npm = os.environ[\"VERSION\"], os.environ[\"INTEGRITY\"], os.environ[\"NPM_CLI\"]\ndeadline = time.monotonic() + lib.REGISTRY_READBACK_SECONDS\nwhile True:\n    try:\n        lookup = lib.registry_lookup(npm, version)\n        state = lib.classify_registry_lookup(lookup.returncode, lookup.stdout,\n                                             lookup.stderr, version, integrity,\n                                             require_attestation=False)\n    except lib.RegistryUnavailable:\n        state = \"unavailable\"\n    if state == \"present\":\n        print(f\"read back {lib.PACKAGE}@{version} with the expected integrity\"); break\n    if time.monotonic() > deadline:\n        raise SystemExit(f\"npm publication not observable with expected integrity (last: {state})\")\n    time.sleep(15)\nevidence = lib.verify_registry_authenticity(npm, version)\nlib.validate_publication_attestation(\n    evidence, version, integrity, release_source_sha=os.environ[\"SOURCE_COMMIT\"],\n    trusted_sha=os.environ[\"SOURCE_COMMIT\"], trusted_repo=lib.Path.cwd(),\n    allow_continuation=False, source_workflows=lib.PI_RELEASE_WORKFLOWS)\nPY\n"
+      },
+      "same_metadata": true,
+      "same_body": true
+    },
+    {
+      "name": "Publish the Release",
+      "baseline": {
+        "start": 466,
+        "end": 486,
+        "metadata": "    - name: Publish the Release\n      id: finish\n      shell: bash\n      env:\n        GH_TOKEN: ${{ inputs.github-token }}\n        TAG: ${{ steps.v.outputs.tag }}\n        RELEASE_ID: ${{ steps.draft.outputs.release-id }}\n        MARK_LATEST: ${{ inputs.mark-latest }}\n",
+        "body": "set -euo pipefail\nDRAFT=$(gh api \"repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID\" --jq .draft)\nif [ \"$DRAFT\" = true ]; then\n  gh api --method PATCH -F draft=false -f make_latest=\"$MARK_LATEST\" \\\n    \"repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID\" >/dev/null\nfi\n# GATE: the Release is public and names this tag.\nread -r DRAFT NAMED < <(gh api \"repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID\" --jq '\"\\(.draft) \\(.tag_name)\"')\n[ \"$DRAFT\" = false ] && [ \"$NAMED\" = \"$TAG\" ] || {\n  echo \"::error::Release $RELEASE_ID reads back draft=$DRAFT tag=$NAMED\"; exit 1; }\necho \"release-state=published\" >> \"$GITHUB_OUTPUT\"\n"
+      },
+      "current": {
+        "start": 507,
+        "end": 527,
+        "metadata": "    - name: Publish the Release\n      id: finish\n      shell: bash\n      env:\n        GH_TOKEN: ${{ inputs.github-token }}\n        TAG: ${{ steps.v.outputs.tag }}\n        RELEASE_ID: ${{ steps.draft.outputs.release-id }}\n        MARK_LATEST: ${{ inputs.mark-latest }}\n",
+        "body": "set -euo pipefail\nDRAFT=$(gh api \"repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID\" --jq .draft)\nif [ \"$DRAFT\" = true ]; then\n  gh api --method PATCH -F draft=false -f make_latest=\"$MARK_LATEST\" \\\n    \"repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID\" >/dev/null\nfi\n# GATE: the Release is public and names this tag.\nread -r DRAFT NAMED < <(gh api \"repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID\" --jq '\"\\(.draft) \\(.tag_name)\"')\n[ \"$DRAFT\" = false ] && [ \"$NAMED\" = \"$TAG\" ] || {\n  echo \"::error::Release $RELEASE_ID reads back draft=$DRAFT tag=$NAMED\"; exit 1; }\necho \"release-state=published\" >> \"$GITHUB_OUTPUT\"\n"
+      },
+      "same_metadata": true,
+      "same_body": true
+    },
+    {
+      "name": "Attach the publication receipt",
+      "baseline": {
+        "start": 487,
+        "end": 517,
+        "metadata": "    - name: Attach the publication receipt\n      shell: bash\n      env:\n        GH_TOKEN: ${{ inputs.github-token }}\n        RELEASE_ID: ${{ steps.draft.outputs.release-id }}\n        MISSING: ${{ steps.plan.outputs.missing-assets }}\n        TARGET: ${{ inputs.target }}\n        HOST: ${{ inputs.host }}\n        TAG: ${{ steps.v.outputs.tag }}\n        VERSION: ${{ steps.v.outputs.version }}\n        SOURCE_COMMIT: ${{ inputs.source-commit }}\n        PACKAGE_FILE: ${{ inputs.host == 'pi' && steps.pi.outputs.tarball || steps.package.outputs.file }}\n        PACKAGE_SHA256: ${{ steps.package.outputs.sha256 }}\n        CHANNEL_REF: ${{ steps.claude-channel.outputs.ref || steps.codex-channel.outputs.ref }}\n",
+        "body": "set -euo pipefail\ncase \"$HOST\" in\n  claude) CHANNEL=ca-marketplace ;;\n  codex) CHANNEL=ca-codex-marketplace ;;\n  pi) CHANNEL=\"npm:@arbiterforge/ca-pi@$VERSION\" ;;\n  *) CHANNEL=none ;;\nesac\ncase \" $MISSING \" in *\" codearbiter-publication.json \"*) ;; *) echo \"receipt already attached\"; exit 0 ;; esac\nreceipt=\"$RUNNER_TEMP/codearbiter-publication.json\"\npython3 .github/scripts/release_target.py receipt --target \"$TARGET\" --host \"${HOST:-none}\" \\\n  --tag \"$TAG\" --version \"$VERSION\" --source \"$SOURCE_COMMIT\" \\\n  --package-file \"$(basename \"${PACKAGE_FILE:-none}\")\" --package-sha256 \"${PACKAGE_SHA256:-none}\" \\\n  --channel \"$CHANNEL\" --channel-ref \"${CHANNEL_REF:-none}\" --release-state published \\\n  --output \"$receipt\"\ngh api --method POST -H \"Content-Type: application/json\" --input \"$receipt\" \\\n  \"https://uploads.github.com/repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID/assets?name=codearbiter-publication.json\" >/dev/null\n"
+      },
+      "current": {
+        "start": 528,
+        "end": 573,
+        "metadata": "    - name: Attach the publication receipt\n      shell: bash\n      env:\n        GH_TOKEN: ${{ inputs.github-token }}\n        RELEASE_ID: ${{ steps.draft.outputs.release-id }}\n        MISSING: ${{ steps.plan.outputs.missing-assets }}\n        TARGET: ${{ inputs.target }}\n        HOST: ${{ inputs.host }}\n        TAG: ${{ steps.v.outputs.tag }}\n        VERSION: ${{ steps.v.outputs.version }}\n        SOURCE_COMMIT: ${{ inputs.source-commit }}\n        PACKAGE_FILE: ${{ inputs.host == 'pi' && steps.pi.outputs.tarball || steps.package.outputs.file }}\n        PACKAGE_SHA256: ${{ steps.package.outputs.sha256 }}\n        CHANNEL_REF: ${{ steps.claude-channel.outputs.ref || steps.codex-channel.outputs.ref }}\n",
+        "body": "set -euo pipefail\ncase \"$HOST\" in\n  claude) CHANNEL=ca-marketplace ;;\n  codex) CHANNEL=ca-codex-marketplace ;;\n  pi) CHANNEL=\"npm:@arbiterforge/ca-pi@$VERSION\" ;;\n  *) CHANNEL=none ;;\nesac\nPACKAGE_NAME=\"$(basename \"${PACKAGE_FILE:-none}\")\"\ncase \" $MISSING \" in\n  *\" codearbiter-publication.json \"*)\n    receipt=\"$RUNNER_TEMP/codearbiter-publication.json\"\n    python3 .github/scripts/release_target.py receipt --target \"$TARGET\" --host \"${HOST:-none}\" \\\n      --tag \"$TAG\" --version \"$VERSION\" --source \"$SOURCE_COMMIT\" \\\n      --package-file \"$PACKAGE_NAME\" --package-sha256 \"${PACKAGE_SHA256:-none}\" \\\n      --channel \"$CHANNEL\" --channel-ref \"${CHANNEL_REF:-none}\" --release-state published \\\n      --output \"$receipt\"\n    gh api --method POST -H \"Content-Type: application/json\" --input \"$receipt\" \\\n      \"https://uploads.github.com/repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID/assets?name=codearbiter-publication.json\" >/dev/null ;;\nesac\n# GATE: whether just attached or found from an earlier run, the receipt\n# must read back naming exactly this publication; a same-named asset\n# with other content is a conflict, not \"already attached\".\nURL=$(gh api \"repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID/assets\" \\\n  --jq '.[] | select(.name == \"codearbiter-publication.json\") | .url')\n[ -n \"$URL\" ] || { echo \"::error::codearbiter-publication.json is missing after attach\"; exit 1; }\ngh api -H \"Accept: application/octet-stream\" \"$URL\" > \"$RUNNER_TEMP/readback-receipt.json\"\npython3 .github/scripts/release_target.py verify-receipt --receipt \"$RUNNER_TEMP/readback-receipt.json\" \\\n  --target \"$TARGET\" --host \"${HOST:-none}\" --tag \"$TAG\" --version \"$VERSION\" \\\n  --source \"$SOURCE_COMMIT\" --package-file \"$PACKAGE_NAME\" \\\n  --package-sha256 \"${PACKAGE_SHA256:-none}\" --channel \"$CHANNEL\" \\\n  --channel-ref \"${CHANNEL_REF:-none}\"\n"
+      },
+      "same_metadata": true,
+      "same_body": false
+    }
+  ]
+}

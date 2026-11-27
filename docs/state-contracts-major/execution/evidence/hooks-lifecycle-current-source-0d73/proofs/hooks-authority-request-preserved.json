@@ -1,0 +1,424 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "/root/acceptance_security_review as source author; not independent self-review or execution"
+ },
+ "inputs": {
+  ".codearbiter/decisions/0030-orchestration-mode-plane-with-composed-persona.md": "c383c47baac98aa64638795f50d10befa8ad7361e803788229d4f71826ef962b",
+  ".codearbiter/decisions/0032-hosted-static-codex-release-evidence.md": "96b28b262f0bff474a53383c9823c22fbe06ecc3f63f343d8c6a31993c97e4c9",
+  ".codearbiter/decisions/0033-bind-accepted-adrs-to-obligation-evidence.md": "47c8903501b5d2fa3c5c72c9c59a5a0eebddae0c8ffa6f4f153f262068b1c16f",
+  ".codearbiter/decisions/0034-establish-closed-legacy-published-tag-provenance-epoch.md": "caec3ca7d29942c143661cab268b49cb57bb1c403c55d1ac476ca02a7059e224",
+  ".codearbiter/decisions/0040-independent-per-target-release-with-consumer-safety-gates.md": "2dce2651ea067cc7bec25982ce23fdeb1528e9bfb003906c55be7e243a3a8964",
+  ".codearbiter/decisions/0043-assistive-state-engine.md": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+  ".codearbiter/decisions/0044-trusted-pi-npm-publication.md": "fda3c0194f83d41bcb169fae7c14d1b24bdaf3bace8d41780a88825e10fe30d6",
+  ".codearbiter/decisions/0049-require-https-outside-bounded-loopback.md": "c757cef9d5e318b75ff164d270b29a49255449360f0b7cde51e53775e6916ab8",
+  "core/pysrc/_artifactauthoritylib.py": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+  "core/pysrc/artifact-authority-hook.py": "783230e6cc6f27ee697797467cac092b8db0b257b6c408f5f7051f403a8d82d4",
+  "core/pysrc/artifact-authority.py": "0dc4fd27b25ec5ca9f38ab0a52301a480c44c87072b0ec92080738fc0db38010",
+  "core/pysrc/init-codearbiter.py": "641f0d04057ea22bff6fc39ce6fd95324901c4cc810617f4a783842cd31086b3",
+  "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+  "docs/state-contracts-major/contracts/decisions.json": "5e27a869b569224df3b516a6f64a84aac662b8819607ae6c75b5847be23770a9",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+  "docs/state-contracts-major/hooks-workflow-tasks.json": "05a2b15eb968b7fa25bb2af6c11c862eef599757f66404b6abcf5b0f519c3e30"
+ },
+ "disposition_ids": [
+  "disposition:machines:hooks:authority-request",
+  "disposition:transitions:hooks:authority-request:01",
+  "disposition:transitions:hooks:authority-request:02",
+  "disposition:transitions:hooks:authority-request:03",
+  "disposition:transitions:hooks:authority-request:04",
+  "disposition:transitions:hooks:authority-request:05",
+  "disposition:transitions:hooks:authority-request:06",
+  "disposition:transitions:hooks:authority-request:07"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/source-bindings.json",
+   "sha256": "c42504c013b5c1e9673e47a51f8e33b609f9b365cf9830478dbec065df87d2f4"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/clause-inspection.json",
+   "sha256": "0020b4f082221414c7e6e513665f0725b1b592a3d02fe789565df50a69dde593"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/intake-and-limits.json",
+   "sha256": "cd46da96efcaf1c38aff76cf3168ec98afd7971d315addd34fb3720eec84e5f7"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/retained-history.json",
+   "sha256": "5329297af40dff771aa893950d7f8fd8ce504bffc2ded986b80cc4dd130f138b"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/review-reuse-and-reinspection.json",
+   "sha256": "371ced28ee3ccfaf3c4d1553327a20c0c4a732311990f68019a08946ac0c0cfe"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:hooks:authority-request",
+   "frozen_row_sha256": "d98ee43f468d6ebf124c8c446e35bf40b6b3729dfb5977ce10dbd199e8f3d9ec",
+   "clause_ids": [
+    "disposition:transitions:hooks:authority-request:01",
+    "disposition:transitions:hooks:authority-request:02",
+    "disposition:transitions:hooks:authority-request:03",
+    "disposition:transitions:hooks:authority-request:04",
+    "disposition:transitions:hooks:authority-request:05",
+    "disposition:transitions:hooks:authority-request:06",
+    "disposition:transitions:hooks:authority-request:07"
+   ],
+   "witnesses": [
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "start": 681,
+     "end": 766,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "b6ed98912ed1c5f31665f6a6fbafb7d53aa5e83796ebad1b8439b99fb732c629",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "start": 815,
+     "end": 913,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "93807afd3c5b984dc4efab9fa5fe21db5a0109c76bc1e6ae0371cbfce0637964",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "start": 1324,
+     "end": 1406,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "ed3f67a05eedaa0f65287a3dc0c0292d71b1188608e9d1bc132595cf60c0bc67",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "start": 1668,
+     "end": 1822,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "3446bbdda034332174dba0b62390147ce0423149745eb2eabbac342f15ea9218",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "start": 1005,
+     "end": 1034,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "8728f7a5e7b8332121389b0e0981216b8aa484a1cee9566941a3fa3cf0488d5d",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "start": 328,
+     "end": 425,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "956ca59e6baff298f80af1d22a335450acc50f0379da2d18ad0f35a33dca21c7",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "start": 545,
+     "end": 660,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "0c883dcf6e4f040563dd3cf6b608b803c207846dd3c5d892f6ac0d52b67a4043",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "start": 271,
+     "end": 319,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "fdc9e27453581eeca988ee87a04334a551850dd039a044f51526cea2a3bd03d6",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "start": 4602,
+     "end": 4687,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "6368430bc938871fbd8bf62b491194065bcdc32ff042e519073aabad877390aa",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "start": 4690,
+     "end": 4721,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "2d17fd597c66c72464da8a257addf9d804ca9d3cf31e3e7d087ca58b81866d0c",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "start": 916,
+     "end": 925,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "b7701f68379c713ba3605473981bd09fcdb9a3435df86d9f49cb074023b9225b",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "start": 3150,
+     "end": 3269,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "c58d26e2549a17d7a422dd6b1bbe86979ed18d770b458140b3d4c02ea0392e08",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "start": 3858,
+     "end": 4025,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "1a125717ec6f82b7ad023bc84b502abcad4299f08315c95a4f25dafe84f1020b",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "start": 1921,
+     "end": 2039,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "4fdeeecb6a7e39bf70d5c22448715d1f7e9b62b45bee68722cac740996235a00",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "start": 3056,
+     "end": 3067,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "14c5fd05279125ea8d903058149d4bca35136ee4832ec259e43b379b530b76e7",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/init-codearbiter.py",
+     "start": 381,
+     "end": 419,
+     "file_sha256": "641f0d04057ea22bff6fc39ce6fd95324901c4cc810617f4a783842cd31086b3",
+     "span_sha256": "6fc44dfe26c50cda06bb2cbecc8d7c0da3699ae97c05652c8f034e9822b11efe",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    }
+   ],
+   "assessment": "Current source preserves the finite literal responsibilities with the named accepted corrections and explicit intake/platform/storage limits in bound matrix.",
+   "source_boundary": "Reasoned finite source-conformance at actual committed0d73 only. No tests, original-owner/native/API/provider/model execution, actual work/effect/cleanup permission, runtime/installed/human/scenario/task acceptance, CI or publication qualification. Historical checks remain bound to their exact source and observation epochs. No global atomicity, storage-denial durability, unconditional replay, ancestor confinement or universal OS race/nofollow guarantee. Source author is not independent self-review; Root owns review, admission and canonical writes."
+  },
+  {
+   "cell": "disposition:transitions:hooks:authority-request:01",
+   "frozen_row_sha256": "b3b87011d1ef4c09c202bf8451c1f9036a31059b216dea7e5cfe3b6a76ded08c",
+   "clause_ids": [
+    "disposition:transitions:hooks:authority-request:01"
+   ],
+   "witnesses": [
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "start": 681,
+     "end": 766,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "b6ed98912ed1c5f31665f6a6fbafb7d53aa5e83796ebad1b8439b99fb732c629",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "start": 815,
+     "end": 913,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "93807afd3c5b984dc4efab9fa5fe21db5a0109c76bc1e6ae0371cbfce0637964",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "start": 1324,
+     "end": 1406,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "ed3f67a05eedaa0f65287a3dc0c0292d71b1188608e9d1bc132595cf60c0bc67",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "start": 1668,
+     "end": 1822,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "3446bbdda034332174dba0b62390147ce0423149745eb2eabbac342f15ea9218",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "start": 1005,
+     "end": 1034,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "8728f7a5e7b8332121389b0e0981216b8aa484a1cee9566941a3fa3cf0488d5d",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    }
+   ],
+   "assessment": "Current source preserves the finite literal responsibilities with the named accepted corrections and explicit intake/platform/storage limits in bound matrix.",
+   "source_boundary": "Reasoned finite source-conformance at actual committed0d73 only. No tests, original-owner/native/API/provider/model execution, actual work/effect/cleanup permission, runtime/installed/human/scenario/task acceptance, CI or publication qualification. Historical checks remain bound to their exact source and observation epochs. No global atomicity, storage-denial durability, unconditional replay, ancestor confinement or universal OS race/nofollow guarantee. Source author is not independent self-review; Root owns review, admission and canonical writes."
+  },
+  {
+   "cell": "disposition:transitions:hooks:authority-request:02",
+   "frozen_row_sha256": "78beccd4fb37efee87dd2cab6a99e7cbffd29a5ae1c854d8f36c50ebdf53e793",
+   "clause_ids": [
+    "disposition:transitions:hooks:authority-request:02"
+   ],
+   "witnesses": [
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "start": 328,
+     "end": 425,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "956ca59e6baff298f80af1d22a335450acc50f0379da2d18ad0f35a33dca21c7",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "start": 545,
+     "end": 660,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "0c883dcf6e4f040563dd3cf6b608b803c207846dd3c5d892f6ac0d52b67a4043",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    }
+   ],
+   "assessment": "Current source preserves the finite literal responsibilities with the named accepted corrections and explicit intake/platform/storage limits in bound matrix.",
+   "source_boundary": "Reasoned finite source-conformance at actual committed0d73 only. No tests, original-owner/native/API/provider/model execution, actual work/effect/cleanup permission, runtime/installed/human/scenario/task acceptance, CI or publication qualification. Historical checks remain bound to their exact source and observation epochs. No global atomicity, storage-denial durability, unconditional replay, ancestor confinement or universal OS race/nofollow guarantee. Source author is not independent self-review; Root owns review, admission and canonical writes."
+  },
+  {
+   "cell": "disposition:transitions:hooks:authority-request:03",
+   "frozen_row_sha256": "e1258840fe8d07902c5c49c05541f8ff99859f2e0d016f5047ce74c95325b71c",
+   "clause_ids": [
+    "disposition:transitions:hooks:authority-request:03"
+   ],
+   "witnesses": [
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "start": 271,
+     "end": 319,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "fdc9e27453581eeca988ee87a04334a551850dd039a044f51526cea2a3bd03d6",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "start": 4602,
+     "end": 4687,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "6368430bc938871fbd8bf62b491194065bcdc32ff042e519073aabad877390aa",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    }
+   ],
+   "assessment": "Current source preserves the finite literal responsibilities with the named accepted corrections and explicit intake/platform/storage limits in bound matrix.",
+   "source_boundary": "Reasoned finite source-conformance at actual committed0d73 only. No tests, original-owner/native/API/provider/model execution, actual work/effect/cleanup permission, runtime/installed/human/scenario/task acceptance, CI or publication qualification. Historical checks remain bound to their exact source and observation epochs. No global atomicity, storage-denial durability, unconditional replay, ancestor confinement or universal OS race/nofollow guarantee. Source author is not independent self-review; Root owns review, admission and canonical writes."
+  },
+  {
+   "cell": "disposition:transitions:hooks:authority-request:04",
+   "frozen_row_sha256": "de0b0de293eb78bf9b2578d1b3ece705c5ec92bd16228afb99b2e21b207b2a77",
+   "clause_ids": [
+    "disposition:transitions:hooks:authority-request:04"
+   ],
+   "witnesses": [
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "start": 4690,
+     "end": 4721,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "2d17fd597c66c72464da8a257addf9d804ca9d3cf31e3e7d087ca58b81866d0c",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    }
+   ],
+   "assessment": "Current source preserves the finite literal responsibilities with the named accepted corrections and explicit intake/platform/storage limits in bound matrix.",
+   "source_boundary": "Reasoned finite source-conformance at actual committed0d73 only. No tests, original-owner/native/API/provider/model execution, actual work/effect/cleanup permission, runtime/installed/human/scenario/task acceptance, CI or publication qualification. Historical checks remain bound to their exact source and observation epochs. No global atomicity, storage-denial durability, unconditional replay, ancestor confinement or universal OS race/nofollow guarantee. Source author is not independent self-review; Root owns review, admission and canonical writes."
+  },
+  {
+   "cell": "disposition:transitions:hooks:authority-request:05",
+   "frozen_row_sha256": "f11cb389421f235a6cdebfdcc5416a749ff1569c4c15f1dddd8f6732c07c6c33",
+   "clause_ids": [
+    "disposition:transitions:hooks:authority-request:05"
+   ],
+   "witnesses": [
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "start": 916,
+     "end": 925,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "b7701f68379c713ba3605473981bd09fcdb9a3435df86d9f49cb074023b9225b",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "start": 4690,
+     "end": 4721,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "2d17fd597c66c72464da8a257addf9d804ca9d3cf31e3e7d087ca58b81866d0c",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    }
+   ],
+   "assessment": "Current source preserves the finite literal responsibilities with the named accepted corrections and explicit intake/platform/storage limits in bound matrix.",
+   "source_boundary": "Reasoned finite source-conformance at actual committed0d73 only. No tests, original-owner/native/API/provider/model execution, actual work/effect/cleanup permission, runtime/installed/human/scenario/task acceptance, CI or publication qualification. Historical checks remain bound to their exact source and observation epochs. No global atomicity, storage-denial durability, unconditional replay, ancestor confinement or universal OS race/nofollow guarantee. Source author is not independent self-review; Root owns review, admission and canonical writes."
+  },
+  {
+   "cell": "disposition:transitions:hooks:authority-request:06",
+   "frozen_row_sha256": "6da9c3fa771ecc4608853c1e08e162c1789213c2ef2756ee77a70729aa3b1dcf",
+   "clause_ids": [
+    "disposition:transitions:hooks:authority-request:06"
+   ],
+   "witnesses": [
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "start": 3150,
+     "end": 3269,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "c58d26e2549a17d7a422dd6b1bbe86979ed18d770b458140b3d4c02ea0392e08",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "start": 3858,
+     "end": 4025,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "1a125717ec6f82b7ad023bc84b502abcad4299f08315c95a4f25dafe84f1020b",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "start": 1921,
+     "end": 2039,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "4fdeeecb6a7e39bf70d5c22448715d1f7e9b62b45bee68722cac740996235a00",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    }
+   ],
+   "assessment": "Current source preserves the finite literal responsibilities with the named accepted corrections and explicit intake/platform/storage limits in bound matrix.",
+   "source_boundary": "Reasoned finite source-conformance at actual committed0d73 only. No tests, original-owner/native/API/provider/model execution, actual work/effect/cleanup permission, runtime/installed/human/scenario/task acceptance, CI or publication qualification. Historical checks remain bound to their exact source and observation epochs. No global atomicity, storage-denial durability, unconditional replay, ancestor confinement or universal OS race/nofollow guarantee. Source author is not independent self-review; Root owns review, admission and canonical writes."
+  },
+  {
+   "cell": "disposition:transitions:hooks:authority-request:07",
+   "frozen_row_sha256": "b88b9b2181ff11152731775a8e2b14ff8a8ac4162765c9470992e751c8d2c4c9",
+   "clause_ids": [
+    "disposition:transitions:hooks:authority-request:07"
+   ],
+   "witnesses": [
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "start": 3056,
+     "end": 3067,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "14c5fd05279125ea8d903058149d4bca35136ee4832ec259e43b379b530b76e7",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/init-codearbiter.py",
+     "start": 381,
+     "end": 419,
+     "file_sha256": "641f0d04057ea22bff6fc39ce6fd95324901c4cc810617f4a783842cd31086b3",
+     "span_sha256": "6fc44dfe26c50cda06bb2cbecc8d7c0da3699ae97c05652c8f034e9822b11efe",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    }
+   ],
+   "assessment": "Current source preserves the finite literal responsibilities with the named accepted corrections and explicit intake/platform/storage limits in bound matrix.",
+   "source_boundary": "Reasoned finite source-conformance at actual committed0d73 only. No tests, original-owner/native/API/provider/model execution, actual work/effect/cleanup permission, runtime/installed/human/scenario/task acceptance, CI or publication qualification. Historical checks remain bound to their exact source and observation epochs. No global atomicity, storage-denial durability, unconditional replay, ancestor confinement or universal OS race/nofollow guarantee. Source author is not independent self-review; Root owns review, admission and canonical writes."
+  }
+ ],
+ "limits": "Reasoned finite source-conformance at actual committed0d73 only. No tests, original-owner/native/API/provider/model execution, actual work/effect/cleanup permission, runtime/installed/human/scenario/task acceptance, CI or publication qualification. Historical checks remain bound to their exact source and observation epochs. No global atomicity, storage-denial durability, unconditional replay, ancestor confinement or universal OS race/nofollow guarantee. Source author is not independent self-review; Root owns review, admission and canonical writes."
+}

@@ -1,0 +1,91 @@
+{
+  "schema": "bounded-private-source-conformance-assessment/1",
+  "recorded_at": "2026-11-16T10:00:47.348897+00:00",
+  "reviewer": "crypto_evidence_review",
+  "verdict": "SUPPORTED_WITH_EXPLICIT_SCOPE",
+  "findings": [],
+  "open_findings": [],
+  "subject": "S75:08 obsolete guarded baseline contract ONLY",
+  "proof_sha256": "0830da403c8741ab9aa2ad2f846bec07dbffb07d2394c29aa73cd09783a521df",
+  "raw_inspection_sha256": "dff302c9abc7b949a0b94260083e270e8674b83cd6247e00ac814b81bcb61249",
+  "prospective_owner_receipt_sha256": "f7126083913fa8f92c7c9aa4b03681dcc5c31ee74d49624ad2b8045cbfb1b74f",
+  "recorded_source": "2f65fda443816d84b0ee4283f9fc237df728b663",
+  "checked_source": "1984510402d8f662d27e6ecd5f3186da9bf71978",
+  "source_bindings": {
+    "docs/state-contracts-major/PROGRAM.md": {
+      "sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+      "bytes": 7910,
+      "source_epoch_unchanged": true,
+      "current_oid": "b07288b0a1f090e722caa571fbd5d97ed78def92"
+    },
+    "docs/state-contracts-major/contracts/tasks.json": {
+      "sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+      "bytes": 331224,
+      "source_epoch_unchanged": true,
+      "current_oid": "3f52ff13e833b002a9759706dd6f5f48e499cc63"
+    },
+    "docs/state-contracts-major/contracts/transition-coverage.json": {
+      "sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+      "bytes": 3185278,
+      "source_epoch_unchanged": true,
+      "current_oid": "cf092ff8ef7776f81a23377eb8946f941a6cd1a9"
+    },
+    "tools/build-surface.py": {
+      "sha256": "70c572a415cf69d6955c4dac67ffa9c0120009807e2f55635c5430c0f962ba3a",
+      "bytes": 63143,
+      "source_epoch_unchanged": true,
+      "current_oid": "b0d10f3626a6f351096e7819dfc386349048cf62"
+    },
+    "tools/owned_output.py": {
+      "sha256": "52ee664a00b4f66df8f585047cf38a839428c489762890208a9db1961060b22c",
+      "bytes": 4648,
+      "source_epoch_unchanged": true,
+      "current_oid": "cf29aa1e6eef8cba4069b3824c1750fe80b3c158"
+    }
+  },
+  "frozen_tuple": {
+    "event": "I/O failure",
+    "guard": "direct writes may be partial",
+    "to": "partial output",
+    "effects": "No cross-file transaction/rollback; rerun after repairing source/filesystem.",
+    "failure_retry": "",
+    "source": [
+      {
+        "path": "tools/build-surface.py",
+        "symbol": "registry validation, render_all, check_all, write_all",
+        "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/build-surface.py",
+        "lines": "121-1306"
+      }
+    ],
+    "from": "writing",
+    "transition_id": "S75:08"
+  },
+  "reasoning": [
+    "The baseline whole tuple explicitly asserts direct writes with no cross-file transaction/rollback. Accepted BUILD-G01 requires render/stage/validate before promotion and restoration or an explicitly unusable projection; it already authorizes the scoped behavioral replacement.",
+    "Current write_all finishes all host render/target collection before delegating once to publish_files; no direct output write is performed by write_all. The inspected publisher stages new bytes and old before-images, journals, serializes writers, replaces bounded owned targets, rolls applied paths back on failure, and retains its unusable marker when rollback fails.",
+    "The old no-rollback effect is no longer the supported contract. NOT_APPLICABLE is justified only for that frozen obsolete guard/effect tuple, never for the I/O-failure event, possibility of partial physical projection, or remaining recovery obligations. No assertion of an atomic cross-file transaction or infallible rollback is made.",
+    "Frozen intake remains byte-identical. Existing TESTED evidence is retained historically; the proposed row does not relabel its old runtime outcome as a current pass. Four replacement state records are byte/data unchanged in the private proposed ledger."
+  ],
+  "still_applicable_runtime_obligations": [
+    "S75:added-stage-failed",
+    "S75:added-rolled-back",
+    "S75:added-unusable",
+    "S75:added-writer-refused"
+  ],
+  "preservation": {
+    "frozen_transition_exact": true,
+    "accepted_BUILD_G01_exact": true,
+    "positive_inputs_5_unchanged_old_to_current_to_physical": true,
+    "inspection_function_AST_source_exact": true,
+    "historical_current_and_prior_evidence_retained": true,
+    "four_replacement_records_unchanged": true
+  },
+  "owner_receipt_limits": "PASS_PROSPECTIVE_ONLY at an unreferenced private fixture commit; not canonical proof retention, final source admission, runtime execution or status authority. Root must retain the actual proof/raw data commit before canonical references and run unchanged strict current-owner admission.",
+  "scope_limits": [
+    "No staged commit review or authority to admit/change the ledger.",
+    "No runtime/tests/Node/native/SDK/provider/network actions; only passive source/AST/hash/record reads and private assessment writes.",
+    "Four replacement runtime outcomes require their own current evidence/applicability checks; none is proved by this source inspection.",
+    "Do not describe the entire S75 machine, failure event, generation, BUILD-G01 task or program as not applicable/complete.",
+    "Complete32 policy reused unchanged SHA02e5e721b039df9a54686cc9ec82b8b6baedacff8f78cbfac4da2caec7b382ec; parent1098/main/publication/PiHTTP holds remain."
+  ]
+}

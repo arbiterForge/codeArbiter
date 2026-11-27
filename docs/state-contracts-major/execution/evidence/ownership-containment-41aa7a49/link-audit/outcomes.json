@@ -1,0 +1,107 @@
+{
+ "schema": "codearbiter.private-fix-outcomes/1",
+ "finding": "SITE-LINK-CONTAINMENT-01",
+ "sequence": [
+  {
+   "phase": "original forward-slash RED",
+   "receipt": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-fix-d5zflta6\\red.json",
+    "sha256": "6df64328f1444a0efd8b8f08f6a5e8e03f31d5e91eaea118b95a05f15051d897",
+    "bytes": 1076
+   },
+   "outcome": "2 correct assertion FAIL,34PASS; before first fix"
+  },
+  {
+   "phase": "forward-slash predecessor GREEN",
+   "receipt": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-fix-d5zflta6\\green.json",
+    "sha256": "d0fde826bfff24f69fd5518fdef4dda9477e8011fe8ffbe12f4ff816fc215a21",
+    "bytes": 1112
+   },
+   "outcome": "36PASS; retained immutable predecessor, insufficient for Windows backslash containment"
+  },
+  {
+   "phase": "original backslash RED",
+   "receipt": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-successor-85m2n50h\\original-backslash-red.json",
+    "sha256": "e3fe47398e05d11c2440683b6c2e03e5a330da13e6be48ebe6e622543476ad4a",
+    "bytes": 1125
+   },
+   "outcome": "4 correct assertion FAIL,36 deliberately unselected by name filter"
+  },
+  {
+   "phase": "intermediate backslash RED",
+   "receipt": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-successor-85m2n50h\\intermediate-red.json",
+    "sha256": "2b2886d1a16f9467ccf29add141040b8b363c420cb704d0e3cfb0aa7ba605ef9",
+    "bytes": 1070
+   },
+   "outcome": "4 correct assertion FAIL,36PASS; before final guard"
+  },
+  {
+   "phase": "final GREEN with coverage",
+   "receipt": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-successor-85m2n50h\\green.json",
+    "sha256": "883cd6f6c292744b499ac16332e813969155693f35f4c64ede858a1865f320f1",
+    "bytes": 1075
+   },
+   "outcome": "40PASS,0FAIL,0SKIP"
+  },
+  {
+   "phase": "final scoped typecheck",
+   "receipt": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-successor-85m2n50h\\typecheck.json",
+    "sha256": "7e939d039cd62f4707df0e47c9666b215491692315c42b5169dae6e415311580",
+    "bytes": 898
+   },
+   "outcome": "PASS with original compiler options"
+  }
+ ],
+ "coverage": {
+  "host": "Windows",
+  "profile": "lines-branches",
+  "scope": "scripts/link-audit/lib.ts only",
+  "metrics": {
+   "lines": {
+    "total": 74,
+    "covered": 74,
+    "skipped": 0,
+    "pct": 100
+   },
+   "statements": {
+    "total": 88,
+    "covered": 87,
+    "skipped": 0,
+    "pct": 98.86
+   },
+   "functions": {
+    "total": 10,
+    "covered": 10,
+    "skipped": 0,
+    "pct": 100
+   },
+   "branches": {
+    "total": 61,
+    "covered": 58,
+    "skipped": 0,
+    "pct": 95.08
+   },
+   "branchesTrue": {
+    "total": 0,
+    "covered": 0,
+    "skipped": 0,
+    "pct": "Unknown"
+   }
+  },
+  "overall_site_and_Ubuntu": "UNMEASURED"
+ },
+ "original_tests_byte_prefix_unchanged": true,
+ "predecessor_tests_byte_prefix_unchanged": true,
+ "same_regression_bytes_RED_GREEN": true,
+ "critical_guard_mutation": "Intermediate source is exact removal mutation of final filesystem guard and four real regressions fail; original source similarly proves URL normalization. Reused observed RED, no redundant mutation rerun.",
+ "limits": [
+  "Private Windows unit/component execution only; no Ubuntu/full-site coverage or typecheck, site build, browser, network, install or publication qualification. Maintained coverage scope/config/thresholds unchanged.",
+  "Final guard establishes lexical host-path containment for classified internal targets; no symlink, hostile concurrent filesystem or OS/process sandbox claim; no broader URL parser redesign.",
+  "All SX06 source dispositions remain pending until actual canonical repair epoch. Parent owns independent review, adoption, exact-head hosted qualification and canonical/marker/ledger writes."
+ ]
+}

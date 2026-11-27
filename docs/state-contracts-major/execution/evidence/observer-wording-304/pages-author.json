@@ -1,0 +1,146 @@
+{
+ "schema": "private-pages-finite-proof-recovery/1",
+ "state": "SEALED_TWO_PROOF_SEVEN_CAS_ROOT_ADOPTION_PENDING",
+ "task": "WORK-2A68C3051D5A477EAC131493FF8A85AF",
+ "terminal_watch": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-d482-docs-attempt2-watch-fkwh74we\\terminal-receipt.json",
+  "sha256": "0d237ff52577061fed0c3938a136d4c908e20317cf5921333d576adf5aa62038",
+  "bytes": 2938
+ },
+ "runtime_source_commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+ "original_browser_attempt": 1,
+ "whole_docs_success_attempt": 2,
+ "original_report_artifact_id": 14311124383,
+ "original_report_archive": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-d482-docs-attempt2-watch-fkwh74we\\original-report-14311124383.raw",
+  "sha256": "8e2cf1a3cbf8e0069c7a2984e4ac630e355414ac11c9a2c3ade0bfd0b02d5c9e",
+  "bytes": 54982
+ },
+ "original_owner_admission": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-d482-docs-attempt2-watch-fkwh74we\\original-owner-admission.json",
+  "sha256": "1486c49116b956dfe293b854517a7bd1bb2cf61b88cb81ef335f1213955c0759",
+  "bytes": 1032
+ },
+ "filemap": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-d482-docs-attempt2-watch-fkwh74we\\adoption-filemap.json",
+  "sha256": "d3800eb176764787db5a66e748c2039ac3dd6d22b2c8fa6725f9557c4b5ad4a6",
+  "bytes": 4423
+ },
+ "cas_proposal": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-d482-docs-attempt2-watch-fkwh74we\\cas-proposal.json",
+  "sha256": "06d045c34e509d8409243ef50f78a7e09a7977e859103b8da5c0eb898b42be97",
+  "bytes": 9918
+ },
+ "files": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/site-bookmark-directory-d482-docs/raw/original-docs-qualification.json",
+   "replacement_file": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-d482-docs-attempt2-watch-fkwh74we\\proposal-files\\original-docs-qualification.json",
+   "sha256": "0666931cd84c947ccaa594e4ffad0a79921b3c2e26e217e1397b9e075f8097bc",
+   "bytes": 225228,
+   "mode": "100644",
+   "git_index_oid": null
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/site-bookmark-directory-d482-docs/raw/original-report-admission.json",
+   "replacement_file": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-d482-docs-attempt2-watch-fkwh74we\\proposal-files\\original-report-admission.json",
+   "sha256": "826407b16b5bb7dd4d0df50912d65d589a8890b66b59f31224052505c1b6a366",
+   "bytes": 1010,
+   "mode": "100644",
+   "git_index_oid": null
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/site-bookmark-directory-d482-docs/raw/origin-and-attempts.json",
+   "replacement_file": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-d482-docs-attempt2-watch-fkwh74we\\proposal-files\\origin-and-attempts.json",
+   "sha256": "3b258ba612ad61c50263ccd4fdb0715349ae36df8653c286c8e4f0a2156f90ec",
+   "bytes": 2221,
+   "mode": "100644",
+   "git_index_oid": null
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/site-bookmark-directory-d482-docs/raw/selected-original-named-outcomes.json",
+   "replacement_file": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-d482-docs-attempt2-watch-fkwh74we\\proposal-files\\selected-original-named-outcomes.json",
+   "sha256": "9c4cf36ece5de0d5b653387a9672e14bc1f189590c160d30e1a6026d69a84dfe",
+   "bytes": 3528,
+   "mode": "100644",
+   "git_index_oid": null
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/site-bookmark-directory-d482-docs/raw/finite-seven-clause-inspection.json",
+   "replacement_file": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-d482-docs-attempt2-watch-fkwh74we\\proposal-files\\finite-seven-clause-inspection.json",
+   "sha256": "ff61fdfd811d030e9bbef8e35f770b47df1450630d78e9efed53d8948c12b60f",
+   "bytes": 33204,
+   "mode": "100644",
+   "git_index_oid": null
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/site-bookmark-directory-d482-docs/raw/predecessor-bookmark-hosted-tested.json",
+   "replacement_file": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-d482-docs-attempt2-watch-fkwh74we\\proposal-files\\predecessor-bookmark-hosted-tested.json",
+   "sha256": "fe8c4f5a0b71fd5daa4579fe943c372a27e6c4736c0580da732f77129cf6e148",
+   "bytes": 8699,
+   "mode": "100644",
+   "git_index_oid": null
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/site-bookmark-directory-d482-docs/raw/predecessor-directory-hosted-tested.json",
+   "replacement_file": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-d482-docs-attempt2-watch-fkwh74we\\proposal-files\\predecessor-directory-hosted-tested.json",
+   "sha256": "883539ae821b49d48ebb4b069db165d61c696d2981ee1b8f3272b73466393762",
+   "bytes": 9397,
+   "mode": "100644",
+   "git_index_oid": null
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/site-bookmark-directory-d482-docs/raw/previous-history.json",
+   "replacement_file": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-d482-docs-attempt2-watch-fkwh74we\\proposal-files\\previous-history.json",
+   "sha256": "509673119cad9fe25f7b383bff8de1b469febc04aa97c241f8cfadbb1372e4f1",
+   "bytes": 22875,
+   "mode": "100644",
+   "git_index_oid": null
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/site-bookmark-directory-d482-docs/bookmark-hosted-tested.json",
+   "replacement_file": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-d482-docs-attempt2-watch-fkwh74we\\proposal-files\\bookmark-hosted-tested.json",
+   "sha256": "b42d71987a52df2020c5b333998f77d0d6a175ab4fa34eea6b1fbabf1cad83dd",
+   "bytes": 10958,
+   "mode": "100644",
+   "git_index_oid": null
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/site-bookmark-directory-d482-docs/directory-hosted-tested.json",
+   "replacement_file": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-d482-docs-attempt2-watch-fkwh74we\\proposal-files\\directory-hosted-tested.json",
+   "sha256": "60c33139a48230fdc75fd211758e7793d3db0d8f10a4187e430cd4beb7b6d2a6",
+   "bytes": 11695,
+   "mode": "100644",
+   "git_index_oid": null
+  }
+ ],
+ "cells": [
+  "S56:01",
+  "S56:02",
+  "S56:04",
+  "S56:05",
+  "S56:06",
+  "S58:01",
+  "S58:02"
+ ],
+ "statuses": "Seven TESTED remain TESTED; no other ledger/task/status changes",
+ "frozen_claims": "S56:01/02/04/05/06 bookmark and S58:01/02 directory, not drawer/whole machine",
+ "history": "Both full old proof byte copies and complete previous rows/records/raw refs retained in current lineage; expired artifact14107944699 removed only from active successor dependency. Original canonical files untouched.",
+ "current_ancestry": "Root confirmed D482 was not ancestor of304 and is carrying out a genuine incoming D482 merge with zero file delta. Actual final candidate must include D482 ancestry; no source relabel or ancestry bypass.",
+ "owner_boundary": "Unchanged validate_artifact, validate_upload(original job1/report/log), _report_document(cached authenticated bytes), validate_observation(all203 actual names); exact7 names individually matched unchanged literal owning tests. Root will run full original record owner after adoption. No self-certified staged/full-owner PASS.",
+ "private_checks": [
+  "10 file hashes/readbacks",
+  "7 exact expected row CAS hashes",
+  "2 changed input assessments (playwright.config optional additive JSON/list reporter; docs.yml once-only observation/main-only promotion)",
+  "Original doc report job/source/tree/run/attempt1 exact",
+  "Separate attempt2 whole workflow SUCCESS with3appropriate deploy/prepare SKIPs",
+  "Original uploader log API bytes equal reused attempt2 alias log",
+  "No staged OID claims for private files"
+ ],
+ "limits": [
+  "No local browser/build/test/install/runtime replay",
+  "No97MB screenshots or6.58MB Pages tar acquired",
+  "No final main-only Pages readiness/Q03/publication/installed/native/model/task acceptance",
+  "No canonical/index/ref/marker writes by this actor",
+  "No extra child/runner/timeout/status exemptions; original8W03 and phase-feature packets untouched"
+ ]
+}

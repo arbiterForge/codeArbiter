@@ -1,0 +1,12 @@
+plugins/ca-sandbox/COMMANDS.md
+plugins/ca-sandbox/README.md
+plugins/ca-sandbox/commands/sandbox-cp.md
+plugins/ca-sandbox/commands/sandbox-destroy.md
+plugins/ca-sandbox/commands/sandbox-exec.md
+plugins/ca-sandbox/commands/sandbox-shell.md
+plugins/ca-sandbox/commands/sandbox.md
+plugins/ca-sandbox/skills/INDEX.md
+plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md
+plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md
+plugins/ca-sandbox/tools/claude-inside-cli.ts
+plugins/ca/README.md

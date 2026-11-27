@@ -1,0 +1,192 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "a0f4bc274c78613b739757743616bd23b1fe63ef",
+  "kind": "test",
+  "result": "PASSED",
+  "producer": {
+    "class": "local-host",
+    "identity": "/root/farm_sandbox_program independent actual committed-Gov Windows CPython observer; no Temp source overlay"
+  },
+  "platform": "windows/amd64",
+  "inputs": {
+    "tools/sync-core.py": "8d7de484c10e26c9e875ca44d3a1ea1d184eecef97dcefabc5ed9d413974062c",
+    "tools/owned_output.py": "52ee664a00b4f66df8f585047cf38a839428c489762890208a9db1961060b22c",
+    "tools/host_descriptors.py": "2c98ea82723f60879616469ec399cd81db0fb9cb98f4c943eea1dce852123601",
+    "core/hosts.json": "3ea50fd2af1ed359e602210de3f0a9b661a567c45d08a5f947f0f4c2e24a8cd8",
+    ".github/scripts/test_sync_core.py": "3776deb5db4fa1963b419e5a2131fa519da98c484cb4627c33c338629e00f040"
+  },
+  "commands": [
+    {
+      "argv": [
+        "C:\\Python314\\python.exe",
+        "-B",
+        "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sync-owner-current-a0-if3mb7tt\\observe-current.py"
+      ],
+      "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
+      "exit_code": 0
+    }
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/sync-owner-current-a0/raw/observe-current.py",
+      "sha256": "073e1188352e7b8c9ba4134f8a663ddc2cf21a9dc25b883ebd207939434c1d03"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/sync-owner-current-a0/raw/selectors.json",
+      "sha256": "f3a8eee5c654d0bd7fedfffa71a7b0a6d638551403002c7ffed006820e942dd8"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/sync-owner-current-a0/raw/result.json",
+      "sha256": "82b1d35ecaee6276024cd537849d981ad220d6fb7f8b9e4741cbf8712dda27f2"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/sync-owner-current-a0/raw/original-fifteen.stderr.log",
+      "sha256": "abfdc28efe2b7dfe69cfa66d3ee74ac50502ea1ef3b21ef569ab95b0ff6545dc"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/sync-owner-current-a0/raw/inputs-before.json",
+      "sha256": "53188d2c8ddbeec556b312f61ca929056fc089837e5846d054ecaa7e71df857d"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/sync-owner-current-a0/raw/inputs-after.json",
+      "sha256": "53188d2c8ddbeec556b312f61ca929056fc089837e5846d054ecaa7e71df857d"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/sync-owner-current-a0/raw/runner.json",
+      "sha256": "45519926a4852b18ebad644893aff2b5a3b60ae152cbb9153d95657366f00717"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/sync-owner-current-a0/raw/runner.stdout",
+      "sha256": "81ea2a5143aecd574159d96f6a342d7fcc670675c4cbd4ada296d2e132026623"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/sync-owner-current-a0/raw/runner.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "disposition_ids": [
+    "disposition:transitions:S76:01",
+    "disposition:transitions:S76:02",
+    "disposition:transitions:S76:03",
+    "disposition:transitions:S76:04",
+    "disposition:transitions:S76:05",
+    "disposition:transitions:S76:06",
+    "disposition:transitions:S76:07"
+  ],
+  "per_cell_assertion_mapping": [
+    {
+      "cell": "disposition:transitions:S76:01",
+      "observed_named_cases": [
+        "test_sync_core.TestSyncOwnerAcceptance.test_declared_inventory_excludes_host_adapter_and_nonpython_owners",
+        "test_sync_core.TestPackageNotices.test_syncs_notices_into_each_installable_plugin_root"
+      ],
+      "assertion_scope": "Actual declared3-host registry receives exact top-level shared Python and canonical notices; each per-host _host.py/manual file survives, non-Python/nested/Python-named directories excluded.",
+      "limits": [
+        "Synthetic payload roots, no installed hosts or orphan removal."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S76:02",
+      "observed_named_cases": [
+        "test_sync_core.TestCheckMode.test_check_passes_when_in_sync"
+      ],
+      "assertion_scope": "Exact raw selected byte copies yield check exit0. Current read_bytes/main binary comparison has no line-ending normalization.",
+      "source_preservation_review": "read_bytes uses rb; main compares raw bytes and only sends changed set to publisher.",
+      "limits": [
+        "No additional CRLF-specific test was selected; raw-equality semantics reviewed at current source, not a fabricated extra case."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S76:03",
+      "observed_named_cases": [
+        "test_sync_core.TestCheckMode.test_check_fails_on_modified_vendored_copy",
+        "test_sync_core.TestCheckMode.test_check_fails_on_missing_vendored_file",
+        "test_sync_core.TestCheckMode.test_check_never_writes_when_drifted",
+        "test_sync_core.TestPackageNotices.test_missing_notice_fails_check_without_writing",
+        "test_sync_core.TestPackageNotices.test_notice_drift_fails_check_and_write_repairs_it"
+      ],
+      "assertion_scope": "Changed/missing helpers or notices produce check failure/drift and remain unrepaired until explicit write; check never calls mutating publication path."
+    },
+    {
+      "cell": "disposition:transitions:S76:04",
+      "observed_named_cases": [
+        "test_sync_core.TestSuccessfulSync.test_write_mode_vendors_byte_identical_copies",
+        "test_sync_core.TestPackageNotices.test_syncs_notices_into_each_installable_plugin_root",
+        "test_sync_core.TestWriteModeRepairsDrift.test_sync_repairs_a_drifted_copy",
+        "test_sync_core.TestSyncOwnerAcceptance.test_later_host_publish_fault_restores_complete_set_then_rerun_converges"
+      ],
+      "assertion_scope": "Current sync fully renders/validates admitted changed set then delegates staging/publication to shared owned_output; successful paths install exact admitted bytes and repair drift.",
+      "candidate_behavior": "BUILD-G01 replaces historical per-file .tmp-sync prescription with owned complete-set staging/journal and bounded rollback. No filesystem-crash atomicity or orphan deletion claimed."
+    },
+    {
+      "cell": "disposition:transitions:S76:05",
+      "observed_named_cases": [
+        "test_sync_core.TestSuccessfulSync.test_write_mode_vendors_byte_identical_copies",
+        "test_sync_core.TestWriteModeRepairsDrift.test_sync_repairs_a_drifted_copy",
+        "test_sync_core.TestSyncOwnerAcceptance.test_later_host_publish_fault_restores_complete_set_then_rerun_converges"
+      ],
+      "assertion_scope": "Successful actual owner publication installs exact source bytes; late fault test proves earlier host replacement really occurred before rollback.",
+      "source_preservation_review": "main excludes byte-equal targets from changed; publish_files stages only changed entries and applies per-target os.replace.",
+      "limits": [
+        "Equal-file no-replacement property is current source conformance, not an extra selected mtime/syscall assertion; no power-loss transaction claim."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S76:06",
+      "observed_named_cases": [
+        "test_sync_core.TestSyncOwnerAcceptance.test_later_host_publish_fault_restores_complete_set_then_rerun_converges"
+      ],
+      "assertion_scope": "Injected late second-host .new replacement failure occurs after first host has new bytes; exit1 restores complete old plugin file set, removes completed journal/marker, then a clean rerun and check converge.",
+      "candidate_behavior": "Accepted BUILD-G01 deliberately replaces historical partial synchronization with successful owner-transaction rollback; does not claim all-filesystem-crash atomicity.",
+      "limits": [
+        "Rollback-failure retained unusable marker is owned by separate generic publisher tests, not executed here; no orphan deletion."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S76:07",
+      "observed_named_cases": [
+        "test_sync_core.TestSyncOwnerAcceptance.test_invalid_real_descriptor_refuses_before_publication_or_other_effect",
+        "test_sync_core.TestEmptyOrMissingCoreDir.test_missing_core_dir_is_a_clear_nonzero_error",
+        "test_sync_core.TestEmptyOrMissingCoreDir.test_empty_core_dir_is_a_clear_nonzero_error",
+        "test_sync_core.TestArgvHandling.test_unknown_argument_is_a_clear_nonzero_error"
+      ],
+      "assertion_scope": "Actual invalid empty descriptor registry returns2 before publisher/effects; all fixture files remain exact and no generated marker. Empty/missing source and unknown argv fail clearly without guessed targets."
+    }
+  ],
+  "selected_assertion_body_sha256": {
+    "test_sync_core.TestPackageNotices.test_syncs_notices_into_each_installable_plugin_root": "1d869c6159dd069f1bdbff0b3cb61957c12c1a05361544479c0477ff968f8905",
+    "test_sync_core.TestPackageNotices.test_missing_notice_fails_check_without_writing": "3f8acf2ead0aaddc3f0040308dcd19bf6ad50ec80e855f381e4238618e95461b",
+    "test_sync_core.TestPackageNotices.test_notice_drift_fails_check_and_write_repairs_it": "bbbf139aa96d84eb37ca33dd8d6e1866551620030eb7665a175ce02740101801",
+    "test_sync_core.TestSuccessfulSync.test_write_mode_vendors_byte_identical_copies": "5c5ed0fdf2793179291bab3833cf79c58af61047eeeee7b3266a12e9159fa745",
+    "test_sync_core.TestCheckMode.test_check_passes_when_in_sync": "d2525ee6d51569067eeee85f515a3ff6de16839aef8f9dad538af38fa2e9034d",
+    "test_sync_core.TestCheckMode.test_check_fails_on_modified_vendored_copy": "3f7cea2286e1cc18fcd55ee803ee2653666b3daa754c5d4bbf69e4dea23df6bc",
+    "test_sync_core.TestCheckMode.test_check_fails_on_missing_vendored_file": "02c23666ce07ce2a0bf8c0a3354b72b7ce900fff2f63a22fbcdf8daa05d2cdbb",
+    "test_sync_core.TestCheckMode.test_check_never_writes_when_drifted": "3fcb0aae44b016805eb915b8cce7457115fac805edb0ad23723a8c9490e29b0a",
+    "test_sync_core.TestWriteModeRepairsDrift.test_sync_repairs_a_drifted_copy": "774d53b2871b9514667fc27cc5362be86ee423711b7218bd29421b17c2058e03",
+    "test_sync_core.TestEmptyOrMissingCoreDir.test_missing_core_dir_is_a_clear_nonzero_error": "6517dfb0be636852a59652b0fcb783106f1aa65898b6740bf33382de69235671",
+    "test_sync_core.TestEmptyOrMissingCoreDir.test_empty_core_dir_is_a_clear_nonzero_error": "4bfdb9c9886f6b850eef3b526a6ca3fcee2ad3cee2ebd060d237b704b85b3c57",
+    "test_sync_core.TestArgvHandling.test_unknown_argument_is_a_clear_nonzero_error": "6784bfdd2117393dba5637ed81c383b1c4e89d01244760140fa663d95e5005df",
+    "test_sync_core.TestSyncOwnerAcceptance.test_declared_inventory_excludes_host_adapter_and_nonpython_owners": "3fd5912c572f9eda94f63defd5695683dc9ed535013d7d59219abb10571b9441",
+    "test_sync_core.TestSyncOwnerAcceptance.test_invalid_real_descriptor_refuses_before_publication_or_other_effect": "6979d473a9305ea244224e7649c5c4ad195ca9aee7d76b9ba26502541278dfe4",
+    "test_sync_core.TestSyncOwnerAcceptance.test_later_host_publish_fault_restores_complete_set_then_rerun_converges": "21fc83175b4dc8879032c6ae52704a5e2c47a65ff00da0f5943186dc2049f625"
+  },
+  "execution_context": {
+    "actual_source_before": "a0f4bc274c78613b739757743616bd23b1fe63ef",
+    "actual_source_after": "a0f4bc274c78613b739757743616bd23b1fe63ef",
+    "inputs_before_after_equal": true,
+    "input_count": 5,
+    "runtime": "3.14.6 (tags/v3.14.6:c63aec6, Jun 10 2026, 10:26:10) [MSC v.1944 64 bit (AMD64)]",
+    "runtime_executable_sha256": "03168c01b7b7491423350e82c26fee71f35b43694d1319d3c668bda6903a0c38",
+    "home_before_import": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sync-owner-current-a0-if3mb7tt\\home",
+    "original_observation_ref": "docs/state-contracts-major/execution/evidence/sync-owner-current-a0/raw/result.json",
+    "actual_named_passed": 15,
+    "unselected_not_counted": true
+  },
+  "scope": "Seven finite S76 sync transitions, using actual15 selected current committed source tests and exact owner source conformance for unchanged byte/equal-target clauses.3 new acceptance rows plus4 existing TESTED successors; no machine/task/installed claim.",
+  "limits": [
+    "Windows amd64 Python3.14.6 component/synthetic owned filesystem outcomes only; no six-host/native/cohort/provider/package/browser/installed qualification.",
+    "Exactly original15-method selection once; no full suite or new mutation run. Prior ce3 mutation/13/15 WIP and0830 proof remain separately unchanged history.",
+    "Current owner staging/rollback intentionally remaps obsolete .tmp-sync/partial-sync baseline wording under BUILD-G01; no arbitrary global/orphan deletion or crash atomicity is introduced.",
+    "No Gov source/index/ledger/progress/marker writes by observer; actualHEAD a0 and raw empty index stayed unchanged."
+  ]
+}

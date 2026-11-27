@@ -1,0 +1,11 @@
+test_actual_remote_parser_failures_are_sanitized_for_both_transports (test_work_github.TransportResponseJSONTest.test_actual_remote_parser_failures_are_sanitized_for_both_transports) ... ok
+test_parser_depth_failure_is_sanitized_without_hiding_other_types (test_work_github.TransportResponseJSONTest.test_parser_depth_failure_is_sanitized_without_hiding_other_types) ... ok
+test_programmer_type_error_at_parser_is_not_swallowed (test_work_github.TransportResponseJSONTest.test_programmer_type_error_at_parser_is_not_swallowed) ... ok
+test_valid_json_and_existing_shape_guards_remain (test_work_github.TransportResponseJSONTest.test_valid_json_and_existing_shape_guards_remain) ... ok
+test_mapped_preclaim_malformed_remote_json_keeps_pending_and_independent_target (test_work_github.GithubWorkTest.test_mapped_preclaim_malformed_remote_json_keeps_pending_and_independent_target) ... ok
+test_mapped_postclaim_malformed_remote_json_stays_unknown_without_resend (test_work_github.GithubWorkTest.test_mapped_postclaim_malformed_remote_json_stays_unknown_without_resend) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 59.046s
+
+OK

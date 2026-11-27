@@ -1,0 +1,120 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "Bounded current instruction/function-clause conformance review; no runtime/provider/host-session result inferred."
+  },
+  "inputs": {
+    "core/artifact-release-manifest.json": "3ae933456e1275040f1c36ef4a0eaefac7f49fbff2c36a47867066527f3cb23e",
+    "plugins/ca/tools/__fixtures__/simple.plan.json": "b5ed11c42bb99a3cc0105f4788e814e59077814cc9f4430e60aa65962102bd82",
+    "plugins/ca/tools/artifact-manifest.ts": "c52753ad9aa137876622281652641e67d94e5904f64d1f6d8565e64c2f2c88c0",
+    "plugins/ca/tools/exec.ts": "1a2fe067280c570d3d0c296f6795e642901bf546e873123b2d125da13444fc73",
+    "plugins/ca/tools/farm-dist.test.ts": "6aa430ff36c3e68cea975dd5321dc445219c06c61e49cf858189c4ef5fa2c257",
+    "plugins/ca/tools/farm-recovery.ts": "1dbbbce56e7cda24d6016c7205f60b5bf758e24aed2a5a8132ff4ff336e49885",
+    "plugins/ca/tools/farm.js": "d9e199f83d29d6be6e85d4b05baca80dbcdc9800457fe5b2335f480517320123",
+    "plugins/ca/tools/farm.test.ts": "395ec94484631ee6ffdb66b57b6b8241201592db3b081b218128ddee9758a15e",
+    "plugins/ca/tools/farm.ts": "fb5ea9ffce3c4b495825b2c44e5b72196be6d8370badd7ca417886db83a5ffe6",
+    "plugins/ca/tools/farm.unit.test.ts": "23ba125efe2493fe0839ec23120805b04866d472cc5705b78568788d7d2f151f",
+    "plugins/ca/tools/mutation.ts": "27e5548419430e94ce9b892f478c5cb32da84791c5a07dac01e4393dce01e90d",
+    "plugins/ca/tools/package-lock.json": "81ac5a03620575fa6e1ccbe2343d59092a7d998aa0ed0419147ecc1353f5ab05",
+    "plugins/ca/tools/package.json": "e36527e252fe0b559c93c8b0501eccf93d168297f4a5c2da4f2ce2aa709c9972",
+    "plugins/ca/tools/plan-contract.test.ts": "45fd70c361ad9d9d73903eaa2ebf5fe053133e505f07a796da85e81d6950128a",
+    "plugins/ca/tools/plan.schema.json": "a3895346ec5344049bc77ff92765640aa3ec2362bf30a7cb8f41a408b4b7c0a2",
+    "plugins/ca/tools/redactor.ts": "ef6344cdbb5578e525173852e08e2b410a02238a622e548488daff48b9e30f03",
+    "plugins/ca/tools/tsconfig.json": "8930059661c9e911148eb53c7b96506313ef87c66239856d8ec6500cf6a8aa2e",
+    "plugins/ca/tools/vitest.config.ts": "830ac6df0919d2caae0c7cdda948d931fa2d2bc7c6c270704d5bd43ce495edf0",
+    "plugins/ca/tools/worktree-fs.ts": "0b0f2af98c0f48cbbe4d3a53f5365c87c597d2fc0e702ca15a6af0e2ce618277"
+  },
+  "disposition_ids": [
+    "disposition:transitions:S23:01"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/raw/selected-named-observations.json",
+      "sha256": "9ba86136b2d49dc599cacb783f37420d0a40c97d65c9b4d71750db10c62095d4"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/execution-origins.json",
+      "sha256": "c9b9e4e096ebaf6d203a34af09fa4dc4cdfa5f7e52fdc96fe3b048e46af66ac3"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/source-clause-catalog.json",
+      "sha256": "444ae0dd6cc088826de5802d552220b80bb40c2ea3be1953910a5390451d1a8a"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/input-cones.json",
+      "sha256": "ae0a3897b943158cca7b3079573e24559ab4d17c1422235968335c1704c51c0e"
+    }
+  ],
+  "semantic_mapping": [
+    {
+      "cell": "disposition:transitions:S23:01",
+      "frozen_contract_sha256": "ed79467a59dd3fdc8812c4b0356aea6762cae2b6fb52e19dc2c7185464e6ee66",
+      "event": "start farm",
+      "guard": "closed plan schema; unique IDs; valid dependency DAG; selected provider URL/config",
+      "current_contract_review": "Source-conformance: closed parsePlan/validate, env>plan>default resolution, secure URL admission and exclusive run-ID creation remain ordered before dispatch. Named schema/URL controls corroborate finite branches; no new every-config-combination execution.",
+      "assertion_refs": [
+        "A-0125",
+        "A-0126",
+        "A-0202",
+        "A-0203",
+        "A-0204",
+        "A-0205",
+        "A-0206",
+        "A-0207",
+        "A-0208",
+        "A-0209",
+        "A-0210",
+        "A-0211",
+        "A-0212",
+        "A-0213",
+        "A-0214",
+        "A-0215",
+        "A-0216",
+        "A-0234",
+        "A-0235",
+        "A-0236",
+        "A-0237",
+        "A-0238",
+        "A-0239",
+        "A-0240",
+        "A-0241",
+        "A-0242",
+        "A-0243",
+        "A-0244",
+        "A-0245",
+        "A-0246",
+        "A-0247",
+        "A-0248",
+        "A-0249",
+        "A-0250",
+        "A-0251",
+        "A-0252",
+        "A-0253",
+        "A-0254",
+        "A-0255",
+        "A-0256",
+        "A-0257",
+        "A-0258",
+        "A-0259",
+        "A-0260",
+        "A-0261",
+        "A-0262",
+        "A-0263",
+        "A-0155"
+      ],
+      "source_paths": [
+        "plugins/ca/tools/farm.ts"
+      ],
+      "classification": "REVIEWED_SOURCE_CONFORMANCE_ONLY"
+    }
+  ],
+  "limits": [
+    "Finite named software/source contracts only. No whole-task/whole-program promotion, paid provider, all-crash/partial-compensation, unexecuted platform or new installed runtime claim.",
+    "Actual old execution epochs/raw producer classes remain unchanged. Retaining an extract/current source hash is not another execution.",
+    "Exact callback/declaration hashes and line anchors are in selected-named-observations; full source files are captured inputs, never replaced by AST/function equality."
+  ]
+}

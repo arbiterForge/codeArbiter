@@ -1,0 +1,27 @@
+{
+  "before": {
+    ".github/scripts/test_npm_binding_observation.py": "52672a6736ba467147070aec1cf42572d09579df97e29c47f214d2520797d34c",
+    "plugins/ca-pi/tools/test/delegation-journal.test.ts": "3c9fe93d54d304bb5786f3402a19aa520a4df2ce1e389bb09e467c22331034ec",
+    ".github/scripts/npm_binding_observation.py": "d203d30b593783fb05454904311d7e25c7f7f1b913f3a501f45cf7aac27a95ab",
+    "core/artifacts/internal/evidence/launch_binding_limits_test.go": "1a320a186987678561a8a01e0e4eaf641d3fafe65cd38a0c9667d165a9c81810",
+    "plugins/ca-pi/tools/src/delegation-journal.ts": "2fda36919a5820573d5626f500c1da4ccb55b63f3089e6b3ad71212ba1494efc",
+    ".github/scripts/test_hook_ci_partition.py": "b8ff350ee2af5f749ee84aa57e74c95846add15405de9ef5d090e9d01dfa49bc"
+  },
+  "after": {
+    ".github/scripts/test_npm_binding_observation.py": "52672a6736ba467147070aec1cf42572d09579df97e29c47f214d2520797d34c",
+    "plugins/ca-pi/tools/test/delegation-journal.test.ts": "3c9fe93d54d304bb5786f3402a19aa520a4df2ce1e389bb09e467c22331034ec",
+    ".github/scripts/npm_binding_observation.py": "d203d30b593783fb05454904311d7e25c7f7f1b913f3a501f45cf7aac27a95ab",
+    "core/artifacts/internal/evidence/launch_binding_limits_test.go": "1a320a186987678561a8a01e0e4eaf641d3fafe65cd38a0c9667d165a9c81810",
+    "plugins/ca-pi/tools/src/delegation-journal.ts": "2fda36919a5820573d5626f500c1da4ccb55b63f3089e6b3ad71212ba1494efc",
+    ".github/scripts/test_hook_ci_partition.py": "b8ff350ee2af5f749ee84aa57e74c95846add15405de9ef5d090e9d01dfa49bc"
+  },
+  "tools_before": {
+    "C:/Python314/python.exe": "03168c01b7b7491423350e82c26fee71f35b43694d1319d3c668bda6903a0c38",
+    "D:/dev/Users/brenn/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node.exe": "c0b01496cf3da5cceca86eb6e1b2ef5d088cd46ad4e97cf502e2c937fa7f56b9"
+  },
+  "tools_after": {
+    "C:/Python314/python.exe": "03168c01b7b7491423350e82c26fee71f35b43694d1319d3c668bda6903a0c38",
+    "D:/dev/Users/brenn/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node.exe": "c0b01496cf3da5cceca86eb6e1b2ef5d088cd46ad4e97cf502e2c937fa7f56b9"
+  },
+  "unchanged": true
+}

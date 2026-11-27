@@ -1,0 +1,303 @@
+{
+  "schema": "codearbiter.codex-linux-runtime-pins/1",
+  "registry": "https://registry.npmjs.org",
+  "platform": "linux/amd64",
+  "versions": {
+    "0.143.0": {
+      "root": {
+        "package": "@openai/codex",
+        "version": "0.143.0",
+        "url": "https://registry.npmjs.org/@openai/codex/-/codex-0.143.0.tgz",
+        "integrity": "sha512-6h53sNtESIYncWVwU7zEjdVajwcad/0H94MOrgGqhwBMa9RRUDVG6DU9E9euC7yRdtrsKDAkJkz/m5moZ6MU3A==",
+        "archive_sha256": "d8763cc089e94e2612cb34f947582735dbcbe6e983468cf86beb1a8c5847d84c",
+        "archive_bytes": 3889,
+        "manifest": {
+          "name": "@openai/codex",
+          "version": "0.143.0",
+          "description": "Codex CLI is a coding agent from OpenAI that runs locally on your computer.",
+          "license": "Apache-2.0",
+          "bin": {
+            "codex": "bin/codex.js"
+          },
+          "type": "module",
+          "engines": {
+            "node": ">=16"
+          },
+          "files": [
+            "bin/codex.js"
+          ],
+          "repository": {
+            "type": "git",
+            "url": "git+https://github.com/openai/codex.git",
+            "directory": "codex-cli"
+          },
+          "packageManager": "pnpm@10.33.0+sha512.10568bb4a6afb58c9eb3630da90cc9516417abebd3fabbe6739f0ae795728da1491e9db5a544c76ad8eb7570f5c4bb3d6c637b2cb41bfdcdb47fa823c8649319",
+          "optionalDependencies": {
+            "@openai/codex-linux-x64": "npm:@openai/codex@0.143.0-linux-x64",
+            "@openai/codex-linux-arm64": "npm:@openai/codex@0.143.0-linux-arm64",
+            "@openai/codex-darwin-x64": "npm:@openai/codex@0.143.0-darwin-x64",
+            "@openai/codex-darwin-arm64": "npm:@openai/codex@0.143.0-darwin-arm64",
+            "@openai/codex-win32-x64": "npm:@openai/codex@0.143.0-win32-x64",
+            "@openai/codex-win32-arm64": "npm:@openai/codex@0.143.0-win32-arm64"
+          }
+        },
+        "members": [
+          {
+            "path": "package/bin/codex.js",
+            "size": 5827,
+            "mode": "0o755",
+            "sha256": "d3be844c45c4fd89392536e56e1010963f94785592596b50cd0c45bb8a341406"
+          },
+          {
+            "path": "package/package.json",
+            "size": 1082,
+            "mode": "0o644",
+            "sha256": "8b1dbf6f0b7ff97db0ff0b07b4f73804c877c09ca7d8ceb93765b6d6ea6c2272"
+          },
+          {
+            "path": "package/README.md",
+            "size": 2814,
+            "mode": "0o644",
+            "sha256": "8ef3dd9dd00c7dd39d1f0b77de69d25cff4dd3fe7768ec3a3cd1fc9c0aa5b76c"
+          }
+        ]
+      },
+      "linux_amd64": {
+        "package": "@openai/codex",
+        "version": "0.143.0-linux-x64",
+        "url": "https://registry.npmjs.org/@openai/codex/-/codex-0.143.0-linux-x64.tgz",
+        "integrity": "sha512-B6v6oUgBbjt1bL7yBbRp7e0vLiVOjRdz9Wykotve52Aq2H2TeiCqxM5BSOaFkmNO6VxE0seW7hTi2UZF9x8LLA==",
+        "archive_sha256": "cc89cd8184edefa9ecd957f934c4970f9f17b4d29c0eec23259775a6a0d8fe0e",
+        "archive_bytes": 130278756,
+        "manifest": {
+          "name": "@openai/codex",
+          "version": "0.143.0-linux-x64",
+          "license": "Apache-2.0",
+          "os": [
+            "linux"
+          ],
+          "cpu": [
+            "x64"
+          ],
+          "files": [
+            "vendor"
+          ],
+          "repository": {
+            "type": "git",
+            "url": "git+https://github.com/openai/codex.git",
+            "directory": "codex-cli"
+          },
+          "engines": {
+            "node": ">=16"
+          },
+          "packageManager": "pnpm@10.33.0+sha512.10568bb4a6afb58c9eb3630da90cc9516417abebd3fabbe6739f0ae795728da1491e9db5a544c76ad8eb7570f5c4bb3d6c637b2cb41bfdcdb47fa823c8649319"
+        },
+        "members": [
+          {
+            "path": "package/vendor/x86_64-unknown-linux-musl/codex-resources/bwrap",
+            "size": 529776,
+            "mode": "0o755",
+            "sha256": "01fb705f067bd5365b63d8ad2323a61c8d007733ca5e649437e086f3fb9935d8"
+          },
+          {
+            "path": "package/vendor/x86_64-unknown-linux-musl/bin/codex",
+            "size": 296235056,
+            "mode": "0o755",
+            "sha256": "f41ee4dccfd2c36329a400b348f4d18bd722fd85491d02356aee9794053384fb"
+          },
+          {
+            "path": "package/vendor/x86_64-unknown-linux-musl/bin/codex-code-mode-host",
+            "size": 46122904,
+            "mode": "0o755",
+            "sha256": "a27d18477057bbd738f1c08da6b19aba6dc55d001da94f8e32a13cfd2d04635c"
+          },
+          {
+            "path": "package/vendor/x86_64-unknown-linux-musl/codex-path/rg",
+            "size": 5445512,
+            "mode": "0o755",
+            "sha256": "ebeaf56f8a25e102e9419933423738b3a2a613a444fd749d695e15eba53f71f2"
+          },
+          {
+            "path": "package/vendor/x86_64-unknown-linux-musl/codex-resources/zsh/bin/zsh",
+            "size": 898480,
+            "mode": "0o755",
+            "sha256": "67faaaa89242c4a332e16e508a1977cffc24bf7fca31d4411cdfd101f3831ef3"
+          },
+          {
+            "path": "package/vendor/x86_64-unknown-linux-musl/codex-package.json",
+            "size": 205,
+            "mode": "0o644",
+            "sha256": "aa7d296bc0f9bf1764e76407fafd2f6208212a1f4d34150328e12d46489aa046"
+          },
+          {
+            "path": "package/package.json",
+            "size": 511,
+            "mode": "0o644",
+            "sha256": "31e97dcb36cbc5752aa2c0fc2d453a932e84e3416a13c5c26330df62b5d756ac"
+          },
+          {
+            "path": "package/README.md",
+            "size": 2814,
+            "mode": "0o644",
+            "sha256": "8ef3dd9dd00c7dd39d1f0b77de69d25cff4dd3fe7768ec3a3cd1fc9c0aa5b76c"
+          }
+        ]
+      },
+      "source_metadata": {
+        "license": "Apache-2.0",
+        "repository": "git+https://github.com/openai/codex.git",
+        "signatures_advertised": true,
+        "slsa_advertised": true,
+        "signature_or_slsa_crypto_verification": "NOT_PERFORMED"
+      }
+    },
+    "0.145.0": {
+      "root": {
+        "package": "@openai/codex",
+        "version": "0.145.0",
+        "url": "https://registry.npmjs.org/@openai/codex/-/codex-0.145.0.tgz",
+        "integrity": "sha512-/PSPSFujjjmiyVFvG2yu/grOFhsWdokTH8t2KGWhXSo/M5n/dIDsnbsnO82/7bLtIoDuzQf7ATBUMWqPWQINlQ==",
+        "archive_sha256": "416399796cac371d1a033b17f34b08ba9b25c8f298a5b9d00e10f72c3b128c8d",
+        "archive_bytes": 4311,
+        "manifest": {
+          "name": "@openai/codex",
+          "version": "0.145.0",
+          "description": "Codex CLI is a coding agent from OpenAI that runs locally on your computer.",
+          "license": "Apache-2.0",
+          "bin": {
+            "codex": "bin/codex.js"
+          },
+          "type": "module",
+          "engines": {
+            "node": ">=16"
+          },
+          "files": [
+            "bin/codex.js"
+          ],
+          "repository": {
+            "type": "git",
+            "url": "git+https://github.com/openai/codex.git",
+            "directory": "codex-cli"
+          },
+          "packageManager": "pnpm@10.33.0+sha512.10568bb4a6afb58c9eb3630da90cc9516417abebd3fabbe6739f0ae795728da1491e9db5a544c76ad8eb7570f5c4bb3d6c637b2cb41bfdcdb47fa823c8649319",
+          "optionalDependencies": {
+            "@openai/codex-linux-x64": "npm:@openai/codex@0.145.0-linux-x64",
+            "@openai/codex-linux-arm64": "npm:@openai/codex@0.145.0-linux-arm64",
+            "@openai/codex-darwin-x64": "npm:@openai/codex@0.145.0-darwin-x64",
+            "@openai/codex-darwin-arm64": "npm:@openai/codex@0.145.0-darwin-arm64",
+            "@openai/codex-win32-x64": "npm:@openai/codex@0.145.0-win32-x64",
+            "@openai/codex-win32-arm64": "npm:@openai/codex@0.145.0-win32-arm64"
+          }
+        },
+        "members": [
+          {
+            "path": "package/bin/codex.js",
+            "size": 7236,
+            "mode": "0o755",
+            "sha256": "134063e133f0b4244fa3b251acf973d4fe4b4aeeacbdc135211bf480f59f1477"
+          },
+          {
+            "path": "package/package.json",
+            "size": 1082,
+            "mode": "0o644",
+            "sha256": "ff896fd5e5444cfc645890b21273ad1c6b3e26e4e4ab0934de597a0f8db5aafb"
+          },
+          {
+            "path": "package/README.md",
+            "size": 2814,
+            "mode": "0o644",
+            "sha256": "8ef3dd9dd00c7dd39d1f0b77de69d25cff4dd3fe7768ec3a3cd1fc9c0aa5b76c"
+          }
+        ]
+      },
+      "linux_amd64": {
+        "package": "@openai/codex",
+        "version": "0.145.0-linux-x64",
+        "url": "https://registry.npmjs.org/@openai/codex/-/codex-0.145.0-linux-x64.tgz",
+        "integrity": "sha512-u8w8LLv3DvsfrDCoswLIemZ0SoNEXyi511WsfFsSiYUazk9qMsB/NtU8N9vhAfN7mZAxLFoMex4v66JjHuZWwA==",
+        "archive_sha256": "11239480f8e3efd1430f23bbe91c1a397856b8bbe6185ccbaee2382d25e03df2",
+        "archive_bytes": 135637111,
+        "manifest": {
+          "name": "@openai/codex",
+          "version": "0.145.0-linux-x64",
+          "license": "Apache-2.0",
+          "os": [
+            "linux"
+          ],
+          "cpu": [
+            "x64"
+          ],
+          "files": [
+            "vendor"
+          ],
+          "repository": {
+            "type": "git",
+            "url": "git+https://github.com/openai/codex.git",
+            "directory": "codex-cli"
+          },
+          "engines": {
+            "node": ">=16"
+          },
+          "packageManager": "pnpm@10.33.0+sha512.10568bb4a6afb58c9eb3630da90cc9516417abebd3fabbe6739f0ae795728da1491e9db5a544c76ad8eb7570f5c4bb3d6c637b2cb41bfdcdb47fa823c8649319"
+        },
+        "members": [
+          {
+            "path": "package/vendor/x86_64-unknown-linux-musl/codex-resources/bwrap",
+            "size": 529776,
+            "mode": "0o755",
+            "sha256": "77360cb751ccedc5971391444ac86a8a33c15b04d6b4a6fe45f5d25496e62c4c"
+          },
+          {
+            "path": "package/vendor/x86_64-unknown-linux-musl/bin/codex",
+            "size": 310730800,
+            "mode": "0o755",
+            "sha256": "a2a05dafaa1acb002a45eaec0a462de5b13694fcfcd7bc43305f14781ce7be14"
+          },
+          {
+            "path": "package/vendor/x86_64-unknown-linux-musl/bin/codex-code-mode-host",
+            "size": 46139288,
+            "mode": "0o755",
+            "sha256": "60bf16414be5333f09ff082540082304c7352931ef64bdeb170d4c35a82e6ef8"
+          },
+          {
+            "path": "package/vendor/x86_64-unknown-linux-musl/codex-path/rg",
+            "size": 5408904,
+            "mode": "0o755",
+            "sha256": "e62198eb19b136b88c330af83647b5a962cb99b6b1f066758568f12de1974849"
+          },
+          {
+            "path": "package/vendor/x86_64-unknown-linux-musl/codex-resources/zsh/bin/zsh",
+            "size": 898480,
+            "mode": "0o755",
+            "sha256": "67faaaa89242c4a332e16e508a1977cffc24bf7fca31d4411cdfd101f3831ef3"
+          },
+          {
+            "path": "package/vendor/x86_64-unknown-linux-musl/codex-package.json",
+            "size": 205,
+            "mode": "0o644",
+            "sha256": "8da5349aa5a4242f5e11c5ca8ff4a16d8f9f912cb8accebea4def94edbf30aee"
+          },
+          {
+            "path": "package/package.json",
+            "size": 511,
+            "mode": "0o644",
+            "sha256": "84f3243fd73f23dc27effde18f96db6ed0a939448299a14d594022e6341f0fd5"
+          },
+          {
+            "path": "package/README.md",
+            "size": 2814,
+            "mode": "0o644",
+            "sha256": "8ef3dd9dd00c7dd39d1f0b77de69d25cff4dd3fe7768ec3a3cd1fc9c0aa5b76c"
+          }
+        ]
+      },
+      "source_metadata": {
+        "license": "Apache-2.0",
+        "repository": "git+https://github.com/openai/codex.git",
+        "signatures_advertised": true,
+        "slsa_advertised": true,
+        "signature_or_slsa_crypto_verification": "NOT_PERFORMED"
+      }
+    }
+  }
+}

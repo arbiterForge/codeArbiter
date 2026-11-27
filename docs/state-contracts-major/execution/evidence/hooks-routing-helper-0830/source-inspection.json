@@ -1,0 +1,381 @@
+{
+  "schema": "codearbiter-finite-source-inspection/1",
+  "reviewer": "/root",
+  "recorded_at": "2026-11-14T05:19:57.021666+00:00",
+  "source_commit": "0830b95752a05343563be027e513a2845a6c57df",
+  "complete_owner_joins": {
+    "core/surface/arbiter.md": {
+      "Git_sha256": "1d6573386db5443a7d905e792ee72608d39569ff470c8bf6635b7d0c691b94a4",
+      "physical_sha256": "1d6573386db5443a7d905e792ee72608d39569ff470c8bf6635b7d0c691b94a4",
+      "literal_equal": true,
+      "CRLF_normalized_equal": true,
+      "baseline_sha256": "1d6573386db5443a7d905e792ee72608d39569ff470c8bf6635b7d0c691b94a4",
+      "whole_baseline_equal": true,
+      "complete_current_owner_read": true
+    },
+    "core/surface/includes/routing-table.md": {
+      "Git_sha256": "279eeb8174ac6831904c2852cb14ab60c23fdef68849afe155d32451176d796b",
+      "physical_sha256": "279eeb8174ac6831904c2852cb14ab60c23fdef68849afe155d32451176d796b",
+      "literal_equal": true,
+      "CRLF_normalized_equal": true,
+      "baseline_sha256": "eb5eea0172f2bb591c3be252bfa3ba66529a412eb3ad0a1448a531213e981d53",
+      "whole_baseline_equal": false,
+      "complete_current_owner_read": true
+    },
+    "core/surface/includes/safety-core.md": {
+      "Git_sha256": "a3356c9c306c2624b737f425565afa748d093015c0e968a421092b40bb8f9347",
+      "physical_sha256": "a3356c9c306c2624b737f425565afa748d093015c0e968a421092b40bb8f9347",
+      "literal_equal": true,
+      "CRLF_normalized_equal": true,
+      "baseline_sha256": "a3356c9c306c2624b737f425565afa748d093015c0e968a421092b40bb8f9347",
+      "whole_baseline_equal": true,
+      "complete_current_owner_read": true
+    },
+    "core/surface/includes/helper-invocation.md": {
+      "Git_sha256": "6e5f3da6727dc91ea2838bf414f2f626301ebe75ddeae91aeefede57712ebe33",
+      "physical_sha256": "6e5f3da6727dc91ea2838bf414f2f626301ebe75ddeae91aeefede57712ebe33",
+      "literal_equal": true,
+      "CRLF_normalized_equal": true,
+      "baseline_sha256": "75467678ab56e1871b1aeb1b1b08b15273b7cd3c65b7d4928020570b426ca9cc",
+      "whole_baseline_equal": false,
+      "complete_current_owner_read": true
+    },
+    "core/surface/includes/codex-host-notes.md": {
+      "Git_sha256": "21bc0f71035e88fd5c55317619d2dc9305d5b355ceabfbd310a73ecf0f4ff268",
+      "physical_sha256": "21bc0f71035e88fd5c55317619d2dc9305d5b355ceabfbd310a73ecf0f4ff268",
+      "literal_equal": true,
+      "CRLF_normalized_equal": true,
+      "baseline_sha256": "21bc0f71035e88fd5c55317619d2dc9305d5b355ceabfbd310a73ecf0f4ff268",
+      "whole_baseline_equal": true,
+      "complete_current_owner_read": true
+    },
+    "core/surface/includes/pi-host-notes.md": {
+      "Git_sha256": "e179d2d7c866d95de28b74efbc45c94dc48f74e98134fa0f282ee0ff2c854038",
+      "physical_sha256": "e179d2d7c866d95de28b74efbc45c94dc48f74e98134fa0f282ee0ff2c854038",
+      "literal_equal": true,
+      "CRLF_normalized_equal": true,
+      "baseline_sha256": "674574e1fd9be3be199fa9ec0fc76d97571e33c57bbd363a354f00b47d58349d",
+      "whole_baseline_equal": false,
+      "complete_current_owner_read": true
+    }
+  },
+  "semantic_mapping": [
+    {
+      "cell": "disposition:transitions:WF-01:01",
+      "preserved_source_clause": "Route a clear authorized outcome through its existing loaded owner, retaining scope and gates.",
+      "witnesses": [
+        {
+          "path": "core/surface/arbiter.md",
+          "start": 102,
+          "end": 111,
+          "file_sha256": "1d6573386db5443a7d905e792ee72608d39569ff470c8bf6635b7d0c691b94a4"
+        },
+        {
+          "path": "core/surface/includes/routing-table.md",
+          "start": 6,
+          "end": 15,
+          "file_sha256": "279eeb8174ac6831904c2852cb14ab60c23fdef68849afe155d32451176d796b"
+        }
+      ],
+      "semantic_assessment": "Arbiter outcome tiers and routing preamble require owner loading and preserve prerequisites. A second internal method is explicitly insufficient for another interview.",
+      "limits": "Canonical model-guided instruction preservation only; no model compliance, helper execution, installed package, network, mutation, deletion or publication outcome is claimed."
+    },
+    {
+      "cell": "disposition:transitions:WF-01:02",
+      "preserved_source_clause": "Ask for a material missing outcome/fact/authority; inspect available evidence before a bounded question.",
+      "witnesses": [
+        {
+          "path": "core/surface/arbiter.md",
+          "start": 107,
+          "end": 113,
+          "file_sha256": "1d6573386db5443a7d905e792ee72608d39569ff470c8bf6635b7d0c691b94a4"
+        },
+        {
+          "path": "core/surface/arbiter.md",
+          "start": 112,
+          "end": 114,
+          "file_sha256": "1d6573386db5443a7d905e792ee72608d39569ff470c8bf6635b7d0c691b94a4"
+        }
+      ],
+      "semantic_assessment": "The probable tier identifies a material missing outcome/authority, calls for inspection first, and asks once. The unclear tier uses redirect; internal alternatives alone do not create ambiguity. This is a declared instruction, not proof a model obeys it.",
+      "limits": "Canonical model-guided instruction preservation only; no model compliance, helper execution, installed package, network, mutation, deletion or publication outcome is claimed."
+    },
+    {
+      "cell": "disposition:transitions:WF-01:03",
+      "preserved_source_clause": "Carry an existing in-scope grant through continuation; material expansion, actual denial and separately governed actions retain their stops.",
+      "witnesses": [
+        {
+          "path": "core/surface/includes/safety-core.md",
+          "start": 62,
+          "end": 71,
+          "file_sha256": "a3356c9c306c2624b737f425565afa748d093015c0e968a421092b40bb8f9347"
+        },
+        {
+          "path": "core/surface/arbiter.md",
+          "start": 121,
+          "end": 128,
+          "file_sha256": "1d6573386db5443a7d905e792ee72608d39569ff470c8bf6635b7d0c691b94a4"
+        }
+      ],
+      "semantic_assessment": "Safety-core permits reversible method choices within already-authorized scope, refuses new requirements or spending/disclosure/publication authority, and preserves required confirmations. Loading a direct resource retains wrapper behavior and active call extent.",
+      "limits": "Canonical model-guided instruction preservation only; no model compliance, helper execution, installed package, network, mutation, deletion or publication outcome is claimed."
+    },
+    {
+      "cell": "disposition:transitions:WF-01:04",
+      "preserved_source_clause": "Require the owning specific grant for override, default merge, branch/worktree deletion and publication.",
+      "witnesses": [
+        {
+          "path": "core/surface/includes/safety-core.md",
+          "start": 51,
+          "end": 63,
+          "file_sha256": "a3356c9c306c2624b737f425565afa748d093015c0e968a421092b40bb8f9347"
+        },
+        {
+          "path": "core/surface/includes/routing-table.md",
+          "start": 15,
+          "end": 21,
+          "file_sha256": "279eeb8174ac6831904c2852cb14ab60c23fdef68849afe155d32451176d796b"
+        }
+      ],
+      "semantic_assessment": "The same four-item registry remains in safety-core, persona and routing table. Specific confirmation and exact-head ADR ancestry are separate from CI success. No unlimited authority is inferred from an umbrella outcome.",
+      "limits": "Canonical model-guided instruction preservation only; no model compliance, helper execution, installed package, network, mutation, deletion or publication outcome is claimed."
+    },
+    {
+      "cell": "disposition:transitions:WF-32:01",
+      "preserved_source_clause": "Choose a literal installed helper leaf before resolution; select one actually executed compatible Python3.8+ interpreter.",
+      "witnesses": [
+        {
+          "path": "core/surface/includes/helper-invocation.md",
+          "start": 9,
+          "end": 30,
+          "file_sha256": "6e5f3da6727dc91ea2838bf414f2f626301ebe75ddeae91aeefede57712ebe33"
+        },
+        {
+          "path": "core/surface/includes/helper-invocation.md",
+          "start": 33,
+          "end": 53,
+          "file_sha256": "6e5f3da6727dc91ea2838bf414f2f626301ebe75ddeae91aeefede57712ebe33"
+        },
+        {
+          "path": "core/surface/includes/helper-invocation.md",
+          "start": 54,
+          "end": 74,
+          "file_sha256": "6e5f3da6727dc91ea2838bf414f2f626301ebe75ddeae91aeefede57712ebe33"
+        }
+      ],
+      "semantic_assessment": "The four baseline helper leaves remain literal. The authorized bounded-recovery leaf is an additive current instruction at275d16; it is not evidence of baseline runtime execution. Both shell blocks execute identity probes, check absolute regular executable paths and minimum compatibility, then select once. Newer minor qualification is expressly not claimed.",
+      "limits": "Canonical model-guided instruction preservation only; no model compliance, helper execution, installed package, network, mutation, deletion or publication outcome is claimed."
+    },
+    {
+      "cell": "disposition:transitions:WF-32:02",
+      "preserved_source_clause": "Resolve from an absolute loaded installed entry, require the expected package marker and exact helper; preserve project cwd.",
+      "witnesses": [
+        {
+          "path": "core/surface/includes/helper-invocation.md",
+          "start": 74,
+          "end": 96,
+          "file_sha256": "6e5f3da6727dc91ea2838bf414f2f626301ebe75ddeae91aeefede57712ebe33"
+        },
+        {
+          "path": "core/surface/includes/helper-invocation.md",
+          "start": 96,
+          "end": 109,
+          "file_sha256": "6e5f3da6727dc91ea2838bf414f2f626301ebe75ddeae91aeefede57712ebe33"
+        },
+        {
+          "path": "core/surface/includes/helper-invocation.md",
+          "start": 126,
+          "end": 139,
+          "file_sha256": "6e5f3da6727dc91ea2838bf414f2f626301ebe75ddeae91aeefede57712ebe33"
+        },
+        {
+          "path": "core/surface/includes/helper-invocation.md",
+          "start": 157,
+          "end": 171,
+          "file_sha256": "6e5f3da6727dc91ea2838bf414f2f626301ebe75ddeae91aeefede57712ebe33"
+        }
+      ],
+      "semantic_assessment": "Known host-relative offsets and literal package marker/helper checks replace ambient or source-checkout guessing. Missing resource/package/helper stops. Marker existence identifies the expected package layout; publisher authenticity and actual host execution are not established by this prose review. All three host shell paths were read.",
+      "limits": "Canonical model-guided instruction preservation only; no model compliance, helper execution, installed package, network, mutation, deletion or publication outcome is claimed."
+    },
+    {
+      "cell": "disposition:transitions:WF-32:03",
+      "preserved_source_clause": "Invoke the one selected helper with literal tokens and bounded stdin; retain its actual exit/stdout/stderr and no failure replay under another interpreter.",
+      "witnesses": [
+        {
+          "path": "core/surface/includes/helper-invocation.md",
+          "start": 184,
+          "end": 206,
+          "file_sha256": "6e5f3da6727dc91ea2838bf414f2f626301ebe75ddeae91aeefede57712ebe33"
+        },
+        {
+          "path": "core/surface/includes/helper-invocation.md",
+          "start": 206,
+          "end": 223,
+          "file_sha256": "6e5f3da6727dc91ea2838bf414f2f626301ebe75ddeae91aeefede57712ebe33"
+        },
+        {
+          "path": "core/surface/includes/codex-host-notes.md",
+          "start": 67,
+          "end": 80,
+          "file_sha256": "21bc0f71035e88fd5c55317619d2dc9305d5b355ceabfbd310a73ecf0f4ff268"
+        },
+        {
+          "path": "core/surface/includes/pi-host-notes.md",
+          "start": 25,
+          "end": 41,
+          "file_sha256": "e179d2d7c866d95de28b74efbc45c94dc48f74e98134fa0f282ee0ff2c854038"
+        }
+      ],
+      "semantic_assessment": "The debug packet limit is65536bytes; direct validate invocation preserves host timeout/output controls and forbids shell transport construction. Local board work retains intended project cwd and literal argument boundaries. Both host notes repeat select-once/no second-interpreter retry; source review does not execute these shell blocks.",
+      "limits": "Canonical model-guided instruction preservation only; no model compliance, helper execution, installed package, network, mutation, deletion or publication outcome is claimed."
+    },
+    {
+      "cell": "disposition:machines:WF-01",
+      "preserved_source_clause": "All finite baseline declared instruction transitions of this model-guided machine are covered by the named per-row conformance review.",
+      "transition_cells": [
+        "disposition:transitions:WF-01:01",
+        "disposition:transitions:WF-01:02",
+        "disposition:transitions:WF-01:03",
+        "disposition:transitions:WF-01:04"
+      ],
+      "witnesses": [
+        {
+          "path": "core/surface/arbiter.md",
+          "start": 102,
+          "end": 111,
+          "file_sha256": "1d6573386db5443a7d905e792ee72608d39569ff470c8bf6635b7d0c691b94a4"
+        },
+        {
+          "path": "core/surface/includes/routing-table.md",
+          "start": 6,
+          "end": 15,
+          "file_sha256": "279eeb8174ac6831904c2852cb14ab60c23fdef68849afe155d32451176d796b"
+        },
+        {
+          "path": "core/surface/arbiter.md",
+          "start": 107,
+          "end": 113,
+          "file_sha256": "1d6573386db5443a7d905e792ee72608d39569ff470c8bf6635b7d0c691b94a4"
+        },
+        {
+          "path": "core/surface/arbiter.md",
+          "start": 112,
+          "end": 114,
+          "file_sha256": "1d6573386db5443a7d905e792ee72608d39569ff470c8bf6635b7d0c691b94a4"
+        },
+        {
+          "path": "core/surface/includes/safety-core.md",
+          "start": 62,
+          "end": 71,
+          "file_sha256": "a3356c9c306c2624b737f425565afa748d093015c0e968a421092b40bb8f9347"
+        },
+        {
+          "path": "core/surface/arbiter.md",
+          "start": 121,
+          "end": 128,
+          "file_sha256": "1d6573386db5443a7d905e792ee72608d39569ff470c8bf6635b7d0c691b94a4"
+        },
+        {
+          "path": "core/surface/includes/safety-core.md",
+          "start": 51,
+          "end": 63,
+          "file_sha256": "a3356c9c306c2624b737f425565afa748d093015c0e968a421092b40bb8f9347"
+        },
+        {
+          "path": "core/surface/includes/routing-table.md",
+          "start": 15,
+          "end": 21,
+          "file_sha256": "279eeb8174ac6831904c2852cb14ab60c23fdef68849afe155d32451176d796b"
+        }
+      ],
+      "semantic_assessment": "Only declared source contract preservation; every baseline row has a finite source assessment above. No observed autonomous-model or installed-host behavior is inferred.",
+      "limits": "Does not promote any task, composed scenario or runtime capability."
+    },
+    {
+      "cell": "disposition:machines:WF-32",
+      "preserved_source_clause": "All finite baseline declared instruction transitions of this model-guided machine are covered by the named per-row conformance review.",
+      "transition_cells": [
+        "disposition:transitions:WF-32:01",
+        "disposition:transitions:WF-32:02",
+        "disposition:transitions:WF-32:03"
+      ],
+      "witnesses": [
+        {
+          "path": "core/surface/includes/helper-invocation.md",
+          "start": 9,
+          "end": 30,
+          "file_sha256": "6e5f3da6727dc91ea2838bf414f2f626301ebe75ddeae91aeefede57712ebe33"
+        },
+        {
+          "path": "core/surface/includes/helper-invocation.md",
+          "start": 33,
+          "end": 53,
+          "file_sha256": "6e5f3da6727dc91ea2838bf414f2f626301ebe75ddeae91aeefede57712ebe33"
+        },
+        {
+          "path": "core/surface/includes/helper-invocation.md",
+          "start": 54,
+          "end": 74,
+          "file_sha256": "6e5f3da6727dc91ea2838bf414f2f626301ebe75ddeae91aeefede57712ebe33"
+        },
+        {
+          "path": "core/surface/includes/helper-invocation.md",
+          "start": 74,
+          "end": 96,
+          "file_sha256": "6e5f3da6727dc91ea2838bf414f2f626301ebe75ddeae91aeefede57712ebe33"
+        },
+        {
+          "path": "core/surface/includes/helper-invocation.md",
+          "start": 96,
+          "end": 109,
+          "file_sha256": "6e5f3da6727dc91ea2838bf414f2f626301ebe75ddeae91aeefede57712ebe33"
+        },
+        {
+          "path": "core/surface/includes/helper-invocation.md",
+          "start": 126,
+          "end": 139,
+          "file_sha256": "6e5f3da6727dc91ea2838bf414f2f626301ebe75ddeae91aeefede57712ebe33"
+        },
+        {
+          "path": "core/surface/includes/helper-invocation.md",
+          "start": 157,
+          "end": 171,
+          "file_sha256": "6e5f3da6727dc91ea2838bf414f2f626301ebe75ddeae91aeefede57712ebe33"
+        },
+        {
+          "path": "core/surface/includes/helper-invocation.md",
+          "start": 184,
+          "end": 206,
+          "file_sha256": "6e5f3da6727dc91ea2838bf414f2f626301ebe75ddeae91aeefede57712ebe33"
+        },
+        {
+          "path": "core/surface/includes/helper-invocation.md",
+          "start": 206,
+          "end": 223,
+          "file_sha256": "6e5f3da6727dc91ea2838bf414f2f626301ebe75ddeae91aeefede57712ebe33"
+        },
+        {
+          "path": "core/surface/includes/codex-host-notes.md",
+          "start": 67,
+          "end": 80,
+          "file_sha256": "21bc0f71035e88fd5c55317619d2dc9305d5b355ceabfbd310a73ecf0f4ff268"
+        },
+        {
+          "path": "core/surface/includes/pi-host-notes.md",
+          "start": 25,
+          "end": 41,
+          "file_sha256": "e179d2d7c866d95de28b74efbc45c94dc48f74e98134fa0f282ee0ff2c854038"
+        }
+      ],
+      "semantic_assessment": "Only declared source contract preservation; every baseline row has a finite source assessment above. No observed autonomous-model or installed-host behavior is inferred.",
+      "limits": "Does not promote any task, composed scenario or runtime capability."
+    }
+  ],
+  "changed_shared_source_assessment": [
+    "Routing-table changes only conflict dependency scope and watcher wording. Explicitly authorized scoped conflict continuation remains distinct from outcome routing and irreversible action confirmation; WF-02/WF-13 are not qualified here.",
+    "Helper card adds one bounded recovery leaf without changing baseline literal-leaf/interpreter/root/cwd/output contracts. Actual recovery runtime acceptance is separately recorded in WR owning evidence.",
+    "Pi host-note changes add parent-delegation limits, exact supported version and installed-host proof requirements; baseline private-helper clauses are unchanged. Neither S10/S11 endpoint policy nor other Pi runtime events are qualified here."
+  ],
+  "affected_policy_conflict_excluded": "Pending CON-004/ADR0018 provider transport choice has no dependency on the seven source-only routing/helper clauses; no endpoint behavior is reviewed or changed."
+}

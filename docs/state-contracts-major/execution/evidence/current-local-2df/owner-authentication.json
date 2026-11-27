@@ -1,0 +1,501 @@
+{
+  "format": "prospective-current-proof-owner-validation/1",
+  "source_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+  "owner": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\.github\\scripts\\major_readiness.py",
+  "owner_sha256": "217ffe45e7a812b0a3613626600afe4d9d98c0277f45e532cd1e15b88f77e2d1",
+  "results": [
+    {
+      "cell": "disposition:added_transitions:WR-01",
+      "state": "PASSED_PROSPECTIVE_OWNER_VALIDATION",
+      "bound": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/recovery22-tested.json",
+          "sha256": "46e1d52e98ae991eb37670dc17502fcc68d82f5db8a9f0f8e5c8c6dbe3544cea",
+          "source_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+          "producer_class": "local-host"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:added_transitions:WR-02",
+      "state": "PASSED_PROSPECTIVE_OWNER_VALIDATION",
+      "bound": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/recovery22-tested.json",
+          "sha256": "46e1d52e98ae991eb37670dc17502fcc68d82f5db8a9f0f8e5c8c6dbe3544cea",
+          "source_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+          "producer_class": "local-host"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:added_transitions:WR-03",
+      "state": "PASSED_PROSPECTIVE_OWNER_VALIDATION",
+      "bound": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/recovery22-tested.json",
+          "sha256": "46e1d52e98ae991eb37670dc17502fcc68d82f5db8a9f0f8e5c8c6dbe3544cea",
+          "source_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+          "producer_class": "local-host"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:added_transitions:WR-04",
+      "state": "PASSED_PROSPECTIVE_OWNER_VALIDATION",
+      "bound": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/recovery22-tested.json",
+          "sha256": "46e1d52e98ae991eb37670dc17502fcc68d82f5db8a9f0f8e5c8c6dbe3544cea",
+          "source_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+          "producer_class": "local-host"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:added_transitions:WR-05",
+      "state": "PASSED_PROSPECTIVE_OWNER_VALIDATION",
+      "bound": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/recovery22-tested.json",
+          "sha256": "46e1d52e98ae991eb37670dc17502fcc68d82f5db8a9f0f8e5c8c6dbe3544cea",
+          "source_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+          "producer_class": "local-host"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:added_transitions:WR-06",
+      "state": "PASSED_PROSPECTIVE_OWNER_VALIDATION",
+      "bound": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/recovery22-tested.json",
+          "sha256": "46e1d52e98ae991eb37670dc17502fcc68d82f5db8a9f0f8e5c8c6dbe3544cea",
+          "source_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+          "producer_class": "local-host"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:added_transitions:WR-07",
+      "state": "PASSED_PROSPECTIVE_OWNER_VALIDATION",
+      "bound": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/recovery22-tested.json",
+          "sha256": "46e1d52e98ae991eb37670dc17502fcc68d82f5db8a9f0f8e5c8c6dbe3544cea",
+          "source_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+          "producer_class": "local-host"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:added_transitions:WR-08",
+      "state": "PASSED_PROSPECTIVE_OWNER_VALIDATION",
+      "bound": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/recovery22-tested.json",
+          "sha256": "46e1d52e98ae991eb37670dc17502fcc68d82f5db8a9f0f8e5c8c6dbe3544cea",
+          "source_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+          "producer_class": "local-host"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:added_transitions:WR-09",
+      "state": "PASSED_PROSPECTIVE_OWNER_VALIDATION",
+      "bound": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/recovery22-tested.json",
+          "sha256": "46e1d52e98ae991eb37670dc17502fcc68d82f5db8a9f0f8e5c8c6dbe3544cea",
+          "source_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+          "producer_class": "local-host"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:added_transitions:WR-10",
+      "state": "PASSED_PROSPECTIVE_OWNER_VALIDATION",
+      "bound": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/recovery22-tested.json",
+          "sha256": "46e1d52e98ae991eb37670dc17502fcc68d82f5db8a9f0f8e5c8c6dbe3544cea",
+          "source_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+          "producer_class": "local-host"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:added_transitions:WR-11",
+      "state": "PASSED_PROSPECTIVE_OWNER_VALIDATION",
+      "bound": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/recovery22-tested.json",
+          "sha256": "46e1d52e98ae991eb37670dc17502fcc68d82f5db8a9f0f8e5c8c6dbe3544cea",
+          "source_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+          "producer_class": "local-host"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:added_transitions:WR-12",
+      "state": "PASSED_PROSPECTIVE_OWNER_VALIDATION",
+      "bound": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/recovery22-tested.json",
+          "sha256": "46e1d52e98ae991eb37670dc17502fcc68d82f5db8a9f0f8e5c8c6dbe3544cea",
+          "source_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+          "producer_class": "local-host"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:added_transitions:WR-13",
+      "state": "PASSED_PROSPECTIVE_OWNER_VALIDATION",
+      "bound": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/recovery22-tested.json",
+          "sha256": "46e1d52e98ae991eb37670dc17502fcc68d82f5db8a9f0f8e5c8c6dbe3544cea",
+          "source_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+          "producer_class": "local-host"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:added_transitions:WR-14",
+      "state": "PASSED_PROSPECTIVE_OWNER_VALIDATION",
+      "bound": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/recovery22-tested.json",
+          "sha256": "46e1d52e98ae991eb37670dc17502fcc68d82f5db8a9f0f8e5c8c6dbe3544cea",
+          "source_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+          "producer_class": "local-host"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:added_transitions:WR-15",
+      "state": "PASSED_PROSPECTIVE_OWNER_VALIDATION",
+      "bound": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/recovery22-tested.json",
+          "sha256": "46e1d52e98ae991eb37670dc17502fcc68d82f5db8a9f0f8e5c8c6dbe3544cea",
+          "source_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+          "producer_class": "local-host"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:added_transitions:WR-16",
+      "state": "PASSED_PROSPECTIVE_OWNER_VALIDATION",
+      "bound": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/recovery22-tested.json",
+          "sha256": "46e1d52e98ae991eb37670dc17502fcc68d82f5db8a9f0f8e5c8c6dbe3544cea",
+          "source_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+          "producer_class": "local-host"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:added_transitions:WR-17",
+      "state": "PASSED_PROSPECTIVE_OWNER_VALIDATION",
+      "bound": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/recovery22-tested.json",
+          "sha256": "46e1d52e98ae991eb37670dc17502fcc68d82f5db8a9f0f8e5c8c6dbe3544cea",
+          "source_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+          "producer_class": "local-host"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:added_transitions:WR-18",
+      "state": "PASSED_PROSPECTIVE_OWNER_VALIDATION",
+      "bound": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/recovery22-tested.json",
+          "sha256": "46e1d52e98ae991eb37670dc17502fcc68d82f5db8a9f0f8e5c8c6dbe3544cea",
+          "source_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+          "producer_class": "local-host"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:added_transitions:WR-19",
+      "state": "PASSED_PROSPECTIVE_OWNER_VALIDATION",
+      "bound": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/recovery22-tested.json",
+          "sha256": "46e1d52e98ae991eb37670dc17502fcc68d82f5db8a9f0f8e5c8c6dbe3544cea",
+          "source_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+          "producer_class": "local-host"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:added_transitions:WR-20",
+      "state": "PASSED_PROSPECTIVE_OWNER_VALIDATION",
+      "bound": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/recovery22-tested.json",
+          "sha256": "46e1d52e98ae991eb37670dc17502fcc68d82f5db8a9f0f8e5c8c6dbe3544cea",
+          "source_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+          "producer_class": "local-host"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:added_transitions:WR-21",
+      "state": "PASSED_PROSPECTIVE_OWNER_VALIDATION",
+      "bound": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/recovery22-tested.json",
+          "sha256": "46e1d52e98ae991eb37670dc17502fcc68d82f5db8a9f0f8e5c8c6dbe3544cea",
+          "source_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+          "producer_class": "local-host"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:added_transitions:WR-22",
+      "state": "PASSED_PROSPECTIVE_OWNER_VALIDATION",
+      "bound": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/recovery22-tested.json",
+          "sha256": "46e1d52e98ae991eb37670dc17502fcc68d82f5db8a9f0f8e5c8c6dbe3544cea",
+          "source_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+          "producer_class": "local-host"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S52:01",
+      "state": "PASSED_PROSPECTIVE_OWNER_VALIDATION",
+      "bound": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/sandbox17-tested.json",
+          "sha256": "bb5cb4bd9b629c6b0c5e472ee60ded7fa2877f7a172557d6facc918817a63be9",
+          "source_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+          "producer_class": "local-host"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S52:02",
+      "state": "PASSED_PROSPECTIVE_OWNER_VALIDATION",
+      "bound": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/sandbox17-tested.json",
+          "sha256": "bb5cb4bd9b629c6b0c5e472ee60ded7fa2877f7a172557d6facc918817a63be9",
+          "source_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+          "producer_class": "local-host"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S52:03",
+      "state": "PASSED_PROSPECTIVE_OWNER_VALIDATION",
+      "bound": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/sandbox17-tested.json",
+          "sha256": "bb5cb4bd9b629c6b0c5e472ee60ded7fa2877f7a172557d6facc918817a63be9",
+          "source_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+          "producer_class": "local-host"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S52:04",
+      "state": "PASSED_PROSPECTIVE_OWNER_VALIDATION",
+      "bound": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/sandbox17-tested.json",
+          "sha256": "bb5cb4bd9b629c6b0c5e472ee60ded7fa2877f7a172557d6facc918817a63be9",
+          "source_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+          "producer_class": "local-host"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S52:05",
+      "state": "PASSED_PROSPECTIVE_OWNER_VALIDATION",
+      "bound": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/sandbox17-tested.json",
+          "sha256": "bb5cb4bd9b629c6b0c5e472ee60ded7fa2877f7a172557d6facc918817a63be9",
+          "source_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+          "producer_class": "local-host"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S48:06",
+      "state": "PASSED_PROSPECTIVE_OWNER_VALIDATION",
+      "bound": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/sandbox17-tested.json",
+          "sha256": "bb5cb4bd9b629c6b0c5e472ee60ded7fa2877f7a172557d6facc918817a63be9",
+          "source_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+          "producer_class": "local-host"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S48:07",
+      "state": "PASSED_PROSPECTIVE_OWNER_VALIDATION",
+      "bound": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/sandbox17-tested.json",
+          "sha256": "bb5cb4bd9b629c6b0c5e472ee60ded7fa2877f7a172557d6facc918817a63be9",
+          "source_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+          "producer_class": "local-host"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S49:01",
+      "state": "PASSED_PROSPECTIVE_OWNER_VALIDATION",
+      "bound": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/sandbox17-tested.json",
+          "sha256": "bb5cb4bd9b629c6b0c5e472ee60ded7fa2877f7a172557d6facc918817a63be9",
+          "source_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+          "producer_class": "local-host"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S51:05",
+      "state": "PASSED_PROSPECTIVE_OWNER_VALIDATION",
+      "bound": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/sandbox17-tested.json",
+          "sha256": "bb5cb4bd9b629c6b0c5e472ee60ded7fa2877f7a172557d6facc918817a63be9",
+          "source_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+          "producer_class": "local-host"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S53:01",
+      "state": "PASSED_PROSPECTIVE_OWNER_VALIDATION",
+      "bound": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/sandbox17-tested.json",
+          "sha256": "bb5cb4bd9b629c6b0c5e472ee60ded7fa2877f7a172557d6facc918817a63be9",
+          "source_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+          "producer_class": "local-host"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S53:02",
+      "state": "PASSED_PROSPECTIVE_OWNER_VALIDATION",
+      "bound": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/sandbox17-tested.json",
+          "sha256": "bb5cb4bd9b629c6b0c5e472ee60ded7fa2877f7a172557d6facc918817a63be9",
+          "source_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+          "producer_class": "local-host"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S53:03",
+      "state": "PASSED_PROSPECTIVE_OWNER_VALIDATION",
+      "bound": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/sandbox17-tested.json",
+          "sha256": "bb5cb4bd9b629c6b0c5e472ee60ded7fa2877f7a172557d6facc918817a63be9",
+          "source_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+          "producer_class": "local-host"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S53:04",
+      "state": "PASSED_PROSPECTIVE_OWNER_VALIDATION",
+      "bound": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/sandbox17-tested.json",
+          "sha256": "bb5cb4bd9b629c6b0c5e472ee60ded7fa2877f7a172557d6facc918817a63be9",
+          "source_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+          "producer_class": "local-host"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S53:05",
+      "state": "PASSED_PROSPECTIVE_OWNER_VALIDATION",
+      "bound": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/sandbox17-tested.json",
+          "sha256": "bb5cb4bd9b629c6b0c5e472ee60ded7fa2877f7a172557d6facc918817a63be9",
+          "source_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+          "producer_class": "local-host"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S53:06",
+      "state": "PASSED_PROSPECTIVE_OWNER_VALIDATION",
+      "bound": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/sandbox17-tested.json",
+          "sha256": "bb5cb4bd9b629c6b0c5e472ee60ded7fa2877f7a172557d6facc918817a63be9",
+          "source_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+          "producer_class": "local-host"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S53:07",
+      "state": "PASSED_PROSPECTIVE_OWNER_VALIDATION",
+      "bound": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/sandbox17-tested.json",
+          "sha256": "bb5cb4bd9b629c6b0c5e472ee60ded7fa2877f7a172557d6facc918817a63be9",
+          "source_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+          "producer_class": "local-host"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:machines:S53",
+      "state": "PASSED_PROSPECTIVE_OWNER_VALIDATION",
+      "bound": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/sandbox17-tested.json",
+          "sha256": "bb5cb4bd9b629c6b0c5e472ee60ded7fa2877f7a172557d6facc918817a63be9",
+          "source_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+          "producer_class": "local-host"
+        }
+      ]
+    }
+  ],
+  "source_blob_reads": 128,
+  "new_metadata_overlay_paths": [
+    "docs/state-contracts-major/execution/evidence/current-local-2df/observe-recovery.py",
+    "docs/state-contracts-major/execution/evidence/current-local-2df/observe-sandbox.py",
+    "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/recovery22-tested.json",
+    "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/sandbox17-tested.json",
+    "docs/state-contracts-major/execution/evidence/current-local-2df/recovery/original.stderr.log",
+    "docs/state-contracts-major/execution/evidence/current-local-2df/recovery/original.stdout.log",
+    "docs/state-contracts-major/execution/evidence/current-local-2df/recovery/result.json",
+    "docs/state-contracts-major/execution/evidence/current-local-2df/sandbox/node-version-after.json",
+    "docs/state-contracts-major/execution/evidence/current-local-2df/sandbox/original-vitest.json",
+    "docs/state-contracts-major/execution/evidence/current-local-2df/sandbox/original.stderr.log",
+    "docs/state-contracts-major/execution/evidence/current-local-2df/sandbox/original.stdout.log",
+    "docs/state-contracts-major/execution/evidence/current-local-2df/sandbox/result.json",
+    "docs/state-contracts-major/execution/evidence/current-local-2df/sandbox/runtime-members.json"
+  ],
+  "argv": [
+    "authenticate-proposal.py"
+  ],
+  "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-non-native-current-2df",
+  "limits": [
+    "Prospective new metadata overlay only; source and existing records are actual immutable Git blobs.",
+    "No missing-object fallback, reader weakening, API/artifact fetch, fakeCI or source mutation.",
+    "Root must retain files and bind their eventual actual metadata commit before recorded-history admission."
+  ]
+}

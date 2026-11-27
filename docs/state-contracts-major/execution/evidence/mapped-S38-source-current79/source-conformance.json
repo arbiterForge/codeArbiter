@@ -1,0 +1,57 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "31e200feffac4179cf6782b70a5c683a436b345d",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "/root/sandbox_qualification; acceptance-only current79 source inspection"
+  },
+  "inputs": {
+    "core/pysrc/_workgithub.py": "79a1ce36cc360eb1eb095b45ab08ecc50c50fe10670dc10e2d9c5cd21be8ca1f",
+    ".github/scripts/test_work_github.py": "9365e6ab869b9eb1131940da1851769f3cc4f804bb9b168512420b5d9add7752",
+    ".github/scripts/_contextverificationlib.py": "361b29a202f8ff3fe4f35c58a42d53cf77c4f8fe05985b1e91b721fc8f2a0707",
+    ".github/scripts/ci20_native_binding.py": "8a927974424c7c18d3e2e28db0173de07c65e2f1bb068e08dd11e14614284c3f",
+    ".github/scripts/test_artifact_authoring.py": "97c4b9b0dc903a187eb86cea3c5429b758073beb741299b50f618890e9c38555",
+    ".github/scripts/test_context_native.py": "8fa405405398bed4d39dd6b6a7f445b65c6e89b7c29c59aff9a6322fae64595b",
+    "core/pysrc/_activationlib.py": "60c6391b4d8b143c5e59cf2320291a2d31063e8fbebe0fcf337dd83e07f8fd97",
+    "core/pysrc/_artifactauthoritylib.py": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+    "core/pysrc/_artifactlib.py": "59dbf6c51cbbb824cf553aa38aeb9c543dcada14c6311e9393434d231babe03b",
+    "core/pysrc/_artifactmanifestlib.py": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054",
+    "core/pysrc/_artifactpromptlib.py": "03e0c4b32c806cc054ef34ae7ac58ed093cbe80521a8fea723b7ceb8ac72e1d9",
+    "core/pysrc/_contextreportlib.py": "76669de01a426b83a841d439d92f82532923303097fa051c4d08c1a1d0bfb538",
+    "core/pysrc/_contextselectlib.py": "0609783e758b6d654c05eeda8c40ccf355641eaf51fb0d9e9978ae5bf4304706",
+    "core/pysrc/_contextsnapshotlib.py": "bef9c37c09abc39e6113baa39f51f261103c760db66ec8e4cdc5818a075c1afe",
+    "core/pysrc/_gitexec.py": "a5935246028f506ef5ab13ba379b399cb7a754a077866fd39528545f30f4bef3",
+    "core/pysrc/_hooklib.py": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+    "core/pysrc/_intentlib.py": "9712bed86854f405475958d07727bf21f58a0faa1bfd03c19d9ada8972007319",
+    "core/pysrc/_pathnorm.py": "f6a99cddf6277641316f5e8f9d86fb97691e535ba569aa6cb51c9e4f3ed52906",
+    "core/pysrc/_protectedlib.py": "3156e9ad47cf577476dfcae27fde1d4ebfd71fe33b5e1976d351b8f833ea53d3",
+    "core/pysrc/_protectedstatelib.py": "9703e5e777ab286df820dd14da8c0118c24335d41007abfa6f536b5b0b3f14e0",
+    "core/pysrc/_provenancelib.py": "3cbd8d241ff6640e824ee2707ca1a3bd3202db83df371822201ceeabdd2657e4",
+    "core/pysrc/_replylib.py": "127d9bcfd842bcea941f2d61b86963cd3e50fcb34a603e8a834fe18d2cc9bf0d",
+    "core/pysrc/_scopelib.py": "03d1f066863d08c952ebda8d9b6f1515813f53a4fd3fc0af560a735f63954e0b",
+    "core/pysrc/_sensitivelib.py": "a3902997c16d367a3c7e6e7247a42ba35d962e2c885f9ed3e8e1ab0ce98ec506",
+    "core/pysrc/hostapi.py": "2aea81ad167a458c6053cb52880952521159a367eaa5baa7df6e2e35fea574e4",
+    "tools/build-artifacts.py": "1ba585a0ffe11c20262801b2e00f0cf93f9593c58e84da214b4f6cb1336c00be",
+    "tools/go_test_parallel.py": "7ed1fb5eaa71a0b74b4139d330a75bed1ac8656029d64b58678ce9cc3a575a40"
+  },
+  "disposition_ids": [
+    "disposition:transitions:S38:01",
+    "disposition:transitions:S38:02",
+    "disposition:transitions:S38:03",
+    "disposition:transitions:S38:05",
+    "disposition:transitions:S38:06"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/mapped-S38-source-current79/source-inspection.json",
+      "sha256": "fc809046b8f40d992989ad591512f2f0b15ca216d57a0e93a144a08b93f68574"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/mapped-S38-source-current79/input-join.json",
+      "sha256": "8c3cbc51aff4908f3e42dadf82964c7eae2b31147c5e77a2ef4a907cdfb1589d"
+    }
+  ],
+  "scope": "Exactly five unchanged S38 source clauses renewed at current79 bytes. Retained13controlled test outcomes are source-bound but do not turn all API/native/identity variants or whole machine into executed/installed proof."
+}

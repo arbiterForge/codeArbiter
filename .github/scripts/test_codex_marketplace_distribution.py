@@ -883,7 +883,8 @@ class CodexMarketplaceDistributionTests(unittest.TestCase):
         codex = release.split("  release-codex:", 1)[1].split("\n  release-pi:", 1)[0]
         self.assertNotIn("NPMJS_TOKEN", codex)
         self.assertNotIn("id-token: write", codex)
-        security = (REPO / ".codearbiter/security-controls.md").read_text()
+        from project_knowledge import context_text
+        security = context_text("security-controls")
         self.assertIn("first `@arbiterforge/ca-codex` publication", security)
         self.assertIn("available to all organization repositories", security)
         self.assertIn("npm privilege scope", security)

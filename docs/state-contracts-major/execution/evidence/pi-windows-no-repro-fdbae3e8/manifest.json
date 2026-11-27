@@ -1,0 +1,104 @@
+{
+  "schema": "pi-windows-shutdown-no-reproduction/1",
+  "result": "NO_REPRODUCTION",
+  "actual_execution_head": "fdbae3e8d0b296f402bd918596188fb748ccab7b",
+  "bound_source_epoch": "eaf108d0bbd3296631c029c89f6cb9321f8d5713",
+  "case": "test_pi_package.PiPackageTests.test_real_rpc_shutdown_probe_uses_the_same_discovery_and_doctor_fixture",
+  "seconds": 17.97951630000898,
+  "supervisor_seconds": 18.60305460001109,
+  "retained_original_results": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pi-windows-no-repro-fdbae3e8/case-result.json",
+      "sha256": "268f04122d28f6920724153da4395fa241d3acf340d07e2dee021c07b45121d4",
+      "bytes": 964
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pi-windows-no-repro-fdbae3e8/supervisor.json",
+      "sha256": "843054635e343f0917fe2094dc6daea8f4f2a43d6896df8079388a81403d4bfe",
+      "bytes": 858
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pi-windows-no-repro-fdbae3e8/before.json",
+      "sha256": "b5b0dff24af92426bc8a108be7fdbacb815312fb45172c278297fc5a9b77cb5e",
+      "bytes": 325
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pi-windows-no-repro-fdbae3e8/after.json",
+      "sha256": "b5b0dff24af92426bc8a108be7fdbacb815312fb45172c278297fc5a9b77cb5e",
+      "bytes": 325
+    }
+  ],
+  "reviewed_plan": {
+    "sha256": "c74cf1b9b0f192be3b86a0a81c797ab20077c84cd352ddb1fdb8093de47b7746",
+    "script_sha256": "13f77e6f85625bac573649c7c7b0af7b2c3ea0416f42301e6741ddd12a5fdee4",
+    "source_manifest_sha256": "d15f2c5574f036549355777805e8ccd2e95ddc1ae349bad308458f07761fca4e",
+    "private_original_directory": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-EOF-install-plan-xj8i5ep_"
+  },
+  "source_owners": [
+    {
+      "path": ".github/scripts/test_pi_package.py",
+      "sha256": "6fd1035b6057132905471a79854bf628b0ba53d477702217c53b78f86009378c"
+    },
+    {
+      "path": ".github/scripts/_windows_rpc_timeout.py",
+      "sha256": "286b952a5691b371cd94677c2601a40af051c3a6d826303dd5616957da6fad1a"
+    },
+    {
+      "path": ".github/scripts/_windows_dbgeng.py",
+      "sha256": "e018036ee5a200fccb406f4cc2955f7140d5035fdd9f34153fab09e7f08d1424"
+    },
+    {
+      "path": ".github/scripts/coordinate_pi_host.py",
+      "sha256": "ccefae31968346bbbd2ce9341c162ccdb9905abc8f93b1a43d93bf6e6754eac6"
+    },
+    {
+      "path": ".github/scripts/observe_pi_installed_rpc.py",
+      "sha256": "b6cd96c57da7aaa8afa0409b48755b87bf9fa34e66f2921b4521bc9ae9d3d7c8"
+    },
+    {
+      "path": "plugins/ca-pi/tools/src/extension.ts",
+      "sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532"
+    },
+    {
+      "path": "plugins/ca-pi/tools/src/native-background.ts",
+      "sha256": "7108750536f09a7924950ba934c2c88deb239b52e18216e8967cc8f1398d3bad"
+    },
+    {
+      "path": "plugins/ca-pi/tools/src/background-jobs.ts",
+      "sha256": "12d9b9d5e4dd2c71d5f5c9fe2a2009da49fc275fb8df3d4020b854493636ebb9"
+    },
+    {
+      "path": ".github/scripts/pi_cli_resolver.py",
+      "sha256": "9161c4ee81f0d2f9ea566b682c72785f861a1c7c51331070d8068c94f1bf31e1"
+    },
+    {
+      "path": ".github/scripts/_boundedproc.py",
+      "sha256": "671458a00f178ac690e4d1f4e0458da7b3833353384f9cb7546be711bab15f51"
+    },
+    {
+      "path": "plugins/ca-pi/extensions/codearbiter.js",
+      "sha256": "5556db3ee3e757563a74d822dac573835a9edc3afe0120a13386acc7a23fef28"
+    },
+    {
+      "path": "plugins/ca-pi/generated/command-catalog.json",
+      "sha256": "4fc24af4e491ea49ca0442f407efa84361a2c7bad93d89efaeb4ddd34febf944"
+    },
+    {
+      "path": "package.json",
+      "sha256": "b43ba5459d1445cfc98e918288c450894a024377b7924b7243d9b252a8ba8143"
+    },
+    {
+      "path": "plugins/ca-pi/package.json",
+      "sha256": "a6eaec07ab5b2f32ff61fcdae2adc8fc7914c5c7689ea97c2092493e15c0e657"
+    }
+  ],
+  "historic_failure_source": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+  "historic_failure_receipts": "docs/state-contracts-major/execution/evidence/pi-2df-unresolved-shutdown/",
+  "limits": [
+    "One observed existing unittest internally runs discovery, enabled alias and doctor with private first-party registrations and in-memory test responses. No remote model service was configured.",
+    "The original deadlines, assertions and cleanup remained intact. Source367+14, cached runtime11, approved SDK4, HEAD and index readbacks match before/after.",
+    "No natural-exit failure occurred, so no debugger attachment/native capture was triggered. No historical cause or repair is established.",
+    "Diagnostic only: no installed13, host, task, machine or ledger qualification. Original failed receipts remain unchanged.",
+    "Unexpected process output was hashed; no raw failure or debugger text is retained."
+  ]
+}

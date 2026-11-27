@@ -118,7 +118,7 @@ def collect(repository: str, run_id: int, checkout: Path) -> dict:
     if not re.fullmatch(r"[a-f0-9]{40}", head):
         raise ValueError("Invalid checkout SHA")
     workflow_path = checkout / ".github/workflows/ci.yml"
-    raw = workflow_path.read_bytes()
+    raw = bound_workflow_bytes(checkout, '.github/workflows/ci.yml', head)
     workflow = yaml.safe_load(raw)
     if not isinstance(workflow, dict) or not isinstance(workflow.get("jobs"), dict):
         raise ValueError("Invalid workflow")
@@ -186,6 +186,18 @@ def collect(repository: str, run_id: int, checkout: Path) -> dict:
             "Job-ready delay includes scheduling/provisioning and cannot alone prove account quota.",
         ],
     }
+
+
+def bound_workflow_bytes(checkout: Path, relative: str, commit: str) -> bytes:
+    """Observed workflow bytes must equal the immutable source being described."""
+    actual = (checkout / relative).read_bytes()
+    try:
+        committed = subprocess.check_output(['git', 'show', f'{commit}:{relative}'], cwd=checkout, stderr=subprocess.PIPE)
+    except (OSError, subprocess.CalledProcessError) as error:
+        raise ValueError(f'workflow {relative} cannot be bound to its source commit') from error
+    if actual != committed:
+        raise ValueError(f'workflow {relative} differs from its bound commit')
+    return committed
 
 
 def main() -> None:

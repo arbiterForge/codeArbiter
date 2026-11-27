@@ -1,4 +1,5 @@
 import { defineConfig } from "vitest/config";
+import { primaryNamedResults } from "./scripts/docs-vitest-results";
 
 /**
  * Docs-site test harness.
@@ -26,6 +27,7 @@ import { defineConfig } from "vitest/config";
  */
 export default defineConfig({
   test: {
+    ...primaryNamedResults(),
     include: ["test/**/*.test.ts", "scripts/**/*.test.ts"],
     environment: "node",
     coverage: {

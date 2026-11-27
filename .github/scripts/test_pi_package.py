@@ -32,6 +32,7 @@ from pi_cli_resolver import resolve_pi_cli_path as _resolve_pi_cli_path
 REPO = Path(__file__).resolve().parents[2]
 PLUGIN = REPO / "plugins" / "ca-pi"
 TOOLS = PLUGIN / "tools"
+PLATFORM_PACKAGE_PARTITION = None
 
 
 def read_json(path: Path) -> dict:
@@ -105,16 +106,14 @@ def terminate_process_tree(process: subprocess.Popen[str]) -> None:
     process.wait(timeout=5)
 
 
-def write_rpc_shutdown_observer(home: Path) -> tuple[Path, Path, Path]:
-    """Observe EOF, a shutdown hook, and exit without driving them."""
-    preload = home / "ca-rpc-shutdown-observer.cjs"
-    extension = home / "ca-rpc-shutdown-observer.ts"
-    trace = home / "ca-rpc-shutdown-trace.json"
-    preload.write_text(
-        "const { writeFileSync } = require('node:fs');\n"
-        f"const tracePath = {json.dumps(str(trace))};\n"
+def rpc_shutdown_observer_source(trace: Path, *, module: bool = False) -> str:
+    """Bounded passive observer, also embeddable in the existing provider."""
+    return (
+        ("import { writeFileSync } from 'node:fs';\n" if module else
+         "const { writeFileSync } = require('node:fs');\n")
+        + f"const tracePath = {json.dumps(str(trace))};\n"
         "const started = performance.now();\n"
-        "const report = {schemaVersion: 1, pid: process.pid, node: process.version, platform: process.platform, phases: []};\n"
+        "const report = {schemaVersion: 1, pid: process.pid, node: process.version, platform: process.platform, phases: [], reallyExitCallEntered: false};\n"
         "function observe(phase, exitCode) {\n"
         "  if (report.phases.length >= 8) return;\n"
         "  report.phases.push({phase, elapsedMs: Math.round(performance.now() - started),\n"
@@ -124,12 +123,31 @@ def write_rpc_shutdown_observer(home: Path) -> tuple[Path, Path, Path]:
         "  try { writeFileSync(tracePath, JSON.stringify(report), {encoding: 'utf8', mode: 0o600}); }\n"
         "  catch { /* Diagnostics must not change the host's shutdown outcome. */ }\n"
         "}\n"
+        "// Entry into this wrapper is not proof of native shutdown or OS exit.\n"
+        "try {\n"
+        "  const originalReallyExit = process.reallyExit;\n"
+        "  if (typeof originalReallyExit === 'function') {\n"
+        "    process.reallyExit = function(...args) {\n"
+        "      report.reallyExitCallEntered = true;\n"
+        "      try { writeFileSync(tracePath, JSON.stringify(report), {encoding: 'utf8', mode: 0o600}); }\n"
+        "      catch { /* This diagnostic write may itself be the last observed cut. */ }\n"
+        "      return Reflect.apply(originalReallyExit, this, args);\n"
+        "    };\n"
+        "  }\n"
+        "} catch { /* Optional observation must not change process behavior. */ }\n"
         "globalThis.__caPiRpcShutdownObserve = observe;\n"
         "process.stdin.prependOnceListener('end', () => observe('stdin_end'));\n"
         "process.once('exit', code => observe('process_exit', code));\n"
-        "observe('started');\n",
-        encoding="utf-8", newline="\n",
+        "observe('started');\n"
     )
+
+
+def write_rpc_shutdown_observer(home: Path) -> tuple[Path, Path, Path]:
+    """Observe EOF, a shutdown hook, and exit without driving them."""
+    preload = home / "ca-rpc-shutdown-observer.cjs"
+    extension = home / "ca-rpc-shutdown-observer.ts"
+    trace = home / "ca-rpc-shutdown-trace.json"
+    preload.write_text(rpc_shutdown_observer_source(trace), encoding="utf-8", newline="\n")
     extension.write_text(
         "export default function observeShutdown(pi: any) {\n"
         "  pi.on('session_shutdown', () => {\n"
@@ -226,20 +244,267 @@ def wait_for_rpc_shutdown(
 
 
 def rpc_shutdown_diagnostics(trace: Path) -> str:
+    report = safe_rpc_shutdown_report(trace)
+    return json.dumps(report, separators=(",", ":"))[:2000] if report is not None else "unavailable or invalid trace"
+
+
+def safe_rpc_shutdown_report(trace: Path) -> dict | None:
+    """Project only fixed diagnostic fields; never echo arbitrary file content."""
     try:
         with trace.open("rb") as stream:
             data = stream.read(8193)
-    except OSError:
-        return "unavailable"
-    try:
         if len(data) > 8192:
             raise ValueError("oversized trace")
         report = json.loads(data.decode("utf-8", "strict"))
-        if not isinstance(report, dict):
-            raise ValueError("non-object trace")
-    except (ValueError, UnicodeError, RecursionError):
-        return "invalid or oversized trace"
-    return json.dumps(report, separators=(",", ":"))[:2000]
+        if not isinstance(report, dict) or type(report.get("schemaVersion")) is not int or report["schemaVersion"] != 1:
+            return None
+        if type(report.get("pid")) is not int or not 0 < report["pid"] <= 2**32:
+            return None
+        if not isinstance(report.get("node"), str) or re.fullmatch(r"v[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}", report["node"]) is None:
+            return None
+        if report.get("platform") not in ("win32", "linux", "darwin"):
+            return None
+        phases = report.get("phases")
+        if not isinstance(phases, list) or not 1 <= len(phases) <= 8:
+            return None
+        rows = []
+        for row in phases:
+            if not isinstance(row, dict) or row.get("phase") not in ("started", "stdin_end", "session_shutdown_observer", "process_exit"):
+                return None
+            if type(row.get("elapsedMs")) is not int or not 0 <= row["elapsedMs"] <= 86_400_000 or type(row.get("stdinEnded")) is not bool:
+                return None
+            resources = row.get("resources")
+            if not isinstance(resources, list) or len(resources) > 16 or any(not isinstance(x, str) or len(x) > 24 for x in resources):
+                return None
+            known_resources = {"PipeWrap", "TTYWrap", "TCPWrap", "UDPWrap", "ProcessWrap", "FSReqCallback", "FSReqPromise", "CloseReq", "Timeout", "Immediate", "FileHandle", "Worker", "MessagePort", "TCPSocketWrap", "TCPServerWrap", "SignalWrap", "ConnectWrap", "WriteWrap", "ShutdownWrap"}
+            item = {key: row[key] for key in ("phase", "elapsedMs", "stdinEnded")}
+            item["resources"] = [value if value in known_resources else "Other" for value in resources]
+            if "exitCode" in row:
+                if type(row["exitCode"]) is not int or not -(2**31) <= row["exitCode"] < 2**32:
+                    return None
+                item["exitCode"] = row["exitCode"]
+            rows.append(item)
+        projected = {"schemaVersion": 1, "pid": report["pid"], "node": report["node"], "platform": report["platform"], "phases": rows}
+        if "reallyExitCallEntered" in report:
+            if type(report["reallyExitCallEntered"]) is not bool:
+                return None
+            projected["reallyExitCallEntered"] = report["reallyExitCallEntered"]
+        return projected
+    except (OSError, ValueError, UnicodeError, RecursionError):
+        return None
+
+
+RPC_PROTOCOL_PHASES = (
+    "spawned", "send_commands", "send_state", "send_invoke", "send_capture",
+    "receive_commands", "receive_state", "receive_capture", "agent_settled",
+    "collection_complete", "collection_deadline", "stdout_eof", "stdin_closed",
+    "process_exited", "shutdown_timeout", "error",
+)
+_NO_RPC_PROTOCOL = object()
+
+
+def safe_rpc_protocol_report(value: object) -> dict | None:
+    """Closed parent observations, never protocol payloads or inferred completion."""
+    try:
+        keys = {"schemaVersion", "events", "recordCount", "recordCountSaturated",
+                "commandsSeen", "stateSeen", "agentSettledSeen", "captureSeen",
+                "collection", "eofClosed", "processExited", "exitCode"}
+        if type(value) is not dict or any(type(key) is not str for key in value) or set(value) != keys:
+            return None
+        if type(value["schemaVersion"]) is not int or value["schemaVersion"] != 1:
+            return None
+        if type(value["recordCount"]) is not int or not 0 <= value["recordCount"] <= 1_000_000:
+            return None
+        flags = ("recordCountSaturated", "commandsSeen", "stateSeen", "agentSettledSeen", "captureSeen", "eofClosed")
+        if any(type(value[key]) is not bool for key in flags):
+            return None
+        if value["recordCountSaturated"] and value["recordCount"] != 1_000_000:
+            return None
+        if type(value["collection"]) is not str or value["collection"] not in ("not-started", "complete", "deadline", "stdout-eof", "error"):
+            return None
+        if value["processExited"] is not None and type(value["processExited"]) is not bool:
+            return None
+        code = value["exitCode"]
+        if value["processExited"] is True:
+            if type(code) is not int or not -(2**31) <= code < 2**32:
+                return None
+        elif code is not None:
+            return None
+        events = value["events"]
+        if type(events) is not list or not 1 <= len(events) <= 16:
+            return None
+        phases, elapsed = [], []
+        for row in events:
+            if type(row) is not dict or any(type(key) is not str for key in row) or set(row) != {"phase", "elapsedMs"}:
+                return None
+            if type(row["phase"]) is not str or row["phase"] not in RPC_PROTOCOL_PHASES or row["phase"] in phases:
+                return None
+            if type(row["elapsedMs"]) is not int or not 0 <= row["elapsedMs"] <= 86_400_000:
+                return None
+            phases.append(row["phase"]); elapsed.append(row["elapsedMs"])
+        if phases[0] != "spawned" or elapsed != sorted(elapsed):
+            return None
+        for key, phase in (("commandsSeen", "receive_commands"), ("stateSeen", "receive_state"),
+                           ("agentSettledSeen", "agent_settled"), ("captureSeen", "receive_capture"),
+                           ("eofClosed", "stdin_closed")):
+            if value[key] != (phase in phases):
+                return None
+        if (value["processExited"] is True) != ("process_exited" in phases):
+            return None
+        terminal = {"complete": "collection_complete", "deadline": "collection_deadline", "stdout-eof": "stdout_eof", "error": "error"}
+        if value["collection"] in terminal and terminal[value["collection"]] not in phases:
+            return None
+        return json.loads(json.dumps(value))
+    except Exception:
+        return None
+
+
+class RpcProtocolDiagnostic:
+    """Best-effort fixed-symbol bookkeeping; never owns the RPC verdict."""
+    def __init__(self):
+        self.started = time.monotonic()
+        self.value = {"schemaVersion": 1, "events": [], "recordCount": 0,
+                      "recordCountSaturated": False, "commandsSeen": False, "stateSeen": False,
+                      "agentSettledSeen": False, "captureSeen": False, "collection": "not-started",
+                      "eofClosed": False, "processExited": None, "exitCode": None}
+        self.mark("spawned")
+
+    def mark(self, phase):
+        try:
+            events = self.value["events"]
+            if phase in RPC_PROTOCOL_PHASES and len(events) < 16 and not any(row["phase"] == phase for row in events):
+                events.append({"phase": phase, "elapsedMs": round((time.monotonic() - self.started) * 1000)})
+        except Exception:
+            pass
+
+    def observe_record(self, record):
+        try:
+            count = self.value["recordCount"]
+            self.value["recordCount"] = min(count + 1, 1_000_000)
+            self.value["recordCountSaturated"] |= count == 1_000_000
+            for key, identifier in (("commandsSeen", "commands"), ("stateSeen", "state"), ("captureSeen", "capture")):
+                if record.get("id") == identifier:
+                    self.value[key] = True
+                    self.mark("receive_" + identifier)
+            if record.get("type") == "agent_settled":
+                self.value["agentSettledSeen"] = True
+                self.mark("agent_settled")
+        except Exception:
+            pass
+
+    def collected(self, outcome):
+        self.value["collection"] = outcome
+        self.mark({"complete": "collection_complete", "deadline": "collection_deadline", "stdout-eof": "stdout_eof", "error": "error"}[outcome])
+
+    def closed_stdin(self):
+        self.value["eofClosed"] = True
+        self.mark("stdin_closed")
+
+    def failed(self):
+        if self.value["collection"] == "not-started":
+            self.value["collection"] = "error"
+        self.mark("error")
+
+    def exited(self, code):
+        if type(code) is int:
+            self.value["processExited"], self.value["exitCode"] = True, code
+            self.mark("process_exited")
+        elif code is None:
+            self.value["processExited"] = False
+
+    def snapshot(self):
+        return safe_rpc_protocol_report(self.value)
+
+
+def rpc_protocol_observe(diagnostic, operation, *args):
+    """An optional diagnostic failure cannot become the test's failure."""
+    try:
+        return getattr(diagnostic, operation)(*args)
+    except Exception:
+        return None
+
+
+def retain_rpc_shutdown_failure(trace: Path, *, protocol: object = _NO_RPC_PROTOCOL) -> str | None:
+    """Failure-only, exclusive CI artifact; never participates in the verdict."""
+    selected = os.environ.get("CA_PI_RPC_DIAGNOSTICS_DIR")
+    if not selected:
+        return None
+    try:
+        report = {"schemaVersion": 1, "outcome": "failure", "trace": safe_rpc_shutdown_report(trace)}
+        if protocol is not _NO_RPC_PROTOCOL:
+            report.update(schemaVersion=2, protocol=safe_rpc_protocol_report(protocol))
+        encoded = json.dumps(report, separators=(",", ":")) + "\n"
+        if len(encoded.encode("utf-8")) > 8192:
+            return None
+        destination = Path(selected)
+        destination.mkdir(parents=True, exist_ok=True)
+        if destination.is_symlink() or not destination.is_dir():
+            return None
+        with tempfile.NamedTemporaryFile(mode="w", encoding="utf-8", prefix="rpc-shutdown-", suffix=".json", dir=destination, delete=False) as stream:
+            stream.write(encoded)
+            return Path(stream.name).name
+    except (OSError, ValueError):
+        return None
+
+
+def rpc_diagnostic_runtime_identity(node: str, cli: Path) -> dict | None:
+    """Hash the admitted executable and direct RPC entries, without logging paths."""
+    try:
+        entry = cli.parent / "cli-runtime.js"
+        with entry.open("rb") as stream:
+            source = stream.read(16_385)
+        if len(source) > 16_384:
+            return None
+        imported = re.search(
+            rb'import\{configureHttpDispatcher,main\}from"(\./chunks/[A-Za-z0-9_-]+\.js)"',
+            source,
+        )
+        if imported is None:
+            return None
+        runtime = cli.parent / imported[1].decode("ascii")
+        paths = {"nodeSha256": Path(node), "cliSha256": cli,
+                 "entrySha256": entry, "rpcModuleSha256": runtime}
+        identities = {}
+        for name, path in paths.items():
+            digest = hashlib.sha256()
+            size = 0
+            with path.open("rb") as stream:
+                while block := stream.read(65_536):
+                    size += len(block)
+                    if size > 128 << 20:
+                        return None
+                    digest.update(block)
+            identities[name] = digest.hexdigest()
+        return identities
+    except (OSError, ValueError, UnicodeError):
+        return None
+
+
+def retain_rpc_observed_raw_diagnostics(trace: Path, identity: dict | None, *, succeeded: bool) -> str | None:
+    """Separate observed-route receipt; never changes the raw compatibility verdict."""
+    selected = os.environ.get("CA_PI_RPC_DIAGNOSTICS_DIR")
+    if not selected:
+        return None
+    fields = {"nodeSha256", "cliSha256", "entrySha256", "rpcModuleSha256"}
+    if not isinstance(identity, dict) or set(identity) != fields or any(
+        not isinstance(value, str) or re.fullmatch(r"[0-9a-f]{64}", value) is None
+        for value in identity.values()
+    ):
+        identity = None
+    try:
+        destination = Path(selected)
+        destination.mkdir(parents=True, exist_ok=True)
+        if destination.is_symlink() or not destination.is_dir():
+            return None
+        with tempfile.NamedTemporaryFile(mode="w", encoding="utf-8", prefix="rpc-shutdown-observed-", suffix=".json", dir=destination, delete=False) as stream:
+            json.dump({"schemaVersion": 1, "route": "passive-observed-raw-companion",
+                       "outcome": "observed-pass" if succeeded is True else "observed-failure",
+                       "runtimeIdentity": identity, "trace": safe_rpc_shutdown_report(trace)},
+                      stream, separators=(",", ":"))
+            stream.write("\n")
+            return Path(stream.name).name
+    except (OSError, ValueError):
+        return None
 
 
 def run_rpc_commands(
@@ -273,6 +538,9 @@ def run_rpc_commands(
         "PI_CODING_AGENT_DIR": str(agent_dir),
         "PI_OFFLINE": "1",
         "PI_TELEMETRY": "0",
+        # Installed-package proof owns a complete inventory. The real Python
+        # bridge must not add untracked bytecode to those original bytes.
+        "PYTHONDONTWRITEBYTECODE": "1",
         "TEMP": str(temp_dir),
         "TMP": str(temp_dir),
         "USERPROFILE": str(home),
@@ -322,6 +590,7 @@ def run_rpc_commands(
         _after_install()
 
     provider = home / "ca-task3-capture-provider.ts"
+    shutdown_trace = home / "ca-rpc-shutdown-trace.json"
     if invoke_enforcement_fault:
         if mutation_path is None or fault_marker_path is None:
             raise AssertionError("enforcement fault fixture requires mutation and consumed-fault paths")
@@ -431,8 +700,21 @@ export default function registerFaultProvider(pi: any) {
     elif invoke_read_context:
         if governed_read_path is None or ungoverned_read_path is None:
             raise AssertionError("read-context fixture requires governed and ungoverned paths")
+        # Keep raw argv and the natural-exit verdict. The explicit companion
+        # already has its own preload and must not install a second observer.
+        observer_source = ""
+        shutdown_handler = ""
+        if not _observe_shutdown:
+            observer_source = rpc_shutdown_observer_source(shutdown_trace, module=True)
+            shutdown_handler = (
+                "  try {\n"
+                "    pi.on('session_shutdown', () => {\n"
+                "      (globalThis as any).__caPiRpcShutdownObserve?.('session_shutdown_observer');\n"
+                "    });\n"
+                "  } catch { /* Optional diagnostics must not change provider behavior. */ }\n"
+            )
         provider.write_text(
-            """import { createAssistantMessageEventStream } from '@earendil-works/pi-ai';
+            observer_source + """import { createAssistantMessageEventStream } from '@earendil-works/pi-ai';
 
 const governedPath = __CA_PI_GOVERNED_PATH__;
 const ungovernedPath = __CA_PI_UNGOVERNED_PATH__;
@@ -534,8 +816,9 @@ export default function registerReadContextProvider(pi: any) {
       return stream;
     },
   });
-}
+__CA_PI_RPC_SHUTDOWN_HANDLER__}
 """
+            .replace("__CA_PI_RPC_SHUTDOWN_HANDLER__", shutdown_handler)
             .replace("__CA_PI_GOVERNED_PATH__", json.dumps(str(governed_read_path.resolve())))
             .replace("__CA_PI_UNGOVERNED_PATH__", json.dumps(str(ungoverned_read_path.resolve()))),
             encoding="utf-8",
@@ -606,7 +889,18 @@ export default function registerCaptureProvider(pi: any) {
             newline="\n",
         )
 
-    shutdown_trace = home / "ca-rpc-shutdown-trace.json"
+    if (invoke_alias or invoke_doctor) and not _observe_shutdown:
+        # Embed observation into the already-selected local provider. Raw Node
+        # argv and the natural-exit verdict remain unchanged; this captures the
+        # previously missing phase when that original compatibility case fails.
+        source = provider.read_text(encoding="utf-8")
+        source = source.replace(
+            "export default function registerCaptureProvider(pi: any) {",
+            "export default function registerCaptureProvider(pi: any) {\n"
+            "  pi.on('session_shutdown', () => { (globalThis as any).__caPiRpcShutdownObserve?.('session_shutdown_observer'); });",
+            1,
+        )
+        provider.write_text(rpc_shutdown_observer_source(shutdown_trace, module=True) + source, encoding="utf-8", newline="\n")
     command = [
         node,
         str(cli),
@@ -649,6 +943,26 @@ export default function registerCaptureProvider(pi: any) {
         )
     if _rpc_command is not None:
         command = _rpc_command
+    provider_warmup = None
+    diagnostic_dir = os.environ.get("CA_PI_RPC_DIAGNOSTICS_DIR")
+    if _observe_shutdown or (os.name == "nt" and diagnostic_dir):
+        try:
+            from _windows_rpc_timeout import preflight_provider
+            provider_warmup = preflight_provider(home)
+        except Exception:
+            pass  # unavailable warm reads do not replace the RPC case
+        if provider_warmup is not None and provider_warmup.get("containment") == "unconfirmed":
+            try:
+                from _windows_rpc_timeout import retain_preflight
+                if diagnostic_dir:
+                    retain_preflight(provider_warmup, None, Path(diagnostic_dir))
+            except Exception:
+                pass
+            raise AssertionError("Pi provider hash helper containment unconfirmed; RPC target not spawned")
+    if _observe_shutdown or (os.name == "nt" and PLATFORM_PACKAGE_PARTITION == "rpc"):
+        # Keep optional cache writes out of the aggregate Windows RPC timing.
+        # Standalone discovery, installed qualification and package install use defaults.
+        environment["NODE_DISABLE_COMPILE_CACHE"] = "1"
     process = subprocess.Popen(
         command,
         cwd=cwd,
@@ -663,16 +977,28 @@ export default function registerCaptureProvider(pi: any) {
         start_new_session=os.name != "nt",
         creationflags=(subprocess.CREATE_NEW_PROCESS_GROUP if os.name == "nt" else 0),
     )
+    if provider_warmup is not None and diagnostic_dir:
+        try:
+            from _windows_rpc_timeout import retain_preflight
+            retain_preflight(provider_warmup, process.pid, Path(diagnostic_dir))
+        except Exception:
+            pass
     reader: threading.Thread | None = None
     stderr_reader: threading.Thread | None = None
     # Stderr is diagnostic only: drain raw bytes so malformed UTF-8 cannot stop
     # the reader and let a full pipe stall the child. Protocol stdout stays strict.
     stderr_bytes = b""
     stderr_error: Exception | None = None
+    protocol = None
+    shutdown_waiting = False
 
     def stderr_tail() -> str:
         return stderr_bytes.decode("utf-8", errors="replace")[-2000:]
     try:
+        try:
+            protocol = RpcProtocolDiagnostic()
+        except Exception:
+            pass
         if process.stdin is None or process.stdout is None or process.stderr is None:
             raise AssertionError("Pi RPC did not expose standard streams")
 
@@ -707,6 +1033,7 @@ export default function registerCaptureProvider(pi: any) {
             assert process.stdin is not None
             process.stdin.write(json.dumps(record, separators=(",", ":")) + "\n")
             process.stdin.flush()
+            rpc_protocol_observe(protocol, "mark", "send_" + record["id"])
 
         def decode(line: str) -> dict:
             try:
@@ -745,11 +1072,14 @@ export default function registerCaptureProvider(pi: any) {
             try:
                 line = output.get(timeout=max(0.01, deadline - time.monotonic()))
             except Empty:
+                rpc_protocol_observe(protocol, "collected", "deadline")
                 break
             if line is None:
+                rpc_protocol_observe(protocol, "collected", "stdout-eof")
                 break
             value = decode(line)
             records.append(value)
+            rpc_protocol_observe(protocol, "observe_record", value)
             if (invoke_alias or invoke_doctor or invoke_read_context) and value.get("type") == "agent_settled" and not capture_sent:
                 send({"id": "capture", "type": "get_last_assistant_text"})
                 capture_sent = True
@@ -764,12 +1094,20 @@ export default function registerCaptureProvider(pi: any) {
                 or not (invoke_alias or invoke_doctor or invoke_enforcement_fault or invoke_read_context)
                 or capture_done
             ):
+                rpc_protocol_observe(protocol, "collected", "complete")
                 break
+        else:
+            rpc_protocol_observe(protocol, "collected", "deadline")
 
         process.stdin.close()
+        rpc_protocol_observe(protocol, "closed_stdin")
         try:
+            shutdown_waiting = True
             returncode = wait_for_rpc_shutdown(process, shutdown_trace, observed=_observe_shutdown)
+            shutdown_waiting = False
+            rpc_protocol_observe(protocol, "exited", returncode)
         except subprocess.TimeoutExpired as error:
+            rpc_protocol_observe(protocol, "mark", "shutdown_timeout")
             raise AssertionError(
                 f"Pi RPC did not exit within 30 seconds of stdin EOF; received {len(records)} records; "
                 f"stderr tail={stderr_tail()!r}; "
@@ -787,7 +1125,9 @@ export default function registerCaptureProvider(pi: any) {
             except Empty:
                 break
             if line is not None:
-                records.append(decode(line))
+                value = decode(line)
+                records.append(value)
+                rpc_protocol_observe(protocol, "observe_record", value)
         if returncode != 0:
             raise AssertionError(f"Pi RPC exited {returncode}: {stderr_tail()}")
         if not any(record.get("id") == "commands" for record in records):
@@ -799,6 +1139,31 @@ export default function registerCaptureProvider(pi: any) {
         if invoke_enforcement_fault and not any(record.get("type") == "agent_settled" for record in records):
             raise AssertionError(f"Pi RPC did not settle the fault-injection turn: {records!r}; stderr={stderr_tail()}")
         return records
+    except Exception as error:
+        rpc_protocol_observe(protocol, "failed")
+        try:
+            rpc_protocol_observe(protocol, "exited", process.poll())
+        except Exception:
+            pass
+        try:
+            retained = retain_rpc_shutdown_failure(
+                shutdown_trace, protocol=rpc_protocol_observe(protocol, "snapshot"),
+            )
+        except Exception:
+            retained = None
+        if retained is not None:
+            error.add_note(f"Pi RPC failure diagnostic artifact: {retained}")
+            if shutdown_waiting:
+                # Original failure and phase receipt exist before optional OS observation.
+                # No later observation may substitute for this failed wait.
+                try:
+                    from _windows_rpc_timeout import retain_failure
+                    native = retain_failure(process, Path(node), Path(os.environ["CA_PI_RPC_DIAGNOSTICS_DIR"]))
+                    if native is not None:
+                        error.add_note(f"Pi RPC native timeout diagnostic artifact: {native}")
+                except Exception:
+                    pass
+        raise
     finally:
         cleanup_errors: list[str] = []
         if process.stdin is not None and not process.stdin.closed:
@@ -1159,6 +1524,835 @@ def pi_ci_contract_violations(ci: str) -> list[str]:
 
 
 class PiPackageTests(unittest.TestCase):
+    def test_real_sdk_footer_owner_disposal_restores_native_without_clobbering_replacement(self):
+        """Real supported SDK owner/render component; no CLI, agent or model turn."""
+        import stat
+        node, cli = live_pi_cli()
+        cli = cli.resolve(strict=True)
+
+        def manifest_at(directory, name, version=None):
+            manifest = directory / "package.json"
+            info = manifest.lstat()
+            self.assertTrue(stat.S_ISREG(info.st_mode) and not manifest.is_symlink())
+            self.assertLessEqual(info.st_size, 64 * 1024)
+            value = read_json(manifest)
+            self.assertEqual(value.get("name"), name)
+            if version is not None:
+                self.assertEqual(value.get("version"), version)
+            return value
+
+        roots = []
+        for directory in list(cli.parents)[:4]:
+            manifest = directory / "package.json"
+            if manifest.is_file() and read_json(manifest).get("name") == "@earendil-works/pi-coding-agent":
+                roots.append(directory)
+        self.assertEqual(len(roots), 1, "one installed supported SDK adjacent to the admitted launcher required")
+        sdk = roots[0]
+        manifest_at(sdk, "@earendil-works/pi-coding-agent", "1.5.0")
+        node_modules = sdk.parent.parent
+        self.assertEqual(node_modules.name, "node_modules")
+        prefix = node_modules.parent
+        reviewed = REPO / ".github/fixtures/pi-hosts/1.5.0"
+        self.assertEqual((prefix / "package-lock.json").read_bytes(), (reviewed / "package-lock.json").read_bytes())
+
+        def dependency(name, version):
+            candidates = [sdk / "node_modules" / name, node_modules / name]
+            matches = [p.resolve(strict=True) for p in candidates if (p / "package.json").is_file()]
+            self.assertEqual(len(set(matches)), 1, "one reviewed SDK dependency location required")
+            result = matches[0]
+            self.assertTrue(result.is_relative_to(node_modules.resolve()))
+            manifest_at(result, name, version)
+            return result
+
+        tui = dependency("@earendil-works/pi-tui", "1.5.0")
+        jiti = dependency("jiti", "2.7.0")
+        node = Path(node).resolve(strict=True)
+
+        def installed_inventory():
+            entries = []
+            for directory, folders, files in os.walk(node_modules, followlinks=False):
+                for name in sorted(folders + files):
+                    item = Path(directory) / name
+                    info = item.lstat()
+                    relative = item.relative_to(node_modules).as_posix()
+                    self.assertFalse(getattr(info, "st_file_attributes", 0) & 0x400,
+                                     "SDK reparse entry refused")
+                    if item.is_symlink():
+                        # npm's POSIX .bin aliases are data, never invoked by this probe.
+                        self.assertEqual(item.parent, node_modules / ".bin")
+                        self.assertTrue(item.resolve(strict=True).is_relative_to(node_modules.resolve()))
+                        self.assertTrue(item.resolve(strict=True).is_file())
+                        entries.append({"path": relative, "kind": "bin-symlink", "target": os.readlink(item)})
+                    elif stat.S_ISDIR(info.st_mode):
+                        entries.append({"path": relative, "kind": "directory"})
+                    else:
+                        self.assertTrue(stat.S_ISREG(info.st_mode))
+                        self.assertLessEqual(info.st_size, 256 * 1024 * 1024)
+                        entries.append({"path": relative, "kind": "file",
+                                        "sha256": hashlib.sha256(item.read_bytes()).hexdigest()})
+                    self.assertLessEqual(len(entries), 32768)
+            return sorted(entries, key=lambda row: row["path"])
+
+        before = installed_inventory()
+        node_hash = hashlib.sha256(node.read_bytes()).hexdigest()
+        source_paths = (
+            "plugins/ca-pi/tools/src/audit-sink.ts", "plugins/ca-pi/tools/src/bridge.ts",
+            "plugins/ca-pi/tools/src/footer-state.ts", "plugins/ca-pi/tools/src/footer.ts",
+            "plugins/ca-pi/tools/src/path-boundary.ts", "plugins/ca-pi/tools/src/redaction.ts",
+            "plugins/ca-pi/tools/src/status.ts", "plugins/ca/tools/redactor.ts",
+        )
+        source_before = {p: hashlib.sha256((REPO / p).read_bytes()).hexdigest() for p in source_paths}
+        with tempfile.TemporaryDirectory(prefix="ca-pi-footer-sdk-") as raw:
+            profile = Path(raw).resolve(strict=True)
+            for name in ("appdata", "localappdata", "xdg", "cache", "temp", "jiti", "agent", "work", "result"):
+                (profile / name).mkdir()
+            output = profile / "result"
+            configuration = output / "config.json"
+            config = {"repo": str(REPO), "sdk": str(sdk), "tui": str(tui), "jiti": str(jiti),
+                      "profile": str(profile), "cwd": str(profile / "work"), "output": str(output)}
+            configuration.write_text(json.dumps(config), encoding="utf-8")
+            environment = {key: os.environ[key] for key in ("SystemRoot", "WINDIR", "ComSpec", "PATHEXT")
+                           if key in os.environ}
+            environment.update(HOME=str(profile), USERPROFILE=str(profile), APPDATA=str(profile / "appdata"),
+                               LOCALAPPDATA=str(profile / "localappdata"), XDG_CONFIG_HOME=str(profile / "xdg"),
+                               XDG_CACHE_HOME=str(profile / "cache"), TEMP=str(profile / "temp"),
+                               TMP=str(profile / "temp"), TMPDIR=str(profile / "temp"),
+                               PI_CODING_AGENT_DIR=str(profile / "agent"), JITI_CACHE_DIR=str(profile / "jiti"),
+                               NO_COLOR="1", PATH=str(node.parent), CA_PI_FOOTER_CONFIG=str(configuration))
+            script = output / "footer-probe.mjs"
+            script.write_text(r'''import fs from 'node:fs';
+import path from 'node:path';
+import {fileURLToPath, pathToFileURL} from 'node:url';
+import {createRequire, registerHooks, syncBuiltinESMExports} from 'node:module';
+import {createHash} from 'node:crypto';
+import assert from 'node:assert/strict';
+import childProcess from 'node:child_process';
+import net from 'node:net';
+import tls from 'node:tls';
+import http from 'node:http';
+import https from 'node:https';
+import dns from 'node:dns';
+import workerThreads from 'node:worker_threads';
+
+const config = JSON.parse(fs.readFileSync(process.env.CA_PI_FOOTER_CONFIG, 'utf8'));
+const output = config.output;
+const originalRead = fs.readFileSync.bind(fs);
+const originalWrite = fs.writeFileSync.bind(fs);
+const digest = value => createHash('sha256').update(value).digest('hex');
+const report = {format:'codearbiter.pi-footer-sdk-component/1', stage:'guards', phases:[],
+  peripheralAttempts:[], modules:[], sourceReads:[], cleanup:{}, result:'RUNNING'};
+const loaded = new Set();
+const sourceReads = new Map();
+let terminal, mode, lifecycle, deferredLifecycle, jiti, theme;
+const persist = () => originalWrite(path.join(output,'sdk-observation.json'),JSON.stringify(report,null,2)+'\n');
+function forbidden(operation) {
+  return function () {
+    report.peripheralAttempts.push(operation);
+    persist();
+    throw new Error('forbidden peripheral operation: '+operation);
+  };
+}
+for (const key of ['spawn','spawnSync','exec','execSync','execFile','execFileSync','fork'])
+  childProcess[key]=forbidden('child_process.'+key);
+net.Socket.prototype.connect=forbidden('net.Socket.connect');
+net.Server.prototype.listen=forbidden('net.Server.listen');
+net.connect=forbidden('net.connect'); net.createConnection=forbidden('net.createConnection');
+tls.connect=forbidden('tls.connect');
+for (const [name, module] of [['http',http],['https',https]])
+  for (const key of ['request','get']) module[key]=forbidden(name+'.'+key);
+for (const key of ['lookup','resolve','resolve4','resolve6','reverse']) {
+  dns[key]=forbidden('dns.'+key);
+  if (key in dns.promises) dns.promises[key]=forbidden('dns.promises.'+key);
+}
+globalThis.fetch=forbidden('fetch');
+globalThis.WebSocket=forbidden('WebSocket');
+process.dlopen=forbidden('process.dlopen');
+workerThreads.Worker=forbidden('Worker');
+syncBuiltinESMExports();
+function noteRead(filename, data) {
+  if (typeof filename==='number') return;
+  try {
+    const p = filename instanceof URL ? fileURLToPath(filename) : String(filename);
+    if (/\.(?:[cm]?js|ts|json)$/.test(p)) sourceReads.set(path.resolve(p),digest(data));
+  } catch { /* The original file operation still determines its own outcome. */ }
+}
+fs.readFileSync=function(filename,...args) {
+  const data=originalRead(filename,...args); noteRead(filename,data); return data;
+};
+const promiseRead=fs.promises.readFile.bind(fs.promises);
+fs.promises.readFile=async function(filename,...args) {
+  const data=await promiseRead(filename,...args); noteRead(filename,data); return data;
+};
+syncBuiltinESMExports();
+registerHooks({
+  resolve(specifier,context,next) { const result=next(specifier,context); loaded.add(result.url); return result; },
+  load(url,context,next) { const result=next(url,context); loaded.add(url); return result; }
+});
+class ByteTerminal {
+  columns=120; rows=40; kittyProtocolActive=false; started=false; stopped=false; chunks=[]; bytes=0;
+  start(input,resize) { this.started=true; this.input=input; this.resize=resize; }
+  stop() { this.stopped=true; this.input=undefined; this.resize=undefined; }
+  async drainInput() {}
+  write(value) { this.bytes+=Buffer.byteLength(value); assert(this.bytes<=262144,'terminal capture cap'); this.chunks.push(value); }
+  moveBy() {} hideCursor() {} showCursor() {} clearLine() {} clearFromCursor() {} clearScreen() {}
+  setTitle() {} setProgress() {} setProgramStatus() {} restoreOnExit() {}
+}
+function phase(name) {
+  const lines=mode.footerContainer.render(120);
+  const before=terminal.chunks.length;
+  mode.renderer.renderNow(true);
+  const frame=terminal.chunks.slice(before).join('');
+  const readback={name, callbackCount:mode.footerDataProvider.branchChangeCallbacks.size,
+    isNative:mode.footerContainer.children.length===1 && mode.footerContainer.children[0]===mode.footer,
+    custom:mode.customFooter!==undefined, health:lifecycle?.health(), lines, frame};
+  report.phases.push(readback); persist(); return readback;
+}
+try {
+  report.stage='imports'; persist();
+  const sdk=config.sdk;
+  const imp=relative=>import(pathToFileURL(path.join(sdk,relative)).href);
+  const {InteractiveMode}=await imp('dist/modes/interactive/interactive-mode.js');
+  const {SettingsManager}=await imp('dist/core/settings-manager.js');
+  const {SessionManager}=await imp('dist/core/session-manager.js');
+  theme=await imp('dist/modes/interactive/theme/theme.js');
+  const tui=await import(pathToFileURL(path.join(config.tui,'dist/index.js')).href);
+  const {createJiti}=await import(pathToFileURL(path.join(config.jiti,'lib/jiti.mjs')).href);
+  jiti=createJiti(import.meta.url,{fsCache:path.join(config.profile,'jiti'),moduleCache:true});
+  const {PiFooterLifecycle}=await jiti.import(path.join(config.repo,'plugins/ca-pi/tools/src/status.ts'));
+  const manager=SessionManager.inMemory(config.cwd);
+  const settings=SettingsManager.inMemory({theme:'dark'});
+  const session={settingsManager:settings,sessionManager:manager,state:{},autoCompactionEnabled:false,
+    resourceLoader:{getThemes:()=>({themes:[]})},getContextUsage:()=>({tokens:0,contextWindow:0,percent:null})};
+  const registrations={};
+  const runtimeHost={session,setBeforeSessionInvalidate:fn=>{registrations.invalidate=fn;},
+    setRebindSession:fn=>{registrations.rebind=fn;}};
+  terminal=new ByteTerminal(); report.stage='constructor'; persist();
+  mode=new InteractiveMode(runtimeHost,{terminal,tuiMode:'inline',initialThemeSetting:'dark'});
+  assert(mode.renderer instanceof tui.TuiMainScreen);
+  assert.equal(mode.footer.constructor.name,'FooterComponent');
+  assert.equal(mode.footerDataProvider.constructor.name,'FooterDataProvider');
+  mode.renderer.addChild(mode.footerContainer);
+  mode.renderer.start();
+  const baselineCallbacks=mode.footerDataProvider.branchChangeCallbacks.size;
+  report.baselineCallbacks=baselineCallbacks;
+  const metrics={visibleWidth:tui.visibleWidth,truncateToWidth:tui.truncateToWidth};
+  const parent={getSessionName:()=>manager.getSessionName(),getThinkingLevel:()=> 'off'};
+  const noBridge=new Proxy({}, {get:()=>forbidden('bridge')});
+  lifecycle=new PiFooterLifecycle(parent,noBridge,async()=>metrics);
+  const context=()=>({cwd:config.cwd,hasUI:true,mode:'tui',ui:mode.createExtensionUIContext(),
+    sessionManager:manager,isProjectTrusted:()=>false});
+  const a=context(), b=context(); assert.notEqual(a.ui,b.ui);
+  report.stage='owned-disposal';
+  const nativeLines=phase('native-before').lines;
+  lifecycle.dispose(); assert.equal(mode.footerContainer.children[0],mode.footer);
+  await lifecycle.start(a);
+  const owned=phase('owned');
+  assert.equal(owned.callbackCount,baselineCallbacks+1); assert(owned.custom); assert(!owned.isNative);
+  assert(owned.lines.join('\n').includes('╭')); assert(owned.frame.includes('╭'));
+  lifecycle.dispose();
+  const restored=phase('owned-disposed');
+  assert.equal(restored.callbackCount,baselineCallbacks); assert(restored.isNative); assert(!restored.custom);
+  assert.deepEqual(restored.lines,nativeLines); assert.equal(lifecycle.currentTui(),undefined);
+  assert.deepEqual(lifecycle.health(),{expected:false,initialized:false});
+  lifecycle.dispose(); const repeated=phase('repeat-disposed'); assert.deepEqual(repeated.lines,nativeLines);
+  assert.equal(repeated.callbackCount,baselineCallbacks);
+  report.stage='foreign-replacement';
+  await lifecycle.start(b);
+  const foreign=new tui.Text('other extension footer',0,0);
+  b.ui.setFooter(()=>foreign);
+  const foreignBefore=phase('foreign-installed');
+  assert.equal(mode.customFooter,foreign); assert.equal(foreignBefore.callbackCount,baselineCallbacks);
+  lifecycle.dispose(); const foreignAfter=phase('foreign-preserved');
+  assert.equal(mode.customFooter,foreign); assert.deepEqual(foreignAfter.lines,foreignBefore.lines);
+  assert(foreignAfter.frame.includes('other extension footer'));
+  report.stage='stale-generation';
+  for (const [name,next] of [['same-context',a],['distinct-context',b]]) {
+    await lifecycle.start(a); const old=mode.customFooter;
+    await lifecycle.start(next); const current=mode.customFooter;
+    assert.notEqual(old,current); old.dispose(); old.dispose();
+    const retained=phase(name+'-stale-disposed');
+    assert.equal(mode.customFooter,current); assert.equal(retained.callbackCount,baselineCallbacks+1);
+    assert.deepEqual(lifecycle.health(),{expected:true,initialized:true});
+    lifecycle.dispose(); current.dispose();
+    const final=phase(name+'-current-disposed');
+    assert(final.isNative); assert.equal(final.callbackCount,baselineCallbacks); assert.deepEqual(final.lines,nativeLines);
+  }
+  report.stage='deferred-metrics';
+  let resolveMetrics;
+  deferredLifecycle=new PiFooterLifecycle(parent,noBridge,()=>new Promise(resolve=>{resolveMetrics=resolve;}));
+  const pending=deferredLifecycle.start(context());
+  deferredLifecycle.dispose(); resolveMetrics(metrics); await pending;
+  const deferred=phase('deferred-disposed');
+  assert(deferred.isNative); assert.equal(deferred.callbackCount,baselineCallbacks);
+  assert.deepEqual(deferred.lines,nativeLines);
+  assert.deepEqual(deferredLifecycle.health(),{expected:false,initialized:false});
+  assert.equal(report.peripheralAttempts.length,0,'caught forbidden peripheral attempt');
+  report.result='PASSED';
+} catch (error) {
+  report.result='FAILED'; report.error={name:error?.name,message:String(error?.message),stack:String(error?.stack)};
+  process.exitCode=1;
+} finally {
+  try {
+    deferredLifecycle?.dispose(); lifecycle?.dispose();
+    if (mode) {
+      mode.setExtensionFooter(undefined);
+      report.cleanup.callbackCountBeforeProviderDispose=mode.footerDataProvider.branchChangeCallbacks.size;
+      mode.footerDataProvider.dispose(); mode.themeController.dispose(); theme?.stopThemeWatcher();
+      mode.renderer.stop();
+      report.cleanup.providerDisposed=mode.footerDataProvider.disposed;
+      report.cleanup.remainingCallbacks=mode.footerDataProvider.branchChangeCallbacks.size;
+      report.cleanup.terminalStopped=terminal.stopped;
+      report.cleanup.rendererStopped=mode.renderer.stopped;
+    }
+    if(terminal) originalWrite(path.join(output,'terminal-capture.json'),JSON.stringify({encoding:'base64',
+      bytes:terminal.bytes,data:Buffer.from(terminal.chunks.join('')).toString('base64')})+'\n');
+  } catch(error) { report.cleanup.error={name:error?.name,message:String(error?.message)}; report.result='FAILED'; process.exitCode=1; }
+  const require=createRequire(import.meta.url);
+  for(const key of Object.keys(require.cache)) loaded.add(pathToFileURL(key).href);
+  if(jiti) for(const key of Object.keys(jiti.cache)) loaded.add(pathToFileURL(key).href);
+  report.modules=[...loaded].sort().map(url=>{
+    if(!url.startsWith('file:')) return {url};
+    const filename=fileURLToPath(url);
+    try{return {url,sha256:digest(originalRead(filename))};}catch{return {url,unreadable:true};}
+  });
+  report.sourceReads=[...sourceReads].sort(([a],[b])=>a.localeCompare(b)).map(([p,sha256])=>({path:p,sha256}));
+  if(report.peripheralAttempts.length) {report.result='FAILED';process.exitCode=1;}
+  report.stageAtCompletion=report.stage; persist();
+}
+''', encoding="utf-8", newline="\n")
+            started = time.monotonic()
+            done = subprocess.run([str(node), str(script)], cwd=profile / "work", env=environment,
+                                  capture_output=True, timeout=30, check=False)
+            # Preserve original outcomes before assertions, even if the SDK refused setup.
+            (output / "node.stdout.bin").write_bytes(done.stdout)
+            (output / "node.stderr.bin").write_bytes(done.stderr)
+            (output / "outcome.json").write_text(json.dumps({"returncode": done.returncode,
+                "elapsed_seconds": time.monotonic() - started, "argv": [str(node), str(script)]}), encoding="utf-8")
+            self.assertEqual(installed_inventory(), before)
+            self.assertEqual(hashlib.sha256(node.read_bytes()).hexdigest(), node_hash)
+            self.assertEqual({p: hashlib.sha256((REPO / p).read_bytes()).hexdigest() for p in source_paths}, source_before)
+            self.assertEqual(done.returncode, 0, "real SDK footer component probe failed")
+            observed = read_json(output / "sdk-observation.json")
+            self.assertEqual(observed["result"], "PASSED")
+            self.assertEqual(observed["peripheralAttempts"], [])
+            self.assertEqual(len(observed["phases"]), 11)
+            self.assertTrue(observed["cleanup"]["terminalStopped"])
+            self.assertTrue(observed["cleanup"]["rendererStopped"])
+            self.assertTrue(observed["cleanup"]["providerDisposed"])
+            self.assertEqual(observed["cleanup"]["remainingCallbacks"], 0)
+
+    def test_rpc_native_shutdown_stack_projection_is_closed_and_bounded(self):
+        import _windows_dbgeng as sdk
+        self.assertEqual(sdk.project_frame(b"NODE", 0x1010, 0x1000, True),
+                         {"module": "node", "returnOffset": 16})
+        for name, address, base, unique in (
+            (b"PrivateFixtureValue!private/path", 0x1010, 0x1000, True),
+            (b"node", 0x1010, 0x1000, False), (b"node", 1, 2, True),
+            (b"node", 2**64, 0, True), (b"node\xff", 0x1010, 0x1000, True)):
+            self.assertEqual(sdk.project_frame(name, address, base, unique),
+                             {"module": "Other", "returnOffset": None})
+        # Exercise the actual metadata lookup, including its overlap refusal.
+        for ambiguous in (False, True):
+            engine = object.__new__(sdk.Engine)
+            seen = []
+            def query(interface, index, argtypes, *args):
+                seen.append(index)
+                if index == 15:
+                    if args[1] and not ambiguous:
+                        return 0x80004005
+                    sdk.C.cast(args[2], sdk.C.POINTER(sdk.U32)).contents.value = args[1]
+                    sdk.C.cast(args[3], sdk.C.POINTER(sdk.U64)).contents.value = 0x1000
+                    return 0
+                self.assertEqual(index, 16)
+                args[5].value = b"node"
+                sdk.C.cast(args[7], sdk.C.POINTER(sdk.U32)).contents.value = 5
+                return 0
+            engine.call = query
+            self.assertEqual(engine.frame(0x1010),
+                {"module": "Other", "returnOffset": None} if ambiguous else
+                {"module": "node", "returnOffset": 16})
+            self.assertEqual(seen.count(16), int(not ambiguous))
+        good = {"schemaVersion": 1, "status": "captured", "threads": [{"frames": [
+            {"module": "node", "returnOffset": 16}]}], "truncated": False,
+            "pid": 33, "created": 44, "bound": True, "attached": True,
+            "policy": sdk.POLICY, "detached": True, "hresult": 0}
+        self.assertEqual(sdk.decode_result(json.dumps(good).encode(), 33, 44), good)
+        for key, value in (("pid", 99), ("created", 55), ("policy", 0),
+                           ("policy", sdk.POLICY | sdk.ALLOW_NETWORK),
+                           ("detached", False), ("bound", False), ("hresult", 1),
+                           ("threads", [{"frames": [{"module": "PrivateFixtureValue", "returnOffset": 1}]}]),
+                           ("threads", [{"frames": [{"module": "Other", "returnOffset": None}]}]),
+                           ("threads", [{"frames": [{"module": "node", "returnOffset": 1}] * 25}]),
+                           ("threads", [{"frames": []}] * 17)):
+            with self.subTest(key=key, value_kind=type(value).__name__):
+                changed = {**good, key: value}
+                self.assertIsNone(sdk.decode_result(json.dumps(changed).encode(), 33, 44))
+        self.assertIsNone(sdk.decode_result(b"x" * (sdk.MAX_JSON + 1), 33, 44))
+        self.assertIsNone(sdk.decode_result(b"PrivateFixtureValue", 33, 44))
+
+    def test_rpc_native_shutdown_identity_refuses_foreign_or_unknown_handles(self):
+        import _windows_rpc_timeout as native
+        from types import SimpleNamespace
+        with tempfile.TemporaryDirectory() as directory:
+            image = Path(directory).resolve() / "node.exe"
+            image.write_bytes(b"owned image")
+            for failure in (None, "pid", "created", "image", "query", "wait", "late",
+                            "rundown", "rundown-pid", "rundown-created"):
+                with self.subTest(failure=failure):
+                    class Kernel:
+                        closed = []
+                        def open(self, pid):
+                            self.closed = []
+                            return 22
+                        def close(self, handle):
+                            self.closed.append(handle)
+                        def snapshot(self, handle):
+                            if failure == "query":
+                                raise OSError("PrivateFixtureValue")
+                            return {"pid": 77 if failure in ("pid", "rundown-pid") and handle == 22 else 33,
+                                    "created": 88 if failure in ("created", "rundown-created") and handle == 22 else 44,
+                                    "image": "" if failure and failure.startswith("rundown") and handle == 22 else str(image.parent / "foreign.exe") if failure == "image" else str(image),
+                                    "state": "failed" if failure == "wait" else "signaled" if failure == "late" or (failure and failure.startswith("rundown") and handle == 22) else "running",
+                                    "exitCode": 0 if failure == "late" or (failure and failure.startswith("rundown") and handle == 22) else None}
+                    kernel = Kernel()
+                    debugger = mock.Mock(return_value={"status": "unavailable", "threads": [], "truncated": False})
+                    process = SimpleNamespace(pid=33, _handle=11)
+                    result = native.capture(process, image, _kernel=kernel, _debugger=debugger)
+                    self.assertEqual(vars(process), {"pid": 33, "_handle": 11})
+                    self.assertEqual(debugger.call_count, int(failure is None))
+                    self.assertNotIn(11, kernel.closed)
+                    if 22 in kernel.closed:
+                        self.assertEqual(kernel.closed, [22])
+                    self.assertEqual(result["outcome"], "original-failure")
+                    self.assertNotIn("PrivateFixtureValue", json.dumps(result))
+                    if failure is None:
+                        self.assertEqual(result["identity"], "matched")
+                    elif failure == "late":
+                        self.assertEqual(result["before"]["state"], "signaled")
+                    elif failure == "rundown":
+                        self.assertEqual(result["identity"], "owned-exited")
+                        self.assertEqual(result["before"], {"state": "running", "exitCode": None})
+                        self.assertEqual(result["after"], {"state": "signaled", "exitCode": 0})
+                        self.assertEqual(result["processId"], 33)
+                        self.assertEqual(result["creationTime"], 44)
+                        self.assertEqual(kernel.closed, [22])
+                    elif failure in ("rundown-pid", "rundown-created"):
+                        self.assertEqual(result["identity"], "mismatch")
+                        self.assertEqual(result["after"], {"state": "unknown", "exitCode": None})
+                    else:
+                        self.assertNotEqual(result["identity"], "matched")
+
+    def _native_progress_fixture(self, root, *, failure=None, expired_after=False):
+        import _windows_rpc_timeout as native
+        from types import SimpleNamespace
+        image = root.resolve(strict=True) / "node.exe"
+        image.write_bytes(b"owned process image")
+        now = [0.0]
+        class Kernel:
+            reads = []
+            closed = []
+            snapshots = 0
+            def open(self, pid): return 22
+            def close(self, handle): self.closed.append(handle)
+            def snapshot(self, handle):
+                self.snapshots += 1
+                return {"pid": 99 if failure == "identity" else 33, "created": 44,
+                        "image": str(image), "state": "running", "exitCode": None,
+                        "cpuTimes": {"kernelTime100ns": self.snapshots * 100,
+                                     "userTime100ns": self.snapshots * 200}}
+            def process_counters(self, handle, deadline):
+                self.reads.append((handle, deadline))
+                if failure == "query": raise OSError("PRIVATE_COUNTER_ERROR")
+                return {"readOperations": len(self.reads), "writeOperations": len(self.reads) * 2,
+                        "otherOperations": 3, "readBytes": 4, "writeBytes": 5, "otherBytes": 6,
+                        "handleCount": 7, "PRIVATE_EXTRA": "PRIVATE_COUNTER_VALUE"}
+        kernel = Kernel()
+        if failure == "missing": kernel.process_counters = None
+        def debug(*args):
+            if expired_after: now[0] = 5.1
+            return {"status": "unavailable", "threads": [], "truncated": False}
+        debugger = mock.Mock(side_effect=debug)
+        process = SimpleNamespace(pid=33, _handle=11)
+        with mock.patch.object(native.time, "monotonic", side_effect=lambda: now[0]):
+            result = native.capture(process, image, _kernel=kernel, _debugger=debugger)
+        return result, kernel, debugger, process
+
+    def test_rpc_native_shutdown_progress_is_identity_bound_and_preserves_failure(self):
+        with tempfile.TemporaryDirectory() as directory:
+            result, kernel, debugger, process = self._native_progress_fixture(Path(directory))
+        self.assertIn("processProgress", result, "failed native wait must retain passive process progress")
+        before, after = result["processProgress"]["before"], result["processProgress"]["after"]
+        self.assertEqual((before["kernelTime100ns"], after["kernelTime100ns"]), (200, 300))
+        self.assertEqual((before["userTime100ns"], after["userTime100ns"]), (400, 600))
+        self.assertEqual((before["writeOperations"], after["writeOperations"]), (2, 4))
+        self.assertEqual(before["handleCount"], 7)
+        self.assertEqual(kernel.reads, [(11, 5.0), (11, 5.0)])
+        self.assertEqual(kernel.closed, [22])
+        self.assertEqual(vars(process), {"pid": 33, "_handle": 11})
+        self.assertEqual(debugger.call_count, 1)
+        self.assertEqual(result["identity"], "matched")
+        self.assertEqual(result["outcome"], "original-failure")
+        self.assertNotIn("PRIVATE_", json.dumps(result))
+
+    def test_rpc_native_shutdown_progress_is_optional_and_never_queries_foreign_process(self):
+        for failure in ("query", "missing", "identity"):
+            with self.subTest(failure=failure), tempfile.TemporaryDirectory() as directory:
+                result, kernel, debugger, _ = self._native_progress_fixture(Path(directory), failure=failure)
+                if failure == "identity":
+                    self.assertEqual(result["processProgress"], {"before": None, "after": None})
+                    self.assertEqual(kernel.reads, [])
+                    self.assertEqual(debugger.call_count, 0)
+                else:
+                    self.assertEqual(result["identity"], "matched")
+                    self.assertEqual(result["processProgress"]["before"]["kernelTime100ns"], 200)
+                    self.assertIsNone(result["processProgress"]["before"]["writeBytes"])
+                    self.assertEqual(debugger.call_count, 1)
+                self.assertEqual(result["outcome"], "original-failure")
+                self.assertNotIn("PRIVATE_", json.dumps(result))
+
+    def test_rpc_native_shutdown_progress_uses_only_remaining_original_budget(self):
+        with tempfile.TemporaryDirectory() as directory:
+            result, kernel, debugger, _ = self._native_progress_fixture(Path(directory), expired_after=True)
+        self.assertEqual(kernel.reads, [(11, 5.0)])
+        self.assertEqual(result["processProgress"]["after"]["kernelTime100ns"], 300)
+        self.assertIsNone(result["processProgress"]["after"]["writeOperations"])
+        self.assertEqual(result["elapsedMs"], 5100)
+        self.assertEqual(result["outcome"], "original-failure")
+        self.assertEqual(debugger.call_args.args[-1], 5.0)
+
+    def test_rpc_native_shutdown_progress_projects_only_closed_numeric_values(self):
+        import _windows_rpc_timeout as native
+        from types import SimpleNamespace
+        values = {"readOperations": True, "writeOperations": -1, "otherOperations": 2**64,
+                  "readBytes": "PRIVATE_COUNTER_VALUE", "writeBytes": 2**64 - 1,
+                  "otherBytes": 0, "handleCount": 2**32}
+        kernel = SimpleNamespace(process_counters=lambda handle, deadline: values)
+        snapshot = {"cpuTimes": {"kernelTime100ns": True, "userTime100ns": 2**64}}
+        with mock.patch.object(native.time, "monotonic", return_value=0):
+            projected = native._process_progress(kernel, 11, snapshot, 5.0)
+        self.assertEqual(projected, {"kernelTime100ns": None, "userTime100ns": None,
+            "readOperations": None, "writeOperations": None, "otherOperations": None,
+            "readBytes": None, "writeBytes": 2**64 - 1, "otherBytes": 0, "handleCount": None})
+        self.assertNotIn("PRIVATE_", json.dumps(projected))
+
+    def test_rpc_native_shutdown_progress_typed_queries_are_optional_and_budgeted(self):
+        import ctypes
+        import _windows_rpc_timeout as native
+        from types import SimpleNamespace
+        for mode in ("ok", "false", "raise", "missing", "spent", "spent-after-io"):
+            with self.subTest(mode=mode):
+                now = [6.0 if mode == "spent" else 0.0]
+                seen = []
+                class Query:
+                    def __init__(self, kind): self.kind = kind
+                    def __call__(self, handle, destination):
+                        self_test.assertEqual(handle, 11)
+                        seen.append(self.kind)
+                        if mode == "raise": raise OSError("PRIVATE_COUNTER_CALL")
+                        if mode == "false": return False
+                        if self.kind == "io":
+                            value = ctypes.cast(destination, ctypes.POINTER(native._IoCounters)).contents
+                            for index, (field, _) in enumerate(value._fields_, 1): setattr(value, field, index)
+                            if mode == "spent-after-io": now[0] = 6.0
+                        else:
+                            ctypes.cast(destination, ctypes.POINTER(native.wintypes.DWORD)).contents.value = 17
+                        return True
+                self_test = self
+                kernel = object.__new__(native.WindowsKernel)
+                kernel.api = (SimpleNamespace() if mode == "missing" else
+                              SimpleNamespace(GetProcessIoCounters=Query("io"), GetProcessHandleCount=Query("handles")))
+                with mock.patch.object(native.time, "monotonic", side_effect=lambda: now[0]):
+                    result = kernel.process_counters(11, 5.0)
+                if mode in ("ok", "spent-after-io"):
+                    self.assertEqual([result[field] for field in ("readOperations", "writeOperations", "otherOperations",
+                                     "readBytes", "writeBytes", "otherBytes")], [1, 2, 3, 4, 5, 6])
+                    self.assertEqual(result.get("handleCount"), 17 if mode == "ok" else None)
+                else: self.assertEqual(result, {})
+                self.assertEqual(seen, [] if mode in ("missing", "spent") else ["io"] if mode == "spent-after-io" else ["io", "handles"])
+                self.assertNotIn("PRIVATE_", json.dumps(result))
+
+    def test_rpc_native_shutdown_transport_has_one_deadline_and_aggregate_cap(self):
+        import _windows_rpc_timeout as native
+        from types import SimpleNamespace
+        for scenario in ("complete", "cap", "deadline", "pipe_failure"):
+            with self.subTest(scenario=scenario):
+                now = [0.0]
+                chunks = [b"closed"] if scenario == "complete" else [b"x" * (native.MAX_OUTPUT + 1)]
+                class Process:
+                    returncode = 0
+                    killed = False
+                    stdout = io.BytesIO()
+                    def poll(self):
+                        return 0 if scenario == "complete" and not chunks else None
+                    def kill(self):
+                        self.killed = True
+                    def wait(self, timeout):
+                        return 0
+                process = Process()
+                def available(stream):
+                    if scenario == "pipe_failure":
+                        raise OSError("PrivateFixtureValue")
+                    return len(chunks[0]) if chunks and scenario != "deadline" else 0
+                def read(stream, count):
+                    first = chunks[0][:count]
+                    chunks[0] = chunks[0][count:]
+                    if not chunks[0]:
+                        chunks.pop(0)
+                    return first
+                def sleep(seconds):
+                    now[0] += seconds
+                result = native._collect(process, available, deadline=0.05,
+                                         _read=read, _clock=lambda: now[0], _sleep=sleep)
+                expected = {"complete": "captured", "cap": "output_limit", "deadline": "deadline",
+                            "pipe_failure": "transport_failed"}[scenario]
+                self.assertEqual(result[0], expected)
+                self.assertLessEqual(len(result[1]), native.MAX_OUTPUT)
+                self.assertLessEqual(now[0], 0.051)
+                self.assertEqual(process.killed, scenario != "complete")
+                self.assertNotIn(b"PrivateFixtureValue", result[1])
+
+    def test_rpc_native_shutdown_fixed_debugger_profile_and_private_sidecar(self):
+        import _windows_rpc_timeout as native
+        import _windows_dbgeng as sdk
+        from types import SimpleNamespace
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory).resolve()
+            with mock.patch.dict(os.environ, {"PRIVATE_TOKEN": "PrivateFixtureValue", "_NT_SYMBOL_PATH": "https://private", "INIT": "private"}):
+                env = native._worker_environment(root)
+            self.assertNotIn("PrivateFixtureValue", json.dumps(env))
+            self.assertNotIn("_NT_SYMBOL_PATH", env)
+            self.assertNotIn("INIT", env)
+            for key in ("HOME", "USERPROFILE", "TEMP", "TMP", "APPDATA", "LOCALAPPDATA"):
+                self.assertTrue(Path(env[key]).is_relative_to(root))
+            request = {"handle": 77, "pid": 33, "created": 44, "image": str(root / "node.exe"),
+                       "sdk": str(root), "hashes": {name: "a" * 64 for name in
+                           ("cdb.exe", "dbgeng.dll", "dbghelp.dll")}, "deadline": time.monotonic() + 5}
+            class Kernel:
+                def snapshot(self, handle):
+                    return {"pid": 33, "created": 44, "state": "running", "image": request["image"]}
+                def close(self, handle):
+                    self.closed = handle
+            kernel = Kernel()
+            fake_native = SimpleNamespace(WindowsKernel=lambda: kernel, _regular=lambda path, **kw: path,
+                                          _digest=lambda path, deadline: "a" * 64)
+            class Backend:
+                closed = True
+                seen = []
+                def __init__(self, path):
+                    self.seen = []
+                check = staticmethod(sdk.Engine.check)
+                def policy(self):
+                    return sdk.POLICY
+                def call(self, name, index, args, *values):
+                    self.seen.append((name, index))
+                    return 0
+                def threads(self, deadline):
+                    return [{"frames": [{"module": "node", "returnOffset": 16}]}], False
+                def close(self):
+                    return self.closed
+            for cleanup in (True, False):
+                with self.subTest(cleanup=cleanup):
+                    Backend.closed = cleanup
+                    actual = sdk.run(request, fake_native, engine_factory=Backend)
+                    self.assertEqual(actual["status"], "captured" if cleanup else "cleanup_unknown")
+                    self.assertEqual(actual["detached"], cleanup)
+                    self.assertEqual(kernel.closed, 77)
+                    self.assertNotIn("PrivateFixtureValue", json.dumps(actual))
+                    if not cleanup:
+                        self.assertEqual(actual["threads"], [])
+            # A Detach exception must not skip releasing any queried interface.
+            closing = object.__new__(sdk.Engine)
+            closing.interfaces = {"client": None, "control": None, "systems": None, "symbols": None}
+            released = []
+            def release_after_detach_failure(name, index, args, *values, **kwargs):
+                if index == 25:
+                    raise OSError("PrivateFixtureValue")
+                self.assertEqual(index, 2)
+                released.append(name)
+                return 0
+            closing.call = release_after_detach_failure
+            self.assertFalse(closing.close())
+            self.assertEqual(released, ["symbols", "systems", "control", "client"])
+            self.assertEqual(closing.interfaces, {})
+            Backend.closed = True
+            bad_policy = Backend(root)
+            bad_policy.policy = lambda: sdk.ALLOW_NETWORK
+            actual = sdk.run(request, fake_native, engine_factory=lambda path: bad_policy)
+            self.assertEqual(actual["status"], "engine_failed")
+            self.assertNotIn(("client", 12), bad_policy.seen, "reject policy before attaching")
+            kernel.snapshot = lambda handle: {"pid": 99, "created": 44, "state": "running", "image": request["image"]}
+            factory = mock.Mock(side_effect=AssertionError("must not create an engine"))
+            actual = sdk.run(request, fake_native, engine_factory=factory)
+            self.assertEqual(actual["status"], "identity_refused")
+            factory.assert_not_called()
+            report = {"schemaVersion": 1, "outcome": "original-failure", "identity": "unknown"}
+            with mock.patch.object(native, "capture", return_value=report):
+                first = native.retain_failure(None, Path("node"), root)
+                second = native.retain_failure(None, Path("node"), root)
+            self.assertNotEqual(first, second)
+            self.assertTrue(first.startswith("rpc-native-exit-"))
+            self.assertEqual(json.loads((root / first).read_text()), report)
+            self.assertLessEqual((root / first).stat().st_size, native.MAX_JSON)
+            with mock.patch.object(native, "capture", side_effect=ValueError("PrivateFixtureValue")):
+                self.assertIsNone(native.retain_failure(None, Path("node"), root))
+
+    def test_rpc_native_shutdown_failure_hook_preserves_original_then_cleanup(self):
+        import _windows_rpc_timeout as native
+        current = sys.modules[__name__]
+        for observer_fails in (False, True):
+            with self.subTest(observer_fails=observer_fails), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory).resolve()
+                cwd, retained = root / "cwd", root / "retained"
+                cwd.mkdir()
+                order = []
+                original_run, original_cleanup = subprocess.run, terminate_process_tree
+                child = ("import sys,json; sys.stdin.readline(); "
+                         "print(json.dumps({'id':'commands','success':True}),flush=True); sys.stdin.read()")
+                def install(args, **kwargs):
+                    if len(args) > 2 and args[2] == "install":
+                        return subprocess.CompletedProcess(args, 0, "", "")
+                    return original_run(args, **kwargs)
+                original_retain = retain_rpc_shutdown_failure
+                def phase_receipt(*args, **kwargs):
+                    value = original_retain(*args, **kwargs)
+                    self.assertIsNotNone(value)
+                    order.append("original-retained")
+                    return value
+                def observe(process, node, destination):
+                    self.assertEqual(order, ["original-retained"])
+                    self.assertTrue(list(retained.glob("rpc-shutdown-*.json")))
+                    order.append("native-observed")
+                    if observer_fails:
+                        raise ValueError("PrivateFixtureValue")
+                    return None
+                def cleanup(process):
+                    order.append("cleanup")
+                    return original_cleanup(process)
+                with mock.patch.dict(os.environ, {"CA_PI_RPC_DIAGNOSTICS_DIR": str(retained)}), \
+                     mock.patch.object(current, "live_pi_cli", return_value=(sys.executable, root / "unused-cli")), \
+                     mock.patch.object(current, "read_json", return_value={"packages": ["fixture"]}), \
+                     mock.patch.object(subprocess, "run", side_effect=install), \
+                     mock.patch.object(current, "wait_for_rpc_shutdown", side_effect=subprocess.TimeoutExpired("owned", 30)), \
+                     mock.patch.object(current, "retain_rpc_shutdown_failure", side_effect=phase_receipt), \
+                     mock.patch.object(native, "retain_failure", side_effect=observe), \
+                     mock.patch.object(current, "terminate_process_tree", side_effect=cleanup):
+                    with self.assertRaisesRegex(AssertionError, "did not exit within 30 seconds") as raised:
+                        run_rpc_commands(cwd, root / "agent", root / "home",
+                                         _rpc_command=[sys.executable, "-c", child])
+                self.assertIsInstance(raised.exception.__cause__, subprocess.TimeoutExpired)
+                self.assertEqual(order, ["original-retained", "native-observed", "cleanup"])
+                self.assertNotIn("PrivateFixtureValue", str(raised.exception))
+
+    def test_rpc_native_shutdown_worker_deadline_leaves_time_to_observe_exit(self):
+        import _windows_rpc_timeout as native
+
+        now = [0.0]
+        process = mock.Mock(stdout=object(), returncode=1)
+        process.poll.return_value = None
+        chunks = [b"retained progress"]
+
+        def wait(timeout):
+            termination_latency = 0.02
+            if timeout < termination_latency:
+                raise subprocess.TimeoutExpired("owned debugger fixture", timeout)
+            now[0] += termination_latency
+            return 1
+
+        process.wait.side_effect = wait
+        status, raw = native._collect(
+            process, lambda _: len(chunks[0]) if chunks else 0,
+            deadline=5.0, _read=lambda *_: chunks.pop(),
+            _clock=lambda: now[0], _sleep=lambda duration: now.__setitem__(0, now[0] + duration),
+        )
+        self.assertEqual(status, "deadline")
+        self.assertEqual(raw, b"retained progress")
+        process.kill.assert_called_once_with()
+        process.wait.assert_called_once()
+        self.assertLessEqual(now[0], 5.0)
+
+    @unittest.skipUnless(os.name == "nt", "Windows owned process HANDLE control")
+    def test_rpc_native_shutdown_real_owned_node_handles_and_late_exit(self):
+        import _windows_rpc_timeout as native
+        node = os.environ.get("CA_PI_DIAGNOSTIC_NODE") or shutil.which("node")
+        self.assertIsNotNone(node, "existing approved Node must be available")
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory).resolve()
+            env = {key: os.environ[key] for key in ("SystemRoot", "WINDIR") if key in os.environ}
+            env.update(HOME=str(root), USERPROFILE=str(root), TEMP=str(root), TMP=str(root))
+            process = subprocess.Popen([node, "-e", "setInterval(()=>{},1000)"], cwd=root, env=env,
+                                       stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            original_handle = int(process._handle)
+            debugger = mock.Mock(return_value={"status": "unavailable", "threads": [], "truncated": False})
+            try:
+                alive = native.capture(process, Path(node), _debugger=debugger)
+                self.assertEqual(alive["identity"], "matched")
+                self.assertEqual(alive["before"]["state"], "running")
+                self.assertEqual(debugger.call_count, 1)
+                self.assertIsNone(process.poll())
+                self.assertEqual(int(process._handle), original_handle)
+                # Physical capability is observed, never inferred from the runner label.
+                try:
+                    available_profile, _, _ = native._tool_profile(time.monotonic() + native.SECONDS)
+                except (OSError, ValueError):
+                    available_profile = None
+                if available_profile is None:
+                    unavailable = native.capture(process, Path(node))
+                    self.assertEqual(unavailable["debugger"]["status"], "unavailable")
+                    self.assertEqual(unavailable["after"]["state"], "running")
+                else:
+                    # Existing closed SDK or inbox profile only: no installation.
+                    # A present tool must demonstrate recognized frames here;
+                    # unknown status cannot masquerade as capability proof.
+                    actual = native.capture(process, Path(node))
+                    self.assertEqual(actual["identity"], "matched")
+                    self.assertEqual(actual["before"]["state"], "running")
+                    self.assertEqual(actual["after"]["state"], "running")
+                    report = actual["debugger"]
+                    # Keep the existing closed projections from this same capture.
+                    # The job log must distinguish worker transport from SDK cleanup.
+                    self.assertEqual(report["status"], "captured", json.dumps({
+                        "diagnostic": report.get("diagnostic"),
+                        "worker": report.get("worker"),
+                    }, sort_keys=True))
+                    self.assertEqual(report["profile"], available_profile)
+                    self.assertEqual(set(report["toolHashes"]), set(native.TOOL_FILES[available_profile]))
+                    for digest in report["toolHashes"].values():
+                        self.assertRegex(digest, r"\A[0-9a-f]{64}\Z")
+                    self.assertLessEqual(len(json.dumps(actual).encode("utf-8")), native.MAX_JSON)
+                    self.assertLessEqual(len(report["threads"]), 16)
+                    for thread in report["threads"]:
+                        self.assertEqual(set(thread), {"frames"})
+                        self.assertLessEqual(len(thread["frames"]), 24)
+                        for frame in thread["frames"]:
+                            self.assertEqual(set(frame), {"module", "returnOffset", "instructionModule", "instructionOffset"})
+                            self.assertIn(frame["module"], native.MODULES | {"Other"})
+                            self.assertTrue(frame["returnOffset"] is None or
+                                            type(frame["returnOffset"]) is int and 0 <= frame["returnOffset"] < 2**64)
+                            self.assertIn(frame["instructionModule"], native.MODULES | {"Other"})
+                            self.assertTrue(frame["instructionOffset"] is None or
+                                            type(frame["instructionOffset"]) is int and 0 <= frame["instructionOffset"] < 2**64)
+                    if report["status"] == "captured":
+                        self.assertTrue(any(row["frames"] for row in report["threads"]))
+                        self.assertTrue(any(frame["instructionModule"] != "Other"
+                            for row in report["threads"] for frame in row["frames"]))
+                    # Closed status only; never raw debugger text/symbols/paths.
+                    print("owned-node-native-debugger-status=" + report["status"])
+                    self.assertIsNone(process.poll(), "debugger quit must preserve the owned Node")
+                    self.assertEqual(int(process._handle), original_handle)
+                foreign = native.capture(process, Path(sys.executable), _debugger=debugger)
+                self.assertNotEqual(foreign["identity"], "matched")
+                self.assertEqual(debugger.call_count, 1)
+                process.terminate()
+                process.wait(timeout=3)
+                late = native.capture(process, Path(node), _debugger=debugger)
+                self.assertEqual(late["before"]["state"], "signaled")
+                self.assertEqual(debugger.call_count, 1)
+                self.assertEqual(int(process._handle), original_handle)
+            finally:
+                if process.poll() is None:
+                    process.kill()
+                process.wait(timeout=3)
+
     def test_local_prefix_pi_cli_resolves_declared_bin_above_dot_bin(self) -> None:
         # Pi 1.5.0 ships both dist/cli.js and dist/bundle/cli.js; only the declared bin is the CLI.
         for label, declared, expected in (
@@ -1441,7 +2635,8 @@ class PiPackageTests(unittest.TestCase):
     def test_ci_has_pi_path_output_matrix_and_independent_version_guard(self):
         ci = (REPO / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
         required = (
-            "ca-pi: ${{ steps.filter.outputs.ca-pi }}",
+            "ca-pi: ${{ steps.filter.outputs.ca-pi == 'true' || "
+            "(github.event_name == 'push' && github.ref == 'refs/heads/major/state-contracts') }}",
             "- 'plugins/ca-pi/**'",
             "ca-pi-checks:",
             "ca-pi-tools:",
@@ -1454,7 +2649,8 @@ class PiPackageTests(unittest.TestCase):
             "Test package, module identity, compatibility, and native binding",
             "Test the complete Pi adapter suite",
             "Test real package RPC activation and aliases",
-            'python tools/build-host-packages.py --check --release-guard-base "$BASE_COMMIT"',
+            'python tools/build-host-packages.py --check --release-guard-base "$BASE_COMMIT" \\\n'
+            '            --integration-base-branch "${BASE_BRANCH#refs/heads/}" --main-ref origin/main',
             "ca-pi-latest:",
             "- ca-pi-checks",
             "- ca-pi-tools",
@@ -2396,9 +3592,9 @@ class PiPackageTests(unittest.TestCase):
                     reader.join(timeout=2)
 
     def test_real_rpc_shutdown_probe_uses_the_same_untrusted_fixture(self):
-        # The original compatibility case above remains uninstrumented. This
-        # additional case observes the same fixture without turning a passing
-        # diagnostic rerun into a substitute for its original result.
+        # The original case keeps its raw CLI arguments. This additional case
+        # also observes before provider loading, without substituting a passing
+        # diagnostic run for the original natural-exit result.
         real_run = run_rpc_commands
         with mock.patch.object(
             sys.modules[__name__], "run_rpc_commands",
@@ -2414,15 +3610,263 @@ class PiPackageTests(unittest.TestCase):
         ):
             self.test_real_isolated_rpc_command_discovery_and_keyed_status()
 
+    def _observe_original_rpc_fixture_shutdown(self, fixture):
+        # These are additional observations, never substitutes for raw tests.
+        node, cli = live_pi_cli()
+        identity = rpc_diagnostic_runtime_identity(node, cli)
+        self.assertIsNotNone(identity)
+        real_run = run_rpc_commands
+
+        def observed(*args, **kwargs):
+            succeeded = False
+            try:
+                records = real_run(*args, **kwargs, _observe_shutdown=True)
+                succeeded = True
+                return records
+            finally:
+                try:
+                    retain_rpc_observed_raw_diagnostics(
+                        args[2] / "ca-rpc-shutdown-trace.json", identity, succeeded=succeeded,
+                    )
+                except Exception:
+                    pass
+
+        with mock.patch.object(sys.modules[__name__], "run_rpc_commands", side_effect=observed):
+            fixture()
+
+    def test_real_rpc_shutdown_probe_uses_the_same_enforcement_failure_fixture(self):
+        self._observe_original_rpc_fixture_shutdown(
+            self.test_real_rpc_enforcement_registration_failure_stays_fail_closed,
+        )
+
+    def test_real_rpc_shutdown_probe_uses_the_same_native_read_context_fixture(self):
+        self._observe_original_rpc_fixture_shutdown(
+            self.test_real_rpc_native_read_context_is_model_visible_once,
+        )
+
+    def _rpc_really_exit_boundary_fixture(self, kind):
+        node = shutil.which("node")
+        self.assertIsNotNone(node, "Node is required for the shutdown diagnostic fixtures")
+        with tempfile.TemporaryDirectory(prefix="ca-pi-reallyexit-") as directory:
+            root = Path(directory)
+            preload, _, trace = write_rpc_shutdown_observer(root)
+            bootstrap = root / "bootstrap.cjs"
+            setup = (
+                "// Synthetic callee block, not a claim about actual native shutdown.\n"
+                "process.reallyExit = function() { Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0); };\n"
+                if kind == "callee" else ""
+            )
+            bootstrap.write_text(setup + "require(" + json.dumps(str(preload)) + ");\n",
+                                 encoding="utf-8", newline="\n")
+            script = r"""
+const assert = require('node:assert/strict');
+if (KIND === 'normal') {
+  // Test the exact generated wrapper against a returning/throwing callee in a
+  // separate VM, including a failed diagnostic writer. The real process below
+  // still exits through its genuine original native callee.
+  const source = require('node:fs').readFileSync(PRELOAD, 'utf8');
+  const receiver = {}, first = {}, second = {}, returned = {}, thrown = {};
+  let calls = 0;
+  const fake = {
+    pid: 7, version: process.version, platform: process.platform,
+    stdin: {readableEnded: false, prependOnceListener() {}},
+    once() {}, getActiveResourcesInfo() { return []; },
+    reallyExit: function(...args) {
+      calls++;
+      assert.equal(this, receiver);
+      if (args[0] === thrown) throw thrown;
+      assert.deepEqual(args, [first, second]);
+      return returned;
+    },
+  };
+  require('node:vm').runInNewContext(source, {
+    process: fake, performance: {now() { return 0; }},
+    require(name) {
+      assert.equal(name, 'node:fs');
+      return {writeFileSync() { throw new Error('controlled diagnostic write refusal'); }};
+    },
+  });
+  assert.equal(fake.reallyExit.call(receiver, first, second), returned);
+  let caught;
+  try { fake.reallyExit.call(receiver, thrown); } catch (error) { caught = error; }
+  assert.equal(caught, thrown);
+  assert.equal(calls, 2);
+}
+if (KIND === 'listener') {
+  process.on('exit', () => Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0));
+}
+process.stdin.on('end', () => {
+  globalThis.__caPiRpcShutdownObserve('session_shutdown_observer');
+  process.exit(0);
+});
+process.stdin.resume();
+process.stdout.write('ready\n');
+""".replace("KIND", json.dumps(kind)).replace("PRELOAD", json.dumps(str(preload)))
+            command = [node, "--require", str(bootstrap), "-e", script]
+            environment = {"HOME": str(root), "USERPROFILE": str(root),
+                           "TEMP": str(root), "TMP": str(root), "PATH": ""}
+            for key in ("SystemRoot", "WINDIR", "ComSpec", "PATHEXT"):
+                if os.environ.get(key):
+                    environment[key] = os.environ[key]
+            process = subprocess.Popen(
+                command, cwd=root, env=environment, stdin=subprocess.PIPE,
+                stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,
+                encoding="utf-8", errors="strict", start_new_session=os.name != "nt",
+                creationflags=(subprocess.CREATE_NEW_PROCESS_GROUP if os.name == "nt" else 0),
+            )
+            stdout = stderr = None
+            try:
+                if kind == "normal":
+                    stdout, stderr = process.communicate(input="", timeout=5)
+                    self.assertEqual(process.returncode, 0)
+                else:
+                    process.stdin.close()
+                    process.stdin = None
+                    deadline = time.monotonic() + 5
+                    while time.monotonic() < deadline:
+                        report = safe_rpc_shutdown_report(trace)
+                        if report and len(report["phases"]) == 4:
+                            if kind != "callee" or report.get("reallyExitCallEntered") is True:
+                                break
+                        if process.poll() is not None:
+                            break
+                        time.sleep(0.01)
+                    self.assertIsNone(process.poll(), "negative fixture must remain alive before cleanup")
+                report = safe_rpc_shutdown_report(trace)
+                self.assertIsNotNone(report)
+                self.assertEqual(report["pid"], process.pid)
+                self.assertTrue(rpc_shutdown_phase_complete(trace, process.pid))
+                self.assertIs(report["reallyExitCallEntered"], kind != "listener")
+            finally:
+                if process.poll() is None:
+                    # These two synthetic hangs fail the exit contract. Reaping
+                    # this owned fixture is cleanup, never evidence of host success.
+                    terminate_process_tree(process)
+                if stdout is None:
+                    stdout, stderr = process.communicate(timeout=5)
+            self.assertEqual(stdout, "ready\n")
+            self.assertEqual(stderr, "")
+            return report
+
+    def test_rpc_shutdown_reallyexit_normal_is_transparent_and_closed(self):
+        report = self._rpc_really_exit_boundary_fixture("normal")
+        with tempfile.TemporaryDirectory(prefix="ca-pi-reallyexit-projection-") as directory:
+            trace = Path(directory) / "trace.json"
+            legacy = {key: value for key, value in report.items() if key != "reallyExitCallEntered"}
+            trace.write_text(json.dumps(legacy), encoding="utf-8", newline="\n")
+            self.assertEqual(safe_rpc_shutdown_report(trace), legacy)
+            for bad in (1, "PrivateFixtureValue", {"payload": "PrivateFixtureValue"}, None):
+                trace.write_text(json.dumps({**report, "reallyExitCallEntered": bad}),
+                                 encoding="utf-8", newline="\n")
+                self.assertIsNone(safe_rpc_shutdown_report(trace))
+            trace.write_text(json.dumps({**report, "private": "PrivateFixtureValue"}),
+                             encoding="utf-8", newline="\n")
+            self.assertEqual(safe_rpc_shutdown_report(trace), report)
+
+    def test_rpc_shutdown_reallyexit_later_js_listener_stays_before_call(self):
+        self.assertIs(self._rpc_really_exit_boundary_fixture("listener")["reallyExitCallEntered"], False)
+
+    def test_rpc_shutdown_reallyexit_synthetic_callee_stays_after_call_entry(self):
+        self.assertIs(self._rpc_really_exit_boundary_fixture("callee")["reallyExitCallEntered"], True)
+
+    def test_rpc_protocol_failure_report_preserves_order_and_unknown_completion(self):
+        pending = RpcProtocolDiagnostic()
+        pending.mark("send_commands"); pending.mark("send_invoke")
+        pending.observe_record({"id": "commands", "success": True})
+        for _ in range(30):
+            pending.observe_record({"type": "other", "payload": "PrivateFixtureValue"})
+        pending.collected("deadline")
+        pending.closed_stdin()
+        pending.mark("shutdown_timeout"); pending.exited(None); pending.failed()
+        report = pending.snapshot()
+        self.assertIsNotNone(report)
+        self.assertEqual(report["recordCount"], 31)
+        self.assertTrue(report["commandsSeen"])
+        self.assertFalse(report["agentSettledSeen"])
+        self.assertFalse(report["captureSeen"])
+        self.assertEqual(report["collection"], "deadline")
+        self.assertTrue(report["eofClosed"])
+        self.assertIs(report["processExited"], False)
+        self.assertIsNone(report["exitCode"])
+        self.assertEqual([event["phase"] for event in report["events"]], [
+            "spawned", "send_commands", "send_invoke", "receive_commands",
+            "collection_deadline", "stdin_closed", "shutdown_timeout", "error",
+        ])
+        self.assertNotIn("PrivateFixtureValue", json.dumps(report))
+
+        complete = RpcProtocolDiagnostic()
+        for identifier in ("commands", "state", "invoke"):
+            complete.mark("send_" + identifier)
+        complete.observe_record({"id": "commands"})
+        complete.observe_record({"id": "state"})
+        complete.observe_record({"type": "agent_settled"})
+        complete.mark("send_capture"); complete.observe_record({"id": "capture"})
+        complete.collected("complete"); complete.closed_stdin(); complete.exited(0)
+        report = complete.snapshot()
+        self.assertTrue(all(report[key] for key in ("commandsSeen", "stateSeen", "agentSettledSeen", "captureSeen", "eofClosed", "processExited")))
+        self.assertEqual(report["exitCode"], 0)
+        complete.value["recordCount"] = 1_000_000
+        complete.observe_record({})
+        self.assertEqual(complete.snapshot()["recordCount"], 1_000_000)
+        self.assertTrue(complete.snapshot()["recordCountSaturated"])
+        broken = mock.Mock(snapshot=mock.Mock(side_effect=ValueError("PrivateFixtureValue")))
+        self.assertIsNone(rpc_protocol_observe(broken, "snapshot"))
+
+    def test_rpc_protocol_failure_report_is_closed_bounded_and_private(self):
+        valid = RpcProtocolDiagnostic().snapshot()
+        bad = []
+        class PretendEnum(str):
+            def __eq__(self, other):
+                return True
+            __hash__ = str.__hash__
+
+        for key, value in (("private", "PrivateFixtureValue"), ("schemaVersion", True),
+                           ("recordCount", True), ("recordCount", 1_000_001),
+                           ("commandsSeen", 1), ("collection", "PrivateFixtureValue"),
+                           ("collection", PretendEnum("PrivateFixtureValue")),
+                           ("processExited", "PrivateFixtureValue"), ("exitCode", True),
+                           ("events", [])):
+            item = copy.deepcopy(valid); item[key] = value; bad.append(item)
+        for key, value in (("phase", "PrivateFixtureValue"), ("elapsedMs", True),
+                           ("elapsedMs", -1), ("elapsedMs", 86_400_001),
+                           ("payload", "PrivateFixtureValue")):
+            item = copy.deepcopy(valid); item["events"][0][key] = value; bad.append(item)
+        item = copy.deepcopy(valid); item["events"] *= 2; bad.append(item)
+        item = copy.deepcopy(valid)
+        item["events"] = [{"phase": "spawned", "elapsedMs": 2}, {"phase": "error", "elapsedMs": 1}]
+        bad.extend([item, None, ["PrivateFixtureValue"]])
+        with tempfile.TemporaryDirectory(prefix="ca-rpc-protocol-") as directory:
+            root = Path(directory); trace = root / "missing-trace"; retained = root / "retained"
+            with mock.patch.dict(os.environ, {"CA_PI_RPC_DIAGNOSTICS_DIR": str(retained)}):
+                legacy = retain_rpc_shutdown_failure(trace)
+                self.assertEqual(json.loads((retained / legacy).read_text(encoding="utf-8")),
+                                 {"schemaVersion": 1, "outcome": "failure", "trace": None})
+                name = retain_rpc_shutdown_failure(trace, protocol=valid)
+                payload = (retained / name).read_bytes()
+                self.assertLessEqual(len(payload), 8192)
+                self.assertEqual(set(json.loads(payload)), {"schemaVersion", "outcome", "trace", "protocol"})
+                self.assertEqual(json.loads(payload)["schemaVersion"], 2)
+                self.assertEqual(json.loads(payload)["protocol"], valid)
+                for item in bad:
+                    with self.subTest(item=item):
+                        self.assertIsNone(safe_rpc_protocol_report(item))
+                        name = retain_rpc_shutdown_failure(trace, protocol=item)
+                        payload = (retained / name).read_bytes()
+                        self.assertIsNone(json.loads(payload)["protocol"])
+                        self.assertNotIn(b"PrivateFixtureValue", payload)
+                        self.assertLessEqual(len(payload), 8192)
+                with mock.patch.object(tempfile, "NamedTemporaryFile", side_effect=ValueError("PrivateFixtureValue")):
+                    self.assertIsNone(retain_rpc_shutdown_failure(trace, protocol=valid))
+
     @staticmethod
     def _shutdown_report(pid=731, exit_ms=2000):
         phases = ["started", "stdin_end", "session_shutdown_observer", "process_exit"]
         rows = [
-            {"phase": phase, "elapsedMs": elapsed, "stdinEnded": index > 0}
+            {"phase": phase, "elapsedMs": elapsed, "stdinEnded": index > 0, "resources": []}
             for index, (phase, elapsed) in enumerate(zip(phases, [0, 100, 101, exit_ms]))
         ]
         rows[-1]["exitCode"] = 0
-        return {"schemaVersion": 1, "pid": pid, "phases": rows}
+        return {"schemaVersion": 1, "pid": pid, "node": "v22.19.0", "platform": "win32", "phases": rows}
 
     def test_rpc_shutdown_phase_requires_exact_order_identity_and_success(self):
         with tempfile.TemporaryDirectory(prefix="ca-pi-rpc-phase-") as directory:
@@ -2516,7 +3960,7 @@ class PiPackageTests(unittest.TestCase):
                 self.assertLessEqual(elapsed, 10.001)
 
     def test_rpc_shutdown_budget_bounds_raw_and_post_exit_entry_hangs(self):
-        for observed, phase_at in ((False, None), (True, 2)):
+        for observed, phase_at in ((False, None), (False, 2), (True, 2)):
             with self.subTest(observed=observed):
                 result, elapsed, _ = self._exercise_shutdown_clock(
                     observed=observed, phase_at=phase_at, exit_at=100,
@@ -2562,27 +4006,169 @@ class PiPackageTests(unittest.TestCase):
     def test_rpc_shutdown_diagnostics_are_bounded_and_tolerate_missing_or_invalid_trace(self):
         with tempfile.TemporaryDirectory(prefix="ca-pi-rpc-observer-") as directory:
             trace = Path(directory) / "trace.json"
-            self.assertEqual(rpc_shutdown_diagnostics(trace), "unavailable")
+            self.assertEqual(rpc_shutdown_diagnostics(trace), "unavailable or invalid trace")
             trace.write_bytes(b"{" + b"x" * 20_000)
-            self.assertEqual(rpc_shutdown_diagnostics(trace), "invalid or oversized trace")
+            self.assertEqual(rpc_shutdown_diagnostics(trace), "unavailable or invalid trace")
             trace.write_text(json.dumps({"large": "x" * 9000}), encoding="utf-8")
-            self.assertEqual(rpc_shutdown_diagnostics(trace), "invalid or oversized trace")
+            self.assertEqual(rpc_shutdown_diagnostics(trace), "unavailable or invalid trace")
             trace.write_bytes(b"{}" + b" " * 9000)
-            self.assertEqual(rpc_shutdown_diagnostics(trace), "invalid or oversized trace")
-            trace.write_bytes(b"{}" + b" " * 8190)
-            self.assertEqual(rpc_shutdown_diagnostics(trace), "{}")
+            self.assertEqual(rpc_shutdown_diagnostics(trace), "unavailable or invalid trace")
+            good = json.dumps(self._shutdown_report()).encode("utf-8")
+            trace.write_bytes(good + b" " * (8192 - len(good)))
+            self.assertIn('"process_exit"', rpc_shutdown_diagnostics(trace))
             trace.write_bytes(b"{not-json}")
-            self.assertEqual(rpc_shutdown_diagnostics(trace), "invalid or oversized trace")
+            self.assertEqual(rpc_shutdown_diagnostics(trace), "unavailable or invalid trace")
             trace.write_bytes(b"\xff")
-            self.assertEqual(rpc_shutdown_diagnostics(trace), "invalid or oversized trace")
+            self.assertEqual(rpc_shutdown_diagnostics(trace), "unavailable or invalid trace")
             trace.write_bytes(b"[]")
-            self.assertEqual(rpc_shutdown_diagnostics(trace), "invalid or oversized trace")
+            self.assertEqual(rpc_shutdown_diagnostics(trace), "unavailable or invalid trace")
             trace.write_bytes(b"[" * 2000 + b"]" * 2000)
-            self.assertEqual(rpc_shutdown_diagnostics(trace), "invalid or oversized trace")
+            self.assertEqual(rpc_shutdown_diagnostics(trace), "unavailable or invalid trace")
             trace.write_text(json.dumps({"phases": [{"phase": "stdin_end"}]}), encoding="utf-8")
-            self.assertEqual(rpc_shutdown_diagnostics(trace), '{"phases":[{"phase":"stdin_end"}]}')
+            self.assertEqual(rpc_shutdown_diagnostics(trace), "unavailable or invalid trace")
             trace.write_text(json.dumps({"large": "x" * 3000}), encoding="utf-8")
             self.assertLessEqual(len(rpc_shutdown_diagnostics(trace)), 2000)
+
+    def test_rpc_shutdown_failure_artifact_projects_only_safe_fields_and_is_exclusive(self):
+        with tempfile.TemporaryDirectory(prefix="ca-pi-rpc-retained-") as directory:
+            root = Path(directory)
+            trace = root / "trace.json"
+            report = self._shutdown_report()
+            report["secret"] = "NOT_A_REAL_SECRET_FIXTURE"
+            report["phases"][-1]["argv"] = "NOT_A_REAL_SECRET_FIXTURE"
+            trace.write_text(json.dumps(report), encoding="utf-8")
+            output = root / "artifacts"
+            with mock.patch.dict(os.environ, {"CA_PI_RPC_DIAGNOSTICS_DIR": str(output)}):
+                first = retain_rpc_shutdown_failure(trace)
+                second = retain_rpc_shutdown_failure(trace)
+            self.assertNotEqual(first, second)
+            self.assertIsNotNone(first)
+            raw = (output / first).read_text(encoding="utf-8")
+            self.assertNotIn("NOT_A_REAL_SECRET_FIXTURE", raw)
+            self.assertNotIn("NOT_A_REAL_SECRET_FIXTURE", rpc_shutdown_diagnostics(trace))
+            self.assertEqual(json.loads(raw), {"schemaVersion": 1, "outcome": "failure", "trace": self._shutdown_report()})
+            report["phases"][-1]["resources"] = ["PrivateFixtureValue", "PipeWrap"]
+            trace.write_text(json.dumps(report), encoding="utf-8")
+            self.assertEqual(safe_rpc_shutdown_report(trace)["phases"][-1]["resources"], ["Other", "PipeWrap"])
+            self.assertNotIn("PrivateFixtureValue", rpc_shutdown_diagnostics(trace))
+            with mock.patch.dict(os.environ, {"CA_PI_RPC_DIAGNOSTICS_DIR": str(output)}):
+                sanitized = retain_rpc_shutdown_failure(trace)
+            self.assertNotIn("PrivateFixtureValue", (output / sanitized).read_text(encoding="utf-8"))
+            for key, value in (("node", "NOT_A_REAL_SECRET_FIXTURE"), ("platform", "NOT_A_REAL_SECRET_FIXTURE"), ("pid", True)):
+                candidate = self._shutdown_report()
+                candidate[key] = value
+                trace.write_text(json.dumps(candidate), encoding="utf-8")
+                self.assertIsNone(safe_rpc_shutdown_report(trace))
+                self.assertNotIn("NOT_A_REAL_SECRET_FIXTURE", rpc_shutdown_diagnostics(trace))
+            with mock.patch.dict(os.environ, {}, clear=True):
+                self.assertIsNone(retain_rpc_shutdown_failure(trace))
+            with mock.patch.dict(os.environ, {"CA_PI_RPC_DIAGNOSTICS_DIR": str(trace)}):
+                self.assertIsNone(retain_rpc_shutdown_failure(trace))
+
+    def test_rpc_compile_cache_opt_out_is_target_local(self):
+        import _windows_rpc_timeout as native
+        cases = (
+            (None, False, False),      # Standalone and installed observer owner
+            (None, True, True),        # Explicit diagnostic companion
+            ("rpc", False, os.name == "nt"),
+            ("package", False, False),
+        )
+        for partition, observed, expected_cache_opt_out in cases:
+            with self.subTest(partition=partition, observed=observed), tempfile.TemporaryDirectory(prefix="ca-rpc-cache-scope-") as directory:
+                root = Path(directory).resolve()
+                agent, home = root / "agent", root / "home"
+                node, cli = "owned-node-stub", root / "owned-cli.js"
+                installation_environments, target_environments = [], []
+                original_environment = dict(os.environ)
+
+                def configure_package(argv, **kwargs):
+                    self.assertEqual(argv, [node, str(cli), "install", str(root), "--no-approve"])
+                    installation_environments.append(dict(kwargs["env"]))
+                    (agent / "settings.json").write_text(json.dumps({"packages": ["owned-fixture"]}), encoding="utf-8")
+                    return subprocess.CompletedProcess(argv, 0, "", "")
+
+                class LaunchBoundaryReached(Exception):
+                    pass
+
+                def launch(_argv, **kwargs):
+                    target_environments.append(dict(kwargs["env"]))
+                    raise LaunchBoundaryReached()
+
+                with (mock.patch.object(sys.modules[__name__], "PLATFORM_PACKAGE_PARTITION", partition),
+                      mock.patch.object(sys.modules[__name__], "live_pi_cli", return_value=(node, cli)),
+                      mock.patch.object(subprocess, "run", side_effect=configure_package),
+                      mock.patch.object(subprocess, "Popen", side_effect=launch),
+                      mock.patch.object(native, "preflight_provider", return_value=None),
+                      self.assertRaises(LaunchBoundaryReached)):
+                    run_rpc_commands(root, agent, home, package_source=root, _observe_shutdown=observed)
+                self.assertEqual(len(installation_environments), 1)
+                self.assertEqual(len(target_environments), 1)
+                self.assertNotIn("NODE_DISABLE_COMPILE_CACHE", installation_environments[0])
+                self.assertEqual(target_environments[0].get("NODE_DISABLE_COMPILE_CACHE"),
+                                 "1" if expected_cache_opt_out else None)
+                self.assertTrue(dict(os.environ) == original_environment, "RPC target must not mutate parent environment")
+
+    def test_rpc_read_context_observer_preserves_raw_provider_route(self):
+        with tempfile.TemporaryDirectory(prefix="ca-pi-read-context-observer-") as directory:
+            root = Path(directory).resolve()
+            agent = root / "agent"
+            home = root / "home"
+            provider = home / "ca-task3-capture-provider.ts"
+            node, cli = "owned-node-stub", root / "owned-pi-cli-stub.js"
+
+            def configure_package(argv, **_kwargs):
+                self.assertEqual(argv, [node, str(cli), "install", str(root), "--no-approve"])
+                (agent / "settings.json").write_text(
+                    json.dumps({"packages": ["owned-fixture"]}), encoding="utf-8",
+                )
+                return subprocess.CompletedProcess(argv, 0, "", "")
+
+            class LaunchBoundaryReached(Exception):
+                pass
+
+            with (
+                mock.patch.object(sys.modules[__name__], "live_pi_cli", return_value=(node, cli)),
+                mock.patch.object(subprocess, "run", side_effect=configure_package),
+                mock.patch.object(subprocess, "Popen", side_effect=LaunchBoundaryReached) as launch,
+                mock.patch.object(
+                    sys.modules[__name__], "write_rpc_shutdown_observer",
+                    side_effect=AssertionError("the read-context provider needs no preload"),
+                ),
+                self.assertRaises(LaunchBoundaryReached),
+            ):
+                run_rpc_commands(
+                    root, agent, home, package_source=root, invoke_read_context=True,
+                    governed_read_path=root / "governed.txt", ungoverned_read_path=root / "ungoverned.txt",
+                )
+
+            launch.assert_called_once()
+            self.assertEqual(launch.call_args.args[0], [
+                node, str(cli), "--mode", "rpc", "--offline", "--no-session", "--approve",
+                "--no-prompt-templates", "--no-themes", "--no-context-files",
+                "--extension", str(provider), "--provider", "ca-read-context",
+                "--model", "ca-read-context-model", "--api-key", "test-only-no-network",
+            ])
+            source = provider.read_text(encoding="utf-8")
+            self.assertIn(
+                "globalThis.__caPiRpcShutdownObserve = observe;", source,
+                "raw read-context provider did not install the passive child observer",
+            )
+            self.assertIn(json.dumps(str(home / "ca-rpc-shutdown-trace.json")), source)
+            handler = "pi.on('session_shutdown'"
+            self.assertEqual(source.count(handler), 1)
+            self.assertLess(source.index("pi.registerProvider('ca-read-context'"), source.index(handler))
+
+    def test_rpc_embedded_observer_is_passive_and_keeps_stdout_clean(self):
+        node, _ = live_pi_cli()
+        with tempfile.TemporaryDirectory(prefix="ca-pi-rpc-embedded-") as directory:
+            trace = Path(directory) / "trace.json"
+            source = rpc_shutdown_observer_source(trace, module=True)
+            source += "process.stdin.resume(); process.stdin.on('end', () => { setTimeout(() => { process.stdout.write('still-running'); process.exit(0); }, 100); });"
+            result = subprocess.run([node, "--input-type=module", "-e", source], input="", text=True, capture_output=True, timeout=10, check=False)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertEqual(result.stdout, "still-running")
+            self.assertEqual(result.stderr, "")
+            self.assertEqual([x["phase"] for x in safe_rpc_shutdown_report(trace)["phases"]], ["started", "stdin_end", "process_exit"])
 
     def test_rpc_shutdown_observer_never_turns_an_eof_hang_into_a_pass(self):
         node, _ = live_pi_cli()
@@ -2599,7 +4185,8 @@ class PiPackageTests(unittest.TestCase):
                 "JSON.stringify({id:'commands',success:true,data:{commands:[]}})+'\\n'));"
                 "process.stdin.on('end', () => setInterval(() => {}, 1000));"
             )
-            with self.assertRaisesRegex(AssertionError, "orderly shutdown did not complete") as raised:
+            retained = root / "retained"
+            with mock.patch.dict(os.environ, {"CA_PI_RPC_DIAGNOSTICS_DIR": str(retained)}), self.assertRaisesRegex(AssertionError, "orderly shutdown did not complete") as raised:
                 run_rpc_commands(
                     cwd, root / "agent", home,
                     _rpc_command=[node, "--require", str(preload), "-e", child_code],
@@ -2613,6 +4200,11 @@ class PiPackageTests(unittest.TestCase):
             self.assertIsNotNone(process.poll(), "the failing RPC root must be reaped")
             self.assertFalse(reader.is_alive(), "the failing RPC stdout reader must stop")
             self.assertIn('"stdin_end"', rpc_shutdown_diagnostics(trace))
+            artifacts = list(retained.glob("rpc-shutdown-*.json"))
+            self.assertEqual(len(artifacts), 1)
+            self.assertEqual(read_json(artifacts[0])["outcome"], "failure")
+            self.assertEqual(read_json(artifacts[0])["trace"]["phases"][-1]["phase"], "stdin_end")
+            self.assertTrue(any(artifacts[0].name in note for note in raised.exception.__notes__))
 
     def test_rpc_post_exit_entry_hang_reaps_process_tree_and_readers(self):
         node, _ = live_pi_cli()
@@ -2667,6 +4259,51 @@ class PiPackageTests(unittest.TestCase):
                 else:
                     self.fail("post-exit-entry hang left a descendant alive")
 
+    def test_rpc_observed_raw_identity_and_artifact_are_bounded_and_closed(self):
+        with tempfile.TemporaryDirectory(prefix="ca-pi-rpc-observed-record-") as directory:
+            root = Path(directory)
+            cli = root / "cli.js"
+            node = root / "node.exe"
+            entry = root / "cli-runtime.js"
+            runtime = root / "chunks" / "chunk-fixture.js"
+            runtime.parent.mkdir()
+            for path in (cli, node, runtime):
+                path.write_bytes(b"owned non-executable identity fixture")
+            entry.write_bytes(b'import{configureHttpDispatcher,main}from"./chunks/chunk-fixture.js";')
+            identity = rpc_diagnostic_runtime_identity(str(node), cli)
+            self.assertEqual(identity, {
+                name: hashlib.sha256(path.read_bytes()).hexdigest()
+                for name, path in {"nodeSha256": node, "cliSha256": cli,
+                                   "entrySha256": entry, "rpcModuleSha256": runtime}.items()
+            })
+            trace = root / "trace.json"
+            report = self._shutdown_report()
+            report["private"] = "PrivateFixtureValue"
+            report["phases"][0]["resources"] = ["PrivateFixtureValue"]
+            trace.write_text(json.dumps(report), encoding="utf-8")
+            retained = root / "retained"
+            with mock.patch.dict(os.environ, {"CA_PI_RPC_DIAGNOSTICS_DIR": str(retained)}):
+                one = retain_rpc_observed_raw_diagnostics(trace, identity, succeeded=True)
+                two = retain_rpc_observed_raw_diagnostics(trace, {**identity, "private": "PrivateFixtureValue"}, succeeded=False)
+            self.assertNotEqual(one, two)
+            first = read_json(retained / one)
+            second = read_json(retained / two)
+            self.assertEqual(set(first), {"schemaVersion", "route", "outcome", "runtimeIdentity", "trace"})
+            self.assertEqual(first["route"], "passive-observed-raw-companion")
+            self.assertEqual(first["outcome"], "observed-pass")
+            self.assertEqual(first["runtimeIdentity"], identity)
+            self.assertEqual(first["trace"]["phases"][0]["resources"], ["Other"])
+            self.assertEqual(second["outcome"], "observed-failure")
+            self.assertIsNone(second["runtimeIdentity"])
+            self.assertNotIn("PrivateFixtureValue", (retained / one).read_text(encoding="utf-8"))
+            self.assertNotIn("PrivateFixtureValue", (retained / two).read_text(encoding="utf-8"))
+            entry.write_bytes(b'import{configureHttpDispatcher,main}from"../outside.js";')
+            self.assertIsNone(rpc_diagnostic_runtime_identity(str(node), cli))
+            entry.write_bytes(b"x" * 16_385)
+            self.assertIsNone(rpc_diagnostic_runtime_identity(str(node), cli))
+            with mock.patch.dict(os.environ, {}, clear=True):
+                self.assertIsNone(retain_rpc_observed_raw_diagnostics(trace, identity, succeeded=True))
+
     def test_real_rpc_raw_compatibility_path_keeps_the_original_cli_arguments(self):
         with tempfile.TemporaryDirectory(prefix="ca-pi-rpc-raw-") as directory:
             root = Path(directory)
@@ -2685,6 +4322,41 @@ class PiPackageTests(unittest.TestCase):
             self.assertEqual(len(observed), 1)
             self.assertNotIn("--require", observed[0])
             self.assertFalse(any("ca-rpc-shutdown-observer" in argument for argument in observed[0]))
+
+    def test_real_rpc_passive_observed_raw_companion_retains_runtime_and_phases(self):
+        # Separate from the original raw argv/natural-exit qualification above.
+        # A pass here does not resolve or replace a failure in that original case.
+        node, cli = live_pi_cli()
+        identity = rpc_diagnostic_runtime_identity(node, cli)
+        self.assertIsNotNone(identity, "the diagnostic must identify the actual direct RPC runtime")
+        with tempfile.TemporaryDirectory(prefix="ca-pi-rpc-raw-observed-") as directory:
+            root = Path(directory)
+            cwd = root / "cwd"
+            cwd.mkdir()
+            observed = []
+            succeeded = False
+            try:
+                records = run_rpc_commands(
+                    cwd, root / "agent", root / "home", _observe_shutdown=True,
+                    _on_process_started=lambda process, reader: observed.append(process.args),
+                )
+                self.assertTrue(records[0]["success"])
+                self.assertEqual(len(observed), 1)
+                expected = [node, "--require", str(root / "home/ca-rpc-shutdown-observer.cjs"),
+                            str(cli), "--mode", "rpc", "--offline", "--no-session", "--approve",
+                            "--no-prompt-templates", "--no-themes", "--no-context-files",
+                            "--extension", str(root / "home/ca-rpc-shutdown-observer.ts"),
+                            "--no-builtin-tools"]
+                self.assertEqual(observed[0], expected)
+                report = safe_rpc_shutdown_report(root / "home/ca-rpc-shutdown-trace.json")
+                self.assertEqual([row["phase"] for row in report["phases"]],
+                                 ["started", "stdin_end", "session_shutdown_observer", "process_exit"])
+                self.assertEqual(report["phases"][-1]["exitCode"], 0)
+                succeeded = True
+            finally:
+                retain_rpc_observed_raw_diagnostics(
+                    root / "home/ca-rpc-shutdown-trace.json", identity, succeeded=succeeded,
+                )
 
     def test_rpc_stderr_backpressure_does_not_block_shutdown(self):
         with tempfile.TemporaryDirectory(prefix="ca-pi-rpc-stderr-") as directory:
@@ -3632,28 +5304,46 @@ class NpmPublishContractTest(unittest.TestCase):
             cohort = {"promotion_receipt_sha256": "c" * 64, "packages": {}}
             binary = b"binary"; binary_sha = hashlib.sha256(binary).hexdigest()
             for host, prefix in prefixes.items():
-                manifest_data = {"binaries": {
-                    platform: {"file": "artifact-bin", "sha256": binary_sha}
-                    for platform in platforms
-                }}
+                from _artifactmanifestlib import CONTRACT
+                manifest_data = {
+                    "format": CONTRACT["format"], "version": "0.1.0",
+                    "protocol": CONTRACT["protocol"],
+                    "schema_version": CONTRACT["schema_version"],
+                    "binaries": {
+                        platform: {
+                            "file": "ca-artifact-" + platform.replace("/", "-")
+                                    + (".exe" if platform.startswith("windows/") else ""),
+                            "sha256": binary_sha, "native_tested": True,
+                        }
+                        for platform in platforms
+                    },
+                }
                 if host == "pi":
                     manifest_data["context_qualification"] = {
-                        platform: {"source_commit": "a" * 40, "binary_sha256": binary_sha}
+                        platform: {
+                            "source_commit": "a" * 40, "workflow": CONTRACT["workflow"],
+                            "run_id": "123", "binary_sha256": binary_sha,
+                            "observation_sha256": "d" * 64, "module_sha256": "e" * 64,
+                            "native_cases": CONTRACT["native_cases"],
+                        }
                         for platform in platforms
                     }
                 manifest = json.dumps(manifest_data, separators=(",", ":")).encode()
+                self.assertEqual(helper.parse_release_manifest(manifest), manifest_data)
                 manifest_sha = hashlib.sha256(manifest).hexdigest()
+                archive_members = {prefix + "release.json": manifest}
+                archive_members.update({prefix + entry["file"]: binary
+                                        for entry in manifest_data["binaries"].values()})
                 archive_path = packages / f"{host}.tgz"
                 with tarfile.open(archive_path, "w:gz") as archive:
-                    for name, data in ((prefix + "release.json", manifest),
-                                       (prefix + "artifact-bin", binary)):
+                    for name, data in archive_members.items():
                         info = tarfile.TarInfo(name); info.size = len(data)
                         archive.addfile(info, io.BytesIO(data))
                 package_sha = hashlib.sha256(archive_path.read_bytes()).hexdigest()
                 cohort["packages"][host] = {
                     "file": archive_path.name, "sha256": package_sha,
-                    "members": {prefix + "release.json": {"sha256": manifest_sha},
-                                prefix + "artifact-bin": {"sha256": binary_sha}},
+                    "members": {name: {"sha256": hashlib.sha256(data).hexdigest()}
+                                for name, data in archive_members.items()},
                 }
                 for platform in platforms:
                     cell = cold_root / f"{host}-{platform.replace('/', '-')}"
@@ -3763,9 +5453,8 @@ class NpmPublishContractTest(unittest.TestCase):
             helper.validate_main_commit(repo, "b" * 40)
 
     def test_security_policy_and_workflow_guard_the_npm_secret_boundary(self):
-        policy = (REPO / ".codearbiter" / "security-controls.md").read_text(
-            encoding="utf-8"
-        )
+        from project_knowledge import context_text
+        policy = context_text("security-controls")
         workflow = self.WORKFLOW.read_text(encoding="utf-8")
         action = self.ACTION.read_text(encoding="utf-8")
         self.assertIn("### ca-pi npm publication boundary", policy)
@@ -3919,7 +5608,7 @@ class NpmPublishContractTest(unittest.TestCase):
                     observed, tag, source, expected_object=expected
                 )
 
-PLATFORM_PACKAGE_PARTITIONS = ("package", "rpc", "shutdown", "publish")
+PLATFORM_PACKAGE_PARTITIONS = ("package", "rpc", "rpc-observed", "shutdown", "publish")
 
 
 def platform_package_suites():
@@ -3936,6 +5625,11 @@ def platform_package_suites():
     for case in cases(unittest.defaultTestLoader.loadTestsFromModule(sys.modules[__name__])):
         if isinstance(case, NpmPublishContractTest):
             partition = "publish"
+        elif case._testMethodName in (
+            "test_real_rpc_shutdown_probe_uses_the_same_enforcement_failure_fixture",
+            "test_real_rpc_shutdown_probe_uses_the_same_native_read_context_fixture",
+        ):
+            partition = "rpc-observed"
         elif "shutdown" in case._testMethodName or "post_exit_entry" in case._testMethodName:
             partition = "shutdown"
         elif "rpc" in case._testMethodName:
@@ -3946,12 +5640,1010 @@ def platform_package_suites():
     return suites
 
 
+class DebuggerInboxTests(unittest.TestCase):
+    def test_collector_outcome_survives_final_wait_failure(self):
+        import _windows_rpc_timeout as native
+        from types import SimpleNamespace
+        collector = native._collect
+        owner_temp = tempfile.TemporaryDirectory
+        for outcome, failure in (("deadline", "deadline"), ("output_limit", "output-limit"),
+                                 ("debugger_failed", "worker-exit")):
+            for error_kind in ("os-error", "timeout"):
+                with self.subTest(outcome=outcome, error=error_kind), owner_temp() as directory:
+                    root = Path(directory).resolve()
+                    error = OSError(5, "PRIVATE_WAIT_ERROR") if error_kind == "os-error" else native.subprocess.TimeoutExpired("PRIVATE_WAIT_ARGV", 0)
+                    if error_kind == "os-error": error.winerror = 233
+                    process = SimpleNamespace(stdin=io.BytesIO(), stdout=io.BytesIO(), returncode=1,
+                        poll=mock.Mock(return_value=1), wait=mock.Mock(side_effect=error),
+                        kill=mock.Mock(), _handle=SimpleNamespace(Close=mock.Mock()))
+                    kernel = SimpleNamespace(duplicate_query=mock.Mock(return_value=77), close=mock.Mock(), available=mock.Mock())
+                    def real_collect(child, available, *, deadline, _diagnostic):
+                        return collector(child, lambda stream: native.MAX_OUTPUT if outcome == "output_limit" else 0,
+                            deadline=deadline, _diagnostic=_diagnostic,
+                            _read=lambda stream, count: b"x" * count,
+                            _clock=lambda: deadline + 1 if outcome == "deadline" else 0)
+                    with mock.patch.object(native.tempfile, "TemporaryDirectory", side_effect=lambda **kwargs: owner_temp(dir=root, **kwargs)), \
+                         mock.patch.object(native, "_tool_profile", return_value=("inbox-v1", root,
+                             {name: "a" * 64 for name in native.TOOL_FILES["inbox-v1"]})), \
+                         mock.patch.object(native.subprocess, "STARTUPINFO", side_effect=SimpleNamespace, create=True), \
+                         mock.patch.object(native.subprocess, "CREATE_NO_WINDOW", 0x08000000, create=True), \
+                         mock.patch.object(native.subprocess, "Popen", return_value=process), \
+                         mock.patch.object(native, "_collect", side_effect=real_collect):
+                        actual = native._debugger(33, kernel, time.monotonic() + 5,
+                            binding={"handle": 11, "created": 44, "image": str(root / "inert-node.exe")})
+                    diagnostic = actual["diagnostic"]
+                    self.assertEqual(actual["status"], "cleanup_unknown")
+                    self.assertEqual(diagnostic["primaryStatus"], outcome)
+                    self.assertEqual(diagnostic["failure"], failure)
+                    self.assertEqual(diagnostic["cleanupFailure"], {"operation": "worker-wait",
+                        "exception": "os-error" if error_kind == "os-error" else "deadline", "errno": 5 if error_kind == "os-error" else None,
+                        "winerror": 233 if error_kind == "os-error" else None})
+                    self.assertEqual(diagnostic["collectedBytes"], native.MAX_OUTPUT if outcome == "output_limit" else 0)
+                    self.assertEqual(actual["truncated"], outcome == "output_limit")
+                    self.assertNotIn("PRIVATE_", json.dumps(actual))
+                    self.assertNotIn(str(root), json.dumps(actual))
+                    self.assertLess(len(json.dumps(actual).encode()), native.MAX_JSON)
+                    process.kill.assert_not_called()
+
+
+
+    def test_final_owned_worker_cleanup_keeps_poll_and_wait_operations(self):
+        import _windows_rpc_timeout as native
+        from types import SimpleNamespace
+        collector_temp = tempfile.TemporaryDirectory
+        for operation in ("worker-poll", "worker-wait"):
+            with self.subTest(operation=operation), collector_temp() as directory:
+                root = Path(directory).resolve()
+                error = OSError(5, "PRIVATE_FINAL_CLEANUP_CANARY"); error.winerror = 233
+                process = SimpleNamespace(stdin=io.BytesIO(), stdout=io.BytesIO(),
+                    poll=mock.Mock(side_effect=error) if operation == "worker-poll" else mock.Mock(return_value=None),
+                    wait=mock.Mock(side_effect=error), kill=mock.Mock(), _handle=SimpleNamespace(Close=mock.Mock()))
+                kernel = SimpleNamespace(duplicate_query=mock.Mock(return_value=77), close=mock.Mock(), available=mock.Mock())
+                with mock.patch.object(native.tempfile, "TemporaryDirectory", side_effect=lambda **kwargs: collector_temp(dir=root, **kwargs)), \
+                     mock.patch.object(native, "_tool_profile", return_value=("inbox-v1", root,
+                         {name: "a" * 64 for name in native.TOOL_FILES["inbox-v1"]})), \
+                     mock.patch.object(native.subprocess, "STARTUPINFO", side_effect=SimpleNamespace, create=True), \
+                     mock.patch.object(native.subprocess, "CREATE_NO_WINDOW", 0x08000000, create=True), \
+                     mock.patch.object(native.subprocess, "Popen", return_value=process), \
+                     mock.patch.object(native, "_collect", return_value=("transport_failed", b"")):
+                    actual = native._debugger(33, kernel, time.monotonic() + 5,
+                        binding={"handle": 11, "created": 44, "image": str(root / "inert-node.exe")})
+                self.assertEqual(actual["status"], "cleanup_unknown")
+                self.assertEqual(actual["diagnostic"]["failure"], "transport")
+                self.assertEqual(actual["diagnostic"]["primaryStatus"], "transport_failed")
+                self.assertEqual(actual["diagnostic"]["cleanupFailure"], {"operation": operation,
+                    "exception": "os-error", "errno": 5, "winerror": 233})
+                self.assertNotIn("PRIVATE_FINAL_CLEANUP_CANARY", json.dumps(actual))
+                self.assertEqual(process.kill.call_count, int(operation == "worker-wait"))
+
+    def test_closed_transport_error_codes_reject_bool_range_and_exception_text(self):
+        import _windows_rpc_timeout as native
+        def diagnostic():
+            return {"failure": None, "operation": None, "exception": None, "errno": None,
+                "winerror": None, "primaryStatus": None, "cleanupFailure": None}
+        for code, expected_errno, expected_winerror in ((True, None, None), (2**32, None, None),
+                (-(2**31)-1, None, None), (5, 5, 5)):
+            with self.subTest(code=code):
+                row = diagnostic()
+                error = OSError("PRIVATE_CODE_CANARY")
+                error.errno = code; error.winerror = code
+                native._transport_failure(row, "pipe-read", error, "transport_failed")
+                self.assertEqual(row["errno"], expected_errno)
+                self.assertEqual(row["winerror"], expected_winerror)
+                self.assertEqual(row["exception"], "os-error")
+                self.assertEqual(row["operation"], "pipe-read")
+                self.assertEqual(row["primaryStatus"], "transport_failed")
+                cleanup = PermissionError(13, "PRIVATE_SECONDARY_CANARY"); cleanup.winerror = 5
+                native._transport_failure(row, "temporary-root-cleanup", cleanup, "cleanup_unknown", cleanup=True)
+                native._transport_failure(row, "worker-final-cleanup", OSError(99, "PRIVATE_THIRD_CANARY"), "cleanup_unknown", cleanup=True)
+                self.assertEqual(row["operation"], "pipe-read")
+                self.assertEqual(row["primaryStatus"], "transport_failed")
+                self.assertEqual(row["cleanupFailure"], {"operation": "temporary-root-cleanup",
+                    "exception": "os-error", "errno": 13, "winerror": 5})
+                self.assertNotIn("PRIVATE_", json.dumps(row))
+
+    def test_pipe_known_winerror_is_retained_before_closed_transport(self):
+        import _windows_rpc_timeout as native
+        from types import SimpleNamespace
+        kernel = object.__new__(native.WindowsKernel)
+        kernel.api = SimpleNamespace(PeekNamedPipe=mock.Mock(return_value=False))
+        with mock.patch.dict(sys.modules, {"msvcrt": SimpleNamespace(get_osfhandle=lambda descriptor: 77)}), \
+             mock.patch.object(native.ctypes, "get_last_error", return_value=233, create=True):
+            with self.assertRaises(OSError) as caught:
+                kernel.available(SimpleNamespace(fileno=lambda: 1))
+        self.assertEqual(getattr(caught.exception, "winerror", None), 233,
+            "known PeekNamedPipe WinError was erased before closed transport attribution")
+
+    def test_parent_retains_closed_transport_operation_and_primary_failure(self):
+        import _windows_rpc_timeout as native
+        from types import SimpleNamespace
+        collector_temp = tempfile.TemporaryDirectory
+        for mode in ("pipe-peek", "pipe-read", "worker-poll", "worker-wait", "worker-launch",
+                     "request-write", "request-close", "temporary-root-cleanup", "worker-final-cleanup"):
+            with self.subTest(operation=mode), collector_temp(prefix="ca-closed-diagnostic-fixture-") as directory:
+                root = Path(directory).resolve()
+                primary = OSError(5, "PRIVATE_TRANSPORT_CANARY", str(root / "private-error-path"))
+                primary.winerror = 233
+                secondary = PermissionError(13, "PRIVATE_CLEANUP_CANARY", str(root / "private-cleanup-path"))
+                secondary.winerror = 5
+                class Root:
+                    def __init__(self, **kwargs): self.owner = collector_temp(dir=root, **kwargs)
+                    def __enter__(self): return self.owner.__enter__()
+                    def __exit__(self, *args):
+                        self.owner.__exit__(*args)
+                        if mode in ("pipe-peek", "temporary-root-cleanup"): raise secondary
+                class Input(io.BytesIO):
+                    refused = False
+                    def write(self, value):
+                        if mode == "request-write": raise primary
+                        return super().write(value)
+                    def close(self):
+                        if mode == "request-close" and not self.refused:
+                            self.refused = True
+                            raise primary
+                        super().close()
+                response = bytearray(json.dumps(self._attribution_worker_result()).encode())
+                polls = [0]
+                def poll():
+                    polls[0] += 1
+                    if mode == "worker-poll" and polls[0] == 1: raise primary
+                    return 0
+                def wait(timeout):
+                    if mode == "worker-wait": raise primary
+                    return 0
+                process = SimpleNamespace(stdin=Input(), stdout=io.BytesIO(), returncode=0,
+                    poll=poll, wait=wait, kill=mock.Mock(),
+                    _handle=SimpleNamespace(Close=mock.Mock(side_effect=primary if mode == "worker-final-cleanup" else None)))
+                def available(stream):
+                    if mode == "pipe-peek": raise primary
+                    return 0 if mode in ("worker-poll", "worker-wait") else len(response)
+                def read(stream, count):
+                    if mode == "pipe-read": raise primary
+                    value = bytes(response[:count]); del response[:count]; return value
+                collect = native._collect
+                def inert_collect(child, pipe_available, *, deadline, **kwargs):
+                    return collect(child, pipe_available, deadline=deadline, _read=read, **kwargs)
+                kernel = SimpleNamespace(duplicate_query=mock.Mock(return_value=77), close=mock.Mock(), available=available)
+                with mock.patch.object(native.tempfile, "TemporaryDirectory", side_effect=Root), \
+                     mock.patch.object(native, "_tool_profile", return_value=("inbox-v1", root,
+                         {name: "a" * 64 for name in native.TOOL_FILES["inbox-v1"]})), \
+                     mock.patch.object(native, "_regular", side_effect=lambda path, **kwargs: Path(path)), \
+                     mock.patch.object(native, "_worker_environment", return_value={}), \
+                     mock.patch.object(native.subprocess, "STARTUPINFO", side_effect=SimpleNamespace, create=True), \
+                     mock.patch.object(native.subprocess, "CREATE_NO_WINDOW", 0x08000000, create=True), \
+                     mock.patch.object(native.subprocess, "Popen", side_effect=primary if mode == "worker-launch" else None,
+                                       return_value=process) as launch, \
+                     mock.patch.object(native, "_collect", side_effect=inert_collect):
+                    actual = native._debugger(33, kernel, time.monotonic() + 5,
+                        binding={"handle": 11, "created": 44, "image": str(root / "inert-node.exe")})
+                diagnostic = actual["diagnostic"]
+                if mode == "pipe-peek":
+                    self.assertEqual(diagnostic["failure"], "transport",
+                        "secondary temporary cleanup must not overwrite the primary transport failure")
+                self.assertEqual(diagnostic.get("operation"), mode, "closed failing operation was erased")
+                self.assertEqual(diagnostic.get("exception"), "os-error")
+                self.assertEqual(diagnostic.get("errno"), 13 if mode == "temporary-root-cleanup" else 5)
+                self.assertEqual(diagnostic.get("winerror"), 5 if mode == "temporary-root-cleanup" else 233)
+                self.assertEqual(diagnostic.get("workerSpawned"), mode != "worker-launch")
+                self.assertIn(diagnostic.get("workerExited"), (None, True))
+                self.assertIn(diagnostic.get("workerReturnCode"), (None, 0))
+                self.assertIs(type(diagnostic.get("collectedBytes")), int)
+                self.assertTrue(0 <= diagnostic["collectedBytes"] <= native.MAX_OUTPUT)
+                self.assertEqual(set(diagnostic), {"phase", "failure", "elapsedMs", "remainingMs", "operation",
+                    "exception", "errno", "winerror", "workerSpawned", "workerExited", "workerReturnCode",
+                    "collectedBytes", "cleanupFailure", "primaryStatus"})
+                if mode == "pipe-peek":
+                    self.assertEqual(diagnostic["primaryStatus"], "transport_failed")
+                    self.assertEqual(diagnostic["cleanupFailure"], {"operation": "temporary-root-cleanup",
+                        "exception": "os-error", "errno": 13, "winerror": 5})
+                self.assertNotIn("PRIVATE_TRANSPORT_CANARY", json.dumps(actual))
+                self.assertNotIn("PRIVATE_CLEANUP_CANARY", json.dumps(actual))
+                self.assertNotIn(str(root), json.dumps(actual))
+                self.assertLess(len(json.dumps(actual).encode()), native.MAX_JSON)
+                launch.assert_called_once()
+                kernel.duplicate_query.assert_called_once_with(11)
+                process.kill.assert_not_called()  # The inert worker already reports exited; no target exists.
+    def test_warm_refusal_timeout_and_uncontained_helper_have_distinct_target_outcomes(self):
+        import _windows_rpc_timeout as native
+        import _boundedproc as bounded
+        from types import SimpleNamespace
+        current=sys.modules[__name__]
+        for mode in ('refused','launch-error','timeout','uncontained','malformed'):
+            with self.subTest(mode=mode),tempfile.TemporaryDirectory() as raw:
+                root=Path(raw).resolve();cwd=root/'cwd';cwd.mkdir();retained=root/'retained';retained.mkdir();order=[]
+                def preflight(argv,**kwargs):
+                    order.append('preflight')
+                    if mode=='launch-error':raise OSError('PRIVATE_WARM_CANARY')
+                    def communicate(timeout):
+                        if mode in ('timeout','uncontained') and timeout==5.0:raise subprocess.TimeoutExpired('owned-hash-only',5.0)
+                        if mode=='refused':
+                            return json.dumps({'schemaVersion':1,'kind':'protected-provider-warm-read','status':'unavailable',
+                                'profile':None,'filesHashed':0,'phase':'provider-hash-dbgeng','failure':'refused','elapsedMs':1}),''
+                        return ('{bad PRIVATE_WARM_CANARY' if mode=='malformed' else ''),''
+                    return SimpleNamespace(returncode=0,communicate=communicate)
+                def target(*args,**kwargs):order.append('target');raise RuntimeError('inert-target-stop')
+                os_model=SimpleNamespace(name='nt',environ=os.environ)
+                startup=lambda:SimpleNamespace(dwFlags=0,wShowWindow=0)
+                with mock.patch.dict(os.environ,{'CA_PI_RPC_DIAGNOSTICS_DIR':str(retained)}), \
+                     mock.patch.object(native,'os',os_model),mock.patch.object(bounded,'_VerifierProcess',side_effect=preflight), \
+                     mock.patch.object(bounded,'terminate_tree',return_value='unconfirmed' if mode=='uncontained' else 'terminated'), \
+                     mock.patch.object(current,'live_pi_cli',return_value=(sys.executable,root/'unused-cli')), \
+                     mock.patch.object(current,'read_json',return_value={'packages':['inert']}), \
+                     mock.patch.object(subprocess,'run',return_value=subprocess.CompletedProcess([],0,'','')), \
+                     mock.patch.object(subprocess,'Popen',side_effect=target), \
+                     mock.patch.object(subprocess,'STARTUPINFO',side_effect=startup,create=True), \
+                     mock.patch.object(subprocess,'STARTF_USESHOWWINDOW',1,create=True), \
+                     mock.patch.object(subprocess,'SW_HIDE',0,create=True):
+                    if mode in ('uncontained','launch-error'):
+                        with self.assertRaises((AssertionError,RuntimeError)) as caught:
+                            run_rpc_commands(cwd,root/'agent',root/'home',_rpc_command=['inert-target'],_observe_shutdown=True)
+                        self.assertIsInstance(caught.exception,AssertionError,'uncertain hash-helper ownership must block target spawn')
+                        self.assertIn('containment unconfirmed; RPC target not spawned',str(caught.exception))
+                        self.assertEqual(order,['preflight'])
+                        files=list(retained.glob('rpc-native-warmup-*.json'));self.assertEqual(len(files),1)
+                        value=json.loads(files[0].read_bytes());self.assertIsNone(value['processId'])
+                        self.assertEqual(value['targetState'],'not-spawned');self.assertEqual(value['containment'],'unconfirmed')
+                        self.assertNotIn('PRIVATE_WARM_CANARY',files[0].read_text())
+                    else:
+                        with self.assertRaisesRegex(RuntimeError,'inert-target-stop'):
+                            run_rpc_commands(cwd,root/'agent',root/'home',_rpc_command=['inert-target'],_observe_shutdown=True)
+                        self.assertEqual(order,['preflight','target'])
+
+    def test_hash_only_warm_records_are_closed_not_authority_and_pid_associated(self):
+        import _windows_rpc_timeout as native
+        from types import SimpleNamespace
+        original=native.os
+        def reads(deadline,*,_progress):
+            self.assertGreater(deadline,time.monotonic())
+            self.assertLessEqual(deadline-time.monotonic(),5.0)
+            _progress['phase']='provider-hash-dbghelp'
+            return 'sdk-v1',Path('unused'),dict.fromkeys(('cdb.exe','dbgeng.dll','dbghelp.dll'),'PRIVATE_HASH_CANARY')
+        with mock.patch.object(native,'os',SimpleNamespace(name='nt')), \
+             mock.patch.object(native,'_tool_profile',side_effect=reads) as hashing, \
+             mock.patch.object(native,'WindowsKernel',side_effect=AssertionError('no target query')), \
+             mock.patch.object(native,'_debugger',side_effect=AssertionError('no debugger')):
+            child=native.provider_warm_read()
+        hashing.assert_called_once();self.assertEqual(child['status'],'complete')
+        self.assertEqual(child['filesHashed'],3);self.assertNotIn('PRIVATE_HASH_CANARY',json.dumps(child))
+        self.assertNotIn('hashes',child);self.assertNotIn('toolHashes',child)
+        parent={**child,'kind':'protected-provider-warm-preflight','timed_out':False,'containment':'exited'}
+        self.assertTrue(native._warm_valid(parent,supervised=True))
+        with tempfile.TemporaryDirectory() as raw:
+            root=Path(raw).resolve()
+            fresh=root/'first-observed-case'
+            retained=native.retain_preflight(parent,77,fresh)
+            self.assertIsNotNone(retained,'first observed case must create its diagnostic directory')
+            self.assertEqual(json.loads((fresh/retained).read_bytes())['processId'],77)
+            first=native.retain_preflight(parent,77,root);second=native.retain_preflight(parent,77,root)
+            self.assertIsNotNone(first);self.assertNotEqual(first,second)
+            row=json.loads((root/first).read_bytes());self.assertEqual(row['processId'],77)
+            self.assertEqual(row['targetState'],'spawned')
+            for changed in ({**parent,'private':'PRIVATE_WARM_CANARY'},{**parent,'phase':[]},
+                            {**parent,'filesHashed':True},{**parent,'containment':'unconfirmed'}):
+                self.assertFalse(native._warm_valid(changed,supervised=True))
+                self.assertIsNone(native.retain_preflight(changed,77,root))
+        # Only the helper CLI/main is new; these authority functions must still
+        # call full provider hashing, and never consume the warm record.
+        source=Path(native.__file__).read_text(encoding='utf8')
+        tree=ast.parse(source)
+        for name in ('_debugger','_bound_tool_profile'):
+            node=next(n for n in tree.body if isinstance(n,ast.FunctionDef) and n.name==name)
+            calls=[n for n in ast.walk(node) if isinstance(n,ast.Call)]
+            self.assertTrue(any(isinstance(n.func,ast.Name) and n.func.id==('_tool_profile' if name=='_debugger' else '_digest') for n in calls))
+            self.assertNotIn('preflight',ast.get_source_segment(source,node))
+        ci=(REPO/'.github/workflows/ci.yml').read_text(encoding='utf8')
+        self.assertEqual(ci.count('${{ runner.temp }}/ca-pi-rpc-diagnostics/rpc-native-warmup-*.json'),1)
+
+    def test_owned_hash_only_control_uses_existing_deadline_cleanup_owner(self):
+        import _boundedproc as bounded
+        with tempfile.TemporaryDirectory() as raw:
+            root=Path(raw).resolve();owned=[];start=bounded.start
+            env={k:v for k,v in os.environ.items() if k.upper() in ('SYSTEMROOT','WINDIR','COMSPEC','PATHEXT')}
+            env.update(PATH='',HOME=str(root),USERPROFILE=str(root),TEMP=str(root),TMP=str(root))
+            def record(*args,**kwargs):
+                child=start(*args,**kwargs);owned.append(child);return child
+            with mock.patch.object(bounded,'start',side_effect=record):
+                result=bounded.run([sys.executable,'-I','-S','-B','-X','utf8','-c',
+                    'import time; print("owned-hash-control-ready",flush=True); time.sleep(10)'],
+                    timeout=0.15,cwd=root,env=env,stdin=subprocess.DEVNULL)
+            self.assertTrue(result.timed_out);self.assertIn(result.containment,('terminated','exited'))
+            self.assertEqual(len(owned),1);self.assertIsNotNone(owned[0].poll())
+            self.assertEqual(owned[0].stdin,None)
+
+    def test_observed_windows_warm_preflight_precedes_owned_target_without_effect_substitution(self):
+        import _windows_rpc_timeout as native
+        import _boundedproc as bounded
+        from types import SimpleNamespace
+        current=sys.modules[__name__]
+        cases = (
+            (True, True, False, ['preflight', 'target']),
+            (False, True, True, ['preflight', 'target']),
+            (False, True, False, ['target']),
+            (False, False, True, ['target']),
+            (True, False, False, ['target']),
+        )
+        for observed, windows, retained, expect in cases:
+            with self.subTest(observed=observed, windows=windows, retained=retained), tempfile.TemporaryDirectory() as raw:
+                root=Path(raw).resolve();cwd=root/'cwd';cwd.mkdir();order=[]
+                report={'schemaVersion':1,'kind':'protected-provider-warm-read','status':'complete',
+                        'profile':'sdk-v1','filesHashed':3,'phase':'provider-hash-dbghelp','failure':None,'elapsedMs':1}
+                def preflight(argv,**kwargs):
+                    order.append('preflight')
+                    self.assertEqual(argv,[sys.executable,'-I','-S','-B','-X','utf8',str(Path(native.__file__).resolve()),'--preflight-provider'])
+                    self.assertEqual(kwargs['stdin'],subprocess.DEVNULL)
+                    self.assertTrue(kwargs['close_fds'])
+                    self.assertEqual(kwargs['env'].get('PATH'),'')
+                    self.assertFalse(any(k in kwargs['env'] for k in ('GH_TOKEN','GITHUB_TOKEN','OPENAI_API_KEY','_NT_SYMBOL_PATH','PYTHONPATH')))
+                    def communicate(timeout):
+                        self.assertEqual(timeout,5.0)
+                        return json.dumps(report),''
+                    return SimpleNamespace(returncode=0,communicate=communicate)
+                def target(*args,**kwargs):
+                    order.append('target')
+                    self.assertEqual(kwargs['env'].get('NODE_DISABLE_COMPILE_CACHE'), '1' if observed else None)
+                    raise RuntimeError('inert-target-stop')
+                environment = dict(os.environ)
+                environment.pop('CA_PI_RPC_DIAGNOSTICS_DIR', None)
+                if retained:
+                    environment['CA_PI_RPC_DIAGNOSTICS_DIR'] = str(root / 'retained')
+                os_model=SimpleNamespace(name='nt' if windows else 'posix',environ=os.environ)
+                startup=lambda:SimpleNamespace(dwFlags=0,wShowWindow=0)
+                with mock.patch.dict(os.environ, environment, clear=True), \
+                     mock.patch.object(current, 'os', os_model), \
+                     mock.patch.object(native,'os',os_model),mock.patch.object(bounded,'_VerifierProcess',side_effect=preflight), \
+                     mock.patch.object(current,'live_pi_cli',return_value=(sys.executable,root/'unused-cli')), \
+                     mock.patch.object(current,'read_json',return_value={'packages':['inert']}), \
+                     mock.patch.object(subprocess,'run',return_value=subprocess.CompletedProcess([],0,'','')), \
+                     mock.patch.object(subprocess,'Popen',side_effect=target), \
+                     mock.patch.object(subprocess,'STARTUPINFO',side_effect=startup,create=True), \
+                     mock.patch.object(subprocess,'STARTF_USESHOWWINDOW',1,create=True), \
+                     mock.patch.object(subprocess,'SW_HIDE',0,create=True), \
+                     mock.patch.object(subprocess,'CREATE_NEW_PROCESS_GROUP',0x200,create=True):
+                    with self.assertRaisesRegex(RuntimeError,'inert-target-stop'):
+                        run_rpc_commands(cwd,root/'agent',root/'home',_rpc_command=['inert-target'],_observe_shutdown=observed)
+                self.assertEqual(order, expect, 'Windows diagnostic target must follow bounded hash-only preflight')
+
+    def test_collector_provider_attribution_distinguishes_missing_refused_and_deadline(self):
+        import _windows_rpc_timeout as native
+        from types import SimpleNamespace
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory).resolve()
+            selected = root / "cdb.exe"
+            kernel = SimpleNamespace()
+            original_digest = native._digest
+            for failure in ("missing", "refused", "deadline", "os-error"):
+                with self.subTest(failure=failure):
+                    if selected.exists():
+                        if selected.is_dir(): selected.rmdir()
+                        else: selected.unlink()
+                    if failure == "refused": selected.mkdir()
+                    elif failure in ("deadline", "os-error"): selected.write_bytes(b"inert, never loaded")
+                    def digest(path, deadline):
+                        if failure == "os-error": raise OSError("PrivateFixtureValue")
+                        return original_digest(path, deadline)
+                    with mock.patch.object(native, "CDB", selected), \
+                         mock.patch.object(native, "DEFAULT_CDB", selected), \
+                         mock.patch.object(native, "_digest", side_effect=digest), \
+                         mock.patch.object(native, "_system_directory") as inbox, \
+                         mock.patch.object(native.subprocess, "Popen") as launch:
+                        actual = native._debugger(33, kernel,
+                            time.monotonic() - 1 if failure == "deadline" else time.monotonic() + 5,
+                            binding={"handle": 11, "created": 44, "image": str(root / "node.exe")})
+                    self.assertEqual(actual["status"], "unavailable")
+                    self.assertIn("diagnostic", actual)
+                    self.assertEqual(actual["diagnostic"]["phase"], "provider-hash-cdb")
+                    self.assertEqual(actual["diagnostic"]["failure"], failure)
+                    self.assertIsNone(actual["profile"])
+                    self.assertIsNone(actual["worker"])
+                    self.assertTrue(0 <= actual["diagnostic"]["elapsedMs"] <= 2**31 - 1)
+                    self.assertTrue(0 <= actual["diagnostic"]["remainingMs"] <= 5000)
+                    if failure == "deadline": self.assertEqual(actual["diagnostic"]["remainingMs"], 0)
+                    inbox.assert_not_called()
+                    launch.assert_not_called()
+                    self.assertNotIn(str(root), json.dumps(actual))
+                    self.assertNotIn("PrivateFixtureValue", json.dumps(actual))
+
+    def test_current_instruction_projection_uses_actual_stack_frame_offsets(self):
+        import _windows_dbgeng as sdk
+        engine = object.__new__(sdk.Engine)
+        large = False
+        def call(name, index, types, *args):
+            if (name, index) == ("systems", 9):
+                sdk.C.cast(args[0], sdk.C.POINTER(sdk.U32)).contents.value = 16 if large else 1
+            elif (name, index) == ("systems", 11):
+                for index in range(args[1]): args[2][index] = index + 7
+            elif (name, index) == ("control", 31):
+                for index in range(24 if large else 1):
+                    args[3][index].InstructionOffset = 0x1011
+                    args[3][index].ReturnOffset = 0x2022
+                sdk.C.cast(args[5], sdk.C.POINTER(sdk.U32)).contents.value = 24 if large else 1
+            else:
+                self.assertEqual((name, index), ("systems", 6))
+            return 0
+        engine.call = call
+        engine.frame = lambda address: sdk.project_frame(
+            b"node" if address == 0x2022 else b"kernelbase", address,
+            0x2000 if address == 0x2022 else 0x1000, True)
+        actual, truncated = engine.threads(time.monotonic() + 5, include_instruction=True)
+        self.assertFalse(truncated)
+        self.assertEqual(actual, [{"frames": [{"module": "node", "returnOffset": 0x22,
+            "instructionModule": "kernelbase", "instructionOffset": 0x11}]}])
+        legacy, _ = engine.threads(time.monotonic() + 5)
+        self.assertEqual(legacy, [{"frames": [{"module": "node", "returnOffset": 0x22}]}])
+        large = True
+        capped, truncated = engine.threads(time.monotonic() + 5, include_instruction=True)
+        self.assertTrue(truncated)
+        self.assertLessEqual(len(capped), 16)
+        self.assertTrue(all(len(row["frames"]) <= 24 for row in capped))
+        self.assertLessEqual(len(json.dumps(capped, separators=(",", ":")).encode()), sdk.MAX_JSON - 2048)
+
+    @staticmethod
+    def _attribution_worker_result():
+        import _windows_dbgeng as sdk
+        return {"schemaVersion": 3, "profile": "inbox-v1", "status": "captured",
+            "threads": [{"frames": [{"module": "node", "returnOffset": 16,
+                "instructionModule": "kernelbase", "instructionOffset": 32}]}], "truncated": False,
+            "pid": 33, "created": 44, "bound": True, "attached": True, "policy": sdk.POLICY,
+            "detached": True, "hresult": 0, "phase": "detach", "elapsedMs": 4}
+
+    def test_worker_v3_attribution_and_legacy_readers_remain_closed(self):
+        import _windows_dbgeng as sdk
+        good = self._attribution_worker_result()
+        self.assertEqual(sdk.decode_result(json.dumps(good).encode(), 33, 44,
+                                         profile="inbox-v1", version=3), good)
+        legacy = copy.deepcopy(good)
+        for key in ("phase", "elapsedMs"): legacy.pop(key)
+        for frame in legacy["threads"][0]["frames"]:
+            frame.pop("instructionModule"); frame.pop("instructionOffset")
+        legacy["schemaVersion"] = 2
+        self.assertEqual(sdk.decode_result(json.dumps(legacy).encode(), 33, 44, profile="inbox-v1"), legacy)
+        self.assertIsNone(sdk.decode_result(json.dumps(legacy).encode(), 33, 44, profile="inbox-v1", version=3))
+        legacy.pop("profile"); legacy["schemaVersion"] = 1
+        self.assertEqual(sdk.decode_result(json.dumps(legacy).encode(), 33, 44), legacy)
+        mutations = []
+        for key, value in (("phase", "PrivateFixtureValue"), ("elapsedMs", True),
+                           ("elapsedMs", 2**31), ("unexpected", "PrivateFixtureValue"),
+                           ("policy", sdk.POLICY | sdk.ALLOW_NETWORK), ("detached", False)):
+            mutations.append({**good, key: value})
+        for key, value in (("instructionModule", "PrivateFixtureValue"), ("instructionOffset", True),
+                           ("instructionOffset", 2**64), ("unexpected", "PrivateFixtureValue")):
+            changed = copy.deepcopy(good)
+            changed["threads"][0]["frames"][0][key] = value
+            mutations.append(changed)
+        unknown = copy.deepcopy(good)
+        unknown["threads"][0]["frames"][0].update(instructionModule="Other", instructionOffset=None)
+        self.assertEqual(sdk.decode_result(json.dumps(unknown).encode(), 33, 44), unknown)
+        unknown["threads"][0]["frames"][0]["instructionOffset"] = 1
+        mutations.append(unknown)
+        for changed in mutations:
+            with self.subTest(changed_keys=list(changed)):
+                self.assertIsNone(sdk.decode_result(json.dumps(changed).encode(), 33, 44, profile="inbox-v1", version=3))
+
+    def test_parent_preserves_validated_worker_failure_and_detach_fields(self):
+        import _windows_rpc_timeout as native
+        from types import SimpleNamespace
+        collector_temp = tempfile.TemporaryDirectory
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory).resolve()
+            for detached in (True, False):
+                with self.subTest(detached=detached):
+                    good = {**self._attribution_worker_result(), "status": "engine_failed" if detached else "cleanup_unknown",
+                            "threads": [], "hresult": 0x80004005, "phase": "attach", "detached": detached}
+                    kernel = SimpleNamespace(duplicate_query=mock.Mock(return_value=77), close=mock.Mock(), available=mock.Mock())
+                    process = SimpleNamespace(stdin=io.BytesIO(), stdout=io.BytesIO(),
+                        _handle=SimpleNamespace(Close=mock.Mock()), poll=lambda: 0)
+                    with mock.patch.object(native.tempfile, "TemporaryDirectory",
+                                           side_effect=lambda **kwargs: collector_temp(dir=root, **kwargs)), \
+                         mock.patch.object(native, "_tool_profile", return_value=("inbox-v1", root,
+                             {name: "a" * 64 for name in native.TOOL_FILES["inbox-v1"]})), \
+                         mock.patch.object(native.subprocess, "STARTUPINFO", side_effect=SimpleNamespace, create=True), \
+                         mock.patch.object(native.subprocess, "CREATE_NO_WINDOW", 0x08000000, create=True), \
+                         mock.patch.object(native.subprocess, "Popen", return_value=process) as launch, \
+                         mock.patch.object(native, "_collect", return_value=("captured", json.dumps(good).encode())):
+                        actual = native._debugger(33, kernel, time.monotonic() + 5,
+                            binding={"handle": 11, "created": 44, "image": str(root / "node.exe")})
+                    self.assertEqual(actual["status"], good["status"])
+                    self.assertEqual(actual["worker"], {key: good[key] for key in
+                        ("bound", "attached", "detached", "hresult", "policy", "phase", "elapsedMs")})
+                    self.assertEqual(actual["diagnostic"]["failure"], "engine" if detached else "cleanup")
+                    self.assertEqual(actual["threads"], [])
+                    self.assertEqual(launch.call_count, 1)
+                    self.assertNotIn(str(root), json.dumps(actual))
+
+    def test_worker_fixed_phase_distinguishes_provider_policy_and_stack_failure(self):
+        import _windows_rpc_timeout as native
+        import _windows_dbgeng as sdk
+        from types import SimpleNamespace
+        root = Path("inert-profile")
+        request = {"schemaVersion": 3, "profile": "inbox-v1", "handle": 77, "pid": 33,
+            "created": 44, "image": "inert-node.exe", "sdk": str(root),
+            "hashes": {name: "a" * 64 for name in native.TOOL_FILES["inbox-v1"]},
+            "deadline": time.monotonic() + 5}
+        kernel = SimpleNamespace(snapshot=lambda handle: {"pid": 33, "created": 44,
+            "state": "running", "image": request["image"]}, close=mock.Mock())
+        owner = SimpleNamespace(IdentityDeadline=native.IdentityDeadline, WindowsKernel=lambda: kernel, _regular=lambda path, **kwargs: path,
+                                _bound_tool_profile=lambda *args: root)
+        for failure in ("provider-bind", "policy", "stack"):
+            owner._bound_tool_profile = mock.Mock(side_effect=native.IdentityDeadline("PrivateFixtureValue")) if failure == "provider-bind" else lambda *args: root
+            backend = SimpleNamespace(policy=lambda: sdk.ALLOW_NETWORK if failure == "policy" else sdk.POLICY,
+                check=sdk.Engine.check, call=mock.Mock(return_value=0),
+                threads=mock.Mock(side_effect=sdk.EngineFailure(0x80004005)), close=lambda: True)
+            actual = sdk.run(request, owner, engine_factory=lambda path: backend)
+            self.assertEqual(actual["status"], "deadline" if failure == "provider-bind" else "engine_failed")
+            self.assertEqual(actual["phase"], failure)
+            self.assertEqual(actual["detached"], failure != "provider-bind")
+            self.assertEqual(actual["hresult"], None if failure == "provider-bind" else 0x80070005 if failure == "policy" else 0x80004005)
+            self.assertIsNotNone(sdk.decode_result(json.dumps(actual).encode(), 33, 44, profile="inbox-v1", version=3))
+            self.assertNotIn("PrivateFixtureValue", json.dumps(actual))
+            if failure != "stack": backend.threads.assert_not_called()
+            else: backend.threads.assert_called_once_with(mock.ANY, include_instruction=True)
+
+    def test_dll_only_inbox_collector_uses_one_bound_inert_worker_without_cdb(self):
+        import _windows_rpc_timeout as native
+        import _windows_dbgeng as sdk
+        from types import SimpleNamespace
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory).resolve()
+            collector_temp = tempfile.TemporaryDirectory
+            inbox = root / "protected-system"
+            inbox.mkdir()
+            for name in ("dbgeng.dll", "dbghelp.dll"):
+                (inbox / name).write_bytes(("inert " + name).encode())
+            image = root / "owned-node.exe"
+            image.write_bytes(b"inert image, never executed")
+            missing = root / "absent-sdk" / "cdb.exe"
+            kernel = SimpleNamespace(
+                duplicate_query=mock.Mock(return_value=77), close=mock.Mock(),
+                snapshot=mock.Mock(return_value={"pid": 33, "created": 44,
+                    "state": "running", "image": str(image)}), available=mock.Mock())
+            api = SimpleNamespace(GetSystemDirectoryW=mock.Mock(
+                side_effect=lambda buffer, count: self._fill_system_directory(buffer, count, inbox)))
+            process = SimpleNamespace(stdin=io.BytesIO(), stdout=io.BytesIO(),
+                                      _handle=SimpleNamespace(Close=mock.Mock()), poll=lambda: 0)
+            requests = []
+            class Backend:
+                check = staticmethod(sdk.Engine.check)
+                def __init__(self, path):
+                    self_test.assertEqual(path, inbox)
+                def policy(self):
+                    return sdk.POLICY
+                def call(self, *args):
+                    return 0
+                def threads(self, deadline, *, include_instruction=False):
+                    row = {"module": "node", "returnOffset": 16}
+                    if include_instruction:
+                        row.update(instructionModule="kernelbase", instructionOffset=32)
+                    return [{"frames": [row]}], False
+                def close(self):
+                    return True
+            self_test = self
+            # Preserve the actual encoded request after the parent's stdin close.
+            class Input(io.BytesIO):
+                def close(self):
+                    if not self.closed and self.getvalue():
+                        requests.append(json.loads(self.getvalue()))
+                    super().close()
+            process.stdin = Input()
+            def collect(child, available, *, deadline, _diagnostic=None):
+                self.assertIs(child, process)
+                response = sdk.run(requests[-1], native, engine_factory=Backend)
+                return "captured", json.dumps(response).encode()
+            with mock.patch.object(native.tempfile, "TemporaryDirectory",
+                                   side_effect=lambda **kwargs: collector_temp(dir=root, **kwargs)), \
+                 mock.patch.object(native, "CDB", missing), \
+                 mock.patch.object(native, "DEFAULT_CDB", missing, create=True), \
+                 mock.patch.object(native.ctypes, "WinDLL", return_value=api, create=True), \
+                 mock.patch.object(native, "WindowsKernel", return_value=kernel), \
+                 mock.patch.object(native.subprocess, "STARTUPINFO", side_effect=SimpleNamespace, create=True), \
+                 mock.patch.object(native.subprocess, "CREATE_NO_WINDOW", 0x08000000, create=True), \
+                 mock.patch.object(native.subprocess, "Popen", return_value=process) as launch, \
+                 mock.patch.object(native, "_collect", side_effect=collect), \
+                 mock.patch.dict(os.environ, {"SystemRoot": str(root / "attacker"),
+                     "WINDIR": str(root / "attacker"), "PATH": str(root / "attacker"),
+                     "_NT_SYMBOL_PATH": "PrivateFixtureValue"}):
+                actual = native._debugger(33, kernel, time.monotonic() + 5,
+                    binding={"handle": 11, "created": 44, "image": str(image)})
+            self.assertEqual(actual["status"], "captured", "DLL-only inbox must reach the bound worker")
+            self.assertEqual(actual["profile"], "inbox-v1")
+            self.assertEqual(launch.call_count, 1)
+            self.assertEqual(launch.call_args.kwargs["cwd"].parent, root)
+            self.assertEqual(launch.call_args.kwargs["startupinfo"].lpAttributeList, {"handle_list": [77]})
+            self.assertEqual(launch.call_args.kwargs["creationflags"], 0x08000000)
+            self.assertEqual(set(actual["toolHashes"]), {"dbgeng.dll", "dbghelp.dll"})
+            self.assertEqual(actual["toolHashes"], {name: hashlib.sha256((inbox / name).read_bytes()).hexdigest()
+                                                    for name in ("dbgeng.dll", "dbghelp.dll")})
+            self.assertNotIn("PrivateFixtureValue", json.dumps(actual))
+            self.assertFalse((inbox / "cdb.exe").exists())
+            kernel.duplicate_query.assert_called_once_with(11)
+            self.assertEqual(kernel.close.call_args_list, [mock.call(77), mock.call(77)])
+            process._handle.Close.assert_called_once_with()
+
+    def test_profiles_preserve_sdk_precedence_and_refuse_partial_or_unsafe_files(self):
+        import _windows_rpc_timeout as native
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory).resolve()
+            inbox, sdk_root = root / "inbox", root / "sdk"
+            inbox.mkdir()
+            sdk_root.mkdir()
+            for folder, names in ((inbox, native.TOOL_FILES["inbox-v1"]),
+                                  (sdk_root, native.TOOL_FILES["sdk-v1"])):
+                for name in names:
+                    (folder / name).write_bytes((folder.name + name).encode())
+            selected = sdk_root / "cdb.exe"
+            with mock.patch.object(native, "CDB", selected), \
+                 mock.patch.object(native, "DEFAULT_CDB", selected), \
+                 mock.patch.object(native, "_system_directory", return_value=inbox) as system:
+                profile, actual, hashes = native._tool_profile(time.monotonic() + 5)
+                self.assertEqual((profile, actual), ("sdk-v1", sdk_root))
+                self.assertEqual(set(hashes), set(native.TOOL_FILES["sdk-v1"]))
+                system.assert_not_called()
+                for name in native.TOOL_FILES["sdk-v1"]:
+                    with self.subTest(missing_sdk_member=name):
+                        original = (sdk_root / name).read_bytes()
+                        (sdk_root / name).unlink()
+                        with self.assertRaises(OSError):
+                            native._tool_profile(time.monotonic() + 5)
+                        system.assert_not_called()
+                        (sdk_root / name).write_bytes(original)
+            with mock.patch.object(native, "CDB", root / "override-missing" / "cdb.exe"), \
+                 mock.patch.object(native, "_system_directory") as system:
+                with self.assertRaisesRegex(ValueError, "selected SDK unavailable"):
+                    native._tool_profile(time.monotonic() + 5)
+                system.assert_not_called()
+            missing = root / "default-missing" / "cdb.exe"
+            with mock.patch.object(native, "CDB", missing), \
+                 mock.patch.object(native, "DEFAULT_CDB", missing), \
+                 mock.patch.object(native, "_system_directory", return_value=inbox):
+                profile, actual, hashes = native._tool_profile(time.monotonic() + 5)
+                self.assertEqual((profile, actual), ("inbox-v1", inbox))
+                self.assertEqual(set(hashes), {"dbgeng.dll", "dbghelp.dll"})
+                for name in native.TOOL_FILES["inbox-v1"]:
+                    with self.subTest(linked_inbox_member=name):
+                        target = root / ("target-" + name)
+                        (inbox / name).rename(target)
+                        (inbox / name).symlink_to(target)
+                        with self.assertRaisesRegex(ValueError, "unsupported file identity"):
+                            native._tool_profile(time.monotonic() + 5)
+                        (inbox / name).unlink()
+                        target.rename(inbox / name)
+                with self.assertRaisesRegex(ValueError, "identity bound"):
+                    native._tool_profile(time.monotonic() - 1)
+            linked = root / "linked-sdk"
+            linked.symlink_to(sdk_root, target_is_directory=True)
+            with mock.patch.object(native, "CDB", linked / "cdb.exe"), \
+                 mock.patch.object(native, "_system_directory") as system:
+                with self.assertRaisesRegex(ValueError, "unsupported file identity"):
+                    native._tool_profile(time.monotonic() + 5)
+                system.assert_not_called()
+            # A missing SDK leaf must not hide a reparse ancestor.
+            absent_below_link = linked / "missing" / "cdb.exe"
+            with mock.patch.object(native, "CDB", absent_below_link), \
+                 mock.patch.object(native, "DEFAULT_CDB", absent_below_link), \
+                 mock.patch.object(native, "_system_directory", return_value=inbox) as system:
+                with self.assertRaisesRegex(ValueError, "unsupported file identity"):
+                    native._tool_profile(time.monotonic() + 5)
+                system.assert_not_called()
+
+    def test_system_directory_uses_typed_os_api_and_rejects_invalid_paths(self):
+        import _windows_rpc_timeout as native
+        from types import SimpleNamespace
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory).resolve()
+            inbox = root / "protected"
+            inbox.mkdir()
+            for failure in (None, "zero", "oversize", "relative", "mismatch", "linked"):
+                with self.subTest(failure=failure):
+                    def query(buffer, count):
+                        if failure == "zero":
+                            return 0
+                        if failure == "oversize":
+                            return count
+                        path = Path("relative") if failure == "relative" else inbox
+                        if failure == "linked":
+                            path = root / "link"
+                            if not path.exists():
+                                path.symlink_to(inbox, target_is_directory=True)
+                        size = self._fill_system_directory(buffer, count, path)
+                        return size + int(failure == "mismatch")
+                    function = mock.Mock(side_effect=query)
+                    api = SimpleNamespace(GetSystemDirectoryW=function)
+                    with mock.patch.object(native.ctypes, "WinDLL", return_value=api, create=True) as loader, \
+                         mock.patch.dict(os.environ, {"SystemRoot": "PrivateFixtureValue", "WINDIR": "PrivateFixtureValue", "PATH": "PrivateFixtureValue"}):
+                        if failure is None:
+                            self.assertEqual(native._system_directory(), inbox)
+                        else:
+                            with self.assertRaises(ValueError):
+                                native._system_directory()
+                    loader.assert_called_once_with("kernel32", use_last_error=True, winmode=0x800)
+                    self.assertIs(function.restype, native.wintypes.UINT)
+                    self.assertEqual(function.argtypes, [native.wintypes.LPWSTR, native.wintypes.UINT])
+
+    def test_worker_rebinds_closed_profile_path_hashes_and_target_before_engine(self):
+        import _windows_rpc_timeout as native
+        import _windows_dbgeng as sdk
+        from types import SimpleNamespace
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory).resolve()
+            inbox, sdk_root, foreign = (root / name for name in ("inbox", "sdk", "foreign"))
+            for folder in (inbox, sdk_root, foreign):
+                folder.mkdir()
+                for name in native.TOOL_FILES["sdk-v1"]:
+                    (folder / name).write_bytes(("inert " + name).encode())
+            image = root / "image.exe"
+            image.write_bytes(b"inert")
+            snapshot = {"pid": 33, "created": 44, "state": "running", "image": str(image)}
+            kernel = SimpleNamespace(snapshot=mock.Mock(return_value=snapshot), close=mock.Mock())
+            backend = SimpleNamespace(policy=lambda: sdk.POLICY, check=sdk.Engine.check,
+                call=mock.Mock(return_value=0), threads=lambda deadline: ([{"frames": [{"module": "node", "returnOffset": 1}]}], False),
+                close=lambda: True)
+            for profile, folder in (("inbox-v1", inbox), ("sdk-v1", sdk_root)):
+                request = {"schemaVersion": 2, "profile": profile, "handle": 77, "pid": 33, "created": 44,
+                    "image": str(image), "sdk": str(folder), "hashes": {name: hashlib.sha256((folder / name).read_bytes()).hexdigest()
+                    for name in native.TOOL_FILES[profile]}, "deadline": time.monotonic() + 5}
+                for failure in (None, "profile", "root", "extra", "missing", "hash", "tamper", "pid", "created", "image", "state", "deadline", "network", "cleanup"):
+                    with self.subTest(profile=profile, failure=failure):
+                        changed = copy.deepcopy(request)
+                        changed["deadline"] = time.monotonic() + 5
+                        state = dict(snapshot)
+                        if failure == "profile": changed["profile"] = "PrivateFixtureValue"
+                        if failure == "root": changed["sdk"] = str(foreign)
+                        if failure == "extra": changed["hashes"]["other.dll"] = "a" * 64
+                        if failure == "missing": changed["hashes"].pop("dbghelp.dll")
+                        if failure == "hash": changed["hashes"]["dbgeng.dll"] = "b" * 64
+                        if failure == "tamper": (folder / "dbgeng.dll").write_bytes(b"tampered")
+                        if failure == "pid": state["pid"] = 99
+                        if failure == "created": state["created"] = 55
+                        if failure == "image": state["image"] = str(foreign / "dbgeng.dll")
+                        if failure == "state": state["state"] = "signaled"
+                        if failure == "deadline": changed["deadline"] = time.monotonic() - 1
+                        kernel.snapshot.return_value = state
+                        backend.policy = lambda: sdk.ALLOW_NETWORK if failure == "network" else sdk.POLICY
+                        backend.close = lambda: failure != "cleanup"
+                        factory = mock.Mock(return_value=backend)
+                        with mock.patch.object(native, "CDB", sdk_root / "cdb.exe"), \
+                             mock.patch.object(native, "_system_directory", return_value=inbox), \
+                             mock.patch.object(native, "WindowsKernel", return_value=kernel):
+                            actual = sdk.run(changed, native, engine_factory=factory)
+                        if failure == "tamper": (folder / "dbgeng.dll").write_bytes(b"inert dbgeng.dll")
+                        if failure is None:
+                            self.assertEqual(actual["status"], "captured")
+                            self.assertEqual(factory.call_args_list, [mock.call(folder)])
+                            self.assertEqual(actual["profile"], profile)
+                            self.assertIsNotNone(sdk.decode_result(json.dumps(actual).encode(), 33, 44, profile=profile))
+                        else:
+                            self.assertNotEqual(actual["status"], "captured")
+                            self.assertEqual(actual["threads"], [])
+                            if failure not in ("network", "cleanup"):
+                                factory.assert_not_called()
+                            if failure in ("pid", "created", "image", "state"):
+                                self.assertEqual(actual["status"], "identity_refused")
+                            if failure == "cleanup": self.assertEqual(actual["status"], "cleanup_unknown")
+                        self.assertNotIn("PrivateFixtureValue", json.dumps(actual))
+
+    def test_profile_transport_keeps_legacy_decoder_and_refuses_mismatches(self):
+        import _windows_dbgeng as sdk
+        old = {"schemaVersion": 1, "status": "captured", "threads": [{"frames": [
+            {"module": "node", "returnOffset": 16}]}], "truncated": False,
+            "pid": 33, "created": 44, "bound": True, "attached": True,
+            "policy": sdk.POLICY, "detached": True, "hresult": 0}
+        self.assertEqual(sdk.decode_result(json.dumps(old).encode(), 33, 44), old)
+        self.assertIsNone(sdk.decode_result(json.dumps(old).encode(), 33, 44, profile="inbox-v1"))
+        current = {**old, "schemaVersion": 2, "profile": "inbox-v1"}
+        self.assertEqual(sdk.decode_result(json.dumps(current).encode(), 33, 44, profile="inbox-v1"), current)
+        self.assertIsNone(sdk.decode_result(json.dumps(current).encode(), 33, 44, profile="sdk-v1"))
+        for key, value in (("profile", "PrivateFixtureValue"), ("profile", None), ("schemaVersion", True),
+                           ("schemaVersion", 3), ("policy", sdk.POLICY | sdk.ALLOW_NETWORK),
+                           ("bound", False), ("detached", False), ("pid", 99), ("created", 55),
+                           ("threads", [{"frames": [{"module": "private", "returnOffset": 1}]}])):
+            with self.subTest(key=key, value_kind=type(value).__name__):
+                self.assertIsNone(sdk.decode_result(json.dumps({**current, key: value}).encode(), 33, 44, profile="inbox-v1"))
+        self.assertIsNone(sdk.decode_result(json.dumps({**current, "unexpected": 1}).encode(), 33, 44, profile="inbox-v1"))
+
+    def test_collector_rejects_wrong_profile_legacy_or_malformed_worker_transport(self):
+        import _windows_rpc_timeout as native
+        import _windows_dbgeng as sdk
+        from types import SimpleNamespace
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory).resolve()
+            collector_temp = tempfile.TemporaryDirectory
+            hashes = {name: "a" * 64 for name in native.TOOL_FILES["inbox-v1"]}
+            good = self._attribution_worker_result()
+            previous = copy.deepcopy(good)
+            previous.pop("phase"); previous.pop("elapsedMs")
+            previous["schemaVersion"] = 2
+            for frame in previous["threads"][0]["frames"]:
+                frame.pop("instructionModule"); frame.pop("instructionOffset")
+            legacy = {k: v for k, v in previous.items() if k != "profile"}
+            legacy["schemaVersion"] = 1
+            vectors = (("captured", json.dumps(good).encode(), "captured"),
+                       ("captured", json.dumps({**good, "profile": "sdk-v1"}).encode(), "transport_failed"),
+                       ("captured", json.dumps(legacy).encode(), "transport_failed"),
+                       ("captured", json.dumps(previous).encode(), "transport_failed"),
+                       ("captured", b"PrivateFixtureValue", "transport_failed"),
+                       ("deadline", b"PrivateFixtureValue", "deadline"),
+                       ("output_limit", b"PrivateFixtureValue", "output_limit"))
+            for transport, raw, expected in vectors:
+                with self.subTest(expected=expected, raw_length=len(raw)):
+                    kernel = SimpleNamespace(duplicate_query=mock.Mock(return_value=77), close=mock.Mock(), available=mock.Mock())
+                    process = SimpleNamespace(stdin=io.BytesIO(), stdout=io.BytesIO(),
+                        _handle=SimpleNamespace(Close=mock.Mock()), poll=lambda: 0)
+                    with mock.patch.object(native.tempfile, "TemporaryDirectory",
+                                           side_effect=lambda **kwargs: collector_temp(dir=root, **kwargs)), \
+                         mock.patch.object(native, "_tool_profile", return_value=("inbox-v1", root, hashes)), \
+                         mock.patch.object(native.subprocess, "STARTUPINFO", side_effect=SimpleNamespace, create=True), \
+                         mock.patch.object(native.subprocess, "CREATE_NO_WINDOW", 0x08000000, create=True), \
+                         mock.patch.object(native.subprocess, "Popen", return_value=process) as launch, \
+                         mock.patch.object(native, "_collect", return_value=(transport, raw)):
+                        actual = native._debugger(33, kernel, time.monotonic() + 5,
+                            binding={"handle": 11, "created": 44, "image": str(root / "image.exe")})
+                    self.assertEqual(actual["status"], expected)
+                    self.assertEqual(actual["profile"], "inbox-v1")
+                    self.assertEqual(launch.call_count, 1)
+                    self.assertEqual(launch.call_args.kwargs["cwd"].parent, root)
+                    self.assertEqual(launch.call_args.kwargs["startupinfo"].lpAttributeList, {"handle_list": [77]})
+                    self.assertEqual(launch.call_args.kwargs["creationflags"], 0x08000000)
+                    if expected != "captured": self.assertEqual(actual["threads"], [])
+                    self.assertEqual(actual["truncated"], expected == "output_limit")
+                    self.assertNotIn("PrivateFixtureValue", json.dumps(actual))
+                    kernel.close.assert_called_once_with(77)
+                    process._handle.Close.assert_called_once_with()
+
+    @staticmethod
+    def _fill_system_directory(buffer, count, path):
+        value = str(path)
+        if len(value) >= count:
+            return len(value) + 1
+        buffer.value = value
+        return len(value)
+
+
+
+class DebuggerPhaseProgressTests(unittest.TestCase):
+    def test_owned_phase_worker_deadline_retains_last_announced_boundary_without_frames(self):
+        import _windows_rpc_timeout as native
+        from types import SimpleNamespace
+        real_popen = subprocess.Popen
+        real_startup = getattr(subprocess, "STARTUPINFO", SimpleNamespace)
+        program = r"""# CA_OWNED_SDK_PHASE_WORKER
+import json,os,sys,time
+request=json.loads(sys.stdin.buffer.read(4097))
+record={"schemaVersion":1,"pid":request["pid"],"created":request["created"],
+        "profile":request["profile"],"workerPid":os.getpid(),"phase":"wait"}
+sys.stdout.buffer.write(b"CA_SDK_PHASE "+json.dumps(record,separators=(",",":")).encode()+b"\n")
+sys.stdout.buffer.flush()
+time.sleep(10)
+"""
+        children=[];readers=[];pending=bytearray();lock=threading.Lock()
+        class Worker:
+            def __init__(self, child):
+                self.child=child;self.pid=child.pid;self.stdin=child.stdin;self.stdout=child.stdout
+                self._handle=SimpleNamespace(Close=mock.Mock())
+            @property
+            def returncode(self): return self.child.returncode
+            def poll(self): return self.child.poll()
+            def wait(self, timeout): return self.child.wait(timeout=timeout)
+            def kill(self): return self.child.kill()
+        def launch(argv, **kwargs):
+            with mock.patch.object(subprocess,"STARTUPINFO",real_startup,create=True):
+                child=real_popen([sys.executable,"-I","-S","-B","-c",program],cwd=kwargs["cwd"],
+                    env=kwargs["env"],stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,bufsize=0)
+            children.append(child)
+            def drain():
+                while chunk:=child.stdout.read(4096):
+                    with lock: pending.extend(chunk)
+            thread=threading.Thread(target=drain,daemon=True);thread.start();readers.append(thread)
+            return Worker(child)
+        def available(stream):
+            with lock:return len(pending)
+        def read(stream,count):
+            with lock:
+                raw=bytes(pending[:count]);del pending[:count];return raw
+        collect=native._collect
+        def collect_owned(child, probe, *, deadline, **kwargs):
+            return collect(child,probe,deadline=deadline,_read=read,**kwargs)
+        kernel=SimpleNamespace(duplicate_query=mock.Mock(return_value=77),close=mock.Mock(),available=available)
+        try:
+            with tempfile.TemporaryDirectory(prefix="ca-sdk-phase-test-") as directory:
+                root=Path(directory).resolve();owner_temp=tempfile.TemporaryDirectory
+                with mock.patch.object(native.tempfile,"TemporaryDirectory",side_effect=lambda **kw:owner_temp(dir=root,**kw)), \
+                     mock.patch.object(native,"_tool_profile",return_value=("inbox-v1",root,{"dbgeng.dll":"a"*64,"dbghelp.dll":"b"*64})), \
+                     mock.patch.object(native.subprocess,"STARTUPINFO",side_effect=SimpleNamespace,create=True), \
+                     mock.patch.object(native.subprocess,"CREATE_NO_WINDOW",0x08000000,create=True), \
+                     mock.patch.object(native.subprocess,"Popen",side_effect=launch), \
+                     mock.patch.object(native,"_collect",side_effect=collect_owned):
+                    started=time.monotonic()
+                    result=native._debugger(33,kernel,started+1.0,
+                        binding={"handle":11,"created":44,"image":str(root/"inert-node.exe")})
+                self.assertTrue(result["diagnostic"]["workerSpawned"], "owned inert worker must actually launch")
+                self.assertEqual(len(children),1)
+                self.assertEqual(result["diagnostic"]["phase"],"sdk-wait",
+                    "the last closed owned SDK phase was lost when final JSON never arrived")
+                self.assertIn(result["status"],("deadline","cleanup_unknown"))
+                self.assertEqual(result["diagnostic"]["primaryStatus"],"deadline")
+                self.assertEqual(result["diagnostic"]["failure"],"deadline")
+                self.assertEqual(result["threads"],[]);self.assertIsNone(result["worker"])
+                self.assertEqual(native.SECONDS,5.0)
+                self.assertLess(time.monotonic()-started,3.0)
+                kernel.duplicate_query.assert_called_once_with(11)
+                self.assertEqual(kernel.close.call_args_list,[mock.call(77)])
+        finally:
+            for child in children:
+                if child.poll() is None:child.kill()
+                child.wait(timeout=2)
+                if child.stdout is not None and not child.stdout.closed:child.stdout.close()
+            for reader in readers:reader.join(timeout=2);self.assertFalse(reader.is_alive())
+
+    def test_progress_decoder_refuses_unbound_malformed_partial_and_unbounded_rows(self):
+        import _windows_dbgeng as sdk
+        good={"schemaVersion":1,"pid":33,"created":44,"profile":"inbox-v1","workerPid":123,"phase":"wait"}
+        def encode(row):return b"CA_SDK_PHASE "+json.dumps(row,separators=(",",":")).encode()+b"\n"
+        def decode(raw):return sdk.decode_progress(raw,33,44,profile="inbox-v1",worker_pid=123)
+        self.assertEqual(decode(encode(good)),("wait",b""))
+        self.assertEqual(decode(b'{"legacy":true}'),(None,b'{"legacy":true}'))
+        bad=[b"",b"CA_SDK_PHASE {",b"CA_SDK_PHASE {broken}\n",b"CA_SDK_PHASE "+b"x"*300+b"\n",
+             b'CA_SDK_PHASE {"schemaVersion":1,"schemaVersion":1,"pid":33,"created":44,"profile":"inbox-v1","workerPid":123,"phase":"wait"}\n']
+        for key,value in (("schemaVersion",True),("pid",34),("pid",True),("created",45),("workerPid",124),
+                          ("profile","sdk-v1"),("phase","PRIVATE_PHASE_CANARY"),("extra","PRIVATE_PHASE_CANARY")):
+            bad.append(encode({**good,key:value}))
+        bad.extend((encode(good)+encode(good),encode(good)+encode({**good,"phase":"attach"})))
+        for raw in bad:
+            with self.subTest(kind=hashlib.sha256(raw).hexdigest()[:8]):self.assertIsNone(decode(raw)[0])
+        partial=b"CA_SDK_PHASE {"
+        self.assertEqual(decode(encode(good)+partial),("wait",partial))
+        with_final=encode(good)+b'{"legacy":true}'
+        self.assertEqual(decode(with_final),("wait",b'{"legacy":true}'))
+        self.assertIsNone(sdk.decode_progress(encode(good),33,44,profile="inbox-v1",worker_pid=None)[0])
+        self.assertIsNone(sdk.decode_progress(encode(good),33,45,profile="inbox-v1",worker_pid=123)[0])
+
+    def test_real_worker_phase_callbacks_precede_inert_boundaries_and_keep_final_schema(self):
+        import _windows_dbgeng as sdk
+        from types import SimpleNamespace
+        request={"schemaVersion":3,"profile":"inbox-v1","handle":77,"pid":33,"created":44,
+                 "image":"inert-node.exe","sdk":"inert-profile","hashes":{"dbgeng.dll":"a"*64,"dbghelp.dll":"b"*64},
+                 "deadline":time.monotonic()+5,"progress":True}
+        stream=io.BytesIO();emit=sdk._progress_writer(request,stream);self.assertIsNotNone(emit)
+        emit("input");seen=[]
+        def check_phase(expected):
+            actual,tail=sdk.decode_progress(stream.getvalue(),33,44,profile="inbox-v1",worker_pid=os.getpid())
+            self.assertEqual(actual,expected);self.assertEqual(tail,b"");seen.append(expected)
+        def snapshot(handle):
+            check_phase("identity")
+            return {"pid":33,"created":44,"state":"running","image":"inert-node.exe"}
+        kernel=SimpleNamespace(snapshot=snapshot,close=mock.Mock())
+        def provider(*args):check_phase("provider-bind");return Path("inert-profile")
+        def policy():check_phase("policy");return sdk.POLICY
+        def call(name,index,*args):check_phase("attach" if name=="client" else "wait");return 0
+        def threads(deadline,*,include_instruction):
+            check_phase("stack")
+            return [{"frames":[{"module":"node","returnOffset":1,"instructionModule":"kernelbase","instructionOffset":2}]}],False
+        def close():check_phase("detach");return True
+        engine=SimpleNamespace(check=sdk.Engine.check,policy=policy,call=call,threads=threads,close=close)
+        def factory(path):check_phase("engine-create");return engine
+        native=SimpleNamespace(WindowsKernel=lambda:kernel,_regular=lambda path,**kwargs:path,_bound_tool_profile=provider)
+        result=sdk.run(request,native,engine_factory=factory,_progress=emit)
+        self.assertEqual(seen,["identity","provider-bind","engine-create","policy","attach","wait","stack","detach"])
+        self.assertEqual(result["status"],"captured")
+        self.assertEqual(sdk.decode_result(json.dumps(result).encode(),33,44,profile="inbox-v1",version=3),result)
+        self.assertEqual(set(result),{"schemaVersion","profile","phase","elapsedMs","status","threads","truncated",
+                                     "pid","created","bound","attached","policy","detached","hresult"})
+        raw=stream.getvalue();self.assertLessEqual(len(raw),sdk.MAX_PROGRESS_BYTES)
+        self.assertEqual(len(raw.splitlines()),9)
+        emit("PRIVATE_PHASE_CANARY");emit("wait");self.assertEqual(stream.getvalue(),raw)
+        legacy=dict(request);legacy.pop("progress");self.assertIsNone(sdk._progress_writer(legacy,io.BytesIO()))
+        refused={**request,"progress":False};self.assertIsNone(sdk._progress_writer(refused,io.BytesIO()))
+        self.assertEqual(sdk.run(refused,native,engine_factory=factory)["status"],"input_refused")
+        class Broken:
+            def write(self,raw):raise OSError("PRIVATE_PHASE_CANARY")
+            def flush(self):raise AssertionError("must not flush after failed write")
+        writer=sdk._progress_writer(request,Broken());writer("input");writer("identity")
+
 if __name__ == "__main__":
     if "--platform-partition" in sys.argv:
         parser = argparse.ArgumentParser()
         parser.add_argument("--platform-partition", choices=PLATFORM_PACKAGE_PARTITIONS, required=True)
         args = parser.parse_args()
-        result = unittest.TextTestRunner(verbosity=2).run(platform_package_suites()[args.platform_partition])
+        PLATFORM_PACKAGE_PARTITION = args.platform_partition
+        result = unittest.TextTestRunner(verbosity=2).run(platform_package_suites()[PLATFORM_PACKAGE_PARTITION])
         raise SystemExit(0 if result.wasSuccessful() else 1)
     elif "--rpc-commands" in sys.argv:
         sys.argv = [

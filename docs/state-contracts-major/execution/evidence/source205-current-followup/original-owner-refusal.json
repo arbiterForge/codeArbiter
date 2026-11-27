@@ -1,0 +1,65 @@
+{
+  "result": "FAILED",
+  "fixture": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-additive-source-preview-zycdvol4",
+  "cells": 205,
+  "passed": 198,
+  "failures": [
+    {
+      "cell": "disposition:machines:hooks:command-evidence",
+      "original_owner_refusal": "disposition proof omits owning source inputs: disposition:machines:hooks:command-evidence",
+      "missing_owning_inputs": [
+        "core/pysrc/knowledge.py"
+      ],
+      "proof": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/proofs/hooks-command-evidence-preserved.json"
+    },
+    {
+      "cell": "disposition:transitions:hooks:command-evidence:01",
+      "original_owner_refusal": "disposition proof omits owning source inputs: disposition:transitions:hooks:command-evidence:01",
+      "missing_owning_inputs": [
+        "core/pysrc/knowledge.py"
+      ],
+      "proof": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/proofs/hooks-command-evidence-preserved.json"
+    },
+    {
+      "cell": "disposition:transitions:hooks:command-evidence:02",
+      "original_owner_refusal": "disposition proof omits owning source inputs: disposition:transitions:hooks:command-evidence:02",
+      "missing_owning_inputs": [
+        "core/pysrc/knowledge.py"
+      ],
+      "proof": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/proofs/hooks-command-evidence-preserved.json"
+    },
+    {
+      "cell": "disposition:transitions:hooks:command-evidence:03",
+      "original_owner_refusal": "disposition proof omits owning source inputs: disposition:transitions:hooks:command-evidence:03",
+      "missing_owning_inputs": [
+        "core/pysrc/knowledge.py"
+      ],
+      "proof": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/proofs/hooks-command-evidence-preserved.json"
+    },
+    {
+      "cell": "disposition:transitions:hooks:command-evidence:04",
+      "original_owner_refusal": "disposition proof omits owning source inputs: disposition:transitions:hooks:command-evidence:04",
+      "missing_owning_inputs": [
+        "core/pysrc/knowledge.py"
+      ],
+      "proof": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/proofs/hooks-command-evidence-preserved.json"
+    },
+    {
+      "cell": "disposition:transitions:hooks:command-evidence:05",
+      "original_owner_refusal": "disposition proof omits owning source inputs: disposition:transitions:hooks:command-evidence:05",
+      "missing_owning_inputs": [
+        "core/pysrc/knowledge.py"
+      ],
+      "proof": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/proofs/hooks-command-evidence-preserved.json"
+    },
+    {
+      "cell": "disposition:transitions:hooks:command-evidence:06",
+      "original_owner_refusal": "disposition proof omits owning source inputs: disposition:transitions:hooks:command-evidence:06",
+      "missing_owning_inputs": [
+        "core/pysrc/knowledge.py"
+      ],
+      "proof": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/proofs/hooks-command-evidence-preserved.json"
+    }
+  ],
+  "qualification": false
+}

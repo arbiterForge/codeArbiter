@@ -1,0 +1,206 @@
+{
+  "scope": "One omitted shipped Sandbox catalog; docs-only maintained SBX-C01/D01/D02/D03/D04 claim propagation. No runtime/API/capability change.",
+  "state": "TEMP_ONLY_NOT_APPLIED",
+  "observed_head": "566375bb5557e1c749a11b94eb1f6da58ee30136",
+  "preimage": {
+    "path": "plugins/ca-sandbox/COMMANDS.md",
+    "sha256": "b4b231a5255e5be97e206fd0f940c1e74fdd941fccbb41f65e1baa7cc89334df",
+    "literal_git_match": true
+  },
+  "proposed": {
+    "path": "plugins/ca-sandbox/COMMANDS.md",
+    "sha256": "41273c84591f22ec1c62c5983e8c5cb61747996a4698fa7eee53aaa7d432020e"
+  },
+  "patch_sha256": "3328a9cd322ea5bdfaa3e43336840b6723639ee11d4593cb6a458a8e2d2b0c47",
+  "concrete_before_contradictions": [
+    "Required Nixpacks despite supported Node/Python fallback.",
+    "Old basename/dephash tags and hash-only cache-hit promise.",
+    "Nonexistent --network/ordinary --with-claude flags.",
+    "Named destroy described as global-empty and no-ID prune, despite exact-target/snapshot policy.",
+    "Runtime isolation description omitted temporary host source staging."
+  ],
+  "source_observations": {
+    "plugins/ca-sandbox/tools/cli.ts": "f5a004a68aa2ab6da7432ee6d6b5a216ae22d0c79a993b4ca3587e5bd5de209c",
+    "plugins/ca-sandbox/README.md": "b024372b828c7281a68ff7a4542ba20405a356449147e50ad346c5d59f624c8d",
+    "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md": "0601714006da08b047514a1e76c83507f34a80c688b2afa615a1be84866133f4",
+    "plugins/ca-sandbox/commands/sandbox.md": "77c70d21ed44f79c14783a5f68dee0baec958901cfa73c675ae4e69e16ee60c9",
+    "plugins/ca-sandbox/commands/sandbox-destroy.md": "5119e80360fd5f219ed2f7067072a7b939bb06f1b2588ba092a426e71471cea1"
+  },
+  "existing_named_grammar_observations": {
+    "original_raw": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\docs\\state-contracts-major\\execution\\evidence\\sandbox-builder-ef40\\raw\\coverage-tests.json",
+    "sha256": "e973bb859cd16a5ab30b05d3c0a575bfadfa0b3468b33331bc6541f4a1e0a7c9",
+    "cases": [
+      {
+        "fullName": "parseCli \u2014 subcommand recognition rejects an empty argv (no subcommand) with a CliError",
+        "status": "passed"
+      },
+      {
+        "fullName": "parseCli \u2014 subcommand recognition rejects an unknown subcommand with a CliError",
+        "status": "passed"
+      },
+      {
+        "fullName": "parseCli \u2014 create (AC-01) parses `create <url>` into a create command with offline default",
+        "status": "passed"
+      },
+      {
+        "fullName": "parseCli \u2014 create (AC-01) parses `--net=clone-then-cut` into the netPolicy",
+        "status": "passed"
+      },
+      {
+        "fullName": "parseCli \u2014 create (AC-01) parses `--net allowlist` (space form) into the netPolicy",
+        "status": "passed"
+      },
+      {
+        "fullName": "parseCli \u2014 create (AC-01) rejects an unknown --net value",
+        "status": "passed"
+      },
+      {
+        "fullName": "parseCli \u2014 create (AC-01) requires a url",
+        "status": "passed"
+      },
+      {
+        "fullName": "parseCli \u2014 create (AC-01) rejects an UNKNOWN FLAG on create",
+        "status": "passed"
+      },
+      {
+        "fullName": "parseCli \u2014 exec (AC-09) parses `exec <id> -- sh -c 'exit 7'` keeping the post-`--` argv verbatim",
+        "status": "passed"
+      },
+      {
+        "fullName": "parseCli \u2014 exec (AC-09) treats flags AFTER `--` as part of the in-container argv, not CLI flags",
+        "status": "passed"
+      },
+      {
+        "fullName": "parseCli \u2014 exec (AC-09) requires an id",
+        "status": "passed"
+      },
+      {
+        "fullName": "parseCli \u2014 exec (AC-09) requires a non-empty command after `--`",
+        "status": "passed"
+      },
+      {
+        "fullName": "parseCli \u2014 exec (AC-09) rejects an UNKNOWN FLAG before `--`",
+        "status": "passed"
+      },
+      {
+        "fullName": "parseCli \u2014 cp (AC-10) parses `cp <id>:<path> <dest>` into the pull-only triple",
+        "status": "passed"
+      },
+      {
+        "fullName": "parseCli \u2014 cp (AC-10) rejects a source without the `<id>:` container prefix (no host->container push)",
+        "status": "passed"
+      },
+      {
+        "fullName": "parseCli \u2014 cp (AC-10) requires both a source and a dest",
+        "status": "passed"
+      },
+      {
+        "fullName": "parseCli \u2014 cp (AC-10) rejects an UNKNOWN FLAG on cp",
+        "status": "passed"
+      },
+      {
+        "fullName": "parseCli \u2014 destroy / prune (AC-11) parses `destroy <id>` into a destroy command",
+        "status": "passed"
+      },
+      {
+        "fullName": "parseCli \u2014 destroy / prune (AC-11) parses `destroy <id> --keep-volume`",
+        "status": "passed"
+      },
+      {
+        "fullName": "parseCli \u2014 destroy / prune (AC-11) requires an id for destroy",
+        "status": "passed"
+      },
+      {
+        "fullName": "parseCli \u2014 destroy / prune (AC-11) rejects an UNKNOWN FLAG on destroy",
+        "status": "passed"
+      },
+      {
+        "fullName": "parseCli \u2014 destroy / prune (AC-11) parses bare `prune` (no id) into a prune command",
+        "status": "passed"
+      },
+      {
+        "fullName": "parseCli \u2014 destroy / prune (AC-11) rejects an UNKNOWN FLAG on prune",
+        "status": "passed"
+      },
+      {
+        "fullName": "parseCli \u2014 shell parses `shell <id>` into a shell command with a default shell",
+        "status": "passed"
+      },
+      {
+        "fullName": "parseCli \u2014 shell parses `shell <id> --shell=bash`",
+        "status": "passed"
+      },
+      {
+        "fullName": "parseCli \u2014 shell requires an id for shell",
+        "status": "passed"
+      },
+      {
+        "fullName": "parseCli \u2014 shell rejects an UNKNOWN FLAG on shell",
+        "status": "passed"
+      },
+      {
+        "fullName": "runCli \u2014 dispatch to modules (AC-01/09/10/11) dispatches create -> await handlers.create(url, {netPolicy, keepVolume})",
+        "status": "passed"
+      },
+      {
+        "fullName": "runCli \u2014 dispatch to modules (AC-01/09/10/11) dispatches exec -> await handlers.exec(id, argv) and returns the inner exitCode (AC-09)",
+        "status": "passed"
+      },
+      {
+        "fullName": "runCli \u2014 dispatch to modules (AC-01/09/10/11) dispatches cp -> await handlers.cp(id, containerPath, hostDest) (AC-10)",
+        "status": "passed"
+      },
+      {
+        "fullName": "runCli \u2014 dispatch to modules (AC-01/09/10/11) dispatches destroy -> await handlers.destroy(id, {keepVolume}) (AC-11)",
+        "status": "passed"
+      },
+      {
+        "fullName": "runCli \u2014 dispatch to modules (AC-01/09/10/11) dispatches prune -> await handlers.prune() (AC-11)",
+        "status": "passed"
+      },
+      {
+        "fullName": "runCli \u2014 dispatch to modules (AC-01/09/10/11) dispatches shell -> await handlers.shell(id, shell) and returns its code",
+        "status": "passed"
+      },
+      {
+        "fullName": "runCli \u2014 dispatch to modules (AC-01/09/10/11) returns a non-zero code and does NOT throw on an unknown flag",
+        "status": "passed"
+      },
+      {
+        "fullName": "runCli \u2014 dispatch to modules (AC-01/09/10/11) a non-zero exec exit code propagates as the CLI's code",
+        "status": "passed"
+      },
+      {
+        "fullName": "runCli \u2014 dispatch to modules (AC-01/09/10/11) a non-zero cp exit code propagates as the CLI's code",
+        "status": "passed"
+      }
+    ],
+    "claim": "Original357 local suite,36 existing CLI grammar/handler cases passed. This is reused evidence, not a new help/test execution."
+  },
+  "link_checks": [
+    {
+      "target": "skills/sandbox-lifecycle/SKILL.md",
+      "sha256": "0601714006da08b047514a1e76c83507f34a80c688b2afa615a1be84866133f4"
+    },
+    {
+      "target": "skills/sandbox-claude-inside/SKILL.md",
+      "sha256": "67064779a9c2079db862fdf162b9c38bef6254147bf8a06e1a259d9ea8edab01"
+    },
+    {
+      "target": "tools/mounts.ts",
+      "sha256": "15a89e0d2b08a57bc82139f1af267d250cc2bb3380f134df56dc55dcfe92b81d"
+    }
+  ],
+  "preserved": [
+    "Five namespaced command entrypoints and lazy command routing.",
+    "Separate token-only Claude-inside routine and existing Windows/WSL builder route.",
+    "Ordinary accepted request names remain accepted and effective runtime stays offline.",
+    "Reviewed bounded4provider Nixpacks profile; fallback remains Node/Python only, no runtime installs.",
+    "Named volume/tmpfs isolation, no bind/socket/privileged, exact teardown scopes, retained old cache images."
+  ],
+  "limits": [
+    "No Docker/provider/CLI rerun or install performed. Existing help source and original named grammar outcomes were inspected.",
+    "Proposed catalog source is uncommitted; parent must apply exact preimage and return its actual source commit before source-conformance evidence can bind it.",
+    "No Gov source/index/ledger/progress/marker writes by this agent."
+  ]
+}

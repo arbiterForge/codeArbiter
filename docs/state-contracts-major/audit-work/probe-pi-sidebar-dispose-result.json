@@ -1,0 +1,23 @@
+{
+  "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "runtime": "v24.22.1",
+  "disposed": {
+    "health": {
+      "expected": false,
+      "installed": false,
+      "degraded": false
+    },
+    "columns": 140,
+    "nativeRender": true
+  },
+  "afterPendingCompletes": {
+    "health": {
+      "expected": false,
+      "installed": true,
+      "degraded": false
+    },
+    "columns": 99,
+    "nativeRender": false
+  },
+  "finalColumns": 140
+}

@@ -1,0 +1,128 @@
+{
+  "scope": "one Linux three-adapter local fixture benchmark; not an installed-host performance measurement",
+  "job_id": 133626907074,
+  "job_name": "[CHECK] | [PI  ] | Host-independent adapter contract",
+  "original_step": {
+    "name": "Measure the three-host relative adapter benchmark",
+    "status": "completed",
+    "conclusion": "success",
+    "number": 26,
+    "started_at": "2026-11-16T21:48:10Z",
+    "completed_at": "2026-11-16T21:48:10Z"
+  },
+  "original_log": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-normal-M0b0-watch-2h4aggb0\\original-job-133626907074.log",
+    "bytes": 85993,
+    "sha256": "96d47704600a4724801e856a51f513f70b7b8e5604cd9604916259f107dff5aa"
+  },
+  "executed_command": {
+    "line": 828,
+    "command": "python .github/scripts/pi_benchmark.py --samples 100"
+  },
+  "retained_public_results": [
+    {
+      "line": 840,
+      "record": {
+        "platform": "linux",
+        "host": "claude",
+        "sampleCount": 100,
+        "startupMs": 34.51253,
+        "coreP50Ms": 0.025087,
+        "adapterP50Ms": 0.011572,
+        "adapterP95Ms": 0.015279
+      }
+    },
+    {
+      "line": 841,
+      "record": {
+        "platform": "linux",
+        "host": "codex",
+        "sampleCount": 100,
+        "startupMs": 1.113877,
+        "coreP50Ms": 0.025608,
+        "adapterP50Ms": 0.011772,
+        "adapterP95Ms": 0.020458
+      }
+    },
+    {
+      "line": 842,
+      "record": {
+        "platform": "linux",
+        "host": "pi",
+        "sampleCount": 100,
+        "startupMs": 29.064419,
+        "coreP50Ms": 0.019016,
+        "adapterP50Ms": 0.04254999999999853,
+        "adapterP95Ms": 0.1332000000000022
+      }
+    }
+  ],
+  "recorded_runtime_versions": {
+    "node": {
+      "version": "v22.19.0",
+      "line": 139
+    },
+    "npm": {
+      "version": "10.9.3",
+      "line": 140
+    },
+    "python": {
+      "version": "3.15.2",
+      "line": 162
+    }
+  },
+  "relative_pi_limit_ms": 10.020458,
+  "relative_gate": "PASS",
+  "guard_backed_protocol": {
+    "measured_samples_per_host": 100,
+    "warmups": 5,
+    "ready_wrappers": 4,
+    "bridge_calls": 105,
+    "native_fixture_calls": 105,
+    "basis": "unchanged producer requires these parsed child values before the three retained public rows can be printed and owning step succeeds"
+  },
+  "directly_retained_ready_complete_json": false,
+  "raw_timings_retained": false,
+  "historical_runtime_binary_or_bundle_sha256": "NOT_RETAINED_IN_BENCHMARK_OUTPUT",
+  "fixture_boundary": {
+    "production_wrapBuiltins": true,
+    "bridge": "in-process fixture returning allow",
+    "native_functions": "fixture counters returning fixture text",
+    "actual_provider_model_or_host_process": false
+  },
+  "sources": {
+    ".github/scripts/pi_benchmark.py": {
+      "M": {
+        "sha256": "1a224fc7625b00586e453d9f3cac878d5d2db1d68ac26b37c54b5002b1b8ee77",
+        "bytes": 16181
+      },
+      "current": {
+        "sha256": "1a224fc7625b00586e453d9f3cac878d5d2db1d68ac26b37c54b5002b1b8ee77",
+        "bytes": 16181
+      },
+      "byte_equal": true
+    },
+    "plugins/ca-pi/tools/test/benchmark-boundary.ts": {
+      "M": {
+        "sha256": "d4a8a0573a0710119f9e4ff1bc55bde7f0e2ce44c10dfcc44a63c5f259677aab",
+        "bytes": 2699
+      },
+      "current": {
+        "sha256": "d4a8a0573a0710119f9e4ff1bc55bde7f0e2ce44c10dfcc44a63c5f259677aab",
+        "bytes": 2699
+      },
+      "byte_equal": true
+    },
+    "plugins/ca-pi/tools/src/tool-guard.ts": {
+      "M": {
+        "sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141",
+        "bytes": 46425
+      },
+      "current": {
+        "sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141",
+        "bytes": 46425
+      },
+      "byte_equal": true
+    }
+  }
+}

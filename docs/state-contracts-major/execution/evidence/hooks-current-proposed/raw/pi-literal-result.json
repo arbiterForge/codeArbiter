@@ -1,0 +1,18 @@
+{
+  "kind": "pi",
+  "source_commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+  "argv": [
+    "C:/Users/brenn/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node.exe",
+    "node_modules/vitest/vitest.mjs",
+    "run",
+    "test/security.test.ts",
+    "-t",
+    "#464",
+    "--reporter=json",
+    "--outputFile=C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hooks-current-focused-exfr9bh6\\pi-isolation-literal.json"
+  ],
+  "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\plugins\\ca-pi\\tools",
+  "exit_code": 0,
+  "seconds": 1.1183912754058838,
+  "environment_keys": null
+}

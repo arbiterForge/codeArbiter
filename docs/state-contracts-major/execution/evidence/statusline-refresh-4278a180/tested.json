@@ -1,0 +1,256 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "4278a1800eeb89b7bf2ef3a6ec90b30bd8f0d84d",
+  "source_tree": "b057b4cbb8e0a3823638e2777a932d5910ca099d",
+  "kind": "test",
+  "result": "PASSED",
+  "producer": {
+    "class": "local-host",
+    "identity": "/root/ci_repair_review Windows existing9 TestRefreshStalePathOnSessionStart methods plus one private actual-main exact preservation assertion; source4278a180"
+  },
+  "platform": "windows/amd64",
+  "inputs": {
+    "core/pysrc/_durabilitylib.py": "42e9d3ed6f6f43c76bef073e6edad2b8a119dfc154e2a497909422b4e4d28f9b",
+    "core/pysrc/wire-statusline.py": "216e3754cf0fb8f9c33d77a18c2ce26f85a1b0b025ef28675bfcd3785bfef1a4",
+    "plugins/ca/hooks/_activationlib.py": "60c6391b4d8b143c5e59cf2320291a2d31063e8fbebe0fcf337dd83e07f8fd97",
+    "plugins/ca/hooks/_durabilitylib.py": "42e9d3ed6f6f43c76bef073e6edad2b8a119dfc154e2a497909422b4e4d28f9b",
+    "plugins/ca/hooks/_gitexec.py": "a5935246028f506ef5ab13ba379b399cb7a754a077866fd39528545f30f4bef3",
+    "plugins/ca/hooks/_hooklib.py": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+    "plugins/ca/hooks/_host.py": "9d04b88683d1deab03850ef1f2a169579f59756d3430079bdc6aa2160994bc1b",
+    "plugins/ca/hooks/_pathnorm.py": "f6a99cddf6277641316f5e8f9d86fb97691e535ba569aa6cb51c9e4f3ed52906",
+    "plugins/ca/hooks/_protectedlib.py": "3156e9ad47cf577476dfcae27fde1d4ebfd71fe33b5e1976d351b8f833ea53d3",
+    "plugins/ca/hooks/_scopelib.py": "03d1f066863d08c952ebda8d9b6f1515813f53a4fd3fc0af560a735f63954e0b",
+    "plugins/ca/hooks/_sensitivelib.py": "a3902997c16d367a3c7e6e7247a42ba35d962e2c885f9ed3e8e1ab0ce98ec506",
+    "plugins/ca/hooks/hostapi.py": "2aea81ad167a458c6053cb52880952521159a367eaa5baa7df6e2e35fea574e4",
+    "plugins/ca/hooks/tests/test_wire_statusline.py": "579fe364417021770a3c536c42bdc1664c6b1c2eebfc7820fd53a17a36cd0c88",
+    "plugins/ca/hooks/wire-statusline.py": "216e3754cf0fb8f9c33d77a18c2ce26f85a1b0b025ef28675bfcd3785bfef1a4"
+  },
+  "input_membership": [
+    {
+      "profile": "python-import-directory-v1",
+      "root": "core/pysrc",
+      "path_order": "windows",
+      "sha256": "47866d8dbbe83d269b0c3311e9bb1df44111bd8596c4c9808865eabf6d10ff9d"
+    },
+    {
+      "profile": "python-import-directory-v1",
+      "root": "plugins/ca/hooks",
+      "path_order": "windows",
+      "sha256": "76a3da417d1e07f0d94f3a7394412feb1e39a3a687426e4d7881aac9145ffd2a"
+    }
+  ],
+  "commands": [
+    {
+      "argv": [
+        "C:/Python314/python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-refresh-successor-tgna0199\\run-selected.py",
+        "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
+        "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-refresh-successor-tgna0199"
+      ],
+      "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-refresh-successor-tgna0199",
+      "exit_code": 0,
+      "seconds": 0.6087136999994982,
+      "selected_named_population": 10,
+      "selected_skipped": 0
+    }
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/statusline-refresh-4278a180/raw/capture.py",
+      "sha256": "7f4dd4d90c930745dd7a447d040e3d549c62e9ae78eb65e0fb80366a200256a3"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/statusline-refresh-4278a180/raw/run-selected.py",
+      "sha256": "7a1216fc2a35a4e0b414d8e7450140790e4fa9623d363c3fcb8e524984ebfc0c"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/statusline-refresh-4278a180/raw/selectors.json",
+      "sha256": "fadcdedd3ec2ae86accc526e137ff373fcba6ea480e9fdc07c83bf654be66f01"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/statusline-refresh-4278a180/raw/original-nine-class.py.txt",
+      "sha256": "ea127bb870b24198aa76dad9dfecc772f07c0d76131dfb9ac0f0b137a5b37d77"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/statusline-refresh-4278a180/raw/run-start.json",
+      "sha256": "1635256eb8e0807edae60b96c74f0194f5d3bfe287f35339e5834417c6570627"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/statusline-refresh-4278a180/raw/process-exit.json",
+      "sha256": "d3cb337232a4b0f4f6fbb291008f371f72288f8984ebbdaf0e6a6d96be789dbc"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/statusline-refresh-4278a180/raw/after-snapshot.json",
+      "sha256": "9d84b3f5ab5268df9863030c640ecaa8a7aa474c3edf1e7fec759c54aa9c8e40"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/statusline-refresh-4278a180/raw/run-result.json",
+      "sha256": "b1e4c34ac8f16e540858f15852b8be75a85f2df69155a75641ab7217fb9339ba"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/statusline-refresh-4278a180/raw/named-results.json",
+      "sha256": "def44f7a0879cf69b61d79b34e55b87523d43b1fdf9b46fc0ba7099646998df4"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/statusline-refresh-4278a180/raw/whole-row-preservation.json",
+      "sha256": "59f0372f25f94adac10c39e0e8d427f4d82752768df87534c449ec6ae77f0e4b"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/statusline-refresh-4278a180/raw/capture-complete.json",
+      "sha256": "31b05b9539333f820b4539dffa2f0303b73fa5c48f23587077fddd0c0be0e9c1"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/statusline-refresh-4278a180/raw/producer-correction.json",
+      "sha256": "0bc4be5b8b3e82f4134ced10c0afda1844bd602eee9192d7cbbdd795df50405e"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/statusline-refresh-4278a180/raw/observer/sitecustomize.py",
+      "sha256": "7df396586013f1e16a1c22865662787da894f48f3c7d66d5d53f99829debdc26"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/statusline-refresh-4278a180/raw/actual-imports-21272.json",
+      "sha256": "fe0ca99f0b9d8e17173330e97bf22d6c8cbca544ef9817db87d7672105bae3a1"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/statusline-refresh-4278a180/raw/original.stdout.log.base64.json",
+      "sha256": "080dd46419718a113ebe58ee6bc441ae7e28f434421461dd8b626c01cb8952c0"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/statusline-refresh-4278a180/raw/original.stderr.log.base64.json",
+      "sha256": "32fe94660faca9a1a544a8cb639f900b43c1b30ed54290839a7718e7ba5fa260"
+    }
+  ],
+  "disposition_ids": [
+    "disposition:transitions:hooks:statusline-wiring:03"
+  ],
+  "original_named_results": [
+    {
+      "id": "test_wire_statusline.TestRefreshStalePathOnSessionStart.test_stale_ours_path_is_refreshed",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestRefreshStalePathOnSessionStart.test_refresh_does_not_rewrite_when_already_current",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestRefreshStalePathOnSessionStart.test_refresh_leaves_third_party_line_untouched",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestRefreshStalePathOnSessionStart.test_refresh_leaves_third_party_statusline_py_untouched",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestRefreshStalePathOnSessionStart.test_refresh_ignores_stale_owner_marker_after_user_replaces_line",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestRefreshStalePathOnSessionStart.test_refresh_migrates_legacy_cache_command_to_owner_marker",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestRefreshStalePathOnSessionStart.test_refresh_does_not_wire_when_no_statusline",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestRefreshStalePathOnSessionStart.test_refresh_noop_when_renderer_missing",
+      "outcome": "PASS"
+    },
+    {
+      "id": "test_wire_statusline.TestRefreshStalePathOnSessionStart.test_refresh_heals_bare_string_statusline",
+      "outcome": "PASS"
+    },
+    {
+      "id": "__main__.RefreshWholeRowPreservation.test_refresh_preserves_spinner_backups_and_unrelated_settings",
+      "outcome": "PASS"
+    }
+  ],
+  "per_cell_assertion_mapping": [
+    {
+      "cell": "disposition:transitions:hooks:statusline-wiring:03",
+      "observed_named_cases": [
+        "test_wire_statusline.TestRefreshStalePathOnSessionStart.test_stale_ours_path_is_refreshed",
+        "test_wire_statusline.TestRefreshStalePathOnSessionStart.test_refresh_does_not_rewrite_when_already_current",
+        "test_wire_statusline.TestRefreshStalePathOnSessionStart.test_refresh_leaves_third_party_line_untouched",
+        "test_wire_statusline.TestRefreshStalePathOnSessionStart.test_refresh_leaves_third_party_statusline_py_untouched",
+        "test_wire_statusline.TestRefreshStalePathOnSessionStart.test_refresh_ignores_stale_owner_marker_after_user_replaces_line",
+        "test_wire_statusline.TestRefreshStalePathOnSessionStart.test_refresh_migrates_legacy_cache_command_to_owner_marker",
+        "test_wire_statusline.TestRefreshStalePathOnSessionStart.test_refresh_does_not_wire_when_no_statusline",
+        "test_wire_statusline.TestRefreshStalePathOnSessionStart.test_refresh_noop_when_renderer_missing",
+        "test_wire_statusline.TestRefreshStalePathOnSessionStart.test_refresh_heals_bare_string_statusline",
+        "__main__.RefreshWholeRowPreservation.test_refresh_preserves_spinner_backups_and_unrelated_settings"
+      ],
+      "assertion_scope": "Actual main(refresh) heals exact-owned stale command/root metadata, migrates legacy and bare-string own command; stable current pin does not rewrite; foreign/current user replacements, missing setting and missing renderer remain intact. Private preservation case proves exact whole-object equality after changing only statusLine and owner marker; spinner/current/prior ownership stamps, backups and unrelated nested settings remain unchanged.",
+      "failure_retry": "Absent renderer preserves previous stale pin for later refresh; no setting is installed if absent; steady state is no-op.",
+      "source_clauses": [
+        "refresh_if_stale",
+        "cmd_refresh",
+        "plugin_root"
+      ],
+      "limits": [
+        "Authenticated fixture Host seam is used; no installed package or actual Claude SessionStart/rendering qualification.",
+        "Ephemeral-path denial belongs to separate row06 and is source-read here, not newly executed; no row06 or whole machine promotion.",
+        "No concurrent-writer CAS, atomic-write failure injection or I/O fault coverage claim; row07 remains unchanged."
+      ]
+    }
+  ],
+  "source_clause_binding": {
+    "path": "core/pysrc/wire-statusline.py",
+    "clauses": [
+      "refresh_if_stale",
+      "cmd_refresh",
+      "plugin_root"
+    ],
+    "generated_executed_copy": "plugins/ca/hooks/wire-statusline.py",
+    "canonical_generated_byte_parity": true
+  },
+  "selected_assertion_body_sha256": {
+    "test_wire_statusline.TestRefreshStalePathOnSessionStart.test_stale_ours_path_is_refreshed": "4ce82019ce8a2dd4c08b9a678b3441bb1e33a94b012d74f257b3c633357a8b85",
+    "test_wire_statusline.TestRefreshStalePathOnSessionStart.test_refresh_does_not_rewrite_when_already_current": "9d4900e01f6cc227d7d18fca0e462569f6b941254677ba62d1a40ad938480b76",
+    "test_wire_statusline.TestRefreshStalePathOnSessionStart.test_refresh_leaves_third_party_line_untouched": "f9d2645833d75c53dbcf5d74fd04ede0f919050256b7ce7811201121aa44ca4e",
+    "test_wire_statusline.TestRefreshStalePathOnSessionStart.test_refresh_leaves_third_party_statusline_py_untouched": "38b62dcd1ae5301fe63abcb824045e30da69def8e0c324cd803c9284a5783b31",
+    "test_wire_statusline.TestRefreshStalePathOnSessionStart.test_refresh_ignores_stale_owner_marker_after_user_replaces_line": "97447316f587b42eec960ca97ab345b7e85d8f027ae427c446021400b9f21fdf",
+    "test_wire_statusline.TestRefreshStalePathOnSessionStart.test_refresh_migrates_legacy_cache_command_to_owner_marker": "11fab64cea242a5879750521818603cf1a9666aff5da9651485f3678b2a6bf3c",
+    "test_wire_statusline.TestRefreshStalePathOnSessionStart.test_refresh_does_not_wire_when_no_statusline": "76076174f24c50ab671f7fa6ee64af245b7280a91af6b0e737d913219e93b6b4",
+    "test_wire_statusline.TestRefreshStalePathOnSessionStart.test_refresh_noop_when_renderer_missing": "9a608633f9df9a4bcff88ba169bff75bc5127c2e6c78ee89f08bf9b017694af7",
+    "test_wire_statusline.TestRefreshStalePathOnSessionStart.test_refresh_heals_bare_string_statusline": "346af8f70d9b365dd58ad514f752eb2d8cda35f13e819f595a9998e70b465190"
+  },
+  "execution_context": {
+    "actual_start_git_commit": "4278a1800eeb89b7bf2ef3a6ec90b30bd8f0d84d",
+    "actual_end_git_commit": "4278a1800eeb89b7bf2ef3a6ec90b30bd8f0d84d",
+    "all_before_after_closure_equal": true,
+    "positive_inputs": 14,
+    "complete_typed_Git_namespaces": [
+      "core/pysrc",
+      "plugins/ca/hooks"
+    ],
+    "physical_namespaces": "Full names/types/modes/contents retained before and after, including existing cache/untracked entries; no blanket cache absence claimed.",
+    "structured_runtime_records": 1905,
+    "actual_repository_imports": {
+      "plugins/ca/hooks/tests/test_wire_statusline.py": "579fe364417021770a3c536c42bdc1664c6b1c2eebfc7820fd53a17a36cd0c88",
+      "plugins/ca/hooks/wire-statusline.py": "216e3754cf0fb8f9c33d77a18c2ce26f85a1b0b025ef28675bfcd3785bfef1a4",
+      "plugins/ca/hooks/_durabilitylib.py": "42e9d3ed6f6f43c76bef073e6edad2b8a119dfc154e2a497909422b4e4d28f9b",
+      "plugins/ca/hooks/_hooklib.py": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+      "plugins/ca/hooks/hostapi.py": "2aea81ad167a458c6053cb52880952521159a367eaa5baa7df6e2e35fea574e4",
+      "plugins/ca/hooks/_gitexec.py": "a5935246028f506ef5ab13ba379b399cb7a754a077866fd39528545f30f4bef3",
+      "plugins/ca/hooks/_pathnorm.py": "f6a99cddf6277641316f5e8f9d86fb97691e535ba569aa6cb51c9e4f3ed52906",
+      "plugins/ca/hooks/_activationlib.py": "60c6391b4d8b143c5e59cf2320291a2d31063e8fbebe0fcf337dd83e07f8fd97",
+      "plugins/ca/hooks/_scopelib.py": "03d1f066863d08c952ebda8d9b6f1515813f53a4fd3fc0af560a735f63954e0b",
+      "plugins/ca/hooks/_protectedlib.py": "3156e9ad47cf577476dfcae27fde1d4ebfd71fe33b5e1976d351b8f833ea53d3",
+      "plugins/ca/hooks/_sensitivelib.py": "a3902997c16d367a3c7e6e7247a42ba35d962e2c885f9ed3e8e1ab0ce98ec506"
+    },
+    "private_pycache_prefix_before_imports": true,
+    "no_user_site_before_imports": 1,
+    "owning_host_lookup": "Tracked plugins/ca/hooks/_host.py is a positive input; no absent-input declaration.",
+    "raw_ref": "docs/state-contracts-major/execution/evidence/statusline-refresh-4278a180/raw/run-start.json"
+  },
+  "scope_limits": [
+    "Only one transition03 moves PLANNED to TESTED; task/machine/finding/other rows unchanged.",
+    "Original source-same old10 spinner/uninstall outcomes were not reexecuted or changed.",
+    "First private capture invalid due doubly qualified unittest loader names: none of original9 bodies ran, only private preservation case passed; immutable predecessor retained separately, not admitted as passing evidence. Corrected successor ran original9+one once.",
+    "No production/permanent test code changed; no user settings, real HOME, native build, network, provider, installed/UI/model/hosted/publication effects."
+  ]
+}

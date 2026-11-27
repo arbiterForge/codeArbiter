@@ -1,0 +1,28 @@
+{
+  "schema": "codearbiter-full-owner-overlay-authentication/1",
+  "source_commit": "9a26600f756bb48d26f9fe5a89bc043f73812c31",
+  "candidate_for_scoped_overlay_check": "9a26600f756bb48d26f9fe5a89bc043f73812c31",
+  "function": "major_readiness.authenticate_recorded_disposition",
+  "result": "PASSED",
+  "seconds": 0.06315939999967668,
+  "original_producer_shape_refusal": "tested disposition lacks executed original checks",
+  "bound": [
+    {
+      "ref": "docs/state-contracts-major/execution/evidence/native-reconcile-closure-9a26600f/command-successor-tested.json",
+      "sha256": "4ae8e6d2396a7db0793c4f635b642cc2b0ca2beccfbbfcf50cbe90811bdde74e",
+      "source_commit": "9a26600f756bb48d26f9fe5a89bc043f73812c31",
+      "producer_class": "local-host"
+    }
+  ],
+  "declared_source_inputs_authenticated_from_literal_git_objects": 253,
+  "owning_sources": [
+    "core/artifacts/internal/operations/lifecycle.go"
+  ],
+  "membership_authenticated": true,
+  "current_applicability": "APPLICABLE",
+  "changed_inputs": [],
+  "unavailable_inputs": [],
+  "load_origin": "Source inputs are actual immutable9a Git blobs. New proof/raw retention paths use explicit private Temp overlay only; no claim those paths were committed at9a or that Root final index passed.",
+  "tests_rerun": false,
+  "Gov_or_index_writes": false
+}

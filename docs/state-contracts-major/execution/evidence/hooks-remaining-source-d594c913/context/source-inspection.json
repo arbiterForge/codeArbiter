@@ -1,0 +1,1057 @@
+{
+  "schema": "codearbiter-source-clause-inspection/1",
+  "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+  "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "control_cone": "context",
+  "method": "Read actual baseline guard/effect/retry and frozen owning source control paths; verify exact owner byte/mode identity separately; inspect scoped dependency boundaries. No test execution.",
+  "limits": "Finite source guard/effect/retry conformance at the frozen source commit only. No runtime, host/package qualification, model compliance, task/scenario, provider/authentication, physical consent, endpoint policy, publication or whole-program readiness claim. HOLD rows receive no ledger mutation.",
+  "source_inputs": {
+    "core/pysrc/_artifactlib.py": {
+      "source_sha256": "59dbf6c51cbbb824cf553aa38aeb9c543dcada14c6311e9393434d231babe03b",
+      "baseline_sha256": "24424a47249483eefce1f389041892273bd2950cce7213bb76458d953b394ce1",
+      "byte_equal": false,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "scoped-witness-or-direct-dependency"
+    },
+    "core/pysrc/_contextreportlib.py": {
+      "source_sha256": "76669de01a426b83a841d439d92f82532923303097fa051c4d08c1a1d0bfb538",
+      "baseline_sha256": "76669de01a426b83a841d439d92f82532923303097fa051c4d08c1a1d0bfb538",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "cited-owning-source"
+    },
+    "core/pysrc/_contextselectlib.py": {
+      "source_sha256": "0609783e758b6d654c05eeda8c40ccf355641eaf51fb0d9e9978ae5bf4304706",
+      "baseline_sha256": "0609783e758b6d654c05eeda8c40ccf355641eaf51fb0d9e9978ae5bf4304706",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "cited-owning-source"
+    },
+    "core/pysrc/_contextsnapshotlib.py": {
+      "source_sha256": "bef9c37c09abc39e6113baa39f51f261103c760db66ec8e4cdc5818a075c1afe",
+      "baseline_sha256": "bef9c37c09abc39e6113baa39f51f261103c760db66ec8e4cdc5818a075c1afe",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "cited-owning-source"
+    },
+    "core/pysrc/_entrylib.py": {
+      "source_sha256": "1f4f95d55502d022f60bc9754a629a3fd38f0914ad69903fb5aa4aa8c4da8f5a",
+      "baseline_sha256": "1f4f95d55502d022f60bc9754a629a3fd38f0914ad69903fb5aa4aa8c4da8f5a",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "scoped-witness-or-direct-dependency"
+    },
+    "core/pysrc/_gitexec.py": {
+      "source_sha256": "a5935246028f506ef5ab13ba379b399cb7a754a077866fd39528545f30f4bef3",
+      "baseline_sha256": "a5935246028f506ef5ab13ba379b399cb7a754a077866fd39528545f30f4bef3",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "scoped-witness-or-direct-dependency"
+    },
+    "core/pysrc/_hooklib.py": {
+      "source_sha256": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+      "baseline_sha256": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "scoped-witness-or-direct-dependency"
+    },
+    "core/pysrc/_provenancelib.py": {
+      "source_sha256": "3cbd8d241ff6640e824ee2707ca1a3bd3202db83df371822201ceeabdd2657e4",
+      "baseline_sha256": "3cbd8d241ff6640e824ee2707ca1a3bd3202db83df371822201ceeabdd2657e4",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "cited-owning-source"
+    },
+    "core/pysrc/_readinjectlib.py": {
+      "source_sha256": "a4d689293690beefa28e33834c7aa421145bab6547685f8d25e5c29425b61138",
+      "baseline_sha256": "a4d689293690beefa28e33834c7aa421145bab6547685f8d25e5c29425b61138",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "cited-owning-source"
+    },
+    "core/pysrc/hostapi.py": {
+      "source_sha256": "2aea81ad167a458c6053cb52880952521159a367eaa5baa7df6e2e35fea574e4",
+      "baseline_sha256": "3dbeeb6bfdfde3f082a773090ca47133f55fab1c1e30e17a59547e781c5eca18",
+      "byte_equal": false,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "scoped-witness-or-direct-dependency"
+    },
+    "core/pysrc/pre-read.py": {
+      "source_sha256": "e8acb8b4901198cac202084b880605d7dd0a702781d650a47dad5d0214c491f3",
+      "baseline_sha256": "e8acb8b4901198cac202084b880605d7dd0a702781d650a47dad5d0214c491f3",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "cited-owning-source"
+    }
+  },
+  "rows": [
+    {
+      "id": "hooks:read-context:01",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/pre-read.py",
+          "start": 44,
+          "end": 61,
+          "sha256": "e8acb8b4901198cac202084b880605d7dd0a702781d650a47dad5d0214c491f3"
+        },
+        {
+          "path": "core/pysrc/_readinjectlib.py",
+          "start": 191,
+          "end": 264,
+          "sha256": "a4d689293690beefa28e33834c7aa421145bab6547685f8d25e5c29425b61138"
+        },
+        {
+          "path": "core/pysrc/_readinjectlib.py",
+          "start": 729,
+          "end": 843,
+          "sha256": "a4d689293690beefa28e33834c7aa421145bab6547685f8d25e5c29425b61138"
+        }
+      ],
+      "conformance": "Enabled noninternal reads assemble priority security/ADR/spec/provenance pointers with legacy150-token proxy. Hook catches all exceptions and never blocks read; native state remains advisory data.",
+      "machine_id": "hooks:read-context",
+      "baseline_clause_sha256": "b5fc002543c6877ea7687246b8b1c7d697255b00c1c3efc3d16bbb1229a6277b",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_readinjectlib.py",
+          "symbol": "module",
+          "lines": "1-1350"
+        },
+        {
+          "path": "core/pysrc/pre-read.py",
+          "symbol": "module",
+          "lines": "1-81"
+        }
+      ]
+    },
+    {
+      "id": "hooks:read-context:02",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_readinjectlib.py",
+          "start": 1295,
+          "end": 1350,
+          "sha256": "a4d689293690beefa28e33834c7aa421145bab6547685f8d25e5c29425b61138"
+        }
+      ],
+      "conformance": "Session+generation and native catalog digest bind dedup marker. Same binding suppresses duplicate; changed compaction generation/catalog entry content redelivers.",
+      "machine_id": "hooks:read-context",
+      "baseline_clause_sha256": "79e21a8227253b19c3245aa9b68b561bae5ff3aa5d81f69c6f0607c60c85217c",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_readinjectlib.py",
+          "symbol": "module",
+          "lines": "1-1350"
+        },
+        {
+          "path": "core/pysrc/pre-read.py",
+          "symbol": "module",
+          "lines": "1-81"
+        }
+      ]
+    },
+    {
+      "id": "hooks:read-context:03",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_readinjectlib.py",
+          "start": 1077,
+          "end": 1084,
+          "sha256": "a4d689293690beefa28e33834c7aa421145bab6547685f8d25e5c29425b61138"
+        },
+        {
+          "path": "core/pysrc/_readinjectlib.py",
+          "start": 1303,
+          "end": 1311,
+          "sha256": "a4d689293690beefa28e33834c7aa421145bab6547685f8d25e5c29425b61138"
+        }
+      ],
+      "conformance": "Internal .codearbiter self-read returns before index/Git/marker operations, avoiding recursive guidance; no state promotion occurs.",
+      "machine_id": "hooks:read-context",
+      "baseline_clause_sha256": "9a01027d2d71fa01cb8ac61bd6e999c4921b81aac30ca70de0bca4b8213e34af",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_readinjectlib.py",
+          "symbol": "module",
+          "lines": "1-1350"
+        },
+        {
+          "path": "core/pysrc/pre-read.py",
+          "symbol": "module",
+          "lines": "1-81"
+        }
+      ]
+    },
+    {
+      "id": "hooks:read-context:04",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_readinjectlib.py",
+          "start": 1115,
+          "end": 1200,
+          "sha256": "a4d689293690beefa28e33834c7aa421145bab6547685f8d25e5c29425b61138"
+        }
+      ],
+      "conformance": "Draft/ready/approved native entries are explicit advisory references, never approval/execution authority. Capability/invalid artifact diagnostics scope guidance to affected dependent work.",
+      "machine_id": "hooks:read-context",
+      "baseline_clause_sha256": "32bc4301684ff4764e3b05bb747cd180ca5b1d3b80cdefd892ff1f75b4330039",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_readinjectlib.py",
+          "symbol": "module",
+          "lines": "1-1350"
+        },
+        {
+          "path": "core/pysrc/pre-read.py",
+          "symbol": "module",
+          "lines": "1-81"
+        }
+      ]
+    },
+    {
+      "id": "hooks:read-context:05",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_readinjectlib.py",
+          "start": 1215,
+          "end": 1321,
+          "sha256": "a4d689293690beefa28e33834c7aa421145bab6547685f8d25e5c29425b61138"
+        }
+      ],
+      "conformance": "Corrupt/unsafe/nondecimal/oversized generation yieldsNone and advisory redelivery without marking. Bump uses25×10ms mkdir lock attempts and no crash-stale lock recovery.",
+      "machine_id": "hooks:read-context",
+      "baseline_clause_sha256": "defe8cc94647ec2bf39e4e61a1a850ea87ecee7b703625eef9c369786112117f",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_readinjectlib.py",
+          "symbol": "module",
+          "lines": "1-1350"
+        },
+        {
+          "path": "core/pysrc/pre-read.py",
+          "symbol": "module",
+          "lines": "1-81"
+        }
+      ]
+    },
+    {
+      "id": "hooks:read-context:06",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_readinjectlib.py",
+          "start": 935,
+          "end": 1042,
+          "sha256": "a4d689293690beefa28e33834c7aa421145bab6547685f8d25e5c29425b61138"
+        },
+        {
+          "path": "core/pysrc/_readinjectlib.py",
+          "start": 1115,
+          "end": 1162,
+          "sha256": "a4d689293690beefa28e33834c7aa421145bab6547685f8d25e5c29425b61138"
+        }
+      ],
+      "conformance": "Legacy Markdown ADR/spec cache keys max directory/file mtime and reloads provenance separately. Native catalog is reacquired and content-hashed rather than pretending the cache shares full native hashing.",
+      "machine_id": "hooks:read-context",
+      "baseline_clause_sha256": "0983c00945d6f3cfab0ce67d8e98a200e3fd7e01a8a98f9f3e833e4a973de512",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_readinjectlib.py",
+          "symbol": "module",
+          "lines": "1-1350"
+        },
+        {
+          "path": "core/pysrc/pre-read.py",
+          "symbol": "module",
+          "lines": "1-81"
+        }
+      ]
+    },
+    {
+      "id": "hooks:context-provenance:01",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_provenancelib.py",
+          "start": 459,
+          "end": 507,
+          "sha256": "3cbd8d241ff6640e824ee2707ca1a3bd3202db83df371822201ceeabdd2657e4"
+        },
+        {
+          "path": "core/pysrc/_provenancelib.py",
+          "start": 638,
+          "end": 687,
+          "sha256": "3cbd8d241ff6640e824ee2707ca1a3bd3202db83df371822201ceeabdd2657e4"
+        }
+      ],
+      "conformance": "Absent/legacy/invalid records retain explicit missing/legacy_unverified/unsupported coverage with semantic unverified and verified_fresh false. Record presence never establishes current truth.",
+      "machine_id": "hooks:context-provenance",
+      "baseline_clause_sha256": "d6b5c2b49b86443b176a56c4c9a76468b50f125f8000ec7e629511f3a360c761",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_provenancelib.py",
+          "symbol": "module",
+          "lines": "1-1663"
+        }
+      ]
+    },
+    {
+      "id": "hooks:context-provenance:02",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_provenancelib.py",
+          "start": 261,
+          "end": 332,
+          "sha256": "3cbd8d241ff6640e824ee2707ca1a3bd3202db83df371822201ceeabdd2657e4"
+        },
+        {
+          "path": "core/pysrc/_provenancelib.py",
+          "start": 339,
+          "end": 444,
+          "sha256": "3cbd8d241ff6640e824ee2707ca1a3bd3202db83df371822201ceeabdd2657e4"
+        }
+      ],
+      "conformance": "V2 requires closed record, every named host capability, accepted exact ownership digest/doc/fields and exact preimage before atomic writer. Unsupported/malformed ownership refuses and v2 cannot downgrade to legacy.",
+      "machine_id": "hooks:context-provenance",
+      "baseline_clause_sha256": "9771c146ddebd528152d3433c928a1a508cacc7ea46c9577965e8ebb2af8055b",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_provenancelib.py",
+          "symbol": "module",
+          "lines": "1-1663"
+        }
+      ]
+    },
+    {
+      "id": "hooks:context-provenance:03",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_provenancelib.py",
+          "start": 638,
+          "end": 794,
+          "sha256": "3cbd8d241ff6640e824ee2707ca1a3bd3202db83df371822201ceeabdd2657e4"
+        }
+      ],
+      "conformance": "Fresh scoped source/target probes and every declared content/membership digest determine identity separately from complete coverage. verified_fresh remains false and semantic unverified regardless of current identity.",
+      "machine_id": "hooks:context-provenance",
+      "baseline_clause_sha256": "f6471e01db0d8c30747b0ca729685e8cc94f5347c850a1f2bfb44445ca7f97e2",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_provenancelib.py",
+          "symbol": "module",
+          "lines": "1-1663"
+        }
+      ]
+    },
+    {
+      "id": "hooks:context-provenance:04",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_provenancelib.py",
+          "start": 510,
+          "end": 592,
+          "sha256": "3cbd8d241ff6640e824ee2707ca1a3bd3202db83df371822201ceeabdd2657e4"
+        },
+        {
+          "path": "core/pysrc/_provenancelib.py",
+          "start": 750,
+          "end": 794,
+          "sha256": "3cbd8d241ff6640e824ee2707ca1a3bd3202db83df371822201ceeabdd2657e4"
+        },
+        {
+          "path": "core/pysrc/_provenancelib.py",
+          "start": 1035,
+          "end": 1061,
+          "sha256": "3cbd8d241ff6640e824ee2707ca1a3bd3202db83df371822201ceeabdd2657e4"
+        }
+      ],
+      "conformance": "Store faults/missing/oversize/unreadable and per-document source/target mismatch remain explicit; selected changed_scope returns only that document’s paths. One drift does not falsify unrelated files.",
+      "machine_id": "hooks:context-provenance",
+      "baseline_clause_sha256": "dad77a8f287e327d426ba4fefd7fce64fb1c21f6af2d446339428316e23d0c4b",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_provenancelib.py",
+          "symbol": "module",
+          "lines": "1-1663"
+        }
+      ]
+    },
+    {
+      "id": "hooks:context-provenance:05",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_provenancelib.py",
+          "start": 595,
+          "end": 635,
+          "sha256": "3cbd8d241ff6640e824ee2707ca1a3bd3202db83df371822201ceeabdd2657e4"
+        },
+        {
+          "path": "core/pysrc/_provenancelib.py",
+          "start": 673,
+          "end": 681,
+          "sha256": "3cbd8d241ff6640e824ee2707ca1a3bd3202db83df371822201ceeabdd2657e4"
+        }
+      ],
+      "conformance": "Only the empty interview-derived tech-stack stub plus bounded/current target/membership checks reports actual first manifest paths; advisory handoff does not read facts from manifest or author architecture.",
+      "machine_id": "hooks:context-provenance",
+      "baseline_clause_sha256": "0d90eccb86c6a95468cd6da22da9ba1087b7c319151da681fc9b1fca869db86d",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_provenancelib.py",
+          "symbol": "module",
+          "lines": "1-1663"
+        }
+      ]
+    },
+    {
+      "id": "hooks:context-provenance:06",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_provenancelib.py",
+          "start": 900,
+          "end": 1061,
+          "sha256": "3cbd8d241ff6640e824ee2707ca1a3bd3202db83df371822201ceeabdd2657e4"
+        },
+        {
+          "path": "core/pysrc/_provenancelib.py",
+          "start": 1424,
+          "end": 1540,
+          "sha256": "3cbd8d241ff6640e824ee2707ca1a3bd3202db83df371822201ceeabdd2657e4"
+        },
+        {
+          "path": "core/pysrc/_provenancelib.py",
+          "start": 1548,
+          "end": 1641,
+          "sha256": "3cbd8d241ff6640e824ee2707ca1a3bd3202db83df371822201ceeabdd2657e4"
+        }
+      ],
+      "conformance": "Declared trigger/hash inventory drives scoped drift and bounded startup advisory; incomplete hash batches degrade distinctly and map lint checks safe target existence. No-hit means only declared dependency scope.",
+      "machine_id": "hooks:context-provenance",
+      "baseline_clause_sha256": "9435f186d7f5b6c7c1139f950b73a528dec4ca808fc05467a720ae70ebc87fe1",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_provenancelib.py",
+          "symbol": "module",
+          "lines": "1-1663"
+        }
+      ]
+    },
+    {
+      "id": "hooks:context-provenance:07",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_provenancelib.py",
+          "start": 1119,
+          "end": 1298,
+          "sha256": "3cbd8d241ff6640e824ee2707ca1a3bd3202db83df371822201ceeabdd2657e4"
+        }
+      ],
+      "conformance": "Scoped pure v2 heal list explicitly authorizes_write false and retains unknowns; legacy worklist selects source drift without granting writer authority. Actual native/scoped writer remains caller obligation.",
+      "machine_id": "hooks:context-provenance",
+      "baseline_clause_sha256": "a5b618da3bf36975912f021e1e993b70e672fbcded05214b59dd5d91a2a0d6ef",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_provenancelib.py",
+          "symbol": "module",
+          "lines": "1-1663"
+        }
+      ]
+    },
+    {
+      "id": "hooks:context-provenance:08",
+      "decision": "HOLD",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_provenancelib.py",
+          "start": 1069,
+          "end": 1111,
+          "sha256": "3cbd8d241ff6640e824ee2707ca1a3bd3202db83df371822201ceeabdd2657e4"
+        },
+        {
+          "path": "core/pysrc/_provenancelib.py",
+          "start": 1649,
+          "end": 1663,
+          "sha256": "3cbd8d241ff6640e824ee2707ca1a3bd3202db83df371822201ceeabdd2657e4"
+        }
+      ],
+      "conformance": "HOLD: cited rebaseline is a pure record/hash transform preserving top-level created data. It does not select or persist HEAD/date; write_stub only persists created date. Whole baseline HEAD/date persistence needs another owning command/source, not equality of this module.",
+      "machine_id": "hooks:context-provenance",
+      "baseline_clause_sha256": "15bf5289e0f334ae817173902a0545df20edbe11999336f6587da69a91709861",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_provenancelib.py",
+          "symbol": "module",
+          "lines": "1-1663"
+        }
+      ]
+    },
+    {
+      "id": "hooks:context-snapshot:01",
+      "decision": "HOLD",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_contextsnapshotlib.py",
+          "start": 31,
+          "end": 33,
+          "sha256": "bef9c37c09abc39e6113baa39f51f261103c760db66ec8e4cdc5818a075c1afe"
+        },
+        {
+          "path": "core/pysrc/_contextsnapshotlib.py",
+          "start": 295,
+          "end": 431,
+          "sha256": "bef9c37c09abc39e6113baa39f51f261103c760db66ec8e4cdc5818a075c1afe"
+        }
+      ],
+      "conformance": "HOLD: membership scan bounds/link/vendor/generated/nested-repository gaps and strict negative_proof are supported, but its traversal does not apply _SENSITIVE_NAMES/_SENSITIVE_SUFFIXES (those guard digest_file only). Whole no-sensitive-expansion guard is unsupported without explicit caller exclusion/source.",
+      "machine_id": "hooks:context-snapshot",
+      "baseline_clause_sha256": "4f06d07eeb47db519561ec447b3e5c90cda1e305c49dde42bd7b4eb7930e0902",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_contextsnapshotlib.py",
+          "symbol": "module",
+          "lines": "1-999"
+        }
+      ]
+    },
+    {
+      "id": "hooks:context-snapshot:02",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_contextsnapshotlib.py",
+          "start": 162,
+          "end": 292,
+          "sha256": "bef9c37c09abc39e6113baa39f51f261103c760db66ec8e4cdc5818a075c1afe"
+        }
+      ],
+      "conformance": "Pinned regular bounded read checks lexical scope/sensitive denial, path components, device/inode/version before/after, double-read digest and final containment. Concurrent/link/reparse/size/read failure yields no digest.",
+      "machine_id": "hooks:context-snapshot",
+      "baseline_clause_sha256": "c0f307decbc897043dc5ec6b166e47c4869023e70ee3b0dff2f81990552b844c",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_contextsnapshotlib.py",
+          "symbol": "module",
+          "lines": "1-999"
+        }
+      ]
+    },
+    {
+      "id": "hooks:context-snapshot:03",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_contextsnapshotlib.py",
+          "start": 470,
+          "end": 583,
+          "sha256": "bef9c37c09abc39e6113baa39f51f261103c760db66ec8e4cdc5818a075c1afe"
+        },
+        {
+          "path": "core/pysrc/_contextsnapshotlib.py",
+          "start": 653,
+          "end": 762,
+          "sha256": "bef9c37c09abc39e6113baa39f51f261103c760db66ec8e4cdc5818a075c1afe"
+        }
+      ],
+      "conformance": "Worktree/common/head/branch/upstream plus selected raw/index/HEAD sources captured twice identically. Git reads are bounded/root-bound/no lazy replacement/filter effects; upstream remains local_only and fork unknown; races raise.",
+      "machine_id": "hooks:context-snapshot",
+      "baseline_clause_sha256": "f39c6635dfe0085ee22ee9c34a0cf2b008b6f06c57f995ed1c2f39485f9a5751",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_contextsnapshotlib.py",
+          "symbol": "module",
+          "lines": "1-999"
+        }
+      ]
+    },
+    {
+      "id": "hooks:context-snapshot:04",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_contextsnapshotlib.py",
+          "start": 739,
+          "end": 839,
+          "sha256": "bef9c37c09abc39e6113baa39f51f261103c760db66ec8e4cdc5818a075c1afe"
+        }
+      ],
+      "conformance": "Source/target/output role overlaps reject. Join compares source identity independently of target preimage; action additionally requires targets_current. Source-current alone cannot authorize target write.",
+      "machine_id": "hooks:context-snapshot",
+      "baseline_clause_sha256": "8d79cb704b4e03fc34362ed84ac3b0ef1ca73a862ed9e480b87d30e8320df42b",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_contextsnapshotlib.py",
+          "symbol": "module",
+          "lines": "1-999"
+        }
+      ]
+    },
+    {
+      "id": "hooks:context-snapshot:05",
+      "decision": "HOLD",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_contextsnapshotlib.py",
+          "start": 842,
+          "end": 901,
+          "sha256": "bef9c37c09abc39e6113baa39f51f261103c760db66ec8e4cdc5818a075c1afe"
+        }
+      ],
+      "conformance": "HOLD: selected source/membership/target checks correctly ignore unrelated changes, but this function has no runtime/lock/prerequisite/argv/cwd/env evidence-binding fields or invalidation join. That broad failure clause belongs to another command-evidence contract and is not established by this cited owner alone.",
+      "machine_id": "hooks:context-snapshot",
+      "baseline_clause_sha256": "aedad4e085421cc91e70f8946ef23893f02d38ef6781c86bcbec8720f928793c",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_contextsnapshotlib.py",
+          "symbol": "module",
+          "lines": "1-999"
+        }
+      ]
+    },
+    {
+      "id": "hooks:context-snapshot:06",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_contextsnapshotlib.py",
+          "start": 909,
+          "end": 999,
+          "sha256": "bef9c37c09abc39e6113baa39f51f261103c760db66ec8e4cdc5818a075c1afe"
+        }
+      ],
+      "conformance": "Bounded same target/worktree read captures actual byte/status/size/mtime; comparison distinguishes byte changes, timestamp-only and no-op observations. Malformed/read/identity uncertainty raises, and no transient-write absence is inferred.",
+      "machine_id": "hooks:context-snapshot",
+      "baseline_clause_sha256": "c7c6aa6e0b5d45c477b14c8cba1a41e8cf008c47c06e962e2c5fc94bb35ab470",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_contextsnapshotlib.py",
+          "symbol": "module",
+          "lines": "1-999"
+        }
+      ]
+    },
+    {
+      "id": "hooks:context-scout:01",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_contextreportlib.py",
+          "start": 367,
+          "end": 471,
+          "sha256": "76669de01a426b83a841d439d92f82532923303097fa051c4d08c1a1d0bfb538"
+        }
+      ],
+      "conformance": "Run/snapshot/scope/deadline/budgets validate; at most24 total attempts and2 per assignment are admitted before deadline. Changed assignment IDs do not replenish aggregate.",
+      "machine_id": "hooks:context-scout",
+      "baseline_clause_sha256": "f363e1d343d2c961acba328fa7ffc46e25456c558a6d80523683d6d5481a9954",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_contextreportlib.py",
+          "symbol": "admit_scout_attempt",
+          "lines": "458-471"
+        },
+        {
+          "path": "core/pysrc/_contextreportlib.py",
+          "symbol": "decode_report",
+          "lines": "307-358"
+        },
+        {
+          "path": "core/pysrc/_contextreportlib.py",
+          "symbol": "join_scout_reports",
+          "lines": "474-545"
+        },
+        {
+          "path": "core/pysrc/_contextreportlib.py",
+          "symbol": "summarize_context_events",
+          "lines": "552-631"
+        }
+      ]
+    },
+    {
+      "id": "hooks:context-scout:02",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_contextreportlib.py",
+          "start": 68,
+          "end": 250,
+          "sha256": "76669de01a426b83a841d439d92f82532923303097fa051c4d08c1a1d0bfb538"
+        },
+        {
+          "path": "core/pysrc/_contextreportlib.py",
+          "start": 270,
+          "end": 358,
+          "sha256": "76669de01a426b83a841d439d92f82532923303097fa051c4d08c1a1d0bfb538"
+        }
+      ],
+      "conformance": "Bounded duplicate-free closed report binds exact assignment/attempt/snapshot/scope. Transport failed/oversize is distinct from complete content outcomes, and malformed report rejects.",
+      "machine_id": "hooks:context-scout",
+      "baseline_clause_sha256": "86a488b0f4e19c94876e46f4961dabb7291187d0eb1d6942eca52ece8a2f5e71",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_contextreportlib.py",
+          "symbol": "admit_scout_attempt",
+          "lines": "458-471"
+        },
+        {
+          "path": "core/pysrc/_contextreportlib.py",
+          "symbol": "decode_report",
+          "lines": "307-358"
+        },
+        {
+          "path": "core/pysrc/_contextreportlib.py",
+          "symbol": "join_scout_reports",
+          "lines": "474-545"
+        },
+        {
+          "path": "core/pysrc/_contextreportlib.py",
+          "symbol": "summarize_context_events",
+          "lines": "552-631"
+        }
+      ]
+    },
+    {
+      "id": "hooks:context-scout:03",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_contextreportlib.py",
+          "start": 367,
+          "end": 455,
+          "sha256": "76669de01a426b83a841d439d92f82532923303097fa051c4d08c1a1d0bfb538"
+        }
+      ],
+      "conformance": "Child assignments require existing attempted parent, depth<=3, fanout2–4 and exact bound coverage/explicit overlaps; spawning children cannot complete an unattempted parent.",
+      "machine_id": "hooks:context-scout",
+      "baseline_clause_sha256": "b8a0ae27fd5672af21b8978f46c300abe51b398c627c27c4f8f88c4049b004a3",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_contextreportlib.py",
+          "symbol": "admit_scout_attempt",
+          "lines": "458-471"
+        },
+        {
+          "path": "core/pysrc/_contextreportlib.py",
+          "symbol": "decode_report",
+          "lines": "307-358"
+        },
+        {
+          "path": "core/pysrc/_contextreportlib.py",
+          "symbol": "join_scout_reports",
+          "lines": "474-545"
+        },
+        {
+          "path": "core/pysrc/_contextreportlib.py",
+          "symbol": "summarize_context_events",
+          "lines": "552-631"
+        }
+      ]
+    },
+    {
+      "id": "hooks:context-scout:04",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_contextreportlib.py",
+          "start": 474,
+          "end": 545,
+          "sha256": "76669de01a426b83a841d439d92f82532923303097fa051c4d08c1a1d0bfb538"
+        }
+      ],
+      "conformance": "Every attempt report is supplied; latest leaf transport must complete and subdivided parents remain noncomplete. Contradictory overlap status/value/digest refuses; ambiguous/not-inspected/failed/oversize gaps survive.",
+      "machine_id": "hooks:context-scout",
+      "baseline_clause_sha256": "708024b60643158c3f93ad6fb41c4075af54a2a7799ae87a0ecb1cb15d32d3d4",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_contextreportlib.py",
+          "symbol": "admit_scout_attempt",
+          "lines": "458-471"
+        },
+        {
+          "path": "core/pysrc/_contextreportlib.py",
+          "symbol": "decode_report",
+          "lines": "307-358"
+        },
+        {
+          "path": "core/pysrc/_contextreportlib.py",
+          "symbol": "join_scout_reports",
+          "lines": "474-545"
+        },
+        {
+          "path": "core/pysrc/_contextreportlib.py",
+          "symbol": "summarize_context_events",
+          "lines": "552-631"
+        }
+      ]
+    },
+    {
+      "id": "hooks:context-scout:05",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_contextreportlib.py",
+          "start": 534,
+          "end": 545,
+          "sha256": "76669de01a426b83a841d439d92f82532923303097fa051c4d08c1a1d0bfb538"
+        }
+      ],
+      "conformance": "full_coverage is mode==full selection only; explicit gaps are authoritative and no gap-free or semantic-truth guarantee follows.",
+      "machine_id": "hooks:context-scout",
+      "baseline_clause_sha256": "b5128600527ca4087a043618b821d62c7229bfbb94f1877e0563b37de21266d2",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_contextreportlib.py",
+          "symbol": "admit_scout_attempt",
+          "lines": "458-471"
+        },
+        {
+          "path": "core/pysrc/_contextreportlib.py",
+          "symbol": "decode_report",
+          "lines": "307-358"
+        },
+        {
+          "path": "core/pysrc/_contextreportlib.py",
+          "symbol": "join_scout_reports",
+          "lines": "474-545"
+        },
+        {
+          "path": "core/pysrc/_contextreportlib.py",
+          "symbol": "summarize_context_events",
+          "lines": "552-631"
+        }
+      ]
+    },
+    {
+      "id": "hooks:context-scout:06",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_contextreportlib.py",
+          "start": 552,
+          "end": 631,
+          "sha256": "76669de01a426b83a841d439d92f82532923303097fa051c4d08c1a1d0bfb538"
+        }
+      ],
+      "conformance": "Supplied-event accounting caps256 events/128 launches, requires each attempted and joined, validates retry/rescout snapshot changes and permitted effect paths. No host-authenticated inventory or effect permission is invented.",
+      "machine_id": "hooks:context-scout",
+      "baseline_clause_sha256": "02a4c7b2795f1b7eb7b4d333bc8b6317cf21118a4ed993278e360b208b9f77fd",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_contextreportlib.py",
+          "symbol": "admit_scout_attempt",
+          "lines": "458-471"
+        },
+        {
+          "path": "core/pysrc/_contextreportlib.py",
+          "symbol": "decode_report",
+          "lines": "307-358"
+        },
+        {
+          "path": "core/pysrc/_contextreportlib.py",
+          "symbol": "join_scout_reports",
+          "lines": "474-545"
+        },
+        {
+          "path": "core/pysrc/_contextreportlib.py",
+          "symbol": "summarize_context_events",
+          "lines": "552-631"
+        }
+      ]
+    },
+    {
+      "id": "hooks:context-delivery:01",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_contextselectlib.py",
+          "start": 116,
+          "end": 237,
+          "sha256": "0609783e758b6d654c05eeda8c40ccf355641eaf51fb0d9e9978ae5bf4304706"
+        }
+      ],
+      "conformance": "Bounded touching records/root instructions retain exact duplicates only and provenance/unresolved status. Conflicting command records error; noncurrent constraint and conflicting instruction remain blockers.",
+      "machine_id": "hooks:context-delivery",
+      "baseline_clause_sha256": "c36d6c5330fde917c5ae6e540cf290678383e7e404e984ae8802574fd168db7b",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_contextselectlib.py",
+          "symbol": "module",
+          "lines": "1-467"
+        }
+      ]
+    },
+    {
+      "id": "hooks:context-delivery:02",
+      "decision": "HOLD",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_contextselectlib.py",
+          "start": 201,
+          "end": 225,
+          "sha256": "0609783e758b6d654c05eeda8c40ccf355641eaf51fb0d9e9978ae5bf4304706"
+        },
+        {
+          "path": "core/pysrc/_contextselectlib.py",
+          "start": 445,
+          "end": 454,
+          "sha256": "0609783e758b6d654c05eeda8c40ccf355641eaf51fb0d9e9978ae5bf4304706"
+        }
+      ],
+      "conformance": "HOLD: mixed epoch/conflicting instructions add blockers but retain text; only oversize sets individual text=None. The baseline says all three produce text=None plus blockers, which is broader than actual source.",
+      "machine_id": "hooks:context-delivery",
+      "baseline_clause_sha256": "0ee3d870df50d4fde7d8169f3032435ff5881a3abfe8040b3f387992bbdb37e2",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_contextselectlib.py",
+          "symbol": "module",
+          "lines": "1-467"
+        }
+      ]
+    },
+    {
+      "id": "hooks:context-delivery:03",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_contextselectlib.py",
+          "start": 399,
+          "end": 454,
+          "sha256": "0609783e758b6d654c05eeda8c40ccf355641eaf51fb0d9e9978ae5bf4304706"
+        }
+      ],
+      "conformance": "Every required critical reference must be available and applicable constraint/instruction blockers absent before actor check. Missing critical refs explicitly block; map/provenance warnings alone stay advisory.",
+      "machine_id": "hooks:context-delivery",
+      "baseline_clause_sha256": "c0e0a5a8cabecbbca5877ca981a0cc4b4b589238d9721689ec25aca96b0bbf23",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_contextselectlib.py",
+          "symbol": "module",
+          "lines": "1-467"
+        }
+      ]
+    },
+    {
+      "id": "hooks:context-delivery:04",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_contextselectlib.py",
+          "start": 330,
+          "end": 396,
+          "sha256": "0609783e758b6d654c05eeda8c40ccf355641eaf51fb0d9e9978ae5bf4304706"
+        },
+        {
+          "path": "core/pysrc/_contextselectlib.py",
+          "start": 457,
+          "end": 467,
+          "sha256": "0609783e758b6d654c05eeda8c40ccf355641eaf51fb0d9e9978ae5bf4304706"
+        }
+      ],
+      "conformance": "Closed actor/caller/route and exact packet/origin fields feed implementation composition; reviewer preparation is read-only with no reviewer_input when blocked. This preserves caller evidence requirements and does not dispatch actors.",
+      "machine_id": "hooks:context-delivery",
+      "baseline_clause_sha256": "5339e542f76ebd2b9d9e01c7994a9c40ed35659e91b76094f9b21044174b18b9",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_contextselectlib.py",
+          "symbol": "module",
+          "lines": "1-467"
+        }
+      ]
+    },
+    {
+      "id": "hooks:context-delivery:05",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_contextselectlib.py",
+          "start": 240,
+          "end": 313,
+          "sha256": "0609783e758b6d654c05eeda8c40ccf355641eaf51fb0d9e9978ae5bf4304706"
+        }
+      ],
+      "conformance": "Observed receipt is accepted only for exact actor/task/realworktree/paths/source+host+instruction epochs/packet SHA and recognized host-load-event or child-input-capture. Output explicitly says reported observation; helper itself does not authenticate physical delivery.",
+      "machine_id": "hooks:context-delivery",
+      "baseline_clause_sha256": "5904159efd818240aebca9ce3ba695f9bfc38931c1ba8243a61afbafe5d2d628",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_contextselectlib.py",
+          "symbol": "module",
+          "lines": "1-467"
+        }
+      ]
+    },
+    {
+      "id": "hooks:context-delivery:06",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_contextselectlib.py",
+          "start": 293,
+          "end": 327,
+          "sha256": "0609783e758b6d654c05eeda8c40ccf355641eaf51fb0d9e9978ae5bf4304706"
+        }
+      ],
+      "conformance": "Only same binding with fewer than2 attempts yields another delivery plan; afterward ACTOR_DELIVERY_UNOBSERVED advisory remains unknown, without consumption or new-authority claim.",
+      "machine_id": "hooks:context-delivery",
+      "baseline_clause_sha256": "2d7a44183c5e95ddb16efa0078becedb5e66945b6c888869a34b12ab148b2c0a",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_contextselectlib.py",
+          "symbol": "module",
+          "lines": "1-467"
+        }
+      ]
+    }
+  ],
+  "aggregate_machines": [
+    {
+      "id": "hooks:context-scout",
+      "constituents": [
+        "hooks:context-scout:01",
+        "hooks:context-scout:02",
+        "hooks:context-scout:03",
+        "hooks:context-scout:04",
+        "hooks:context-scout:05",
+        "hooks:context-scout:06"
+      ],
+      "basis": "Every constituent whole obligation has supported source mapping in this cone; all machine cited owning inputs byte/mode equal to baseline."
+    },
+    {
+      "id": "hooks:read-context",
+      "constituents": [
+        "hooks:read-context:01",
+        "hooks:read-context:02",
+        "hooks:read-context:03",
+        "hooks:read-context:04",
+        "hooks:read-context:05",
+        "hooks:read-context:06"
+      ],
+      "basis": "Every constituent whole obligation has supported source mapping in this cone; all machine cited owning inputs byte/mode equal to baseline."
+    }
+  ],
+  "context_reuse": {
+    "actor_context_sha256": "adf6ff38e30365d88f7033c87bc91d4266ddcde117765c285d68c9e9fc5ded5e",
+    "actor_delivery_plan_sha256": "809ba5b9648ddd4e86235232380598c993c5a973b136d7f3abaa8001fc8549cf",
+    "claim": "Actual installed composer output reused; delivery file is advisory preparation plan, not invented host receipt."
+  }
+}

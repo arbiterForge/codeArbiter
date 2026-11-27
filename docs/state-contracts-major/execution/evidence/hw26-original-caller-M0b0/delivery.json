@@ -1,0 +1,181 @@
+{
+  "schema": "hw26-original-caller-delivery/1",
+  "scope_verdict": "SCOPED_ORIGINAL_FACTS_PASS_WITH_EXPLICIT_RETENTION_LIMITS",
+  "source_commit": "0b0ae193496335c0d87337e5993f032a9385fffb",
+  "current_source": "ef63f8c306c8e47c111afec12a9d980d0e8927d6",
+  "ci_run_id": 43960617519,
+  "whole_normal_verdict": "BLOCK",
+  "proof_sha256": "5504868d8682783bc5520a87dd227dff73cca23ac2d7184803b47ab649fcdfcb",
+  "files": {
+    "acquire-original-callers.py": {
+      "bytes": 3272,
+      "sha256": "dfb01dcbadb0cbe252317607439116b80619fc2634c5fc8bc605b33d10fb4cf9"
+    },
+    "acquire-source-observation.py": {
+      "bytes": 2836,
+      "sha256": "08c22211df7c2fee79c4e32181bf382954e7873cd98d748ec52979df1254e408"
+    },
+    "admit-original-callers.py": {
+      "bytes": 4796,
+      "sha256": "6fbc64381c96a6474ad0db792374de8dde61ba6c7dd47baf7f2ffe38a5600b2b"
+    },
+    "adoption-and-gaps.md": {
+      "bytes": 3329,
+      "sha256": "aaee7310f133f8a53b2c259894ac34f658e54f88e748a78457b3b062cdbb4543"
+    },
+    "benchmark-original-public-lines.txt": {
+      "bytes": 638,
+      "sha256": "5163629498ca709b2e0feca0aa7864da8ef9f589908dbb8c829ebe77de59d395"
+    },
+    "expanded-source-joins.json": {
+      "bytes": 7983,
+      "sha256": "198e78199533bd1eb8f0862fae89d65cf96a6b0b2966a2ed4111db2affcde58a"
+    },
+    "M-source/.github/scripts/_pi_rpc_profile.py": {
+      "bytes": 11789,
+      "sha256": "3445e2c19c84fbd8a338d538dabf3b1e71610720e527dcd564c0a52156e57d60"
+    },
+    "M-source/.github/scripts/observe_pi_installed_rpc.py": {
+      "bytes": 25934,
+      "sha256": "f6c607187eb4a7701c712613695637ba9ccfb8b4f1069b75a926ef6a8dc63352"
+    },
+    "M-source/.github/scripts/pi_benchmark.py": {
+      "bytes": 16181,
+      "sha256": "1a224fc7625b00586e453d9f3cac878d5d2db1d68ac26b37c54b5002b1b8ee77"
+    },
+    "M-source/.github/scripts/pi_live_report_profile.py": {
+      "bytes": 1218,
+      "sha256": "9ac62697a1547dfaa9ab3735ef4616050e0a4af0e123831f3a72caef99c3d7e7"
+    },
+    "M-source/.github/scripts/test_observe_pi_installed_rpc.py": {
+      "bytes": 27791,
+      "sha256": "f08563e915b4f94c9077816ca65670202570aac1911e3feb5a595ecdeb05c302"
+    },
+    "M-source/.github/scripts/test_pi_benchmark.py": {
+      "bytes": 6271,
+      "sha256": "be4264e341133e7c197ff2059d7311eab83033ab8f3bf760ad590629785db32c"
+    },
+    "M-source/.github/workflows/ci.yml": {
+      "bytes": 272037,
+      "sha256": "88b8154ad664c670f2111f045c14ffba259b50f5ec589062047f90695ab2dbf6"
+    },
+    "M-source/core/pysrc/_hooklib.py": {
+      "bytes": 49147,
+      "sha256": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895"
+    },
+    "M-source/plugins/ca/hooks/_host.py": {
+      "bytes": 1689,
+      "sha256": "9d04b88683d1deab03850ef1f2a169579f59756d3430079bdc6aa2160994bc1b"
+    },
+    "M-source/plugins/ca-codex/hooks/_host.py": {
+      "bytes": 15607,
+      "sha256": "92b1977ada85436649380fdcf07651f586174efee76a8412beb3ae26bf1e457f"
+    },
+    "M-source/plugins/ca-pi/tools/package-lock.json": {
+      "bytes": 63619,
+      "sha256": "16185d807538d2ba97eb57ef098512f667faeb879e7585950adbf013e5b2b5d8"
+    },
+    "M-source/plugins/ca-pi/tools/package.json": {
+      "bytes": 505,
+      "sha256": "083e139a7a805f183e63e8be50e8ce7908d0c4748fe1ed474ee198734efaf560"
+    },
+    "M-source/plugins/ca-pi/tools/src/audit-sink.ts": {
+      "bytes": 9787,
+      "sha256": "118e24ae1be2ad4807801860dbb9fb7b953e0404d198124d4393cd575e49ed27"
+    },
+    "M-source/plugins/ca-pi/tools/src/contracts.ts": {
+      "bytes": 7509,
+      "sha256": "6e1e8b96c95fc9d7dc392817795c7fdbc1d1400c3a2837fb1fd4476cbd8ce928"
+    },
+    "M-source/plugins/ca-pi/tools/src/notices.ts": {
+      "bytes": 2690,
+      "sha256": "48fa54e675837ad0b06ea68e053d72cce734294131eb72b144de608d5f4e697c"
+    },
+    "M-source/plugins/ca-pi/tools/src/policy.ts": {
+      "bytes": 12721,
+      "sha256": "87950047f3d721b15a08bae83b1212d368367f3c332488611073050c0bc77676"
+    },
+    "M-source/plugins/ca-pi/tools/src/redaction.ts": {
+      "bytes": 4571,
+      "sha256": "661a80a80cf818ddc7e8c088d7ede3ccd4e5e1a572c9b799e2e5aa3e61ab6742"
+    },
+    "M-source/plugins/ca-pi/tools/src/tool-guard.ts": {
+      "bytes": 46425,
+      "sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+    },
+    "M-source/plugins/ca-pi/tools/test/benchmark-boundary.ts": {
+      "bytes": 2699,
+      "sha256": "d4a8a0573a0710119f9e4ff1bc55bde7f0e2ce44c10dfcc44a63c5f259677aab"
+    },
+    "M-source/plugins/ca-pi/tools/test/live-pi-host.ts": {
+      "bytes": 3266,
+      "sha256": "f7a18740703b17afc33423561a63c08958473a17b1b2443e1a4c0d414e4e3d7b"
+    },
+    "M-source/plugins/ca-pi/tools/test/runner-isolation.test.ts": {
+      "bytes": 100540,
+      "sha256": "15b25b33f928184493e2bb47f4af7a9576540e26b59e81fc7dfe7972f5f1faac"
+    },
+    "M-source/plugins/ca-pi/tools/test/security.test.ts": {
+      "bytes": 30138,
+      "sha256": "1b532cf9e318d207eba294cab4aa66431d25170f71dce50bda2200c62acc36ec"
+    },
+    "M-source/plugins/ca-pi/tools/test/setup-disposable-home.ts": {
+      "bytes": 2729,
+      "sha256": "768c65b5a03877e16ba9a81f758ccaf8173f28363573aafcd85dab1cc4be6e53"
+    },
+    "M-source/plugins/ca-pi/tools/vitest.config.ts": {
+      "bytes": 2558,
+      "sha256": "bea41c8f465ce1a6f78de62b8a85e560ee03214c6ede6ee5309f1600f8222e9d"
+    },
+    "minimal-followup-plan.json": {
+      "bytes": 2534,
+      "sha256": "5de73d7f53bf775c377f4f132342a5264e37700c227de99f90a0a5543761115c"
+    },
+    "original-benchmark-proof.json": {
+      "bytes": 3892,
+      "sha256": "173b379ac4e1263b756af58935904eaceeb7578bac952d2aca92519a66e89d29"
+    },
+    "original-caller-acquisition.json": {
+      "bytes": 22941,
+      "sha256": "0f86cddce718c9ff45812e95cecfa01e01578f6bc09fba93df0dbc9017e33aa3"
+    },
+    "original-darwin-document-index.json": {
+      "bytes": 3298,
+      "sha256": "bc6a8c23156e1be09861167f50e360ae495a605c7c9c7bd5c92108b65dadb409"
+    },
+    "original-installed-caller-admission.json": {
+      "bytes": 27095,
+      "sha256": "6adf1c711c5854cc81fccc7bb0b52c30fd26093ccc5a404d448ce2cfb33564ef"
+    },
+    "original-isolation-named-outcomes.json": {
+      "bytes": 19012,
+      "sha256": "1de765416bb52f7b3751bd5e09966854da2f1c5d68cac3eb2c356f8d33498246"
+    },
+    "original-linux-document-index.json": {
+      "bytes": 3298,
+      "sha256": "031c8c1a997e04f70e5474826c4848a7de89318a64829731b65e131237046267"
+    },
+    "original-windows-document-index.json": {
+      "bytes": 3298,
+      "sha256": "031c8c1a997e04f70e5474826c4848a7de89318a64829731b65e131237046267"
+    },
+    "prepare-proof.py": {
+      "bytes": 11301,
+      "sha256": "284f6108c4500f0a088e86ca8f00f070a5e258bfb554814ec7adb61c25819278"
+    },
+    "proof.json": {
+      "bytes": 8094,
+      "sha256": "5504868d8682783bc5520a87dd227dff73cca23ac2d7184803b47ab649fcdfcb"
+    },
+    "snapshot.py": {
+      "bytes": 1382,
+      "sha256": "5ab32c27537845f022e218e3c8f9e19847135c2f5dfd729e6a389fb912f2e08c"
+    },
+    "source-joins.json": {
+      "bytes": 4444,
+      "sha256": "5e2f41af766f585e0e6926fc270a2a190c7464449c4c567f521988f25e3d66d7"
+    }
+  },
+  "no_rerun_install_provider_auth_store_global_or_canonical_operation": true,
+  "original_named_objects_acquired_once": 4
+}

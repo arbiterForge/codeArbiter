@@ -21,6 +21,8 @@ import tomllib
 import unittest
 from unittest import mock
 from pathlib import Path
+from test_hook_ci_partition import reviewed_python_source_event_guards, reviewed_impact_source_event_guards, impact_source_roles
+from test_hook_ci_partition import reviewed_statusline_source_event_guards
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -51,13 +53,16 @@ NPM_AUDIT_GATE = "npm audit --omit=dev --audit-level=high"
 # `--omit=dev` gate above audits an empty graph there. This one covers the build
 # toolchain that actually exists - the dev dependencies that produce farm.js,
 # sandbox.js, and the ca-pi extension bundles. Same threshold, by contract.
-NPM_AUDIT_DEV_GATE = "npm audit --audit-level=high"
+NPM_AUDIT_DEV_GATE = (
+    "npm audit --include=dev --json | python3 ../../../.github/scripts/npm_audit_gate.py "
+    "--exceptions ../../../site/audit-exceptions.json --scope full --audit-level=high"
+)
 # The site graph's form of NPM_AUDIT_GATE: same scope and threshold, but the JSON
 # report is judged by npm_audit_gate.py, which admits only a GHSA recorded in
 # site/audit-exceptions.json with a dated backstop. Every other HIGH+ still fails.
 SITE_AUDIT_GATE = (
     "npm audit --omit=dev --json | python ../.github/scripts/npm_audit_gate.py "
-    "--exceptions audit-exceptions.json --audit-level=high"
+    "--exceptions audit-exceptions.json --scope production --audit-level=high"
 )
 PI_PROMOTION_WORKFLOW = REPO_ROOT / ".github" / "workflows" / "pi-promotion.yml"
 PI_TEST_DIR = REPO_ROOT / "plugins" / "ca-pi" / "tools" / "test"
@@ -139,6 +144,247 @@ def workflow_jobs(text: str) -> dict[str, str]:
     return jobs
 
 
+def reviewed_cold_event_guards(block: str) -> set[str]:
+    """Only the reviewed producer alternatives may omit merge-group evidence.
+
+    The original non-push cold execution remains required for merge groups.
+    Match each exact predicate to its one owning step; copying it onto another
+    test step cannot create an event-gating exemption.
+    """
+    push = ("github.event_name == 'push' && (github.ref == 'refs/heads/main' || "
+            "github.ref == 'refs/heads/major/state-contracts') && "
+            "hashFiles('.github/integration-candidate.json') != ''")
+    expected = {
+        "Cold-execute the complete exact-package claude workflow": "${{ !cancelled() && !(" + push + ") }}",
+        "Observe the original exact-package claude workflow": "${{ !cancelled() && " + push + " }}",
+        "Emit installed Claude qualification report": (
+            "github.event_name == 'push' && (github.ref == 'refs/heads/main' || "
+            "github.ref == 'refs/heads/major/state-contracts') "
+            "&& steps.cold_claude_observed.outcome == 'success' "
+            "&& hashFiles('.github/integration-candidate.json') != ''"),
+    }
+    steps = re.split(r"(?m)^      - name: ", block)[1:]
+    all_conditions = re.findall(r"(?m)^\s+if: ([^\n]+)$", block)
+    for name, predicate in expected.items():
+        matches = [step for step in steps if step.splitlines()[0] == name]
+        if (len(matches) != 1
+                or re.findall(r"(?m)^        if: ([^\n]+)$", matches[0]) != [predicate]
+                or all_conditions.count(predicate) != 1):
+            raise ValueError("cold producer event predicate is missing, changed or reused")
+    return set(expected.values())
+
+
+def reviewed_vitest_source_event_guards(block: str, job_id: str) -> set[str]:
+    """Only the three original source-report emitters can omit PR/queue reports."""
+    roles = {
+        "coverage-union-pi": ("Pi", "pi", " && matrix.os == 'windows-latest'"),
+        "ca-sandbox-tools": ("Sandbox", "sandbox", ""),
+        "tools": ("Farm", "farm", ""),
+    }
+    if job_id not in roles or not block.startswith("  " + job_id + ":"):
+        raise ValueError("unknown Vitest source-report owner")
+    title, key, matrix = roles[job_id]
+    predicate = ("${{ !cancelled()" + matrix + " && github.event_name == 'push' "
+                 "&& (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/major/state-contracts') "
+                 "&& hashFiles('.github/integration-candidate.json') != '' "
+                 "&& steps." + key + "_tools_observed.outcome == 'success' "
+                 "&& steps." + key + "_source_upload.outcome == 'success' }}")
+    matches = [step for step in re.split(r"(?m)^      - name: ", block)[1:]
+               if step.splitlines()[0] == "Emit original " + title + " source qualification report"]
+    conditions = re.findall(r"(?m)^\s+if: ([^\n]+)$", block)
+    if (len(matches) != 1 or re.findall(r"(?m)^        if: ([^\n]+)$", matches[0]) != [predicate]
+            or conditions.count(predicate) != 1):
+        raise ValueError("Vitest source-report predicate missing, changed or reused")
+    return {predicate}
+
+
+def reviewed_mapped_work_event_guards(block: str) -> set[str]:
+    """Only named mapped-input/report steps may omit merge-group execution.
+
+    The actual original conformance invocation stays unconditional and unique;
+    moving or copying one producer predicate onto it never earns an exemption.
+    """
+    if not block.startswith('  artifact-native-bridges:'):
+        raise ValueError('unknown mapped-work source-report owner')
+    push = ("matrix.expected_platform == 'windows/amd64' && github.event_name == 'push' "
+            "&& (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/major/state-contracts') "
+            "&& hashFiles('.github/integration-candidate.json') != ''")
+    expected = {
+        'Prepare mapped-work source-test inputs': push,
+        'Upload mapped-work source-test inputs': push + " && steps.mapped_work_source_prepare.outcome == 'success'",
+        'Emit original mapped-work source qualification report': (
+            "${{ !cancelled() && " + push + " && steps.mapped_work_original.outcome == 'success' "
+            "&& steps.mapped_work_source_upload.outcome == 'success' }}"),
+    }
+    steps = re.split(r'(?m)^      - name: ', block)[1:]
+    conditions = re.findall(r'(?m)^\s+if: ([^\n]+)$', block)
+    for name, predicate in expected.items():
+        found = [step for step in steps if step.splitlines()[0] == name]
+        if (len(found) != 1 or re.findall(r'(?m)^        if: ([^\n]+)$', found[0]) != [predicate]
+                or conditions.count(predicate) != 1 or 'continue-on-error:' in found[0]):
+            raise ValueError('mapped-work producer predicate missing, changed, reused or suppressed')
+    original = [step for step in steps if step.splitlines()[0] ==
+                'Test host-owned bridges, reply capture and cross-kind conformance']
+    required = [
+        '.github/scripts/test_artifact_approval_adapter.py',
+        '.github/scripts/test_artifact_prerequisite_adapter.py',
+        '.github/scripts/test_artifact_reconciliation_adapter.py',
+        '.github/scripts/test_replylib.py', '.github/scripts/test_literal_python_reads.py',
+        '--interpreter-env', 'ARTIFACT_CONFORMANCE_PYTHON',
+        '.github/scripts/test_artifact_conformance.py',
+    ]
+    if (len(original) != 1 or re.search(r'(?m)^        if:', original[0])
+            or 'continue-on-error:' in original[0] or bridge_suite_arguments(block) != required
+            or block.count('test_artifact_conformance.py') != 1):
+        raise ValueError('original mapped conformance invocation is conditional, changed or repeated')
+    return set(expected.values())
+
+
+def reviewed_program_source_event_guards(block: str) -> set[str]:
+    """Only the two original Program integrity uploads omit merge-group handling."""
+    push = ("matrix.os == 'windows-latest' && github.event_name == 'push' && "
+            "(github.ref == 'refs/heads/main' || github.ref == 'refs/heads/major/state-contracts') && "
+            "hashFiles('.github/integration-candidate.json') != ''")
+    predicate = "${{ " + push + " && steps.program_integrity_observed.outcome == 'success' }}"
+    names = ("Upload program integrity source-test inputs", "Retain original program integrity observation")
+    steps = re.split(r"(?m)^      - name: ", block)[1:]
+    for name in names:
+        matches = [step for step in steps if step.splitlines()[0] == name]
+        if len(matches) != 1 or re.findall(r"(?m)^        if: ([^\n]+)$", matches[0]) != [predicate]:
+            raise ValueError("Program integrity upload is missing or its original predicate changed")
+    if re.findall(r"(?m)^\s+if: ([^\n]+)$", block).count(predicate) != len(names):
+        raise ValueError("Program integrity upload predicate is reused")
+    original = [step for step in steps if step.splitlines()[0] ==
+                "Test partial-program integrity and historical applicability"]
+    if (len(original) != 1 or re.search(r"(?m)^        (?:if|continue-on-error):", original[0])
+            or "OBSERVE_PROGRAM_INTEGRITY: ${{ " + push + " }}" not in original[0]
+            or "          else\n            python .github/scripts/test_state_contracts_integration.py\n          fi\n"
+            not in original[0]):
+        raise ValueError("Program integrity original merge-group test is conditional or missing")
+    return {predicate}
+
+
+def reviewed_sdk_source_event_guards(ci: str, block: str) -> set[str]:
+    """Exempt only the exact authenticated SDK report role, never its suite."""
+    if (not block.startswith("  ca-pi-checks:\n")
+            or workflow_jobs(ci).get("ca-pi-checks") != block):
+        raise ValueError("unknown SDK source-report owner")
+    owner = SdkFooterSourceWorkflowTests()
+    owner.assert_sdk_route(ci)
+    role = owner._SOURCE_ROLES["Emit original Pi SDK footer source qualification report"]
+    predicate = re.findall(r"(?m)^        if: ([^\n]+)$", role)
+    conditions = re.findall(r"(?m)^\s+if: ([^\n]+)$", block)
+    if len(predicate) != 1 or conditions.count(predicate[0]) != 1:
+        raise ValueError("SDK report predicate is missing, changed or reused")
+    return set(predicate)
+
+
+def candidate_suite_invocation_contract(source: str) -> None:
+    """Read the actual once-only command/environment flow, never a spelling hint."""
+    def require(condition, message):
+        if not condition:
+            raise ValueError(message)
+    def same(node, expression):
+        return ast.dump(node, include_attributes=False) == ast.dump(
+            ast.parse(expression, mode='eval').body, include_attributes=False)
+    def named_assignment(node, name):
+        return (isinstance(node, ast.Assign) and len(node.targets) == 1
+                and isinstance(node.targets[0], ast.Name) and node.targets[0].id == name)
+    methods = [node for node in ast.walk(ast.parse(source)) if isinstance(node, ast.FunctionDef)
+               and node.name == 'test_adversarial_native_candidate_suites_run_as_one_snapshot']
+    require(len(methods) == 1, 'one owning candidate-suite method required')
+    method = methods[0]
+    environments = [node for node in ast.walk(method) if named_assignment(node, 'environment')]
+    require(len(environments) == 1 and same(environments[0].value,
+        'dict(os.environ, ARTIFACT_TEST_INSTALLATION=str(INSTALLATION))'), 'candidate installation environment changed')
+    children = [node for node in method.body if isinstance(node, ast.FunctionDef) and node.name == 'run']
+    require(len(children) == 1, 'one original per-suite child runner required')
+    child = children[0]
+    require([type(node) for node in child.body] == [ast.Expr, ast.Assign, ast.Assign, ast.If, ast.Try],
+            'candidate child dispatch structure changed')
+    command, invocation, selected, attempted = child.body[1:]
+    require(named_assignment(command, 'command') and same(command.value,
+        '[sys.executable, str(REPO / ".github/scripts" / script)]'), 'original candidate argv changed')
+    require(named_assignment(invocation, 'invocation') and same(invocation.value,
+        'nullcontext((command, environment))'), 'unobserved suites must retain original environment')
+    expected_if = ast.parse('''if script == "test_work_github.py" and ("MAJOR_MAPPED_WORK_SOURCE" in environment or "MAJOR_MAPPED_WORK_OBSERVATION" in environment):
+    from mapped_work_observation import conformance_invocation
+    invocation = conformance_invocation(REPO, script, sys.executable, environment)
+''').body[0]
+    require(ast.dump(selected, include_attributes=False) == ast.dump(expected_if, include_attributes=False),
+            'mapped observer must occupy only its exact opt-in original child slot')
+    require(len(attempted.body) == 1 and isinstance(attempted.body[0], ast.With),
+            'candidate child must run inside its selected invocation context')
+    entered = attempted.body[0]
+    require(len(entered.items) == 1 and same(entered.items[0].context_expr, 'invocation')
+            and isinstance(entered.items[0].optional_vars, ast.Tuple)
+            and [item.id if isinstance(item, ast.Name) else None
+                 for item in entered.items[0].optional_vars.elts] == ['command', 'child_environment']
+            and len(entered.body) == 1
+            and isinstance(entered.body[0], ast.Return), 'selected command/environment must be forwarded together')
+    require(same(entered.body[0].value,
+        'subprocess.run(command, cwd=REPO, env=child_environment, capture_output=True, text=True, '
+        'encoding="utf-8", errors="replace", check=False, timeout=SUITE_TIMEOUT_SECONDS)'),
+        'candidate process argv/environment/deadline/result contract changed')
+    calls = [node for node in ast.walk(method) if isinstance(node, ast.Call)
+             and isinstance(node.func, ast.Attribute) and isinstance(node.func.value, ast.Name)
+             and node.func.value.id == 'subprocess' and node.func.attr == 'run']
+    require(len(calls) == 1, 'candidate suite process must be launched exactly once')
+    require(len(attempted.handlers) == 1 and same(attempted.handlers[0].type, 'subprocess.TimeoutExpired')
+            and attempted.handlers[0].name == 'expired', 'candidate timeout must remain a closed failure')
+    returns = [node.value for node in ast.walk(attempted.handlers[0]) if isinstance(node, ast.Return)]
+    require(len(returns) == 1 and isinstance(returns[0], ast.Call)
+            and same(returns[0].func, 'subprocess.CompletedProcess') and len(returns[0].args) == 4
+            and same(returns[0].args[0], 'command') and same(returns[0].args[1], '-1'),
+            'candidate timeout cannot become successful completion')
+
+
+class MappedConformanceReaderControls(unittest.TestCase):
+    def test_mapped_producer_roles_cannot_gate_or_change_the_original_suite(self):
+        block = workflow_jobs(CI_WORKFLOW.read_text(encoding='utf-8'))['artifact-native-bridges']
+        guards = reviewed_mapped_work_event_guards(block)
+        self.assertEqual(len(guards), 3)
+        prepare = next(x for x in guards if x.startswith('matrix.') and 'steps.' not in x)
+        original = '      - name: Test host-owned bridges, reply capture and cross-kind conformance\n'
+        mutations = {
+            'wrong owner': block.replace('  artifact-native-bridges:', '  unreviewed-job:', 1),
+            'wrong platform': block.replace("if: " + prepare, "if: " + prepare.replace("windows/amd64", "linux/amd64"), 1),
+            'wrong event': block.replace("github.event_name == 'push'", "github.event_name == 'pull_request'", 1),
+            'lost source success': block.replace(" && steps.mapped_work_source_prepare.outcome == 'success'", '', 1),
+            'renamed producer': block.replace('Prepare mapped-work source-test inputs', 'Unreviewed preparation', 1),
+            'reused producer predicate': block + '\n      - name: Foreign test\n        if: ' + prepare + '\n        run: python test.py\n',
+            'gated original': block.replace(original, original + '        if: false\n', 1),
+            'gated original with reviewed predicate': block.replace(original, original + '        if: ' + prepare + '\n', 1),
+            'suppressed original': block.replace(original, original + '        continue-on-error: true\n', 1),
+            'missing original suite': block.replace('          .github/scripts/test_artifact_conformance.py\n', '', 1),
+            'duplicated original suite': block + '\n      - name: Duplicate\n        run: python .github/scripts/test_artifact_conformance.py\n',
+        }
+        for label, changed in mutations.items():
+            with self.subTest(mutation=label):
+                self.assertNotEqual(changed, block)
+                with self.assertRaises(ValueError): reviewed_mapped_work_event_guards(changed)
+
+    def test_candidate_child_reader_preserves_environment_slot_deadline_and_refusal(self):
+        source = (REPO_ROOT / '.github/scripts/test_artifact_conformance.py').read_text(encoding='utf-8')
+        candidate_suite_invocation_contract(source)
+        mutations = {
+            'wrong installed candidate': source.replace('ARTIFACT_TEST_INSTALLATION=str(INSTALLATION)', 'ARTIFACT_TEST_INSTALLATION="foreign"', 1),
+            'lost default environment': source.replace('nullcontext((command, environment))', 'nullcontext((command, {}))', 1),
+            'wrong original interpreter': source.replace('[sys.executable, str(REPO / ".github/scripts" / script)]', '["python", str(REPO / ".github/scripts" / script)]', 1),
+            'widened observer script': source.replace('if script == "test_work_github.py" and', 'if script != "test_work_github.py" and', 1),
+            'unmatched observer trigger': source.replace('or "MAJOR_MAPPED_WORK_OBSERVATION" in environment', 'and "MAJOR_MAPPED_WORK_OBSERVATION" in environment', 1),
+            'wrong observer environment': source.replace('conformance_invocation(REPO, script, sys.executable, environment)', 'conformance_invocation(REPO, script, sys.executable, os.environ)', 1),
+            'lost private child environment': source.replace('env=child_environment', 'env=environment', 1),
+            'suppressed command failure': source.replace('command, cwd=REPO, env=child_environment', 'command, cwd=REPO, env=os.environ', 1),
+            'unbounded child': source.replace('timeout=SUITE_TIMEOUT_SECONDS', 'timeout=None', 1),
+            'successful timeout': source.replace('command, -1, partial[0]', 'command, 0, partial[0]', 1),
+        }
+        for label, changed in mutations.items():
+            with self.subTest(mutation=label):
+                self.assertNotEqual(changed, source)
+                with self.assertRaises(ValueError): candidate_suite_invocation_contract(changed)
+
+
 def checkout_fetch_depth(job: str) -> str | None:
     """Return the checkout step's structured ``with.fetch-depth`` value.
 
@@ -183,6 +429,35 @@ def run_step_index(job: str, command: str) -> int:
         ),
         -1,
     )
+
+
+def docs_coverage_step_index(job: str) -> int:
+    """Recognize the original coverage invocation and its exact observation wrapper."""
+    direct = run_step_index(job, "npm run coverage")
+    if direct >= 0:
+        return direct
+    from test_hook_ci_partition import step_blocks
+
+    expected = "\n".join((
+        '      - name: Test with coverage',
+        '        id: docs-source-tests',
+        '        env:',
+        '          DOCS_SOURCE_OBSERVE: ${{ steps.docs-source-mode.outputs.active == \'true\' && '
+        'github.event_name == \'push\' && contains(fromJSON(\'["refs/heads/main","refs/heads/major/state-contracts"]\'), github.ref) }}',
+        '        run: |',
+        '          if [ "$DOCS_SOURCE_OBSERVE" = true ]; then',
+        '            python -B ../.github/scripts/site_vitest_observation.py observe --repo .. \\',
+        '              --source-payload "$RUNNER_TEMP/docs-site-source/source-inputs" \\',
+        '              --raw-results "$RUNNER_TEMP/docs-site-source/primary-vitest.json" \\',
+        '              --output "$RUNNER_TEMP/docs-site-source/observation.json"',
+        '          else',
+        '            npm run coverage',
+        '          fi',
+    ))
+    matching = [step for step in step_blocks(job) if step.rstrip() == expected]
+    if len(matching) != 1:
+        return -1
+    return job[:job.index(expected)].count("\n")
 
 
 def push_trigger_paths(workflow: str) -> list[str]:
@@ -252,22 +527,32 @@ def event_trigger_paths(workflow: str, event: str) -> list[str]:
     return _globs(match.group("body"), '"')
 
 
+def npm_step_directories(workflow: str):
+    """Bind each actual step to its override or owning job default."""
+    for job_id, body in workflow_jobs(workflow).items():
+        default = re.search(
+            r"(?m)^    defaults:\n      run:\n        working-directory: (?P<dir>\S+)", body)
+        for step in re.findall(r"(?ms)^      - .*?(?=^      - |\Z)", body):
+            override = re.search(r"(?m)^        working-directory: (?P<dir>\S+)", step)
+            selected = override or default
+            yield job_id, selected.group("dir") if selected else ".", step
+
+
 def npm_install_jobs(workflow: str) -> dict[str, str]:
     """Every job that runs `npm ci`, mapped to the directory it installs into.
 
     Derived from the workflow rather than listed by hand: a hardcoded job list
     is exactly how a newly added graph slips in unaudited, which is the defect
-    #403 was.  The directory comes from the job's `defaults.run.working-
-    directory`, which is how every npm job in this repo scopes itself.
+    #403 was. A step override takes precedence over the job default. Refuse
+    multiple distinct install graphs rather than losing one in this mapping.
     """
     installs: dict[str, str] = {}
-    for job_id, body in workflow_jobs(workflow).items():
-        if not re.search(r"(?m)^\s*(?:-\s+)?(?:run: )?npm ci\b", body):
+    for job_id, directory, step in npm_step_directories(workflow):
+        if not re.search(r"(?m)^\s*(?:-\s+)?(?:run: )?npm ci\b", step):
             continue
-        directory = re.search(
-            r"(?ms)^    defaults:\n      run:\n        working-directory: (?P<dir>\S+)", body
-        )
-        installs[job_id] = directory.group("dir") if directory else "."
+        if job_id in installs and installs[job_id] != directory:
+            raise ValueError("multiple npm install graphs in job: " + job_id)
+        installs[job_id] = directory
     return installs
 
 
@@ -281,14 +566,13 @@ def unaudited_npm_graphs(workflow: str) -> list[str]:
     directory.  Deriving the rule this way keeps that fact CHECKED instead of
     asserted in a comment, and makes a brand-new graph fail on arrival.
     """
-    jobs = workflow_jobs(workflow)
     installs = npm_install_jobs(workflow)
     audited = {
         directory
-        for job_id, directory in installs.items()
-        if f"run: {NPM_AUDIT_GATE}" in jobs[job_id]
+        for _, directory, step in npm_step_directories(workflow)
+        if f"run: {NPM_AUDIT_GATE}" in step
         # The accepted-advisory form is the site graph's alone.
-        or (directory == "site" and f"run: {SITE_AUDIT_GATE}" in jobs[job_id])
+        or (directory == "site" and f"run: {SITE_AUDIT_GATE}" in step)
     }
     return [
         f"{job_id} installs {directory}, which nothing audits"
@@ -723,6 +1007,34 @@ def valid_map():
         return module.load_map(path)
 
 
+class NpmWorkingDirectoryTest(unittest.TestCase):
+    def workflow(self, steps, default="site"):
+        return ("jobs:\n  fixture:\n    defaults:\n      run:\n"
+                f"        working-directory: {default}\n    steps:\n" + steps)
+
+    def test_install_step_overrides_job_default(self):
+        text = self.workflow("      - run: npm ci --ignore-scripts\n"
+                             "        working-directory: plugins/ca-sandbox/tools\n")
+        self.assertEqual(npm_install_jobs(text), {"fixture": "plugins/ca-sandbox/tools"})
+
+    def test_audit_step_cannot_cover_a_different_installed_graph(self):
+        text = self.workflow("      - run: npm ci --ignore-scripts\n"
+                             "        working-directory: plugins/ca-sandbox/tools\n"
+                             f"      - run: {NPM_AUDIT_GATE}\n")
+        self.assertEqual(unaudited_npm_graphs(text), [
+            "fixture installs plugins/ca-sandbox/tools, which nothing audits"])
+        text += (f"      - run: {NPM_AUDIT_GATE}\n"
+                 "        working-directory: plugins/ca-sandbox/tools\n")
+        self.assertEqual(unaudited_npm_graphs(text), [])
+
+    def test_multiple_install_graphs_cannot_be_silently_collapsed(self):
+        text = self.workflow("      - run: npm ci --ignore-scripts\n"
+                             "      - run: npm ci --ignore-scripts\n"
+                             "        working-directory: plugins/ca-sandbox/tools\n")
+        with self.assertRaises(ValueError):
+            npm_install_jobs(text)
+
+
 class CheckNameTest(unittest.TestCase):
     def test_render_check_name_uses_the_fixed_tag_grammar(self):
         check = module.Check(
@@ -765,6 +1077,35 @@ class EvaluationTest(unittest.TestCase):
         self.assertEqual(
             [check.id for check in result.selected], ["pi-adapter", "pi-latest"]
         )
+
+
+class ReviewedColdEventGuardTest(unittest.TestCase):
+    def block(self):
+        return workflow_jobs(CI_WORKFLOW.read_text(encoding="utf-8"))["artifact-package-cold"]
+
+    def test_only_actual_three_owned_producer_predicates_are_allowed(self):
+        self.assertEqual(len(reviewed_cold_event_guards(self.block())), 3)
+
+    def test_changing_original_merge_group_path_refuses(self):
+        block = self.block().replace("!cancelled() && !(github.event_name", "!cancelled() && (github.event_name", 1)
+        with self.assertRaisesRegex(ValueError, "predicate"):
+            reviewed_cold_event_guards(block)
+
+    def test_copying_a_producer_predicate_to_job_level_refuses(self):
+        block = self.block()
+        predicate = next(value for value in reviewed_cold_event_guards(block)
+                         if value.startswith("${{ !cancelled() && github.event_name"))
+        changed, count = re.subn(r"(?m)^    if: [^\n]+$", "    if: " + predicate, block, count=1)
+        self.assertEqual(count, 1)
+        with self.assertRaisesRegex(ValueError, "predicate"):
+            reviewed_cold_event_guards(changed)
+
+    def test_copying_a_producer_predicate_to_another_test_step_refuses(self):
+        block = self.block()
+        predicate = next(value for value in reviewed_cold_event_guards(block) if value.startswith("github.event_name"))
+        block += "      - name: unrelated required test\n        if: " + predicate + "\n        run: python required.py\n"
+        with self.assertRaisesRegex(ValueError, "predicate"):
+            reviewed_cold_event_guards(block)
 
 
 class MapValidationTest(unittest.TestCase):
@@ -811,7 +1152,47 @@ class DescriptorSurfaceTest(unittest.TestCase):
         )
 
 
+
+class ReviewedPythonSourceEventGuardTest(unittest.TestCase):
+    def block(self):
+        return workflow_jobs(CI_WORKFLOW.read_text(encoding='utf8'))['hooks']
+
+    def test_exact_metadata_role_is_the_only_event_exemption(self):
+        guards=reviewed_python_source_event_guards(self.block())
+        self.assertEqual(len(guards),1)
+        self.assertIn("github.event_name == 'push'",next(iter(guards)))
+        self.assertIn("steps.python_source_upload.outcome == 'success'",next(iter(guards)))
+
+    def test_unknown_metadata_name_or_reused_test_predicate_cannot_get_exemption(self):
+        block=self.block();predicate=next(iter(reviewed_python_source_event_guards(block)))
+        for changed in (
+            block.replace('Emit original Python source qualification report','Emit unrelated report',1),
+            block+'      - name: ordinary test\n        if: '+predicate+'\n        run: python unreviewed.py\n',
+            block.replace("github.event_name == 'push'", "github.event_name == 'pull_request'",1),
+        ):
+            with self.subTest(change=changed[-120:]),self.assertRaises(ValueError):
+                reviewed_python_source_event_guards(changed)
+
+
 class WorkflowContractTest(unittest.TestCase):
+    def test_pi_failure_diagnostics_survive_the_failed_owning_step(self):
+        ci = CI_WORKFLOW.read_text(encoding="utf-8")
+        for helper in ('_windows_rpc_timeout.py', '_windows_dbgeng.py'):
+            self.assertIn('.github/scripts/' + helper, paths_filter(ci, 'ca-pi'))
+        job = workflow_jobs(ci)['ca-pi-tools']
+        for name in ('Test real package RPC activation and aliases',
+                     'Test cross-platform paths, encoding, cancellation, process trees, prune, and generation'):
+            step = job.split('- name: ' + name, 1)[1].split('- name:', 1)[0]
+            self.assertIn('CA_PI_RPC_DIAGNOSTICS_DIR: ${{ runner.temp }}/ca-pi-rpc-diagnostics', step)
+            self.assertNotIn('continue-on-error:', step)
+        upload = job.split('- name: Retain sanitized RPC failure phases', 1)[1]
+        self.assertIn('if: always()', upload)
+        self.assertIn('actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9', upload)
+        self.assertIn('/ca-pi-rpc-diagnostics/rpc-shutdown-*.json', upload)
+        self.assertIn('/ca-pi-rpc-diagnostics/rpc-native-exit-*.json', upload)
+        self.assertIn('if-no-files-found: ignore', upload)
+        self.assertNotIn('continue-on-error:', upload)
+
     def test_required_tag_immutability_job_requires_recorded_publications(self):
         # A missing receipt must block the required merge gate, not first surface
         # after merge when the next automatic release reaches strict preflight.
@@ -1033,8 +1414,10 @@ class WorkflowContractTest(unittest.TestCase):
         self.assertIn("cancel-in-progress: ${{ github.event_name == 'pull_request' }}", ci)
         self.assertIn("id: impact", ci)
         self.assertIn("python tools/ci-impact.py", ci)
-        self.assertIn("list-files: shell", ci)
-        self.assertIn("impact: ${{ steps.filter.outputs.impact }}", ci)
+        self.assertIn("list-files: none", ci)
+        # P-01: the integration branch push selects every domain.
+        self.assertIn("impact: ${{ steps.filter.outputs.impact == 'true' || "
+                      "(github.event_name == 'push' && github.ref == 'refs/heads/major/state-contracts') }}", ci)
         self.assertIn("needs.changes.outputs.impact == 'true'", ci)
         self.assertIn("needs.changes.outputs.ca-pi == 'true'", ci)
 
@@ -1079,55 +1462,138 @@ class WorkflowContractTest(unittest.TestCase):
         for name in expected:
             self.assertIn(f'name: "{name}"', ci)
 
+    def test_sandbox_retains_original_named_results_without_filtering_console_run(self):
+        job = workflow_jobs(CI_WORKFLOW.read_text(encoding="utf-8"))["ca-sandbox-tools"]
+        test_step = job.split("- name: Test (Docker required - a missing daemon fails the run)", 1)[1].split("      - ", 1)[0]
+        self.assertEqual(test_step.count("major_qualification_report.py observe-vitest"), 1)
+        self.assertEqual(job.count("-- npm test -- --reporter=default"), 1, "the owning Sandbox suite must execute exactly once")
+        tokens = shlex.split(" ".join(line.strip() for line in test_step.split("run: >-\n", 1)[1].splitlines()))
+        separator = tokens.index("--")
+        self.assertEqual(tokens[separator + 1:], [
+            "npm", "test", "--", "--reporter=default", "--reporter=github-actions", "--reporter=json",
+            "--outputFile.json=$RUNNER_TEMP/ca-sandbox-vitest.json",
+        ], "reporters may add transport, never a file/name filter or error suppression")
+        self.assertIn("--source-payload", tokens[:separator])
+        self.assertNotIn("continue-on-error:", test_step)
+        self.assertNotIn("if:", test_step)
+
+    def test_sandbox_uploads_source_bound_original_json_and_requires_presence(self):
+        job = workflow_jobs(CI_WORKFLOW.read_text(encoding="utf-8"))["ca-sandbox-tools"]
+        steps = re.split(r"(?m)^      - ", job)[1:]
+        uploads = [step for step in steps if step.startswith("name: Preserve original Sandbox named test results\n")]
+        self.assertEqual(len(uploads), 1, "one original named-result upload required")
+        upload = uploads[0]
+        for value in (
+            "if: always()", "uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9",
+            "name: sandbox-vitest-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}",
+            "path: ${{ runner.temp }}/ca-sandbox-vitest.json", "if-no-files-found: error",
+            "retention-days: 14", "include-hidden-files: false", "overwrite: false",
+        ):
+            self.assertIn(value, upload)
+        self.assertNotIn("continue-on-error:", upload)
+        self.assertNotIn("permissions:", upload)
+        self.assertGreater(job.index("name: Preserve original Sandbox named test results"),
+                           job.index("name: Fail if a committed ca-sandbox artifact is stale"))
+
+    def test_sandbox_result_transport_guards_reject_incomplete_or_weakened_wiring(self):
+        ci = CI_WORKFLOW.read_text(encoding="utf-8")
+        # Exercise the real owning guards against deliberate directive drift.
+        for old, new, guard in (
+            ("--reporter=json", "", self.test_sandbox_retains_original_named_results_without_filtering_console_run),
+            ("--reporter=default", "", self.test_sandbox_retains_original_named_results_without_filtering_console_run),
+            ("--reporter=github-actions", "", self.test_sandbox_retains_original_named_results_without_filtering_console_run),
+            ("--outputFile.json=", "dephash.test.ts --outputFile.json=", self.test_sandbox_retains_original_named_results_without_filtering_console_run),
+            ("if-no-files-found: error", "if-no-files-found: ignore", self.test_sandbox_uploads_source_bound_original_json_and_requires_presence),
+        ):
+            with self.subTest(drift=old), tempfile.TemporaryDirectory(prefix="ca-sandbox-transport-wiring-") as tmp:
+                path = Path(tmp) / "ci.yml"
+                # Mutate only the selected owning job, never another upload.
+                job = workflow_jobs(ci)["ca-sandbox-tools"]
+                self.assertIn(old, job)
+                path.write_text(ci.replace(job, job.replace(old, new, 1), 1), encoding="utf-8")
+                with mock.patch.dict(globals(), {"CI_WORKFLOW": path}), self.assertRaises(AssertionError):
+                    guard()
+
     def test_the_required_sandbox_job_fails_when_docker_is_unavailable(self):
-        # Issue #406 AC-1/AC-2.  ca-sandbox is the driver that clones UNTRUSTED
-        # repositories, and every real-container suite used to convert a failed
-        # `docker info` probe into `describe.skip` - on the required merge-gate
-        # job too.  A runner Docker outage therefore removed the ONLY isolation,
-        # mount, network, lifecycle and teardown evidence while the board went
-        # green off pure argv-builder tests.  The required job must now (a)
-        # preflight the daemon BEFORE the suite and exit non-zero without it,
-        # and (b) run the suite in docker-REQUIRED mode so a daemon that dies
-        # mid-run fails the file instead of skipping it.
+        # #406: the original full required suite is now observed, never replayed.
         ci = CI_WORKFLOW.read_text(encoding="utf-8")
         self.assertIn("ca-sandbox-tools", aggregate_required_results(ci))
         job = workflow_jobs(ci)["ca-sandbox-tools"]
-        suite = job.find("run: npm test")
-        self.assertNotEqual(suite, -1, "the sandbox job no longer runs `npm test`")
-        probe = _DOCKER_PREFLIGHT.search(job)
-        self.assertIsNotNone(probe, "the sandbox job runs no `docker info` preflight command")
-        self.assertLess(
-            probe.start(), suite, "the docker preflight must run BEFORE the sandbox suite"
-        )
-        self.assertIn(
-            "exit 1",
-            job[probe.start():suite],
-            "the docker preflight does not fail the job when the daemon is unavailable",
-        )
-        self.assertIn(
-            'CA_SANDBOX_REQUIRE_DOCKER: "1"',
-            job,
-            "the required sandbox suite does not run in docker-REQUIRED mode",
-        )
+        def assert_job(block):
+            steps = list(re.finditer(r"(?ms)^      - name: (?P<name>[^\n]+)\n(?P<body>.*?)(?=^      - |\Z)", block))
+            matches = [step for step in steps if step["name"] == "Test (Docker required - a missing daemon fails the run)"]
+            self.assertEqual(len(matches), 1, "one owned original Sandbox suite step required")
+            suite_step = matches[0]
+            body = suite_step["body"]
+            self.assertEqual(body.count("run: >-\n"), 1, "owned folded original invocation required")
+            tokens = shlex.split(" ".join(line.strip() for line in body.split("run: >-\n", 1)[1].splitlines()))
+            self.assertEqual(tokens, ['python3', '-B', '../../../.github/scripts/major_qualification_report.py', 'observe-vitest', '--repo', '../../..', '--execution-cwd', 'plugins/ca-sandbox/tools', '--source-payload', '$RUNNER_TEMP/sandbox-source-inputs', '--raw-results', '$RUNNER_TEMP/ca-sandbox-vitest.json', '--output', '$RUNNER_TEMP/sandbox-vitest-observation.json', '--', 'npm', 'test', '--', '--reporter=default', '--reporter=github-actions', '--reporter=json', '--outputFile.json=$RUNNER_TEMP/ca-sandbox-vitest.json'], "the one complete original argv must not be filtered or suppressed")
+            self.assertEqual(block.count("npm test"), 1, "duplicate or missing original suite invocation")
+            self.assertNotIn("continue-on-error:", body)
+            self.assertNotIn("if:", body, "the original required suite cannot be skipped")
+            suite = suite_step.start()
+            probe = _DOCKER_PREFLIGHT.search(block)
+            self.assertIsNotNone(probe, "the sandbox job runs no docker info preflight")
+            self.assertLess(probe.start(), suite, "Docker preflight must run BEFORE the original suite")
+            self.assertIn("exit 1", block[probe.start():suite], "unavailable daemon must fail the job")
+            self.assertIn('CA_SANDBOX_REQUIRE_DOCKER: "1"', block, "required Docker mode cannot silently skip")
+            return suite_step, steps
+        suite, steps = assert_job(job)
+        preflight = next(step for step in steps if step["name"] == "Docker preflight (REQUIRED prerequisite - fail, never skip)")
+        mutations = {
+            "missing-suite": job.replace(suite[0], "", 1),
+            "duplicate-suite": job + suite[0],
+            "filtered-suite": job.replace("-- npm test --", "-- npm test -- cli.test.ts", 1),
+            "suppressed-suite": job.replace('--outputFile.json="$RUNNER_TEMP/ca-sandbox-vitest.json"', '--outputFile.json="$RUNNER_TEMP/ca-sandbox-vitest.json" || true', 1),
+            "skipped-suite": job.replace('id: sandbox_tools_observed', 'id: sandbox_tools_observed\n        if: false', 1),
+            "late-preflight": job.replace(preflight[0], "", 1) + preflight[0],
+            "daemon-not-required": job.replace('CA_SANDBOX_REQUIRE_DOCKER: "1"', 'CA_SANDBOX_REQUIRE_DOCKER: "0"', 1),
+            "probe-does-not-fail": job.replace(preflight[0], preflight[0].replace("exit 1", "echo unavailable"), 1),
+        }
+        for label, changed in mutations.items():
+            with self.subTest(mutation=label), self.assertRaises(AssertionError): assert_job(changed)
 
     def test_the_required_sandbox_job_asserts_a_real_container_execution_sentinel(self):
-        # Issue #406 AC-3.  A preflight only proves the daemon answered once.
-        # The required job must additionally prove that every docker-gated
-        # layer actually EXECUTED, so a suite that silently stops registering
-        # (a bad filter, a renamed file, a gate left inert) cannot pass.
+        # The sentinel is meaningful only after the exact original suite exists.
         ci = CI_WORKFLOW.read_text(encoding="utf-8")
         job = workflow_jobs(ci)["ca-sandbox-tools"]
-        suite = job.find("run: npm test")
-        self.assertIn(
-            "CA_SANDBOX_DOCKER_SENTINEL",
-            job,
-            "the sandbox suite records no machine-checkable execution sentinel",
-        )
-        verifier = job.find("check_sandbox_docker_layers.py")
-        self.assertNotEqual(verifier, -1, "the sandbox job never asserts the layer sentinel")
-        self.assertGreater(
-            verifier, suite, "the layer sentinel must be asserted AFTER the suite runs"
-        )
+        def assert_job(block):
+            steps = list(re.finditer(r"(?ms)^      - name: (?P<name>[^\n]+)\n(?P<body>.*?)(?=^      - |\Z)", block))
+            matches = [step for step in steps if step["name"] == "Test (Docker required - a missing daemon fails the run)"]
+            self.assertEqual(len(matches), 1, "one owned original Sandbox suite step required")
+            suite_step = matches[0]
+            body = suite_step["body"]
+            self.assertEqual(body.count("run: >-\n"), 1, "owned folded original invocation required")
+            tokens = shlex.split(" ".join(line.strip() for line in body.split("run: >-\n", 1)[1].splitlines()))
+            self.assertEqual(tokens, ['python3', '-B', '../../../.github/scripts/major_qualification_report.py', 'observe-vitest', '--repo', '../../..', '--execution-cwd', 'plugins/ca-sandbox/tools', '--source-payload', '$RUNNER_TEMP/sandbox-source-inputs', '--raw-results', '$RUNNER_TEMP/ca-sandbox-vitest.json', '--output', '$RUNNER_TEMP/sandbox-vitest-observation.json', '--', 'npm', 'test', '--', '--reporter=default', '--reporter=github-actions', '--reporter=json', '--outputFile.json=$RUNNER_TEMP/ca-sandbox-vitest.json'], "the one complete original argv must not be filtered or suppressed")
+            self.assertEqual(block.count("npm test"), 1, "duplicate or missing original suite invocation")
+            self.assertNotIn("continue-on-error:", body)
+            self.assertNotIn("if:", body, "the original required suite cannot be skipped")
+            suite = suite_step.start()
+            self.assertIn("CA_SANDBOX_DOCKER_SENTINEL", block, "suite must record the execution sentinel")
+            self.assertRegex(block, r"(?m)^      CA_SANDBOX_DOCKER_SENTINEL: ", "sentinel environment binding required")
+            matches = [step for step in steps if step["name"] == "Assert every real-container layer executed"]
+            self.assertEqual(len(matches), 1, "one original sentinel verifier required")
+            verifier = matches[0]
+            self.assertIn('run: python3 .github/scripts/check_sandbox_docker_layers.py --sentinel "$CA_SANDBOX_DOCKER_SENTINEL"', verifier["body"])
+            self.assertNotIn("continue-on-error:", verifier["body"])
+            self.assertNotIn("if:", verifier["body"])
+            self.assertNotIn("|| true", verifier["body"])
+            self.assertGreater(verifier.start(), suite, "sentinel must be asserted AFTER the original suite")
+            return suite_step, verifier
+        suite, verifier = assert_job(job)
+        mutations = {
+            "missing-suite": job.replace(suite[0], "", 1),
+            "duplicate-suite": job + suite[0],
+            "filtered-suite": job.replace("-- npm test --", "-- npm test -- cli.test.ts", 1),
+            "suppressed-suite": job.replace('--outputFile.json="$RUNNER_TEMP/ca-sandbox-vitest.json"', '--outputFile.json="$RUNNER_TEMP/ca-sandbox-vitest.json" || true', 1),
+            "early-verifier": job.replace(verifier[0], "", 1).replace(suite[0], verifier[0] + suite[0], 1),
+            "missing-verifier": job.replace(verifier[0], "", 1),
+            "skipped-verifier": job.replace(verifier[0], verifier[0].replace("        run:", "        if: false\n        run:"), 1),
+            "echo-verifier": job.replace(verifier[0], verifier[0].replace("run: python3", "run: echo python3"), 1),
+        }
+        for label, changed in mutations.items():
+            with self.subTest(mutation=label), self.assertRaises(AssertionError): assert_job(changed)
 
     def test_every_real_container_sandbox_suite_routes_through_the_shared_docker_gate(self):
         # The contract above is only worth as much as the gate's reach: a suite
@@ -1735,6 +2201,20 @@ class WorkflowContractTest(unittest.TestCase):
                     "every audit gate in the repo must use the SAME threshold",
                 )
 
+    def test_every_approved_tool_graph_retains_a_plain_production_audit(self):
+        workflow = CI_WORKFLOW.read_text(encoding="utf-8")
+        owners = {"plugins/ca/tools": "tools", "plugins/ca-sandbox/tools": "ca-sandbox-tools",
+                  "plugins/ca-pi/tools": "ca-pi-checks"}
+        audits = [(job, directory, command)
+                  for job, directory, step in npm_step_directories(workflow)
+                  for command in npm_audit_invocations(step)]
+        for directory, job in owners.items():
+            with self.subTest(directory=directory):
+                self.assertCountEqual(
+                    [(owner, command) for owner, cwd, command in audits if cwd == directory],
+                    [(job, f"run: {NPM_AUDIT_GATE}"), (job, f"run: {NPM_AUDIT_DEV_GATE}")],
+                )
+
     def test_every_npm_audit_step_exposes_http_diagnostics(self):
         # Main CI 33822155490 hid the original bulk-request failure behind
         # npm's retired quick-endpoint fallback. Keep status/timing visible
@@ -1775,8 +2255,8 @@ class WorkflowContractTest(unittest.TestCase):
         # above already allows).
         dev_audited = {
             directory
-            for job_id, directory in installs.items()
-            if f"run: {NPM_AUDIT_DEV_GATE}" in jobs[job_id]
+            for _, directory, step in npm_step_directories(ci)
+            if f"run: {NPM_AUDIT_DEV_GATE}" in step
         }
         for job_id, directory in sorted(tools_graphs.items()):
             with self.subTest(job=job_id, directory=directory):
@@ -1873,6 +2353,92 @@ class WorkflowContractTest(unittest.TestCase):
                     f"a {event} touching only docs.yml never runs docs.yml",
                 )
 
+    def test_docs_pull_request_selection_covers_every_push_input(self):
+        # R-05 / C-F05: the voice gate's two rule implementations selected
+        # push builds only, so a PR changing just the rule skipped the gate
+        # that enforces it.  Validation inputs are one set for both events;
+        # deliberate event differences live in event/branch admission and the
+        # deploy condition, never in which inputs validate.
+        docs = DOCS_WORKFLOW.read_text(encoding="utf-8")
+        owned_inputs = {
+            ".github/scripts/check_site_voice.py", "core/pysrc/_sloplib.py",
+            ".github/scripts/site_playwright_observation.py",
+            ".github/scripts/test_site_playwright_observation.py",
+            ".github/scripts/major_readiness.py",
+            ".github/scripts/major_qualification_report.py",
+            ".github/scripts/major_native_observation.py",
+            ".github/scripts/test_major_native_observation.py",
+            ".github/scripts/mapped_work_observation.py",
+            ".github/scripts/test_artifact_conformance.py",
+            "tools/go_test_parallel.py",
+            ".github/scripts/test_go_test_parallel.py",
+            ".github/scripts/pages_readiness.py",
+            ".github/scripts/docs_release_publication.py",
+            ".github/scripts/test_docs_release_publication.py",
+            ".github/scripts/_boundedproc.py",
+            ".github/scripts/_contextverificationlib.py",
+            ".github/scripts/_immutable_git_blobs.py",
+            ".github/scripts/ci20_native_binding.py",
+            "core/pysrc/_gitexec.py",
+            ".github/major-qualification-policy.json",
+            ".github/major-test-selections.json",
+            ".github/integration-candidate.json",
+            "docs/state-contracts-major/**",
+        }
+
+        def assert_selection(source):
+            push = set(event_trigger_paths(source, "push"))
+            pull_request = set(event_trigger_paths(source, "pull_request"))
+            for event, paths in (("push", push), ("pull_request", pull_request)):
+                for owned in sorted(owned_inputs):
+                    self.assertIn(owned, paths, f"{event} touching only {owned} skips its owning Docs gate")
+            self.assertEqual(push, pull_request)
+
+        assert_selection(docs)
+        for owned in sorted(owned_inputs):
+            line = '      - "' + owned + '"\n'
+            self.assertEqual(docs.count(line), 2)
+            first = docs.index(line)
+            positions = (first, docs.index(line, first + len(line)))
+            for occurrence, position in enumerate(positions):
+                candidate = docs[:position] + docs[position + len(line):]
+                self.assertEqual(candidate.count(line), 1)
+                with self.subTest(missing_input=owned, event=("push", "pull_request")[occurrence]), self.assertRaises(AssertionError):
+                    assert_selection(candidate)
+            with self.subTest(missing_input=owned, event="both"), self.assertRaises(AssertionError):
+                assert_selection(docs.replace(line, ""))
+
+    def test_docs_validation_triggers_never_grant_deploy(self):
+        docs = DOCS_WORKFLOW.read_text(encoding="utf-8")
+        jobs = workflow_jobs(docs)
+        self.assertIn(
+            "if: contains(fromJSON('[\"push\",\"workflow_run\",\"workflow_dispatch\"]'), "
+            "github.event_name) && github.ref == 'refs/heads/main'", jobs["deploy"])
+        self.assertRegex(docs, r"(?m)^permissions:\n  contents: read$")
+        # Validate the full exact authority before allowing either named deploy role.
+        SiteBrowserPublicationWorkflowTest._assert_workflow_authority(self, jobs)
+        for name, body in jobs.items():
+            if name not in ("deploy", "deploy-qualified"):
+                self.assertNotIn("pages: write", body, name)
+                self.assertNotIn("id-token: write", body, name)
+
+        qualified = jobs["deploy-qualified"]
+        variants = {
+            "unknown privileged job": dict(jobs, **{"deploy-unreviewed": qualified}),
+            "wrong main boundary": dict(jobs, **{"deploy-qualified": qualified.replace(
+                "refs/heads/main", "refs/heads/major/state-contracts", 1)}),
+            "wrong event boundary": dict(jobs, **{"deploy-qualified": qualified.replace(
+                "github.event_name == 'workflow_dispatch'", "github.event_name == 'pull_request'", 1)}),
+            "wrong dependency": dict(jobs, **{"deploy-qualified": qualified.replace(
+                "needs: qualified-pages", "needs: build", 1)}),
+            "unpinned deploy action": dict(jobs, **{"deploy-qualified": qualified.replace(
+                "actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346", "actions/deploy-pages@main", 1)}),
+            "executable deploy step": dict(jobs, **{"deploy-qualified": qualified + "\n      - run: npm run deploy\n"}),
+        }
+        for name, candidate in variants.items():
+            with self.subTest(mutation=name), self.assertRaises(AssertionError):
+                SiteBrowserPublicationWorkflowTest._assert_workflow_authority(self, candidate)
+
     def test_docs_release_applicability_inputs_trigger_full_history_builds(self):
         docs = DOCS_WORKFLOW.read_text(encoding="utf-8")
         required_inputs = {
@@ -1898,7 +2464,7 @@ class WorkflowContractTest(unittest.TestCase):
         site_check = jobs["site-check"]
         generate = run_step_index(site_check, "npm run gen")
         typecheck = run_step_index(site_check, "npm run typecheck")
-        tests = run_step_index(site_check, "npm run coverage")
+        tests = docs_coverage_step_index(site_check)
         self.assertGreaterEqual(generate, 0, "site-check never generates applicability")
         self.assertGreater(typecheck, generate, "site-check typechecks before generation")
         self.assertGreater(tests, generate, "site-check tests before generation")
@@ -2366,6 +2932,17 @@ class WorkflowContractTest(unittest.TestCase):
                 )
                 self.assertIn(guarded, push, "a push of this file starts no CI run")
 
+    def test_active_knowledge_and_selector_reach_policy_conformance(self):
+        ci = CI_WORKFLOW.read_text(encoding="utf-8")
+        scopes = {"push": push_trigger_paths(ci),
+                  "hooks": paths_filter(ci, "hooks"),
+                  "impact": paths_filter(ci, "impact")}
+        for name, paths in scopes.items():
+            for subject in (".codearbiter/context/**", ".codearbiter/CONTEXT.md"):
+                with self.subTest(scope=name, subject=subject):
+                    self.assertIn(subject, paths,
+                                  "an active HTML fact/policy or format-selector edit must run its conformance owner")
+
     def test_gate_command_subjects_reach_the_guard_that_constrains_them(self):
         # Issue #507, same defect class as the test above and as #384/#403/#404.
         # GateCommandTest lives in THIS file, which runs only in the path-scoped
@@ -2451,10 +3028,34 @@ class WorkflowContractTest(unittest.TestCase):
             "the range scan is not scoped to the event that has a base to diff against",
         )
 
+    def test_recovery_checks_have_required_native_cells_and_independent_exit_statuses(self):
+        from test_hook_ci_partition import validate_recovery
+        workflow = CI_WORKFLOW.read_text(encoding="utf-8")
+        jobs = workflow_jobs(workflow)
+        recovery = jobs["workflow-recovery"]
+        self.assertIn("os: [ubuntu-latest, windows-latest, macos-latest]", recovery)
+        self.assertIn("fail-fast: false", recovery)
+        self.assertIn("timeout-minutes: 15", recovery)
+        self.assertNotIn("continue-on-error", recovery)
+        # Only the upload resolver may use a block. The original suites must
+        # still execute as the separately accounted commands in the guard.
+        self.assertEqual(validate_recovery(workflow), {"commands": 5, "native_setup": 1, "cells": 3})
+        for script in ("test_workflow_recovery.py", "test_workflow_recovery_cli.py",
+                       "test_workflow_recovery_hosts.py", "test_workflow_recovery_generator.py",
+                       "test_review_resubmission.py"):
+            self.assertEqual(recovery.count("run: python .github/scripts/" + script + "\n"), 1)
+        self.assertIn("      - workflow-recovery\n", jobs["ci-passed"])
+        self.assertIn("${{ needs['workflow-recovery'].result }}", jobs["ci-passed"])
+
     def test_documentation_contract_is_always_required_by_merge_readiness(self):
         ci = (REPO_ROOT / ".github/workflows/ci.yml").read_text(encoding="utf-8")
         self.assertIn("  documentation-contract:\n", ci)
         self.assertIn('name: "[CHECK] | [REPO] | Documentation contract"', ci)
+        document_job = workflow_jobs(ci)["documentation-contract"]
+        native_setup = "actions/setup-go@d8cbb8045d7f43706b9177cceb36c1f91a6644d5"
+        self.assertIn(native_setup, document_job)
+        self.assertIn('go-version: "1.27.1"', document_job)
+        self.assertLess(document_job.index(native_setup), document_job.index("run: python3 .github/scripts/check_docs_contract.py"))
         aggregate = ci.split("  ci-passed:\n", 1)[1]
         self.assertIn("      - documentation-contract\n", aggregate)
         self.assertIn("${{ needs['documentation-contract'].result }}", aggregate)
@@ -2522,6 +3123,21 @@ class WorkflowContractTest(unittest.TestCase):
             "have nothing to satisfy the required merge-readiness context",
         )
 
+    def test_program_integrity_report_guard_cannot_exempt_another_step(self):
+        ci = CI_WORKFLOW.read_text(encoding="utf-8")
+        block = workflow_jobs(ci)["program-integrity"]
+        predicate, = reviewed_program_source_event_guards(block)
+        mutations = (
+            block.replace("        if: " + predicate, "        if: false", 1),
+            block.replace("        id: program_integrity_observed",
+                          "        if: " + predicate + "\n        id: program_integrity_observed", 1),
+            block.replace("            python .github/scripts/test_state_contracts_integration.py",
+                          "            true", 1),
+        )
+        for changed in mutations:
+            with self.subTest(changed=changed != block), self.assertRaises(ValueError):
+                reviewed_program_source_event_guards(changed)
+
     def test_every_enforced_job_is_reachable_and_correctly_based_in_a_merge_group(self):
         # Issue #383, the half of it a trigger alone does NOT fix.  `ci-passed`
         # accepts `skipped` as success - that is exactly what ADR-0007 path
@@ -2546,10 +3162,30 @@ class WorkflowContractTest(unittest.TestCase):
         misbased: list[str] = []
         for job_id in enforced:
             block = jobs.get(job_id, "")
+            cold_guards = reviewed_cold_event_guards(block) if job_id == "artifact-package-cold" else set()
+            source_guards = (reviewed_python_source_event_guards(block) | reviewed_statusline_source_event_guards(block)
+                             if job_id == "hooks" else set())
+            impact_guards = reviewed_impact_source_event_guards(block) if job_id == "ci-impact" else set()
+            vitest_guards = reviewed_vitest_source_event_guards(block, job_id) if job_id in ("coverage-union-pi", "ca-sandbox-tools", "tools") else set()
+            mapped_guards = reviewed_mapped_work_event_guards(block) if job_id == "artifact-native-bridges" else set()
+            sdk_guards = reviewed_sdk_source_event_guards(ci, block) if job_id == "ca-pi-checks" else set()
+            program_guards = reviewed_program_source_event_guards(block) if job_id == "program-integrity" else set()
+            reviewed_guards = (cold_guards | source_guards | impact_guards | vitest_guards |
+                               mapped_guards | sdk_guards | program_guards)
             # Job-level AND step-level conditions: a step gated to
             # pull_request drops its evidence just as quietly as a job does,
             # and the secret scan's commit-range step is one of those.
             for condition in re.findall(r"(?m)^\s+if: (?P<test>[^\n]+)$", block):
+                # Publication-authority evidence cannot run for PR/queue
+                # events. The named-outcomes check below independently keeps
+                # the original tests and their retained observation unconditional.
+                if (job_id == 'artifact-native-build' and condition ==
+                        "github.event_name == 'push' && github.ref == 'refs/heads/main' && matrix.expected_platform == 'windows/amd64' && hashFiles('.github/integration-candidate.json') != ''"):
+                    report_step = block.split('- name: Emit named major qualification report', 1)[1].split('- name:', 1)[0]
+                    self.assertIn('if: ' + condition, report_step)
+                    continue
+                if condition in reviewed_guards:
+                    continue
                 if "github.event_name" not in condition:
                     continue
                 if "merge_group" not in condition:
@@ -2690,6 +3326,176 @@ class ReceiptCommandTest(unittest.TestCase):
 
 
 
+
+class ChangedPathTransportTest(unittest.TestCase):
+    """Changed paths travel as data, without an exec-sized argument or environment."""
+
+    def _receipt(self, root, *arguments):
+        output, summary = root / "impact.json", root / "summary.md"
+        command = [sys.executable, "-B", str(_TOOL),
+                   "--map", str(REPO_ROOT / ".github/ci-impact-map.json"),
+                   "--hosts", str(REPO_ROOT / "core/hosts.json"),
+                   "--output", str(output), "--summary", str(summary), *arguments]
+        result = subprocess.run(command, capture_output=True, text=True, encoding="utf-8")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        return json.loads(output.read_text(encoding="utf-8"))
+
+    def test_large_path_file_is_lossless_without_large_exec_strings(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            paths = ["core/artifacts/" + str(i).zfill(5) + "x" * 90 + ".go"
+                     for i in range(1500)]
+            paths += ["core/artifacts/quote' space\" unicode-λ.go",
+                      "core/artifacts/line\nbreak.go"]
+            source = root / "paths.json"
+            source.write_text(json.dumps(paths, ensure_ascii=False), encoding="utf-8")
+            self.assertGreater(source.stat().st_size, 148885)
+            receipt = self._receipt(root, "--changed-files-file", str(source))
+            self.assertFalse(receipt["fallback"])
+            self.assertEqual(receipt["matched_paths"], sorted(paths))
+            self.assertEqual({item["id"] for item in receipt["selected"]},
+                             {"artifact-engine", "artifact-browser", "artifact-package-cold"})
+            # Exercise the exact workflow input mode too, including the large Git
+            # stdout-to-Python boundary; the path list never becomes an exec input.
+            repo = root / "repo"
+            repo.mkdir()
+            _, main, _, _, main_paths, _ = self._history(repo)
+            head = self._commit(repo, {**main_paths, **dict.fromkeys(paths, b"large\n")}, main)
+            receipt = self._event_receipt(root, repo,
+                {"repository": {"default_branch": "main"}, "before": main},
+                "push", "refs/heads/main", head)
+            self.assertFalse(receipt["fallback"])
+            self.assertEqual(receipt["matched_paths"], sorted(paths))
+
+    def test_bad_path_file_falls_back_without_partial_selection(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            source = root / "paths.json"
+            for contents in ('{}', '["core/artifacts/good.go", 42]', '["../escape"]',
+                             '["core/artifacts/nul\\u0000.go"]', 'not json'):
+                with self.subTest(contents=contents):
+                    source.write_text(contents, encoding="utf-8")
+                    receipt = self._receipt(root, "--changed-files-file", str(source))
+                    self.assertTrue(receipt["fallback"])
+                    self.assertEqual(receipt["matched_paths"], [])
+            receipt = self._receipt(root, "--changed-files-file", str(root / "missing"))
+            self.assertTrue(receipt["fallback"])
+
+    def _git(self, root, *arguments, data=None):
+        result = subprocess.run(["git", "--no-lazy-fetch", "-C", str(root), *arguments],
+                                input=data, capture_output=True)
+        self.assertEqual(result.returncode, 0, result.stderr.decode("utf-8", "replace"))
+        return result.stdout.decode("utf-8").strip()
+
+    def _history(self, root):
+        self._git(root, "init", "--quiet", "--initial-branch=main")
+        self._git(root, "config", "user.name", "Transport fixture")
+        self._git(root, "config", "user.email", "fixture@example.invalid")
+        self._git(root, "config", "core.autocrlf", "false")
+        # Index-only fixture: Git for Windows otherwise silently ignores quote names.
+        self._git(root, "config", "core.protectNTFS", "false")
+        base_paths = {"core/artifacts/base.go": b"base\n",
+                      "core/artifacts/old 'λ.go": b"rename\n"}
+        base = self._commit(root, base_paths)
+        main_paths = dict(base_paths, **{"core/artifacts/main-only.go": b"main\n"})
+        main = self._commit(root, main_paths, base)
+        feature_paths = {"core/artifacts/base.go": b"changed\n",
+                         "core/artifacts/new \"λ\n.go": b"rename\n",
+                         "core/artifacts/feature.go": b"feature\n"}
+        feature = self._commit(root, feature_paths, base)
+        self._git(root, "update-ref", "refs/heads/main", main)
+        self._git(root, "update-ref", "refs/remotes/origin/main", main)
+        self._git(root, "update-ref", "refs/heads/feature", feature)
+        return base, main, feature, base_paths, main_paths, feature_paths
+
+    def _commit(self, root, files, parent=None):
+        self._git(root, "read-tree", "--empty")
+        entries = bytearray()
+        blobs = {}
+        for path, contents in files.items():
+            if contents not in blobs:
+                blobs[contents] = self._git(root, "hash-object", "-w", "--stdin", data=contents)
+            blob = blobs[contents]
+            entries.extend(("100644 " + blob + "\t" + path + "\0").encode("utf-8"))
+        self._git(root, "update-index", "-z", "--index-info", data=bytes(entries))
+        tree = self._git(root, "write-tree")
+        return self._git(root, "commit-tree", tree, *(["-p", parent] if parent else []),
+                         data=b"transport fixture\n")
+
+    def _event_receipt(self, root, repository, event, name, ref, sha):
+        source = root / "event.json"
+        source.write_text(json.dumps(event), encoding="utf-8")
+        return self._receipt(root, "--github-event", str(source), "--event-name", name,
+                             "--ref", ref, "--sha", sha, "--repository", str(repository))
+
+    def test_event_ranges_preserve_pr_push_major_queue_and_initial_semantics(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            repo = root / "repo"
+            repo.mkdir()
+            base, main, feature, base_paths, main_paths, feature_paths = self._history(repo)
+            repository = {"default_branch": "main"}
+            changed = sorted(set(base_paths) | set(feature_paths))
+            cases = [
+                ("pull_request", {"pull_request": {"base": {"sha": main},
+                    "head": {"sha": feature}}}, "refs/pull/1/merge", feature, changed),
+                ("push", {"before": base}, "refs/heads/main", main,
+                    ["core/artifacts/main-only.go"]),
+                # Non-default pushes compare merge base, NOT before/main tip.
+                ("push", {"before": feature}, "refs/heads/feature", feature, changed),
+                ("merge_group", {"merge_group": {"base_sha": base, "head_sha": feature}},
+                    "refs/heads/gh-readonly-queue/main/test", feature, changed),
+                ("push", {"before": "0" * 40}, "refs/heads/main", main, sorted(main_paths)),
+                ("push", {"before": "0" * 40}, "refs/heads/feature", feature, changed),
+                ("push", {}, "refs/heads/main", main, ["core/artifacts/main-only.go"]),
+            ]
+            for name, event, ref, sha, expected in cases:
+                with self.subTest(name=name, ref=ref, before=event.get("before")):
+                    event["repository"] = repository
+                    receipt = self._event_receipt(root, repo, event, name, ref, sha)
+                    self.assertFalse(receipt["fallback"], receipt["reason"])
+                    self.assertEqual(receipt["matched_paths"], expected)
+            # The pinned action directly compares trees when histories are unrelated.
+            orphan_paths = {"core/artifacts/unrelated.go": b"orphan\n"}
+            orphan = self._commit(repo, orphan_paths)
+            receipt = self._event_receipt(root, repo,
+                {"repository": repository, "before": base}, "push",
+                "refs/heads/unrelated", orphan)
+            self.assertFalse(receipt["fallback"])
+            self.assertEqual(receipt["matched_paths"], sorted(set(main_paths) | set(orphan_paths)))
+
+    def test_unknown_event_or_unavailable_revision_broadens_without_fetch(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            repo = root / "repo"
+            repo.mkdir()
+            base, main, feature, *_ = self._history(repo)
+            for name, event, sha in [
+                ("workflow_dispatch", {}, main),
+                ("pull_request", {"pull_request": {"base": [], "head": None}}, main),
+                ("merge_group", {"merge_group": []}, main),
+                ("push", {"repository": {"default_branch": "main"},
+                          "before": "f" * 40}, main),
+                ("push", {"repository": {"default_branch": "--upload-pack=bad"},
+                          "before": base}, feature),
+                ("merge_group", {"merge_group": {"base_sha": "-bad", "head_sha": main}}, main),
+            ]:
+                with self.subTest(name=name, event=event):
+                    receipt = self._event_receipt(root, repo, event, name,
+                                                 "refs/heads/main", sha)
+                    self.assertTrue(receipt["fallback"])
+                    self.assertEqual(receipt["matched_paths"], [])
+
+    def test_workflow_never_exports_changed_paths_into_exec_environment_or_script(self):
+        changes = workflow_jobs(CI_WORKFLOW.read_text(encoding="utf-8"))["changes"]
+        self.assertNotIn("CHANGED_FILES", changes)
+        self.assertNotIn("steps.filter.outputs.all_files", changes)
+        self.assertIn("list-files: none", changes)
+        self.assertIn('--github-event "$GITHUB_EVENT_PATH"', changes)
+        self.assertIn("fetch-depth: 0", changes)
+        self.assertNotIn("--changed-files ", changes)
+
+
 class NoOrphanedSuiteTest(unittest.TestCase):
     """Every test suite in .github/scripts must actually RUN somewhere.
 
@@ -2803,6 +3609,26 @@ class DebugSuiteRegistrationTest(unittest.TestCase):
                       "'.github/scripts/test_debug_handoff.py']", jobs["artifact-native-bridges"])
         self.assertIn("matrix.partition == 'all' || matrix.partition == 'contracts'", jobs["hooks"])
         self.assertIn('python-version: "3.x"', jobs["hooks"])
+
+    def test_locked_debug_observation_precedes_nested_compatibility_checkouts(self):
+        workflow = CI_WORKFLOW.read_text(encoding="utf-8")
+        bridges = workflow_jobs(workflow)["artifact-native-bridges"]
+        names = re.findall(r"^      - name: (.+)$", bridges, re.M)
+        required = (
+            "Verify tested candidate bytes, source and native toolchain",
+            "Prepare locked debug reference source inputs",
+            "Test debug handoff model against the locked reference interpreter",
+            "Check out the fixed pre-assistive compatibility source",
+            "Check out the schema 0.3.2 integration-base compatibility source",
+            "Check out the fixed pre-cycle work compatibility source",
+            "Verify old work client refuses upgraded work and keeps later edits",
+            "Recheck native candidate after bridge and conformance tests",
+        )
+        for name in required:
+            self.assertEqual(names.count(name), 1, name)
+        positions = [names.index(name) for name in required]
+        self.assertEqual(positions, sorted(positions))
+        self.assertEqual(positions[1] + 1, positions[2])
 
     def test_debug_inputs_reach_the_jobs_that_execute_them(self):
         ci = CI_WORKFLOW.read_text(encoding="utf-8")
@@ -3006,6 +3832,20 @@ class GateCommandTest(unittest.TestCase):
 
     def _defines(self, token, tech_stack):
         """Does tech-stack.md define `token`? Regex where one fits, structure where not."""
+        if token in ("test", "audit"):
+            from project_knowledge import active_records
+            records = active_records("tech-stack")
+            if records is not None:
+                if token == "audit":
+                    return any(record.get("type") == "command"
+                               and record["command"]["argv"][0] == "npm"
+                               and "audit" in record["command"]["argv"]
+                               and "--audit-level=high" in record["command"]["argv"]
+                               for record in records)
+                return any(record.get("type") == "command"
+                           and record["command"]["purpose"] == "test"
+                           and record["command"]["argv"][0] != ":"
+                           for record in records)
         proof = self.DEFINITIONS[token]
         if proof is not None:
             return proof.search(tech_stack) is not None
@@ -3025,7 +3865,8 @@ class GateCommandTest(unittest.TestCase):
         return found
 
     def test_every_gate_command_read_from_tech_stack_is_defined_there(self):
-        tech_stack = (REPO_ROOT / ".codearbiter" / "tech-stack.md").read_text(encoding="utf-8")
+        from project_knowledge import context_text
+        tech_stack = context_text("tech-stack", commands_only=True)
         missing = []
         for token, who in sorted(self._demanded().items()):
             names = ", ".join(sorted(who))
@@ -3076,7 +3917,8 @@ class GateCommandTest(unittest.TestCase):
         leaves the gate pointing at nothing while every text assertion still
         passes - #507 reachable straight through the fix for #507.
         """
-        tech_stack = (REPO_ROOT / ".codearbiter" / "tech-stack.md").read_text(encoding="utf-8")
+        from project_knowledge import context_text
+        tech_stack = context_text("tech-stack", commands_only=True)
         pairs = self._npm_invocations(tech_stack)
         # Non-vacuity, and scoped to `coverage` specifically. A bare `assertTrue(pairs)`
         # is satisfied by the unrelated `build` and `typecheck` invocations in the same
@@ -3127,7 +3969,8 @@ class GateCommandTest(unittest.TestCase):
 
     def test_every_tested_tree_has_its_coverage_command_documented(self):
         """Completeness, driven by the filesystem rather than by the prose."""
-        tech_stack = (REPO_ROOT / ".codearbiter" / "tech-stack.md").read_text(encoding="utf-8")
+        from project_knowledge import context_text
+        tech_stack = context_text("tech-stack", commands_only=True)
         documented = {prefix for prefix, script in self._npm_invocations(tech_stack) if script == "coverage"}
         undocumented = [
             tree for tree in sorted(self._tested_trees())
@@ -3292,8 +4135,10 @@ class SiteCoverageEvidenceTest(unittest.TestCase):
 
     def test_existing_suite_runs_once_with_coverage_and_retains_its_report(self):
         job = self._job()
-        self.assertEqual(re.findall(r"(?m)^        run: (npm (?:test|run coverage))$", job),
+        self.assertEqual(re.findall(r"(?m)^ +(?:run: )?(npm (?:test|run coverage))$", job),
                          ["npm run coverage"])
+        coverage = docs_coverage_step_index(job)
+        self.assertGreaterEqual(coverage, 0, "original Docs coverage invocation is missing or changed")
         scripts = json.loads((REPO_ROOT / "site/package.json").read_text(encoding="utf-8"))["scripts"]
         self.assertEqual(scripts["coverage"].replace("vitest run --coverage", "vitest run"), scripts["test"])
         self.assertEqual(scripts["precoverage"], scripts["pretest"])
@@ -3302,8 +4147,8 @@ class SiteCoverageEvidenceTest(unittest.TestCase):
         self.assertIn('include: ["scripts/**/*.ts"]', config)
         self.assertIn('exclude: ["scripts/**/*.test.ts"]', config)
         self.assertNotRegex(config, r"(?m)^\s*thresholds:")
-        self.assertLess(job.index("id: coverage-source"), job.index("run: npm run coverage"))
-        self.assertLess(job.index("run: npm run coverage"), job.index("id: coverage-summary"))
+        self.assertLess(job[:job.index("id: coverage-source")].count("\n"), coverage)
+        self.assertLess(coverage, job[:job.index("id: coverage-summary")].count("\n"))
         artifact = next((step for step in job.split("\n      - ")
                          if "name: site-coverage-${{ github.sha }}" in step), "")
         self.assertIn("uses: actions/upload-artifact@", artifact)
@@ -3439,12 +4284,312 @@ class SiteBrowserDependencyContractTest(unittest.TestCase):
 class SiteBrowserPublicationWorkflowTest(unittest.TestCase):
     """AC-05/06: the browser verdict blocks publication without local setup or PR writes."""
 
+    # These roles grant no general command/condition exception. Match the
+    # reviewed complete step before projecting the single original browser run.
+    _PROGRAM_ROLES = {'Identify program qualification mode': '      - name: Identify program qualification mode\n'
+                                            '        id: program-mode\n'
+                                            '        run: echo "active=${{ '
+                                            "hashFiles('.github/integration-candidate.json') != '' "
+                                            '}}" >> "$GITHUB_OUTPUT"',
+     'Browser publication gate': '      - name: Browser publication gate\n'
+                                 '        id: browser-gate\n'
+                                 '        env:\n'
+                                 '          DOCS_PROGRAM_OBSERVE: ${{ '
+                                 "steps.program-mode.outputs.active == 'true' && github.event_name == "
+                                 "'push' && "
+                                 'contains(fromJSON(\'["refs/heads/main","refs/heads/major/state-contracts"]\'), '
+                                 'github.ref) }}\n'
+                                 '        run: |\n'
+                                 '          if [ "$DOCS_PROGRAM_OBSERVE" = true ]; then\n'
+                                 '            python -B '
+                                 '../.github/scripts/site_playwright_observation.py observe --repo .. '
+                                 '\\\n'
+                                 '              --browser-binary /opt/google/chrome/chrome \\\n'
+                                 '              --output "$RUNNER_TEMP/docs-browser-observation.json"\n'
+                                 '          else\n'
+                                 '            npm run test:browser\n'
+                                 '          fi',
+     'Emit Docs qualification report': '      - name: Emit Docs qualification report\n'
+                                       '        id: docs-report\n'
+                                       "        if: steps.program-mode.outputs.active == 'true' && "
+                                       "github.event_name == 'push' && "
+                                       'contains(fromJSON(\'["refs/heads/main","refs/heads/major/state-contracts"]\'), '
+                                       'github.ref)\n'
+                                       '        env:\n'
+                                       '          GH_TOKEN: ${{ github.token }}\n'
+                                       '        run: >-\n'
+                                       '          python -B '
+                                       '../.github/scripts/site_playwright_observation.py emit --repo '
+                                       '..\n'
+                                       '          --observation '
+                                       '"$RUNNER_TEMP/docs-browser-observation.json"\n'
+                                       '          --output "$RUNNER_TEMP/docs-qualification.json"',
+     'Upload Docs qualification report': '      - name: Upload Docs qualification report\n'
+                                         "        if: steps.docs-report.outcome == 'success'\n"
+                                         '        uses: '
+                                         'actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9\n'
+                                         '        with:\n'
+                                         '          name: major-docs-qualification-${{ '
+                                         'steps.docs-report.outputs.job_id }}\n'
+                                         '          path: ${{ runner.temp }}/docs-qualification.json\n'
+                                         '          if-no-files-found: error\n'
+                                         '          retention-days: 14\n'
+                                         '          overwrite: false',
+     'Retain Docs qualification diagnostics': '      - name: Retain Docs qualification diagnostics\n'
+                                               '        if: ${{ !cancelled() && '
+                                               "steps.browser-gate.outcome == 'success' && "
+                                               "steps.program-mode.outputs.active == 'true' && "
+                                               "github.event_name == 'push' && "
+                                               'contains(fromJSON(\'["refs/heads/main","refs/heads/major/state-contracts"]\'), '
+                                               'github.ref) }}\n'
+                                               '        uses: '
+                                               'actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9\n'
+                                               '        with:\n'
+                                               '          name: site-qualification-diagnostics\n'
+                                               '          path: |\n'
+                                               '            ${{ runner.temp '
+                                               '}}/docs-browser-observation.json\n'
+                                               '            ${{ runner.temp '
+                                               '}}/docs-qualification.json.refusal.json\n'
+                                               '          if-no-files-found: error\n'
+                                               '          retention-days: 5\n'
+                                               '          overwrite: false'}
+    _COMPONENT_ROLES = {'Validate component capture contract': '      - name: Validate component capture contract\n'
+                                            '        run: python -B '
+                                            '../.github/scripts/test_site_component_observation.py',
+     'Prepare original component source-test inputs': '      - name: Prepare original component source-test '
+                                                      'inputs\n'
+                                                      '        id: component-source\n'
+                                                      '        if: steps.program-mode.outputs.active == '
+                                                      "'true' && github.event_name == 'push' && "
+                                                      'contains(fromJSON(\'["refs/heads/main","refs/heads/major/state-contracts"]\'), '
+                                                      'github.ref)\n'
+                                                      '        run: >-\n'
+                                                      '          python -B '
+                                                      '../.github/scripts/site_component_observation.py '
+                                                      'prepare-source --repo ..\n'
+                                                      '          --output '
+                                                      '"$RUNNER_TEMP/component-source-inputs"',
+     'Browser component acceptance': '      - name: Browser component acceptance\n'
+                                     '        id: component-gate\n'
+                                     '        env:\n'
+                                     '          COMPONENT_PROGRAM_OBSERVE: ${{ '
+                                     "steps.program-mode.outputs.active == 'true' && github.event_name == "
+                                     "'push' && "
+                                     'contains(fromJSON(\'["refs/heads/main","refs/heads/major/state-contracts"]\'), '
+                                     'github.ref) }}\n'
+                                     '        run: |\n'
+                                     '          if [ "$COMPONENT_PROGRAM_OBSERVE" = true ]; then\n'
+                                     '            python -B '
+                                     '../.github/scripts/site_component_observation.py observe --repo .. '
+                                     '\\\n'
+                                     '              --source-payload "$RUNNER_TEMP/component-source-inputs" '
+                                     '\\\n'
+                                     '              --browser-binary /opt/google/chrome/chrome \\\n'
+                                     '              --output "$RUNNER_TEMP/component-observation.json"\n'
+                                     '          else\n'
+                                     '            npm run test:components\n'
+                                     '          fi',
+     'Upload original component source-test inputs': '      - name: Upload original component source-test '
+                                                     'inputs\n'
+                                                     '        if: steps.component-source.outcome == '
+                                                     "'success' && steps.component-gate.outcome == "
+                                                     "'success' && steps.program-mode.outputs.active == "
+                                                     "'true' && github.event_name == 'push' && "
+                                                     'contains(fromJSON(\'["refs/heads/main","refs/heads/major/state-contracts"]\'), '
+                                                     'github.ref)\n'
+                                                     '        uses: '
+                                                     'actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9\n'
+                                                     '        with:\n'
+                                                     '          name: major-source-inputs-site-components\n'
+                                                     '          path: ${{ runner.temp '
+                                                     '}}/component-source-inputs/\n'
+                                                     '          include-hidden-files: true\n'
+                                                     '          if-no-files-found: error\n'
+                                                     '          retention-days: 14\n'
+                                                     '          overwrite: false',
+     'Emit component source-test qualification report': '      - name: Emit component source-test '
+                                                        'qualification report\n'
+                                                        '        id: component-report\n'
+                                                        '        if: steps.component-source.outcome == '
+                                                        "'success' && steps.component-gate.outcome == "
+                                                        "'success' && steps.program-mode.outputs.active == "
+                                                        "'true' && github.event_name == 'push' && "
+                                                        'contains(fromJSON(\'["refs/heads/main","refs/heads/major/state-contracts"]\'), '
+                                                        'github.ref)\n'
+                                                        '        env:\n'
+                                                        '          GH_TOKEN: ${{ github.token }}\n'
+                                                        '        run: >-\n'
+                                                        '          python -B '
+                                                        '../.github/scripts/site_component_observation.py '
+                                                        'emit --repo ..\n'
+                                                        '          --observation '
+                                                        '"$RUNNER_TEMP/component-observation.json"\n'
+                                                        '          --output '
+                                                        '"$RUNNER_TEMP/component-qualification.json"',
+     'Upload component source-test qualification report': '      - name: Upload component source-test '
+                                                          'qualification report\n'
+                                                          '        if: steps.component-report.outcome == '
+                                                          "'success' && steps.program-mode.outputs.active "
+                                                          "== 'true' && github.event_name == 'push' && "
+                                                          'contains(fromJSON(\'["refs/heads/main","refs/heads/major/state-contracts"]\'), '
+                                                          'github.ref)\n'
+                                                          '        uses: '
+                                                          'actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9\n'
+                                                          '        with:\n'
+                                                          '          name: '
+                                                          'major-docs-component-qualification-${{ '
+                                                          'steps.component-report.outputs.job_id }}\n'
+                                                          '          path: ${{ runner.temp '
+                                                          '}}/component-qualification.json\n'
+                                                          '          if-no-files-found: error\n'
+                                                          '          retention-days: 14\n'
+                                                          '          overwrite: false'}
+    _PROGRAM_ROLES = {**_PROGRAM_ROLES, **_COMPONENT_ROLES}
+    _SETUP_ROLES = ['      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1\n'
+     '        with:\n'
+     '          submodules: recursive\n'
+     '          fetch-depth: 0\n'
+     '          persist-credentials: false',
+     '      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1\n'
+     '        with:\n'
+     '          node-version: 22.23.4\n'
+     '          cache: npm\n'
+     '          cache-dependency-path: site/package-lock.json',
+     '      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0\n'
+     '        with:\n'
+     '          python-version: "3.14"']
+    _QUALIFIED_BUILD_IF = "    if: github.event_name != 'workflow_dispatch' || inputs.qualified_core_run_id == ''"
+    _ORIGINAL_COMMANDS = ["npm ci", "npm run build", "npm run link-audit",
+                          "google-chrome --version", "npm run test:components", "npm run test:browser"]
+
+    _RELEASE_READBACK_NAME = "Read the original release publication observation"
+    _RELEASE_READBACK = (
+        f"      - name: {_RELEASE_READBACK_NAME}\n"
+        "        if: github.event_name == 'workflow_run' && github.ref == 'refs/heads/main'\n"
+        "        env:\n"
+        "          GH_TOKEN: ${{ github.token }}\n"
+        "        run: >-\n"
+        "          python -B ../.github/scripts/docs_release_publication.py\n"
+        '          --event "$GITHUB_EVENT_PATH" --repo ..\n'
+        '          --output "$RUNNER_TEMP/route-publication-observation.json"'
+    )
+    _RELEASE_OBSERVATION_ENV = (
+        "          CODEARBITER_PUBLICATION_OBSERVATION: ${{ runner.temp }}/route-publication-observation.json"
+    )
+    _RELEASE_BUILD_COMMENT = " # prebuild regenerates the reference from plugins/ca/**"
+
+    def _assert_release_readback(self, job: str, consumer: str, run: str, prerequisite: str) -> None:
+        from test_hook_ci_partition import step_blocks
+
+        roles = SiteBrowserPublicationWorkflowTest
+        header = job.split("    steps:\n", 1)[0]
+        self.assertEqual(re.findall(r"(?m)^    defaults:\n(?:      [^\n]+\n|        [^\n]+\n)+", header),
+                         ["    defaults:\n      run:\n        working-directory: site\n"])
+        steps = step_blocks(job)
+        publications = [i for i, step in enumerate(steps)
+                        if step.startswith(f"      - name: {roles._RELEASE_READBACK_NAME}\n")]
+        consumers = [i for i, step in enumerate(steps) if step.startswith(f"      - name: {consumer}\n")]
+        self.assertEqual(len(publications), 1, "expected one original release observation reader")
+        self.assertEqual(len(consumers), 1, "expected one publication observation consumer")
+        read_index, consumer_index = publications[0], consumers[0]
+        self.assertGreater(read_index, 0, "readback must follow the existing prerequisite")
+        self.assertEqual(steps[read_index - 1].splitlines()[0], f"      - name: {prerequisite}")
+        self.assertEqual(consumer_index, read_index + 1, "only the immediately following command consumes the observation")
+        self.assertEqual(steps[read_index].rstrip(), roles._RELEASE_READBACK, "closed original release observation role differs")
+        expected_consumer = (
+            f"      - name: {consumer}\n"
+            f"        run: {run}\n"
+            "        env:\n"
+            f"{roles._RELEASE_OBSERVATION_ENV}"
+        )
+        consumer_step = steps[consumer_index].rstrip()
+        if consumer == "Build":
+            consumer_step = consumer_step.replace(roles._RELEASE_BUILD_COMMENT, "", 1)
+        self.assertEqual(consumer_step, expected_consumer,
+                         "publication data belongs to the original tokenless consumer")
+        self.assertEqual(re.findall(r"(?m)^[ \t]+CODEARBITER_PUBLICATION_OBSERVATION:.*$", job),
+                         [roles._RELEASE_OBSERVATION_ENV], "only the reviewed generator or build receives publication data")
+
+    def _build_commands(self, build: str) -> list[str]:
+        from test_hook_ci_partition import step_blocks, command
+        commands = []
+        for step in step_blocks(build):
+            match = re.match(r"      - name: ([^\n]+)\n", step)
+            name = match.group(1) if match else None
+            if name == self._RELEASE_READBACK_NAME:
+                self.assertEqual(step.rstrip(), self._RELEASE_READBACK,
+                                 "closed release observation role changed")
+                continue
+            if name in self._PROGRAM_ROLES:
+                self.assertEqual(step.rstrip(), self._PROGRAM_ROLES[name],
+                                 "closed Docs role changed")
+                if name == "Browser publication gate":
+                    commands.append("npm run test:browser")
+                elif name == "Browser component acceptance":
+                    commands.append("npm run test:components")
+                continue
+            try:
+                run = command(step)
+            except ValueError:
+                self.fail("unsupported workflow command scalar")
+            if run is not None:
+                commands.append(run)
+        return commands
+
+    def _assert_workflow_authority(self, jobs) -> None:
+        readonly = "    permissions:\n      contents: read\n      actions: read\n"
+        privileged = "    permissions:\n      contents: read\n      pages: write\n      id-token: write\n"
+        for job_id, job in jobs.items():
+            if job_id in ("build", "qualified-pages", "site-check"):
+                expected = readonly
+            elif job_id in ("deploy", "deploy-qualified"):
+                expected = privileged
+            else:
+                expected = ""
+            actual = re.findall(r"(?m)^    permissions:\n(?:      [^\n]+\n)+", job)
+            self.assertEqual(actual, [expected] if expected else [],
+                             "only exact reviewed job roles may declare permissions")
+            self.assertNotIn("secrets.", job)
+        from test_hook_ci_partition import step_blocks
+
+        roles = SiteBrowserPublicationWorkflowTest
+        site_check = jobs["site-check"]
+        roles._assert_release_readback(self, site_check, "Generate release applicability", "npm run gen",
+                                       "Audit (CVE gate - fail on HIGH)")
+        roles._assert_release_readback(self, jobs["build"], "Build", "npm run build", "Install deps")
+        checkout, = [step for step in step_blocks(site_check) if "actions/checkout@" in step]
+        self.assertEqual(re.findall(r"(?m)^          persist-credentials: (.+)$", checkout), ["false"])
+        emit, = [step for step in step_blocks(site_check)
+                 if step.startswith("      - name: Emit original Docs source-test qualification\n")]
+        self.assertIn("github.event_name == 'push'", emit)
+        self.assertIn("success() && steps.docs-source-mode.outputs.active == 'true'", emit)
+        self.assertEqual(re.findall(r"(?m)^\s+(?:GH_TOKEN|GITHUB_TOKEN):.*$", site_check),
+                         ["          GH_TOKEN: ${{ github.token }}"] * 2,
+                         "only the original release reader and source-test emitter may receive a token")
+        self.assertEqual(len(re.findall(r"\$\{\{\s*github\.token\s*\}\}", site_check)), 2)
+        self.assertIn("        env:\n          GH_TOKEN: ${{ github.token }}\n", emit)
+        qualified = jobs["deploy-qualified"]
+        self.assertRegex(qualified, r"(?m)^    needs: qualified-pages$")
+        self.assertIn("    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && inputs.qualified_core_run_id != ''\n", qualified)
+        self.assertEqual(len(re.findall(r"(?m)^    if:", qualified)), 1)
+        self.assertNotRegex(qualified, r"(?m)^\s+(?:- )?(?:run|continue-on-error):")
+        self.assertNotIn("checkout@", qualified)
+        self.assertEqual(re.findall(r"(?m)^        uses: ([^ #\n]+)", qualified),
+                         ["actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346"])
+
     def _assert_build_control_flow(self, build: str) -> None:
         """Permit only bounded diagnostic uploads to run after a failed browser gate."""
+        self._assert_release_readback(build, "Build", "npm run build", "Install deps")
         control = r"(?m)^\s+(?:- )?(?:if|continue-on-error):"
         self.assertNotRegex(build, r"(?m)^\s+(?:- )?continue-on-error:")
         parts = re.split(r"(?m)(?=^      - )", build)
-        self.assertNotRegex(parts[0], control, "the build job must not be conditional")
+        self.assertEqual(parts[0].count(self._QUALIFIED_BUILD_IF + "\n"), 1,
+                         "only explicit qualified dispatch may skip rebuilding")
+        self.assertNotRegex(parts[0].replace(self._QUALIFIED_BUILD_IF + "\n", "", 1), control,
+                            "no additional job conditional is permitted")
+        self.assertEqual(parts[0].count("    outputs:\n      program_candidate: ${{ steps.program-mode.outputs.active }}\n"), 1,
+                         "program deployment hold must use its actual mode output")
         diagnostics = {
             "Retain browser review evidence": (
                 "${{ !cancelled() }}", "site-browser-evidence",
@@ -3454,11 +4599,27 @@ class SiteBrowserPublicationWorkflowTest(unittest.TestCase):
                 "site-browser-failures", "site/.astro/playwright/", 3),
         }
         seen = []
+        role_seen = []
+        setup_seen = []
         names = []
         for step in parts[1:]:
             match = re.match(r"      - name: ([^\n]+)\n", step)
             name = match.group(1) if match else None
             names.append(name)
+            if name == self._RELEASE_READBACK_NAME:
+                continue  # The release-only role was matched in full above.
+            if name in self._PROGRAM_ROLES:
+                self.assertEqual(step.rstrip(), self._PROGRAM_ROLES[name],
+                                 "closed Docs role changed or gained executable authority")
+                role_seen.append(name)
+                continue
+            if name is None:
+                self.assertIn(step.rstrip(), self._SETUP_ROLES, "unknown setup/action role")
+                setup_seen.append(step.rstrip())
+            else:
+                self.assertIn(name, {*diagnostics, "Install deps", "Build", "Link audit",
+                    "Record runner Chrome version", "Browser component acceptance", "Upload Pages artifact"},
+                    "unknown executable or metadata role")
             if name not in diagnostics:
                 self.assertNotRegex(step, control,
                                     "validation and Pages upload must remain success-gated")
@@ -3477,13 +4638,86 @@ class SiteBrowserPublicationWorkflowTest(unittest.TestCase):
             )
             self.assertEqual(step.rstrip(), expected.rstrip(),
                              "diagnostic exceptions may only upload their bounded evidence")
+        self.assertCountEqual(role_seen, list(self._PROGRAM_ROLES),
+                              "all reviewed program roles must occur exactly once")
+        self.assertCountEqual(setup_seen, self._SETUP_ROLES,
+                              "all reviewed setup actions must occur exactly once")
+        self.assertEqual(re.findall(r"(?m)^\s+(?:GH_TOKEN|GITHUB_TOKEN):.*$", build),
+                         ["          GH_TOKEN: ${{ github.token }}"] * 3,
+                         "only the exact release reader and two metadata emitters may receive a token")
+        self.assertEqual(len(re.findall(r"\$\{\{\s*github\.token\s*\}\}", build)), 3)
+        self.assertNotIn("secrets.", build)
+        self.assertEqual(self._build_commands(build), self._ORIGINAL_COMMANDS,
+                         "new roles cannot add, remove, repeat or suppress an original command")
         self.assertCountEqual(seen, list(diagnostics),
                               "both diagnostic uploads must occur exactly once")
+        self.assertLess(names.index("Emit Docs qualification report"),
+                        names.index("Retain Docs qualification diagnostics"))
+        self.assertLess(names.index("Retain Docs qualification diagnostics"),
+                        names.index("Upload Docs qualification report"))
         for name in ("Browser publication gate", "Upload Pages artifact"):
             self.assertEqual(names.count(name), 1, f"missing or duplicate {name}")
         gate = next(step for step in parts[1:]
                     if step.startswith("      - name: Browser publication gate\n"))
         self.assertRegex(gate, r"(?m)^        id: browser-gate$")
+
+    def test_original_pages_artifact_retains_live_proof_for_fourteen_days(self):
+        build = workflow_jobs(DOCS_WORKFLOW.read_text(encoding="utf-8"))["build"]
+        steps = re.split(r"(?m)(?=^      - )", build)[1:]
+        pages, = [step for step in steps if step.startswith("      - name: Upload Pages artifact\n")]
+        self.assertEqual(re.findall(r"(?m)^          retention-days: ([^\n]+)$", pages), ["14"],
+                         "Original Pages bytes must remain available as long as their qualification report")
+
+    def test_component_suite_is_discovered_and_success_gates_pages_upload(self):
+        scripts = json.loads((REPO_ROOT / "site/package.json").read_text(encoding="utf-8"))["scripts"]
+        self.assertEqual(scripts.get("test:components"),
+                         "playwright test --config=playwright.components.config.ts",
+                         "component specs are outside the production browser testDir")
+        config = (REPO_ROOT / "site/playwright.components.config.ts").read_text(encoding="utf-8")
+        self.assertRegex(config, r"testDir:\s*['\"]\./test/components['\"]")
+        self.assertRegex(config, r"channel:\s*['\"]chrome['\"]")
+        build = re.sub(r"(?m)\s+#.*$", "", workflow_jobs(
+            DOCS_WORKFLOW.read_text(encoding="utf-8"))["build"])
+
+        def assert_lane(candidate):
+            self._assert_build_control_flow(candidate)
+            steps = re.split(r"(?m)(?=^      - )", candidate)[1:]
+            selected = [step for step in steps
+                        if step.startswith("      - name: Browser component acceptance\n")]
+            self.assertEqual(len(selected), 1, "component suite must execute exactly once")
+            self.assertEqual(selected[0].rstrip(), self._PROGRAM_ROLES["Browser component acceptance"])
+
+            self.assertLess(candidate.index("run: google-chrome --version"),
+                            candidate.index("      - name: Browser component acceptance\n"))
+            self.assertLess(candidate.index("      - name: Browser component acceptance\n"),
+                            candidate.index("uses: actions/upload-pages-artifact@"))
+
+        actual_steps = re.split(r"(?m)(?=^      - )", build)[1:]
+        source_upload, = [step for step in actual_steps
+                          if step.startswith("      - name: Upload original component source-test inputs\n")]
+        checkout, = [step for step in actual_steps if "uses: actions/checkout@" in step]
+        for boundary, step, required in (
+            ("complete-hidden-source-members", source_upload, "          include-hidden-files: true\n"),
+            ("tokenless-source-checkout", checkout, "          persist-credentials: false\n"),
+        ):
+            with self.subTest(boundary=boundary):
+                self.assertIn(required, step)
+        assert_lane(build)
+        for mutation in (
+            build.replace("            npm run test:components", "            npm run test:browser", 1),
+            build.replace("        id: component-gate\n", "        id: component-gate\n        if: false\n", 1),
+            build.replace("        id: component-gate\n", "        id: component-gate\n        continue-on-error: true\n", 1),
+            build.replace("COMPONENT_PROGRAM_OBSERVE\" = true", "COMPONENT_PROGRAM_OBSERVE\" = false", 1),
+            build.replace("--source-payload \"$RUNNER_TEMP/component-source-inputs\"", "--source-payload \"$RUNNER_TEMP/other-inputs\"", 1),
+            build.replace("          include-hidden-files: true\n", "", 1),
+            build.replace("          include-hidden-files: true\n", "          include-hidden-files: false\n", 1),
+            build.replace("          persist-credentials: false\n", "", 1),
+            build.replace("          persist-credentials: false\n", "          persist-credentials: true\n", 1),
+        ):
+            with self.subTest(mutation=mutation):
+                self.assertNotEqual(mutation, build)
+                with self.assertRaises(AssertionError):
+                    assert_lane(mutation)
 
     def test_diagnostic_exceptions_reject_publication_bypasses_and_unbounded_uploads(self):
         """Mutations must not turn evidence retention into publication authorization."""
@@ -3492,7 +4726,22 @@ class SiteBrowserPublicationWorkflowTest(unittest.TestCase):
         self._assert_build_control_flow(build)
         evidence = next(step for step in re.split(r"(?m)(?=^      - )", build)
                         if step.startswith("      - name: Retain browser review evidence\n"))
+        diagnostic = self._PROGRAM_ROLES["Retain Docs qualification diagnostics"]
+        def mutate_diagnostic(before, after):
+            self.assertIn(before, diagnostic)
+            return build.replace(diagnostic, diagnostic.replace(before, after, 1), 1)
         mutations = {
+            "Docs diagnostic always": mutate_diagnostic("${{ !cancelled() &&", "${{ always() &&"),
+            "Docs diagnostic failed browser": mutate_diagnostic("steps.browser-gate.outcome == 'success'", "steps.browser-gate.outcome != 'success'"),
+            "Docs diagnostic PR event": mutate_diagnostic("github.event_name == 'push'", "github.event_name == 'pull_request'"),
+            "Docs diagnostic wrong artifact": mutate_diagnostic("name: site-qualification-diagnostics", "name: github-pages"),
+            "Docs diagnostic publication path": mutate_diagnostic("${{ runner.temp }}/docs-browser-observation.json", "site/dist"),
+            "Docs diagnostic unbounded path": mutate_diagnostic("${{ runner.temp }}/docs-qualification.json.refusal.json", "${{ runner.temp }}/**"),
+            "Docs diagnostic credential": mutate_diagnostic("        uses:", "        env:\n          GH_TOKEN: ${{ github.token }}\n        uses:"),
+            "Docs diagnostic executable": mutate_diagnostic("        uses:", "        run: npm run deploy\n        uses:"),
+            "Docs diagnostic overwrite": mutate_diagnostic("overwrite: false", "overwrite: true"),
+            "Docs diagnostic missing": build.replace(diagnostic, "", 1),
+            "Docs diagnostic duplicate": build.replace(diagnostic, diagnostic + "\n" + diagnostic, 1),
             "conditional job": build.replace("  build:\n", "  build:\n    if: always()\n", 1),
             "conditional browser": build.replace("        id: browser-gate\n",
                                                  "        id: browser-gate\n        if: false\n", 1),
@@ -3523,14 +4772,14 @@ class SiteBrowserPublicationWorkflowTest(unittest.TestCase):
         jobs = workflow_jobs(workflow)
         # Strip comments before checking executed commands and control-flow keys.
         build = re.sub(r"(?m)\s+#.*$", "", jobs["build"])
-        commands = re.findall(r"(?m)^        run: (.+)$", build)
+        commands = self._build_commands(build)
         version = "google-chrome --version"
         self.assertIn(version, commands, "hosted build must record runner-provided Chrome")
         self.assertIn("npm run test:browser", commands)
         self.assertLess(commands.index("npm run build"), commands.index(version))
         self.assertLess(commands.index("npm run build"), commands.index("npm run test:browser"))
         self.assertLess(commands.index(version), commands.index("npm run test:browser"))
-        self.assertLess(build.index("run: npm run test:browser"),
+        self.assertLess(build.index("      - name: Browser publication gate\n"),
                         build.index("uses: actions/upload-pages-artifact@"))
         self.assertRegex(build, r"(?m)^    runs-on: ubuntu-latest$")
         self._assert_build_control_flow(build)
@@ -3541,13 +4790,10 @@ class SiteBrowserPublicationWorkflowTest(unittest.TestCase):
         self.assertRegex(global_config, r"(?m)^permissions:\n  contents: read\n")
         self.assertNotRegex(global_config, r"(?m)^\s+(?:pages|id-token): write")
         self.assertNotIn("pull_request_target:", workflow)
-        for job_id, job in jobs.items():
-            if job_id != "deploy":
-                self.assertNotRegex(job, r"(?m)^    permissions:")
-                self.assertNotIn("secrets.", job)
+        self._assert_workflow_authority(jobs)
         deploy = re.sub(r"(?m)\s+#.*$", "", jobs["deploy"])
         self.assertRegex(deploy, r"(?m)^    needs: \[build, site-check\]$")
-        self.assertIn("    " + ALLOWLISTED_DEPLOY_IF + "\n", deploy)
+        self.assertIn("    " + ALLOWLISTED_DEPLOY_IF + " && needs.build.outputs.program_candidate != 'true' && inputs.qualified_core_run_id == ''\n", deploy)
         # A release-triggered run waits instead of cancelling, so an outside
         # contributor completing release runs cannot keep cancelling the deploy.
         concurrency = workflow.split("\nconcurrency:\n", 1)[1].split("\njobs:\n", 1)[0]
@@ -3559,20 +4805,20 @@ class SiteBrowserPublicationWorkflowTest(unittest.TestCase):
         self.assertNotIn("continue-on-error:", deploy)
         scripts = json.loads((REPO_ROOT / "site/package.json").read_text(encoding="utf-8"))["scripts"]
         for name, command in scripts.items():
-            if name != "test:browser":
+            if name not in {"test:browser", "test:components"}:
                 self.assertNotRegex(command, r"playwright|test:browser", name)
-        for path in (REPO_ROOT / ".codearbiter/tech-stack.md",
-                     REPO_ROOT / "core/surface/skills/commit-gate/SKILL.md"):
-            self.assertNotRegex(path.read_text(encoding="utf-8"), r"playwright install|run test:browser")
+        from project_knowledge import context_text
+        self.assertNotRegex(context_text("tech-stack"), r"playwright install|run test:browser")
+        self.assertNotRegex((REPO_ROOT / "core/surface/skills/commit-gate/SKILL.md").read_text(encoding="utf-8"), r"playwright install|run test:browser")
 
     def test_build_has_no_browser_ffmpeg_or_os_dependency_acquisition(self):
         build = re.sub(r"(?m)\s+#.*$", "", workflow_jobs(
             DOCS_WORKFLOW.read_text(encoding="utf-8"))["build"])
         self.assertNotRegex(build, r"(?i)playwright\s+install|\bffmpeg\b|\bapt(?:-get)?\b")
         self.assertNotRegex(build, r"(?i)\b(?:curl|wget)\b|install-(?:browser|deps)")
-        self.assertEqual(re.findall(r"(?m)^        run: (.+)$", build), [
+        self.assertEqual(self._build_commands(build), [
             "npm ci", "npm run build", "npm run link-audit",
-            "google-chrome --version", "npm run test:browser",
+            "google-chrome --version", "npm run test:components", "npm run test:browser",
         ], "browser validation must consume the runner image without executable downloads")
 
     def test_playwright_configuration_is_inside_the_typecheck_scope(self):
@@ -3589,7 +4835,134 @@ class SiteBrowserPublicationWorkflowTest(unittest.TestCase):
         self.assertEqual(ignored.returncode, 0, ignored.stderr)
 
 
+    def test_release_readback_refuses_event_credential_command_and_consumer_drift(self):
+        jobs = workflow_jobs(DOCS_WORKFLOW.read_text(encoding="utf-8"))
+        self._assert_workflow_authority(jobs)
+        role = self._RELEASE_READBACK
+        for job_id, consumer, prerequisite in (
+            ("site-check", "Generate release applicability", "Audit (CVE gate - fail on HIGH)"),
+            ("build", "Build", "Install deps"),
+        ):
+            job = jobs[job_id]
+            self.assertIn(role + "\n", job)
+            mutations = {
+                "push event": job.replace(role, role.replace("'workflow_run'", "'push'"), 1),
+                "wrong branch": job.replace(role, role.replace("'refs/heads/main'", "'refs/heads/major/state-contracts'"), 1),
+                "extra credential": job.replace(role, role.replace("        run:", "          OTHER_TOKEN: ${{ github.token }}\n        run:"), 1),
+                "different event payload": job.replace(role, role.replace("$GITHUB_EVENT_PATH", "$RUNNER_TEMP/other.json"), 1),
+                "incorrect repository": job.replace(role, role.replace("--repo ..", "--repo ."), 1),
+                "wrong output": job.replace(role, role.replace("/route-publication-observation.json", "/publication.json"), 1),
+                "folded reader changed": job.replace(role, role.replace("run: >-", "run: |"), 1),
+                "reader tolerated failure": job.replace(role, role.replace("        env:", "        continue-on-error: true\n        env:"), 1),
+                "reader omitted": job.replace(role + "\n", "", 1),
+                "reader repeated": job.replace(role + "\n", (role + "\n") * 2, 1),
+                "consumer skipped": job.replace(f"      - name: {consumer}\n",
+                                                 f"      - name: {consumer}\n        if: false\n", 1),
+                "consumer wrong variable": job.replace("CODEARBITER_PUBLICATION_OBSERVATION:", "OBSERVATION:", 1),
+                "reader before prerequisite": job.replace(role + "\n", "", 1).replace(
+                    f"      - name: {prerequisite}\n", role + f"\n      - name: {prerequisite}\n", 1),
+                "different job working directory": job.replace("        working-directory: site\n",
+                                                                "        working-directory: .\n", 1),
+            }
+            for mutation, candidate in mutations.items():
+                with self.subTest(job=job_id, mutation=mutation):
+                    self.assertNotEqual(candidate, job)
+                    with self.assertRaises(AssertionError):
+                        self._assert_workflow_authority({**jobs, job_id: candidate})
+
+    def test_program_roles_refuse_unknown_duplicate_token_and_qualified_header_changes(self):
+        workflow = DOCS_WORKFLOW.read_text(encoding="utf-8")
+        build = re.sub(r"(?m)\s+#.*$", "", workflow_jobs(workflow)["build"])
+        role = self._PROGRAM_ROLES["Identify program qualification mode"]
+        emitter = self._PROGRAM_ROLES["Emit Docs qualification report"]
+        mutations = {
+            "widened qualified job skip": build.replace(self._QUALIFIED_BUILD_IF, "    if: true", 1),
+            "second qualified job skip": build.replace(self._QUALIFIED_BUILD_IF,
+                self._QUALIFIED_BUILD_IF + "\n" + self._QUALIFIED_BUILD_IF, 1),
+            "wrong mode output": build.replace("program_candidate: ${{ steps.program-mode.outputs.active }}", "program_candidate: false", 1),
+            "duplicate metadata role": build + "\n" + role + "\n",
+            "unknown executable role": build + "\n      - name: New metadata\n        run: curl https://example.invalid\n",
+            "observer selection": build.replace("observe --repo ..", "observe --repo .. --grep one", 1),
+            "changed browser branch": build.replace('if [ "$DOCS_PROGRAM_OBSERVE" = true ]; then', 'if false; then', 1),
+            "changed emitter branch": build.replace("github.event_name == 'push' && contains", "github.event_name != 'push' && contains", 1),
+            "token in browser": build.replace("        id: browser-gate\n",
+                "        id: browser-gate\n        env:\n          GH_TOKEN: ${{ github.token }}\n", 1),
+            "token in source mode": build.replace('run: echo "active=', 'env:\n          GH_TOKEN: ${{ github.token }}\n        run: echo "active=', 1),
+            "changed report upload": build.replace("if: steps.docs-report.outcome == 'success'", "if: always()", 1),
+            "wrong report path": build.replace('path: ${{ runner.temp }}/docs-qualification.json', 'path: site/dist', 1),
+            "folded emitter changed": build.replace(emitter, emitter.replace("        run: >-", "        run: |", 1), 1),
+            "extra setup action": build + "\n      - uses: unreviewed/browser@main\n",
+        }
+        for name, candidate in mutations.items():
+            with self.subTest(mutation=name):
+                self.assertNotEqual(candidate, build)
+                with self.assertRaises(AssertionError):
+                    self._assert_build_control_flow(candidate)
+        for name, candidate in {
+            "write in preparation": workflow.replace("  qualified-pages:\n", "  qualified-pages:\n    permissions:\n      pages: write\n", 1),
+            "qualified deploy wrong event": workflow.replace("  deploy-qualified:\n", "  deploy-qualified:\n    if: github.event_name == 'push'\n", 1),
+            "qualified deploy executable": workflow + "\n      - run: npm run deploy\n",
+        }.items():
+            with self.subTest(mutation=name), self.assertRaises(AssertionError):
+                self._assert_workflow_authority(workflow_jobs(candidate))
+
+
 class ArtifactEngineCIContractTest(unittest.TestCase):
+    def test_native_registry_and_every_owned_suite_edit_select_the_existing_fast_guard(self):
+        # Read only the literal suite registry: importing it could run/build
+        # native code. The oracle here is actual workflow path selection.
+        registry_path = REPO_ROOT / ".github/scripts/test_artifact_conformance.py"
+        declarations = [node for node in ast.parse(registry_path.read_text(encoding="utf-8")).body
+                        if isinstance(node, ast.Assign) and any(isinstance(target, ast.Name)
+                            and target.id == "EXPECTED_SUITES" for target in node.targets)]
+        self.assertEqual(len(declarations), 1)
+        owners = ast.literal_eval(declarations[0].value)
+        self.assertIsInstance(owners, dict)
+        self.assertTrue(owners)
+        subjects = {".github/scripts/test_artifact_conformance.py"}
+        for name in owners:
+            self.assertIsInstance(name, str)
+            self.assertEqual(Path(name).name, name)
+            self.assertTrue(name.startswith("test_") and name.endswith(".py"))
+            subjects.add(".github/scripts/" + name)
+        ci = CI_WORKFLOW.read_text(encoding="utf-8")
+        def check(text):
+            selected = paths_filter(text, "impact")
+            self.assertIn("tools/ci-impact.py", selected)
+            job = workflow_jobs(text)["ci-impact"]
+            self.assertIn("if: needs.changes.outputs.impact == 'true'", job)
+            roles = impact_source_roles(job)
+            self.assertIn("Observe original impact planner contract tests", roles)
+            self.assertIn("-- .github/scripts/test_ci_impact.py", roles["Observe original impact planner contract tests"])
+            missing = [subject for subject in sorted(subjects)
+                       if not any(fnmatch.fnmatchcase(subject, pattern) for pattern in selected)]
+            self.assertEqual(missing, [], "edits skip their existing fast registry guard")
+        check(ci)
+        # Every newly-owned edge matters; removing any one must fail closed.
+        begin = ci.index("            impact:\n")
+        end = ci.index("            codex-resources:\n", begin)
+        original = ci[begin:end]
+        for subject in sorted(subjects):
+            entry = "              - '" + subject + "'\n"
+            self.assertIn(entry, original)
+            mutated = ci[:begin] + original.replace(entry, "", 1) + ci[end:]
+            with self.subTest(missing_input=subject), self.assertRaises(AssertionError): check(mutated)
+
+    def test_retained_recovery_receives_independent_production_context(self):
+        ci = (REPO_ROOT / ".github/workflows/ci.yml").read_text(encoding="utf-8")
+        block = workflow_jobs(ci)["artifact-package-cold"]
+        recovery = block.split("- name: Qualify recovery against the retained exact package cohort", 1)[1]
+        recovery = recovery.split("\n      - ", 1)[0]
+        for argument in (
+            '--trusted-source-commit "${{ github.sha }}"',
+            '--trusted-workflow ".github/workflows/ci.yml"',
+            '--trusted-workflow-run "${{ github.run_id }}"',
+            '--release-package-stage "${{ runner.temp }}/artifact-host-payloads"',
+            '--promotion-receipt-sha256 "${{ needs.artifact-package-assembly.outputs.promotion-receipt-sha256 }}"',
+        ):
+            with self.subTest(argument=argument):
+                self.assertIn(argument, recovery)
+
     """The structured-artifact engine is a required six-platform package gate."""
 
     def test_candidate_suites_have_one_qualified_execution(self):
@@ -3610,9 +4983,20 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
             "test_work_adopt.py", "test_work_github.py",
         }
         self.assertEqual(set(suites), expected)
+        for script, registered in suites.items():
+            with self.subTest(suite=script):
+                suite_tree = ast.parse((REPO_ROOT / ".github/scripts" / script).read_text(encoding="utf-8"))
+                declared = [
+                    method.name
+                    for case in suite_tree.body if isinstance(case, ast.ClassDef)
+                    for method in case.body
+                    if isinstance(method, ast.FunctionDef) and method.name.startswith("test_")
+                ]
+                self.assertEqual(len(declared), len(set(declared)), f"duplicate source test in {script}")
+                self.assertEqual(set(declared), registered, f"stale suite membership in {script}")
         self.assertIn("for script, expected in EXPECTED_SUITES.items():", source)
         self.assertIn("[sys.executable, str(REPO / \".github/scripts\" / script)]", source)
-        self.assertIn("env=environment", source)
+        candidate_suite_invocation_contract(source)
         self.assertIn("ARTIFACT_TEST_INSTALLATION=str(INSTALLATION)", source)
         self.assertIn("self.assertEqual(candidate_identity(), CANDIDATE_IDENTITY)", source)
         for script in expected:
@@ -3777,7 +5161,7 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
             "subprocess.check_output(['go', 'env', 'GOVERSION']",
             'python tools/go_test_parallel.py --module core/artifacts --build-flag=-race',
             'python .github/scripts/test_artifact_native.py',
-            'python tools/build-artifacts.py --output "${{ runner.temp }}/artifact-candidate"',
+            'python tools/build-artifacts.py\n          --output "${{ runner.temp }}/artifact-candidate"\n          --test-observation "${{ runner.temp }}/native-tests.json"',
             'python .github/scripts/run_concurrent_suites.py',
             '.github/scripts/test_artifact_approval_adapter.py',
             '.github/scripts/test_artifact_prerequisite_adapter.py',
@@ -3849,6 +5233,21 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
             'test "$("$resolved_cli" --version)" = "$NPM_CLI_VERSION"', assembly
         )
 
+        for observation_step in (
+            '--installed-package-cohort "${{ runner.temp }}/artifact-release-packages"',
+            '--receipt "${{ runner.temp }}/artifact-installed-package-identity.json"',
+            "name: artifact-installed-package-identity-${{ github.sha }}",
+        ):
+            self.assertIn(observation_step, assembly)
+        self.assertLess(
+            assembly.index("Build and verify the exact-head normal release packages"),
+            assembly.index("Replay installed Claude helper, doctor, and Farm from the verified cohort"),
+        )
+        self.assertLess(
+            assembly.index("Replay installed Claude helper, doctor, and Farm from the verified cohort"),
+            assembly.index("Preserve the installed package identity observation"),
+        )
+
         self.assertIn("artifact-package-cold", jobs)
         cold = jobs["artifact-package-cold"]
         self.assertIn("needs: [changes, artifact-package-assembly]", cold)
@@ -3856,15 +5255,21 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
         # One job per platform; each host runs as its own isolated step with its
         # own receipt artifact, and a failing host never hides the others.
         self.assertNotIn("matrix.host", cold)
+        self.assertIn("Create one isolated receipt directory per host\n"
+                      "        if: ${{ !cancelled() }}\n", cold)
+        cold_hosts = cold.split("Create one isolated receipt directory per host", 1)[1]
         for binding in ('--release-package-stage "${{ runner.temp }}/artifact-host-payloads"',
                         '--cold-package-root "${{ runner.temp }}/artifact-release-packages"',
                         '--cold-platform "${{ matrix.platform }}"',
                         'needs.artifact-package-assembly.outputs.promotion-receipt-sha256'):
-            self.assertEqual(cold.count(binding), 3, binding)
+            self.assertEqual(cold_hosts.count(binding), 3, binding)
         for host in ("claude", "codex", "pi"):
             self.assertEqual(cold.count(f'--cold-host "{host}"'), 1)
-            self.assertEqual(cold.count(f"id: cold_{host}"), 1)
-            self.assertIn(f"if: ${{{{ !cancelled() && steps.cold_{host}.outcome == 'success' }}}}", cold)
+            self.assertEqual(cold.count(f"id: cold_{host}\n"), 1)
+            if host == "claude":
+                self.assertIn("if: ${{ !cancelled() && (steps.cold_claude.outcome == 'success' || steps.cold_claude_observed.outcome == 'success') }}", cold)
+            else:
+                self.assertIn(f"if: ${{{{ !cancelled() && steps.cold_{host}.outcome == 'success' }}}}", cold)
             self.assertIn(f'--cold-receipt "${{{{ runner.temp }}}}/cold-{host}/artifact-package-cold.json"', cold)
             self.assertIn(f"name: artifact-package-cold-${{{{ matrix.platform_token }}}}-{host}-${{{{ github.sha }}}}", cold)
         for runner, platform_name in (
@@ -3905,7 +5310,8 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
         # Every main push must build the cohort release.yml publishes from.
         self.assertIn(
             "artifacts: ${{ steps.filter.outputs.artifacts == 'true' || "
-            "(github.event_name == 'push' && github.ref == 'refs/heads/main') }}",
+            "(github.event_name == 'push' && github.ref == 'refs/heads/main') || "
+            "(github.event_name == 'push' && github.ref == 'refs/heads/major/state-contracts') }}",
             changes,
         )
         self.assertIn(
@@ -3946,6 +5352,7 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
             "site/src/curated/**",
             "tools/build-artifacts.py",
             "tools/test-artifact-mixed-schema.py",
+            "tools/test-artifact-work-old-client.py",
             "tools/build-host-packages.py",
             "tools/install-artifact-payload.py",
             "tools/generate-artifact-types.py",
@@ -3991,6 +5398,7 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
             "tools/create-artifact-examples.py",
             ".github/scripts/test_artifact_conformance.py",
             "tools/test-artifact-mixed-schema.py",
+            "tools/test-artifact-work-old-client.py",
             ".github/requirements/artifact-conformance-py314.lock",
         ):
             result = module.evaluate(real_map, [path], hosts())
@@ -4315,7 +5723,129 @@ class ContextImpactClosureTest(unittest.TestCase):
             self._assert_context_closure(ci, missing_host_edge)
 
 
+class VitestSourceQualificationWiringTest(unittest.TestCase):
+    def test_exact_source_emitter_roles_refuse_predicate_copy_or_widening(self):
+        jobs = workflow_jobs(CI_WORKFLOW.read_text(encoding="utf-8"))
+        for job_id in ("coverage-union-pi", "ca-sandbox-tools"):
+            with self.subTest(job_id=job_id):
+                block = jobs[job_id]
+                predicate, = reviewed_vitest_source_event_guards(block, job_id)
+                self.assertIn("actions: read", block)
+                self.assertIn("contents: read", block)
+                self.assertNotRegex(block, r"(?m)^\s+[A-Za-z-]+: write\s*$")
+                self.assertEqual(block.count("GH_TOKEN: ${{ github.token }}"), 1)
+                emitter = next(step for step in re.split(r"(?m)^      - name: ", block)[1:]
+                    if step.splitlines()[0].startswith("Emit original "))
+                self.assertIn("GH_TOKEN: ${{ github.token }}", emitter)
+                self.assertIn("major_qualification_report.py emit", emitter)
+                self.assertNotIn("continue-on-error:", block)
+                for failure in ("pr", "branch", "upload", "renamed", "copy", "other-job"):
+                    changed = block
+                    if failure == "pr": changed = changed.replace(predicate, predicate.replace("github.event_name == 'push'", "github.event_name != 'merge_group'"))
+                    if failure == "branch": changed = changed.replace(predicate, predicate.replace("refs/heads/major/state-contracts", "refs/heads/untrusted"))
+                    if failure == "upload": changed = changed.replace(predicate, predicate.replace("_source_upload.outcome == 'success'", "_source_upload.outcome != 'skipped'"))
+                    if failure == "renamed": changed = changed.replace("source qualification report\n", "unreviewed source report\n")
+                    if failure == "copy": changed += "      - name: Unrelated step\n        if: " + predicate + "\n        run: echo inert\n"
+                    if failure == "other-job": changed = changed.replace("  " + job_id + ":", "  unreviewed-job:", 1)
+                    with self.subTest(failure=failure), self.assertRaises(ValueError): reviewed_vitest_source_event_guards(changed, job_id)
+
+    def test_original_coverage_and_docker_invocations_remain_once_and_report_after_upload(self):
+        jobs = workflow_jobs(CI_WORKFLOW.read_text(encoding="utf-8"))
+        pi, sandbox = jobs["coverage-union-pi"], jobs["ca-sandbox-tools"]
+        def step(block, name):
+            matches = [part for part in re.split(r"(?m)^      - name: ", block)[1:] if part.splitlines()[0] == name]
+            self.assertEqual(len(matches), 1, name)
+            return matches[0]
+        original = step(pi, "Coverage (blob)")
+        observed = step(pi, "Observe original Pi coverage invocation")
+        self.assertIn("if: matrix.os != 'windows-latest'", original)
+        self.assertIn("if: matrix.os == 'windows-latest'", observed)
+        self.assertEqual(original.count("npx vitest run --coverage --reporter=blob --reporter=default"), 1)
+        self.assertIn("-- npx vitest run --coverage --reporter=blob --reporter=default", observed)
+        self.assertIn("--outputFile.blob=coverage-inputs/${{ matrix.os }}.json", observed)
+        self.assertIn("--execution-cwd plugins/ca-pi/tools", observed)
+        self.assertIn("coverage_union.py prepare --check", step(pi, "Recheck coverage inputs after execution"))
+        self.assertLess(pi.index("name: Recheck coverage inputs after execution"), pi.index("name: Upload Pi source-test inputs"))
+        self.assertEqual(sandbox.count("-- npm test -- --reporter=default --reporter=github-actions --reporter=json"), 1)
+        body = step(sandbox, "Test (Docker required - a missing daemon fails the run)")
+        self.assertIn("--execution-cwd plugins/ca-sandbox/tools", body)
+        self.assertIn('--outputFile.json="$RUNNER_TEMP/ca-sandbox-vitest.json"', body)
+        self.assertIn('CA_SANDBOX_REQUIRE_DOCKER: "1"', sandbox)
+        self.assertIn("docker info --format", step(sandbox, "Docker preflight (REQUIRED prerequisite - fail, never skip)"))
+        self.assertIn("check_sandbox_docker_layers.py --sentinel", step(sandbox, "Assert every real-container layer executed"))
+        self.assertIn("docker pull node:20-slim@sha256:", step(sandbox, "Acquire the existing reviewed Sandbox image"))
+        self.assertIn("path: ${{ runner.temp }}/ca-sandbox-vitest.json", step(sandbox, "Preserve original Sandbox named test results"))
+        for block, title, key in ((pi, "Pi", "pi"), (sandbox, "Sandbox", "sandbox")):
+            upload = step(block, "Upload " + title + " source-test inputs")
+            self.assertIn("actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9", upload)
+            self.assertIn("include-hidden-files: true", upload)
+            self.assertIn("overwrite: false", upload)
+            self.assertLess(block.index("name: Upload " + title + " source-test inputs"), block.index("name: Emit original " + title + " source qualification report"))
+            self.assertIn("if: steps." + key + "_qualification_emit.outcome == 'success'", step(block, "Upload major qualification report"))
+
+    def test_only_four_exact_software_cells_are_added_to_original_assertion_routes(self):
+        root = CI_WORKFLOW.parents[2]
+        selections = json.loads((root / ".github/major-test-selections.json").read_text(encoding="utf-8"))
+        policy = json.loads((root / ".github/major-qualification-policy.json").read_text(encoding="utf-8"))
+        groups = [g for g in selections["groups"] if g["id"].startswith(("software-pi-disposable-home-", "software-sandbox-valid-dispatch-and-interrupt"))]
+        expected = {"disposition:transitions:pi-qualification:disposable-home:" + n for n in ("01", "02", "03")} | {"disposition:transitions:S54:01"}
+        self.assertEqual(len(groups), 4)
+        self.assertEqual({cell for group in groups for cell in group["cells"]}, expected)
+        for group in groups:
+            self.assertEqual(group["proof_kind"], "source-test")
+            self.assertTrue(group["selectors"])
+            self.assertTrue(all(selector.startswith("vitest:plugins/") for selector in group["selectors"]))
+            self.assertTrue(all(policy["cell_job_bindings"][cell] == group["job"] for cell in group["cells"]))
+            if group["id"].startswith("software-pi"):
+                self.assertEqual(group["job"], "Coverage union (Pi)  <os: windows-latest>")
+                self.assertEqual(group["payload_name"], "major-source-inputs-pi-windows-coverage")
+                self.assertTrue(any("setup failure and exit boundaries" in name for name in group["selectors"]))
+            else:
+                self.assertEqual(group["job"], "[CHECK] | [SBX ] | Sandbox driver contract")
+                self.assertEqual(group["payload_name"], "major-source-inputs-sandbox-driver")
+                self.assertEqual(set(group["selectors"]), {'vitest:plugins/ca-sandbox/tools/cli.test.ts:runCli — dispatch to modules (AC-01/09/10/11) dispatches exec -> await handlers.exec(id, argv) and returns the inner exitCode (AC-09)', 'vitest:plugins/ca-sandbox/tools/cli.test.ts:runCli — dispatch to modules (AC-01/09/10/11) dispatches cp -> await handlers.cp(id, containerPath, hostDest) (AC-10)', 'vitest:plugins/ca-sandbox/tools/cli.test.ts:runCli — dispatch to modules (AC-01/09/10/11) dispatches destroy -> await handlers.destroy(id, {keepVolume}) (AC-11)', 'vitest:plugins/ca-sandbox/tools/cli.test.ts:runCli — dispatch to modules (AC-01/09/10/11) dispatches prune -> await handlers.prune() (AC-11)', 'vitest:plugins/ca-sandbox/tools/cli.test.ts:runCli — dispatch to modules (AC-01/09/10/11) returns a non-zero code and does NOT throw on an unknown flag', 'vitest:plugins/ca-sandbox/tools/cli.test.ts:runCli — dispatch to modules (AC-01/09/10/11) dispatches shell -> await handlers.shell(id, shell) and returns its code', 'vitest:plugins/ca-sandbox/tools/cli.test.ts:runCli — dispatch to modules (AC-01/09/10/11) dispatches create -> await handlers.create(url, {netPolicy, keepVolume})', 'vitest:plugins/ca-sandbox/tools/cli.test.ts:CLI direct-entry signal wiring installs SIGINT before one valid dispatch and forwards cancellation through the original entry'})
+
+
 class NativeQualificationTimeBudgetTest(unittest.TestCase):
+    def test_publication_reports_are_trusted_main_only_and_read_only(self):
+        jobs = workflow_jobs(CI_WORKFLOW.read_text(encoding="utf-8"))
+        native = jobs['artifact-native-build']
+        emit = native.split('- name: Emit named major qualification report', 1)[1].split('- name:', 1)[0]
+        self.assertIn("github.event_name == 'push'", emit)
+        self.assertIn("github.ref == 'refs/heads/main'", emit)
+        self.assertIn("matrix.expected_platform == 'windows/amd64'", emit)
+        self.assertIn('GH_TOKEN: ${{ github.token }}', emit)
+        self.assertIn('major_qualification_report.py emit', emit)
+        self.assertNotIn('continue-on-error:', native)
+        producer = jobs['major-readiness-producer']
+        self.assertIn('name: major readiness producer', producer)
+        self.assertIn("github.event_name == 'push'", producer)
+        self.assertIn("github.ref == 'refs/heads/main'", producer)
+        self.assertIn('needs: [changes, ci-passed, pi-installed-package]', producer)
+        self.assertIn('actions: read', producer)
+        self.assertIn('contents: read', producer)
+        self.assertNotIn(': write', producer)
+        self.assertIn('major_readiness.py produce', producer)
+        self.assertIn('name: Upload major readiness record', producer)
+        self.assertIn("if: hashFiles('.github/integration-candidate.json') != ''", producer)
+        self.assertIn("if: steps.major-readiness.outcome == 'success'", producer)
+        self.assertIn('major-readiness-${{ github.sha }}', producer)
+        self.assertNotIn('continue-on-error:', producer)
+
+    def test_native_named_outcomes_come_from_the_original_build_run(self):
+        job = workflow_jobs(CI_WORKFLOW.read_text(encoding="utf-8"))["artifact-native-build"]
+        self.assertEqual(job.count("python tools/build-artifacts.py"), 1)
+        self.assertIn('--test-observation "${{ runner.temp }}/native-tests.json"', job)
+        self.assertIn('major_qualification_report.py admit-go', job)
+        self.assertLess(job.index('ci20_native_binding.py stamp'),
+                        job.index('major_qualification_report.py admit-go'))
+        self.assertLess(job.index('major_qualification_report.py admit-go'),
+                        job.index('name: Share the real tested candidate'))
+        upload = job.split('name: Share the real tested candidate', 1)[1]
+        self.assertIn('${{ runner.temp }}/native-tests.json', upload)
+        self.assertIn('${{ runner.temp }}/native-observation.json', upload)
+        self.assertNotIn('continue-on-error:', job)
+
     def test_complete_native_qualification_retains_bounded_time_for_slow_hosts(self):
         jobs = workflow_jobs(CI_WORKFLOW.read_text(encoding="utf-8"))
         qualifier = jobs["artifact-engine"]
@@ -4392,7 +5922,236 @@ class SuiteEntrypointTest(unittest.TestCase):
         self.assertIsNotNone(self.ENTRY.search('if __name__ == "__main__":\n    unittest.main()\n'))
 
 
+class SdkFooterSourceWorkflowTests(unittest.TestCase):
+    _SOURCE_ROLES = {'Prepare Pi SDK footer source-test inputs': '      - name: Prepare Pi SDK footer source-test '
+                                                 'inputs\n'
+                                                 '        id: pi_sdk_source_prepare\n'
+                                                 '        working-directory: .\n'
+                                                 '        run: >-\n'
+                                                 '          python -B '
+                                                 '.github/scripts/major_qualification_report.py '
+                                                 'prepare-source\n'
+                                                 '          --repo . --source-profile '
+                                                 'pi-sdk-footer-v1\n'
+                                                 '          --job-name "[CHECK] | [PI  ] | '
+                                                 'Host-independent adapter contract"\n'
+                                                 '          --output "${{ runner.temp '
+                                                 '}}/pi-sdk-source-inputs"',
+     'Test release package contract': '      - name: Test release package contract\n'
+                                      '        id: pi_sdk_observed\n'
+                                      '        working-directory: .\n'
+                                      '        run: >-\n'
+                                      '          python -B '
+                                      '.github/scripts/major_qualification_report.py observe-python\n'
+                                      '          --repo . --source-profile pi-sdk-footer-v1\n'
+                                      '          --source-payload "${{ runner.temp '
+                                      '}}/pi-sdk-source-inputs"\n'
+                                      '          --output "${{ runner.temp '
+                                      '}}/pi-sdk-python-observation.json"\n'
+                                      '          -- .github/scripts/test_pi_package.py',
+     'Upload Pi SDK footer source-test inputs': '      - name: Upload Pi SDK footer source-test '
+                                                'inputs\n'
+                                                '        id: pi_sdk_source_upload\n'
+                                                '        if: ${{ !cancelled() && (success() || '
+                                                'failure()) && steps.pi_sdk_source_prepare.outcome == '
+                                                "'success' }}\n"
+                                                '        uses: '
+                                                'actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9\n'
+                                                '        with:\n'
+                                                '          name: major-source-inputs-pi-sdk-footer\n'
+                                                '          path: ${{ runner.temp '
+                                                '}}/pi-sdk-source-inputs/\n'
+                                                '          if-no-files-found: error\n'
+                                                '          retention-days: 14\n'
+                                                '          include-hidden-files: true\n'
+                                                '          overwrite: false',
+     'Emit original Pi SDK footer source qualification report': '      - name: Emit original Pi SDK '
+                                                                'footer source qualification report\n'
+                                                                '        id: pi_sdk_emit\n'
+                                                                '        if: ${{ !cancelled() && '
+                                                                "github.event_name == 'push' && "
+                                                                "(github.ref == 'refs/heads/main' || "
+                                                                'github.ref == '
+                                                                "'refs/heads/major/state-contracts') "
+                                                                '&& '
+                                                                "hashFiles('.github/integration-candidate.json') "
+                                                                "!= '' && "
+                                                                'steps.pi_sdk_observed.outcome == '
+                                                                "'success' && "
+                                                                'steps.pi_sdk_source_upload.outcome == '
+                                                                "'success' }}\n"
+                                                                '        working-directory: ${{ '
+                                                                'github.workspace }}\n'
+                                                                '        shell: bash\n'
+                                                                '        env:\n'
+                                                                '          GH_TOKEN: ${{ github.token '
+                                                                '}}\n'
+                                                                '        run: |\n'
+                                                                '          python -B '
+                                                                '.github/scripts/major_qualification_report.py '
+                                                                'emit \\\n'
+                                                                '            --repo . --output '
+                                                                '"$RUNNER_TEMP/qualification.json" '
+                                                                '\\\n'
+                                                                '            --job-name "[CHECK] | '
+                                                                '[PI  ] | Host-independent adapter '
+                                                                'contract" \\\n'
+                                                                '            --observation '
+                                                                '"pi-sdk-footer=$RUNNER_TEMP/pi-sdk-python-observation.json" '
+                                                                '\\\n'
+                                                                '            --payload-root '
+                                                                '"major-source-inputs-pi-sdk-footer=${{ '
+                                                                'github.workspace }}"\n'
+                                                                "          python -c 'import json,os; "
+                                                                'from pathlib import Path; '
+                                                                'r=json.loads((Path(os.environ["RUNNER_TEMP"])/"qualification.json").read_text(encoding="utf-8")); '
+                                                                'j=r["job_id"]; assert type(j) is int '
+                                                                'and j>0; '
+                                                                'f=open(os.environ["GITHUB_OUTPUT"],"a",encoding="utf-8"); '
+                                                                'print("artifact_name=major-qualification-"+str(j),file=f); '
+                                                                "f.close()'",
+     'Upload major qualification report': '      - name: Upload major qualification report\n'
+                                          "        if: steps.pi_sdk_emit.outcome == 'success'\n"
+                                          '        uses: '
+                                          'actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9\n'
+                                          '        with:\n'
+                                          '          name: ${{ steps.pi_sdk_emit.outputs.artifact_name '
+                                          '}}\n'
+                                          '          path: ${{ runner.temp '
+                                          '}}/qualification.json\n'
+                                          '          if-no-files-found: error\n'
+                                          '          retention-days: 14\n'
+                                          '          include-hidden-files: false\n'
+                                          '          overwrite: false'}
+
+    def assert_sdk_route(self,ci):
+        jobs=workflow_jobs(ci);job=jobs["ca-pi-checks"]
+        from test_hook_ci_partition import step_blocks
+        self.assertEqual(re.findall(r"(?m)^    if: ([^\n]+)$", job),
+                         ["needs.changes.outputs.ca-pi == 'true'"])
+        self.assertNotRegex(job, r"(?m)^    continue-on-error:")
+        self.assertEqual(re.findall(r"(?m)^    permissions:\n(?:      [^\n]+\n)+", job),
+                         ["    permissions:\n      contents: read\n      actions: read\n"])
+        self.assertNotIn("secrets.", job)
+        selected = step_blocks(job)
+        positions = []
+        for name, expected in self._SOURCE_ROLES.items():
+            found = [(i, step) for i, step in enumerate(selected)
+                     if step.startswith("      - name: " + name + "\n")]
+            self.assertEqual(len(found), 1, "SDK source role missing or repeated")
+            index, step = found[0]
+            self.assertEqual(re.sub(r"(?m)\s+#.*$", "", step).rstrip(), expected,
+                             "SDK source role changed or gained authority")
+            positions.append(index)
+        self.assertEqual(positions, sorted(positions), "SDK source roles are out of order")
+        self.assertIn('name: "[CHECK] | [PI  ] | Host-independent adapter contract"',job)
+        self.assertIn('runs-on: ubuntu-latest',job)
+        self.assertIn('      contents: read\n      actions: read',job)
+        self.assertNotIn('strategy:',job)
+        self.assertEqual(job.count('pi_host_locks.py install --version'),1)
+        suite=re.search(r'(?ms)^      - name: Test release package contract\n(?P<body>.*?)(?=^      - |\Z)',job)
+        self.assertIsNotNone(suite)
+        body=suite.group('body')
+        self.assertNotIn('if:',body);self.assertNotIn('continue-on-error',body)
+        self.assertNotIn('||',body);self.assertNotIn('--rpc-commands',body)
+        self.assertNotIn('--platform-partition',body)
+        self.assertIn('working-directory: .',body)
+        self.assertIn('run: >-',body)
+        command=' '.join(line.strip() for line in body.split('run: >-',1)[1].splitlines() if line.strip())
+        self.assertEqual(command,'python -B .github/scripts/major_qualification_report.py observe-python '
+          '--repo . --source-profile pi-sdk-footer-v1 '
+          '--source-payload "${{ runner.temp }}/pi-sdk-source-inputs" '
+          '--output "${{ runner.temp }}/pi-sdk-python-observation.json" -- .github/scripts/test_pi_package.py')
+        self.assertEqual(job.count('-- .github/scripts/test_pi_package.py'),1)
+        self.assertNotIn('run: python .github/scripts/test_pi_package.py\n',job)
+        prepare=job.index('name: Prepare Pi SDK footer source-test inputs')
+        execute=job.index('name: Test release package contract')
+        upload=job.index('name: Upload Pi SDK footer source-test inputs')
+        emit=job.index('name: Emit original Pi SDK footer source qualification report')
+        self.assertLess(prepare,execute);self.assertLess(execute,upload);self.assertLess(upload,emit)
+        self.assertIn("steps.pi_sdk_source_prepare.outcome == 'success'",job[upload:emit])
+        self.assertIn('actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9',job[upload:emit])
+        self.assertIn('include-hidden-files: true',job[upload:emit]);self.assertIn('overwrite: false',job[upload:emit])
+        emitter=job[emit:]
+        for token in ("github.event_name == 'push'","github.ref == 'refs/heads/main'",
+                      "github.ref == 'refs/heads/major/state-contracts'","hashFiles('.github/integration-candidate.json') != ''",
+                      "steps.pi_sdk_observed.outcome == 'success'","steps.pi_sdk_source_upload.outcome == 'success'"):
+            self.assertIn(token,emitter)
+        self.assertEqual(job.count('GH_TOKEN:'),1);self.assertNotIn('GH_TOKEN:',job[:emit])
+        self.assertIn('GH_TOKEN: ${{ github.token }}',emitter)
+        self.assertIn('run: python .github/scripts/test_pi_package.py --rpc-commands',jobs['ca-pi-tools'])
+        self.assertIn('--pi-version ${{ matrix.pi-version }}',jobs['ca-pi-tools'])
+
+    def test_sdk_footer_preserves_original_suite_once_and_closed_owner_event_roles(self):
+        ci=CI_WORKFLOW.read_text(encoding='utf-8');self.assert_sdk_route(ci)
+        mutations=[
+            ('observe-python','observe-vitest'),
+            ('-- .github/scripts/test_pi_package.py','-- .github/scripts/test_pi_package.py --rpc-commands'),
+            ('-- .github/scripts/test_pi_package.py','-- .github/scripts/test_pi_package.py || true'),
+            ('-- .github/scripts/test_pi_package.py','-- .github/scripts/test_pi_package.py\n          python .github/scripts/test_pi_package.py'),
+            ('      - name: Test release package contract\n','      - name: Test release package contract\n        if: false\n'),
+            ('      - name: Test release package contract\n','      - name: Test release package contract\n        continue-on-error: true\n'),
+            ('-- .github/scripts/test_pi_package.py','-- .github/scripts/not-the-owner.py'),
+            ('name: Prepare Pi SDK footer source-test inputs','name: Missing source preparation'),
+            ('name: Upload Pi SDK footer source-test inputs','name: Unknown uploader'),
+            ('name: Emit original Pi SDK footer source qualification report','name: Unknown emitter'),
+        ]
+        # Mutate only the owning job, leaving coincident predicates in other jobs irrelevant.
+        start=ci.index('  ca-pi-checks:\n');end=ci.index('  ca-pi-tools:\n',start)
+        for before,after in mutations:
+            job=ci[start:end];self.assertIn(before,job)
+            broken=ci[:start]+job.replace(before,after,1)+ci[end:]
+            with self.subTest(mutation=before),self.assertRaises((AssertionError,ValueError)):
+                self.assert_sdk_route(broken)
+        for before,after in (("github.event_name == 'push'","github.event_name == 'pull_request'"),
+                             ('GH_TOKEN: ${{ github.token }}','OTHER_TOKEN: ${{ github.token }}')):
+            job=ci[start:end];broken=ci[:start]+job.replace(before,after,1)+ci[end:]
+            with self.subTest(mutation=before),self.assertRaises(AssertionError):self.assert_sdk_route(broken)
+
+
+    def test_sdk_report_merge_group_exemption_requires_exact_original_role(self):
+        ci = CI_WORKFLOW.read_text(encoding="utf-8")
+        job = workflow_jobs(ci)["ca-pi-checks"]
+        expected = reviewed_sdk_source_event_guards(ci, job)
+        self.assertEqual(len(expected), 1)
+        predicate = next(iter(expected))
+        mutations = {
+            "duplicate emitter": job.replace(self._SOURCE_ROLES["Emit original Pi SDK footer source qualification report"],
+                self._SOURCE_ROLES["Emit original Pi SDK footer source qualification report"] + "\n" + self._SOURCE_ROLES["Emit original Pi SDK footer source qualification report"], 1),
+            "original suite conditional": job.replace("        id: pi_sdk_observed\n", "        id: pi_sdk_observed\n        if: " + predicate + "\n", 1),
+            "emitter always": job.replace(predicate, "always()", 1),
+            "emitter predicate copied to other step": job + "\n      - name: Unknown evidence\n        if: " + predicate + "\n        run: echo skipped-verdict\n",
+            "source uploader failed accepted": job.replace("steps.pi_sdk_source_upload.outcome == 'success'", "steps.pi_sdk_source_upload.outcome != 'success'", 1),
+            "wrong source upload path": job.replace("path: ${{ runner.temp }}/pi-sdk-source-inputs/", "path: ${{ runner.temp }}/other/", 1),
+            "wrong source artifact": job.replace("name: major-source-inputs-pi-sdk-footer", "name: unrelated-inputs", 1),
+            "source upload overwrite": job.replace("overwrite: false", "overwrite: true", 1),
+            "job suppression": job.replace("  ca-pi-checks:\n", "  ca-pi-checks:\n    continue-on-error: true\n", 1),
+            "job write permission": job.replace("      contents: read\n", "      contents: write\n", 1),
+            "job path-scope changed": job.replace("    if: needs.changes.outputs.ca-pi == 'true'", "    if: true", 1),
+        }
+        for name, broken_job in mutations.items():
+            with self.subTest(mutation=name):
+                self.assertNotEqual(broken_job, job)
+                broken = ci.replace(job, broken_job, 1)
+                with self.assertRaises((AssertionError, ValueError)):
+                    reviewed_sdk_source_event_guards(broken, broken_job)
+        with self.assertRaises(ValueError):
+            reviewed_sdk_source_event_guards(ci, workflow_jobs(ci)["ca-pi-tools"])
+        # A copied producer predicate never exempts a different enforced job.
+        other = workflow_jobs(ci)["version-bump"]
+        changed = other + "\n      - name: Unknown SDK exception\n        if: " + predicate + "\n        run: echo skipped-verdict\n"
+        broken = ci.replace(other, changed, 1)
+        with mock.patch.object(sys.modules[__name__], "CI_WORKFLOW") as workflow:
+            workflow.read_text.return_value = broken
+            with self.assertRaises(AssertionError):
+                WorkflowContractTest("test_every_enforced_job_is_reachable_and_correctly_based_in_a_merge_group").test_every_enforced_job_is_reachable_and_correctly_based_in_a_merge_group()
+
+
+
 if __name__ == "__main__":
     if len(sys.argv) == 3 and sys.argv[1] == "--run-debug-suite":
+        if os.environ.get("MAJOR_DEBUG_SOURCE_PROFILE"):
+            from major_qualification_report import observe_original_debug_suite
+            raise SystemExit(observe_original_debug_suite(REPO_ROOT, sys.argv, run_debug_suite))
         raise SystemExit(run_debug_suite(Path(sys.argv[2])))
     unittest.main()

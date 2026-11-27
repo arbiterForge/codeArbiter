@@ -1,0 +1,447 @@
+{
+  "schema": "codearbiter-lane-evidence/1",
+  "owner": "release-and-integration",
+  "source_base": "97e1ecac795138cacb83a9d5e81c39d4c234867a",
+  "branch": "codex/program-release-state-contracts",
+  "status": "IMPLEMENTED_UNQUALIFIED",
+  "tasks": {
+    "R-01": "implementation and focused tests passed",
+    "R-02": "implementation and focused tests passed",
+    "R-03": "required pre-tag source/tests implemented; G-01 ADR successor pending",
+    "R-04": "implementation and 29 route observation tests passed; read-only public observation preserves draft-hidden unknown",
+    "R-05": "both rule-only path selection and deploy authority tests passed",
+    "R-06": "typed verdict and absent/invalid source tests passed",
+    "R-07": "deadline/tree tests passed; diagnostic duplication regression RED then GREEN",
+    "R-08": "reassigned to site owner, remains required",
+    "Q-02": "producer/verifier/composite barrier and 33 focused tests implemented; independent narrow security rereview passed; CI producer wiring/qualification jobs and exact main qualification pending"
+  },
+  "checks": [
+    {
+      "command": "python -B .github/scripts/test_major_readiness.py",
+      "result": "PASSED",
+      "tests": 33,
+      "skips": 0
+    },
+    {
+      "command": "python -B .github/scripts/test_release_workflow.py",
+      "result": "PASSED",
+      "tests": 45,
+      "skips": 0
+    },
+    {
+      "command": "python -B .github/scripts/test_auto_release_candidate.py",
+      "result": "PASSED",
+      "tests": 12,
+      "skips": 0
+    },
+    {
+      "command": "python -B .github/scripts/test_boundedproc.py",
+      "result": "PASSED",
+      "tests": 16,
+      "skips": 0
+    },
+    {
+      "command": "python -B .github/scripts/test_release_trace.py",
+      "result": "PASSED",
+      "tests": 29,
+      "skips": 1
+    },
+    {
+      "command": "python -B .github/scripts/test_release_target.py",
+      "result": "PASSED",
+      "tests": 42,
+      "skips": 0
+    },
+    {
+      "command": "python -B .github/scripts/test_verdictlib.py",
+      "result": "PASSED",
+      "tests": 13,
+      "skips": 0
+    },
+    {
+      "command": "python -B .github/scripts/test_tag_immutability.py",
+      "result": "PASSED",
+      "tests": 74,
+      "skips": 0
+    },
+    {
+      "command": "python -B .github/scripts/test_payload_version_gate.py",
+      "result": "PASSED",
+      "tests": 36,
+      "skips": 0
+    },
+    {
+      "command": "python -B .github/scripts/test_command_route_release_state.py",
+      "result": "PASSED",
+      "tests": 29,
+      "skips": 0,
+      "seconds": 75.279
+    },
+    {
+      "command": "python -B .github/scripts/test_codex_release_identity.py",
+      "result": "PASSED",
+      "tests": 7,
+      "skips": 0
+    },
+    {
+      "command": "python -B .github/scripts/test_check_codex_host.py",
+      "result": "PASSED",
+      "tests": 17,
+      "skips": 0
+    },
+    {
+      "command": "python -B .github/scripts/test_pi_benchmark.py",
+      "result": "PASSED",
+      "tests": 11,
+      "skips": 0
+    }
+  ],
+  "additional_checks": [
+    {
+      "command": "python -B .github/scripts/test_marketplace_git_channels.py",
+      "result": "PASSED",
+      "tests": 16
+    },
+    {
+      "command": "python -B .github/scripts/test_ci_impact.py WorkflowContractTest.test_docs_pull_request_selection_covers_every_push_input WorkflowContractTest.test_docs_validation_triggers_never_grant_deploy",
+      "result": "PASSED",
+      "tests": 2
+    },
+    {
+      "command": "git diff --check",
+      "result": "PASSED"
+    }
+  ],
+  "verification_kind": "caller_reported; exact source bytes listed below; no installed/publication qualification claimed",
+  "source_sha256": {
+    ".codearbiter/.provenance/security-controls.json": "663b38dacebf5a2f9f47ff1ebe0395e0b1a9d1189d685543f215e984fd9e74d4",
+    ".github/MAJOR-READINESS.md": "dd000fcbdcd8a8a1105200924e6ef46b2464f76b97327e215753367e1b5db6e6",
+    ".github/actions/publish-target/action.yml": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+    ".github/major-qualification-policy.json": "9a2944943311a002f8752a32d0775390c9e8543766bae3d2de39033256e0abcb",
+    ".github/scripts/_boundedproc.py": "48044ee2899b320e44da21544a9e155c6a9338dd1c2075506586fb872bc78309",
+    ".github/scripts/_verdictlib.py": "79963873a258965e244fe907055e6fe3d7a06b6a90308c0261374b76dc89197b",
+    ".github/scripts/check_auto_release_candidate.py": "b00914befa56089cf633d0327f35e88166bdfcb05b45aff36c1ae4786c9f5d07",
+    ".github/scripts/check_branch_protection.py": "5cb85c08a9810d53d7ed02dbcf8a8762971cf46edd8654477def54ef14e374b2",
+    ".github/scripts/check_codex_host.py": "63ce9fd75af79739681d3fe5c2f28bd56517cd7e7a568da465fd63d80ae8cdb4",
+    ".github/scripts/check_command_route_release_state.py": "fa11c0182190db6f1afad026eb22d0c9b09fed14fc2ae691ef745596fe32d22c",
+    ".github/scripts/check_tag_immutability.py": "862a1b3ef2d0f171172c5e3f11856f96bfc8b234dc7b4c1110c75182d84d4d31",
+    ".github/scripts/major_readiness.py": "4a3a0f3544d6e8361af382edbc8597eaf70303995709f4c6954c680bcd51cbad",
+    ".github/scripts/payload_version_gate.py": "713ab821fedf797cc0be4b2fee335d1c71a18ef6a6104503d4e7388eea9868d5",
+    ".github/scripts/pi_benchmark.py": "12caa1eaf604af286aaf1e5e46583985726926f759cc64f5bcbce161c5c70356",
+    ".github/scripts/release_source.py": "aa37a86177d236a072bb2ba366e2c00ef6296df83bf5a9b367abb56e7532c2d3",
+    ".github/scripts/release_target.py": "1161d997e00605651e80f572b0c66445ada185165793f15bb8ba9a76b5c8fe51",
+    ".github/scripts/test_auto_release_candidate.py": "d99c278faf7729f79c79f76c6a950e8b86b2285839305c92f99b75c0d4e860af",
+    ".github/scripts/test_boundedproc.py": "dde595037ffdc2f7d7c6b83543e8b512b6b9ef948f311f63a40a75db4611a2f6",
+    ".github/scripts/test_ci_impact.py": "6d0f059c034086ee3fc835ab2fb824d531a24845c3dedd6bc292694a3a9a8b14",
+    ".github/scripts/test_command_route_release_state.py": "03ccc17b21ca86de180e4fe6af30cbcd958b9387d3dc82dd8a9de2ae1353ffd3",
+    ".github/scripts/test_major_readiness.py": "9623440e4b34ab1b2f320b4eff5d7f1ca102f5f068d37a7a78371c5452456258",
+    ".github/scripts/test_marketplace_git_channels.py": "dc1c176bc96ba632d67cbd41784f7a4a8fc4fa7dcfdd9a861534b0ecd5e96509",
+    ".github/scripts/test_payload_version_gate.py": "a9b71e3f4125bca4a02462dd889920d6d35c7d5c64920b68e2ed3b32e036b580",
+    ".github/scripts/test_release_target.py": "ec0ddddceb68542143b3bcb6862cade4d5a86981ad007d99b5ca1f50f2adbcac",
+    ".github/scripts/test_release_workflow.py": "20a5ca1f613c2b9b5e54918974762b6cde0eb6321fe6b4310044279466ef45b6",
+    ".github/scripts/test_verdictlib.py": "4e4f8d8691edc357ba4db213e8806ada85d44a2e4ff0967b16da1a6289f163e6",
+    ".github/workflows/ci.yml": "8488233e8ffc164741d9827a8819236ddce5e58ab15d79dd439afb7bf9aeba54",
+    ".github/workflows/docs.yml": "f6efa02aacfc30f89965a64c4bda20b9e198809d5d7f2b5bcd540552abbb7843",
+    ".github/workflows/release.yml": "74b24b50f26f1670c933d99d9e6091f2725fba5d612932ddc1b61ae1dd1ed3cb",
+    "tools/promote-claude-marketplace.py": "1fc71b885b8611e50170060a1c75f09790366170447220e3422af9834d78a15a",
+    "tools/promote-codex-marketplace.py": "62bdf3186f311c8cb7eeee74b7bd2bcb9e8ea36842bfc0cad2f6e17905fd80e8"
+  },
+  "transfer": {
+    "original_worktree": "C:/Users/brenn/projects/codeArbiter-worktrees/msc-release-r01",
+    "baseline": "C:/Users/brenn/AppData/Local/Temp/ca-release-transfer-m98gdohq/baseline.json",
+    "selected_paths": 31,
+    "original_status_index_and_hashes_unchanged": true,
+    "source_and_destination_payload_hashes_match": true
+  },
+  "limits": [
+    "full current integration CI, staged security marker binding and exact main qualification pending; independent full/narrow security source review passed",
+    "one release_trace history-shape case skipped because no matching history example",
+    "R03 ADR successor G-01 pending",
+    "Q02 readiness must refuse until real task/disposition/scenario/platform and artifact evidence completes",
+    "inherited security-controls provenance requires integrator-owned refresh or HTML reconciliation",
+    "No commit, PR, main merge, tag, release, npm or marketplace effect performed"
+  ],
+  "row_coverage": {
+    "kind": "explicit scoped mapping, not blanket ledger completion",
+    "groups": [
+      {
+        "task_ids": [
+          "R-01"
+        ],
+        "row_ids": [
+          "C16:03",
+          "C16:04",
+          "C17:01",
+          "C17:02",
+          "C17:03",
+          "C17:04",
+          "C17:05",
+          "C17:06",
+          "C17:07",
+          "C17:08",
+          "C17:09",
+          "C17:10",
+          "C17:11"
+        ],
+        "checks": [
+          "test_release_target.CompletionModelTests",
+          "test_release_target.ReceiptReadbackTests",
+          "test_release_target.FaultInjectionTests",
+          "test_release_target.CompositionContractTests"
+        ],
+        "scope": "Executed hermetic publication planning/recovery fixtures and action source contracts. No external tag/channel/npm/publication effect executed. C16:04 and C17:10 intentionally change to receipt-only recovery with byte readback.",
+        "coverage_state": "TESTED_SOURCE_FIXTURES"
+      },
+      {
+        "task_ids": [
+          "R-02"
+        ],
+        "row_ids": [
+          "C16:01",
+          "C16:02"
+        ],
+        "checks": [
+          "test_release_workflow.SourceSelectionTest"
+        ],
+        "scope": "Actual pure source/run selection and report rejection fixtures: earlier successful source, off-main, missing/expired bytes, expected-source/run mismatch.",
+        "coverage_state": "TESTED_SOURCE_FIXTURES"
+      },
+      {
+        "task_ids": [
+          "R-03"
+        ],
+        "row_ids": [
+          "C15:01",
+          "C15:02",
+          "C15:03",
+          "C15:04",
+          "C15:05"
+        ],
+        "checks": [
+          "test_auto_release_candidate.CandidateCheckTest",
+          "test_auto_release_candidate.PreTagPolicyTest",
+          "test_release_workflow.AdvisoryCheckTest"
+        ],
+        "scope": "Intent/source fixtures and required pre-tag failure execution plus shared-owner workflow contracts. C15:05 changes advisory to required under user decision. G01 ADR successor and hosted publication remain pending.",
+        "coverage_state": "TESTED_SOURCE_FIXTURES"
+      },
+      {
+        "task_ids": [
+          "R-04"
+        ],
+        "row_ids": [
+          "C32:01",
+          "C32:02",
+          "C32:03",
+          "C32:04",
+          "C32:05",
+          "C32:06",
+          "C32:07"
+        ],
+        "checks": [
+          "test_command_route_release_state.DeclarationTest",
+          "test_command_route_release_state.RecordedObservationTest",
+          "test_command_route_release_state.ObserveIntegrationTest",
+          "test_release_workflow.SourceSelectionTest.test_route_publication_is_observed_after_every_target_settles"
+        ],
+        "scope": "Executed local CLI fixtures and source wiring: draft/tag-only/published/API-unknown/mismatch/idempotent observation; C32:07 now wired after target settlement. No actual publication clock advanced.",
+        "coverage_state": "TESTED_SOURCE_FIXTURES"
+      },
+      {
+        "task_ids": [
+          "R-05"
+        ],
+        "row_ids": [
+          "C29:01",
+          "C29:04"
+        ],
+        "checks": [
+          "test_ci_impact.WorkflowContractTest.test_docs_pull_request_selection_covers_every_push_input",
+          "test_ci_impact.WorkflowContractTest.test_docs_validation_triggers_never_grant_deploy"
+        ],
+        "scope": "Executed declared trigger/deploy predicate checks. Actual build/browser/deploy rows C29:02/03/05 remain Q01/site obligations.",
+        "coverage_state": "TESTED_SOURCE_CONTRACTS"
+      },
+      {
+        "task_ids": [
+          "R-06"
+        ],
+        "row_ids": [
+          "C11:01",
+          "C11:02",
+          "C14:01",
+          "C14:02",
+          "C14:03",
+          "C14:04",
+          "C14:05",
+          "C21:01",
+          "C21:02",
+          "C21:03",
+          "C21:04",
+          "C21:05",
+          "C22:02",
+          "C22:03",
+          "C22:04"
+        ],
+        "checks": [
+          "test_verdictlib.CheckerObservationTest",
+          "test_verdictlib.RequiredAggregationTest",
+          "test_verdictlib.SourceIdentityTest",
+          "test_payload_version_gate",
+          "test_tag_immutability"
+        ],
+        "scope": "Executed hermetic API/version/history fixtures and actual checkout-vs-event identity regression. Does not claim live protection API, new host installation or public tag inventory qualification.",
+        "coverage_state": "TESTED_SOURCE_FIXTURES"
+      },
+      {
+        "task_ids": [
+          "R-07"
+        ],
+        "row_ids": [
+          "C11:04",
+          "C11:05",
+          "C36:02",
+          "C36:03"
+        ],
+        "checks": [
+          "test_boundedproc.ReadinessWaitTest",
+          "test_boundedproc.BoundedRunTest",
+          "test_boundedproc.CodexHostCommandDeadlineTest",
+          "test_boundedproc.PiBenchmarkReadinessDeadlineTest",
+          "test_pi_benchmark"
+        ],
+        "scope": "Actual Windows fake-child/process-tree/deadline tests and controlled verifier command fixtures. New timeout/containment distinctions and duplicate-output regression proven; actual Codex install/Pi runtime benchmark and other OS cells unqualified.",
+        "coverage_state": "PARTIAL_BOUNDARY_TESTED"
+      }
+    ],
+    "machine_ids": [
+      "C01",
+      "C02",
+      "C04",
+      "C11",
+      "C13",
+      "C14",
+      "C15",
+      "C16",
+      "C17",
+      "C18",
+      "C21",
+      "C22",
+      "C23",
+      "C29",
+      "C32",
+      "C36"
+    ],
+    "finding_ids": [
+      "C-F01",
+      "C-F02",
+      "C-F03",
+      "C-F04",
+      "C-F05",
+      "C-F06",
+      "C-F07",
+      "C-F08"
+    ],
+    "remaining_cross_owner_or_unverified_row_ids": [
+      "C01:01",
+      "C01:02",
+      "C01:03",
+      "C01:04",
+      "C01:05",
+      "C02:01",
+      "C02:02",
+      "C02:03",
+      "C02:04",
+      "C04:01",
+      "C04:02",
+      "C04:03",
+      "C04:04",
+      "C04:05",
+      "C04:06",
+      "C04:07",
+      "C11:03",
+      "C11:06",
+      "C11:07",
+      "C11:08",
+      "C13:01",
+      "C13:02",
+      "C13:03",
+      "C13:04",
+      "C16:05",
+      "C16:06",
+      "C18:01",
+      "C18:02",
+      "C18:03",
+      "C18:04",
+      "C18:05",
+      "C18:06",
+      "C18:07",
+      "C18:08",
+      "C18:09",
+      "C22:01",
+      "C23:01",
+      "C23:02",
+      "C23:03",
+      "C23:04",
+      "C29:02",
+      "C29:03",
+      "C29:05",
+      "C36:01",
+      "C36:04",
+      "C36:05",
+      "C36:06"
+    ],
+    "qualification_note": "All executed results refer to recorded dirty source bytes; bind an actual source commit and retained original proof before final readiness. Shared meaningful checks may cover multiple rows, but suite counts alone do not qualify rows."
+  },
+  "review_repairs": {
+    "result": "INDEPENDENT_NARROW_REREVIEW_PASSED",
+    "target_red": [
+      "complete frozen metadata with CONFIRM99 admitted before fix",
+      "PRESERVED rows with absent ffff source admitted before fix",
+      "existing source with unavailable proof admitted before fix",
+      "source_identity falsely used later GITHUB_SHA instead of actual checkout",
+      "report artifact names/JSON job IDs admitted without successful upload step",
+      "later patch version bypassed major readiness while integration marker remained",
+      "receipt-only mismatched version bypassed candidate admission before validation moved ahead of repair exit",
+      "UTF-8 BOM in actual authenticated Actions job log prevented valid upload attribution",
+      "new read-only observer policy regression failed against contents:write job",
+      "public listing wrongly classified a hidden draft as tag-only or planned"
+    ],
+    "changes": [
+      "selected-source native question-entry grammar, digest and unresolved count",
+      "existing ancestor source commits and available digest-bound retained proof/raw evidence with row scope and actual candidate input applicability",
+      "2105 baseline disposition cells plus added transition population in grouped owner reports",
+      "actual checkout commit distinct from event_commit",
+      "exact successful upload step/window/original log finalized artifact ID/name/archive SHA attribution",
+      "strict candidate marker schema and complete target population; every mismatched version refuses before receipt-only repair exit",
+      "UTF-8 BOM tolerant original Actions log decoding with actual read-only upload attribution probe",
+      "route observer contents:read only; explicit actual listing visibility, draft-hidden missing entries are unknown; draft-inclusive fixture evidence retains all declared state distinctions"
+    ],
+    "actual_upload_probe": {
+      "job_id": 131533705882,
+      "artifact_id": 13989861412,
+      "step": "Store impact receipt",
+      "result": "PASSED"
+    },
+    "triage": [
+      "[NEEDS-TRIAGE] startup/status numeric CONFIRM counter counts resolved/explanatory history while native question-entry owner ignores ordinary prose; Q02 aligns native owner without changing counters."
+    ],
+    "marker_retirement_method": {
+      "selected_by": "integration owner instruction; supersedes proposed runtime settlement protocol",
+      "active_barrier": "All candidate-version mismatches refuse while the committed integration marker exists; malformed marker and absent required readiness refuse.",
+      "retirement": "Q-03 authenticates real required-target settlement through existing trusted publisher, original publication receipts and exact readback owners; a separate reviewed integration-owned marker-retirement PR restores ordinary later-patch behavior.",
+      "boundary": "Existing reviewed-source authority, no runtime boolean or new settlement protocol. No marker retirement or publication performed."
+    },
+    "independent_rereview": {
+      "reviewer": "release_security",
+      "result": "PASSED",
+      "checks": "33 readiness and 13 verdict tests; full source policy and bounded marker lifecycle inspected; genuine upload attributed",
+      "actual_upload_probe": {
+        "job_id": 131940717358,
+        "artifact_id": 14046425103,
+        "result": "PASSED"
+      }
+    },
+    "followup_review": "Exact staged auth/crypto review identified observer token scope violation; target regressions RED then GREEN, affected rereview pending."
+  }
+}

@@ -1,0 +1,70 @@
+{
+  "kind": "ONE_ACTUAL_OWNING_WINDOWS_STORE_RUN",
+  "source_epoch": "bb66e3fca9fa0b87b5a983ccd1e930b691f22861 plus exact Root-adopted four-file overlay",
+  "source_fix_delivery": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-journal-overlap-fix-0296fc9a\\delivery.json",
+  "source_fix_delivery_sha256": "944abbf9cc3a9ac0dad1e835c5463569a33b279799ea7491af8d05143bd2c3dd",
+  "actual": {
+    "argv": [
+      "C:/Program Files/Go/bin/go.exe",
+      "test",
+      "-json",
+      "-x",
+      "./internal/store",
+      "-count=1",
+      "-timeout=120s",
+      "-covermode=atomic",
+      "-coverprofile=C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-journal-whole-store-43d06fd1\\coverage.out"
+    ],
+    "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-journal-whole-store-43d06fd1\\candidate\\core\\artifacts",
+    "pid": 64288,
+    "returncode": 0,
+    "duration_seconds": 7.186431800015271,
+    "timed_out": false,
+    "output_limit_exceeded": false,
+    "containment": "exited",
+    "spawn_error_type": null,
+    "reader_errors": [],
+    "stdout_sha256": "52650200377e2f08835421c788178cf9141701b0c004a2c760f974ab6e4c8c34",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_bytes": 442441,
+    "stderr_bytes": 0,
+    "qualification": false
+  },
+  "named_results": "52 parents +151 slash children =203 PASS,0FAIL0SKIP; all supported Windows store tests selected, no -run filter",
+  "scope_of_processes": "Go compiler/vet/link/test process plus explicitly authorized owned store process-death child test binaries; no actual ca-artifact CLI/helper/provider/Node/SDK/runtime-install/conformance/whole-module execution",
+  "vet": "Default vet remained enabled (no -vet flag); actual command/build output retained, not a fabricated separate vet run",
+  "actual_build_trace": {
+    "compile_present": true,
+    "link_present": true,
+    "vet_trace_present": true,
+    "channel": "stdout JSON build-output; stderr retained even if empty"
+  },
+  "atomic_statement_coverage": {
+    "package": {
+      "mode": "mode: atomic",
+      "total_statements": 1140,
+      "covered_statements": 811,
+      "percentage": 71.14035087719299,
+      "profile_sha256": "d0abad1e648c7d3159def04037572c8903358cd555791c6a73015b26994108b1",
+      "kind": "Actual Windows store-package statement coverage only, not branch/line/all-platform coverage."
+    },
+    "changed_helper": {
+      "statements": 12,
+      "covered": 12,
+      "percentage": 100.0
+    }
+  },
+  "preservation": {
+    "root_module": true,
+    "private_module": true,
+    "Go_tools_and_GOROOT_source": true,
+    "original_green_cache": true
+  },
+  "limits": [
+    "Windows/amd64 owning package execution only, not six-platform or host/task/program qualification",
+    "Package coverage71.14035% is actual statement coverage; changed helper100% statement coverage is not branch/line/all-input proof",
+    "Unix-only mode-denial helper was excluded by Windows build tags; no Unix permission or privilege behavior observed",
+    "No native policy/ledger/proof/status mutation or automatic route promotion",
+    "No further runs, source edits, retry or deadline changes"
+  ]
+}

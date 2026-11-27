@@ -1,0 +1,98 @@
+{
+  "schema": "codearbiter.selected-original-vitest-results/1",
+  "representation": "LOSSLESS_SELECTED_ASSERTION_OBJECTS_PARTIAL_REPORT",
+  "original": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-doctor-aggregate-yfb1_rma\\focused-green.json",
+    "sha256": "82108ca7895ba76fc0d6f8aacbd8af70210201ba30fa8599b3394d96cc921fc3",
+    "bytes": 8662,
+    "preserved_in_Temp": true
+  },
+  "actual_source_epoch": "ce3a4a91+Temp doctor test-only overlay; pre-footer-fix source",
+  "original_success": true,
+  "selected_assertion_objects": [
+    {
+      "ancestorTitles": [
+        "Pi structured doctor"
+      ],
+      "fullName": "Pi structured doctor aggregates the terminal doctor verdict without clearing active-dispatch degradation or granting state",
+      "status": "passed",
+      "title": "aggregates the terminal doctor verdict without clearing active-dispatch degradation or granting state",
+      "duration": 5.478800000000035,
+      "failureMessages": [],
+      "meta": {},
+      "tags": []
+    },
+    {
+      "ancestorTitles": [
+        "Pi structured doctor"
+      ],
+      "fullName": "Pi structured doctor reports exact active origins and limits the module-identity claim",
+      "status": "passed",
+      "title": "reports exact active origins and limits the module-identity claim",
+      "duration": 3.019900000000007,
+      "failureMessages": [],
+      "meta": {},
+      "tags": []
+    },
+    {
+      "ancestorTitles": [
+        "Pi structured doctor"
+      ],
+      "fullName": "Pi structured doctor reports enabled global untrusted state without a bridge probe or wrapper self-test",
+      "status": "passed",
+      "title": "reports enabled global untrusted state without a bridge probe or wrapper self-test",
+      "duration": 4.4243000000000166,
+      "failureMessages": [],
+      "meta": {},
+      "tags": []
+    },
+    {
+      "ancestorTitles": [
+        "Pi structured doctor"
+      ],
+      "fullName": "Pi structured doctor wrapper self-test calls only the stored wrapper with the exact H-03 dry-run",
+      "status": "passed",
+      "title": "wrapper self-test calls only the stored wrapper with the exact H-03 dry-run",
+      "duration": 0.18430000000000746,
+      "failureMessages": [],
+      "meta": {},
+      "tags": []
+    },
+    {
+      "ancestorTitles": [
+        "Pi structured doctor"
+      ],
+      "fullName": "Pi structured doctor wrapper self-test is unhealthy if the dry-run executes or lacks an exact H-03 block",
+      "status": "passed",
+      "title": "wrapper self-test is unhealthy if the dry-run executes or lacks an exact H-03 block",
+      "duration": 2.144300000000044,
+      "failureMessages": [],
+      "meta": {},
+      "tags": []
+    },
+    {
+      "ancestorTitles": [
+        "Pi structured doctor"
+      ],
+      "fullName": "Pi structured doctor wrapper self-test skips while dormant without claiming active dispatch",
+      "status": "passed",
+      "title": "wrapper self-test skips while dormant without claiming active dispatch",
+      "duration": 2.112000000000023,
+      "failureMessages": [],
+      "meta": {},
+      "tags": []
+    }
+  ],
+  "selected_counts": {
+    "passed": 6,
+    "failed": 0
+  },
+  "omitted_unselected_count": 22,
+  "omitted_fields": [
+    "unselected assertion objects",
+    "coverageMap if present",
+    "snapshot bookkeeping",
+    "suite wallclock wrapper"
+  ],
+  "limits": "Selected objects exactly equal original JSON semantic values; original raw report remains untouched. Not a lossless projection of omitted report fields or a later-source execution."
+}

@@ -1,0 +1,14 @@
+{
+  "source_commit": "af5f74a6afb0090a378520f7e175a8cb2ea29d39",
+  "inputs_before": {
+    "tools/test_ci20_baseline.py": "4577deac26c8c03891ab678eec8da2534edb863ffc032965c92504806bc3d93b",
+    "tools/ci20_baseline.py": "b02da4a083ff2868b424d043b6d6f707006e5e4768167760cca1f1ce94e4dfb0",
+    "tools/ci20_inventory.py": "60513d5f720f7ccdf1eb63fc92e63d8c3c3adb0dd2dc2dfa6a2773499b1c810a"
+  },
+  "inputs_after": {
+    "tools/test_ci20_baseline.py": "4577deac26c8c03891ab678eec8da2534edb863ffc032965c92504806bc3d93b",
+    "tools/ci20_baseline.py": "b02da4a083ff2868b424d043b6d6f707006e5e4768167760cca1f1ce94e4dfb0",
+    "tools/ci20_inventory.py": "60513d5f720f7ccdf1eb63fc92e63d8c3c3adb0dd2dc2dfa6a2773499b1c810a"
+  },
+  "stable": true
+}

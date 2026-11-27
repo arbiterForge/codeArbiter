@@ -1,0 +1,7 @@
+{
+  "exit_code": 2,
+  "input_bytes": 10665,
+  "input_sha256": "25d9a2e1b3914b2cbd491fad268af0aa27f0731f3624928b43948dcacd8a4069",
+  "stdout_sha256": "4f298f181281f49f7d2d87ffa2a51b84ed30690935c15d5b49b5623a94cf2f5d",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

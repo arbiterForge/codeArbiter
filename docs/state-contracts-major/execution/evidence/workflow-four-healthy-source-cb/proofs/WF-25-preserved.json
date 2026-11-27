@@ -1,0 +1,197 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "/root/acceptance_security_review as source author; no independent self-review or runtime qualification"
+ },
+ "inputs": {
+  ".codearbiter/decisions/0043-assistive-state-engine.md": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+  "core/surface/agents/dependency-reviewer.md": "e04d000271bd9755bf23f7b952d40008362e227de751bb259f2550952095ea5d",
+  "core/surface/commands/add-dep.md": "9e493bd79070012801b84a46176262808d443d883ecd852c8783efb2b0812045",
+  "core/surface/commands/chore.md": "85f0c06c9070f72b0bc33d819ae3acf72af8e7142f043cdd0438d48d99a11e31",
+  "core/surface/includes/reviewer-contract.md": "f46a62e021ae1beff049f2122d20b2886cfa5f51261f801f709c5b1d88040032",
+  "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e"
+ },
+ "disposition_ids": [
+  "disposition:machines:WF-25",
+  "disposition:transitions:WF-25:01",
+  "disposition:transitions:WF-25:02",
+  "disposition:transitions:WF-25:03",
+  "disposition:transitions:WF-25:04"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/workflow-four-healthy-source-cb/source-bindings.json",
+   "sha256": "f626283d1d1932962a94cde87936799776cecf5b877bc07ac8a6708384f13a68"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/workflow-four-healthy-source-cb/clause-inspection.json",
+   "sha256": "5c621baecd5fe9e412e848d439014de399b4615807914ef2f809dd97c73c61e1"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/workflow-four-healthy-source-cb/owner-baseline-current.diff",
+   "sha256": "f110caf5b33b12ea165fe8cd831a8c891276aacb674699f73baa0a6b46193dca"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:WF-25",
+   "frozen_row_sha256": "9325ee02c755aeab1b022238362cfa67590c1d12412dc54effa0396614197fb8",
+   "clause_ids": [
+    "disposition:transitions:WF-25:01",
+    "disposition:transitions:WF-25:02",
+    "disposition:transitions:WF-25:03",
+    "disposition:transitions:WF-25:04"
+   ],
+   "witnesses": [
+    {
+     "path": "core/surface/commands/add-dep.md",
+     "start": 8,
+     "end": 29,
+     "file_sha256": "9e493bd79070012801b84a46176262808d443d883ecd852c8783efb2b0812045",
+     "span_sha256": "eab12ae01220f047c8621bec55b330402229c5f30eb600677e2156c8edc4826e"
+    },
+    {
+     "path": "core/surface/agents/dependency-reviewer.md",
+     "start": 19,
+     "end": 76,
+     "file_sha256": "e04d000271bd9755bf23f7b952d40008362e227de751bb259f2550952095ea5d",
+     "span_sha256": "201834fa749643e0de80b20c15b8558594d617c20add2bf8e3ba22e7ff20f0c3"
+    },
+    {
+     "path": "core/surface/commands/add-dep.md",
+     "start": 15,
+     "end": 35,
+     "file_sha256": "9e493bd79070012801b84a46176262808d443d883ecd852c8783efb2b0812045",
+     "span_sha256": "9dc5d9c85b5ccd2b179b4946c188293b4dea484eaae4a2b3dfabe544376e3b8e"
+    },
+    {
+     "path": "core/surface/includes/reviewer-contract.md",
+     "start": 33,
+     "end": 38,
+     "file_sha256": "f46a62e021ae1beff049f2122d20b2886cfa5f51261f801f709c5b1d88040032",
+     "span_sha256": "e7160d5487ff26a56852e7f5b43be459fac3fb02a5401bc830bfd2e8f81c4c06"
+    },
+    {
+     "path": "core/surface/commands/chore.md",
+     "start": 25,
+     "end": 37,
+     "file_sha256": "85f0c06c9070f72b0bc33d819ae3acf72af8e7142f043cdd0438d48d99a11e31",
+     "span_sha256": "0b0d5b6621322b508ef4f0ed704eecf5eb1f1d70726a56a35a67b6f0c4e1a86e"
+    },
+    {
+     "path": "core/surface/commands/chore.md",
+     "start": 49,
+     "end": 55,
+     "file_sha256": "85f0c06c9070f72b0bc33d819ae3acf72af8e7142f043cdd0438d48d99a11e31",
+     "span_sha256": "a7051e9c1832e03a31e0d3bb4527be59e4f9f304adb7c8dae6d773ab9dd2801e"
+    },
+    {
+     "path": "core/surface/commands/add-dep.md",
+     "start": 38,
+     "end": 95,
+     "file_sha256": "9e493bd79070012801b84a46176262808d443d883ecd852c8783efb2b0812045",
+     "span_sha256": "91b36879a605fbbb8cc474edfb4d494c74f0ac5ad0d9b2ab1db3725ccb5fc2ca"
+    }
+   ],
+   "semantic_assessment": "All literal clauses assessed against exact pinned/current owners and named accepted scopes; guidance/source conformance only, not execution.",
+   "limits": "Reasoned source-only assessment. No workflow/test/runtime/API/network/provider/model/install/dispatch/native build executed for source conformance. Separately authorized private statusline regression/fix evidence is referenced distinctly, not a qualification of cb76 source."
+  },
+  {
+   "cell": "disposition:transitions:WF-25:01",
+   "frozen_row_sha256": "840d8960e9db83b91cad92b5b7b9512f53fed43ece6c895ae791ba9503c7cccf",
+   "witnesses": [
+    {
+     "path": "core/surface/commands/add-dep.md",
+     "start": 8,
+     "end": 29,
+     "file_sha256": "9e493bd79070012801b84a46176262808d443d883ecd852c8783efb2b0812045",
+     "span_sha256": "eab12ae01220f047c8621bec55b330402229c5f30eb600677e2156c8edc4826e"
+    },
+    {
+     "path": "core/surface/agents/dependency-reviewer.md",
+     "start": 19,
+     "end": 76,
+     "file_sha256": "e04d000271bd9755bf23f7b952d40008362e227de751bb259f2550952095ea5d",
+     "span_sha256": "201834fa749643e0de80b20c15b8558594d617c20add2bf8e3ba22e7ff20f0c3"
+    }
+   ],
+   "semantic_assessment": "Read complete selected policy, package version/source and stack/license owner before install; unknown/denied license or unapproved origin blocks adoption. Review license, provenance, maintenance/security and lifecycle scripts without installing. D-HIGH/HW09 now makes maintenance-only MEDIUM, while security HIGH/CRITICAL blocks. This is orchestrator/reviewer guidance, not a universal shell install hook. Reviewer clearance does not itself authorize installation or prove registry/account facts.",
+   "limits": "Reasoned source-only assessment. No workflow/test/runtime/API/network/provider/model/install/dispatch/native build executed for source conformance. Separately authorized private statusline regression/fix evidence is referenced distinctly, not a qualification of cb76 source."
+  },
+  {
+   "cell": "disposition:transitions:WF-25:02",
+   "frozen_row_sha256": "be617dad65b607c892e582cd916d0388c2e99a3b59a88a076ea391f17e561186",
+   "witnesses": [
+    {
+     "path": "core/surface/commands/add-dep.md",
+     "start": 15,
+     "end": 35,
+     "file_sha256": "9e493bd79070012801b84a46176262808d443d883ecd852c8783efb2b0812045",
+     "span_sha256": "9dc5d9c85b5ccd2b179b4946c188293b4dea484eaae4a2b3dfabe544376e3b8e"
+    },
+    {
+     "path": "core/surface/includes/reviewer-contract.md",
+     "start": 33,
+     "end": 38,
+     "file_sha256": "f46a62e021ae1beff049f2122d20b2886cfa5f51261f801f709c5b1d88040032",
+     "span_sha256": "e7160d5487ff26a56852e7f5b43be459fac3fb02a5401bc830bfd2e8f81c4c06"
+    }
+   ],
+   "semantic_assessment": "Actual install request and completed dependency clearance plus original host/security permissions guard the selected install. Surface exact selected install; retain manifest and lock together. Bump-with-code uses feature/fix and dependency review at its original PR owner. Do not re-ask an unchanged authorized action solely for a ritual, but do not infer future install authority from one PASS. No install executed in this proof.",
+   "limits": "Reasoned source-only assessment. No workflow/test/runtime/API/network/provider/model/install/dispatch/native build executed for source conformance. Separately authorized private statusline regression/fix evidence is referenced distinctly, not a qualification of cb76 source."
+  },
+  {
+   "cell": "disposition:transitions:WF-25:03",
+   "frozen_row_sha256": "c9dd5322bb3be0cb3371c5f0664f79db8cf2c52bc41ef05fa5eacfd2d61b7247",
+   "witnesses": [
+    {
+     "path": "core/surface/commands/chore.md",
+     "start": 25,
+     "end": 37,
+     "file_sha256": "85f0c06c9070f72b0bc33d819ae3acf72af8e7142f043cdd0438d48d99a11e31",
+     "span_sha256": "0b0d5b6621322b508ef4f0ed704eecf5eb1f1d70726a56a35a67b6f0c4e1a86e"
+    },
+    {
+     "path": "core/surface/commands/chore.md",
+     "start": 49,
+     "end": 55,
+     "file_sha256": "85f0c06c9070f72b0bc33d819ae3acf72af8e7142f043cdd0438d48d99a11e31",
+     "span_sha256": "a7051e9c1832e03a31e0d3bb4527be59e4f9f304adb7c8dae6d773ab9dd2801e"
+    }
+   ],
+   "semantic_assessment": "Version/lock update of existing package selects deps lane; code adaptation selects feature/fix instead. Keep independent dependency review, manifest/lock consistency, affected local checks and exact-head exhaustive hosted CI before merge. Existing dependency bump is not review-exempt; no TDD invented for prose or unchanged revert. Source instructions do not establish executed checks.",
+   "limits": "Reasoned source-only assessment. No workflow/test/runtime/API/network/provider/model/install/dispatch/native build executed for source conformance. Separately authorized private statusline regression/fix evidence is referenced distinctly, not a qualification of cb76 source."
+  },
+  {
+   "cell": "disposition:transitions:WF-25:04",
+   "frozen_row_sha256": "8a36de388129975df0b149b81f0f01daf0e546776a8e767dc8ee8e5d2eeef25f",
+   "witnesses": [
+    {
+     "path": "core/surface/commands/add-dep.md",
+     "start": 38,
+     "end": 95,
+     "file_sha256": "9e493bd79070012801b84a46176262808d443d883ecd852c8783efb2b0812045",
+     "span_sha256": "91b36879a605fbbb8cc474edfb4d494c74f0ac5ad0d9b2ab1db3725ccb5fc2ca"
+    }
+   ],
+   "semantic_assessment": "Only explicit one-time named version-pinned inspection tool, approved registry and no manifest/lock/committed-artifact adoption qualify. Use temp cache/report where possible; report exact invocation and inspect manifest/lock status after actual run. Any accidental/unclear adoption returns to dependency review. Explicit guidance acknowledges there is no hook block for arbitrary bare package-manager commands.",
+   "limits": "Reasoned source-only assessment. No workflow/test/runtime/API/network/provider/model/install/dispatch/native build executed for source conformance. Separately authorized private statusline regression/fix evidence is referenced distinctly, not a qualification of cb76 source."
+  }
+ ],
+ "scope": "Only listed WF25/26/33/35 source-conformance cells. All WF31/WF34 selected rows excluded pending actual canonical repair epoch.",
+ "limits": [
+  "Reasoned source-only assessment. No workflow/test/runtime/API/network/provider/model/install/dispatch/native build executed for source conformance. Separately authorized private statusline regression/fix evidence is referenced distinctly, not a qualification of cb76 source.",
+  "Only20 healthy PLANNED cells proposed: four machines+16 edges in WF25/26/33/35. All14 selected WF31/WF34 machine/edge rows stay PLANNED until canonical corrections are committed. No advanced rows exist here; all unrelated history/epochs retained.",
+  "Model instructions, manual selection/cache, source helper behavior and actual host/effect qualification remain distinct. No universal install hook, hostile process containment, billing completeness, permission or review authenticity invented.",
+  "Frozen historical bug/recovery text remains verbatim. HW01/02, HW05, D-HIGH/HW09/20, HW17, HW14, HW21, PI-D06, FARM-R01 and ADR43 accepted scopes are explicit; real user/host/security/main/publication boundaries remain.",
+  "After actual repair/source epoch changes, affected proof inputs require bounded reinspection; this partial packet must not be hash-restamped into a new epoch. Root owns independent review/strict admission/adoption."
+ ]
+}

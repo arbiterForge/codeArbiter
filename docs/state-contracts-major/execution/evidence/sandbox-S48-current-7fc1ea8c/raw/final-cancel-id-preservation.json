@@ -1,0 +1,34 @@
+{
+  "original_cases": 24,
+  "candidate_cases": 25,
+  "all_original_it_call_ASTs_preserved": true,
+  "added_cases": [
+    "createSandbox final cancellation retains known container identity when discovery is unavailable"
+  ],
+  "original_case_sha256": {
+    "accepts plain network remotes (https / ssh / scp-like)": "70efed0c548961ded96f788a58070f57720e4401fcdb6d48307b217c2beb6e3d",
+    "REJECTS git argument injection (a url beginning with '-')": "f283560cf76ac853f82ee3d2fcd38d31af13b847cb538452757f77aff039447a",
+    "REJECTS git transport-helper / local transports (ext::, fd::, file://)": "66be1ec5e5a029e060dbe672e3f31685ccd74adbd32ea83192f7924e81767075",
+    "REJECTS other unknown / non-network schemes and empties": "0386065e7716583be096b05ebe4961f5440291ff168234e278b234fd413f60f8",
+    "emits an end-of-options `--` immediately before the url": "1e4077ee7bf1947ccc91222e2f89a573982fae6eb17af6bfef377bd17cd16ed6",
+    "the `--` follows the clone subcommand and its flags (git parses it)": "32439abddeeed02e422e0cea8fd26dd726e52aa0d2ea10ee80953765c3a4bc5a",
+    "routes the source-volume mount through the buildMountArgs chokepoint": "3681ee883a5a0efb2ae04898e225775e95773a9adf2979ac071d9a9fd44744e2",
+    "labels the throwaway clone container ca.sandbox=1 + ca.sandbox.id=<id>": "d3a1d9897218fce2010cb4c297c84756e39c13640266c4f3f4cf12f9d1b0ab40",
+    "a different id produces a different id-label (no cross-sandbox collision)": "1b493b4d4a1bb43545bcf426c795b1878754ebc72b0377c1c36d288d1a2fa9d6",
+    "labels the docker-cp helper container ca.sandbox=1 + ca.sandbox.id=<id>": "60eb204a4cb0dd5613ce55517ed22423266e54a717c0db5e41e55a0a3da11c49",
+    "still routes the volume mount through the buildMountArgs chokepoint": "825bf652e95a020bc2994354f40c4e3dd6f794f3532e1297186a73e57bbb58a0",
+    "removes leftover labeled containers BEFORE removing the volume": "ec633c9c1b2bb936ea814c58b91d48c9c5f0d8d969e72dadb4f6e2691c9f2534",
+    "createSandbox cancellation during successful run observation refuses success and compensates owned resources": "ac4a4a180890d64327a083cb7e2492d4d5d406a97ce31b09e342dad38e3fc1db",
+    "createSandbox final cancellation retains unknown cleanup without false success": "2f1bc6c943e2ae3da293280b7358faf649fc5ad59b45f9dbeaf4087f0490ee01",
+    "createSandbox successful un-aborted run preserves image identity without compensation": "441f84c0642622f935f11a106c375f8e0d597108f8815b09e07f6a0f0b54af56",
+    "a labeled, detached clone-shaped orphan is removed by await prune()": "fb85f3ca28da5d6e8899d7c5338fa69c32b89dc9151a58b228d6f42f98804e01",
+    "a labeled, detached cp-helper-shaped orphan is removed by await prune()": "0b41e93bca3e5a976a1feace3f427d362fdee4c732a0039d6b92227e6f49e30f",
+    "REJECTS double-colon transport-helper form git@github.com::evil (InvalidRepoUrlError)": "5296669499be4e4b9e406781528e80c23bc25cf80098dd63c5ff054adf0a3fd3",
+    "ACCEPTS scp-like url with single colon and a nested path (git@github.com:path/sub)": "a71213e34c92dc2034fa644b9f972161914d54fee60d8fe9bc4c7cbf94d0ce04",
+    "throws with stderr snippet when injected cloneRepo fails (exit 1)": "b12041a00b7738caa60b0b4223415482654891d6398e2ea76bfe76526c6e28a0",
+    "includes exit code in the clone error message when stderr is empty": "e55f9a9afcc0f85f8b574d6d2488f8f142ab48f237e925d76eb223de134872ef",
+    "thrown error does NOT include raw argv — only docker/git stderr (no secret leak)": "44fa7d3357d6b5cd995e9dd5bb6ae10ac14980a644d8dc04c0507ac006566d78",
+    "throws with docker stderr when injected buildImage signals docker-create failure": "0cd9e7d19cec6c1f54277963cfeceb5b9abee49b92ae954f4f58ea4df9064bea",
+    "throws when injected buildImage signals docker-cp produced an empty checkout": "b91fef2fbea9d8674c00729bd6146bb49e55b1a83134f05b42c11fa3c61c52b1"
+  }
+}

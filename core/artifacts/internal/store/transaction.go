@@ -56,8 +56,18 @@ func journalPath(id string) string { return meta + "/transactions/" + id + ".jso
 // Transaction targets must remain distinct on every supported filesystem.
 // EqualFold also rejects aliases that would become the same file on Windows.
 func collidesWithTarget(seen []string, candidate string) bool {
+	parts := strings.Split(candidate, "/")
 	for _, prior := range seen {
-		if strings.EqualFold(prior, candidate) {
+		previous := strings.Split(prior, "/")
+		common := min(len(parts), len(previous))
+		matches := true
+		for i := 0; i < common; i++ {
+			if !strings.EqualFold(parts[i], previous[i]) {
+				matches = false
+				break
+			}
+		}
+		if matches {
 			return true
 		}
 	}

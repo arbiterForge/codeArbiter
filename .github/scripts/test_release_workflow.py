@@ -9,7 +9,10 @@ CI red.
 """
 from __future__ import annotations
 
+import json
 import os
+import shlex
+import tempfile
 import re
 import shutil
 import subprocess
@@ -25,6 +28,105 @@ RELEASE = REPO / ".github/workflows/release.yml"
 ACTION = REPO / ".github/actions/publish-target/action.yml"
 RELEASE_JOBS = {"release-ca": "ca", "release-codex": "ca-codex",
                 "release-pi": "ca-pi", "release-sandbox": "ca-sandbox"}
+
+
+def git_for_windows_bash(git: str | None) -> Path | None:
+    """Find the same installation's Bash for Git's normal Windows entrypoints."""
+    if not git or not Path(git).is_absolute():
+        return None
+    # Derive the installation from the declared entrypoint. Resolving that
+    # entrypoint first can discard a wrapper/link's installation location.
+    executable = Path(git)
+    if not executable.is_file():
+        return None
+    if executable.name.casefold() != "git.exe":
+        return None
+    parent = executable.parent
+    if parent.name.casefold() == "cmd":
+        installation = parent.parent
+    elif parent.name.casefold() == "bin":
+        installation = parent.parent
+        if installation.name.casefold() in ("mingw32", "mingw64", "ucrt64"):
+            installation = installation.parent
+    elif (parent.name.casefold() == "git-core"
+          and parent.parent.name.casefold() == "libexec"
+          and parent.parent.parent.name.casefold() in ("mingw32", "mingw64", "ucrt64")):
+        installation = parent.parent.parent.parent
+    else:
+        return None
+    for directory in ("bin", "usr/bin"):
+        candidate = installation / directory / "bash.exe"
+        if candidate.is_file():
+            return candidate.resolve(strict=True)
+    return None
+
+
+def real_bash() -> Path | None:
+    if os.name == "nt":
+        return git_for_windows_bash(shutil.which("git"))
+    executable = shutil.which("bash")
+    return Path(executable) if executable else None
+
+
+class BashDiscoveryTest(unittest.TestCase):
+    def test_internal_git_entrypoints_find_the_same_installations_bash(self):
+        with tempfile.TemporaryDirectory() as raw:
+            installation = Path(raw) / "Git"
+            bash = installation / "bin/bash.exe"
+            bash.parent.mkdir(parents=True)
+            bash.write_bytes(b"inert discovery fixture; never executed")
+            for architecture in ("mingw32", "mingw64", "ucrt64"):
+                git = installation / architecture / "libexec/git-core/git.exe"
+                git.parent.mkdir(parents=True)
+                git.write_bytes(b"inert internal Git entrypoint; never executed")
+                with self.subTest(architecture=architecture):
+                    actual = git_for_windows_bash(str(git))
+                    self.assertTrue(actual and actual.samefile(bash))
+
+    def test_linked_git_entrypoint_keeps_its_declared_installation(self):
+        with tempfile.TemporaryDirectory() as raw:
+            root = Path(raw)
+            installation = root / "Git"
+            bash = installation / "bin/bash.exe"
+            bash.parent.mkdir(parents=True)
+            bash.write_bytes(b"inert discovery fixture; never executed")
+            target = root / "actual-binary.exe"
+            target.write_bytes(b"inert link target; never executed")
+            git = installation / "cmd/git.exe"
+            git.parent.mkdir()
+            git.symlink_to(target)
+            actual = git_for_windows_bash(str(git))
+            self.assertTrue(actual and actual.samefile(bash))
+
+    def test_git_entrypoints_share_the_same_installations_bash(self):
+        with tempfile.TemporaryDirectory() as raw:
+            installation = Path(raw) / "Git"
+            bash = installation / "bin/bash.exe"
+            bash.parent.mkdir(parents=True)
+            bash.write_bytes(b"inert discovery fixture; never executed")
+            for relative in ("cmd/git.exe", "bin/git.exe", "mingw64/bin/git.exe", "mingw32/bin/git.exe", "ucrt64/bin/git.exe"):
+                git = installation / relative
+                git.parent.mkdir(parents=True, exist_ok=True)
+                git.write_bytes(b"inert Git entrypoint; never executed")
+                with self.subTest(entrypoint=relative):
+                    actual = git_for_windows_bash(str(git))
+                    self.assertTrue(actual and actual.samefile(bash))
+
+    def test_missing_or_unknown_installations_cannot_select_an_unrelated_bash(self):
+        self.assertIsNone(git_for_windows_bash(None))
+        self.assertIsNone(git_for_windows_bash("git.exe"))
+        with tempfile.TemporaryDirectory() as raw:
+            root = Path(raw)
+            unknown = root / "unrelated/git.exe"
+            unknown.parent.mkdir()
+            unknown.write_bytes(b"inert unknown entrypoint")
+            (root / "bin").mkdir()
+            (root / "bin/bash.exe").write_bytes(b"unrelated; never selected")
+            self.assertIsNone(git_for_windows_bash(str(unknown)))
+            known = root / "Git/cmd/git.exe"
+            known.parent.mkdir(parents=True)
+            known.write_bytes(b"inert known entrypoint without Bash")
+            self.assertIsNone(git_for_windows_bash(str(known)))
 
 
 def release_text() -> str:
@@ -79,12 +181,33 @@ class TriggerTest(unittest.TestCase):
         preflight = jobs()["preflight"]
         # Never skip because main moved on: a later merge may start no CI run.
         self.assertNotIn('SOURCE=""', preflight)
-        self.assertIn('SOURCE="$RUN_SHA"; CI_RUN_ID="$RUN_ID"', preflight)
+        self.assertIn('release_source.py select --event workflow_run', preflight)
+        self.assertIn('--run-sha "$RUN_SHA" --run-id "$RUN_ID"', preflight)
         self.assertIn('git merge-base --is-ancestor "$SOURCE" HEAD', preflight)
         self.assertIn('git checkout --quiet --detach "$SOURCE"', preflight)
 
     def test_dispatch_uses_the_newest_main_commit_with_successful_ci(self):
         self.assertIn("branch=main&event=push&status=success&per_page=1", jobs()["preflight"])
+
+    def test_selection_is_reported_and_bindable_to_an_approved_candidate(self):
+        # R-02 / C-F02: the run names its exact source and build, and an
+        # operator can require equality with the approved final candidate.
+        preflight = jobs()["preflight"]
+        self.assertIn("release_source.py report", preflight)
+        self.assertIn('--summary "$GITHUB_STEP_SUMMARY"', preflight)
+        self.assertIn('--expected-source "$EXPECTED_SOURCE" --expected-run "$EXPECTED_RUN"', preflight)
+        self.assertLess(preflight.index("release_source.py report"),
+                        preflight.index('git checkout --quiet --detach "$SOURCE"'))
+        text = release_text()
+        self.assertIn("expected-source:", text)
+        self.assertIn("expected-ci-run:", text)
+        self.assertNotIn("main's current head", text)
+        self.assertNotIn("publishes main's CURRENT head", text)
+
+    def test_hosted_targets_refuse_expired_ci_artifacts(self):
+        preflight = jobs()["preflight"]
+        self.assertIn('[ "$ARTIFACTS" != retained ]', preflight)
+        self.assertIn('[ "$TARGET" != ca-sandbox ]', preflight)
 
     def test_each_release_job_rechecks_before_publishing(self):
         found = jobs()
@@ -94,10 +217,127 @@ class TriggerTest(unittest.TestCase):
             self.assertIn("release_target.py eligible", block, job)
             self.assertRegex(block, r"uses: \./\.github/actions/publish-target\n\s+if: steps\.recheck\.outputs\.go == 'true'", job)
 
+    def test_every_publisher_receives_the_selected_source_and_ci_run(self):
+        for job, block in ((job, jobs()[job]) for job in RELEASE_JOBS):
+            with self.subTest(job=job):
+                publish = block.split("uses: ./.github/actions/publish-target", 1)[1]
+                publish = publish.split("\n      - ", 1)[0]
+                self.assertIn("source-commit: ${{ needs.preflight.outputs.source }}", publish)
+                self.assertIn("ci-run-id: ${{ needs.preflight.outputs.ci-run-id }}", publish)
+
     def test_dispatch_requires_a_successful_ci_run_for_the_commit(self):
         preflight = jobs()["preflight"]
         self.assertIn("status=success", preflight)
-        self.assertIn("no successful push CI run", preflight)
+        self.assertIn("release_source.py select --event workflow_dispatch", preflight)
+
+
+def _source_module():
+    import importlib.util
+    spec = importlib.util.spec_from_file_location(
+        "release_source", Path(__file__).with_name("release_source.py"))
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+OLD, NEW, HEAD = "1" * 40, "2" * 40, "3" * 40
+
+
+def ci_artifacts(sha, *, expired=False):
+    names = ("artifact-host-payloads-{}", "artifact-release-packages-{}")
+    return [{"total_count": len(names), "artifacts": [
+        {"name": name.format(sha), "expired": expired} for name in names]}]
+
+
+class SourceSelectionTest(unittest.TestCase):
+    """release_source.py: exact source/build selection and reporting (R-02)."""
+
+    def setUp(self):
+        self.rs = _source_module()
+
+    def test_newer_failed_head_selects_the_older_successful_source_and_says_so(self):
+        # The successful-run query excludes the failed head; the report must
+        # state that the selection is not main's head.
+        runs = {"workflow_runs": [{"head_sha": OLD, "id": 41, "conclusion": "success"}]}
+        source, run, rule = self.rs.select("workflow_dispatch", runs=runs)
+        self.assertEqual((source, run), (OLD, "41"))
+        result = self.rs.report(source=source, ci_run_id=run, head=HEAD, ancestor=True,
+                                artifacts=ci_artifacts(OLD), rule=rule)
+        self.assertEqual(result["source-is-head"], "false")
+        self.assertIn("not necessarily main's head", result["rule"])
+        text = self.rs.summary(result, "o/r")
+        self.assertIn(f"`{OLD}`", text)
+        self.assertIn("actions/runs/41", text)
+
+    def test_route_publication_is_observed_after_every_target_settles(self):
+        # R-04 / C-F04: the compatibility clock gets actual observation
+        # evidence, wired after all target jobs regardless of their outcome,
+        # and the observer never mutates or gates publication.
+        job = jobs()["route-publication-observation"]
+        self.assertIn("needs: [preflight, release-ca, release-codex, release-pi, release-sandbox]", job)
+        self.assertIn("always() && needs.preflight.result == 'success'", job)
+        self.assertIn("check_command_route_release_state.py record", job)
+        self.assertIn("--releases-exit \"$LIST_EXIT\"", job)
+        self.assertIn("upload-artifact", job)
+        self.assertNotIn("--method", job)
+        self.assertNotIn("set -e", job.replace("set -uo pipefail", ""))
+        for name in RELEASE_JOBS:
+            self.assertNotIn("route-publication-observation", jobs()[name])
+
+    def test_route_observer_uses_only_read_permission_and_declares_public_visibility(self):
+        job = jobs()["route-publication-observation"]
+        self.assertIn("contents: read", job)
+        self.assertNotIn("contents: write", job)
+        self.assertIn("--releases-visibility public", job)
+        self.assertIn("ref: ${{ github.workflow_sha }}", job)
+        self.assertIn("path: release-observer", job)
+        self.assertIn("ref: ${{ needs.preflight.outputs.source }}", job)
+        self.assertIn("path: release-source", job)
+        self.assertIn("working-directory: release-observer", job)
+        self.assertIn('--repo "$GITHUB_WORKSPACE/release-source"', job)
+        self.assertIn("CI_RUN_ID: ${{ needs.preflight.outputs.ci-run-id }}", job)
+        self.assertIn('--ci-run-id "$CI_RUN_ID"', job)
+
+    def test_no_successful_ci_is_refused(self):
+        with self.assertRaisesRegex(self.rs.SelectionError, "no successful push CI run"):
+            self.rs.select("workflow_dispatch", runs={"workflow_runs": []})
+        with self.assertRaises(self.rs.SelectionError):
+            self.rs.select("workflow_dispatch", runs={"message": "Bad credentials"})
+
+    def test_source_no_longer_on_main_is_refused(self):
+        with self.assertRaisesRegex(self.rs.SelectionError, "not on main"):
+            self.rs.report(source=OLD, ci_run_id="41", head=HEAD, ancestor=False,
+                           artifacts=ci_artifacts(OLD))
+
+    def test_expired_or_missing_artifacts_are_reported_not_hidden(self):
+        expired = self.rs.report(source=OLD, ci_run_id="41", head=OLD, ancestor=True,
+                                 artifacts=ci_artifacts(OLD, expired=True))
+        self.assertEqual(expired["artifacts"], "expired")
+        self.assertIn("fresh qualification", self.rs.summary(expired, "o/r"))
+        missing = self.rs.report(source=OLD, ci_run_id="41", head=OLD, ancestor=True,
+                                 artifacts=ci_artifacts(NEW))
+        self.assertEqual(missing["artifacts"], "missing")
+        unknown = [{"artifacts": [{"name": f"artifact-host-payloads-{OLD}"},
+                                  {"name": f"artifact-release-packages-{OLD}"}]}]
+        with self.assertRaisesRegex(self.rs.SelectionError, "expiry"):
+            self.rs.artifact_state(unknown, OLD)
+
+    def test_selection_that_differs_from_the_approved_candidate_is_refused(self):
+        with self.assertRaisesRegex(self.rs.SelectionError, "approved source"):
+            self.rs.report(source=NEW, ci_run_id="42", head=NEW, ancestor=True,
+                           artifacts=ci_artifacts(NEW), expected_source=OLD)
+        with self.assertRaisesRegex(self.rs.SelectionError, "approved build run"):
+            self.rs.report(source=OLD, ci_run_id="43", head=NEW, ancestor=True,
+                           artifacts=ci_artifacts(OLD), expected_source=OLD, expected_run="41")
+        exact = self.rs.report(source=OLD, ci_run_id="41", head=NEW, ancestor=True,
+                               artifacts=ci_artifacts(OLD), expected_source=OLD,
+                               expected_run="41")
+        self.assertEqual(exact["source"], OLD)
+
+    def test_workflow_run_event_binds_its_own_run(self):
+        self.assertEqual(self.rs.select("workflow_run", run_sha=NEW, run_id="9")[:2], (NEW, "9"))
+        with self.assertRaises(self.rs.SelectionError):
+            self.rs.select("workflow_run", run_sha="abc", run_id="9")
 
 
 class IndependenceTest(unittest.TestCase):
@@ -179,13 +419,9 @@ class ConsumerSafetyGateTest(unittest.TestCase):
             script = "\n".join(
                 line[8:] for line in run.splitlines()[1:] if line.startswith("        ")
             )
-        if os.name == "nt":
-            git = shutil.which("git")
-            self.assertIsNotNone(git, "Git for Windows is required")
-            bash = Path(git).resolve().parents[1] / "bin" / "bash.exe"
-        else:
-            bash = shutil.which("bash")
-        self.assertTrue(bash and Path(bash).is_file(), "bash is required")
+        bash = real_bash()
+        self.assertTrue(bash and Path(bash).is_file(),
+                        f"bash is required (selected Git: {shutil.which('git')!r})")
         script = "npm_mock() { printf '__NPM_CALLED__\\n'; }\n" + script
         base_env = {**os.environ, "NPM_CLI": "npm_mock", "TARBALL": "unused.tgz",
                     "SOURCE_COMMIT": "a" * 40}
@@ -275,9 +511,29 @@ class AdvisoryCheckTest(unittest.TestCase):
         self.assertIn("validate_publication_attestation", readback)
         self.assertNotIn("::warning::npm provenance", readback)
 
-    def test_pre_tag_checks_are_advisory(self):
-        self.assertIn("run-pre-tag", jobs()["preflight"])
-        self.assertIn("(not blocking)", jobs()["preflight"])
+    def test_pre_tag_checks_are_required_through_the_shared_owner(self):
+        # R-03 / D-GOV-PRETAG (B, 2026-11-12): declared pre-tag checks are a
+        # REQUIRED gate. Intended contract change from the old advisory warn:
+        # release planning now calls the same owner as required CI and a
+        # failure keeps that target (only) from tagging.
+        preflight = jobs()["preflight"]
+        self.assertIn("check_auto_release_candidate.py --pre-tag-target \"$TARGET\"", preflight)
+        self.assertNotIn("_releaselib.py run-pre-tag", preflight)
+        self.assertNotIn("pre-tag advisory checks did not pass (not blocking)", preflight)
+        gate = preflight[preflight.index("--pre-tag-target"):]
+        self.assertIn('ELIGIBLE=false; FAILED="$FAILED $TARGET"', gate)
+        # Pre-tag runs only before the version's tag exists (the same new-
+        # version population the CI candidate check gates).
+        self.assertIn('git rev-parse -q --verify "refs/tags/$PREFIX$VERSION"', preflight)
+        self.assertLess(preflight.index("--pre-tag-target"),
+                        preflight.index('echo "$TARGET=$ELIGIBLE" >> "$GITHUB_OUTPUT"'))
+        ci = (REPO / ".github/workflows/ci.yml").read_text(encoding="utf-8")
+        self.assertIn("check_auto_release_candidate.py \\\n            --candidate \"$GITHUB_SHA\" --run-pre-tag", ci)
+
+    def test_advisory_checks_stay_visible_and_are_not_relabelled_verified(self):
+        codex = jobs()["release-codex"]
+        self.assertIn("Codex candidate provenance check did not pass (not blocking)", codex)
+        self.assertIn("(advisory)", codex)
 
 
 class ChannelTest(unittest.TestCase):
@@ -295,6 +551,239 @@ class ChannelTest(unittest.TestCase):
                      "Publish the Claude marketplace channel",
                      "Publish the Codex marketplace channel"):
             self.assertIn("GH_TOKEN: ${{ inputs.github-token }}", action_step(name), name)
+
+
+
+def _literal_publication_bash(name: str, text: str | None = None) -> str:
+    """Extract one unchanged, unconditional literal run block; reject new YAML forms."""
+    lines = (action_text() if text is None else text).splitlines()
+    starts = [i for i, line in enumerate(lines) if line == "    - name: " + name]
+    if len(starts) != 1:
+        raise AssertionError(f"expected one exact publication step {name!r}")
+    start = starts[0]
+    end = next((i for i in range(start + 1, len(lines))
+                if lines[i].startswith("    - ")), len(lines))
+    step = lines[start + 1:end]
+    headers = [i for i, line in enumerate(step) if line == "      run: |"]
+    if len(headers) != 1:
+        raise AssertionError("expected one literal run: | block")
+    prelude, body = step[:headers[0]], step[headers[0] + 1:]
+    if prelude.count("      shell: bash") != 1:
+        raise AssertionError("expected explicit bash shell")
+    for line in prelude:
+        if line.strip() and not (line.startswith("        ") or
+                re.fullmatch(r"      (?:id: .+|shell: bash|env:)", line)):
+            raise AssertionError("unsupported publication step metadata")
+    if any("\t" in line or (line.strip() and not line.startswith("        "))
+           for line in body):
+        raise AssertionError("unsupported literal run indentation")
+    script = "\n".join(line[8:] if line.startswith("        ") else "" for line in body).rstrip() + "\n"
+    if "${{" in script or not script.startswith("set -euo pipefail\n"):
+        raise AssertionError("unsupported executable expression or shell preamble")
+    return script
+
+
+# This is only the isolated provider protocol: fixed GET observations and one
+# exclusive receipt upload. The production shell and planner decide the effects.
+_RECEIPT_PROVIDER = r'''
+import json, os, sys
+from pathlib import Path
+root = Path(os.environ["RECEIPT_FIXTURE"])
+command, args = sys.argv[1], sys.argv[2:]
+with (root / "calls.jsonl").open("a", encoding="utf-8") as stream:
+    stream.write(json.dumps([command, *args]) + "\n")
+meta = json.loads((root / "remote.json").read_text(encoding="utf-8"))
+repo, rid = "fixture/qualification", "7"
+receipt = root / "stored-receipt.json"
+def refuse():
+    print("unexpected fixture provider operation", file=sys.stderr)
+    raise SystemExit(93)
+if command == "git" and args == ["ls-remote", "--tags", "origin", "refs/tags/" + meta["tag"], "refs/tags/" + meta["tag"] + "^{}"]:
+    print(meta["source"] + "\trefs/tags/" + meta["tag"])
+elif command != "gh":
+    refuse()
+elif args == ["auth", "setup-git"]:
+    pass
+elif args == ["api", "--paginate", "--slurp", "repos/" + repo + "/releases?per_page=100"]:
+    release = meta["release"]
+    if receipt.exists():
+        release["assets"].append({"name": "codearbiter-publication.json", "state": "uploaded"})
+    print(json.dumps([[release]]))
+elif len(args) == 8 and args[:5] == ["api", "--method", "POST", "-H", "Content-Type: application/json"] and args[5] == "--input" and args[7] == "https://uploads.github.com/repos/" + repo + "/releases/7/assets?name=codearbiter-publication.json":
+    supplied = Path(args[6]).resolve()
+    if not supplied.is_relative_to(root.resolve()):
+        refuse()
+    with receipt.open("xb") as stream:
+        stream.write(supplied.read_bytes())
+    if (root / "lose-upload-response").exists():
+        raise SystemExit(57)
+elif args == ["api", "repos/" + repo + "/releases/7/assets", "--jq", '.[] | select(.name == "codearbiter-publication.json") | .url']:
+    if receipt.exists():
+        print("https://fixture.invalid/assets/receipt")
+elif args == ["api", "-H", "Accept: application/octet-stream", "https://fixture.invalid/assets/receipt"]:
+    sys.stdout.buffer.write(receipt.read_bytes())
+else:
+    refuse()
+'''
+
+
+class ReceiptShellBoundaryTest(unittest.TestCase):
+    """Run two shipped Bash blocks, with real receipt CLI and closed fake providers.
+
+    This does not execute GitHub's composite scheduler or qualify live publication,
+    package/channel/npm readback, authentication, or the earlier release steps.
+    """
+
+    def setUp(self):
+        self.scratch = tempfile.TemporaryDirectory()
+        self.addCleanup(self.scratch.cleanup)
+        self.root = Path(self.scratch.name)
+        self.bash = real_bash()
+        self.assertTrue(self.bash and self.bash.is_file(),
+                        f"real Bash is required; do not skip qualification (selected Git: {shutil.which('git')!r})")
+
+    def fixture(self, host):
+        root = self.root / host
+        root.mkdir()
+        (root / "bin").mkdir()
+        (root / ".github/scripts").mkdir(parents=True)
+        (root / "core/pysrc").mkdir(parents=True)
+        for path in (".github/scripts/release_target.py", ".github/scripts/_releaselib.py",
+                     "core/pysrc/_releaselib.py"):
+            shutil.copyfile(REPO / path, root / path)
+        target = {"claude": "ca", "codex": "ca-codex", "pi": "ca-pi", "none": "ca-sandbox"}[host]
+        package = {"claude": "codearbiter-ca-1.2.3.tar.gz", "codex": "codearbiter-ca-codex-1.2.3.tar.gz",
+                   "pi": "arbiterforge-ca-pi-1.2.3.tgz", "none": "none"}[host]
+        meta = {"tag": "fixture-v1.2.3", "source": "a" * 40, "release": {
+            "id": 7, "tag_name": "fixture-v1.2.3", "draft": False,
+            "assets": [] if host == "none" else [{"name": package, "state": "uploaded", "digest": "sha256:" + "b" * 64}]}}
+        (root / "remote.json").write_text(json.dumps(meta), encoding="utf-8")
+        (root / "completed-effects.json").write_text(json.dumps({"tag": "a" * 40,
+            "package": package, "channel": "already-published", "npm": "already-published"}), encoding="utf-8")
+        provider = root / "provider.py"
+        provider.write_text(_RECEIPT_PROVIDER, encoding="utf-8")
+        interpreter = shlex.quote(Path(sys.executable).as_posix())
+        for name in ("gh", "git", "npm", "npx", "curl", "wget", "ssh", "scp", "node", "python3"):
+            script = "#!/bin/bash\nexec " + interpreter + " -B -X utf8 "
+            script += ('"$@"\n' if name == "python3" else
+                       shlex.quote(provider.as_posix()) + " " + name + ' "$@"\n')
+            executable = root / "bin" / name
+            executable.write_text(script, encoding="utf-8", newline="\n")
+            executable.chmod(0o700)
+        essentials = {key: value for key, value in os.environ.items()
+                      if key.upper() in {"SYSTEMROOT", "WINDIR", "COMSPEC", "PATHEXT", "SYSTEMDRIVE"}}
+        utility_dir = self.bash.parent.parent / "usr/bin" if os.name == "nt" else self.bash.parent
+        essentials.update({"PATH": os.pathsep.join((str(root / "bin"), str(utility_dir))),
+            "HOME": str(root), "USERPROFILE": str(root), "TEMP": str(root), "TMP": str(root),
+            "PYTHONDONTWRITEBYTECODE": "1", "PYTHONUTF8": "1", "RECEIPT_FIXTURE": str(root),
+            "GIT_CONFIG_NOSYSTEM": "1", "GIT_CONFIG_GLOBAL": os.devnull,
+            "RECEIPT_BIN": ("/" + root.as_posix()[0].lower() + root.as_posix()[2:] + "/bin") if os.name == "nt" else str(root / "bin"),
+            "GITHUB_REPOSITORY": "fixture/qualification", "RUNNER_TEMP": root.as_posix(),
+            "GITHUB_OUTPUT": (root / "output.txt").as_posix(), "TARGET": target, "HOST": "" if host == "none" else host,
+            "VERSION": "1.2.3", "TAG": meta["tag"], "SOURCE_COMMIT": meta["source"],
+            "ASSET": "" if host == "none" else package, "ASSET_SHA256": "" if host == "none" else "b" * 64,
+            "RELEASE_ID": "7", "PACKAGE_FILE": "" if host == "none" else package,
+            "PACKAGE_SHA256": "" if host == "none" else "b" * 64,
+            "CHANNEL_REF": "" if host in {"none", "pi"} else "c" * 40})
+        return root, essentials
+
+    def invoke(self, root, env, step):
+        script = _literal_publication_bash(step)
+        # Git for Windows' launcher may prepend its own executables. Establish
+        # and prove the private POSIX search path before the unchanged body.
+        bootstrap = ('PATH="$RECEIPT_BIN:/usr/bin:/bin"; export PATH\n'
+                     'for tool in gh git python3; do '
+                     '[ "$(command -v "$tool")" = "$RECEIPT_BIN/$tool" ] || exit 94; done\n')
+        return subprocess.run([str(self.bash), "--noprofile", "--norc", "-c", bootstrap + script],
+                              cwd=root, env=env, capture_output=True, text=True,
+                              encoding="utf-8", errors="strict", timeout=30)
+
+    def observe(self, root, env):
+        (root / "output.txt").write_text("", encoding="utf-8")
+        result = self.invoke(root, env, "Observe remote state and plan")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        output = dict(line.split("=", 1) for line in (root / "output.txt").read_text().splitlines())
+        env["MISSING"] = output["missing-assets"]
+        return output
+
+    def calls(self, root):
+        return [json.loads(line) for line in (root / "calls.jsonl").read_text().splitlines()]
+
+    def posts(self, root):
+        return [call for call in self.calls(root) if call[:4] == ["gh", "api", "--method", "POST"]]
+
+    def test_missing_receipt_is_uploaded_once_and_replay_only_reads(self):
+        for host in ("claude", "codex", "pi", "none"):
+            with self.subTest(host=host):
+                root, env = self.fixture(host)
+                completed = (root / "completed-effects.json").read_bytes()
+                plan = self.observe(root, env)
+                self.assertEqual((plan["tag"], plan["release"], plan["effects"]), ("present", "published", "receipt"))
+                self.assertEqual(plan["missing-assets"], "codearbiter-publication.json")
+                attached = self.invoke(root, env, "Attach the publication receipt")
+                self.assertEqual(attached.returncode, 0, attached.stderr)
+                receipt = (root / "stored-receipt.json").read_bytes()
+                observed = json.loads(receipt)
+                self.assertEqual((observed["target"], observed["source_commit"], observed["release_state"]),
+                                 (env["TARGET"], "a" * 40, "published"))
+                self.assertEqual(observed["package_sha256"], "none" if host == "none" else "b" * 64)
+                expected_channel = {"claude": "ca-marketplace", "codex": "ca-codex-marketplace",
+                                    "pi": "npm:@arbiterforge/ca-pi@1.2.3", "none": "none"}[host]
+                self.assertEqual(observed["channel"], expected_channel)
+                self.assertEqual(len(self.posts(root)), 1)
+                self.assertEqual(self.observe(root, env)["effects"], "")
+                repeated = self.invoke(root, env, "Attach the publication receipt")
+                self.assertEqual(repeated.returncode, 0, repeated.stderr)
+                self.assertEqual(len(self.posts(root)), 1)
+                self.assertEqual((root / "stored-receipt.json").read_bytes(), receipt)
+                self.assertEqual((root / "completed-effects.json").read_bytes(), completed)
+
+    def test_same_named_wrong_receipt_is_downloaded_and_refused_without_overwrite(self):
+        for host in ("claude", "codex", "pi", "none"):
+            with self.subTest(host=host):
+                root, env = self.fixture(host)
+                channel = {"claude": "ca-marketplace", "codex": "ca-codex-marketplace",
+                           "pi": "npm:@arbiterforge/ca-pi@1.2.3", "none": "none"}[host]
+                wrong = (json.dumps({"format": "codearbiter.target-publication/0.1.0",
+                    "target": env["TARGET"], "host": env["HOST"] or "none", "tag": env["TAG"],
+                    "version": env["VERSION"], "source_commit": "d" * 40,
+                    "package_file": env["PACKAGE_FILE"] or "none",
+                    "package_sha256": env["PACKAGE_SHA256"] or "none", "channel": channel,
+                    "channel_ref": env["CHANNEL_REF"] or "none", "release_state": "published"}) + "\n").encode()
+                (root / "stored-receipt.json").write_bytes(wrong)
+                self.assertEqual(self.observe(root, env)["effects"], "")
+                refused = self.invoke(root, env, "Attach the publication receipt")
+                self.assertNotEqual(refused.returncode, 0)
+                self.assertIn("conflicting receipt is never replaced", refused.stderr)
+                self.assertIn("source_commit=", refused.stderr)
+                self.assertEqual(self.posts(root), [])
+                self.assertEqual((root / "stored-receipt.json").read_bytes(), wrong)
+                self.assertEqual((root / "readback-receipt.json").read_bytes(), wrong)
+
+    def test_uploaded_receipt_with_lost_response_is_observed_before_retry(self):
+        root, env = self.fixture("claude")
+        self.assertEqual(self.observe(root, env)["effects"], "receipt")
+        (root / "lose-upload-response").touch()
+        lost = self.invoke(root, env, "Attach the publication receipt")
+        self.assertEqual(lost.returncode, 57, lost.stderr)
+        self.assertEqual(len(self.posts(root)), 1)
+        self.assertEqual(self.observe(root, env)["effects"], "")
+        recovered = self.invoke(root, env, "Attach the publication receipt")
+        self.assertEqual(recovered.returncode, 0, recovered.stderr)
+        self.assertEqual(len(self.posts(root)), 1)
+
+    def test_literal_extraction_refuses_missing_duplicate_and_unsupported_shapes(self):
+        text = action_text()
+        name = "Attach the publication receipt"
+        for malformed in (text.replace("    - name: " + name, "    - name: absent"),
+                          text + "\n    - name: " + name + "\n",
+                          text.replace("      run: |", "      run: >"),
+                          text.replace("      shell: bash", "      shell: sh"),
+                          text.replace("    - name: " + name, "    - name: " + name + "\n      if: always()"),
+                          text.replace("        case \"$HOST\"", "\tcase \"$HOST\"")):
+            with self.subTest(shape=malformed[-100:]):
+                with self.assertRaises(AssertionError):
+                    _literal_publication_bash(name, malformed)
 
 
 if __name__ == "__main__":

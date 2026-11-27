@@ -1,0 +1,261 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "/root/ci_repair_review: literal62-clause immutable Pi/current-callee/baseline inspection; no execution"
+ },
+ "inputs": {
+  ".codearbiter/decisions/0043-assistive-state-engine.md": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+  ".codearbiter/decisions/0049-require-https-outside-bounded-loopback.md": "c757cef9d5e318b75ff164d270b29a49255449360f0b7cde51e53775e6916ab8",
+  "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+  "docs/state-contracts-major/surfaces-tasks.json": "5a68b14cdc637e369fa5298d3f566b950dec9fb8056e4f1fa77baf40cb4b0d97",
+  "plugins/ca-pi/tools/src/process-tree.ts": "c95c41d55cf73de5f4c4426228a42633d759203fc6ca0f590cfe884b33640f51",
+  "plugins/ca-pi/tools/src/windows-supervisor.ts": "9121289b6efc3145799cee64c4d98397825d5347b8b84bb871b352d1b75873d3"
+ },
+ "disposition_ids": [
+  "disposition:machines:S13"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/source-bindings.json",
+   "sha256": "5ff5edd6e452412a3caec604eae002b4d10132d8321c3a991c99e8949bce025f"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/clause-inspection.json",
+   "sha256": "c64cc79bbe9a660bfe891b9af36197023a543a82c16bb4e333a96dc7cec32dfa"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:S13",
+   "frozen_row_sha256": "c721503419aa54999331e405da1f498a7e7380ed47ea0228fad23b775abfd493",
+   "clause_ids": [
+    "disposition:transitions:S13:01",
+    "disposition:transitions:S13:02",
+    "disposition:transitions:S13:03",
+    "disposition:transitions:S13:04",
+    "disposition:transitions:S13:05",
+    "disposition:transitions:S13:06",
+    "disposition:transitions:S13:07",
+    "disposition:transitions:S13:08",
+    "disposition:transitions:S13:09"
+   ],
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/process-tree.ts",
+     "start": 392,
+     "end": 403,
+     "file_sha256": "c95c41d55cf73de5f4c4426228a42633d759203fc6ca0f590cfe884b33640f51",
+     "span_sha256": "8beb64359ded79b9f1c5d512d880a8b731193e7b2bbc3ae41210aa603f28f70a"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/process-tree.ts",
+     "start": 862,
+     "end": 870,
+     "file_sha256": "c95c41d55cf73de5f4c4426228a42633d759203fc6ca0f590cfe884b33640f51",
+     "span_sha256": "ad7afe2a48161264c1f14cbfa830bd40179af646c4857583c91bb4bbfea59f6f"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/process-tree.ts",
+     "start": 915,
+     "end": 929,
+     "file_sha256": "c95c41d55cf73de5f4c4426228a42633d759203fc6ca0f590cfe884b33640f51",
+     "span_sha256": "325d3724cf9116d4f6d9893b5e3e4ab0c91f40cdffd191533a6df163abac0d24"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/process-tree.ts",
+     "start": 990,
+     "end": 1004,
+     "file_sha256": "c95c41d55cf73de5f4c4426228a42633d759203fc6ca0f590cfe884b33640f51",
+     "span_sha256": "be0b1e9b98197024b04a831be669bd577917990ba80841dbdb35774ae8f31aa0"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/process-tree.ts",
+     "start": 31,
+     "end": 42,
+     "file_sha256": "c95c41d55cf73de5f4c4426228a42633d759203fc6ca0f590cfe884b33640f51",
+     "span_sha256": "bccac98f2f672ef6eebacb38e3d1014d4d70d4e742d9e567b0b9fed7bb141719"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/process-tree.ts",
+     "start": 103,
+     "end": 121,
+     "file_sha256": "c95c41d55cf73de5f4c4426228a42633d759203fc6ca0f590cfe884b33640f51",
+     "span_sha256": "0a3a385dd0458c79d8c9566bd13ba1fba3e6142079fb16ffc6ffd3cbe15023de"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/process-tree.ts",
+     "start": 152,
+     "end": 190,
+     "file_sha256": "c95c41d55cf73de5f4c4426228a42633d759203fc6ca0f590cfe884b33640f51",
+     "span_sha256": "d6cd06ae29afd7cd7ec8972d2739d843db15c2c9845a8d6bf17db996eb2a8103"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/process-tree.ts",
+     "start": 352,
+     "end": 389,
+     "file_sha256": "c95c41d55cf73de5f4c4426228a42633d759203fc6ca0f590cfe884b33640f51",
+     "span_sha256": "65509aab58f6f3677bc46b3d3cd7ed71f0c8658845f424feef39df2e4856c461"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/process-tree.ts",
+     "start": 617,
+     "end": 677,
+     "file_sha256": "c95c41d55cf73de5f4c4426228a42633d759203fc6ca0f590cfe884b33640f51",
+     "span_sha256": "6991200bc21fe1a7c6564bb7a203635926c99d3db41eaba9e40bc000c5740359"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/process-tree.ts",
+     "start": 871,
+     "end": 888,
+     "file_sha256": "c95c41d55cf73de5f4c4426228a42633d759203fc6ca0f590cfe884b33640f51",
+     "span_sha256": "d327a3016e135a1a90f717911be42de4e3b3ef3e93416beac22f464a0052488d"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/process-tree.ts",
+     "start": 889,
+     "end": 912,
+     "file_sha256": "c95c41d55cf73de5f4c4426228a42633d759203fc6ca0f590cfe884b33640f51",
+     "span_sha256": "c3e86ad7f9758e146811683cad1d7070374e5db92916de22b52526a2f4458826"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/windows-supervisor.ts",
+     "start": 15,
+     "end": 20,
+     "file_sha256": "9121289b6efc3145799cee64c4d98397825d5347b8b84bb871b352d1b75873d3",
+     "span_sha256": "14a250994aa2d301ae00987c3f20237f22a482cd9e5cbdb4ebdbd8b2b6cc9b96"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/windows-supervisor.ts",
+     "start": 47,
+     "end": 94,
+     "file_sha256": "9121289b6efc3145799cee64c4d98397825d5347b8b84bb871b352d1b75873d3",
+     "span_sha256": "51acdc4b9e83bfbba8c2f8ad1adb05c73c83581afe853023b335485f3de8a33f"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/windows-supervisor.ts",
+     "start": 155,
+     "end": 179,
+     "file_sha256": "9121289b6efc3145799cee64c4d98397825d5347b8b84bb871b352d1b75873d3",
+     "span_sha256": "faed9e2fa21e0e6ec5c7b05f1e01ee14cb4db30a2a047a6a8fd5736b545fb7d8"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/windows-supervisor.ts",
+     "start": 208,
+     "end": 227,
+     "file_sha256": "9121289b6efc3145799cee64c4d98397825d5347b8b84bb871b352d1b75873d3",
+     "span_sha256": "6f92d41def3c1cc092454fc883dfb1bd8c1ca6f5d5ee209eb68562497aa7c88b"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/process-tree.ts",
+     "start": 862,
+     "end": 912,
+     "file_sha256": "c95c41d55cf73de5f4c4426228a42633d759203fc6ca0f590cfe884b33640f51",
+     "span_sha256": "917ff7c6f0a0da07def8a9957e16239225bd67388a264b8236ee79f4e987c7da"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/windows-supervisor.ts",
+     "start": 107,
+     "end": 114,
+     "file_sha256": "9121289b6efc3145799cee64c4d98397825d5347b8b84bb871b352d1b75873d3",
+     "span_sha256": "563cc973b122916fa0aaf0bcc46363b36aa25a375dab9da2c4a2c81cb390e0e8"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/windows-supervisor.ts",
+     "start": 228,
+     "end": 242,
+     "file_sha256": "9121289b6efc3145799cee64c4d98397825d5347b8b84bb871b352d1b75873d3",
+     "span_sha256": "9be6e825848fc9b2cf14fcd9dc11757332c38953afe154d84c6499dfa6a14977"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/process-tree.ts",
+     "start": 328,
+     "end": 339,
+     "file_sha256": "c95c41d55cf73de5f4c4426228a42633d759203fc6ca0f590cfe884b33640f51",
+     "span_sha256": "9ca442b6fa26240b5e528b4de8addf9e12636f0f48731ef8e73efd7477af41a8"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/process-tree.ts",
+     "start": 396,
+     "end": 412,
+     "file_sha256": "c95c41d55cf73de5f4c4426228a42633d759203fc6ca0f590cfe884b33640f51",
+     "span_sha256": "9a16647a710921e3e7fd25f0a527b0f81bbaba4ff475f510e1db6aa804656d23"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/process-tree.ts",
+     "start": 943,
+     "end": 1004,
+     "file_sha256": "c95c41d55cf73de5f4c4426228a42633d759203fc6ca0f590cfe884b33640f51",
+     "span_sha256": "7b3bcd913b46db84362545c461b2ac1d05501b176a3c061fbc9935ab2d087302"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/process-tree.ts",
+     "start": 927,
+     "end": 941,
+     "file_sha256": "c95c41d55cf73de5f4c4426228a42633d759203fc6ca0f590cfe884b33640f51",
+     "span_sha256": "ac3bb0f5ba6784054194d4c0d3a8350a80fa37b9bff2d777476e4a7ff6a58202"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/process-tree.ts",
+     "start": 955,
+     "end": 1004,
+     "file_sha256": "c95c41d55cf73de5f4c4426228a42633d759203fc6ca0f590cfe884b33640f51",
+     "span_sha256": "64c4927e0f5f4e4f49af1a4db58ac3bd4c0321332b1bba115771978ab168e8f3"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/windows-supervisor.ts",
+     "start": 150,
+     "end": 153,
+     "file_sha256": "9121289b6efc3145799cee64c4d98397825d5347b8b84bb871b352d1b75873d3",
+     "span_sha256": "54570857764fb13515736c4ae6770b1a629892a01b4273b725eeb963c827c505"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/process-tree.ts",
+     "start": 140,
+     "end": 190,
+     "file_sha256": "c95c41d55cf73de5f4c4426228a42633d759203fc6ca0f590cfe884b33640f51",
+     "span_sha256": "ef314c4897012ba6fb1216796169169ae4fa10b27ea1c94192e0d79de018209b"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/windows-supervisor.ts",
+     "start": 116,
+     "end": 147,
+     "file_sha256": "9121289b6efc3145799cee64c4d98397825d5347b8b84bb871b352d1b75873d3",
+     "span_sha256": "608147955d03efd16072bb23457b22fc461735119fbb49162bc8bdac824962ad"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/windows-supervisor.ts",
+     "start": 180,
+     "end": 242,
+     "file_sha256": "9121289b6efc3145799cee64c4d98397825d5347b8b84bb871b352d1b75873d3",
+     "span_sha256": "18415d1785c8ac0c43a14450b2bd0daa037f1f2349263434a9c4f60351427576"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/process-tree.ts",
+     "start": 784,
+     "end": 858,
+     "file_sha256": "c95c41d55cf73de5f4c4426228a42633d759203fc6ca0f590cfe884b33640f51",
+     "span_sha256": "6e54548f17372698b7029d6203a8eb06b8ff4c4a466afa1a538d0f00d8ccc234"
+    }
+   ],
+   "semantic_assessment": "All actual current owner guards/effects/retry branches mapped individually. Explicit analytical corrections/accepted task deltas are incorporated; no literal nonexistent guard or bug preservation claimed. ",
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  }
+ ],
+ "scope": "Actual current source-only conformance underPROGRAM/ADR43/49/acceptedPi tasks; no strongerliteral/runtime/host/task claim.",
+ "limits": [
+  "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification.",
+  "PROGRAM actual-source/current accepted direction takes precedence over inaccurate analytical intake. Every variance is explicit; frozen rows remain unchanged.",
+  "PI-L02 intentionally replaces S19 resurrection bug; ADR49 narrows endpoint transports, ordinary artifact ceremony is separate from real host permissions underADR43.",
+  "S17:07 exact absent confirmation-dedup route is N/A only; retained proposal no-op/fingerprint checks and bounded best-effort audit remain supported.",
+  "Only47 PLANNED row proposals;24advanced edges and all other ledger records/history remain untouched. Whole ledgerhash advisory; exact per-rowCAS authoritative.",
+  "All proofs bind genuine immutable384269 source inspection, not futureCI or currentRoot staging. No stagedOIDs or fullowner authentication claimed."
+ ]
+}

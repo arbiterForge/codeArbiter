@@ -1,0 +1,143 @@
+{
+  "schema": "codearbiter-local-development-observation/1",
+  "source_parent": "970518e787c13f82d688a79a55b683ed60225752",
+  "atlas": {
+    "original_docs_failures": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1115-970518e7-watch-n4_cotsk\\docs-first-failures.json",
+      "sha256": "9dc27a768c7ec103ca523e1e32d8ec089b664918842b1a2bd6878b0220ee337a"
+    },
+    "owner": "site\\scripts\\execution-maps\\atlas-data\\major-state-contracts-update.json",
+    "source": "core/pysrc/_artifactlib.py",
+    "previous_blob": "4ebc16010335c0288a65ff8721068717d4212d78",
+    "reviewed_current_blob": "0074f23a0a3d3a1994081d0be41c63e7fe06dff3",
+    "affected_nodes": [
+      "f-capability",
+      "b-profile",
+      "k-doctor"
+    ],
+    "review": "Reviewed the actual four OS-selection queries and all three cited route nodes against existing exact-source review1c178228. Native architecture/pinning/process bounds and historical graph geometry are unchanged; no host qualification is claimed.",
+    "change": "Update only this exact source pin and its explanatory summary; retain historical review identity, all other pins and fail-closed drift checking."
+  },
+  "actual_local_atlas_checks": {
+    "full_declared_generation": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-970-atlas-full-generation-8qal6r_6\\results.json",
+      "sha256": "b05e0dacd46ff9cf4077a1db89b4133ddb61f452b67b8029598d18c8550f4c5e",
+      "scripts": [
+        {
+          "script": "gen",
+          "argv": [
+            "D:\\dev\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+            "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\tsx\\dist\\cli.mjs",
+            "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\scripts\\gen.ts"
+          ],
+          "exit_code": 0,
+          "seconds": 3.63296960000298,
+          "stdout_sha256": "c60d4ef8fc6d5dd205ac693f09b7e78331502423a6a23f628e125d9a8b2c737c",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "script": "generate-atlas",
+          "argv": [
+            "D:\\dev\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+            "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\tsx\\dist\\cli.mjs",
+            "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\scripts\\generate-atlas.ts"
+          ],
+          "exit_code": 0,
+          "seconds": 0.9520531999878585,
+          "stdout_sha256": "e8ddf6b29d472ddb79cccf6bf6de9d1429aaa41bf9bacb5f0373b86d4b378b0e",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "script": "generate-diagrams",
+          "argv": [
+            "D:\\dev\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+            "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\tsx\\dist\\cli.mjs",
+            "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\scripts\\generate-diagrams.ts"
+          ],
+          "exit_code": 0,
+          "seconds": 0.27523030000156723,
+          "stdout_sha256": "ef8d29d5c291fd1fc42d6913b252ef2f70dae251673ccdd2af22aed75df6dcd9",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "script": "diagram-audit",
+          "argv": [
+            "D:\\dev\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+            "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\tsx\\dist\\cli.mjs",
+            "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\scripts\\diagram-audit.ts"
+          ],
+          "exit_code": 0,
+          "seconds": 0.14859130000695586,
+          "stdout_sha256": "c564af8b5fed8d995a4c57cc81a1675575ccdab85a6aa907ae88f747f83b4831",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    "focused_tests": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-970-atlas-focused-tests-zgjny6ty\\result.json",
+      "sha256": "ac6e953b751d386e46f3c964978ffbba0b83105c0f829c751dc1b41d384103d2",
+      "test_files": 2,
+      "passed_tests": 158,
+      "result": {
+        "argv": [
+          "D:/dev/Users/brenn/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node.exe",
+          "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\vitest\\vitest.mjs",
+          "run",
+          "scripts/execution-maps/atlas.test.ts",
+          "scripts/execution-maps/atlas-changelog.test.ts"
+        ],
+        "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site",
+        "exit_code": 0,
+        "seconds": 13.207004099996993
+      }
+    },
+    "scope": "Actual full four-command site generator and existing Atlas tests after the Atlas binding update. Final candidate source authentication and subsequent full generation are recorded separately, not invented here."
+  },
+  "source_conformance_adoption": {
+    "result": "APPLIED_REVIEWED_SOURCE_ONLY_DISPOSITIONS",
+    "machines": [
+      "N05",
+      "N06",
+      "N08"
+    ],
+    "clauses": 11,
+    "inputs": 43,
+    "source": "89a2d43b573681b993353609fc24956ccb175f7d",
+    "proof_sha256": "a9de03a7b327c7655e69908d10751a972b215c37efcb323b866f4b7ef512ee3a",
+    "review_sha256": "fb885217e5896ab69f0b9dda5866cb49e555f16e4f3cb8a7a914ad71db5a704d",
+    "all_existing_edge_rows_unchanged": true,
+    "all_existing_tasks_and_runtime_evidence_unchanged": true,
+    "planned": {
+      "findings": 49,
+      "machines": 177,
+      "transitions": 610,
+      "total": 836
+    },
+    "N06_exception": "Existing accepted NT-05 typed-retirement repair; historical N-F10 failure is not preserved.",
+    "original_strict_candidate_authentication": "PENDING",
+    "runtime_qualification": false
+  },
+  "native_proof": {
+    "path": "evidence/native-n05-n06-n08-source-89a2/proof.json",
+    "sha256": "a9de03a7b327c7655e69908d10751a972b215c37efcb323b866f4b7ef512ee3a",
+    "source": "89a2d43b573681b993353609fc24956ccb175f7d",
+    "kind": "conformance-check",
+    "result": "PRESERVED",
+    "explicit_inputs": 43,
+    "finite_clauses": 11
+  },
+  "independent_source_review": {
+    "path": "evidence/native-n05-n06-n08-source-89a2/independent-review.json",
+    "sha256": "fb885217e5896ab69f0b9dda5866cb49e555f16e4f3cb8a7a914ad71db5a704d",
+    "status": "PASS_NO_FINDINGS"
+  },
+  "retained_boundaries": [
+    "N06 explicitly preserves the accepted current typed-retirement contract, not historical N-F10 failure. All existing edge histories, runtime proofs and task statuses remain unchanged.",
+    "Only three machine source dispositions change. Native40 recipes and all platform/installed/model/user acceptance requirements remain.",
+    "Original89 Pi kernel process remained running after successful SDK detach. The native-entry/cause question remains unresolved; a fresh970 Windows Pi job PASS does not claim a Pi fix.",
+    "Original970 Docs failure remains failed. Local generator success does not qualify that source or replace complete fresh child and normal integration CI/Docs."
+  ],
+  "parent1098_to_main": "HELD_FOR_USER_TESTING",
+  "publication": "NOT_AUTHORIZED",
+  "runtime_or_task_epoch_renewal": false
+}

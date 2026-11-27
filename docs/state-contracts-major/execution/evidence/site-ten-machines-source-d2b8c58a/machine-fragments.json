@@ -1,0 +1,320 @@
+{
+  "source_commit": "d2b8c58a650277eeab25d21272c086b19a25c4f2",
+  "row_hash_encoding": "SHA256 sorted compact UTF8 JSON (ensure_ascii=false)",
+  "proposals": [
+    {
+      "cell": "disposition:machines:S56",
+      "expected_before": {
+        "owner": "site",
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "task_ids": [
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "old_row_sha256": "dfca9d26004d61785dd8539f3db4f90cfaa57443ea286b580fccb801119294cb",
+      "proposed_after": {
+        "owner": "site",
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "task_ids": [
+          "Q-01"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "d2b8c58a650277eeab25d21272c086b19a25c4f2",
+            "ref": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/proofs/S56-preserved.json",
+            "sha256": "cb99d1b409c2d883931e859a1e48ab8376e8a4866755acedc7a3dacb98305cf0"
+          }
+        ],
+        "candidate_contract_note": "Eight-clause SOURCE-ONLY bookmark/owned listener conformance. Valid generated inventory is a precondition; bookmark state is not verified learning progress."
+      },
+      "scope": "SOURCE_ONLY"
+    },
+    {
+      "cell": "disposition:machines:S57",
+      "expected_before": {
+        "owner": "site",
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "task_ids": [
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "old_row_sha256": "dfca9d26004d61785dd8539f3db4f90cfaa57443ea286b580fccb801119294cb",
+      "proposed_after": {
+        "owner": "site",
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "task_ids": [
+          "Q-01"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "d2b8c58a650277eeab25d21272c086b19a25c4f2",
+            "ref": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/proofs/S57-preserved.json",
+            "sha256": "d40b4c9a75da21be28fcf63a5871fabd500eb5643b4192e7248d93d49d29355f"
+          }
+        ],
+        "candidate_contract_note": "Seven-clause SOURCE-ONLY preferences/copy conformance, including the actual no-cross-tab/no-disconnect baseline limitation; no clipboard/browser observation."
+      },
+      "scope": "SOURCE_ONLY"
+    },
+    {
+      "cell": "disposition:machines:S58",
+      "expected_before": {
+        "owner": "site",
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "task_ids": [
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "old_row_sha256": "dfca9d26004d61785dd8539f3db4f90cfaa57443ea286b580fccb801119294cb",
+      "proposed_after": {
+        "owner": "site",
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "task_ids": [
+          "Q-01"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "d2b8c58a650277eeab25d21272c086b19a25c4f2",
+            "ref": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/proofs/S58-preserved.json",
+            "sha256": "ecb120859dc235d5991f8af86f819eb5c224e0119a0fb1892500925e4d81a017"
+          }
+        ],
+        "candidate_contract_note": "Three-clause SOURCE-ONLY filter conformance; no particular content corpus, browser or accessibility acceptance."
+      },
+      "scope": "SOURCE_ONLY"
+    },
+    {
+      "cell": "disposition:machines:S59",
+      "expected_before": {
+        "owner": "site",
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "task_ids": [
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "old_row_sha256": "dfca9d26004d61785dd8539f3db4f90cfaa57443ea286b580fccb801119294cb",
+      "proposed_after": {
+        "owner": "site",
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "task_ids": [
+          "Q-01"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "d2b8c58a650277eeab25d21272c086b19a25c4f2",
+            "ref": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/proofs/S59-preserved.json",
+            "sha256": "38b6db27c67902ff0aba0f08ade584377996627d5c05c5a140ef6278ee04e134"
+          }
+        ],
+        "candidate_contract_note": "Five-clause SOURCE-ONLY heterogeneous selection/disclosure conformance with existing S59:01/:03 analytical baseline corrections retained. No invented common initialization or tab-widget feature."
+      },
+      "scope": "SOURCE_ONLY"
+    },
+    {
+      "cell": "disposition:machines:S60",
+      "expected_before": {
+        "owner": "site",
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "task_ids": [
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "old_row_sha256": "dfca9d26004d61785dd8539f3db4f90cfaa57443ea286b580fccb801119294cb",
+      "proposed_after": {
+        "owner": "site",
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "task_ids": [
+          "Q-01"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "d2b8c58a650277eeab25d21272c086b19a25c4f2",
+            "ref": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/proofs/S60-preserved.json",
+            "sha256": "2073c43795452a28220e8a4cad6999b11eb57052d6fcd7a14da85e8d22c9b947"
+          }
+        ],
+        "candidate_contract_note": "Five-clause SOURCE-ONLY literal contained fragment/chapter navigation conformance; actual browser focus/history behavior is unexecuted."
+      },
+      "scope": "SOURCE_ONLY"
+    },
+    {
+      "cell": "disposition:machines:S61",
+      "expected_before": {
+        "owner": "site",
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "task_ids": [
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "old_row_sha256": "dfca9d26004d61785dd8539f3db4f90cfaa57443ea286b580fccb801119294cb",
+      "proposed_after": {
+        "owner": "site",
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "task_ids": [
+          "Q-01"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "d2b8c58a650277eeab25d21272c086b19a25c4f2",
+            "ref": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/proofs/S61-preserved.json",
+            "sha256": "ac3c7e28a6750c9dd7810f0b87199a606249ae08f4356684f0afa0393794bdc7"
+          }
+        ],
+        "candidate_contract_note": "Thirteen-clause SOURCE-ONLY Atlas client conformance with existing S61:10/:11 print-description corrections retained. Valid rendered model is a precondition; no SVG geometry/browser/print/dialog/user acceptance."
+      },
+      "scope": "SOURCE_ONLY"
+    },
+    {
+      "cell": "disposition:machines:S63",
+      "expected_before": {
+        "owner": "site",
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "task_ids": [
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "old_row_sha256": "dfca9d26004d61785dd8539f3db4f90cfaa57443ea286b580fccb801119294cb",
+      "proposed_after": {
+        "owner": "site",
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "task_ids": [
+          "Q-01"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "d2b8c58a650277eeab25d21272c086b19a25c4f2",
+            "ref": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/proofs/S63-preserved.json",
+            "sha256": "acff28c887626ca6c3904e9803f6586366c70950dc615365df5ec9103f003aa5"
+          }
+        ],
+        "candidate_contract_note": "Five-clause SOURCE-ONLY TOC/forced-dark conformance with existing S63:01 arbitrary-layout-observer correction retained; no new observer/theme feature or real layout/assistive acceptance."
+      },
+      "scope": "SOURCE_ONLY"
+    },
+    {
+      "cell": "disposition:machines:S64",
+      "expected_before": {
+        "owner": "site",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "BUILD-G01",
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "old_row_sha256": "cf92f12423303019c67c70d0d4dbfca2dc857bac0a3277d8fa8d6417461cf789",
+      "proposed_after": {
+        "owner": "site",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "BUILD-G01",
+          "Q-01"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "d2b8c58a650277eeab25d21272c086b19a25c4f2",
+            "ref": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/proofs/S64-preserved.json",
+            "sha256": "6807369c351f2015d16afd2bd19766379ce329c4c278cecff70430830f5e0c03"
+          }
+        ],
+        "candidate_contract_note": "Five-clause SOURCE-ONLY generator ordering and owned-output conformance under accepted BUILD-G01 staged publication, retaining S64:02/:05 retired-state records and independent cross-owner partial failure. No literal delete-first preservation or whole-site transaction/build claim."
+      },
+      "scope": "SOURCE_ONLY"
+    },
+    {
+      "cell": "disposition:machines:S66",
+      "expected_before": {
+        "owner": "site",
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "task_ids": [
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "old_row_sha256": "dfca9d26004d61785dd8539f3db4f90cfaa57443ea286b580fccb801119294cb",
+      "proposed_after": {
+        "owner": "site",
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "task_ids": [
+          "Q-01"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "d2b8c58a650277eeab25d21272c086b19a25c4f2",
+            "ref": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/proofs/S66-preserved.json",
+            "sha256": "b8dfe15dea7216bf6f677e537bee842d6aa58050eb8fbdb0f9edd676749cfd16"
+          }
+        ],
+        "candidate_contract_note": "Eight-clause SOURCE-ONLY capture validation/failure/disposal-control conformance. Disposal is invoked with bounded retries; successful physical cleanup and actual target/media/runtime freshness are not observed."
+      },
+      "scope": "SOURCE_ONLY"
+    },
+    {
+      "cell": "disposition:machines:S67",
+      "expected_before": {
+        "owner": "site",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "BUILD-G01",
+          "Q-01"
+        ],
+        "status": "PLANNED",
+        "evidence": []
+      },
+      "old_row_sha256": "cf92f12423303019c67c70d0d4dbfca2dc857bac0a3277d8fa8d6417461cf789",
+      "proposed_after": {
+        "owner": "site",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "BUILD-G01",
+          "Q-01"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "d2b8c58a650277eeab25d21272c086b19a25c4f2",
+            "ref": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/proofs/S67-preserved.json",
+            "sha256": "f311bea0458aa7fe7a5d47bd52848a6714f084438f2a9183a4cc702c81923ae4"
+          }
+        ],
+        "candidate_contract_note": "Seven-clause SOURCE-ONLY Academy admission/staged publication conformance under BUILD-G01, retaining S67:01 unsupported strict-schema/gitlink correction and S67:04/:06 retired intermediates. Working guide/action reads and external-repository acceptance limits remain explicit."
+      },
+      "scope": "SOURCE_ONLY"
+    }
+  ]
+}

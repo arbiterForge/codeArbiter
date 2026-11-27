@@ -27,6 +27,12 @@ func TestWorkProjectEffectPreservesIssueAndScopesRetry(t *testing.T) {
 	id := model.S(work["work_id"])
 	issueConfig := call("work-provider-configure", object{"operation_id": "project-issue-config-001", "repository": "arbiterForge/disposable", "credential_ref": "GH_TOKEN", "effect_timing": "immediate"})
 	projectConfig := call("work-project-configure", object{"operation_id": "project-config-001", "project_node_id": "PVT_fixture12345678"})
+	for op, configured := range map[string]object{"work-provider-get": issueConfig, "work-project-get": projectConfig} {
+		readback := call(op, object{})
+		if readback["binding_generation"] != configured["binding_generation"] {
+			t.Fatalf("%s did not read the configured binding: %v", op, readback)
+		}
+	}
 	work = call("work-effect-adopt", object{"operation_id": "project-issue-adopt-001", "work_id": id,
 		"binding_generation": issueConfig["binding_generation"], "expected": expected(work),
 		"remote_issue_number": int64(7), "remote_issue_url": "https://github.com/arbiterForge/disposable/issues/7", "remote_state": "open"})
@@ -123,6 +129,14 @@ func TestWorkProjectEffectPreservesIssueAndScopesRetry(t *testing.T) {
 	if model.S(model.M(fieldWhileUnknown["project_effect"])["status"]) != "pending" ||
 		model.S(model.M(fieldWhileUnknown["provider_effect"])["status"]) != "outcome_unknown" {
 		t.Fatalf("field staging changed or blocked an independent issue status effect: %v", fieldWhileUnknown)
+	}
+	conflicted := call("work-project-conflict", object{"operation_id": "project-field-conflict-001",
+		"work_id": id, "binding_generation": projectConfig["binding_generation"],
+		"observed_option_id": "different-option", "expected": expected(fieldWhileUnknown)})
+	effect := model.M(conflicted["project_effect"])
+	if effect["status"] != "conflict" || effect["observed_option_id"] != "different-option" ||
+		model.M(conflicted["provider_effect"])["status"] != "outcome_unknown" {
+		t.Fatalf("Project conflict changed the observed option or independent issue effect: %v", conflicted)
 	}
 }
 

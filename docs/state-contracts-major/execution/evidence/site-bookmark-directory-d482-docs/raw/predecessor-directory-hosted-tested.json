@@ -1,0 +1,132 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+  "kind": "test",
+  "result": "PASSED",
+  "producer": {
+    "class": "hosted",
+    "identity": "GitHub normal Deploy docs push43582198099 original build132409108684 Browser publication gate; original list reporter + uploaded readbacks"
+  },
+  "platform": "Ubuntu26.04.1 hosted Chrome157.0.8103.50",
+  "inputs": {
+    "site/package.json": "f5fc189cffe4dd4f4ba2de7ee1a31f36cacc017d0f4b598d69a3ffc4e1bdffd3",
+    "site/package-lock.json": "d81f1d4b54c0e2a0fc05815687fcb306e0a12f98c3e382032556e445c614787a",
+    "site/playwright.config.ts": "1f8d2f99203986f48b92209918479f45bfb054043296745e0d987e415e199615",
+    "site/astro.config.mjs": "20d9902155edc22090f5d4929b8643684dc7d0ffa8e306158ee28bafe899e47f",
+    "site/base.mjs": "16dffd9508277355c801e56cff1d8c49bbb26f809b6b279d799aaae5c7e78931",
+    ".github/workflows/docs.yml": "38e7ba00eaac7069573dedcfdc44552426370a1293d3b91935dc7a638c495ac7",
+    "site/test/browser/guide-discovery.spec.ts": "cef4f4c061b20f7e48d858cfaed5a9bc01ca999be8420a130be8d9cd6a1aa0d9",
+    "site/src/components/GuideDirectory.astro": "5df67010d4359d7a5c2f81b4914104812eeba82be063fc3b0f8b795a10bc8160",
+    "site/src/scripts/guide-filter.ts": "62dca60757ab9b275280238eb93dcc16ea04dda0c0c5cb9bbd076d538143c91f",
+    "site/scripts/guide-directory.ts": "f3a0fc545056b843265baa854a376226ae71e0f820f0d2e78f5c0e748a968717",
+    "site/src/content/docs/guides/adding-a-dependency.mdx": "54dfb6bc464a5a1dbe1fbb7fb24590637aaba0d7851a397a06544b91066a20bf",
+    "site/src/content/docs/guides/autonomous-sprints.mdx": "14ccb49c331be0f8b0551d299e764f616159cfdd287324cba227d04d1ecc6e31",
+    "site/src/content/docs/guides/ca-sandbox.md": "f5993258c611cb409b9668e03bbac4102d8d6074f5105dfd9daa244e29a109d9",
+    "site/src/content/docs/guides/feature-lane.mdx": "15ca6f3dc5183523a3ee2bf5091e87ab18999e7b9532ca778a0c59babef766db",
+    "site/src/content/docs/guides/first-feature.mdx": "93c29c3d9bf7f21784712f6fc3e9a1f8066e5ed72ebbf54508b92195e49aa63f",
+    "site/src/content/docs/guides/index.mdx": "974a8a43e3fbdb239a41c6f1dde94aa85cb0562923156b023318817dcbc119d7",
+    "site/src/content/docs/guides/investigate-and-fix.mdx": "5250770887ffd964d64336b19ce8d18efa98494a7c0a2f1a6ed99aa99a65c942",
+    "site/src/content/docs/guides/opt-in-a-repo.mdx": "7c3816ecef1a294ef4f3246f0cd9599e3d7f722fdb593857c065b8f793b49a2e",
+    "site/src/content/docs/guides/overriding-a-gate.md": "7b955c5893f7604752bcba102e31ce47033d210a2ed6b557fbc7d0a6dc283754",
+    "site/src/content/docs/guides/plan-a-new-project.mdx": "00d37a59a100c1461100e4121276d22ee79baf9a403c8557ee507656928bb85c",
+    "site/src/content/docs/guides/recording-adrs.mdx": "f9166386645da1df268a09d6560728a8ef77cacf70e2fee2caba4f1ffc54b7b8",
+    "site/src/content/docs/guides/releasing-a-version.mdx": "70847a274253676d32ff0a86d8315a6e7c569982e0bf5e9c2331809c580bc8f4",
+    "site/src/content/docs/guides/resume-and-recover.mdx": "c43958bb99f1373cda77486e56e20dc1296de2a94daff9fddad5e68d3bd143f0",
+    "site/src/content/docs/guides/return-to-a-project.md": "cbf6eddce2d5503381652f68583562cab1403b0c31ffebd6cd30efe5574e08e2",
+    "site/src/content/docs/guides/review-and-ship.mdx": "831c2d1d1b239679737de172fd01b472b3465f0d789a071ee93da2d85dc9c40d",
+    "site/src/content/docs/guides/review-artifacts.md": "928ecfc031896439303ddf4b551b13dd61779d2cbe8e8b67d05962349c72130a",
+    "site/src/content/docs/guides/the-statusline.md": "6b72e46955c582a63c0bdce3466dabd1e0918d3d60770cde24b5a7adc3a20231",
+    "site/src/content/docs/guides/troubleshooting.md": "7cef502368aa76e8c1e0ba1f2b20afc567a079337039304700cd52bcbd8aa36f",
+    "site/src/content/docs/guides/understand-an-existing-project.md": "29f9a96290b6aa61f1dcba5f6feb8dd0835e7bb8b7cf2a7556f054d4abc39a47",
+    "site/src/content/docs/guides/uninstalling.md": "8cc0421237325747c86c6075da509b23c1162d91c920fd8312315d3ee64ecd35",
+    "site/src/content/docs/guides/uninstalling/details.md": "0e4829de7a22056249dcc64905f065b7a431fd709af4e4b8bb72bb94ed002089"
+  },
+  "commands": [
+    {
+      "argv": [
+        "npm",
+        "run",
+        "test:browser"
+      ],
+      "cwd": "site",
+      "exit_code": 0,
+      "observed_exit_basis": "Original named successful Browser publication gate step; exact command appears in original private log. No new command executed."
+    }
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/site-bookmark-directory-M-46e29a79/raw/academy-wayfinding-context.json",
+      "sha256": "8471a6998797bd093b3574643dc56f2a66ba09da5fd2d47cc82050b7c9c3b727"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/site-bookmark-directory-M-46e29a79/raw/guide-discovery-geometry.json",
+      "sha256": "17d41ffe863678e49da064cdd11a27a37550eab9df842e95aa308a4c9b8f992b"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/site-bookmark-directory-M-46e29a79/raw/original-named-outcomes-projection.json",
+      "sha256": "7b61ac8f4864383cfff7b41c0549549f36e52f6bc2b66849a0159f5fc235d4eb"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/site-bookmark-directory-M-46e29a79/raw/origin-projection.json",
+      "sha256": "bedda51941c73999b84565daa7c9869f858abb9fcf69a3162a707ebeeadc4492"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/site-bookmark-directory-M-46e29a79/raw/original-artifact-admission.json",
+      "sha256": "ea5238049b37eedc0292673f84c4ab35913d97e2c5d18171d9f048b18ffbd186"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/site-bookmark-directory-M-46e29a79/raw/finite-source-clause-observations.json",
+      "sha256": "9c4890ebbe52dc608f078d63bf3c30bf3bc57981281ae8e736abc83f8c8e7005"
+    },
+    {
+      "run_id": 43582198099,
+      "job_id": 132409108684,
+      "artifact_id": 14107944699,
+      "sha256": "cf02b3ee3e04c09ba36f253506e4a9880cf19e28524651c56118c98dd558e76d"
+    }
+  ],
+  "disposition_ids": [
+    "disposition:transitions:S58:01",
+    "disposition:transitions:S58:02"
+  ],
+  "per_cell_assertion_mapping": [
+    {
+      "cell": "disposition:transitions:S58:01",
+      "observed_named_cases": [
+        "directory contains every guide and filters by both task and literal words",
+        "filtering makes no request or storage write and does not submit a query URL"
+      ],
+      "assertion_scope": "Actual category selection narrows to4; two required literal terms narrow to1; a nonmatch containing markup yields0, visible empty state and exact count. Source-only guard supplement: guideMatches applies NFKC/lowercase and bounded160-character normalized query, requires each term and matching selected category; no claim that a runtime Unicode boundary vector was executed."
+    },
+    {
+      "cell": "disposition:transitions:S58:02",
+      "observed_named_cases": [
+        "directory contains every guide and filters by both task and literal words",
+        "filter controls and the review guide reconnect after client navigation and back"
+      ],
+      "assertion_scope": "Clear restores the complete declared card count and input focus. After real client navigation/back, controls remain usable and selecting initialize-and-understand yields3 cards. Read-only test separately asserts no request, storage write or query-URL submission."
+    }
+  ],
+  "execution_context": {
+    "product_M": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+    "tree": "d69fb1c0eb4b16672137e1185eb085339f13727d",
+    "normal_docs_R": 43582198099,
+    "original_job": 132409108684,
+    "original_browser_artifact": 14107944699,
+    "original_archive_sha256": "cf02b3ee3e04c09ba36f253506e4a9880cf19e28524651c56118c98dd558e76d",
+    "original_job_log_sha256": "226e79b6b729ba51c812c0989c3e6d2e853bf7247138876b55f5c5bb87959801",
+    "source_epoch": "Original hosted M, not current Temp inspection execution",
+    "later_inspection": "Original metadata/ZIP/list output read-only now; no API/browser/test rerun",
+    "selected_criterion_named_outcomes": 7,
+    "selected_capture_provenance_outcomes": 2
+  },
+  "scope": "Finite directory clauses only, no whole machine or SITE task promotion.",
+  "limits": [
+    "Genuine hosted normal docs push R43582198099 at product M; no relabeling to a local browser or another source. Original names come from list output, not an invented Playwright JSON reporter.",
+    "Runtime cases use original CI Chrome157.0.8103.50 on Ubuntu26.04.1. No exact hosted browser executable digest, platform union or installed/native/host/provider claim.",
+    "Actual storage-denial fixture intentionally overrides acquisition. Bookmark is reading convenience, not completion or authority. No real cross-tab dispatch or disconnected listener invocation is claimed.",
+    "Finite helper source inspection supplements explicit guards and effects; unexecuted malformed/Unicode/oversized vectors are identified rather than called new passing tests.",
+    "Immutable built product/source M and original artifact/readback IDs are retained. These inputs do not create a generic full site-build membership claim or establish a later rebuilt site from owner-file equality.",
+    "Original whole acquisition/joblog/ZIP remain private. Hosted raw artifact expiry/unavailability may make future owning authentication unavailable; no reader exception or policy relaxation is proposed."
+  ]
+}

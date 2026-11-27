@@ -1,0 +1,388 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "/root/ci_repair_review: source-only author, no independent self-review or execution"
+ },
+ "inputs": {
+  ".codearbiter/decisions/0043-assistive-state-engine.md": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+  "core/pysrc/_artifactauthoritylib.py": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+  "core/pysrc/_gitexec.py": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5",
+  "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e"
+ },
+ "disposition_ids": [
+  "disposition:machines:hooks:codex-review",
+  "disposition:transitions:hooks:codex-review:01",
+  "disposition:transitions:hooks:codex-review:02",
+  "disposition:transitions:hooks:codex-review:03",
+  "disposition:transitions:hooks:codex-review:04",
+  "disposition:transitions:hooks:codex-review:05",
+  "disposition:transitions:hooks:codex-review:06"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/source-bindings.json",
+   "sha256": "1fb0bc0a5b9b6bbb0a5778aa3c7473b7aa4436f12b7302691482981d4e13503a"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/clause-inspection.json",
+   "sha256": "fb0f419efc542d8d24115010ad418287ac0caada0681005b8a0f2c01c511d115"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/inherited-evidence-inventory.json",
+   "sha256": "0bd4a253ed17166d5e44ef669c14437b7b43e8382d96d7130cf828f7101440bc"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/baseline-current-joins.json",
+   "sha256": "8f9a26c8b80983c73fd27867ebf7510633af5565ebe4d4811b1c64a0cca02b5f"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:hooks:codex-review",
+   "frozen_row_sha256": "5c4f140bf96e5e0597cdf4f5ebb9f99349a5f9869925e58f7df9c03d703d0705",
+   "clause_ids": [
+    "disposition:transitions:hooks:codex-review:01",
+    "disposition:transitions:hooks:codex-review:02",
+    "disposition:transitions:hooks:codex-review:03",
+    "disposition:transitions:hooks:codex-review:04",
+    "disposition:transitions:hooks:codex-review:05",
+    "disposition:transitions:hooks:codex-review:06"
+   ],
+   "witnesses": [
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "symbol": "observe_codex_hook",
+     "start": 4097,
+     "end": 4275,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "36f7fce6660d948b8f8e268c27802e36b91aaabee2618f87afd1f1f3dbbe7f3c",
+     "git_oid": "fb3089e12ddb95242a511cb7754f1e744f7bf53d"
+    },
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "symbol": "_codex_v2_trace_anchor",
+     "start": 3594,
+     "end": 3613,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "3d30a92be97a5c6254dc4369286bb3924be3b179496318e3247f1826cccf0bc0",
+     "git_oid": "fb3089e12ddb95242a511cb7754f1e744f7bf53d"
+    },
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "symbol": "_claim_codex_event",
+     "start": 3743,
+     "end": 3761,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "eae57448633d27a89f6e1e3142a9f5222f740260026da9f99b8830cb8f74d802",
+     "git_oid": "fb3089e12ddb95242a511cb7754f1e744f7bf53d"
+    },
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "symbol": "_codex_native_post_join",
+     "start": 3858,
+     "end": 3918,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "558a80343cbf13e625eb51ee0819180121d3c602da6c4dc64f336b01065e922b",
+     "git_oid": "fb3089e12ddb95242a511cb7754f1e744f7bf53d"
+    },
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "symbol": "_codex_native_lifecycle_join",
+     "start": 3964,
+     "end": 4025,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "b0c512d9502b1b3ae313c8bbe48f109812e09a4e36e098197cbbd871f791d8fd",
+     "git_oid": "fb3089e12ddb95242a511cb7754f1e744f7bf53d"
+    },
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "symbol": "_codex_v2_activity",
+     "start": 3616,
+     "end": 3668,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "40d7c0a1afeec8a46829596bf64122ccce4c28673a35ec94148daaf13eb8ce97",
+     "git_oid": "fb3089e12ddb95242a511cb7754f1e744f7bf53d"
+    },
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "symbol": "_codex_v2_bind_child",
+     "start": 3709,
+     "end": 3721,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "c331bebdb2227cf2e689d2268834dfb7b66d7a73ee8b1a2a82ccde2e45903df7",
+     "git_oid": "fb3089e12ddb95242a511cb7754f1e744f7bf53d"
+    },
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "symbol": "_reject_overlapping_authority",
+     "start": 1183,
+     "end": 1197,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "409ccbf299cb16d55c204b1d53625864721665f0af00233f2465aaabc6dd05e4",
+     "git_oid": "fb3089e12ddb95242a511cb7754f1e744f7bf53d"
+    },
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "symbol": "_codex_native_steering",
+     "start": 4043,
+     "end": 4094,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "02444e3a82c078bc3ca486ecd6d3575a967cf5e61da750bd4990544747fb6253",
+     "git_oid": "fb3089e12ddb95242a511cb7754f1e744f7bf53d"
+    },
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "symbol": "_codex_steering_uuid",
+     "start": 4028,
+     "end": 4040,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "cacfec62a728861f0e3aeb9aaaeb8b92f3c23fe1ace285752ed3b52b17979053",
+     "git_oid": "fb3089e12ddb95242a511cb7754f1e744f7bf53d"
+    },
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "symbol": "_parse_decision",
+     "start": 3477,
+     "end": 3548,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "da66e197af8593b141115244f9b3ec50c873974d973426775c92e5d31b3781ff",
+     "git_oid": "fb3089e12ddb95242a511cb7754f1e744f7bf53d"
+    },
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "symbol": "_codex_review_complete",
+     "start": 3921,
+     "end": 3942,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "eae66fdd079ac26e8924cef5e921bf72d58f63a4ddedf7bed952ec0c3b338a4e",
+     "git_oid": "fb3089e12ddb95242a511cb7754f1e744f7bf53d"
+    },
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "symbol": "publish_request",
+     "start": 4632,
+     "end": 4687,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "dfc0cebada45feda07b609743c2b67fec3ea9f9b852fe98210c5a0efdccf5a7f",
+     "git_oid": "fb3089e12ddb95242a511cb7754f1e744f7bf53d"
+    }
+   ],
+   "semantic_assessment": "All 6 frozen clauses inspected as a finite source contract with the per-clause current/pinned witnesses and explicit analytical limits in clause-inspection. Existing advanced observations remain historical, not renewed.",
+   "intake_variances": [],
+   "limits": "Source conformance only. No product/test/native/host/model/command execution, no action authority, semantic truth or task/scenario completion claim."
+  },
+  {
+   "cell": "disposition:transitions:hooks:codex-review:01",
+   "frozen_row_sha256": "66508c818c36de39ff46620a67530a0bb5844e8725c72d9d4c30f59554c54fe0",
+   "witnesses": [
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "symbol": "observe_codex_hook",
+     "start": 4097,
+     "end": 4275,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "36f7fce6660d948b8f8e268c27802e36b91aaabee2618f87afd1f1f3dbbe7f3c",
+     "git_oid": "fb3089e12ddb95242a511cb7754f1e744f7bf53d"
+    },
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "symbol": "_codex_v2_trace_anchor",
+     "start": 3594,
+     "end": 3613,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "3d30a92be97a5c6254dc4369286bb3924be3b179496318e3247f1826cccf0bc0",
+     "git_oid": "fb3089e12ddb95242a511cb7754f1e744f7bf53d"
+    },
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "symbol": "_claim_codex_event",
+     "start": 3743,
+     "end": 3761,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "eae57448633d27a89f6e1e3142a9f5222f740260026da9f99b8830cb8f74d802",
+     "git_oid": "fb3089e12ddb95242a511cb7754f1e744f7bf53d"
+    }
+   ],
+   "semantic_assessment": "The exact frozen launch envelope, session/turn/tool-use and supported native profile are required. Collaboration captures a bound parent transcript metadata/tail anchor, persists LAUNCHING, then joins the host activity UUID and actual child metadata; claims prevent reusing native events.",
+   "intake_variances": [],
+   "limits": "Source conformance only. No product/test/native/host/model/command execution, no action authority, semantic truth or task/scenario completion claim."
+  },
+  {
+   "cell": "disposition:transitions:hooks:codex-review:02",
+   "frozen_row_sha256": "46c09681e96993f89869c1cce59fcf7826a4f36f580445693a97e10557cf9825",
+   "witnesses": [
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "symbol": "_codex_native_post_join",
+     "start": 3858,
+     "end": 3918,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "558a80343cbf13e625eb51ee0819180121d3c602da6c4dc64f336b01065e922b",
+     "git_oid": "fb3089e12ddb95242a511cb7754f1e744f7bf53d"
+    },
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "symbol": "_codex_native_lifecycle_join",
+     "start": 3964,
+     "end": 4025,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "b0c512d9502b1b3ae313c8bbe48f109812e09a4e36e098197cbbd871f791d8fd",
+     "git_oid": "fb3089e12ddb95242a511cb7754f1e744f7bf53d"
+    },
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "symbol": "_codex_v2_activity",
+     "start": 3616,
+     "end": 3668,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "40d7c0a1afeec8a46829596bf64122ccce4c28673a35ec94148daaf13eb8ce97",
+     "git_oid": "fb3089e12ddb95242a511cb7754f1e744f7bf53d"
+    },
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "symbol": "_codex_v2_bind_child",
+     "start": 3709,
+     "end": 3721,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "c331bebdb2227cf2e689d2268834dfb7b66d7a73ee8b1a2a82ccde2e45903df7",
+     "git_oid": "fb3089e12ddb95242a511cb7754f1e744f7bf53d"
+    }
+   ],
+   "semantic_assessment": "Post/start join handles the supported arrival orders under per-child locking. Actual collaboration activity and child metadata must agree on parent/session/path/UUID; both launch post-confirmation and actual child start are needed for RUNNING. Duplicate/conflicting/failed lifecycle consumes or rejects the child.",
+   "intake_variances": [],
+   "limits": "Source conformance only. No product/test/native/host/model/command execution, no action authority, semantic truth or task/scenario completion claim."
+  },
+  {
+   "cell": "disposition:transitions:hooks:codex-review:03",
+   "frozen_row_sha256": "a97264d273702c7c414d41de7ee3ab457a012724fa9edfc5271d8e77080690d7",
+   "witnesses": [
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "symbol": "_reject_overlapping_authority",
+     "start": 1183,
+     "end": 1197,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "409ccbf299cb16d55c204b1d53625864721665f0af00233f2465aaabc6dd05e4",
+     "git_oid": "fb3089e12ddb95242a511cb7754f1e744f7bf53d"
+    },
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "symbol": "observe_codex_hook",
+     "start": 4097,
+     "end": 4275,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "36f7fce6660d948b8f8e268c27802e36b91aaabee2618f87afd1f1f3dbbe7f3c",
+     "git_oid": "fb3089e12ddb95242a511cb7754f1e744f7bf53d"
+    }
+   ],
+   "semantic_assessment": "Ordinary parent spawns record a per-session/turn marker and reject overlapping active legacy authority. Current collaboration profiles are explicitly excluded because direct native activity UUIDs separate unrelated launches; the legacy exclusion is not generalized.",
+   "intake_variances": [],
+   "limits": "Source conformance only. No product/test/native/host/model/command execution, no action authority, semantic truth or task/scenario completion claim."
+  },
+  {
+   "cell": "disposition:transitions:hooks:codex-review:04",
+   "frozen_row_sha256": "02e4a2982659b37fbb9374a8b796415aedcb09d49d93c4d6fca0506e8d64da85",
+   "witnesses": [
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "symbol": "_codex_native_steering",
+     "start": 4043,
+     "end": 4094,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "02444e3a82c078bc3ca486ecd6d3575a967cf5e61da750bd4990544747fb6253",
+     "git_oid": "fb3089e12ddb95242a511cb7754f1e744f7bf53d"
+    },
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "symbol": "_codex_steering_uuid",
+     "start": 4028,
+     "end": 4040,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "cacfec62a728861f0e3aeb9aaaeb8b92f3c23fe1ace285752ed3b52b17979053",
+     "git_oid": "fb3089e12ddb95242a511cb7754f1e744f7bf53d"
+    }
+   ],
+   "semantic_assessment": "Supported steer/resume/close events normalize only the denial target and mark the matching bound child rejected. Collaboration matching uses canonical/relative task path or direct native UUID/parent association, never absent evidence as a positive join.",
+   "intake_variances": [],
+   "limits": "Source conformance only. No product/test/native/host/model/command execution, no action authority, semantic truth or task/scenario completion claim."
+  },
+  {
+   "cell": "disposition:transitions:hooks:codex-review:05",
+   "frozen_row_sha256": "636ec4eda4027e3bbd73fdba341c166d57f732a9762c12d6594b69fd093b270d",
+   "witnesses": [
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "symbol": "_codex_native_lifecycle_join",
+     "start": 3964,
+     "end": 4025,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "b0c512d9502b1b3ae313c8bbe48f109812e09a4e36e098197cbbd871f791d8fd",
+     "git_oid": "fb3089e12ddb95242a511cb7754f1e744f7bf53d"
+    },
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "symbol": "_parse_decision",
+     "start": 3477,
+     "end": 3548,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "da66e197af8593b141115244f9b3ec50c873974d973426775c92e5d31b3781ff",
+     "git_oid": "fb3089e12ddb95242a511cb7754f1e744f7bf53d"
+    },
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "symbol": "_codex_review_complete",
+     "start": 3921,
+     "end": 3942,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "eae66fdd079ac26e8924cef5e921bf72d58f63a4ddedf7bed952ec0c3b338a4e",
+     "git_oid": "fb3089e12ddb95242a511cb7754f1e744f7bf53d"
+    }
+   ],
+   "semantic_assessment": "Only the first clean bound stop with matching child turn, post-confirmed launch and frozen context can complete. The decision parser requires exact format/request/target/contract, complete coverage, passing verdict, no BLOCK finding and every required completion obligation/reference. Invalid first-stop evidence is rejected, not replaced by a later answer.",
+   "intake_variances": [],
+   "limits": "Source conformance only. No product/test/native/host/model/command execution, no action authority, semantic truth or task/scenario completion claim."
+  },
+  {
+   "cell": "disposition:transitions:hooks:codex-review:06",
+   "frozen_row_sha256": "b2be53acb7047873714e866309690bb379d686bceea87493833af42f4a81468b",
+   "witnesses": [
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "symbol": "_codex_review_complete",
+     "start": 3921,
+     "end": 3942,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "eae66fdd079ac26e8924cef5e921bf72d58f63a4ddedf7bed952ec0c3b338a4e",
+     "git_oid": "fb3089e12ddb95242a511cb7754f1e744f7bf53d"
+    },
+    {
+     "path": "core/pysrc/_artifactauthoritylib.py",
+     "symbol": "publish_request",
+     "start": 4632,
+     "end": 4687,
+     "file_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+     "span_sha256": "dfc0cebada45feda07b609743c2b67fec3ea9f9b852fe98210c5a0efdccf5a7f",
+     "git_oid": "fb3089e12ddb95242a511cb7754f1e744f7bf53d"
+    }
+   ],
+   "semantic_assessment": "Completion freezes the observed decision and launch into immutable observation and COMPLETED payload. Publication rechecks frozen context and observation digest before native capture; CAPTURED replay returns its existing receipt. A later lifecycle cannot overwrite terminal accepted identity.",
+   "intake_variances": [],
+   "limits": "Source conformance only. No product/test/native/host/model/command execution, no action authority, semantic truth or task/scenario completion claim."
+  }
+ ],
+ "scope": "hooks:codex-review finite current source guard/effect/retry clauses, with named analytical distinctions; not runtime acceptance.",
+ "limits": [
+  "No tests, full owner, API, runtime, provider/model, native/Go/SDK/Docker, installs, network or canonical/index/ref/marker/ledger/status writes.",
+  "PROGRAM and current accepted requirements govern named changes. No actual failing test is relabeled N/A, no task/scenario or whole-platform completion.",
+  "Root alone owns independent review, unchanged strict prospective admission, canonical integration and later hosted qualification.",
+  "18 advanced rows retain exact original objects, proof bytes, history and epochs; no cache/negative absence/semantic freshness invented."
+ ]
+}

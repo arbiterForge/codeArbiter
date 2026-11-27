@@ -1,0 +1,2805 @@
+{
+ "schema": "codearbiter.literal-source-clause-inspection/1",
+ "source_commit": "cfa8effd8e3e856571052f94311f4f01c96b7f77",
+ "families": [
+  "generator:discovery",
+  "generator:hook-extractor",
+  "generator:public-catalog",
+  "pi-qualification:runtime-discovery",
+  "pi-qualification:disposable-home"
+ ],
+ "clauses": [
+  {
+   "id": "generator:discovery:01",
+   "machine_id": "generator:discovery",
+   "frozen_contract": {
+    "transition_id": "generator:discovery:01",
+    "machine_id": "generator:discovery",
+    "owner": "hooks-workflows",
+    "baseline": {
+     "from": "missing root/lens directory",
+     "event": "collect",
+     "guard": "path absent",
+     "to": "empty inventory",
+     "effects": "Return empty list.",
+     "failure_retry": "Other read/stat failures propagate; existence alone not a successful parse.",
+     "source": [
+      {
+       "path": "site/scripts/generator/collect-sources.ts",
+       "symbol": "module",
+       "lines": "1-59",
+       "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/collect-sources.ts",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/collect-sources.ts"
+      },
+      {
+       "path": "site/scripts/generator/collect-lenses.ts",
+       "symbol": "module",
+       "lines": "1-33",
+       "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/collect-lenses.ts",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/collect-lenses.ts"
+      },
+      {
+       "path": "site/scripts/generator/classify-source.ts",
+       "symbol": "module",
+       "lines": "1-30",
+       "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/classify-source.ts",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/classify-source.ts"
+      },
+      {
+       "path": "site/scripts/generator/derive-name.ts",
+       "symbol": "module",
+       "lines": "1-27",
+       "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/derive-name.ts",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/derive-name.ts"
+      },
+      {
+       "path": "site/scripts/generator/assign-slugs.ts",
+       "symbol": "module",
+       "lines": "1-28",
+       "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/assign-slugs.ts",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/assign-slugs.ts"
+      },
+      {
+       "path": "site/scripts/generator/slugify.ts",
+       "symbol": "module",
+       "lines": "1-14",
+       "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/slugify.ts",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/slugify.ts"
+      },
+      {
+       "path": "site/scripts/generator/host-command-catalog.ts",
+       "symbol": "module",
+       "lines": "1-66",
+       "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/host-command-catalog.ts",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/host-command-catalog.ts"
+      }
+     ],
+     "transition_id": "generator:discovery:01"
+    },
+    "task_ids": [
+     "HW-24",
+     "HW-19",
+     "HW-27"
+    ],
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "proposed_composed_scenario_ids": [
+     "SEQ-29"
+    ],
+    "verification_status": "NOT_RUN",
+    "evidence": [],
+    "candidate_transition": null,
+    "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+   },
+   "frozen_contract_sha256": "9bf01da06584cc0f899cd083e30d25b93d870d3d21fcab4916350b7d86ad4993",
+   "ledger_status": "PLANNED",
+   "assessment": "SOURCE_CONFORMANCE_WITH_NAMED_ACCEPTED_DELTAS",
+   "semantic_assessment": "collectSources returns [] for a missing root; collectLenses returns [] for a missing lens directory. After existence checks, directory/text/stat operations are direct uncaught calls. Empty discovery is not semantic parse success; existsSync absence results are not a universal diagnosis of why a path is unavailable.",
+   "intake_variances": [],
+   "current_witnesses": [
+    {
+     "path": "site/scripts/generator/collect-sources.ts",
+     "symbol": "literal source lines 6-59",
+     "start": 6,
+     "end": 59,
+     "file_sha256": "31973d8a555b97ff21449882f40cdf8aa6f670ee40f8e6721b6fc35ef3186711",
+     "span_sha256": "fbec18a97501bccdd766996db4d566b93aa24bde8de38cac98559e4046438e38",
+     "git_oid": "7d0abe705231df98a45d4ccfd8bc213900c02bec"
+    },
+    {
+     "path": "site/scripts/generator/collect-lenses.ts",
+     "symbol": "literal source lines 22-33",
+     "start": 22,
+     "end": 33,
+     "file_sha256": "18eed1236677e6217ee5028f113a36704ccc8fea96ce87cc4e612e3e91e8a13c",
+     "span_sha256": "9f9e6ea9a454960b1d15a9eaa6fbe8ee6d1a12ade9be37bf96739d270cca599a",
+     "git_oid": "4349e814e8d652bf50562631e5e80ff1f4f7e08e"
+    }
+   ],
+   "pinned_baseline_witnesses": [
+    {
+     "path": "site/scripts/generator/collect-sources.ts",
+     "start": 1,
+     "end": 59,
+     "symbol": "module",
+     "file_sha256": "31973d8a555b97ff21449882f40cdf8aa6f670ee40f8e6721b6fc35ef3186711",
+     "span_sha256": "31973d8a555b97ff21449882f40cdf8aa6f670ee40f8e6721b6fc35ef3186711",
+     "git_oid": "7d0abe705231df98a45d4ccfd8bc213900c02bec"
+    },
+    {
+     "path": "site/scripts/generator/collect-lenses.ts",
+     "start": 1,
+     "end": 33,
+     "symbol": "module",
+     "file_sha256": "18eed1236677e6217ee5028f113a36704ccc8fea96ce87cc4e612e3e91e8a13c",
+     "span_sha256": "18eed1236677e6217ee5028f113a36704ccc8fea96ce87cc4e612e3e91e8a13c",
+     "git_oid": "4349e814e8d652bf50562631e5e80ff1f4f7e08e"
+    },
+    {
+     "path": "site/scripts/generator/classify-source.ts",
+     "start": 1,
+     "end": 30,
+     "symbol": "module",
+     "file_sha256": "08e41c224b3d0faf700df404d0bf1cbdaa29f4e863ac4bb6226142fff42853d2",
+     "span_sha256": "08e41c224b3d0faf700df404d0bf1cbdaa29f4e863ac4bb6226142fff42853d2",
+     "git_oid": "3d417271192f633d3bc3ab7160484c9d4d0f4c87"
+    },
+    {
+     "path": "site/scripts/generator/derive-name.ts",
+     "start": 1,
+     "end": 27,
+     "symbol": "module",
+     "file_sha256": "b3e8321eaa1ba7e4f953b5e937c94da38d041e58220eac0114d88e7dacd6a5e2",
+     "span_sha256": "b3e8321eaa1ba7e4f953b5e937c94da38d041e58220eac0114d88e7dacd6a5e2",
+     "git_oid": "6a692483dc56594163e79277edf4222da28e5f3e"
+    },
+    {
+     "path": "site/scripts/generator/assign-slugs.ts",
+     "start": 1,
+     "end": 28,
+     "symbol": "module",
+     "file_sha256": "9469de207ea9d3c3ff1af06b4077357766749d22527d4cdc4524f50b0a7c3831",
+     "span_sha256": "9469de207ea9d3c3ff1af06b4077357766749d22527d4cdc4524f50b0a7c3831",
+     "git_oid": "b3a5c6a1be9a52ecec1e74ecaac7e9f3e272b1ce"
+    },
+    {
+     "path": "site/scripts/generator/slugify.ts",
+     "start": 1,
+     "end": 14,
+     "symbol": "module",
+     "file_sha256": "8c22752b4ed11c1037d6c8b9d294834e06f8c185d144d05d62fd69666eaeba82",
+     "span_sha256": "8c22752b4ed11c1037d6c8b9d294834e06f8c185d144d05d62fd69666eaeba82",
+     "git_oid": "8265355d84c9b0c3b2926521933eec2c1654a298"
+    },
+    {
+     "path": "site/scripts/generator/host-command-catalog.ts",
+     "start": 1,
+     "end": 66,
+     "symbol": "module",
+     "file_sha256": "880715cd374a995647e93b700f5f7e67402233e793aa0406196946a06eef0abd",
+     "span_sha256": "880715cd374a995647e93b700f5f7e67402233e793aa0406196946a06eef0abd",
+     "git_oid": "69ec5181d14ad1646af106116c8efb176c7332f9"
+    }
+   ],
+   "scope": "Literal current/pinned source inspection only; advanced runtime/source observations not renewed."
+  },
+  {
+   "id": "generator:discovery:02",
+   "machine_id": "generator:discovery",
+   "frozen_contract": {
+    "transition_id": "generator:discovery:02",
+    "machine_id": "generator:discovery",
+    "owner": "hooks-workflows",
+    "baseline": {
+     "from": "plugin tree",
+     "event": "collect",
+     "guard": "top-level command/agent .md or skill directory containing SKILL.md",
+     "to": "collected",
+     "effects": "Read full text; classify by normalized path substring and stable sort path. Lenses separately collect sorted .md basenames.",
+     "failure_retry": "Unknown path class throws; discovery does not validate semantic contents.",
+     "source": [
+      {
+       "path": "site/scripts/generator/collect-sources.ts",
+       "symbol": "module",
+       "lines": "1-59",
+       "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/collect-sources.ts",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/collect-sources.ts"
+      },
+      {
+       "path": "site/scripts/generator/collect-lenses.ts",
+       "symbol": "module",
+       "lines": "1-33",
+       "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/collect-lenses.ts",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/collect-lenses.ts"
+      },
+      {
+       "path": "site/scripts/generator/classify-source.ts",
+       "symbol": "module",
+       "lines": "1-30",
+       "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/classify-source.ts",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/classify-source.ts"
+      },
+      {
+       "path": "site/scripts/generator/derive-name.ts",
+       "symbol": "module",
+       "lines": "1-27",
+       "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/derive-name.ts",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/derive-name.ts"
+      },
+      {
+       "path": "site/scripts/generator/assign-slugs.ts",
+       "symbol": "module",
+       "lines": "1-28",
+       "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/assign-slugs.ts",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/assign-slugs.ts"
+      },
+      {
+       "path": "site/scripts/generator/slugify.ts",
+       "symbol": "module",
+       "lines": "1-14",
+       "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/slugify.ts",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/slugify.ts"
+      },
+      {
+       "path": "site/scripts/generator/host-command-catalog.ts",
+       "symbol": "module",
+       "lines": "1-66",
+       "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/host-command-catalog.ts",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/host-command-catalog.ts"
+      }
+     ],
+     "transition_id": "generator:discovery:02"
+    },
+    "task_ids": [
+     "HW-24",
+     "HW-19",
+     "HW-27"
+    ],
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "proposed_composed_scenario_ids": [
+     "SEQ-29"
+    ],
+    "verification_status": "NOT_RUN",
+    "evidence": [],
+    "candidate_transition": null,
+    "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+   },
+   "frozen_contract_sha256": "d882ed6cea98807120d1f31878fc9e365255164a4df0ec1e6290384ecf3f1dd2",
+   "ledger_status": "PLANNED",
+   "assessment": "SOURCE_CONFORMANCE_WITH_NAMED_ACCEPTED_DELTAS",
+   "semantic_assessment": "Only top-level commands/agents ending .md and skill child directories with SKILL.md are read as UTF8. Constructed paths are classified by normalized commands/skills/agents substrings and stable path sorting. Lens discovery independently reads every .md basename and sorts it. Unknown direct classifySource inputs throw; no frontmatter/content validation or recursive plugin walk is added.",
+   "intake_variances": [],
+   "current_witnesses": [
+    {
+     "path": "site/scripts/generator/collect-sources.ts",
+     "symbol": "literal source lines 6-59",
+     "start": 6,
+     "end": 59,
+     "file_sha256": "31973d8a555b97ff21449882f40cdf8aa6f670ee40f8e6721b6fc35ef3186711",
+     "span_sha256": "fbec18a97501bccdd766996db4d566b93aa24bde8de38cac98559e4046438e38",
+     "git_oid": "7d0abe705231df98a45d4ccfd8bc213900c02bec"
+    },
+    {
+     "path": "site/scripts/generator/collect-lenses.ts",
+     "symbol": "literal source lines 22-33",
+     "start": 22,
+     "end": 33,
+     "file_sha256": "18eed1236677e6217ee5028f113a36704ccc8fea96ce87cc4e612e3e91e8a13c",
+     "span_sha256": "9f9e6ea9a454960b1d15a9eaa6fbe8ee6d1a12ade9be37bf96739d270cca599a",
+     "git_oid": "4349e814e8d652bf50562631e5e80ff1f4f7e08e"
+    },
+    {
+     "path": "site/scripts/generator/classify-source.ts",
+     "symbol": "literal source lines 12-30",
+     "start": 12,
+     "end": 30,
+     "file_sha256": "08e41c224b3d0faf700df404d0bf1cbdaa29f4e863ac4bb6226142fff42853d2",
+     "span_sha256": "3c49e7298f9514ce065268af977c927a02c4a8b9b63924b9b986204134193fb2",
+     "git_oid": "3d417271192f633d3bc3ab7160484c9d4d0f4c87"
+    }
+   ],
+   "pinned_baseline_witnesses": [
+    {
+     "path": "site/scripts/generator/collect-sources.ts",
+     "start": 1,
+     "end": 59,
+     "symbol": "module",
+     "file_sha256": "31973d8a555b97ff21449882f40cdf8aa6f670ee40f8e6721b6fc35ef3186711",
+     "span_sha256": "31973d8a555b97ff21449882f40cdf8aa6f670ee40f8e6721b6fc35ef3186711",
+     "git_oid": "7d0abe705231df98a45d4ccfd8bc213900c02bec"
+    },
+    {
+     "path": "site/scripts/generator/collect-lenses.ts",
+     "start": 1,
+     "end": 33,
+     "symbol": "module",
+     "file_sha256": "18eed1236677e6217ee5028f113a36704ccc8fea96ce87cc4e612e3e91e8a13c",
+     "span_sha256": "18eed1236677e6217ee5028f113a36704ccc8fea96ce87cc4e612e3e91e8a13c",
+     "git_oid": "4349e814e8d652bf50562631e5e80ff1f4f7e08e"
+    },
+    {
+     "path": "site/scripts/generator/classify-source.ts",
+     "start": 1,
+     "end": 30,
+     "symbol": "module",
+     "file_sha256": "08e41c224b3d0faf700df404d0bf1cbdaa29f4e863ac4bb6226142fff42853d2",
+     "span_sha256": "08e41c224b3d0faf700df404d0bf1cbdaa29f4e863ac4bb6226142fff42853d2",
+     "git_oid": "3d417271192f633d3bc3ab7160484c9d4d0f4c87"
+    },
+    {
+     "path": "site/scripts/generator/derive-name.ts",
+     "start": 1,
+     "end": 27,
+     "symbol": "module",
+     "file_sha256": "b3e8321eaa1ba7e4f953b5e937c94da38d041e58220eac0114d88e7dacd6a5e2",
+     "span_sha256": "b3e8321eaa1ba7e4f953b5e937c94da38d041e58220eac0114d88e7dacd6a5e2",
+     "git_oid": "6a692483dc56594163e79277edf4222da28e5f3e"
+    },
+    {
+     "path": "site/scripts/generator/assign-slugs.ts",
+     "start": 1,
+     "end": 28,
+     "symbol": "module",
+     "file_sha256": "9469de207ea9d3c3ff1af06b4077357766749d22527d4cdc4524f50b0a7c3831",
+     "span_sha256": "9469de207ea9d3c3ff1af06b4077357766749d22527d4cdc4524f50b0a7c3831",
+     "git_oid": "b3a5c6a1be9a52ecec1e74ecaac7e9f3e272b1ce"
+    },
+    {
+     "path": "site/scripts/generator/slugify.ts",
+     "start": 1,
+     "end": 14,
+     "symbol": "module",
+     "file_sha256": "8c22752b4ed11c1037d6c8b9d294834e06f8c185d144d05d62fd69666eaeba82",
+     "span_sha256": "8c22752b4ed11c1037d6c8b9d294834e06f8c185d144d05d62fd69666eaeba82",
+     "git_oid": "8265355d84c9b0c3b2926521933eec2c1654a298"
+    },
+    {
+     "path": "site/scripts/generator/host-command-catalog.ts",
+     "start": 1,
+     "end": 66,
+     "symbol": "module",
+     "file_sha256": "880715cd374a995647e93b700f5f7e67402233e793aa0406196946a06eef0abd",
+     "span_sha256": "880715cd374a995647e93b700f5f7e67402233e793aa0406196946a06eef0abd",
+     "git_oid": "69ec5181d14ad1646af106116c8efb176c7332f9"
+    }
+   ],
+   "scope": "Literal current/pinned source inspection only; advanced runtime/source observations not renewed."
+  },
+  {
+   "id": "generator:discovery:03",
+   "machine_id": "generator:discovery",
+   "frozen_contract": {
+    "transition_id": "generator:discovery:03",
+    "machine_id": "generator:discovery",
+    "owner": "hooks-workflows",
+    "baseline": {
+     "from": "collected document",
+     "event": "deriveName",
+     "guard": "nonempty fields.name supplied",
+     "to": "named",
+     "effects": "Use supplied name; otherwise basename without .md, or parent for SKILL.",
+     "failure_retry": "Callers can explicitly pass empty fields to enforce filename identity.",
+     "source": [
+      {
+       "path": "site/scripts/generator/collect-sources.ts",
+       "symbol": "module",
+       "lines": "1-59",
+       "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/collect-sources.ts",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/collect-sources.ts"
+      },
+      {
+       "path": "site/scripts/generator/collect-lenses.ts",
+       "symbol": "module",
+       "lines": "1-33",
+       "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/collect-lenses.ts",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/collect-lenses.ts"
+      },
+      {
+       "path": "site/scripts/generator/classify-source.ts",
+       "symbol": "module",
+       "lines": "1-30",
+       "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/classify-source.ts",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/classify-source.ts"
+      },
+      {
+       "path": "site/scripts/generator/derive-name.ts",
+       "symbol": "module",
+       "lines": "1-27",
+       "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/derive-name.ts",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/derive-name.ts"
+      },
+      {
+       "path": "site/scripts/generator/assign-slugs.ts",
+       "symbol": "module",
+       "lines": "1-28",
+       "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/assign-slugs.ts",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/assign-slugs.ts"
+      },
+      {
+       "path": "site/scripts/generator/slugify.ts",
+       "symbol": "module",
+       "lines": "1-14",
+       "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/slugify.ts",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/slugify.ts"
+      },
+      {
+       "path": "site/scripts/generator/host-command-catalog.ts",
+       "symbol": "module",
+       "lines": "1-66",
+       "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/host-command-catalog.ts",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/host-command-catalog.ts"
+      }
+     ],
+     "transition_id": "generator:discovery:03"
+    },
+    "task_ids": [
+     "HW-24",
+     "HW-19",
+     "HW-27"
+    ],
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "proposed_composed_scenario_ids": [
+     "SEQ-29"
+    ],
+    "verification_status": "NOT_RUN",
+    "evidence": [],
+    "candidate_transition": null,
+    "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+   },
+   "frozen_contract_sha256": "a11acd2e1d3d097631fdaa97f9a2e1fbbb0f16e643045d0717e4ff9193529d76",
+   "ledger_status": "PLANNED",
+   "assessment": "SOURCE_CONFORMANCE_WITH_NAMED_ACCEPTED_DELTAS",
+   "semantic_assessment": "Truthy supplied fields.name is used verbatim; otherwise backslashes normalize, .md is removed and SKILL uses its parent segment. Empty fields can force filename-derived identity. This helper neither parses frontmatter nor validates display-name semantics.",
+   "intake_variances": [],
+   "current_witnesses": [
+    {
+     "path": "site/scripts/generator/derive-name.ts",
+     "symbol": "literal source lines 10-27",
+     "start": 10,
+     "end": 27,
+     "file_sha256": "b3e8321eaa1ba7e4f953b5e937c94da38d041e58220eac0114d88e7dacd6a5e2",
+     "span_sha256": "b06a9f06542001ce436efbbce09910c577b3ef3c692081c29cfe0e5af84b36b9",
+     "git_oid": "6a692483dc56594163e79277edf4222da28e5f3e"
+    }
+   ],
+   "pinned_baseline_witnesses": [
+    {
+     "path": "site/scripts/generator/collect-sources.ts",
+     "start": 1,
+     "end": 59,
+     "symbol": "module",
+     "file_sha256": "31973d8a555b97ff21449882f40cdf8aa6f670ee40f8e6721b6fc35ef3186711",
+     "span_sha256": "31973d8a555b97ff21449882f40cdf8aa6f670ee40f8e6721b6fc35ef3186711",
+     "git_oid": "7d0abe705231df98a45d4ccfd8bc213900c02bec"
+    },
+    {
+     "path": "site/scripts/generator/collect-lenses.ts",
+     "start": 1,
+     "end": 33,
+     "symbol": "module",
+     "file_sha256": "18eed1236677e6217ee5028f113a36704ccc8fea96ce87cc4e612e3e91e8a13c",
+     "span_sha256": "18eed1236677e6217ee5028f113a36704ccc8fea96ce87cc4e612e3e91e8a13c",
+     "git_oid": "4349e814e8d652bf50562631e5e80ff1f4f7e08e"
+    },
+    {
+     "path": "site/scripts/generator/classify-source.ts",
+     "start": 1,
+     "end": 30,
+     "symbol": "module",
+     "file_sha256": "08e41c224b3d0faf700df404d0bf1cbdaa29f4e863ac4bb6226142fff42853d2",
+     "span_sha256": "08e41c224b3d0faf700df404d0bf1cbdaa29f4e863ac4bb6226142fff42853d2",
+     "git_oid": "3d417271192f633d3bc3ab7160484c9d4d0f4c87"
+    },
+    {
+     "path": "site/scripts/generator/derive-name.ts",
+     "start": 1,
+     "end": 27,
+     "symbol": "module",
+     "file_sha256": "b3e8321eaa1ba7e4f953b5e937c94da38d041e58220eac0114d88e7dacd6a5e2",
+     "span_sha256": "b3e8321eaa1ba7e4f953b5e937c94da38d041e58220eac0114d88e7dacd6a5e2",
+     "git_oid": "6a692483dc56594163e79277edf4222da28e5f3e"
+    },
+    {
+     "path": "site/scripts/generator/assign-slugs.ts",
+     "start": 1,
+     "end": 28,
+     "symbol": "module",
+     "file_sha256": "9469de207ea9d3c3ff1af06b4077357766749d22527d4cdc4524f50b0a7c3831",
+     "span_sha256": "9469de207ea9d3c3ff1af06b4077357766749d22527d4cdc4524f50b0a7c3831",
+     "git_oid": "b3a5c6a1be9a52ecec1e74ecaac7e9f3e272b1ce"
+    },
+    {
+     "path": "site/scripts/generator/slugify.ts",
+     "start": 1,
+     "end": 14,
+     "symbol": "module",
+     "file_sha256": "8c22752b4ed11c1037d6c8b9d294834e06f8c185d144d05d62fd69666eaeba82",
+     "span_sha256": "8c22752b4ed11c1037d6c8b9d294834e06f8c185d144d05d62fd69666eaeba82",
+     "git_oid": "8265355d84c9b0c3b2926521933eec2c1654a298"
+    },
+    {
+     "path": "site/scripts/generator/host-command-catalog.ts",
+     "start": 1,
+     "end": 66,
+     "symbol": "module",
+     "file_sha256": "880715cd374a995647e93b700f5f7e67402233e793aa0406196946a06eef0abd",
+     "span_sha256": "880715cd374a995647e93b700f5f7e67402233e793aa0406196946a06eef0abd",
+     "git_oid": "69ec5181d14ad1646af106116c8efb176c7332f9"
+    }
+   ],
+   "scope": "Literal current/pinned source inspection only; advanced runtime/source observations not renewed."
+  },
+  {
+   "id": "generator:discovery:04",
+   "machine_id": "generator:discovery",
+   "frozen_contract": {
+    "transition_id": "generator:discovery:04",
+    "machine_id": "generator:discovery",
+    "owner": "hooks-workflows",
+    "baseline": {
+     "from": "name list",
+     "event": "assignSlugs",
+     "guard": "lowercase ASCII-alphanumeric normalization",
+     "to": "slugged",
+     "effects": "Increment per-normalized-base counter and suffix repeated base -2,-3.",
+     "failure_retry": "No global reserved-output set: generated suffix can equal a different natural base; no current production collision claimed.",
+     "source": [
+      {
+       "path": "site/scripts/generator/collect-sources.ts",
+       "symbol": "module",
+       "lines": "1-59",
+       "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/collect-sources.ts",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/collect-sources.ts"
+      },
+      {
+       "path": "site/scripts/generator/collect-lenses.ts",
+       "symbol": "module",
+       "lines": "1-33",
+       "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/collect-lenses.ts",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/collect-lenses.ts"
+      },
+      {
+       "path": "site/scripts/generator/classify-source.ts",
+       "symbol": "module",
+       "lines": "1-30",
+       "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/classify-source.ts",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/classify-source.ts"
+      },
+      {
+       "path": "site/scripts/generator/derive-name.ts",
+       "symbol": "module",
+       "lines": "1-27",
+       "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/derive-name.ts",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/derive-name.ts"
+      },
+      {
+       "path": "site/scripts/generator/assign-slugs.ts",
+       "symbol": "module",
+       "lines": "1-28",
+       "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/assign-slugs.ts",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/assign-slugs.ts"
+      },
+      {
+       "path": "site/scripts/generator/slugify.ts",
+       "symbol": "module",
+       "lines": "1-14",
+       "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/slugify.ts",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/slugify.ts"
+      },
+      {
+       "path": "site/scripts/generator/host-command-catalog.ts",
+       "symbol": "module",
+       "lines": "1-66",
+       "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/host-command-catalog.ts",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/host-command-catalog.ts"
+      }
+     ],
+     "transition_id": "generator:discovery:04"
+    },
+    "task_ids": [
+     "HW-24",
+     "HW-19",
+     "HW-27"
+    ],
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "proposed_composed_scenario_ids": [
+     "SEQ-29"
+    ],
+    "verification_status": "NOT_RUN",
+    "evidence": [],
+    "candidate_transition": null,
+    "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+   },
+   "frozen_contract_sha256": "45e1e4b2691df59ea90170e1f922a804ba13cd30e8cc27546a34bdf8bda29e37",
+   "ledger_status": "PLANNED",
+   "assessment": "SOURCE_CONFORMANCE_WITH_NAMED_ACCEPTED_DELTAS",
+   "semantic_assessment": "The current HW-24 owner reserves every emitted slug in one Set, reusing per-base next-suffix search only as an optimization. If a natural numeric name collides with an emitted suffix, it too receives a free suffix. Input order and noncollision assignments remain deterministic; arbitrary source inspection is not a measured production URL/redirect comparison. Slug normalization itself permits an empty base.",
+   "intake_variances": [
+    "Frozen per-base-only collision description is replaced by accepted HW-24 global emitted-output reservation. No old collision effect is claimed preserved and no runtime/production catalog comparison is claimed here."
+   ],
+   "current_witnesses": [
+    {
+     "path": "site/scripts/generator/assign-slugs.ts",
+     "symbol": "literal source lines 1-34",
+     "start": 1,
+     "end": 34,
+     "file_sha256": "4b1999c27e388c3c8747777945f468e3047a7aff8f58991cc2b783b227a9260d",
+     "span_sha256": "4b1999c27e388c3c8747777945f468e3047a7aff8f58991cc2b783b227a9260d",
+     "git_oid": "493ac5e4f72e4a9167fc6b3e421574e0a122ef2f"
+    },
+    {
+     "path": "site/scripts/generator/slugify.ts",
+     "symbol": "literal source lines 9-14",
+     "start": 9,
+     "end": 14,
+     "file_sha256": "8c22752b4ed11c1037d6c8b9d294834e06f8c185d144d05d62fd69666eaeba82",
+     "span_sha256": "8a57660e8741bf58622f3133c415951371b5cc992e33382caf78159f280c6d92",
+     "git_oid": "8265355d84c9b0c3b2926521933eec2c1654a298"
+    }
+   ],
+   "pinned_baseline_witnesses": [
+    {
+     "path": "site/scripts/generator/collect-sources.ts",
+     "start": 1,
+     "end": 59,
+     "symbol": "module",
+     "file_sha256": "31973d8a555b97ff21449882f40cdf8aa6f670ee40f8e6721b6fc35ef3186711",
+     "span_sha256": "31973d8a555b97ff21449882f40cdf8aa6f670ee40f8e6721b6fc35ef3186711",
+     "git_oid": "7d0abe705231df98a45d4ccfd8bc213900c02bec"
+    },
+    {
+     "path": "site/scripts/generator/collect-lenses.ts",
+     "start": 1,
+     "end": 33,
+     "symbol": "module",
+     "file_sha256": "18eed1236677e6217ee5028f113a36704ccc8fea96ce87cc4e612e3e91e8a13c",
+     "span_sha256": "18eed1236677e6217ee5028f113a36704ccc8fea96ce87cc4e612e3e91e8a13c",
+     "git_oid": "4349e814e8d652bf50562631e5e80ff1f4f7e08e"
+    },
+    {
+     "path": "site/scripts/generator/classify-source.ts",
+     "start": 1,
+     "end": 30,
+     "symbol": "module",
+     "file_sha256": "08e41c224b3d0faf700df404d0bf1cbdaa29f4e863ac4bb6226142fff42853d2",
+     "span_sha256": "08e41c224b3d0faf700df404d0bf1cbdaa29f4e863ac4bb6226142fff42853d2",
+     "git_oid": "3d417271192f633d3bc3ab7160484c9d4d0f4c87"
+    },
+    {
+     "path": "site/scripts/generator/derive-name.ts",
+     "start": 1,
+     "end": 27,
+     "symbol": "module",
+     "file_sha256": "b3e8321eaa1ba7e4f953b5e937c94da38d041e58220eac0114d88e7dacd6a5e2",
+     "span_sha256": "b3e8321eaa1ba7e4f953b5e937c94da38d041e58220eac0114d88e7dacd6a5e2",
+     "git_oid": "6a692483dc56594163e79277edf4222da28e5f3e"
+    },
+    {
+     "path": "site/scripts/generator/assign-slugs.ts",
+     "start": 1,
+     "end": 28,
+     "symbol": "module",
+     "file_sha256": "9469de207ea9d3c3ff1af06b4077357766749d22527d4cdc4524f50b0a7c3831",
+     "span_sha256": "9469de207ea9d3c3ff1af06b4077357766749d22527d4cdc4524f50b0a7c3831",
+     "git_oid": "b3a5c6a1be9a52ecec1e74ecaac7e9f3e272b1ce"
+    },
+    {
+     "path": "site/scripts/generator/slugify.ts",
+     "start": 1,
+     "end": 14,
+     "symbol": "module",
+     "file_sha256": "8c22752b4ed11c1037d6c8b9d294834e06f8c185d144d05d62fd69666eaeba82",
+     "span_sha256": "8c22752b4ed11c1037d6c8b9d294834e06f8c185d144d05d62fd69666eaeba82",
+     "git_oid": "8265355d84c9b0c3b2926521933eec2c1654a298"
+    },
+    {
+     "path": "site/scripts/generator/host-command-catalog.ts",
+     "start": 1,
+     "end": 66,
+     "symbol": "module",
+     "file_sha256": "880715cd374a995647e93b700f5f7e67402233e793aa0406196946a06eef0abd",
+     "span_sha256": "880715cd374a995647e93b700f5f7e67402233e793aa0406196946a06eef0abd",
+     "git_oid": "69ec5181d14ad1646af106116c8efb176c7332f9"
+    }
+   ],
+   "scope": "Literal current/pinned source inspection only; advanced runtime/source observations not renewed."
+  },
+  {
+   "id": "generator:discovery:05",
+   "machine_id": "generator:discovery",
+   "frozen_contract": {
+    "transition_id": "generator:discovery:05",
+    "machine_id": "generator:discovery",
+    "owner": "hooks-workflows",
+    "baseline": {
+     "from": "host catalog present",
+     "event": "parse command catalog Markdown",
+     "guard": "host-specific backticked /ca:,$ca-,/ca- spelling",
+     "to": "host-known",
+     "effects": "Return unique matched names then boolean availability per command.",
+     "failure_retry": "Regex discovery is not live host registration proof.",
+     "source": [
+      {
+       "path": "site/scripts/generator/collect-sources.ts",
+       "symbol": "module",
+       "lines": "1-59",
+       "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/collect-sources.ts",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/collect-sources.ts"
+      },
+      {
+       "path": "site/scripts/generator/collect-lenses.ts",
+       "symbol": "module",
+       "lines": "1-33",
+       "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/collect-lenses.ts",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/collect-lenses.ts"
+      },
+      {
+       "path": "site/scripts/generator/classify-source.ts",
+       "symbol": "module",
+       "lines": "1-30",
+       "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/classify-source.ts",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/classify-source.ts"
+      },
+      {
+       "path": "site/scripts/generator/derive-name.ts",
+       "symbol": "module",
+       "lines": "1-27",
+       "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/derive-name.ts",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/derive-name.ts"
+      },
+      {
+       "path": "site/scripts/generator/assign-slugs.ts",
+       "symbol": "module",
+       "lines": "1-28",
+       "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/assign-slugs.ts",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/assign-slugs.ts"
+      },
+      {
+       "path": "site/scripts/generator/slugify.ts",
+       "symbol": "module",
+       "lines": "1-14",
+       "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/slugify.ts",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/slugify.ts"
+      },
+      {
+       "path": "site/scripts/generator/host-command-catalog.ts",
+       "symbol": "module",
+       "lines": "1-66",
+       "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/host-command-catalog.ts",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/host-command-catalog.ts"
+      }
+     ],
+     "transition_id": "generator:discovery:05"
+    },
+    "task_ids": [
+     "HW-24",
+     "HW-19",
+     "HW-27"
+    ],
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "proposed_composed_scenario_ids": [
+     "SEQ-29"
+    ],
+    "verification_status": "NOT_RUN",
+    "evidence": [],
+    "candidate_transition": null,
+    "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+   },
+   "frozen_contract_sha256": "6b2ff52dc9ffee2bce9ed2dc11ac522680e1382b9e7a9aec1c13547448e3b39d",
+   "ledger_status": "PLANNED",
+   "assessment": "SOURCE_CONFORMANCE_WITH_NAMED_ACCEPTED_DELTAS",
+   "semantic_assessment": "Host-specific backticked Markdown regexes produce unique matched command names, then exact set membership yields Claude/Codex/Pi booleans. This is declared catalog projection, not proof of a registered, installed or executable host command.",
+   "intake_variances": [],
+   "current_witnesses": [
+    {
+     "path": "site/scripts/generator/host-command-catalog.ts",
+     "symbol": "literal source lines 6-29",
+     "start": 6,
+     "end": 29,
+     "file_sha256": "880715cd374a995647e93b700f5f7e67402233e793aa0406196946a06eef0abd",
+     "span_sha256": "9de68a3e87c9ac5306bc20f6c2ee8622a9e36c462a047ccd700a75ac1dc29084",
+     "git_oid": "69ec5181d14ad1646af106116c8efb176c7332f9"
+    },
+    {
+     "path": "site/scripts/generator/host-command-catalog.ts",
+     "symbol": "literal source lines 57-66",
+     "start": 57,
+     "end": 66,
+     "file_sha256": "880715cd374a995647e93b700f5f7e67402233e793aa0406196946a06eef0abd",
+     "span_sha256": "8c7087f6453272c9ef5ebba66784949b0239f83d8ac099377cf32a0411f347b1",
+     "git_oid": "69ec5181d14ad1646af106116c8efb176c7332f9"
+    }
+   ],
+   "pinned_baseline_witnesses": [
+    {
+     "path": "site/scripts/generator/collect-sources.ts",
+     "start": 1,
+     "end": 59,
+     "symbol": "module",
+     "file_sha256": "31973d8a555b97ff21449882f40cdf8aa6f670ee40f8e6721b6fc35ef3186711",
+     "span_sha256": "31973d8a555b97ff21449882f40cdf8aa6f670ee40f8e6721b6fc35ef3186711",
+     "git_oid": "7d0abe705231df98a45d4ccfd8bc213900c02bec"
+    },
+    {
+     "path": "site/scripts/generator/collect-lenses.ts",
+     "start": 1,
+     "end": 33,
+     "symbol": "module",
+     "file_sha256": "18eed1236677e6217ee5028f113a36704ccc8fea96ce87cc4e612e3e91e8a13c",
+     "span_sha256": "18eed1236677e6217ee5028f113a36704ccc8fea96ce87cc4e612e3e91e8a13c",
+     "git_oid": "4349e814e8d652bf50562631e5e80ff1f4f7e08e"
+    },
+    {
+     "path": "site/scripts/generator/classify-source.ts",
+     "start": 1,
+     "end": 30,
+     "symbol": "module",
+     "file_sha256": "08e41c224b3d0faf700df404d0bf1cbdaa29f4e863ac4bb6226142fff42853d2",
+     "span_sha256": "08e41c224b3d0faf700df404d0bf1cbdaa29f4e863ac4bb6226142fff42853d2",
+     "git_oid": "3d417271192f633d3bc3ab7160484c9d4d0f4c87"
+    },
+    {
+     "path": "site/scripts/generator/derive-name.ts",
+     "start": 1,
+     "end": 27,
+     "symbol": "module",
+     "file_sha256": "b3e8321eaa1ba7e4f953b5e937c94da38d041e58220eac0114d88e7dacd6a5e2",
+     "span_sha256": "b3e8321eaa1ba7e4f953b5e937c94da38d041e58220eac0114d88e7dacd6a5e2",
+     "git_oid": "6a692483dc56594163e79277edf4222da28e5f3e"
+    },
+    {
+     "path": "site/scripts/generator/assign-slugs.ts",
+     "start": 1,
+     "end": 28,
+     "symbol": "module",
+     "file_sha256": "9469de207ea9d3c3ff1af06b4077357766749d22527d4cdc4524f50b0a7c3831",
+     "span_sha256": "9469de207ea9d3c3ff1af06b4077357766749d22527d4cdc4524f50b0a7c3831",
+     "git_oid": "b3a5c6a1be9a52ecec1e74ecaac7e9f3e272b1ce"
+    },
+    {
+     "path": "site/scripts/generator/slugify.ts",
+     "start": 1,
+     "end": 14,
+     "symbol": "module",
+     "file_sha256": "8c22752b4ed11c1037d6c8b9d294834e06f8c185d144d05d62fd69666eaeba82",
+     "span_sha256": "8c22752b4ed11c1037d6c8b9d294834e06f8c185d144d05d62fd69666eaeba82",
+     "git_oid": "8265355d84c9b0c3b2926521933eec2c1654a298"
+    },
+    {
+     "path": "site/scripts/generator/host-command-catalog.ts",
+     "start": 1,
+     "end": 66,
+     "symbol": "module",
+     "file_sha256": "880715cd374a995647e93b700f5f7e67402233e793aa0406196946a06eef0abd",
+     "span_sha256": "880715cd374a995647e93b700f5f7e67402233e793aa0406196946a06eef0abd",
+     "git_oid": "69ec5181d14ad1646af106116c8efb176c7332f9"
+    }
+   ],
+   "scope": "Literal current/pinned source inspection only; advanced runtime/source observations not renewed."
+  },
+  {
+   "id": "generator:discovery:06",
+   "machine_id": "generator:discovery",
+   "frozen_contract": {
+    "transition_id": "generator:discovery:06",
+    "machine_id": "generator:discovery",
+    "owner": "hooks-workflows",
+    "baseline": {
+     "from": "host catalog absent",
+     "event": "load catalogs",
+     "guard": "filesystem path missing",
+     "to": "host-fallback",
+     "effects": "Claude falls back to collected command names; Codex/Pi empty availability.",
+     "failure_retry": "Does not infer same availability across hosts.",
+     "source": [
+      {
+       "path": "site/scripts/generator/collect-sources.ts",
+       "symbol": "module",
+       "lines": "1-59",
+       "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/collect-sources.ts",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/collect-sources.ts"
+      },
+      {
+       "path": "site/scripts/generator/collect-lenses.ts",
+       "symbol": "module",
+       "lines": "1-33",
+       "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/collect-lenses.ts",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/collect-lenses.ts"
+      },
+      {
+       "path": "site/scripts/generator/classify-source.ts",
+       "symbol": "module",
+       "lines": "1-30",
+       "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/classify-source.ts",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/classify-source.ts"
+      },
+      {
+       "path": "site/scripts/generator/derive-name.ts",
+       "symbol": "module",
+       "lines": "1-27",
+       "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/derive-name.ts",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/derive-name.ts"
+      },
+      {
+       "path": "site/scripts/generator/assign-slugs.ts",
+       "symbol": "module",
+       "lines": "1-28",
+       "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/assign-slugs.ts",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/assign-slugs.ts"
+      },
+      {
+       "path": "site/scripts/generator/slugify.ts",
+       "symbol": "module",
+       "lines": "1-14",
+       "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/slugify.ts",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/slugify.ts"
+      },
+      {
+       "path": "site/scripts/generator/host-command-catalog.ts",
+       "symbol": "module",
+       "lines": "1-66",
+       "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/host-command-catalog.ts",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/host-command-catalog.ts"
+      }
+     ],
+     "transition_id": "generator:discovery:06"
+    },
+    "task_ids": [
+     "HW-24",
+     "HW-19",
+     "HW-27"
+    ],
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "proposed_composed_scenario_ids": [
+     "SEQ-29"
+    ],
+    "verification_status": "NOT_RUN",
+    "evidence": [],
+    "candidate_transition": null,
+    "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+   },
+   "frozen_contract_sha256": "8f6bb425db3845e0d0938a20ef99120cde29e3c4610ddfb005da899a513914ed",
+   "ledger_status": "PLANNED",
+   "assessment": "SOURCE_CONFORMANCE_WITH_NAMED_ACCEPTED_DELTAS",
+   "semantic_assessment": "Absent sibling command catalogs select collected Claude command names only for Claude and empty sets for Codex/Pi. Present catalog reads/regex processing remain direct. Fallback does not grant cross-host command parity.",
+   "intake_variances": [],
+   "current_witnesses": [
+    {
+     "path": "site/scripts/generator/host-command-catalog.ts",
+     "symbol": "literal source lines 34-55",
+     "start": 34,
+     "end": 55,
+     "file_sha256": "880715cd374a995647e93b700f5f7e67402233e793aa0406196946a06eef0abd",
+     "span_sha256": "acfd7b54ff2daeb7e4a18b3f2b1f69245ff6b33ba796fc910c3bdbc87730dc5b",
+     "git_oid": "69ec5181d14ad1646af106116c8efb176c7332f9"
+    }
+   ],
+   "pinned_baseline_witnesses": [
+    {
+     "path": "site/scripts/generator/collect-sources.ts",
+     "start": 1,
+     "end": 59,
+     "symbol": "module",
+     "file_sha256": "31973d8a555b97ff21449882f40cdf8aa6f670ee40f8e6721b6fc35ef3186711",
+     "span_sha256": "31973d8a555b97ff21449882f40cdf8aa6f670ee40f8e6721b6fc35ef3186711",
+     "git_oid": "7d0abe705231df98a45d4ccfd8bc213900c02bec"
+    },
+    {
+     "path": "site/scripts/generator/collect-lenses.ts",
+     "start": 1,
+     "end": 33,
+     "symbol": "module",
+     "file_sha256": "18eed1236677e6217ee5028f113a36704ccc8fea96ce87cc4e612e3e91e8a13c",
+     "span_sha256": "18eed1236677e6217ee5028f113a36704ccc8fea96ce87cc4e612e3e91e8a13c",
+     "git_oid": "4349e814e8d652bf50562631e5e80ff1f4f7e08e"
+    },
+    {
+     "path": "site/scripts/generator/classify-source.ts",
+     "start": 1,
+     "end": 30,
+     "symbol": "module",
+     "file_sha256": "08e41c224b3d0faf700df404d0bf1cbdaa29f4e863ac4bb6226142fff42853d2",
+     "span_sha256": "08e41c224b3d0faf700df404d0bf1cbdaa29f4e863ac4bb6226142fff42853d2",
+     "git_oid": "3d417271192f633d3bc3ab7160484c9d4d0f4c87"
+    },
+    {
+     "path": "site/scripts/generator/derive-name.ts",
+     "start": 1,
+     "end": 27,
+     "symbol": "module",
+     "file_sha256": "b3e8321eaa1ba7e4f953b5e937c94da38d041e58220eac0114d88e7dacd6a5e2",
+     "span_sha256": "b3e8321eaa1ba7e4f953b5e937c94da38d041e58220eac0114d88e7dacd6a5e2",
+     "git_oid": "6a692483dc56594163e79277edf4222da28e5f3e"
+    },
+    {
+     "path": "site/scripts/generator/assign-slugs.ts",
+     "start": 1,
+     "end": 28,
+     "symbol": "module",
+     "file_sha256": "9469de207ea9d3c3ff1af06b4077357766749d22527d4cdc4524f50b0a7c3831",
+     "span_sha256": "9469de207ea9d3c3ff1af06b4077357766749d22527d4cdc4524f50b0a7c3831",
+     "git_oid": "b3a5c6a1be9a52ecec1e74ecaac7e9f3e272b1ce"
+    },
+    {
+     "path": "site/scripts/generator/slugify.ts",
+     "start": 1,
+     "end": 14,
+     "symbol": "module",
+     "file_sha256": "8c22752b4ed11c1037d6c8b9d294834e06f8c185d144d05d62fd69666eaeba82",
+     "span_sha256": "8c22752b4ed11c1037d6c8b9d294834e06f8c185d144d05d62fd69666eaeba82",
+     "git_oid": "8265355d84c9b0c3b2926521933eec2c1654a298"
+    },
+    {
+     "path": "site/scripts/generator/host-command-catalog.ts",
+     "start": 1,
+     "end": 66,
+     "symbol": "module",
+     "file_sha256": "880715cd374a995647e93b700f5f7e67402233e793aa0406196946a06eef0abd",
+     "span_sha256": "880715cd374a995647e93b700f5f7e67402233e793aa0406196946a06eef0abd",
+     "git_oid": "69ec5181d14ad1646af106116c8efb176c7332f9"
+    }
+   ],
+   "scope": "Literal current/pinned source inspection only; advanced runtime/source observations not renewed."
+  },
+  {
+   "id": "generator:hook-extractor:01",
+   "machine_id": "generator:hook-extractor",
+   "frozen_contract": {
+    "transition_id": "generator:hook-extractor:01",
+    "machine_id": "generator:hook-extractor",
+    "owner": "hooks-workflows",
+    "baseline": {
+     "from": "source file",
+     "event": "mask scan",
+     "guard": "comment/# or quote/prefixed literal boundary",
+     "to": "comment / string / code",
+     "effects": "Mask comments/strings, consume escaped single/triple strings; unterminated literal consumes EOF.",
+     "failure_retry": "Not a full Python parser; f-string expressions are not evaluated.",
+     "source": [
+      {
+       "path": "site/scripts/generator/extract-hook-gates.ts",
+       "symbol": "module",
+       "lines": "1-325",
+       "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/extract-hook-gates.ts",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/extract-hook-gates.ts"
+      },
+      {
+       "path": "site/scripts/generator/render-hooks-reference.ts",
+       "symbol": "module",
+       "lines": "1-168",
+       "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/render-hooks-reference.ts",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/render-hooks-reference.ts"
+      },
+      {
+       "path": "site/scripts/generator/source-ref.ts",
+       "symbol": "module",
+       "lines": "1-13",
+       "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/source-ref.ts",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/source-ref.ts"
+      }
+     ],
+     "transition_id": "generator:hook-extractor:01"
+    },
+    "task_ids": [
+     "HW-23",
+     "HW-27"
+    ],
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "proposed_composed_scenario_ids": [
+     "SEQ-29"
+    ],
+    "verification_status": "NOT_RUN",
+    "evidence": [],
+    "candidate_transition": null,
+    "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+   },
+   "frozen_contract_sha256": "e1bbb921159c1242dca2d9a960d37997228d05c62c22c597a282bcbe7cdcf556",
+   "ledger_status": "PLANNED",
+   "assessment": "SOURCE_CONFORMANCE_WITH_NAMED_ACCEPTED_DELTAS",
+   "semantic_assessment": "The lexical mask consumes # comments, escaped one/triple quote strings and up to two recognized prefix letters, marking their spans noncode; an unterminated literal consumes EOF. It is a finite scanner, not Python syntax/dataflow validation or evaluation of f-string expressions.",
+   "intake_variances": [],
+   "current_witnesses": [
+    {
+     "path": "site/scripts/generator/extract-hook-gates.ts",
+     "symbol": "literal source lines 60-118",
+     "start": 60,
+     "end": 118,
+     "file_sha256": "bc23c0e8afdd73d3d808e0bbcee7d677ac80072b7a8399cece888ffcd0be2bb6",
+     "span_sha256": "cffcc7431976401f1a056cdc16038a112b2ae9d5d0d6a01c7bd59af97db7f55f",
+     "git_oid": "d2fdad2072e979d77f7a14f6ddce0d59794e438a"
+    },
+    {
+     "path": "site/scripts/generator/extract-hook-gates.ts",
+     "symbol": "literal source lines 246-270",
+     "start": 246,
+     "end": 270,
+     "file_sha256": "bc23c0e8afdd73d3d808e0bbcee7d677ac80072b7a8399cece888ffcd0be2bb6",
+     "span_sha256": "c478ea1dd0e9532d47d397dcb1568974469cc6c4fc91b28a41340d5604788351",
+     "git_oid": "d2fdad2072e979d77f7a14f6ddce0d59794e438a"
+    }
+   ],
+   "pinned_baseline_witnesses": [
+    {
+     "path": "site/scripts/generator/extract-hook-gates.ts",
+     "start": 1,
+     "end": 325,
+     "symbol": "module",
+     "file_sha256": "c8471e0fc62528e1cd0eaf434058abe5b93684fae8967b9b9a666efda5a49873",
+     "span_sha256": "c8471e0fc62528e1cd0eaf434058abe5b93684fae8967b9b9a666efda5a49873",
+     "git_oid": "6c2fad8d833a0128732fb321df9ce0947e6e82ee"
+    },
+    {
+     "path": "site/scripts/generator/render-hooks-reference.ts",
+     "start": 1,
+     "end": 168,
+     "symbol": "module",
+     "file_sha256": "be34c234ad5548fe956c022a60e421024714fc20b45e7601f37f80255eba45fb",
+     "span_sha256": "be34c234ad5548fe956c022a60e421024714fc20b45e7601f37f80255eba45fb",
+     "git_oid": "e1d34c847ab2b1b96eb362bb8743e025fae60c75"
+    },
+    {
+     "path": "site/scripts/generator/source-ref.ts",
+     "start": 1,
+     "end": 13,
+     "symbol": "module",
+     "file_sha256": "ea2b479f00df225aa33d7d6188009e07056fd24f7645f94de6c8170b55134da1",
+     "span_sha256": "ea2b479f00df225aa33d7d6188009e07056fd24f7645f94de6c8170b55134da1",
+     "git_oid": "f84ca9711dbdffaef00f5dc951be9550c5fc698a"
+    }
+   ],
+   "scope": "Literal current/pinned source inspection only; advanced runtime/source observations not renewed."
+  },
+  {
+   "id": "generator:hook-extractor:02",
+   "machine_id": "generator:hook-extractor",
+   "frozen_contract": {
+    "transition_id": "generator:hook-extractor:02",
+    "machine_id": "generator:hook-extractor",
+    "owner": "hooks-workflows",
+    "baseline": {
+     "from": "source",
+     "event": "literal-tag regex",
+     "guard": "block/remind with double-quoted H-digits suffix tag",
+     "to": "literal-tag",
+     "effects": "Extract static message segments and claim span.",
+     "failure_retry": "This first literal pass does not check computed codeMask, unlike variable/skipped passes.",
+     "source": [
+      {
+       "path": "site/scripts/generator/extract-hook-gates.ts",
+       "symbol": "module",
+       "lines": "1-325",
+       "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/extract-hook-gates.ts",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/extract-hook-gates.ts"
+      },
+      {
+       "path": "site/scripts/generator/render-hooks-reference.ts",
+       "symbol": "module",
+       "lines": "1-168",
+       "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/render-hooks-reference.ts",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/render-hooks-reference.ts"
+      },
+      {
+       "path": "site/scripts/generator/source-ref.ts",
+       "symbol": "module",
+       "lines": "1-13",
+       "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/source-ref.ts",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/source-ref.ts"
+      }
+     ],
+     "transition_id": "generator:hook-extractor:02"
+    },
+    "task_ids": [
+     "HW-23",
+     "HW-27"
+    ],
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "proposed_composed_scenario_ids": [
+     "SEQ-29"
+    ],
+    "verification_status": "NOT_RUN",
+    "evidence": [],
+    "candidate_transition": null,
+    "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+   },
+   "frozen_contract_sha256": "93bc7e29c83e57300a7a718f8864e6a4f3c6233aff60e921db4c9e808e3ffc02",
+   "ledger_status": "PLANNED",
+   "assessment": "SOURCE_CONFORMANCE_WITH_NAMED_ACCEPTED_DELTAS",
+   "semantic_assessment": "Literal double-quoted H-digit tags are accepted only where computed codeMask marks the call start as code. scanMessage captures static fragments plus bounded dynamic descriptions; claimed spans advance the regex cursor. No complete runtime-message equality follows.",
+   "intake_variances": [
+    "Accepted HW-23 adds the mask check to the literal pass; frozen claim that this pass ignores codeMask is historical and is not preserved as a current defect."
+   ],
+   "current_witnesses": [
+    {
+     "path": "site/scripts/generator/extract-hook-gates.ts",
+     "symbol": "literal source lines 192-197",
+     "start": 192,
+     "end": 197,
+     "file_sha256": "bc23c0e8afdd73d3d808e0bbcee7d677ac80072b7a8399cece888ffcd0be2bb6",
+     "span_sha256": "1b35f37339e0f1e5df34109d94c39b81d2570e6360c7a36ffa8fbe0e826550f7",
+     "git_oid": "d2fdad2072e979d77f7a14f6ddce0d59794e438a"
+    },
+    {
+     "path": "site/scripts/generator/extract-hook-gates.ts",
+     "symbol": "literal source lines 273-303",
+     "start": 273,
+     "end": 303,
+     "file_sha256": "bc23c0e8afdd73d3d808e0bbcee7d677ac80072b7a8399cece888ffcd0be2bb6",
+     "span_sha256": "e82fce23e2a66aea9e07fc93a49583b765f3581f784e95f3fc763abe2962dc2f",
+     "git_oid": "d2fdad2072e979d77f7a14f6ddce0d59794e438a"
+    }
+   ],
+   "pinned_baseline_witnesses": [
+    {
+     "path": "site/scripts/generator/extract-hook-gates.ts",
+     "start": 1,
+     "end": 325,
+     "symbol": "module",
+     "file_sha256": "c8471e0fc62528e1cd0eaf434058abe5b93684fae8967b9b9a666efda5a49873",
+     "span_sha256": "c8471e0fc62528e1cd0eaf434058abe5b93684fae8967b9b9a666efda5a49873",
+     "git_oid": "6c2fad8d833a0128732fb321df9ce0947e6e82ee"
+    },
+    {
+     "path": "site/scripts/generator/render-hooks-reference.ts",
+     "start": 1,
+     "end": 168,
+     "symbol": "module",
+     "file_sha256": "be34c234ad5548fe956c022a60e421024714fc20b45e7601f37f80255eba45fb",
+     "span_sha256": "be34c234ad5548fe956c022a60e421024714fc20b45e7601f37f80255eba45fb",
+     "git_oid": "e1d34c847ab2b1b96eb362bb8743e025fae60c75"
+    },
+    {
+     "path": "site/scripts/generator/source-ref.ts",
+     "start": 1,
+     "end": 13,
+     "symbol": "module",
+     "file_sha256": "ea2b479f00df225aa33d7d6188009e07056fd24f7645f94de6c8170b55134da1",
+     "span_sha256": "ea2b479f00df225aa33d7d6188009e07056fd24f7645f94de6c8170b55134da1",
+     "git_oid": "f84ca9711dbdffaef00f5dc951be9550c5fc698a"
+    }
+   ],
+   "scope": "Literal current/pinned source inspection only; advanced runtime/source observations not renewed."
+  },
+  {
+   "id": "generator:hook-extractor:03",
+   "machine_id": "generator:hook-extractor",
+   "frozen_contract": {
+    "transition_id": "generator:hook-extractor:03",
+    "machine_id": "generator:hook-extractor",
+    "owner": "hooks-workflows",
+    "baseline": {
+     "from": "source",
+     "event": "variable-tag regex",
+     "guard": "real code; nearest exact simple/conditional assignment within30 preceding lines",
+     "to": "resolved-variable-tag",
+     "effects": "Emit one site for each literal conditional tag, same static message.",
+     "failure_retry": "No general dataflow; unresolved tag ends in skipped census.",
+     "source": [
+      {
+       "path": "site/scripts/generator/extract-hook-gates.ts",
+       "symbol": "module",
+       "lines": "1-325",
+       "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/extract-hook-gates.ts",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/extract-hook-gates.ts"
+      },
+      {
+       "path": "site/scripts/generator/render-hooks-reference.ts",
+       "symbol": "module",
+       "lines": "1-168",
+       "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/render-hooks-reference.ts",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/render-hooks-reference.ts"
+      },
+      {
+       "path": "site/scripts/generator/source-ref.ts",
+       "symbol": "module",
+       "lines": "1-13",
+       "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/source-ref.ts",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/source-ref.ts"
+      }
+     ],
+     "transition_id": "generator:hook-extractor:03"
+    },
+    "task_ids": [
+     "HW-23",
+     "HW-27"
+    ],
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "proposed_composed_scenario_ids": [
+     "SEQ-29"
+    ],
+    "verification_status": "NOT_RUN",
+    "evidence": [],
+    "candidate_transition": null,
+    "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+   },
+   "frozen_contract_sha256": "6a504ef7789061b95acb5d86ec46d7d005492cde08ef4bde6afb73ecb3f33bc9",
+   "ledger_status": "PLANNED",
+   "assessment": "SOURCE_CONFORMANCE_WITH_NAMED_ACCEPTED_DELTAS",
+   "semantic_assessment": "A code-position bare identifier call not already claimed is resolved by the nearest preceding exact single-line simple/conditional literal-tag assignment within30 lines. A conditional emits one call-site per tag with the same static template. This raw-line pattern search is not scope-aware or general dataflow; unresolved calls remain for skipped census.",
+   "intake_variances": [],
+   "current_witnesses": [
+    {
+     "path": "site/scripts/generator/extract-hook-gates.ts",
+     "symbol": "literal source lines 197-239",
+     "start": 197,
+     "end": 239,
+     "file_sha256": "bc23c0e8afdd73d3d808e0bbcee7d677ac80072b7a8399cece888ffcd0be2bb6",
+     "span_sha256": "6760976fae5977dab7bd9c7751f30e1b315f5305af217872c54909f2232f22f0",
+     "git_oid": "d2fdad2072e979d77f7a14f6ddce0d59794e438a"
+    },
+    {
+     "path": "site/scripts/generator/extract-hook-gates.ts",
+     "symbol": "literal source lines 305-331",
+     "start": 305,
+     "end": 331,
+     "file_sha256": "bc23c0e8afdd73d3d808e0bbcee7d677ac80072b7a8399cece888ffcd0be2bb6",
+     "span_sha256": "db7339b915f5f622886d0724bc2a3af425811456242912ed91c5837ab2b6b854",
+     "git_oid": "d2fdad2072e979d77f7a14f6ddce0d59794e438a"
+    }
+   ],
+   "pinned_baseline_witnesses": [
+    {
+     "path": "site/scripts/generator/extract-hook-gates.ts",
+     "start": 1,
+     "end": 325,
+     "symbol": "module",
+     "file_sha256": "c8471e0fc62528e1cd0eaf434058abe5b93684fae8967b9b9a666efda5a49873",
+     "span_sha256": "c8471e0fc62528e1cd0eaf434058abe5b93684fae8967b9b9a666efda5a49873",
+     "git_oid": "6c2fad8d833a0128732fb321df9ce0947e6e82ee"
+    },
+    {
+     "path": "site/scripts/generator/render-hooks-reference.ts",
+     "start": 1,
+     "end": 168,
+     "symbol": "module",
+     "file_sha256": "be34c234ad5548fe956c022a60e421024714fc20b45e7601f37f80255eba45fb",
+     "span_sha256": "be34c234ad5548fe956c022a60e421024714fc20b45e7601f37f80255eba45fb",
+     "git_oid": "e1d34c847ab2b1b96eb362bb8743e025fae60c75"
+    },
+    {
+     "path": "site/scripts/generator/source-ref.ts",
+     "start": 1,
+     "end": 13,
+     "symbol": "module",
+     "file_sha256": "ea2b479f00df225aa33d7d6188009e07056fd24f7645f94de6c8170b55134da1",
+     "span_sha256": "ea2b479f00df225aa33d7d6188009e07056fd24f7645f94de6c8170b55134da1",
+     "git_oid": "f84ca9711dbdffaef00f5dc951be9550c5fc698a"
+    }
+   ],
+   "scope": "Literal current/pinned source inspection only; advanced runtime/source observations not renewed."
+  },
+  {
+   "id": "generator:hook-extractor:04",
+   "machine_id": "generator:hook-extractor",
+   "frozen_contract": {
+    "transition_id": "generator:hook-extractor:04",
+    "machine_id": "generator:hook-extractor",
+    "owner": "hooks-workflows",
+    "baseline": {
+     "from": "argument scan",
+     "event": "string segment",
+     "guard": "parenthesis depth1",
+     "to": "message appended",
+     "effects": "Unescape common sequences and concatenate depth1 literal bodies.",
+     "failure_retry": "Nested helper call/variable glue contributes no output; runtime interpolation retained as placeholder text, not executed.",
+     "source": [
+      {
+       "path": "site/scripts/generator/extract-hook-gates.ts",
+       "symbol": "module",
+       "lines": "1-325",
+       "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/extract-hook-gates.ts",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/extract-hook-gates.ts"
+      },
+      {
+       "path": "site/scripts/generator/render-hooks-reference.ts",
+       "symbol": "module",
+       "lines": "1-168",
+       "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/render-hooks-reference.ts",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/render-hooks-reference.ts"
+      },
+      {
+       "path": "site/scripts/generator/source-ref.ts",
+       "symbol": "module",
+       "lines": "1-13",
+       "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/source-ref.ts",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/source-ref.ts"
+      }
+     ],
+     "transition_id": "generator:hook-extractor:04"
+    },
+    "task_ids": [
+     "HW-23",
+     "HW-27"
+    ],
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "proposed_composed_scenario_ids": [
+     "SEQ-29"
+    ],
+    "verification_status": "NOT_RUN",
+    "evidence": [],
+    "candidate_transition": null,
+    "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+   },
+   "frozen_contract_sha256": "636a5b3e8c6d108276808f3c2787ac0cc9ac82a6a029e9137441784863a3b446",
+   "ledger_status": "PLANNED",
+   "assessment": "SOURCE_CONFORMANCE_WITH_NAMED_ACCEPTED_DELTAS",
+   "semantic_assessment": "At argument-parenthesis depth1 recognized literal bodies contribute common-unescaped static text. Nonliteral glue and nested call text are disclosed as whitespace-normalized dynamic fragments, each capped at80 JavaScript string code units (77 plus ellipsis). Nested literal arguments are not evaluated into output; f-string placeholders remain source text.",
+   "intake_variances": [
+    "HW-23 now carries dynamic fragment descriptions instead of silently presenting static text as the entire runtime message."
+   ],
+   "current_witnesses": [
+    {
+     "path": "site/scripts/generator/extract-hook-gates.ts",
+     "symbol": "literal source lines 79-118",
+     "start": 79,
+     "end": 118,
+     "file_sha256": "bc23c0e8afdd73d3d808e0bbcee7d677ac80072b7a8399cece888ffcd0be2bb6",
+     "span_sha256": "a7283d2813cc0c0e86e61edc969b78847d64a1af73265c8ac084a2e8a9b675d5",
+     "git_oid": "d2fdad2072e979d77f7a14f6ddce0d59794e438a"
+    },
+    {
+     "path": "site/scripts/generator/extract-hook-gates.ts",
+     "symbol": "literal source lines 129-190",
+     "start": 129,
+     "end": 190,
+     "file_sha256": "bc23c0e8afdd73d3d808e0bbcee7d677ac80072b7a8399cece888ffcd0be2bb6",
+     "span_sha256": "b41e4d11ff7d2c899f424bb2162730bc624c8231dcc26cd2bee9f83a89df7da6",
+     "git_oid": "d2fdad2072e979d77f7a14f6ddce0d59794e438a"
+    }
+   ],
+   "pinned_baseline_witnesses": [
+    {
+     "path": "site/scripts/generator/extract-hook-gates.ts",
+     "start": 1,
+     "end": 325,
+     "symbol": "module",
+     "file_sha256": "c8471e0fc62528e1cd0eaf434058abe5b93684fae8967b9b9a666efda5a49873",
+     "span_sha256": "c8471e0fc62528e1cd0eaf434058abe5b93684fae8967b9b9a666efda5a49873",
+     "git_oid": "6c2fad8d833a0128732fb321df9ce0947e6e82ee"
+    },
+    {
+     "path": "site/scripts/generator/render-hooks-reference.ts",
+     "start": 1,
+     "end": 168,
+     "symbol": "module",
+     "file_sha256": "be34c234ad5548fe956c022a60e421024714fc20b45e7601f37f80255eba45fb",
+     "span_sha256": "be34c234ad5548fe956c022a60e421024714fc20b45e7601f37f80255eba45fb",
+     "git_oid": "e1d34c847ab2b1b96eb362bb8743e025fae60c75"
+    },
+    {
+     "path": "site/scripts/generator/source-ref.ts",
+     "start": 1,
+     "end": 13,
+     "symbol": "module",
+     "file_sha256": "ea2b479f00df225aa33d7d6188009e07056fd24f7645f94de6c8170b55134da1",
+     "span_sha256": "ea2b479f00df225aa33d7d6188009e07056fd24f7645f94de6c8170b55134da1",
+     "git_oid": "f84ca9711dbdffaef00f5dc951be9550c5fc698a"
+    }
+   ],
+   "scope": "Literal current/pinned source inspection only; advanced runtime/source observations not renewed."
+  },
+  {
+   "id": "generator:hook-extractor:05",
+   "machine_id": "generator:hook-extractor",
+   "frozen_contract": {
+    "transition_id": "generator:hook-extractor:05",
+    "machine_id": "generator:hook-extractor",
+    "owner": "hooks-workflows",
+    "baseline": {
+     "from": "any call regex",
+     "event": "unclaimed actual code call",
+     "guard": "not function definition/comment/string or claimed span",
+     "to": "skipped",
+     "effects": "Report file/line omitted from resolved gate table.",
+     "failure_retry": "Skipped census is not a rendered runtime gate or proof absence.",
+     "source": [
+      {
+       "path": "site/scripts/generator/extract-hook-gates.ts",
+       "symbol": "module",
+       "lines": "1-325",
+       "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/extract-hook-gates.ts",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/extract-hook-gates.ts"
+      },
+      {
+       "path": "site/scripts/generator/render-hooks-reference.ts",
+       "symbol": "module",
+       "lines": "1-168",
+       "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/render-hooks-reference.ts",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/render-hooks-reference.ts"
+      },
+      {
+       "path": "site/scripts/generator/source-ref.ts",
+       "symbol": "module",
+       "lines": "1-13",
+       "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/source-ref.ts",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/source-ref.ts"
+      }
+     ],
+     "transition_id": "generator:hook-extractor:05"
+    },
+    "task_ids": [
+     "HW-23",
+     "HW-27"
+    ],
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "proposed_composed_scenario_ids": [
+     "SEQ-29"
+    ],
+    "verification_status": "NOT_RUN",
+    "evidence": [],
+    "candidate_transition": null,
+    "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+   },
+   "frozen_contract_sha256": "0b4f445d3aed968dfefbe007b06b9d2ae2bd73b5de8cac581f48727f7d9a5bec",
+   "ledger_status": "PLANNED",
+   "assessment": "SOURCE_CONFORMANCE_WITH_NAMED_ACCEPTED_DELTAS",
+   "semantic_assessment": "The final any-call regex ignores noncode starts, def prefixes and claimed spans, and reports the remaining file/1-based-line pairs as skipped. Only sorted top-level .py files are scanned; no recursive/helper completeness or runtime absence claim follows.",
+   "intake_variances": [],
+   "current_witnesses": [
+    {
+     "path": "site/scripts/generator/extract-hook-gates.ts",
+     "symbol": "literal source lines 333-349",
+     "start": 333,
+     "end": 349,
+     "file_sha256": "bc23c0e8afdd73d3d808e0bbcee7d677ac80072b7a8399cece888ffcd0be2bb6",
+     "span_sha256": "57f361da624a7027bd2191aa3f50cc9229ca55549e6c22e23bcdeab27d206f6c",
+     "git_oid": "d2fdad2072e979d77f7a14f6ddce0d59794e438a"
+    },
+    {
+     "path": "site/scripts/generator/extract-hook-gates.ts",
+     "symbol": "literal source lines 356-370",
+     "start": 356,
+     "end": 370,
+     "file_sha256": "bc23c0e8afdd73d3d808e0bbcee7d677ac80072b7a8399cece888ffcd0be2bb6",
+     "span_sha256": "246cce1fa78000b361783120f595d94788c0e3f06e8eb1f63bbf5a6ca192039a",
+     "git_oid": "d2fdad2072e979d77f7a14f6ddce0d59794e438a"
+    }
+   ],
+   "pinned_baseline_witnesses": [
+    {
+     "path": "site/scripts/generator/extract-hook-gates.ts",
+     "start": 1,
+     "end": 325,
+     "symbol": "module",
+     "file_sha256": "c8471e0fc62528e1cd0eaf434058abe5b93684fae8967b9b9a666efda5a49873",
+     "span_sha256": "c8471e0fc62528e1cd0eaf434058abe5b93684fae8967b9b9a666efda5a49873",
+     "git_oid": "6c2fad8d833a0128732fb321df9ce0947e6e82ee"
+    },
+    {
+     "path": "site/scripts/generator/render-hooks-reference.ts",
+     "start": 1,
+     "end": 168,
+     "symbol": "module",
+     "file_sha256": "be34c234ad5548fe956c022a60e421024714fc20b45e7601f37f80255eba45fb",
+     "span_sha256": "be34c234ad5548fe956c022a60e421024714fc20b45e7601f37f80255eba45fb",
+     "git_oid": "e1d34c847ab2b1b96eb362bb8743e025fae60c75"
+    },
+    {
+     "path": "site/scripts/generator/source-ref.ts",
+     "start": 1,
+     "end": 13,
+     "symbol": "module",
+     "file_sha256": "ea2b479f00df225aa33d7d6188009e07056fd24f7645f94de6c8170b55134da1",
+     "span_sha256": "ea2b479f00df225aa33d7d6188009e07056fd24f7645f94de6c8170b55134da1",
+     "git_oid": "f84ca9711dbdffaef00f5dc951be9550c5fc698a"
+    }
+   ],
+   "scope": "Literal current/pinned source inspection only; advanced runtime/source observations not renewed."
+  },
+  {
+   "id": "generator:hook-extractor:06",
+   "machine_id": "generator:hook-extractor",
+   "frozen_contract": {
+    "transition_id": "generator:hook-extractor:06",
+    "machine_id": "generator:hook-extractor",
+    "owner": "hooks-workflows",
+    "baseline": {
+     "from": "hooks.json",
+     "event": "build event map",
+     "guard": "script basename recognized in hooks/<file>.py command",
+     "to": "event-attributed",
+     "effects": "Dedup labels per registered event/matcher; map _bashguardlib to pre-bash and Git enforcer to hand-labeled backstop.",
+     "failure_retry": "Other delegated helpers absent mapping have no registered event label.",
+     "source": [
+      {
+       "path": "site/scripts/generator/extract-hook-gates.ts",
+       "symbol": "module",
+       "lines": "1-325",
+       "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/extract-hook-gates.ts",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/extract-hook-gates.ts"
+      },
+      {
+       "path": "site/scripts/generator/render-hooks-reference.ts",
+       "symbol": "module",
+       "lines": "1-168",
+       "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/render-hooks-reference.ts",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/render-hooks-reference.ts"
+      },
+      {
+       "path": "site/scripts/generator/source-ref.ts",
+       "symbol": "module",
+       "lines": "1-13",
+       "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/source-ref.ts",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/source-ref.ts"
+      }
+     ],
+     "transition_id": "generator:hook-extractor:06"
+    },
+    "task_ids": [
+     "HW-23",
+     "HW-27"
+    ],
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "proposed_composed_scenario_ids": [
+     "SEQ-29"
+    ],
+    "verification_status": "NOT_RUN",
+    "evidence": [],
+    "candidate_transition": null,
+    "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+   },
+   "frozen_contract_sha256": "8c3058d7c34999ad6fe5726501d56c4dd79f80cf979c7d1296ae3f5126ca453c",
+   "ledger_status": "PLANNED",
+   "assessment": "SOURCE_CONFORMANCE_WITH_NAMED_ACCEPTED_DELTAS",
+   "semantic_assessment": "buildEventMap reads recognized hooks/<basename>.py command text and deduplicates event/matcher labels. eventsFor maps _bashguardlib through pre-bash and git-enforce to the explicit Git backstop label. Unmapped helpers receive no event label; text recognition is not proof a host registered or invoked a hook.",
+   "intake_variances": [],
+   "current_witnesses": [
+    {
+     "path": "site/scripts/generator/render-hooks-reference.ts",
+     "symbol": "literal source lines 25-65",
+     "start": 25,
+     "end": 65,
+     "file_sha256": "5b0c6eb0b468b2fc60289b6003eda425544e59533ef837dff40492af68e3ceee",
+     "span_sha256": "52e9bdfacc372fb58d437e7f3caff20cb23532b932de6ec73ed6a6237746a8f7",
+     "git_oid": "dd9fb9cfbeeb7a1be3e192ae3b40494f2b8c09c4"
+    }
+   ],
+   "pinned_baseline_witnesses": [
+    {
+     "path": "site/scripts/generator/extract-hook-gates.ts",
+     "start": 1,
+     "end": 325,
+     "symbol": "module",
+     "file_sha256": "c8471e0fc62528e1cd0eaf434058abe5b93684fae8967b9b9a666efda5a49873",
+     "span_sha256": "c8471e0fc62528e1cd0eaf434058abe5b93684fae8967b9b9a666efda5a49873",
+     "git_oid": "6c2fad8d833a0128732fb321df9ce0947e6e82ee"
+    },
+    {
+     "path": "site/scripts/generator/render-hooks-reference.ts",
+     "start": 1,
+     "end": 168,
+     "symbol": "module",
+     "file_sha256": "be34c234ad5548fe956c022a60e421024714fc20b45e7601f37f80255eba45fb",
+     "span_sha256": "be34c234ad5548fe956c022a60e421024714fc20b45e7601f37f80255eba45fb",
+     "git_oid": "e1d34c847ab2b1b96eb362bb8743e025fae60c75"
+    },
+    {
+     "path": "site/scripts/generator/source-ref.ts",
+     "start": 1,
+     "end": 13,
+     "symbol": "module",
+     "file_sha256": "ea2b479f00df225aa33d7d6188009e07056fd24f7645f94de6c8170b55134da1",
+     "span_sha256": "ea2b479f00df225aa33d7d6188009e07056fd24f7645f94de6c8170b55134da1",
+     "git_oid": "f84ca9711dbdffaef00f5dc951be9550c5fc698a"
+    }
+   ],
+   "scope": "Literal current/pinned source inspection only; advanced runtime/source observations not renewed."
+  },
+  {
+   "id": "generator:hook-extractor:07",
+   "machine_id": "generator:hook-extractor",
+   "frozen_contract": {
+    "transition_id": "generator:hook-extractor:07",
+    "machine_id": "generator:hook-extractor",
+    "owner": "hooks-workflows",
+    "baseline": {
+     "from": "call sites",
+     "event": "render reference",
+     "guard": "static extracted tags/messages",
+     "to": "rendered",
+     "effects": "Natural-sort H-tags, mark blocking/advisory, union events, quote static message and line-pinned source URL.",
+     "failure_retry": "Claims Every gate/never drift overstate bounded extraction; dynamic recovery messages and unresolvable calls are not fully rendered.",
+     "source": [
+      {
+       "path": "site/scripts/generator/extract-hook-gates.ts",
+       "symbol": "module",
+       "lines": "1-325",
+       "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/extract-hook-gates.ts",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/extract-hook-gates.ts"
+      },
+      {
+       "path": "site/scripts/generator/render-hooks-reference.ts",
+       "symbol": "module",
+       "lines": "1-168",
+       "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/render-hooks-reference.ts",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/render-hooks-reference.ts"
+      },
+      {
+       "path": "site/scripts/generator/source-ref.ts",
+       "symbol": "module",
+       "lines": "1-13",
+       "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/source-ref.ts",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/source-ref.ts"
+      }
+     ],
+     "transition_id": "generator:hook-extractor:07"
+    },
+    "task_ids": [
+     "HW-23",
+     "HW-27"
+    ],
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "proposed_composed_scenario_ids": [
+     "SEQ-29"
+    ],
+    "verification_status": "NOT_RUN",
+    "evidence": [],
+    "candidate_transition": null,
+    "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+   },
+   "frozen_contract_sha256": "ab0b51dda91c431a3181657db5a88dc5460b6459f0f8280aaec1d11a0ec3d19a",
+   "ledger_status": "PLANNED",
+   "assessment": "SOURCE_CONFORMANCE_WITH_NAMED_ACCEPTED_DELTAS",
+   "semantic_assessment": "The renderer natural-sorts tags, combines blocking/advisory kinds and event sets, quotes static template fragments, identifies dynamic fragments and emits sourceRef/line links plus skipped census. The intro expressly describes a bounded static scan; a zero skipped count concerns only calls found by that scan. Version strings label output without release or runtime equivalence evidence.",
+   "intake_variances": [
+    "HW-23 removes every-runtime-gate/never-drift claims and renders dynamic/omitted coverage explicitly; historical analytical wording is not current advertised equivalence."
+   ],
+   "current_witnesses": [
+    {
+     "path": "site/scripts/generator/render-hooks-reference.ts",
+     "symbol": "literal source lines 69-187",
+     "start": 69,
+     "end": 187,
+     "file_sha256": "5b0c6eb0b468b2fc60289b6003eda425544e59533ef837dff40492af68e3ceee",
+     "span_sha256": "5c5beb74d650e89c79e584e46417685bee873af949227c44a3d32659c55e223d",
+     "git_oid": "dd9fb9cfbeeb7a1be3e192ae3b40494f2b8c09c4"
+    },
+    {
+     "path": "site/scripts/generator/source-ref.ts",
+     "symbol": "literal source lines 1-13",
+     "start": 1,
+     "end": 13,
+     "file_sha256": "ea2b479f00df225aa33d7d6188009e07056fd24f7645f94de6c8170b55134da1",
+     "span_sha256": "ea2b479f00df225aa33d7d6188009e07056fd24f7645f94de6c8170b55134da1",
+     "git_oid": "f84ca9711dbdffaef00f5dc951be9550c5fc698a"
+    }
+   ],
+   "pinned_baseline_witnesses": [
+    {
+     "path": "site/scripts/generator/extract-hook-gates.ts",
+     "start": 1,
+     "end": 325,
+     "symbol": "module",
+     "file_sha256": "c8471e0fc62528e1cd0eaf434058abe5b93684fae8967b9b9a666efda5a49873",
+     "span_sha256": "c8471e0fc62528e1cd0eaf434058abe5b93684fae8967b9b9a666efda5a49873",
+     "git_oid": "6c2fad8d833a0128732fb321df9ce0947e6e82ee"
+    },
+    {
+     "path": "site/scripts/generator/render-hooks-reference.ts",
+     "start": 1,
+     "end": 168,
+     "symbol": "module",
+     "file_sha256": "be34c234ad5548fe956c022a60e421024714fc20b45e7601f37f80255eba45fb",
+     "span_sha256": "be34c234ad5548fe956c022a60e421024714fc20b45e7601f37f80255eba45fb",
+     "git_oid": "e1d34c847ab2b1b96eb362bb8743e025fae60c75"
+    },
+    {
+     "path": "site/scripts/generator/source-ref.ts",
+     "start": 1,
+     "end": 13,
+     "symbol": "module",
+     "file_sha256": "ea2b479f00df225aa33d7d6188009e07056fd24f7645f94de6c8170b55134da1",
+     "span_sha256": "ea2b479f00df225aa33d7d6188009e07056fd24f7645f94de6c8170b55134da1",
+     "git_oid": "f84ca9711dbdffaef00f5dc951be9550c5fc698a"
+    }
+   ],
+   "scope": "Literal current/pinned source inspection only; advanced runtime/source observations not renewed."
+  },
+  {
+   "id": "generator:public-catalog:01",
+   "machine_id": "generator:public-catalog",
+   "frozen_contract": {
+    "transition_id": "generator:public-catalog:01",
+    "machine_id": "generator:public-catalog",
+    "owner": "hooks-workflows",
+    "baseline": {
+     "from": "Feature Forge declaration",
+     "event": "build PREVIEW_COMMANDS",
+     "guard": "preview-command or preview-flag",
+     "to": "command badge data",
+     "effects": "Derive command map; exclude separate preview-plugin entries; Pi requirements read version facts at render time.",
+     "failure_retry": "Unlisted command resolves null/stable display; allowlist does not inspect actual release maturity evidence.",
+     "source": [
+      {
+       "path": "site/scripts/generator/forge-status.ts",
+       "symbol": "module",
+       "lines": "1-179",
+       "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/forge-status.ts",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/forge-status.ts"
+      },
+      {
+       "path": "site/scripts/generator/configuration-reference.ts",
+       "symbol": "module",
+       "lines": "1-453",
+       "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/configuration-reference.ts",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/configuration-reference.ts"
+      },
+      {
+       "path": "site/scripts/generator/source-ref.ts",
+       "symbol": "module",
+       "lines": "1-13",
+       "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/source-ref.ts",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/source-ref.ts"
+      }
+     ],
+     "transition_id": "generator:public-catalog:01"
+    },
+    "task_ids": [
+     "HW-19",
+     "HW-20",
+     "HW-22",
+     "HW-27"
+    ],
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "proposed_composed_scenario_ids": [
+     "SEQ-29"
+    ],
+    "verification_status": "NOT_RUN",
+    "evidence": [],
+    "candidate_transition": null,
+    "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+   },
+   "frozen_contract_sha256": "3c2b151dcf10aa2483d81115ed2ac46f5ddfb5873714c14eb645a1aa86955c31",
+   "ledger_status": "PLANNED",
+   "assessment": "SOURCE_CONFORMANCE_WITH_NAMED_ACCEPTED_DELTAS",
+   "semantic_assessment": "The maintained Forge declarations derive preview command/flag badges; sibling preview plugins are excluded and unknown command lookup returns null. Pi requires invokes repositoryVersionFacts when the getter is read. That helper loads/checks source facts once per process and caches the result; it is not a fresh release or runtime probe per render. Missing/malformed required facts can propagate errors. The manually maintained allowlist is not a release-maturity or installed-support validator.",
+   "intake_variances": [],
+   "current_witnesses": [
+    {
+     "path": "site/scripts/generator/forge-status.ts",
+     "symbol": "literal source lines 66-179",
+     "start": 66,
+     "end": 179,
+     "file_sha256": "2318709085d04a81ba7daa82e2e906fb0e44e80c279bd1dab41e3b01977cc7a0",
+     "span_sha256": "680ac3e45309d9a990de32138b62a7c510751e5403cf059ff349283ca7623ff4",
+     "git_oid": "7cac67a143eb4115c0a1e3db9e478a825f124c86"
+    },
+    {
+     "path": "site/scripts/version-facts.ts",
+     "symbol": "literal source lines 1-298",
+     "start": 1,
+     "end": 298,
+     "file_sha256": "41d852e30a8af7aeaf4d45dfc5186866eabcfb0c54b276243bcaeb496ff64042",
+     "span_sha256": "41d852e30a8af7aeaf4d45dfc5186866eabcfb0c54b276243bcaeb496ff64042",
+     "git_oid": "238e157b760c9dcb870e14102841958a6c4c0429"
+    }
+   ],
+   "pinned_baseline_witnesses": [
+    {
+     "path": "site/scripts/generator/forge-status.ts",
+     "start": 1,
+     "end": 179,
+     "symbol": "module",
+     "file_sha256": "2318709085d04a81ba7daa82e2e906fb0e44e80c279bd1dab41e3b01977cc7a0",
+     "span_sha256": "2318709085d04a81ba7daa82e2e906fb0e44e80c279bd1dab41e3b01977cc7a0",
+     "git_oid": "7cac67a143eb4115c0a1e3db9e478a825f124c86"
+    },
+    {
+     "path": "site/scripts/generator/configuration-reference.ts",
+     "start": 1,
+     "end": 453,
+     "symbol": "module",
+     "file_sha256": "5b586efc2c2d06f8dd8fcc0e0007f634b8309cdc98ff3779d8c4241dd5e2a9c5",
+     "span_sha256": "5b586efc2c2d06f8dd8fcc0e0007f634b8309cdc98ff3779d8c4241dd5e2a9c5",
+     "git_oid": "adfd8b6629bf78acde927901f5768140ff4a1753"
+    },
+    {
+     "path": "site/scripts/generator/source-ref.ts",
+     "start": 1,
+     "end": 13,
+     "symbol": "module",
+     "file_sha256": "ea2b479f00df225aa33d7d6188009e07056fd24f7645f94de6c8170b55134da1",
+     "span_sha256": "ea2b479f00df225aa33d7d6188009e07056fd24f7645f94de6c8170b55134da1",
+     "git_oid": "f84ca9711dbdffaef00f5dc951be9550c5fc698a"
+    }
+   ],
+   "scope": "Literal current/pinned source inspection only; advanced runtime/source observations not renewed."
+  },
+  {
+   "id": "generator:public-catalog:02",
+   "machine_id": "generator:public-catalog",
+   "frozen_contract": {
+    "transition_id": "generator:public-catalog:02",
+    "machine_id": "generator:public-catalog",
+    "owner": "hooks-workflows",
+    "baseline": {
+     "from": "configuration entries",
+     "event": "render reference",
+     "guard": "one of five fixed groups",
+     "to": "configuration page",
+     "effects": "Render maintained defaults/accepted-values/purpose/caution table.",
+     "failure_retry": "Executable defaults are not extracted; typed data is not runtime truth verification.",
+     "source": [
+      {
+       "path": "site/scripts/generator/forge-status.ts",
+       "symbol": "module",
+       "lines": "1-179",
+       "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/forge-status.ts",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/forge-status.ts"
+      },
+      {
+       "path": "site/scripts/generator/configuration-reference.ts",
+       "symbol": "module",
+       "lines": "1-453",
+       "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/configuration-reference.ts",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/configuration-reference.ts"
+      },
+      {
+       "path": "site/scripts/generator/source-ref.ts",
+       "symbol": "module",
+       "lines": "1-13",
+       "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/source-ref.ts",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/source-ref.ts"
+      }
+     ],
+     "transition_id": "generator:public-catalog:02"
+    },
+    "task_ids": [
+     "HW-19",
+     "HW-20",
+     "HW-22",
+     "HW-27"
+    ],
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "proposed_composed_scenario_ids": [
+     "SEQ-29"
+    ],
+    "verification_status": "NOT_RUN",
+    "evidence": [],
+    "candidate_transition": null,
+    "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+   },
+   "frozen_contract_sha256": "31750a82fe20abbb2d27f175ad0dc4a59258eca42d7d978567f404e8b4a66a3b",
+   "ledger_status": "PLANNED",
+   "assessment": "SOURCE_CONFORMANCE_WITH_NAMED_ACCEPTED_DELTAS",
+   "semantic_assessment": "Five fixed group tables render maintained defaults, accepted values, purpose and caution; executable defaults are explicitly not extracted. At committed cfa8 the FARM_RUN_ID caution now accurately states existing-ID refusal before receipt stream truncation, receipt-only inspection or an explicit unused new identity. createRunDirectory exclusively creates the run directory and main calls it before stream initialization. This is source conformance, not an executed Farm observation.",
+   "intake_variances": [
+    "The stale overwrite caution identified at3766 is corrected by the committed cfa8 one-field docs change; no prior held proposal or failed behavior is relabelled as runtime success."
+   ],
+   "current_witnesses": [
+    {
+     "path": "site/scripts/generator/configuration-reference.ts",
+     "symbol": "literal source lines 1-453",
+     "start": 1,
+     "end": 453,
+     "file_sha256": "a957946901da48101ca6d257a65f8259da0c1ebb9de3846a108acb5a8e10d140",
+     "span_sha256": "a957946901da48101ca6d257a65f8259da0c1ebb9de3846a108acb5a8e10d140",
+     "git_oid": "e7f61360cf52298eb63fd5e6381dcacc1aa5fcef"
+    },
+    {
+     "path": "plugins/ca/tools/farm-recovery.ts",
+     "symbol": "literal source lines 29-38",
+     "start": 29,
+     "end": 38,
+     "file_sha256": "1dbbbce56e7cda24d6016c7205f60b5bf758e24aed2a5a8132ff4ff336e49885",
+     "span_sha256": "d2b7ffef8d218ecc5b68c24720a21991ed57ac28ecb27a55e43c6d1a00488c48",
+     "git_oid": "a967762c4acf905d5ed93c963efc0f1366400a51"
+    },
+    {
+     "path": "plugins/ca/tools/farm.ts",
+     "symbol": "literal source lines 3454-3487",
+     "start": 3454,
+     "end": 3487,
+     "file_sha256": "a3beba3ce291ca9908f679ee00a190b66b0c44a961296640fc13366ae9aceacc",
+     "span_sha256": "ee3c4e41ff9b721e879a35a89012c2fcfc67d1cb96de46a5d7f3995d52e296a1",
+     "git_oid": "e1bef569ef858b9733a881f191d113e87104f3fc"
+    },
+    {
+     "path": "core/surface/includes/farm.md",
+     "symbol": "literal source lines 260-268",
+     "start": 260,
+     "end": 268,
+     "file_sha256": "34890b198d228dd6d832a424197704fcca054b0eded9d20976ead8f94d4f616b",
+     "span_sha256": "798e3fe48065d24d0e155f99b6f0b489ff4ab24594b339b9cfd2afbe5a4573e2",
+     "git_oid": "4bd77112c8ef5230c5156ad7f1db244a86136c78"
+    },
+    {
+     "path": "core/surface/includes/farm.md",
+     "symbol": "literal source lines 423-432",
+     "start": 423,
+     "end": 432,
+     "file_sha256": "34890b198d228dd6d832a424197704fcca054b0eded9d20976ead8f94d4f616b",
+     "span_sha256": "29da3f703e1d3cb6ee379994bce6d1b2562577e70019c899f431674021d61bf4",
+     "git_oid": "4bd77112c8ef5230c5156ad7f1db244a86136c78"
+    }
+   ],
+   "pinned_baseline_witnesses": [
+    {
+     "path": "site/scripts/generator/forge-status.ts",
+     "start": 1,
+     "end": 179,
+     "symbol": "module",
+     "file_sha256": "2318709085d04a81ba7daa82e2e906fb0e44e80c279bd1dab41e3b01977cc7a0",
+     "span_sha256": "2318709085d04a81ba7daa82e2e906fb0e44e80c279bd1dab41e3b01977cc7a0",
+     "git_oid": "7cac67a143eb4115c0a1e3db9e478a825f124c86"
+    },
+    {
+     "path": "site/scripts/generator/configuration-reference.ts",
+     "start": 1,
+     "end": 453,
+     "symbol": "module",
+     "file_sha256": "5b586efc2c2d06f8dd8fcc0e0007f634b8309cdc98ff3779d8c4241dd5e2a9c5",
+     "span_sha256": "5b586efc2c2d06f8dd8fcc0e0007f634b8309cdc98ff3779d8c4241dd5e2a9c5",
+     "git_oid": "adfd8b6629bf78acde927901f5768140ff4a1753"
+    },
+    {
+     "path": "site/scripts/generator/source-ref.ts",
+     "start": 1,
+     "end": 13,
+     "symbol": "module",
+     "file_sha256": "ea2b479f00df225aa33d7d6188009e07056fd24f7645f94de6c8170b55134da1",
+     "span_sha256": "ea2b479f00df225aa33d7d6188009e07056fd24f7645f94de6c8170b55134da1",
+     "git_oid": "f84ca9711dbdffaef00f5dc951be9550c5fc698a"
+    }
+   ],
+   "scope": "Literal current/pinned source inspection only; advanced runtime/source observations not renewed."
+  },
+  {
+   "id": "generator:public-catalog:03",
+   "machine_id": "generator:public-catalog",
+   "frozen_contract": {
+    "transition_id": "generator:public-catalog:03",
+    "machine_id": "generator:public-catalog",
+    "owner": "hooks-workflows",
+    "baseline": {
+     "from": "source permalink request",
+     "event": "repositorySourceRef",
+     "guard": "GITHUB_SHA exactly40hex after trim",
+     "to": "commit-ref",
+     "effects": "Use supplied commit in source URL.",
+     "failure_retry": "Absent/malformed SHA falls back to main; no tag lookup/release attestation.",
+     "source": [
+      {
+       "path": "site/scripts/generator/forge-status.ts",
+       "symbol": "module",
+       "lines": "1-179",
+       "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/forge-status.ts",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/forge-status.ts"
+      },
+      {
+       "path": "site/scripts/generator/configuration-reference.ts",
+       "symbol": "module",
+       "lines": "1-453",
+       "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/configuration-reference.ts",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/configuration-reference.ts"
+      },
+      {
+       "path": "site/scripts/generator/source-ref.ts",
+       "symbol": "module",
+       "lines": "1-13",
+       "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/source-ref.ts",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/source-ref.ts"
+      }
+     ],
+     "transition_id": "generator:public-catalog:03"
+    },
+    "task_ids": [
+     "HW-19",
+     "HW-20",
+     "HW-22",
+     "HW-27"
+    ],
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "proposed_composed_scenario_ids": [
+     "SEQ-29"
+    ],
+    "verification_status": "NOT_RUN",
+    "evidence": [],
+    "candidate_transition": null,
+    "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+   },
+   "frozen_contract_sha256": "e1451cea35f3c07ba84f760c2da76a4859a8270a9292bb122d56102ce6e068ee",
+   "ledger_status": "PLANNED",
+   "assessment": "SOURCE_CONFORMANCE_WITH_NAMED_ACCEPTED_DELTAS",
+   "semantic_assessment": "repositorySourceRef accepts trimmed40-hex GITHUB_SHA case-insensitively, otherwise returns literal main. No tag lookup, commit existence check, release authentication or publication attestation is performed.",
+   "intake_variances": [],
+   "current_witnesses": [
+    {
+     "path": "site/scripts/generator/source-ref.ts",
+     "symbol": "literal source lines 1-13",
+     "start": 1,
+     "end": 13,
+     "file_sha256": "ea2b479f00df225aa33d7d6188009e07056fd24f7645f94de6c8170b55134da1",
+     "span_sha256": "ea2b479f00df225aa33d7d6188009e07056fd24f7645f94de6c8170b55134da1",
+     "git_oid": "f84ca9711dbdffaef00f5dc951be9550c5fc698a"
+    }
+   ],
+   "pinned_baseline_witnesses": [
+    {
+     "path": "site/scripts/generator/forge-status.ts",
+     "start": 1,
+     "end": 179,
+     "symbol": "module",
+     "file_sha256": "2318709085d04a81ba7daa82e2e906fb0e44e80c279bd1dab41e3b01977cc7a0",
+     "span_sha256": "2318709085d04a81ba7daa82e2e906fb0e44e80c279bd1dab41e3b01977cc7a0",
+     "git_oid": "7cac67a143eb4115c0a1e3db9e478a825f124c86"
+    },
+    {
+     "path": "site/scripts/generator/configuration-reference.ts",
+     "start": 1,
+     "end": 453,
+     "symbol": "module",
+     "file_sha256": "5b586efc2c2d06f8dd8fcc0e0007f634b8309cdc98ff3779d8c4241dd5e2a9c5",
+     "span_sha256": "5b586efc2c2d06f8dd8fcc0e0007f634b8309cdc98ff3779d8c4241dd5e2a9c5",
+     "git_oid": "adfd8b6629bf78acde927901f5768140ff4a1753"
+    },
+    {
+     "path": "site/scripts/generator/source-ref.ts",
+     "start": 1,
+     "end": 13,
+     "symbol": "module",
+     "file_sha256": "ea2b479f00df225aa33d7d6188009e07056fd24f7645f94de6c8170b55134da1",
+     "span_sha256": "ea2b479f00df225aa33d7d6188009e07056fd24f7645f94de6c8170b55134da1",
+     "git_oid": "f84ca9711dbdffaef00f5dc951be9550c5fc698a"
+    }
+   ],
+   "scope": "Literal current/pinned source inspection only; advanced runtime/source observations not renewed."
+  },
+  {
+   "id": "generator:public-catalog:04",
+   "machine_id": "generator:public-catalog",
+   "frozen_contract": {
+    "transition_id": "generator:public-catalog:04",
+    "machine_id": "generator:public-catalog",
+    "owner": "hooks-workflows",
+    "baseline": {
+     "from": "page source version label",
+     "event": "render embed",
+     "guard": "plugin version supplied",
+     "to": "version-labeled source",
+     "effects": "Show v<version> beside actual source and URL.",
+     "failure_retry": "Version label does not prove released artifact; URL is commit or main despite stale tag-pinned comments.",
+     "source": [
+      {
+       "path": "site/scripts/generator/forge-status.ts",
+       "symbol": "module",
+       "lines": "1-179",
+       "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/forge-status.ts",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/forge-status.ts"
+      },
+      {
+       "path": "site/scripts/generator/configuration-reference.ts",
+       "symbol": "module",
+       "lines": "1-453",
+       "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/configuration-reference.ts",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/configuration-reference.ts"
+      },
+      {
+       "path": "site/scripts/generator/source-ref.ts",
+       "symbol": "module",
+       "lines": "1-13",
+       "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/source-ref.ts",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/source-ref.ts"
+      }
+     ],
+     "transition_id": "generator:public-catalog:04"
+    },
+    "task_ids": [
+     "HW-19",
+     "HW-20",
+     "HW-22",
+     "HW-27"
+    ],
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "proposed_composed_scenario_ids": [
+     "SEQ-29"
+    ],
+    "verification_status": "NOT_RUN",
+    "evidence": [],
+    "candidate_transition": null,
+    "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+   },
+   "frozen_contract_sha256": "431106f25162bdb317530614113572d541bc72f3dd6b1ec934019386023bfef4",
+   "ledger_status": "PLANNED",
+   "assessment": "SOURCE_CONFORMANCE_WITH_NAMED_ACCEPTED_DELTAS",
+   "semantic_assessment": "Source embeds show v<pluginVersion> as a label but build URLs from the supplied or selected commit/main sourceRef. chooseFence protects embedded backtick runs and preserves raw source payload text. Stale tag-pinned comments do not change this actual URL contract.",
+   "intake_variances": [
+    "The displayed plugin-version label is separate from the commit/main URL revision and is not released-artifact evidence. Stale tag-pinned implementation comments do not override the actual sourceRef URL construction."
+   ],
+   "current_witnesses": [
+    {
+     "path": "site/scripts/generator/render-source-embed.ts",
+     "symbol": "literal source lines 20-100",
+     "start": 20,
+     "end": 100,
+     "file_sha256": "5d4557effc5d93559c838990e08e3a63ea3c39d77a6fb3ac1c7a91a6f77ed299",
+     "span_sha256": "ee7c6949239df2c7f07a473475202bf23cec63606a1d67415b9a3ee79cbc4d52",
+     "git_oid": "00024093b974b4d1bf9c620f93a3b16d22d5acf3"
+    },
+    {
+     "path": "site/scripts/generator/source-ref.ts",
+     "symbol": "literal source lines 1-13",
+     "start": 1,
+     "end": 13,
+     "file_sha256": "ea2b479f00df225aa33d7d6188009e07056fd24f7645f94de6c8170b55134da1",
+     "span_sha256": "ea2b479f00df225aa33d7d6188009e07056fd24f7645f94de6c8170b55134da1",
+     "git_oid": "f84ca9711dbdffaef00f5dc951be9550c5fc698a"
+    }
+   ],
+   "pinned_baseline_witnesses": [
+    {
+     "path": "site/scripts/generator/forge-status.ts",
+     "start": 1,
+     "end": 179,
+     "symbol": "module",
+     "file_sha256": "2318709085d04a81ba7daa82e2e906fb0e44e80c279bd1dab41e3b01977cc7a0",
+     "span_sha256": "2318709085d04a81ba7daa82e2e906fb0e44e80c279bd1dab41e3b01977cc7a0",
+     "git_oid": "7cac67a143eb4115c0a1e3db9e478a825f124c86"
+    },
+    {
+     "path": "site/scripts/generator/configuration-reference.ts",
+     "start": 1,
+     "end": 453,
+     "symbol": "module",
+     "file_sha256": "5b586efc2c2d06f8dd8fcc0e0007f634b8309cdc98ff3779d8c4241dd5e2a9c5",
+     "span_sha256": "5b586efc2c2d06f8dd8fcc0e0007f634b8309cdc98ff3779d8c4241dd5e2a9c5",
+     "git_oid": "adfd8b6629bf78acde927901f5768140ff4a1753"
+    },
+    {
+     "path": "site/scripts/generator/source-ref.ts",
+     "start": 1,
+     "end": 13,
+     "symbol": "module",
+     "file_sha256": "ea2b479f00df225aa33d7d6188009e07056fd24f7645f94de6c8170b55134da1",
+     "span_sha256": "ea2b479f00df225aa33d7d6188009e07056fd24f7645f94de6c8170b55134da1",
+     "git_oid": "f84ca9711dbdffaef00f5dc951be9550c5fc698a"
+    }
+   ],
+   "scope": "Literal current/pinned source inspection only; advanced runtime/source observations not renewed."
+  },
+  {
+   "id": "pi-qualification:runtime-discovery:01",
+   "machine_id": "pi-qualification:runtime-discovery",
+   "frozen_contract": {
+    "transition_id": "pi-qualification:runtime-discovery:01",
+    "machine_id": "pi-qualification:runtime-discovery",
+    "owner": "hooks-workflows",
+    "baseline": {
+     "from": "unsearched",
+     "event": "findPiPackageRoot",
+     "guard": "nonempty PATH entries; platform native names pi.cmd/pi.exe/pi.ps1/pi on Windows, pi elsewhere",
+     "to": "executable-candidate",
+     "effects": "Try X_OK for each spelling until first accessible executable in an entry.",
+     "failure_retry": "Access failure tries next spelling/entry; no npm command, config lookup or named override is used.",
+     "source": [
+      {
+       "path": "plugins/ca-pi/tools/test/live-pi-host.ts",
+       "symbol": "findPiPackageRoot / findPiCliEntry",
+       "lines": "22-76",
+       "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/test/live-pi-host.ts",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/test/live-pi-host.ts"
+      }
+     ],
+     "transition_id": "pi-qualification:runtime-discovery:01"
+    },
+    "task_ids": [
+     "HW-26",
+     "HW-27"
+    ],
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "proposed_composed_scenario_ids": [],
+    "verification_status": "NOT_RUN",
+    "evidence": [],
+    "candidate_transition": null,
+    "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+   },
+   "frozen_contract_sha256": "d46235c4de63f47841cb5037aec63a0939cc534c79502835d84fefd9ac9c8049",
+   "ledger_status": "PRESERVED",
+   "assessment": "SOURCE_CONFORMANCE_WITH_NAMED_ACCEPTED_DELTAS",
+   "semantic_assessment": "PATH is split into nonempty platform entries. The listed Windows pi.cmd/pi.exe/pi.ps1/pi spellings or POSIX pi are tried through X_OK until one is accessible per entry. Access refusals advance; no npm/config/named override or runtime launch occurs. X_OK alone does not authenticate the chosen tool.",
+   "intake_variances": [],
+   "current_witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/test/live-pi-host.ts",
+     "symbol": "literal source lines 13-35",
+     "start": 13,
+     "end": 35,
+     "file_sha256": "f7a18740703b17afc33423561a63c08958473a17b1b2443e1a4c0d414e4e3d7b",
+     "span_sha256": "eb1a51981a614e5cab3b77ea1c1468c331b7a376506ae4e926cc6b18f153a43f",
+     "git_oid": "b723ab5e0bf871745ef47c97192250cb9ac19cca"
+    }
+   ],
+   "pinned_baseline_witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/test/live-pi-host.ts",
+     "start": 22,
+     "end": 76,
+     "symbol": "findPiPackageRoot / findPiCliEntry",
+     "file_sha256": "f7a18740703b17afc33423561a63c08958473a17b1b2443e1a4c0d414e4e3d7b",
+     "span_sha256": "88e3fb2e0f59c83344e3c02ba7ef8702a9016a89deb40b5d1c248c70ba98c672",
+     "git_oid": "b723ab5e0bf871745ef47c97192250cb9ac19cca"
+    }
+   ],
+   "scope": "Literal current/pinned source inspection only; advanced runtime/source observations not renewed."
+  },
+  {
+   "id": "pi-qualification:runtime-discovery:02",
+   "machine_id": "pi-qualification:runtime-discovery",
+   "frozen_contract": {
+    "transition_id": "pi-qualification:runtime-discovery:02",
+    "machine_id": "pi-qualification:runtime-discovery",
+    "owner": "hooks-workflows",
+    "baseline": {
+     "from": "executable-candidate",
+     "event": "realpath and ancestor scan",
+     "guard": "at most8 ancestor directories; first package.json whose name is @earendil-works/pi-coding-agent",
+     "to": "ancestor-package-found",
+     "effects": "Return package directory associated with resolved executable ancestry.",
+     "failure_retry": "realpath/read/JSON failure propagates; an existing malformed manifest does not simply count as not found. No version/hash check in this helper.",
+     "source": [
+      {
+       "path": "plugins/ca-pi/tools/test/live-pi-host.ts",
+       "symbol": "findPiPackageRoot / findPiCliEntry",
+       "lines": "22-76",
+       "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/test/live-pi-host.ts",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/test/live-pi-host.ts"
+      }
+     ],
+     "transition_id": "pi-qualification:runtime-discovery:02"
+    },
+    "task_ids": [
+     "HW-26",
+     "HW-27"
+    ],
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "proposed_composed_scenario_ids": [],
+    "verification_status": "NOT_RUN",
+    "evidence": [],
+    "candidate_transition": null,
+    "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+   },
+   "frozen_contract_sha256": "09a3d44374f35746cf6e3d289b0b959c29d4c09817da28aa622fd8ae1c0b76f6",
+   "ledger_status": "PRESERVED",
+   "assessment": "SOURCE_CONFORMANCE_WITH_NAMED_ACCEPTED_DELTAS",
+   "semantic_assessment": "Executable realpath supplies an ancestor cursor; at most8 directories are checked for package.json name @earendil-works/pi-coding-agent. Access helper failures return false, while realpath/read/JSON failures after selection propagate. Version/hash/publisher identity is outside this helper.",
+   "intake_variances": [],
+   "current_witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/test/live-pi-host.ts",
+     "symbol": "literal source lines 36-47",
+     "start": 36,
+     "end": 47,
+     "file_sha256": "f7a18740703b17afc33423561a63c08958473a17b1b2443e1a4c0d414e4e3d7b",
+     "span_sha256": "09009adec8d524bf1823f448bdbd062897dff8c6172ea6e0a7a4ce9123dc9fba",
+     "git_oid": "b723ab5e0bf871745ef47c97192250cb9ac19cca"
+    }
+   ],
+   "pinned_baseline_witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/test/live-pi-host.ts",
+     "start": 22,
+     "end": 76,
+     "symbol": "findPiPackageRoot / findPiCliEntry",
+     "file_sha256": "f7a18740703b17afc33423561a63c08958473a17b1b2443e1a4c0d414e4e3d7b",
+     "span_sha256": "88e3fb2e0f59c83344e3c02ba7ef8702a9016a89deb40b5d1c248c70ba98c672",
+     "git_oid": "b723ab5e0bf871745ef47c97192250cb9ac19cca"
+    }
+   ],
+   "scope": "Literal current/pinned source inspection only; advanced runtime/source observations not renewed."
+  },
+  {
+   "id": "pi-qualification:runtime-discovery:03",
+   "machine_id": "pi-qualification:runtime-discovery",
+   "frozen_contract": {
+    "transition_id": "pi-qualification:runtime-discovery:03",
+    "machine_id": "pi-qualification:runtime-discovery",
+    "owner": "hooks-workflows",
+    "baseline": {
+     "from": "executable-candidate with no ancestor match",
+     "event": "adjacent scan",
+     "guard": "entry/node_modules package or node_modules/.bin sibling; dist/index.js and matching-name package.json exist",
+     "to": "adjacent-package-found",
+     "effects": "Return realpath of matching adjacent package.",
+     "failure_retry": "No matching package proceeds to next PATH entry; exhausted search throws explicit not-discoverable error.",
+     "source": [
+      {
+       "path": "plugins/ca-pi/tools/test/live-pi-host.ts",
+       "symbol": "findPiPackageRoot / findPiCliEntry",
+       "lines": "22-76",
+       "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/test/live-pi-host.ts",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/test/live-pi-host.ts"
+      }
+     ],
+     "transition_id": "pi-qualification:runtime-discovery:03"
+    },
+    "task_ids": [
+     "HW-26",
+     "HW-27"
+    ],
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "proposed_composed_scenario_ids": [],
+    "verification_status": "NOT_RUN",
+    "evidence": [],
+    "candidate_transition": null,
+    "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+   },
+   "frozen_contract_sha256": "7ec3aaf818d502c02e5d713955a8e81916035c198ab281d0382c24b47dd17eda",
+   "ledger_status": "PRESERVED",
+   "assessment": "SOURCE_CONFORMANCE_WITH_NAMED_ACCEPTED_DELTAS",
+   "semantic_assessment": "After no matching ancestor, entry/node_modules and a node_modules/.bin sibling shape are checked for dist/index.js plus matching-name JSON. A matching directory realpath is returned; no match continues to another PATH entry and exhaustion throws. Read/parse/realpath failures remain uncaught rather than a universal continue-on-error fallback.",
+   "intake_variances": [],
+   "current_witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/test/live-pi-host.ts",
+     "symbol": "literal source lines 48-65",
+     "start": 48,
+     "end": 65,
+     "file_sha256": "f7a18740703b17afc33423561a63c08958473a17b1b2443e1a4c0d414e4e3d7b",
+     "span_sha256": "ef08f096c7c022bdeac6b381499273dd3f9a073370d2324e92bf1f2e4e8c9989",
+     "git_oid": "b723ab5e0bf871745ef47c97192250cb9ac19cca"
+    }
+   ],
+   "pinned_baseline_witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/test/live-pi-host.ts",
+     "start": 22,
+     "end": 76,
+     "symbol": "findPiPackageRoot / findPiCliEntry",
+     "file_sha256": "f7a18740703b17afc33423561a63c08958473a17b1b2443e1a4c0d414e4e3d7b",
+     "span_sha256": "88e3fb2e0f59c83344e3c02ba7ef8702a9016a89deb40b5d1c248c70ba98c672",
+     "git_oid": "b723ab5e0bf871745ef47c97192250cb9ac19cca"
+    }
+   ],
+   "scope": "Literal current/pinned source inspection only; advanced runtime/source observations not renewed."
+  },
+  {
+   "id": "pi-qualification:runtime-discovery:04",
+   "machine_id": "pi-qualification:runtime-discovery",
+   "frozen_contract": {
+    "transition_id": "pi-qualification:runtime-discovery:04",
+    "machine_id": "pi-qualification:runtime-discovery",
+    "owner": "hooks-workflows",
+    "baseline": {
+     "from": "supplied package root",
+     "event": "findPiCliEntry",
+     "guard": "manifest bin is string or object.pi is string",
+     "to": "CLI-resolved",
+     "effects": "Return realpath(resolve(packageRoot, declared bin)); no host process is launched.",
+     "failure_retry": "Absent bin throws; read/parse/realpath error propagates. This helper does not separately check version/hash, executable permission or containment of declared bin; caller qualification is distinct.",
+     "source": [
+      {
+       "path": "plugins/ca-pi/tools/test/live-pi-host.ts",
+       "symbol": "findPiPackageRoot / findPiCliEntry",
+       "lines": "22-76",
+       "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/test/live-pi-host.ts",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/test/live-pi-host.ts"
+      }
+     ],
+     "transition_id": "pi-qualification:runtime-discovery:04"
+    },
+    "task_ids": [
+     "HW-26",
+     "HW-27"
+    ],
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "proposed_composed_scenario_ids": [],
+    "verification_status": "NOT_RUN",
+    "evidence": [],
+    "candidate_transition": null,
+    "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+   },
+   "frozen_contract_sha256": "3c72761e632b5b6c48fd5f78a1346a5f1a38438c4c854dfad0c4860128a6b824",
+   "ledger_status": "PRESERVED",
+   "assessment": "SOURCE_CONFORMANCE_WITH_NAMED_ACCEPTED_DELTAS",
+   "semantic_assessment": "findPiCliEntry reads the package manifest, selects a string bin or object.pi string and returns realpath(resolve(packageRoot,bin)); missing/nonstring bin throws. There is no separate version/hash/X_OK/regular-file/containment/nonempty-bin guard and no host process launch. Qualification callers must supply stronger identity observations.",
+   "intake_variances": [],
+   "current_witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/test/live-pi-host.ts",
+     "symbol": "literal source lines 68-76",
+     "start": 68,
+     "end": 76,
+     "file_sha256": "f7a18740703b17afc33423561a63c08958473a17b1b2443e1a4c0d414e4e3d7b",
+     "span_sha256": "16e68d126628acd9339fd35f193adcbf25663fdaaaed28f18547104ebcf242ef",
+     "git_oid": "b723ab5e0bf871745ef47c97192250cb9ac19cca"
+    }
+   ],
+   "pinned_baseline_witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/test/live-pi-host.ts",
+     "start": 22,
+     "end": 76,
+     "symbol": "findPiPackageRoot / findPiCliEntry",
+     "file_sha256": "f7a18740703b17afc33423561a63c08958473a17b1b2443e1a4c0d414e4e3d7b",
+     "span_sha256": "88e3fb2e0f59c83344e3c02ba7ef8702a9016a89deb40b5d1c248c70ba98c672",
+     "git_oid": "b723ab5e0bf871745ef47c97192250cb9ac19cca"
+    }
+   ],
+   "scope": "Literal current/pinned source inspection only; advanced runtime/source observations not renewed."
+  },
+  {
+   "id": "pi-qualification:disposable-home:01",
+   "machine_id": "pi-qualification:disposable-home",
+   "frozen_contract": {
+    "transition_id": "pi-qualification:disposable-home:01",
+    "machine_id": "pi-qualification:disposable-home",
+    "owner": "hooks-workflows",
+    "baseline": {
+     "from": "module-uninitialized",
+     "event": "module top-level evaluation",
+     "guard": "mkdtempSync succeeds under tmpdir",
+     "to": "temp-home-created",
+     "effects": "Create fresh ca-pi-operator-home-* directory and .pi/agent recursively.",
+     "failure_retry": "Synchronous create failure throws; no exit cleanup listener exists yet.",
+     "source": [
+      {
+       "path": "plugins/ca-pi/tools/test/setup-disposable-home.ts",
+       "symbol": "top-level disposable-home setup and exit handler",
+       "lines": "35-60",
+       "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/test/setup-disposable-home.ts",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/test/setup-disposable-home.ts"
+      }
+     ],
+     "transition_id": "pi-qualification:disposable-home:01"
+    },
+    "task_ids": [
+     "HW-26",
+     "HW-15",
+     "HW-27"
+    ],
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "proposed_composed_scenario_ids": [
+     "SEQ-10",
+     "SEQ-11"
+    ],
+    "verification_status": "NOT_RUN",
+    "evidence": [],
+    "candidate_transition": null,
+    "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+   },
+   "frozen_contract_sha256": "2315c4fcd39de600ca257a7335bff368420bef28e5423ef5b09a6c3ad97a0c7c",
+   "ledger_status": "TESTED",
+   "assessment": "SOURCE_CONFORMANCE_WITH_NAMED_ACCEPTED_DELTAS",
+   "semantic_assessment": "Top-level evaluation creates a newly named temp root and recursively creates its .pi/agent. Creation failure throws before any exit cleanup listener is registered; partially created owned directories can remain. This is test helper behavior, not a real-home cleanup guarantee.",
+   "intake_variances": [],
+   "current_witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/test/setup-disposable-home.ts",
+     "symbol": "literal source lines 29-42",
+     "start": 29,
+     "end": 42,
+     "file_sha256": "768c65b5a03877e16ba9a81f758ccaf8173f28363573aafcd85dab1cc4be6e53",
+     "span_sha256": "5ac3cfd17b16d04c74432e8289b454782443468e0786c5de001c4238698edbb4",
+     "git_oid": "510ca209e22183e2fe306fa6255e8f43bf4b83a9"
+    }
+   ],
+   "pinned_baseline_witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/test/setup-disposable-home.ts",
+     "start": 35,
+     "end": 60,
+     "symbol": "top-level disposable-home setup and exit handler",
+     "file_sha256": "768c65b5a03877e16ba9a81f758ccaf8173f28363573aafcd85dab1cc4be6e53",
+     "span_sha256": "64171d740e6eec526f9fb1a364fae6f9de85847a4e35ac315c11c775b41883d9",
+     "git_oid": "510ca209e22183e2fe306fa6255e8f43bf4b83a9"
+    }
+   ],
+   "scope": "Literal current/pinned source inspection only; advanced runtime/source observations not renewed."
+  },
+  {
+   "id": "pi-qualification:disposable-home:02",
+   "machine_id": "pi-qualification:disposable-home",
+   "frozen_contract": {
+    "transition_id": "pi-qualification:disposable-home:02",
+    "machine_id": "pi-qualification:disposable-home",
+    "owner": "hooks-workflows",
+    "baseline": {
+     "from": "temp-home-created",
+     "event": "seed dummy credential fixture",
+     "guard": "writeFileSync succeeds",
+     "to": "dummy-auth-seeded",
+     "effects": "Write valid JSON with explicit dummy-disposable-home-not-a-credential API-key fixture.",
+     "failure_retry": "Write failure throws and may leave partial temp directory; this helper does not read operator auth.",
+     "source": [
+      {
+       "path": "plugins/ca-pi/tools/test/setup-disposable-home.ts",
+       "symbol": "top-level disposable-home setup and exit handler",
+       "lines": "35-60",
+       "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/test/setup-disposable-home.ts",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/test/setup-disposable-home.ts"
+      }
+     ],
+     "transition_id": "pi-qualification:disposable-home:02"
+    },
+    "task_ids": [
+     "HW-26",
+     "HW-15",
+     "HW-27"
+    ],
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "proposed_composed_scenario_ids": [
+     "SEQ-10",
+     "SEQ-11"
+    ],
+    "verification_status": "NOT_RUN",
+    "evidence": [],
+    "candidate_transition": null,
+    "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+   },
+   "frozen_contract_sha256": "9956865b05913cdf62872706321dead21d220f76e8371baead2ee3ebcf1ad836",
+   "ledger_status": "TESTED",
+   "assessment": "SOURCE_CONFORMANCE_WITH_NAMED_ACCEPTED_DELTAS",
+   "semantic_assessment": "The fixed clearly fake API-key-shaped fixture is JSON-written in that fresh agent directory. A write error propagates and can leave setup residue before exit registration. The helper does not read operator auth; this source inspection does not execute credential or host access.",
+   "intake_variances": [],
+   "current_witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/test/setup-disposable-home.ts",
+     "symbol": "literal source lines 34-42",
+     "start": 34,
+     "end": 42,
+     "file_sha256": "768c65b5a03877e16ba9a81f758ccaf8173f28363573aafcd85dab1cc4be6e53",
+     "span_sha256": "83563aa4400f2ef87e442ef128c01f0f261809a4e291950dbc4f3f4fdfbf1757",
+     "git_oid": "510ca209e22183e2fe306fa6255e8f43bf4b83a9"
+    }
+   ],
+   "pinned_baseline_witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/test/setup-disposable-home.ts",
+     "start": 35,
+     "end": 60,
+     "symbol": "top-level disposable-home setup and exit handler",
+     "file_sha256": "768c65b5a03877e16ba9a81f758ccaf8173f28363573aafcd85dab1cc4be6e53",
+     "span_sha256": "64171d740e6eec526f9fb1a364fae6f9de85847a4e35ac315c11c775b41883d9",
+     "git_oid": "510ca209e22183e2fe306fa6255e8f43bf4b83a9"
+    }
+   ],
+   "scope": "Literal current/pinned source inspection only; advanced runtime/source observations not renewed."
+  },
+  {
+   "id": "pi-qualification:disposable-home:03",
+   "machine_id": "pi-qualification:disposable-home",
+   "frozen_contract": {
+    "transition_id": "pi-qualification:disposable-home:03",
+    "machine_id": "pi-qualification:disposable-home",
+    "owner": "hooks-workflows",
+    "baseline": {
+     "from": "dummy-auth-seeded",
+     "event": "redirect environment",
+     "guard": "successful prior setup",
+     "to": "environment-redirected",
+     "effects": "Set test-process HOME and USERPROFILE to disposable root, delete HOMEDRIVE/HOMEPATH, set PI_CODING_AGENT_DIR and CODEARBITER_TEST_DISPOSABLE_HOME; register exit listener.",
+     "failure_retry": "No environment restoration is implemented; intended lifetime is this test process. Source alone does not prove every test imports/preloads the helper.",
+     "source": [
+      {
+       "path": "plugins/ca-pi/tools/test/setup-disposable-home.ts",
+       "symbol": "top-level disposable-home setup and exit handler",
+       "lines": "35-60",
+       "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/test/setup-disposable-home.ts",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/test/setup-disposable-home.ts"
+      }
+     ],
+     "transition_id": "pi-qualification:disposable-home:03"
+    },
+    "task_ids": [
+     "HW-26",
+     "HW-15",
+     "HW-27"
+    ],
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "proposed_composed_scenario_ids": [
+     "SEQ-10",
+     "SEQ-11"
+    ],
+    "verification_status": "NOT_RUN",
+    "evidence": [],
+    "candidate_transition": null,
+    "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+   },
+   "frozen_contract_sha256": "f0921ca1692d77f37dabd35984c4c86b67eff14aab1b1c092524b345d0538c0b",
+   "ledger_status": "TESTED",
+   "assessment": "SOURCE_CONFORMANCE_WITH_NAMED_ACCEPTED_DELTAS",
+   "semantic_assessment": "Successful preceding setup sets HOME/USERPROFILE/PI_CODING_AGENT_DIR/disposable marker, deletes HOMEDRIVE/HOMEPATH and then registers the exit listener. It intentionally does not restore prior environment. Source alone cannot prove every test process imports or preloads it.",
+   "intake_variances": [],
+   "current_witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/test/setup-disposable-home.ts",
+     "symbol": "literal source lines 44-54",
+     "start": 44,
+     "end": 54,
+     "file_sha256": "768c65b5a03877e16ba9a81f758ccaf8173f28363573aafcd85dab1cc4be6e53",
+     "span_sha256": "db9527597a876bdb6eb9a7fb596f1480e78408c7c1c80692e1697f3505294b8c",
+     "git_oid": "510ca209e22183e2fe306fa6255e8f43bf4b83a9"
+    }
+   ],
+   "pinned_baseline_witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/test/setup-disposable-home.ts",
+     "start": 35,
+     "end": 60,
+     "symbol": "top-level disposable-home setup and exit handler",
+     "file_sha256": "768c65b5a03877e16ba9a81f758ccaf8173f28363573aafcd85dab1cc4be6e53",
+     "span_sha256": "64171d740e6eec526f9fb1a364fae6f9de85847a4e35ac315c11c775b41883d9",
+     "git_oid": "510ca209e22183e2fe306fa6255e8f43bf4b83a9"
+    }
+   ],
+   "scope": "Literal current/pinned source inspection only; advanced runtime/source observations not renewed."
+  },
+  {
+   "id": "pi-qualification:disposable-home:04",
+   "machine_id": "pi-qualification:disposable-home",
+   "frozen_contract": {
+    "transition_id": "pi-qualification:disposable-home:04",
+    "machine_id": "pi-qualification:disposable-home",
+    "owner": "hooks-workflows",
+    "baseline": {
+     "from": "environment-redirected",
+     "event": "process exit callback",
+     "guard": "listener runs",
+     "to": "removed / residue-possible",
+     "effects": "Attempt rmSync of exact newly created root recursively with force.",
+     "failure_retry": "Cleanup exceptions swallowed; no retry or cleanup receipt. Abrupt termination that skips exit callback can leave temp residue.",
+     "source": [
+      {
+       "path": "plugins/ca-pi/tools/test/setup-disposable-home.ts",
+       "symbol": "top-level disposable-home setup and exit handler",
+       "lines": "35-60",
+       "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/test/setup-disposable-home.ts",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/test/setup-disposable-home.ts"
+      }
+     ],
+     "transition_id": "pi-qualification:disposable-home:04"
+    },
+    "task_ids": [
+     "HW-26",
+     "HW-15",
+     "HW-27"
+    ],
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "proposed_composed_scenario_ids": [
+     "SEQ-10",
+     "SEQ-11"
+    ],
+    "verification_status": "NOT_RUN",
+    "evidence": [],
+    "candidate_transition": null,
+    "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+   },
+   "frozen_contract_sha256": "b7bef714d04ed10e02a379959d4c95ee8a347c22bde1958053ebe304e2b67ada",
+   "ledger_status": "PRESERVED",
+   "assessment": "SOURCE_CONFORMANCE_WITH_NAMED_ACCEPTED_DELTAS",
+   "semantic_assessment": "Only the registered process exit callback attempts rmSync of the exact newly created root recursively with force. Errors are swallowed with no retry/receipt; abrupt termination or callback failure may leave residue. Existing advanced test/source observations remain unchanged and are not renewed here.",
+   "intake_variances": [],
+   "current_witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/test/setup-disposable-home.ts",
+     "symbol": "literal source lines 53-60",
+     "start": 53,
+     "end": 60,
+     "file_sha256": "768c65b5a03877e16ba9a81f758ccaf8173f28363573aafcd85dab1cc4be6e53",
+     "span_sha256": "261f6c6fe500e869267d5b0888e2f1d4a45fe4157649c8380d1ed2d2f15eff6f",
+     "git_oid": "510ca209e22183e2fe306fa6255e8f43bf4b83a9"
+    }
+   ],
+   "pinned_baseline_witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/test/setup-disposable-home.ts",
+     "start": 35,
+     "end": 60,
+     "symbol": "top-level disposable-home setup and exit handler",
+     "file_sha256": "768c65b5a03877e16ba9a81f758ccaf8173f28363573aafcd85dab1cc4be6e53",
+     "span_sha256": "64171d740e6eec526f9fb1a364fae6f9de85847a4e35ac315c11c775b41883d9",
+     "git_oid": "510ca209e22183e2fe306fa6255e8f43bf4b83a9"
+    }
+   ],
+   "scope": "Literal current/pinned source inspection only; advanced runtime/source observations not renewed."
+  }
+ ],
+ "literal_clause_count": 25,
+ "held": [],
+ "open_findings": [],
+ "resolved_source_correction": {
+  "id": "GENERATOR-PUBLIC-FARM-RUN-ID-CAUTION-01",
+  "commit": "cfa8effd8e3e856571052f94311f4f01c96b7f77",
+  "path": "site/scripts/generator/configuration-reference.ts",
+  "line": 345,
+  "conclusion": "Current committed caution agrees with guide and producer; previous held proposal preserved as history."
+ }
+}

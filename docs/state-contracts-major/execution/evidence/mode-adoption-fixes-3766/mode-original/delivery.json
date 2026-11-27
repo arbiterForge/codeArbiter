@@ -1,0 +1,287 @@
+{
+ "schema": "codearbiter.private-fix-delivery/1",
+ "state": "PRIVATE_CANDIDATE_FOR_INDEPENDENT_REVIEW",
+ "work_id": "WORK-2A68C3051D5A477EAC131493FF8A85AF",
+ "finding": "HOOK-MODE-AUDIT-EXIT-01",
+ "named_original_source_epoch": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+ "observed_root_HEAD_at_seal": "9bc844c61d4ef05ec16796a9671628913f10a5a6",
+ "subjects": {
+  "core/pysrc/_modelib.py": {
+   "preimage_git_oid": "9593bb119d8a85eea0291ad45d1edaf9dc7e405f",
+   "preimage_sha256": "d97433737654bbcad2051e62495e70ec006dc31d458514fa74e338e49d04a1db",
+   "preimage_bytes": 44894,
+   "physical_preimage_sha256": "d97433737654bbcad2051e62495e70ec006dc31d458514fa74e338e49d04a1db",
+   "candidate": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-mode-exit-audit-fix-9ubezw5y\\fixture\\core\\pysrc\\_modelib.py",
+    "sha256": "0cc96df9b44a0f4921399dfb0d28cb2600153f4d946ba24e51eb91e3ed2d24db",
+    "bytes": 45405
+   },
+   "changed": true
+  },
+  ".github/scripts/test_modelib.py": {
+   "preimage_git_oid": "c6e814c7fd2fb724fbe03424bb07b03b46e6993a",
+   "preimage_sha256": "4fbb84b4eab120345e522543e76c6e0e4e02bba0b8c3dc852016ed290b9eb5aa",
+   "preimage_bytes": 58661,
+   "physical_preimage_sha256": "4fbb84b4eab120345e522543e76c6e0e4e02bba0b8c3dc852016ed290b9eb5aa",
+   "candidate": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-mode-exit-audit-fix-9ubezw5y\\fixture\\.github\\scripts\\test_modelib.py",
+    "sha256": "d2b40141c36400c8518f081424920c7a02ade611f08c01a8fa1a2908776c005c",
+    "bytes": 68705
+   },
+   "changed": true
+  },
+  "plugins/ca/hooks/_modelib.py": {
+   "preimage_git_oid": "9593bb119d8a85eea0291ad45d1edaf9dc7e405f",
+   "preimage_sha256": "d97433737654bbcad2051e62495e70ec006dc31d458514fa74e338e49d04a1db",
+   "preimage_bytes": 44894,
+   "physical_preimage_sha256": "d97433737654bbcad2051e62495e70ec006dc31d458514fa74e338e49d04a1db",
+   "candidate": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-mode-exit-audit-fix-9ubezw5y\\fixture\\plugins\\ca\\hooks\\_modelib.py",
+    "sha256": "0cc96df9b44a0f4921399dfb0d28cb2600153f4d946ba24e51eb91e3ed2d24db",
+    "bytes": 45405
+   },
+   "changed": true
+  },
+  "plugins/ca-codex/hooks/_modelib.py": {
+   "preimage_git_oid": "9593bb119d8a85eea0291ad45d1edaf9dc7e405f",
+   "preimage_sha256": "d97433737654bbcad2051e62495e70ec006dc31d458514fa74e338e49d04a1db",
+   "preimage_bytes": 44894,
+   "physical_preimage_sha256": "d97433737654bbcad2051e62495e70ec006dc31d458514fa74e338e49d04a1db",
+   "candidate": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-mode-exit-audit-fix-9ubezw5y\\fixture\\plugins\\ca-codex\\hooks\\_modelib.py",
+    "sha256": "0cc96df9b44a0f4921399dfb0d28cb2600153f4d946ba24e51eb91e3ed2d24db",
+    "bytes": 45405
+   },
+   "changed": true
+  },
+  "plugins/ca-pi/hooks/_modelib.py": {
+   "preimage_git_oid": "9593bb119d8a85eea0291ad45d1edaf9dc7e405f",
+   "preimage_sha256": "d97433737654bbcad2051e62495e70ec006dc31d458514fa74e338e49d04a1db",
+   "preimage_bytes": 44894,
+   "physical_preimage_sha256": "d97433737654bbcad2051e62495e70ec006dc31d458514fa74e338e49d04a1db",
+   "candidate": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-mode-exit-audit-fix-9ubezw5y\\fixture\\plugins\\ca-pi\\hooks\\_modelib.py",
+    "sha256": "0cc96df9b44a0f4921399dfb0d28cb2600153f4d946ba24e51eb91e3ed2d24db",
+    "bytes": 45405
+   },
+   "changed": true
+  },
+  "core/pysrc/prompt-submit.py": {
+   "preimage_git_oid": "5fcb6c3e41b051b530887c702a3fe33d078e7448",
+   "preimage_sha256": "db4218a203d1078e7aecc887c8b522fc313a7c0cc29aa353f1065ed97a8adddf",
+   "preimage_bytes": 30296,
+   "physical_preimage_sha256": "db4218a203d1078e7aecc887c8b522fc313a7c0cc29aa353f1065ed97a8adddf",
+   "candidate": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-mode-exit-audit-fix-9ubezw5y\\fixture\\core\\pysrc\\prompt-submit.py",
+    "sha256": "db4218a203d1078e7aecc887c8b522fc313a7c0cc29aa353f1065ed97a8adddf",
+    "bytes": 30296
+   },
+   "changed": false
+  },
+  ".github/scripts/test_prompt_submit.py": {
+   "preimage_git_oid": "44a0a47635a09c3353eebca38e5dd1e1026e787b",
+   "preimage_sha256": "86e0e8d628296b7021e22b166dadcd91ceb4ea6f7282f16eaf0841b023fbd3d2",
+   "preimage_bytes": 42681,
+   "physical_preimage_sha256": "86e0e8d628296b7021e22b166dadcd91ceb4ea6f7282f16eaf0841b023fbd3d2",
+   "candidate": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-mode-exit-audit-fix-9ubezw5y\\fixture\\.github\\scripts\\test_prompt_submit.py",
+    "sha256": "86e0e8d628296b7021e22b166dadcd91ceb4ea6f7282f16eaf0841b023fbd3d2",
+    "bytes": 42681
+   },
+   "changed": false
+  }
+ },
+ "candidate_filemap": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-mode-exit-audit-fix-9ubezw5y\\candidate-filemap.json",
+  "sha256": "527bc22090d21f6239068fbeb0602940437f48322576edf37c531fd4a8d9f9ae",
+  "bytes": 1686
+ },
+ "canonical_test_diff": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-mode-exit-audit-fix-9ubezw5y\\canonical-test.diff",
+  "sha256": "304f901246df1311fad6c7f4746de284a7537953df29392b9dd1f395faaf0424",
+  "bytes": 19507
+ },
+ "preservation": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-mode-exit-audit-fix-9ubezw5y\\preservation.json",
+  "sha256": "2adc4dfc4bd3529252a8278710ff43bd37533c7c9549ff7715e07c81291129f2",
+  "bytes": 4252
+ },
+ "coverage_boundary": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-mode-exit-audit-fix-9ubezw5y\\coverage-boundary.json",
+  "sha256": "88c4e43174633659c7ffe7da34fb5ff09e55e237d79a819a71afa6d67e07118a",
+  "bytes": 1227
+ },
+ "input_references": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-mode-exit-audit-fix-9ubezw5y\\input-references.json",
+  "sha256": "604c9a81ce763d22ddd4d6f39651660a9116f2df88108069884fa1002ac80a6e",
+  "bytes": 1001
+ },
+ "outcome_and_limits": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-mode-exit-audit-fix-9ubezw5y\\outcome-and-limits.json",
+  "sha256": "7507e5cd75d2e737153e13244c32477196b3b7e03ac6e5965eb07330fdcf4159",
+  "bytes": 3374
+ },
+ "evidence_inventory": [
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-mode-exit-audit-fix-9ubezw5y\\original-red.json",
+   "sha256": "642f558b5672d4dca90754a9193065f36fbb542b2e49cd9b3674b325f56f547c",
+   "bytes": 671
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-mode-exit-audit-fix-9ubezw5y\\original-red.stdout",
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "bytes": 0
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-mode-exit-audit-fix-9ubezw5y\\original-red.stderr",
+   "sha256": "c4c2e3ff52e67fa1598923e427050d39dfdf1330900b6a68bf5f2550a2e76b6d",
+   "bytes": 1086
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-mode-exit-audit-fix-9ubezw5y\\focused-green.json",
+   "sha256": "c2ed7bb496614178b71e961dc5b1ab2df643c31bf09fd35817d2f13f8b79683a",
+   "bytes": 1012
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-mode-exit-audit-fix-9ubezw5y\\focused-green.stdout",
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "bytes": 0
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-mode-exit-audit-fix-9ubezw5y\\focused-green.stderr",
+   "sha256": "b4185816871dc5736bb285261229187f7eeff6beeae5489b3cbcceb2216f50d3",
+   "bytes": 13580
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-mode-exit-audit-fix-9ubezw5y\\final-modelib.json",
+   "sha256": "0f09d4af8a8539d408d33e1d818310731b68d53e34aabbaf986bf66362afa254",
+   "bytes": 833
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-mode-exit-audit-fix-9ubezw5y\\final-modelib.stdout",
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "bytes": 0
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-mode-exit-audit-fix-9ubezw5y\\final-modelib.stderr",
+   "sha256": "af5747c67c0350555ef05f8dbec3e03c0c833a0a0cb6d86de68dc8e4fd775369",
+   "bytes": 14597
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-mode-exit-audit-fix-9ubezw5y\\final-modelib-green.json",
+   "sha256": "ef562d6034c09d0ad5426ac5e665112495c4d754ae5f28fc9364db67bb1bc72f",
+   "bytes": 832
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-mode-exit-audit-fix-9ubezw5y\\final-modelib-green.stdout",
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "bytes": 0
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-mode-exit-audit-fix-9ubezw5y\\final-modelib-green.stderr",
+   "sha256": "cd10c7d55467ec0902dd4006a7e59c75ad02d9a44c2038f301de871afd0a8879",
+   "bytes": 13896
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-mode-exit-audit-fix-9ubezw5y\\final-prompt.json",
+   "sha256": "b460dd251304a036d7a3eb09f821b82428761010a5e7d73574ebb3c8825ff941",
+   "bytes": 714
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-mode-exit-audit-fix-9ubezw5y\\final-prompt.stdout",
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "bytes": 0
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-mode-exit-audit-fix-9ubezw5y\\final-prompt.stderr",
+   "sha256": "1d1a97672828d29b7030b53013ea421e1de8dea5a15b35803a22135643d1759e",
+   "bytes": 4714
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-mode-exit-audit-fix-9ubezw5y\\intermediate-fallback-red.json",
+   "sha256": "f8eb2b36ff4c1c91a7222b84d6eaecfb7e6c4bf5029af1e1901708f0b2df5275",
+   "bytes": 558
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-mode-exit-audit-fix-9ubezw5y\\intermediate-fallback-red.stdout",
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "bytes": 0
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-mode-exit-audit-fix-9ubezw5y\\intermediate-fallback-red.stderr",
+   "sha256": "284b66b6fb6ea47231da8327152aa09a37f9dceadead0732b0a12c6383400b05",
+   "bytes": 3067
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-mode-exit-audit-fix-9ubezw5y\\sealed-modelib.json",
+   "sha256": "6f308ca0187350f1e86db31906d4a76ed2de8b2ff70785cb246d80cbd56e482b",
+   "bytes": 951
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-mode-exit-audit-fix-9ubezw5y\\sealed-modelib.stdout",
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "bytes": 0
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-mode-exit-audit-fix-9ubezw5y\\sealed-modelib.stderr",
+   "sha256": "6e149684ac25e397319216a92f850223c55d2cf0fd235ceb20a1d148f7dca324",
+   "bytes": 14044
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-mode-exit-audit-fix-9ubezw5y\\sealed-prompt.json",
+   "sha256": "6406ce9406a0f2fffd501b413f288064789ebc7d0d677912396e8c3a9c89a9a6",
+   "bytes": 659
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-mode-exit-audit-fix-9ubezw5y\\sealed-prompt.stdout",
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "bytes": 0
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-mode-exit-audit-fix-9ubezw5y\\sealed-prompt.stderr",
+   "sha256": "c6bc47ac514c22d5b70873ccc36b153b48e37df76f375f1bc1e2096abd97da82",
+   "bytes": 4714
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-mode-exit-audit-fix-9ubezw5y\\sealed-restart.json",
+   "sha256": "8b8ec95d13249a613c30b52fd96f98558bf2a8ad56f60fd60c41d8d8570dafa9",
+   "bytes": 1157
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-mode-exit-audit-fix-9ubezw5y\\sealed-restart-interrupt.stdout",
+   "sha256": "96dc2f79c6f9a4e113403a8d0d370e92a114e7ef3c931abd17f5f04e3412cb90",
+   "bytes": 704
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-mode-exit-audit-fix-9ubezw5y\\sealed-restart-interrupt.stderr",
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "bytes": 0
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-mode-exit-audit-fix-9ubezw5y\\sealed-restart-recover.stdout",
+   "sha256": "5ebeffee84efeb14d0b078b803790ff59d3f88365d4faf54b9e783923dcf293c",
+   "bytes": 322
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-mode-exit-audit-fix-9ubezw5y\\sealed-restart-recover.stderr",
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "bytes": 0
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-mode-exit-audit-fix-9ubezw5y\\restart-final-owned-check.py",
+   "sha256": "e6ccc3fd7108dac3b279a0d358e2fb8eb8f8e52ebd287b78ce4677d668ef74e6",
+   "bytes": 1618
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-mode-exit-audit-fix-9ubezw5y\\run-focused.py",
+   "sha256": "fbcc67873acbb76283e8499866b4c8aa4526322b352816b96873c4640e2b01bd",
+   "bytes": 617
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-mode-exit-audit-fix-9ubezw5y\\run-prompt.py",
+   "sha256": "7ac851320df2580d953acdcc1ce74b788327d6ab45771bedaa670654ad89426b",
+   "bytes": 645
+  }
+ ],
+ "independence": "Author implementation and focused fixtures only; no self-independent PASS, security marker, index/ref/canonical write or task/source disposition promotion. Root/peer own next admission."
+}

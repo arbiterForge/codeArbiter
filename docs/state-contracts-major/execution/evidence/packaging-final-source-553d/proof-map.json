@@ -1,0 +1,66 @@
+[
+  {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-packaging-final-source-553d\\proofs\\cohort-preserved.json",
+    "ref": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/cohort-preserved.json",
+    "sha256": "3cce462e4eb122d4e12618310e466e1fc02dd15a3438b31de09c2d58588aaa93",
+    "cells": [
+      "disposition:transitions:S71:01",
+      "disposition:transitions:S71:02",
+      "disposition:transitions:S71:03",
+      "disposition:transitions:S71:04",
+      "disposition:transitions:S71:07",
+      "disposition:machines:S71"
+    ]
+  },
+  {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-packaging-final-source-553d\\proofs\\cold-preserved.json",
+    "ref": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/cold-preserved.json",
+    "sha256": "36da8aefdfdb1a49568696bb7a87e8fffd1e7d44da04b51b1143805f697b951a",
+    "cells": [
+      "disposition:transitions:S72:07",
+      "disposition:machines:S72"
+    ]
+  },
+  {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-packaging-final-source-553d\\proofs\\channels-preserved.json",
+    "ref": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/channels-preserved.json",
+    "sha256": "f3ae9766d5f5ec6d521d28644cccfb66f96286a81083fdbf591eeb9830bb2bc6",
+    "cells": [
+      "disposition:machines:S73"
+    ]
+  },
+  {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-packaging-final-source-553d\\proofs\\surface-preserved.json",
+    "ref": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/surface-preserved.json",
+    "sha256": "69ee8323cc1e504c917890867527a0df471121488daaafa1102ca2ca1215159e",
+    "cells": [
+      "disposition:transitions:S75:01",
+      "disposition:machines:S75"
+    ]
+  },
+  {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-packaging-final-source-553d\\proofs\\sync-preserved.json",
+    "ref": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/sync-preserved.json",
+    "sha256": "d17ed13f530d1ddecc6c53ff28b7fe835b13db39ef098e5871f4d5eb39667d6d",
+    "cells": [
+      "disposition:machines:S76"
+    ]
+  },
+  {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-packaging-final-source-553d\\proofs\\metadata-preserved.json",
+    "ref": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/metadata-preserved.json",
+    "sha256": "6e481bfbc0cc9ef18fd7fdd2923b0aededec7dc2583f4b9d1e42dab4ea89e848",
+    "cells": [
+      "disposition:transitions:S77:01",
+      "disposition:transitions:S77:02",
+      "disposition:transitions:S77:03",
+      "disposition:transitions:S77:04",
+      "disposition:transitions:S77:05",
+      "disposition:transitions:S77:06",
+      "disposition:transitions:S77:07",
+      "disposition:transitions:S77:08",
+      "disposition:transitions:S77:09",
+      "disposition:machines:S77"
+    ]
+  }
+]

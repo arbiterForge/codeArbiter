@@ -1,0 +1,862 @@
+{
+ "actual_root": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
+ "inventory_count": 118,
+ "delegates": [
+  "core/surface/skills/decision-lifecycle/SKILL.md",
+  "core/surface/skills/post-merge-cleanup/SKILL.md",
+  "core/surface/skills/decision-variance/SKILL.md",
+  "core/surface/skills/security-architecture/SKILL.md"
+ ],
+ "inventory": [
+  {
+   "path": "core/surface/command-routes.json",
+   "pin": "e86edadafe80c19f86bec17d1c5c2971a9ea69bb",
+   "expected": "e86edadafe80c19f86bec17d1c5c2971a9ea69bb",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/hosts.json",
+   "pin": "2fc53a8b7ca7b0e5a656f5640d9662d798af8856",
+   "expected": "2fc53a8b7ca7b0e5a656f5640d9662d798af8856",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/surface/COMMANDS.md",
+   "pin": "662ac6c88b69c95c971fedf5bd535f8aa48190ca",
+   "expected": "662ac6c88b69c95c971fedf5bd535f8aa48190ca",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/surface/arbiter.md",
+   "pin": "93e052b93e93984b59cb899473d5264dbea9e42d",
+   "expected": "93e052b93e93984b59cb899473d5264dbea9e42d",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/surface/includes/routing-table.md",
+   "pin": "bd8d7d03d321724eef0c075c50f28ff825c59fb8",
+   "expected": "bd8d7d03d321724eef0c075c50f28ff825c59fb8",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/surface/includes/reference-map.md",
+   "pin": "4a024e9c0afbf3a07472e28cd66d41298c73db35",
+   "expected": "4a024e9c0afbf3a07472e28cd66d41298c73db35",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/surface/commands/feature.md",
+   "pin": "56e585ffcec80cab51db58835be4be6b830477ed",
+   "expected": "56e585ffcec80cab51db58835be4be6b830477ed",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/surface/SPRINT.md",
+   "pin": "4a719ae5df42d6447ad58172d81480ccbdd6f436",
+   "expected": "4a719ae5df42d6447ad58172d81480ccbdd6f436",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/surface/skills/subagent-driven-development/SKILL.md",
+   "pin": "3836c58d0658433064b161381334ec8dc38da6fd",
+   "expected": "3836c58d0658433064b161381334ec8dc38da6fd",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/surface/skills/tdd/SKILL.md",
+   "pin": "d443555fb865bc43ebe0d3375c267d12c6c3f9dd",
+   "expected": "d443555fb865bc43ebe0d3375c267d12c6c3f9dd",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/surface/includes/artifacts.md",
+   "pin": "b3f612df41d0b42231933b8dae7d737c86a8652f",
+   "expected": "b3f612df41d0b42231933b8dae7d737c86a8652f",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/surface/skills/commit-gate/SKILL.md",
+   "pin": "31d100450d46ecdb3203ed796a08c7aa1117181b",
+   "expected": "31d100450d46ecdb3203ed796a08c7aa1117181b",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/surface/skills/finishing-a-development-branch/SKILL.md",
+   "pin": "203bf57f6ffb9cb155be29a362103101754219bd",
+   "expected": "203bf57f6ffb9cb155be29a362103101754219bd",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/surface/skills/context-creation/SKILL.md",
+   "pin": "130632a148a0120cd6f9099e7a73225c475bc080",
+   "expected": "130632a148a0120cd6f9099e7a73225c475bc080",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/surface/skills/decompose/SKILL.md",
+   "pin": "47da223845bf3da00acef20b5959fb6abb96f55b",
+   "expected": "47da223845bf3da00acef20b5959fb6abb96f55b",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/pysrc/prompt-submit.py",
+   "pin": "5fcb6c3e41b051b530887c702a3fe33d078e7448",
+   "expected": "5fcb6c3e41b051b530887c702a3fe33d078e7448",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/pysrc/_readinjectlib.py",
+   "pin": "eb9ac0c2ed4516450ec8607327790e3edaab8252",
+   "expected": "eb9ac0c2ed4516450ec8607327790e3edaab8252",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "docs/hooks.md",
+   "pin": "d4726a5fdbc6175498ab03ac47fe8ee66c2bf36a",
+   "expected": "d4726a5fdbc6175498ab03ac47fe8ee66c2bf36a",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/surface/includes/review-matrix.md",
+   "pin": null,
+   "expected": "25980c292b529fca90c39f5f26d69a1c0674de44:core/surface/includes/review-matrix.md",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/surface/commands/fix.md",
+   "pin": "fd27e64c05bbf408a123163940441d3165161426",
+   "expected": "fd27e64c05bbf408a123163940441d3165161426",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/surface/commands/chore.md",
+   "pin": null,
+   "expected": "25980c292b529fca90c39f5f26d69a1c0674de44:core/surface/commands/chore.md",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/surface/skills/INDEX.md",
+   "pin": "0bc0a30080231252bcf0b00b4fe565aba31d61b8",
+   "expected": "0bc0a30080231252bcf0b00b4fe565aba31d61b8",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/surface/agents/INDEX.md",
+   "pin": "5b831ac106d0f053bf51917d40d2e7d46b2339c8",
+   "expected": "5b831ac106d0f053bf51917d40d2e7d46b2339c8",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/surface/commands/init.md",
+   "pin": "924e3756b7c474c9d3c9efad43edd3f90b7a6525",
+   "expected": "924e3756b7c474c9d3c9efad43edd3f90b7a6525",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/surface/skills/debug/SKILL.md",
+   "pin": "d2377928f6f096aa69816f8ef067903f9a638673",
+   "expected": "d2377928f6f096aa69816f8ef067903f9a638673",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/surface/skills/context-check/SKILL.md",
+   "pin": "2db5a03a1d2f09ea2ee05832b3dc4eedd7763606",
+   "expected": "2db5a03a1d2f09ea2ee05832b3dc4eedd7763606",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/pysrc/_contextselectlib.py",
+   "pin": "4bc5bc87f540dd12ece5d0914e78bbfe26e5c532",
+   "expected": "4bc5bc87f540dd12ece5d0914e78bbfe26e5c532",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/surface/commands/review.md",
+   "pin": "2fadd4b755df269e8bd790b6106183da5ce8abc9",
+   "expected": "2fadd4b755df269e8bd790b6106183da5ce8abc9",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/surface/skills/tribunal/SKILL.md",
+   "pin": "fa411c6e8d9b335914e0b31a875d6739d38ade40",
+   "expected": "fa411c6e8d9b335914e0b31a875d6739d38ade40",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/pysrc/_tribunalrunlib.py",
+   "pin": "c2db7a2b082e005e0be9dd637a853c6ee096a01f",
+   "expected": "c2db7a2b082e005e0be9dd637a853c6ee096a01f",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "docs/parity.md",
+   "pin": "17d824a7ddc47662daa9d4069ac5afd453e033ac",
+   "expected": "17d824a7ddc47662daa9d4069ac5afd453e033ac",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/pysrc/_artifactauthoritylib.py",
+   "pin": "fb3089e12ddb95242a511cb7754f1e744f7bf53d",
+   "expected": "fb3089e12ddb95242a511cb7754f1e744f7bf53d",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/surface/skills/release/SKILL.md",
+   "pin": "15216183910a201eb5966b741bbb1a8d023927f8",
+   "expected": "15216183910a201eb5966b741bbb1a8d023927f8",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "CHANGELOG.md",
+   "pin": null,
+   "expected": "25980c292b529fca90c39f5f26d69a1c0674de44:CHANGELOG.md",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/surface/skills/writing-plans/SKILL.md",
+   "pin": "7f93794bde693fd632a9f298129148c002e737ab",
+   "expected": "7f93794bde693fd632a9f298129148c002e737ab",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/pysrc/_artifactlib.py",
+   "pin": "0074f23a0a3d3a1994081d0be41c63e7fe06dff3",
+   "expected": "0074f23a0a3d3a1994081d0be41c63e7fe06dff3",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/surface/skills/brainstorming/SKILL.md",
+   "pin": "654a830c105ef12d2188f485e642382ccac0fb2a",
+   "expected": "654a830c105ef12d2188f485e642382ccac0fb2a",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/artifacts/internal/operations/task_context.go",
+   "pin": "0b6fc74a3d606e3e033f99187ac0bad7110f7d23",
+   "expected": "0b6fc74a3d606e3e033f99187ac0bad7110f7d23",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/artifacts/internal/operations/task_check.go",
+   "pin": "8398a560c8312417fde3f71347e8e2adb7a89f8f",
+   "expected": "8398a560c8312417fde3f71347e8e2adb7a89f8f",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/artifacts/internal/model/assistive.go",
+   "pin": "74a59e614520ae2abd2bc64b5771ac1139846130",
+   "expected": "74a59e614520ae2abd2bc64b5771ac1139846130",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/artifacts/internal/render/render.go",
+   "pin": "2ea57163ae893bba09a190d8a6f66fac2acc8bfd",
+   "expected": "2ea57163ae893bba09a190d8a6f66fac2acc8bfd",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/artifacts/internal/operations/protocol.go",
+   "pin": "48faadf93c77f80d970698b279c011047404fa8d",
+   "expected": "48faadf93c77f80d970698b279c011047404fa8d",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/artifacts/schemas/common.schema.json",
+   "pin": "336f0164084ba9fc1139ad7c88b522ab5f60b152",
+   "expected": "336f0164084ba9fc1139ad7c88b522ab5f60b152",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/surface/commands/status.md",
+   "pin": "905b4f65b6ed147c047f791f6bfef8441f644c3e",
+   "expected": "905b4f65b6ed147c047f791f6bfef8441f644c3e",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/artifacts/internal/operations/context_assistive.go",
+   "pin": "5e506d1069511c7a15ca381d58354e3c8f0d95a6",
+   "expected": "5e506d1069511c7a15ca381d58354e3c8f0d95a6",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/artifacts/internal/operations/assistive.go",
+   "pin": "345fb8216f828d422fdc32d4a62c8eb58fe6db93",
+   "expected": "345fb8216f828d422fdc32d4a62c8eb58fe6db93",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/artifacts/internal/operations/lifecycle.go",
+   "pin": "b5b344b6b7c2d1d12c383fb12b6b90e3fe5003a8",
+   "expected": "b5b344b6b7c2d1d12c383fb12b6b90e3fe5003a8",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/surface/commands/checkpoint.md",
+   "pin": "3df9aea87710fdcee35f43ebab181d72789ec788",
+   "expected": "3df9aea87710fdcee35f43ebab181d72789ec788",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/artifacts/internal/render/work_view.go",
+   "pin": "7f395e2f6b9b71e4268bd62520ade43f94639b54",
+   "expected": "7f395e2f6b9b71e4268bd62520ade43f94639b54",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/surface/commands/override.md",
+   "pin": "7bf6654b069232c11ece3ca120b87f8f216cc242",
+   "expected": "7bf6654b069232c11ece3ca120b87f8f216cc242",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/surface/commands/conflict.md",
+   "pin": "96e20f1e79e0412acb37ec7ee626119e45406722",
+   "expected": "96e20f1e79e0412acb37ec7ee626119e45406722",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/surface/commands/standup.md",
+   "pin": "623b994b9ca4dbfebb04666d617dd76cc42bf663",
+   "expected": "623b994b9ca4dbfebb04666d617dd76cc42bf663",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/surface/commands/watch.md",
+   "pin": "76da75f92d2f83207dfd1ba587425710567bac86",
+   "expected": "76da75f92d2f83207dfd1ba587425710567bac86",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/surface/includes/pi-host-notes.md",
+   "pin": "c2bc83af5d9d70ad163c2b5f1efadbf382093c67",
+   "expected": "c2bc83af5d9d70ad163c2b5f1efadbf382093c67",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/surface/includes/harvest.md",
+   "pin": "1995cf0f251057ab32b9cdd9143c1af0aa501136",
+   "expected": "1995cf0f251057ab32b9cdd9143c1af0aa501136",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/pysrc/_workflowrecoverylib.py",
+   "pin": "a211da361e2fa03333b98fce0260687af330079d",
+   "expected": "a211da361e2fa03333b98fce0260687af330079d",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/pysrc/workflow-recovery.py",
+   "pin": "41f0ade6ae5ade17915dda699ef6432fe9079739",
+   "expected": "41f0ade6ae5ade17915dda699ef6432fe9079739",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/artifact-release-manifest.json",
+   "pin": "ca170c2b363301e75c28b39976c92218e5ac624c",
+   "expected": "ca170c2b363301e75c28b39976c92218e5ac624c",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/pysrc/_artifactmanifestlib.py",
+   "pin": "1e84d812031a969be1decaa73ee8ea0bf8c613cb",
+   "expected": "1e84d812031a969be1decaa73ee8ea0bf8c613cb",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/pysrc/artifact-authority.py",
+   "pin": "9ecd8bb20f843b9b97069f0289f898747eade725",
+   "expected": "9ecd8bb20f843b9b97069f0289f898747eade725",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/surface/agents/authority-reviewer.md",
+   "pin": "9d39b7fe744b7384cb0fe42948b83491fdfe099a",
+   "expected": "9d39b7fe744b7384cb0fe42948b83491fdfe099a",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/surface/includes/reviewer-contract.md",
+   "pin": "355bfac4f20d2dc4a750212d16119357d7427043",
+   "expected": "355bfac4f20d2dc4a750212d16119357d7427043",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/pysrc/_bashguardlib.py",
+   "pin": "85e332e9b7eb3a385e66afcd7052b9d39ec4bce3",
+   "expected": "85e332e9b7eb3a385e66afcd7052b9d39ec4bce3",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/artifacts/internal/evidence/completion.go",
+   "pin": "4b1f0a36c7c1cb825a4a1d6b2235822cea9024bb",
+   "expected": "4b1f0a36c7c1cb825a4a1d6b2235822cea9024bb",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/surface/commands/sprint.md",
+   "pin": "38b3ada6685e031fbdc623081b86463c27976112",
+   "expected": "38b3ada6685e031fbdc623081b86463c27976112",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/surface/skills/executing-plans/SKILL.md",
+   "pin": "6e456bf6612cb1acb531e1b767cb4a73d72854d4",
+   "expected": "6e456bf6612cb1acb531e1b767cb4a73d72854d4",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/pysrc/_reconciliationlib.py",
+   "pin": "394a2212fac91ea597a9989414cae10ee004e915",
+   "expected": "394a2212fac91ea597a9989414cae10ee004e915",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/pysrc/artifact-reconcile.py",
+   "pin": "d80602a85ea9e79a64523bfbc8014bd2ca97f538",
+   "expected": "d80602a85ea9e79a64523bfbc8014bd2ca97f538",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/artifacts/internal/read/read.go",
+   "pin": "677ed0dd66447353b6600b7017003530d303ee24",
+   "expected": "677ed0dd66447353b6600b7017003530d303ee24",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/artifacts/internal/operations/input_scope.go",
+   "pin": "4ea9e8ed7da40a6b1ab4b851801c999b85749e2a",
+   "expected": "4ea9e8ed7da40a6b1ab4b851801c999b85749e2a",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "docs/artifacts/ASSISTIVE-UPGRADE.md",
+   "pin": "17f0cedb203e71a53b8af1b9b3244d1c9eba1f60",
+   "expected": "17f0cedb203e71a53b8af1b9b3244d1c9eba1f60",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/pysrc/_approvallib.py",
+   "pin": "f73bf5d4fdd423114a8ed465d7d1a96a1d00ba13",
+   "expected": "f73bf5d4fdd423114a8ed465d7d1a96a1d00ba13",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/pysrc/_prerequisitelib.py",
+   "pin": "124e82479efdf836aebfcd00746d94a84fbd8a48",
+   "expected": "124e82479efdf836aebfcd00746d94a84fbd8a48",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/pysrc/_sprintapprovallib.py",
+   "pin": "7219fd881b203b917d2bec192c3c274d08c83fda",
+   "expected": "7219fd881b203b917d2bec192c3c274d08c83fda",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/surface/includes/artifacts-attestation.md",
+   "pin": "81d72c2f2e927bf4bf91acb305a0ad981aebbb09",
+   "expected": "81d72c2f2e927bf4bf91acb305a0ad981aebbb09",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/surface/includes/author-tdd-workflow.md",
+   "pin": "786ecd5aacc362799354c2616f6f0c1f799cfd82",
+   "expected": "786ecd5aacc362799354c2616f6f0c1f799cfd82",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/surface/includes/codex-host-notes.md",
+   "pin": "d04519e834ea85105e9b503f42396690568c4add",
+   "expected": "d04519e834ea85105e9b503f42396690568c4add",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/surface/includes/sprint-authority.md",
+   "pin": "dd9bdb78ba3a363b5a70724e4b1535dbd7e1f2d7",
+   "expected": "dd9bdb78ba3a363b5a70724e4b1535dbd7e1f2d7",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/pysrc/_contextwriterlib.py",
+   "pin": "0d66d9ba1b72fdbef2045bc00b8a1945a8059af3",
+   "expected": "0d66d9ba1b72fdbef2045bc00b8a1945a8059af3",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/pysrc/init-codearbiter.py",
+   "pin": "f10d1d619733dbf1e7bf8fe9bbdae21e613e38c4",
+   "expected": "f10d1d619733dbf1e7bf8fe9bbdae21e613e38c4",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/artifacts/internal/contextdocument/contract.go",
+   "pin": "6c3fd897e1dbe6c4933dce6bab55fbd4f81a5860",
+   "expected": "6c3fd897e1dbe6c4933dce6bab55fbd4f81a5860",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/artifacts/internal/contextdocument/document_selection.go",
+   "pin": "9ff5b8ab4cdda001bf027dbb4aca0906e2df8b3a",
+   "expected": "9ff5b8ab4cdda001bf027dbb4aca0906e2df8b3a",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/artifacts/internal/contextdocument/operations.go",
+   "pin": "ff0c467801679f74b7b8b4638c773e390de5102d",
+   "expected": "ff0c467801679f74b7b8b4638c773e390de5102d",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/artifacts/internal/contextdocument/finalization.go",
+   "pin": "e48bb44dfae84966fc976d6850bc82d561e8dc6b",
+   "expected": "e48bb44dfae84966fc976d6850bc82d561e8dc6b",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/artifacts/schemas/context.schema.json",
+   "pin": "92e82ffe9d677df3b856df04fcd33e90f703aadb",
+   "expected": "92e82ffe9d677df3b856df04fcd33e90f703aadb",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/surface/agents/scout.md",
+   "pin": "74f7fd0c5da221ac0e70151ffb24e6dec6b4f472",
+   "expected": "74f7fd0c5da221ac0e70151ffb24e6dec6b4f472",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/pysrc/_artifactpromptlib.py",
+   "pin": "e9f2faeef57008fc202ef05f1693f9afdaaed099",
+   "expected": "e9f2faeef57008fc202ef05f1693f9afdaaed099",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/surface/skills/refactor/SKILL.md",
+   "pin": "3f96c8640832c34d7fb91d59fd5928b8fa68ecfc",
+   "expected": "3f96c8640832c34d7fb91d59fd5928b8fa68ecfc",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/surface/agents/checkpoint-aggregator.md",
+   "pin": "d77511be701e20a5a7c407d7da4c937f4bb89ca4",
+   "expected": "d77511be701e20a5a7c407d7da4c937f4bb89ca4",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/surface/commands/audit.md",
+   "pin": "4db6302b48e2dbe759dc1e132679e36861f78af4",
+   "expected": "4db6302b48e2dbe759dc1e132679e36861f78af4",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/pysrc/_provenancelib.py",
+   "pin": "790ec8470991180dacace9455d22da59fb16faec",
+   "expected": "790ec8470991180dacace9455d22da59fb16faec",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/pysrc/_replylib.py",
+   "pin": "01091fb370347018a2b38a2e2e1176d9ba266f51",
+   "expected": "01091fb370347018a2b38a2e2e1176d9ba266f51",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/artifacts/internal/operations/work.go",
+   "pin": "3614974657c4da9a1d2cc306a0f4432d549702a0",
+   "expected": "3614974657c4da9a1d2cc306a0f4432d549702a0",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/artifacts/internal/operations/work_view.go",
+   "pin": "91a8d3fb51ed2c7dc0411a81b71bde92b1713ab6",
+   "expected": "91a8d3fb51ed2c7dc0411a81b71bde92b1713ab6",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/surface/commands/doctor.md",
+   "pin": "1c912de8eea432af5aec35d84294bae28a7b339a",
+   "expected": "1c912de8eea432af5aec35d84294bae28a7b339a",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/surface/commands/add-dep.md",
+   "pin": "4f39d82c50862c0f16965c1676c8c0a78813362d",
+   "expected": "4f39d82c50862c0f16965c1676c8c0a78813362d",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/surface/commands/adr.md",
+   "pin": null,
+   "expected": "25980c292b529fca90c39f5f26d69a1c0674de44:core/surface/commands/adr.md",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/surface/commands/adr-status.md",
+   "pin": null,
+   "expected": "25980c292b529fca90c39f5f26d69a1c0674de44:core/surface/commands/adr-status.md",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/surface/commands/cleanup.md",
+   "pin": null,
+   "expected": "25980c292b529fca90c39f5f26d69a1c0674de44:core/surface/commands/cleanup.md",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/surface/commands/commit.md",
+   "pin": null,
+   "expected": "25980c292b529fca90c39f5f26d69a1c0674de44:core/surface/commands/commit.md",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/surface/commands/context-check.md",
+   "pin": null,
+   "expected": "25980c292b529fca90c39f5f26d69a1c0674de44:core/surface/commands/context-check.md",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/surface/commands/create-context.md",
+   "pin": null,
+   "expected": "25980c292b529fca90c39f5f26d69a1c0674de44:core/surface/commands/create-context.md",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/surface/commands/debug.md",
+   "pin": null,
+   "expected": "25980c292b529fca90c39f5f26d69a1c0674de44:core/surface/commands/debug.md",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/surface/commands/decompose.md",
+   "pin": null,
+   "expected": "25980c292b529fca90c39f5f26d69a1c0674de44:core/surface/commands/decompose.md",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/surface/commands/pr.md",
+   "pin": null,
+   "expected": "25980c292b529fca90c39f5f26d69a1c0674de44:core/surface/commands/pr.md",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/surface/commands/prune.md",
+   "pin": null,
+   "expected": "25980c292b529fca90c39f5f26d69a1c0674de44:core/surface/commands/prune.md",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/surface/commands/reconcile.md",
+   "pin": null,
+   "expected": "25980c292b529fca90c39f5f26d69a1c0674de44:core/surface/commands/reconcile.md",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/surface/commands/refactor.md",
+   "pin": null,
+   "expected": "25980c292b529fca90c39f5f26d69a1c0674de44:core/surface/commands/refactor.md",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/surface/commands/release.md",
+   "pin": null,
+   "expected": "25980c292b529fca90c39f5f26d69a1c0674de44:core/surface/commands/release.md",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/surface/commands/spike.md",
+   "pin": "390283c8c09ae6f68a25c5787e333baebd0f8836",
+   "expected": "390283c8c09ae6f68a25c5787e333baebd0f8836",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/surface/commands/statusline.md",
+   "pin": null,
+   "expected": "25980c292b529fca90c39f5f26d69a1c0674de44:core/surface/commands/statusline.md",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/surface/commands/task.md",
+   "pin": "417e2944dbda8d3df35acb57a41cfbe63a0500f6",
+   "expected": "417e2944dbda8d3df35acb57a41cfbe63a0500f6",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/surface/commands/threat-model.md",
+   "pin": null,
+   "expected": "25980c292b529fca90c39f5f26d69a1c0674de44:core/surface/commands/threat-model.md",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/surface/commands/tribunal.md",
+   "pin": null,
+   "expected": "25980c292b529fca90c39f5f26d69a1c0674de44:core/surface/commands/tribunal.md",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/surface/skills/decision-lifecycle/SKILL.md",
+   "pin": null,
+   "expected": "25980c292b529fca90c39f5f26d69a1c0674de44:core/surface/skills/decision-lifecycle/SKILL.md",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/surface/skills/post-merge-cleanup/SKILL.md",
+   "pin": null,
+   "expected": "25980c292b529fca90c39f5f26d69a1c0674de44:core/surface/skills/post-merge-cleanup/SKILL.md",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/surface/skills/decision-variance/SKILL.md",
+   "pin": null,
+   "expected": "25980c292b529fca90c39f5f26d69a1c0674de44:core/surface/skills/decision-variance/SKILL.md",
+   "matches": true,
+   "error": null
+  },
+  {
+   "path": "core/surface/skills/security-architecture/SKILL.md",
+   "pin": "669e8a1d4660a7166d0d3304304bcf322758c111",
+   "expected": "669e8a1d4660a7166d0d3304304bcf322758c111",
+   "matches": true,
+   "error": null
+  }
+ ],
+ "mismatches": [],
+ "load": {
+  "success": true,
+  "error": null
+ },
+ "checks": {
+  "validation": true,
+  "spatial_geometry_equal": true,
+  "old_pin_refused": true,
+  "unpinned_main_refused": true,
+  "invalid_source_path_refused": true,
+  "historical_commit_unchanged": true,
+  "major_revision_unchanged": true,
+  "persona_nodes": [
+   "o-runtime",
+   "c-live",
+   "c-persona"
+  ],
+  "persona_blob": "5fcb6c3e41b051b530887c702a3fe33d078e7448",
+  "persona_summary": "Startup emits mode and project state; ordinary prompts compose safety-core with the current ledger-backed persona. Delivery tracks the last emitted mode and compaction generation, so an observed A-to-B-to-A sequence redelivers A while unchanged turns do not. If recording a delivery fails, the owner attempts to invalidate the stale session record. If update and invalidation both fail, it diagnoses unconfirmed dedup; durable invalidation and later redelivery are not guaranteed. Recovery notices use a separate identity.",
+  "owner_revision": "9bc844c61d4ef05ec16796a9671628913f10a5a6",
+  "views": 9,
+  "commands": 37
+ }
+}

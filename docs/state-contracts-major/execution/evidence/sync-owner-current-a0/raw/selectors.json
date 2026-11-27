@@ -1,0 +1,17 @@
+[
+  "TestSuccessfulSync.test_write_mode_vendors_byte_identical_copies",
+  "TestCheckMode.test_check_passes_when_in_sync",
+  "TestCheckMode.test_check_fails_on_modified_vendored_copy",
+  "TestCheckMode.test_check_fails_on_missing_vendored_file",
+  "TestCheckMode.test_check_never_writes_when_drifted",
+  "TestWriteModeRepairsDrift.test_sync_repairs_a_drifted_copy",
+  "TestPackageNotices.test_syncs_notices_into_each_installable_plugin_root",
+  "TestPackageNotices.test_missing_notice_fails_check_without_writing",
+  "TestPackageNotices.test_notice_drift_fails_check_and_write_repairs_it",
+  "TestEmptyOrMissingCoreDir.test_missing_core_dir_is_a_clear_nonzero_error",
+  "TestEmptyOrMissingCoreDir.test_empty_core_dir_is_a_clear_nonzero_error",
+  "TestArgvHandling.test_unknown_argument_is_a_clear_nonzero_error",
+  "TestSyncOwnerAcceptance.test_declared_inventory_excludes_host_adapter_and_nonpython_owners",
+  "TestSyncOwnerAcceptance.test_invalid_real_descriptor_refuses_before_publication_or_other_effect",
+  "TestSyncOwnerAcceptance.test_later_host_publish_fault_restores_complete_set_then_rerun_converges"
+]

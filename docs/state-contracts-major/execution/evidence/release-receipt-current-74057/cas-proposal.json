@@ -1,0 +1,160 @@
+{
+  "schema": "codearbiter.source-clause-cas-proposal/1",
+  "state": "TEMP_ONLY_NOT_APPLIED",
+  "base_source": "74057c377ae7934fe7074443b7ab71f378798ef2",
+  "ledger_path": "docs/state-contracts-major/execution/coverage-ledger.json",
+  "updates": [
+    {
+      "section": "findings",
+      "id": "C-F01",
+      "expected_row_sha256": "f72af195b557a9e43d96b26001b268eaf1a1f2b833071d0f2d362464d0f22b00",
+      "expected_status": "PLANNED",
+      "expected_evidence": [],
+      "set_status": "TESTED",
+      "append_evidence": {
+        "kind": "test",
+        "commit": "74057c377ae7934fe7074443b7ab71f378798ef2",
+        "ref": "docs/state-contracts-major/execution/evidence/release-receipt-current-74057/c-f01-tested.json",
+        "sha256": "0a787da7b18aaa075259d6a2532401f52c371334f48a9b6a90c1144000d66423"
+      },
+      "candidate_contract_note": "The original finding explicitly describes a pure local decision probe. Real maintained eligible() and plan() agree on public missing receipt; completion/digest/source/receipt failure controls and interrupted model recovery pass. External publication is separate."
+    },
+    {
+      "section": "transitions",
+      "id": "C16:04",
+      "expected_row_sha256": "4b680cf346eb988fed2797b2f3a90cecda7ad309e3e5b48c4fbc44b6cc7ae9ce",
+      "expected_status": "PLANNED",
+      "expected_evidence": [],
+      "set_status": "NOT_APPLICABLE",
+      "contract": "frozen-task:R-01",
+      "append_evidence": {
+        "kind": "conformance-check",
+        "commit": "74057c377ae7934fe7074443b7ab71f378798ef2",
+        "ref": "docs/state-contracts-major/execution/evidence/release-receipt-current-74057/retired-defect-states.json",
+        "sha256": "be281044924fc6f22e9b28a1b7398aee5197f4384981620592cb7baba071f7fa"
+      },
+      "candidate_contract_note": "R-01 explicitly retires the old public-release-means-complete predicate. Current public-but-missing-receipt observation stays eligible and plans only receipt; fully complete stays ineligible. The old erroneous skip state is not preserved."
+    },
+    {
+      "section": "transitions",
+      "id": "C17:10",
+      "expected_row_sha256": "c2b7449905e2cbe7a735a994504051084f896afa5811ef3da1057fa863aa2506",
+      "expected_status": "PLANNED",
+      "expected_evidence": [],
+      "set_status": "NOT_APPLICABLE",
+      "contract": "frozen-task:R-01",
+      "append_evidence": {
+        "kind": "conformance-check",
+        "commit": "74057c377ae7934fe7074443b7ab71f378798ef2",
+        "ref": "docs/state-contracts-major/execution/evidence/release-receipt-current-74057/retired-defect-states.json",
+        "sha256": "be281044924fc6f22e9b28a1b7398aee5197f4384981620592cb7baba071f7fa"
+      },
+      "candidate_contract_note": "R-01 explicitly retires acceptance by receipt name without content readback. Current action always downloads attached bytes and invokes verify-receipt; actual verifier rejects wrong source/digest/format/public-state/tag fixtures. No live remote receipt readback is claimed."
+    }
+  ],
+  "holds": {
+    "C16:03": {
+      "observed": [
+        "test_release_target.CompletionModelTests.test_eligible_and_plan_agree_for_every_publication_state"
+      ],
+      "gap": "Production release workflow per-target loop/manual target filtering, separate failure output and sibling independence are not executed. Actual current shell also imposes retained-artifact and required pre-tag gates. Direct eligible() coverage alone is not the whole row.",
+      "frozen_row_sha256": "278ede2e3414e545c39fbf53e600938c4fd556904246c0f32bf35607028de7e9",
+      "scope": "EXACT_LOCAL_ASSERTIONS_ONLY; no external/whole-clause TESTED from model"
+    },
+    "C17:01": {
+      "observed": [
+        "test_release_target.CompletionModelTests.test_conflicting_or_interrupted_assets_are_never_papered_over",
+        "test_release_target.CompletionModelTests.test_plan_cli_refuses_a_cohort_file_that_is_not_the_declared_asset"
+      ],
+      "gap": "Actual original-run artifact download, cohort/hash/cold matrix and manifest/companion/changelog admission are not exercised by selected local planner/model tests.",
+      "frozen_row_sha256": "bc323d16ba3a5f2b3646e835e7c5cee5ee99cbcca1593d9e9d81914528e3c2b7",
+      "scope": "EXACT_LOCAL_ASSERTIONS_ONLY; no external/whole-clause TESTED from model"
+    },
+    "C17:02": {
+      "observed": [
+        "test_release_target.FaultInjectionTests.test_every_phase_interruption_resumes_only_missing_effects",
+        "test_release_target.FaultInjectionTests.test_moved_tag_after_interruption_is_refused_not_completed"
+      ],
+      "gap": "Model mutates an in-memory tag map; no annotated Git tag/changelog-date creation or push/indeterminate push readback executes.",
+      "frozen_row_sha256": "51a8f2141d42abc4928f139b55f0b59d40d618a4c4d1ab6f6ee7d8af9a249283",
+      "scope": "EXACT_LOCAL_ASSERTIONS_ONLY; no external/whole-clause TESTED from model"
+    },
+    "C17:03": {
+      "observed": [
+        "test_release_target.FaultInjectionTests.test_moved_tag_after_interruption_is_refused_not_completed"
+      ],
+      "gap": "Exact modeled tag mismatch refuses; actual remote peel, exclusive published-tag identity receipt and retained artifact after failure do not execute.",
+      "frozen_row_sha256": "fb3d9cf19ba32b125958d8d286bcfae66ecf18563c17b220edc6e8ced4a0fb1b",
+      "scope": "EXACT_LOCAL_ASSERTIONS_ONLY; no external/whole-clause TESTED from model"
+    },
+    "C17:04": {
+      "observed": [
+        "test_release_target.FaultInjectionTests.test_every_phase_interruption_resumes_only_missing_effects"
+      ],
+      "gap": "Model appends/reuses release dict; actual POST draft=true/non-prerelease/extracted-notes and lost API response readback are unexecuted.",
+      "frozen_row_sha256": "02871aacdd2aeb5c4a9b458d09da79da7d14d3dc33c1342c875ea2f8a189f3be",
+      "scope": "EXACT_LOCAL_ASSERTIONS_ONLY; no external/whole-clause TESTED from model"
+    },
+    "C17:05": {
+      "observed": [
+        "test_release_target.FaultInjectionTests.test_wrong_package_bytes_on_rerun_are_refused",
+        "test_release_target.CompletionModelTests.test_conflicting_or_interrupted_assets_are_never_papered_over"
+      ],
+      "gap": "Actual remote upload/download byte hashing is not executed; model stores expected digest strings and direct planner validates observed metadata.",
+      "frozen_row_sha256": "d41dae675165f2b5b5d34691df3832e9f0266e3c10001bdf9dc2914e08260d1e",
+      "scope": "EXACT_LOCAL_ASSERTIONS_ONLY; no external/whole-clause TESTED from model"
+    },
+    "C17:06": {
+      "observed": [
+        "test_release_target.FaultInjectionTests.test_receipt_recovery_survives_a_channel_that_moved_on",
+        "test_release_target.CompositionContractTests.test_channel_steps_promote_only_when_the_plan_schedules_it"
+      ],
+      "gap": "Real host publishers immutable distribution/channel checks, Git pushes and independent readback do not execute. Model preserves once-only channel count and existing source action selects readback.",
+      "frozen_row_sha256": "639437a9bb6d51f5a2dd4c2e62160f6a6d6ffba7afe7de8e80eb148b079aa1c8",
+      "scope": "EXACT_LOCAL_ASSERTIONS_ONLY; no external/whole-clause TESTED from model"
+    },
+    "C17:07": {
+      "observed": [
+        "test_release_target.FaultInjectionTests.test_registry_mismatch_is_not_completed",
+        "test_release_target.FaultInjectionTests.test_public_pi_release_never_republishes_npm",
+        "test_release_target.FaultInjectionTests.test_pi_new_publish_still_requires_matching_workflow_commit"
+      ],
+      "gap": "Registry classifier executes on fixture responses; actual exact tarball/npm/OIDC/signature/SLSA/workflow-source verification is not exercised by this selection.",
+      "frozen_row_sha256": "c452c4921fdd19553c4225249d47197f9a8532aeb965ddfa0aba52b8c8aa66db",
+      "scope": "EXACT_LOCAL_ASSERTIONS_ONLY; no external/whole-clause TESTED from model"
+    },
+    "C17:08": {
+      "observed": [
+        "test_release_target.FaultInjectionTests.test_every_phase_interruption_resumes_only_missing_effects"
+      ],
+      "gap": "Model flips draft flag; actual PATCH public and independent API tag/public readback are unexecuted.",
+      "frozen_row_sha256": "d43a037a9d9c77d72a487d3541f704e0d4a76befde2fd4769cb7a15ea334efb3",
+      "scope": "EXACT_LOCAL_ASSERTIONS_ONLY; no external/whole-clause TESTED from model"
+    },
+    "C17:09": {
+      "observed": [
+        "test_release_target.FaultInjectionTests.test_receipt_failure_after_public_schedules_only_the_receipt",
+        "test_release_target.CompositionContractTests.test_existing_receipt_is_read_back_and_verified"
+      ],
+      "gap": "Actual metadata receipt CLI construction/upload POST/lost response is not executed by this selection. Corrected retry effect is directly observed, but whole external attachment row is not TESTED.",
+      "frozen_row_sha256": "df4c452c87e17a43c844ac7371f2e8cc1663560c2e36050f30d5449e88c1934c",
+      "scope": "EXACT_LOCAL_ASSERTIONS_ONLY; no external/whole-clause TESTED from model"
+    },
+    "C17:11": {
+      "observed": [
+        "test_release_target.FaultInjectionTests.test_every_phase_interruption_resumes_only_missing_effects",
+        "test_release_target.FaultInjectionTests.test_receipt_failure_after_public_schedules_only_the_receipt"
+      ],
+      "gap": "Actual original failed hosted-job rerun and retained source/package identities are not executed. Model confirms no duplicate completed writes; baseline retry prose describing already-public recovery blockage is intentionally corrected by R-01.",
+      "frozen_row_sha256": "fa56b1e442c5175fed604e8618918c7b09f60caaaa6940b54d606bd91f682673",
+      "scope": "EXACT_LOCAL_ASSERTIONS_ONLY; no external/whole-clause TESTED from model"
+    }
+  },
+  "counts": {
+    "finding_TESTED": 1,
+    "transition_NOT_APPLICABLE": 2,
+    "transition_TESTED": 0,
+    "transition_HOLD": 11,
+    "machine_or_task": 0
+  }
+}

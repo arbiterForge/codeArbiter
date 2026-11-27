@@ -1,0 +1,235 @@
+{
+ "schema": "codearbiter.source-baseline-current-joins/1",
+ "source_commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+ "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+ "bindings": {
+  "core/artifacts/internal/evidence/completion_workspace.go": {
+   "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+   "git_oid": "ecb4949669c5824ff80ce77d25258131fa2e5551",
+   "sha256": "ecbbab90eee7ce353c49de74d754b64f0dc5a3d36f4504bb51bcb3edd8919261",
+   "bytes": 27288,
+   "equal_current": false
+  },
+  "core/artifacts/internal/observation/runner_contract.go": {
+   "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+   "git_oid": "b4229b8eb4ce8e6b937b2116f3ceeaed294b9136",
+   "sha256": "5c830240864c4c2b50cab874e3cc62c1bb1b44fcb176dc3a20e12baa2ee0f444",
+   "bytes": 5882,
+   "equal_current": false
+  },
+  "core/artifacts/internal/operations/context_assistive.go": {
+   "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+   "git_oid": "27180f138f74586fa4a170716ee5e269008beb1c",
+   "sha256": "b7f138fdb706160f523330e85b08688642e9bcfd74f05c118acd603d254e9e25",
+   "bytes": 7903,
+   "equal_current": false
+  },
+  "core/pysrc/_artifactauthoritylib.py": {
+   "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+   "git_oid": "3bd569c1cbc9be1d25da7bff51429c0cd60793af",
+   "sha256": "cd77a9e9870b8a2f10722a958ff9da25ecf5c87aef72687f7f07c29450b84ba8",
+   "bytes": 220469,
+   "equal_current": false
+  },
+  "core/pysrc/_artifactlib.py": {
+   "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+   "git_oid": "d724140df90601c934c8f246906c71a9aba609f3",
+   "sha256": "24424a47249483eefce1f389041892273bd2950cce7213bb76458d953b394ce1",
+   "bytes": 64686,
+   "equal_current": false
+  },
+  "core/pysrc/_artifactmanifestlib.py": null,
+  "core/pysrc/_contextreportlib.py": {
+   "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+   "git_oid": "000a03764987f7bb45db3093b1ae9c0da713650a",
+   "sha256": "76669de01a426b83a841d439d92f82532923303097fa051c4d08c1a1d0bfb538",
+   "bytes": 46687,
+   "equal_current": true
+  },
+  "core/pysrc/_contextselectlib.py": {
+   "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+   "git_oid": "4bc5bc87f540dd12ece5d0914e78bbfe26e5c532",
+   "sha256": "0609783e758b6d654c05eeda8c40ccf355641eaf51fb0d9e9978ae5bf4304706",
+   "bytes": 22879,
+   "equal_current": true
+  },
+  "core/pysrc/_contextsnapshotlib.py": {
+   "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+   "git_oid": "cc89a71aa784b109fbdfe123a787b30dab957134",
+   "sha256": "bef9c37c09abc39e6113baa39f51f261103c760db66ec8e4cdc5818a075c1afe",
+   "bytes": 47301,
+   "equal_current": true
+  },
+  "core/pysrc/_contextwriterlib.py": {
+   "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+   "git_oid": "0d66d9ba1b72fdbef2045bc00b8a1945a8059af3",
+   "sha256": "1a2c1856a2ba17ac17b947e0823b1dece6f355a2de600f70e0d392b09263607f",
+   "bytes": 6174,
+   "equal_current": true
+  },
+  "core/pysrc/_gitexec.py": {
+   "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+   "git_oid": "492afd199f317dac3624164bc65dae9da6ca8fae",
+   "sha256": "a5935246028f506ef5ab13ba379b399cb7a754a077866fd39528545f30f4bef3",
+   "bytes": 23619,
+   "equal_current": false
+  },
+  "core/pysrc/_knowledgelib.py": {
+   "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+   "git_oid": "5248c4c87fdf47d9587a82abab876b60a10f011c",
+   "sha256": "abc1f93667faf5241c52931d33fc992e5627bd2c406298937d587c373659eeb9",
+   "bytes": 3073,
+   "equal_current": true
+  },
+  "core/pysrc/_protectedstatelib.py": {
+   "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+   "git_oid": "1d90335465271ba4920fb119bb564a94ca56e8f1",
+   "sha256": "9703e5e777ab286df820dd14da8c0118c24335d41007abfa6f536b5b0b3f14e0",
+   "bytes": 35433,
+   "equal_current": true
+  },
+  "core/pysrc/_provenancelib.py": {
+   "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+   "git_oid": "790ec8470991180dacace9455d22da59fb16faec",
+   "sha256": "3cbd8d241ff6640e824ee2707ca1a3bd3202db83df371822201ceeabdd2657e4",
+   "bytes": 76910,
+   "equal_current": true
+  },
+  "core/pysrc/_scopelib.py": {
+   "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+   "git_oid": "53994a0d077cba7ec461a3b103766c5f077704d1",
+   "sha256": "03d1f066863d08c952ebda8d9b6f1515813f53a4fd3fc0af560a735f63954e0b",
+   "bytes": 10966,
+   "equal_current": true
+  },
+  "core/pysrc/_worklib.py": {
+   "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+   "git_oid": "7f118b7ae057b89017e1c1ec7c779c7687740330",
+   "sha256": "4b08bdfdea85a96e1bde4bd7dc610bc61dd8ef31a42d530fb10437b1145818ce",
+   "bytes": 18760,
+   "equal_current": true
+  },
+  "core/pysrc/init-codearbiter.py": {
+   "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+   "git_oid": "40a841ce804efc29ace2abe75fe4c2989b9131b8",
+   "sha256": "faaeaf09ccfcaa893ec6d2b9f966a86e58aea8a5eb8daec4f4760c0587cddc0b",
+   "bytes": 25697,
+   "equal_current": false
+  },
+  "core/pysrc/knowledge.py": {
+   "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+   "git_oid": "00a42480aad008bd0ecc87f29487c9bde66d98b0",
+   "sha256": "522aa2424dd089d1285826fc391a1c916f37365ff1fd3228f08c3ffc68e716f0",
+   "bytes": 21913,
+   "equal_current": false
+  },
+  "core/pysrc/work.py": {
+   "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+   "git_oid": "fce39a305e86c19675af0e1f664b886949a86c53",
+   "sha256": "fe51520ff1faa8d94740fde5a8d73c0a2626841abc7eae5397e6969055b95722",
+   "bytes": 30378,
+   "equal_current": true
+  }
+ },
+ "named_changes": {
+  "core/artifacts/internal/evidence/completion_workspace.go": {
+   "changed_or_added_named_functions": "Literal SHA256/OID/span comparison; Go callee source inspected without compilation"
+  },
+  "core/artifacts/internal/observation/runner_contract.go": {
+   "changed_or_added_named_functions": "Literal SHA256/OID/span comparison; Go callee source inspected without compilation"
+  },
+  "core/artifacts/internal/operations/context_assistive.go": {
+   "changed_or_added_named_functions": "Literal SHA256/OID/span comparison; Go callee source inspected without compilation"
+  },
+  "core/pysrc/_artifactauthoritylib.py": {
+   "changed_or_added_named_functions": [
+    "_resubmission_source",
+    "_read_resubmission",
+    "_resubmission_identity",
+    "_resubmission_result",
+    "resubmit_review",
+    "_WindowsJobObservation",
+    "_WindowsJobObservation.__init__",
+    "_WindowsJobObservation.bind_leader",
+    "_WindowsJobObservation._fail",
+    "_WindowsJobObservation.check",
+    "_WindowsJobObservation._new_process",
+    "_WindowsJobObservation._collect",
+    "_WindowsJobObservation.wait_members",
+    "_WindowsJobObservation.close",
+    "_windows_job_accounting",
+    "_drain_windows_job",
+    "_run_contained"
+   ]
+  },
+  "core/pysrc/_artifactlib.py": {
+   "changed_or_added_named_functions": [
+    "_installed_workflow_preflight",
+    "_host_platform",
+    "ArtifactClient",
+    "ArtifactClient._open_binary",
+    "ArtifactClient._exchange"
+   ]
+  },
+  "core/pysrc/_artifactmanifestlib.py": {
+   "changed_or_added_named_functions": [
+    "_pairs",
+    "parse_release_manifest",
+    "validate_release_manifest"
+   ]
+  },
+  "core/pysrc/_contextreportlib.py": {
+   "changed_or_added_named_functions": []
+  },
+  "core/pysrc/_contextselectlib.py": {
+   "changed_or_added_named_functions": []
+  },
+  "core/pysrc/_contextsnapshotlib.py": {
+   "changed_or_added_named_functions": []
+  },
+  "core/pysrc/_contextwriterlib.py": {
+   "changed_or_added_named_functions": []
+  },
+  "core/pysrc/_gitexec.py": {
+   "changed_or_added_named_functions": [
+    "local_read_git_env"
+   ]
+  },
+  "core/pysrc/_knowledgelib.py": {
+   "changed_or_added_named_functions": []
+  },
+  "core/pysrc/_protectedstatelib.py": {
+   "changed_or_added_named_functions": []
+  },
+  "core/pysrc/_provenancelib.py": {
+   "changed_or_added_named_functions": []
+  },
+  "core/pysrc/_scopelib.py": {
+   "changed_or_added_named_functions": []
+  },
+  "core/pysrc/_worklib.py": {
+   "changed_or_added_named_functions": []
+  },
+  "core/pysrc/init-codearbiter.py": {
+   "changed_or_added_named_functions": [
+    "_runtime_marker_snapshot",
+    "_unexpected_project_state",
+    "_scaffold_inventory"
+   ]
+  },
+  "core/pysrc/knowledge.py": {
+   "changed_or_added_named_functions": [
+    "_records",
+    "current_records",
+    "context_text",
+    "main",
+    "_dispatch",
+    "_stale"
+   ]
+  },
+  "core/pysrc/work.py": {
+   "changed_or_added_named_functions": []
+  }
+ },
+ "accepted_basis": "PROGRAM current accepted direction takes precedence over analytical summaries; named HW04/NT04 launch roles, HW08 fresh reviewer attempts, later source/runtime fixes and host-owned context capability retain independent qualification obligations."
+}

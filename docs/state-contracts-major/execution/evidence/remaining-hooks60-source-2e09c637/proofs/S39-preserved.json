@@ -1,0 +1,549 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "/root/ci_repair_review: source-only author, no independent self-review or current runtime execution"
+ },
+ "inputs": {
+  ".codearbiter/decisions/0043-assistive-state-engine.md": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+  "core/pysrc/_arbiterstatelib.py": "19ebd7d82fa56d2a4535043d3a163cfe9f0475aa5d457d5ad8953980d57f71c1",
+  "core/pysrc/_taskboardlib.py": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+  "core/pysrc/_worklib.py": "4b08bdfdea85a96e1bde4bd7dc610bc61dd8ef31a42d530fb10437b1145818ce",
+  "core/pysrc/taskwrite.py": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25",
+  "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e"
+ },
+ "disposition_ids": [
+  "disposition:machines:S39",
+  "disposition:transitions:S39:01",
+  "disposition:transitions:S39:02",
+  "disposition:transitions:S39:03",
+  "disposition:transitions:S39:04",
+  "disposition:transitions:S39:05",
+  "disposition:transitions:S39:06",
+  "disposition:transitions:S39:07",
+  "disposition:transitions:S39:08",
+  "disposition:transitions:S39:09",
+  "disposition:transitions:S39:10"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/remaining-hooks60-source-2e09c637/source-bindings.json",
+   "sha256": "49ceb8835845eb0eb591600af4b0acb25cdc3292d9894e40d9460f362aa79b2f"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/remaining-hooks60-source-2e09c637/baseline-current-joins.json",
+   "sha256": "54c3a482febdb2c016750a70c275758a46538ea6aafde188aabdb94fd37ca260"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/remaining-hooks60-source-2e09c637/inherited-evidence-inventory.json",
+   "sha256": "eb2da6ec744f83648f1f08f0ce74a71b2799c54bc9a73a5b064217fe76efa4a7"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/remaining-hooks60-source-2e09c637/clause-inspection.json",
+   "sha256": "f1c5d66315d2fa44d366cc436ee35c931356edbc33da649c5fc0e1738202e8f7"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/remaining-hooks60-source-2e09c637/prune-repair-binding.json",
+   "sha256": "03f21fd5ac71cce6b28dcaa1a1b77f7f4c4e092a79a161c06effb11602adfd1b"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:S39",
+   "frozen_row_sha256": "398b2eee7bcea5aec54ab5337da995c86253d2e20d52977569c992bd945d9c42",
+   "clause_ids": [
+    "disposition:transitions:S39:01",
+    "disposition:transitions:S39:02",
+    "disposition:transitions:S39:03",
+    "disposition:transitions:S39:04",
+    "disposition:transitions:S39:05",
+    "disposition:transitions:S39:06",
+    "disposition:transitions:S39:07",
+    "disposition:transitions:S39:08",
+    "disposition:transitions:S39:09",
+    "disposition:transitions:S39:10"
+   ],
+   "witnesses": [
+    {
+     "path": "core/pysrc/_taskboardlib.py",
+     "symbol": "add_error",
+     "start": 931,
+     "end": 988,
+     "git_oid": "85511a724f3de7a8cf84c069814d0605e72f3395",
+     "file_sha256": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+     "span_sha256": "db88bd31075f1ce246f9a26909adf2ef1d4e1f8b748e55313867d45503252f25"
+    },
+    {
+     "path": "core/pysrc/_taskboardlib.py",
+     "symbol": "add_entry",
+     "start": 991,
+     "end": 1028,
+     "git_oid": "85511a724f3de7a8cf84c069814d0605e72f3395",
+     "file_sha256": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+     "span_sha256": "79be9feb087ceebaa1695fae626347f8a48c5d2b9ddc4328d5139cc8406c035f"
+    },
+    {
+     "path": "core/pysrc/taskwrite.py",
+     "symbol": "_apply",
+     "start": 211,
+     "end": 272,
+     "git_oid": "2243e3bfed634f496c70f815c54d5208ed321032",
+     "file_sha256": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25",
+     "span_sha256": "1f8bfadef1673a3ca5d0f72394d3f4109c4783726db8a992e657da14e346c5a7"
+    },
+    {
+     "path": "core/pysrc/taskwrite.py",
+     "symbol": "main",
+     "start": 275,
+     "end": 446,
+     "git_oid": "2243e3bfed634f496c70f815c54d5208ed321032",
+     "file_sha256": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25",
+     "span_sha256": "be7b3b39651b30d2b6ae952df6697046bd8a6e18b46d764fb06ee33c2c182214"
+    },
+    {
+     "path": "core/pysrc/_arbiterstatelib.py",
+     "symbol": "native_work_selected",
+     "start": 162,
+     "end": 184,
+     "git_oid": "be9ed277e3cc84936dd1cc2fbe41e5142c48d06e",
+     "file_sha256": "19ebd7d82fa56d2a4535043d3a163cfe9f0475aa5d457d5ad8953980d57f71c1",
+     "span_sha256": "c78f229e14831568c2dd527369278f2dc8722981888210128469accfd8cb68af"
+    },
+    {
+     "path": "core/pysrc/_taskboardlib.py",
+     "symbol": "_find_task_line",
+     "start": 1248,
+     "end": 1278,
+     "git_oid": "85511a724f3de7a8cf84c069814d0605e72f3395",
+     "file_sha256": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+     "span_sha256": "ced173c74f4992b9f7e5ff6fb74740c586fe4e8589b64d29994347074e747c2a"
+    },
+    {
+     "path": "core/pysrc/_taskboardlib.py",
+     "symbol": "transition_error",
+     "start": 1281,
+     "end": 1304,
+     "git_oid": "85511a724f3de7a8cf84c069814d0605e72f3395",
+     "file_sha256": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+     "span_sha256": "4c1a5ecd5d26dc2be6088214212b2cce4790c4265c9b67ffba3351633790620f"
+    },
+    {
+     "path": "core/pysrc/_taskboardlib.py",
+     "symbol": "set_state",
+     "start": 1307,
+     "end": 1344,
+     "git_oid": "85511a724f3de7a8cf84c069814d0605e72f3395",
+     "file_sha256": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+     "span_sha256": "87de56de3d0db871ff256fd5d3fb5888076832e432896743e3f6cb8c1a2bb7d8"
+    },
+    {
+     "path": "core/pysrc/_taskboardlib.py",
+     "symbol": "edit_work_entry",
+     "start": 1347,
+     "end": 1416,
+     "git_oid": "85511a724f3de7a8cf84c069814d0605e72f3395",
+     "file_sha256": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+     "span_sha256": "b0926fac7378caa047c27fac2204d33545026e1d33259736c1af729d3b4ac9a5"
+    },
+    {
+     "path": "core/pysrc/_taskboardlib.py",
+     "symbol": "origin_for_task",
+     "start": 1226,
+     "end": 1245,
+     "git_oid": "85511a724f3de7a8cf84c069814d0605e72f3395",
+     "file_sha256": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+     "span_sha256": "f030de86952b516fcdd972b03b537fad330bfb533adedec21132e94e002e7876"
+    },
+    {
+     "path": "core/pysrc/_worklib.py",
+     "symbol": "_scan",
+     "start": 90,
+     "end": 183,
+     "git_oid": "7f118b7ae057b89017e1c1ec7c779c7687740330",
+     "file_sha256": "4b08bdfdea85a96e1bde4bd7dc610bc61dd8ef31a42d530fb10437b1145818ce",
+     "span_sha256": "ce145b43820ae8caeb67c7757791f12d79a855531b6644f3e1974a9f6d146f2a"
+    }
+   ],
+   "semantic_assessment": "All10 literal clauses inspected at named owner/callee boundaries, with explicit accepted changes/analytical limits below;28 advanced objects remain historical and are not renewed.",
+   "intake_variances": [
+    "Historical ID/title-only lookup still prefers first open match; pure set_state degrades invalid/missing to unchanged instead of raising. Do not advertise global uniqueness or an exception for every raw transform."
+   ],
+   "limits": "Source guard/effect/retry conformance only. No new product/test/host/native/provider/model execution or installed/task/scenario/CI/whole-program qualification; prior observations retain their real epoch and scope."
+  },
+  {
+   "cell": "disposition:transitions:S39:01",
+   "frozen_row_sha256": "249a8f6e4d125cdf62167ed49a9a0a6af492389b4e7f5655ae686653844e81e2",
+   "witnesses": [
+    {
+     "path": "core/pysrc/_taskboardlib.py",
+     "symbol": "add_error",
+     "start": 931,
+     "end": 988,
+     "git_oid": "85511a724f3de7a8cf84c069814d0605e72f3395",
+     "file_sha256": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+     "span_sha256": "db88bd31075f1ce246f9a26909adf2ef1d4e1f8b748e55313867d45503252f25"
+    },
+    {
+     "path": "core/pysrc/_taskboardlib.py",
+     "symbol": "add_entry",
+     "start": 991,
+     "end": 1028,
+     "git_oid": "85511a724f3de7a8cf84c069814d0605e72f3395",
+     "file_sha256": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+     "span_sha256": "79be9feb087ceebaa1695fae626347f8a48c5d2b9ddc4328d5139cc8406c035f"
+    },
+    {
+     "path": "core/pysrc/taskwrite.py",
+     "symbol": "_apply",
+     "start": 211,
+     "end": 272,
+     "git_oid": "2243e3bfed634f496c70f815c54d5208ed321032",
+     "file_sha256": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25",
+     "span_sha256": "1f8bfadef1673a3ca5d0f72394d3f4109c4783726db8a992e657da14e346c5a7"
+    },
+    {
+     "path": "core/pysrc/taskwrite.py",
+     "symbol": "main",
+     "start": 275,
+     "end": 446,
+     "git_oid": "2243e3bfed634f496c70f815c54d5208ed321032",
+     "file_sha256": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25",
+     "span_sha256": "be7b3b39651b30d2b6ae952df6697046bd8a6e18b46d764fb06ee33c2c182214"
+    },
+    {
+     "path": "core/pysrc/_arbiterstatelib.py",
+     "symbol": "native_work_selected",
+     "start": 162,
+     "end": 184,
+     "git_oid": "be9ed277e3cc84936dd1cc2fbe41e5142c48d06e",
+     "file_sha256": "19ebd7d82fa56d2a4535043d3a163cfe9f0475aa5d457d5ad8953980d57f71c1",
+     "span_sha256": "c78f229e14831568c2dd527369278f2dc8722981888210128469accfd8cb68af"
+    }
+   ],
+   "semantic_assessment": "Validated single-line fields produce one queued block in the selected section; group/type optionally mint next current board sequence. taskwrite locks before fresh read and selected native-owner conflict guard. Malformed pure add returns unchanged; writer exposes explicit refusal.",
+   "intake_variances": [],
+   "limits": "Source guard/effect/retry conformance only. No new product/test/host/native/provider/model execution or installed/task/scenario/CI/whole-program qualification; prior observations retain their real epoch and scope."
+  },
+  {
+   "cell": "disposition:transitions:S39:02",
+   "frozen_row_sha256": "dabc35ea377550e2dbca4c21b0ecf953408fd2c78fce1834f6b8a6bb97f14e1f",
+   "witnesses": [
+    {
+     "path": "core/pysrc/_taskboardlib.py",
+     "symbol": "_find_task_line",
+     "start": 1248,
+     "end": 1278,
+     "git_oid": "85511a724f3de7a8cf84c069814d0605e72f3395",
+     "file_sha256": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+     "span_sha256": "ced173c74f4992b9f7e5ff6fb74740c586fe4e8589b64d29994347074e747c2a"
+    },
+    {
+     "path": "core/pysrc/_taskboardlib.py",
+     "symbol": "transition_error",
+     "start": 1281,
+     "end": 1304,
+     "git_oid": "85511a724f3de7a8cf84c069814d0605e72f3395",
+     "file_sha256": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+     "span_sha256": "4c1a5ecd5d26dc2be6088214212b2cce4790c4265c9b67ffba3351633790620f"
+    },
+    {
+     "path": "core/pysrc/_taskboardlib.py",
+     "symbol": "set_state",
+     "start": 1307,
+     "end": 1344,
+     "git_oid": "85511a724f3de7a8cf84c069814d0605e72f3395",
+     "file_sha256": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+     "span_sha256": "87de56de3d0db871ff256fd5d3fb5888076832e432896743e3f6cb8c1a2bb7d8"
+    },
+    {
+     "path": "core/pysrc/taskwrite.py",
+     "symbol": "_apply",
+     "start": 211,
+     "end": 272,
+     "git_oid": "2243e3bfed634f496c70f815c54d5208ed321032",
+     "file_sha256": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25",
+     "span_sha256": "1f8bfadef1673a3ca5d0f72394d3f4109c4783726db8a992e657da14e346c5a7"
+    }
+   ],
+   "semantic_assessment": "Unique exact origin selection or historical target lookup enters in_progress, may mint an admitted dotted ID and replaces lifecycle stamp with started date while retaining origin/other fields.",
+   "intake_variances": [],
+   "limits": "Source guard/effect/retry conformance only. No new product/test/host/native/provider/model execution or installed/task/scenario/CI/whole-program qualification; prior observations retain their real epoch and scope."
+  },
+  {
+   "cell": "disposition:transitions:S39:03",
+   "frozen_row_sha256": "9d14ff215ef7b5bad71e3650313e647cffb2cbb11e56f2646689e510d2282b06",
+   "witnesses": [
+    {
+     "path": "core/pysrc/_taskboardlib.py",
+     "symbol": "transition_error",
+     "start": 1281,
+     "end": 1304,
+     "git_oid": "85511a724f3de7a8cf84c069814d0605e72f3395",
+     "file_sha256": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+     "span_sha256": "4c1a5ecd5d26dc2be6088214212b2cce4790c4265c9b67ffba3351633790620f"
+    },
+    {
+     "path": "core/pysrc/_taskboardlib.py",
+     "symbol": "set_state",
+     "start": 1307,
+     "end": 1344,
+     "git_oid": "85511a724f3de7a8cf84c069814d0605e72f3395",
+     "file_sha256": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+     "span_sha256": "87de56de3d0db871ff256fd5d3fb5888076832e432896743e3f6cb8c1a2bb7d8"
+    }
+   ],
+   "semantic_assessment": "From in_progress, done replaces marker/date and removes old started/done stamp before adding done date; identity and other metadata remain.",
+   "intake_variances": [],
+   "limits": "Source guard/effect/retry conformance only. No new product/test/host/native/provider/model execution or installed/task/scenario/CI/whole-program qualification; prior observations retain their real epoch and scope."
+  },
+  {
+   "cell": "disposition:transitions:S39:04",
+   "frozen_row_sha256": "7361578238b563fd7a839d224ee65b92fc451c3edef042640001113c6f1466a1",
+   "witnesses": [
+    {
+     "path": "core/pysrc/_taskboardlib.py",
+     "symbol": "transition_error",
+     "start": 1281,
+     "end": 1304,
+     "git_oid": "85511a724f3de7a8cf84c069814d0605e72f3395",
+     "file_sha256": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+     "span_sha256": "4c1a5ecd5d26dc2be6088214212b2cce4790c4265c9b67ffba3351633790620f"
+    },
+    {
+     "path": "core/pysrc/_taskboardlib.py",
+     "symbol": "set_state",
+     "start": 1307,
+     "end": 1344,
+     "git_oid": "85511a724f3de7a8cf84c069814d0605e72f3395",
+     "file_sha256": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+     "span_sha256": "87de56de3d0db871ff256fd5d3fb5888076832e432896743e3f6cb8c1a2bb7d8"
+    }
+   ],
+   "semantic_assessment": "An explicit origin selector permits queued-to-done; without origin the ordinary path refuses until started. The adapter-specific distinction is preserved.",
+   "intake_variances": [],
+   "limits": "Source guard/effect/retry conformance only. No new product/test/host/native/provider/model execution or installed/task/scenario/CI/whole-program qualification; prior observations retain their real epoch and scope."
+  },
+  {
+   "cell": "disposition:transitions:S39:05",
+   "frozen_row_sha256": "6a1a126e1b4bcf45b4afbef57a37f6e64a1be71eebb8fb0996b322b71f961818",
+   "witnesses": [
+    {
+     "path": "core/pysrc/_taskboardlib.py",
+     "symbol": "set_state",
+     "start": 1307,
+     "end": 1344,
+     "git_oid": "85511a724f3de7a8cf84c069814d0605e72f3395",
+     "file_sha256": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+     "span_sha256": "87de56de3d0db871ff256fd5d3fb5888076832e432896743e3f6cb8c1a2bb7d8"
+    }
+   ],
+   "semantic_assessment": "Already-done target returns the exact input text unchanged, retaining identity and dates.",
+   "intake_variances": [],
+   "limits": "Source guard/effect/retry conformance only. No new product/test/host/native/provider/model execution or installed/task/scenario/CI/whole-program qualification; prior observations retain their real epoch and scope."
+  },
+  {
+   "cell": "disposition:transitions:S39:06",
+   "frozen_row_sha256": "fe72586c0274d8d3626784917730145c9f93ed22241de3e577a5fb8c3ce668fb",
+   "witnesses": [
+    {
+     "path": "core/pysrc/_taskboardlib.py",
+     "symbol": "transition_error",
+     "start": 1281,
+     "end": 1304,
+     "git_oid": "85511a724f3de7a8cf84c069814d0605e72f3395",
+     "file_sha256": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+     "span_sha256": "4c1a5ecd5d26dc2be6088214212b2cce4790c4265c9b67ffba3351633790620f"
+    },
+    {
+     "path": "core/pysrc/_taskboardlib.py",
+     "symbol": "set_state",
+     "start": 1307,
+     "end": 1344,
+     "git_oid": "85511a724f3de7a8cf84c069814d0605e72f3395",
+     "file_sha256": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+     "span_sha256": "87de56de3d0db871ff256fd5d3fb5888076832e432896743e3f6cb8c1a2bb7d8"
+    },
+    {
+     "path": "core/pysrc/taskwrite.py",
+     "symbol": "_apply",
+     "start": 211,
+     "end": 272,
+     "git_oid": "2243e3bfed634f496c70f815c54d5208ed321032",
+     "file_sha256": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25",
+     "span_sha256": "1f8bfadef1673a3ca5d0f72394d3f4109c4783726db8a992e657da14e346c5a7"
+    }
+   ],
+   "semantic_assessment": "Repeated start is rejected by transition_error and pure set_state returns unchanged; sanctioned writer reports no-change/refusal, not newly fabricated progress.",
+   "intake_variances": [],
+   "limits": "Source guard/effect/retry conformance only. No new product/test/host/native/provider/model execution or installed/task/scenario/CI/whole-program qualification; prior observations retain their real epoch and scope."
+  },
+  {
+   "cell": "disposition:transitions:S39:07",
+   "frozen_row_sha256": "42f06835887ed4885db57f15466eb5284c2a54c3d6b2cd3083e18d07fe79d9de",
+   "witnesses": [
+    {
+     "path": "core/pysrc/_taskboardlib.py",
+     "symbol": "transition_error",
+     "start": 1281,
+     "end": 1304,
+     "git_oid": "85511a724f3de7a8cf84c069814d0605e72f3395",
+     "file_sha256": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+     "span_sha256": "4c1a5ecd5d26dc2be6088214212b2cce4790c4265c9b67ffba3351633790620f"
+    },
+    {
+     "path": "core/pysrc/_taskboardlib.py",
+     "symbol": "set_state",
+     "start": 1307,
+     "end": 1344,
+     "git_oid": "85511a724f3de7a8cf84c069814d0605e72f3395",
+     "file_sha256": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+     "span_sha256": "87de56de3d0db871ff256fd5d3fb5888076832e432896743e3f6cb8c1a2bb7d8"
+    }
+   ],
+   "semantic_assessment": "Ordinary set_state refuses done-to-in_progress; no implicit reopen.",
+   "intake_variances": [],
+   "limits": "Source guard/effect/retry conformance only. No new product/test/host/native/provider/model execution or installed/task/scenario/CI/whole-program qualification; prior observations retain their real epoch and scope."
+  },
+  {
+   "cell": "disposition:transitions:S39:08",
+   "frozen_row_sha256": "e7f12583f3acfb64ba30c13978b30535ad8a5603e21623f990e4bbcbe6172980",
+   "witnesses": [
+    {
+     "path": "core/pysrc/_taskboardlib.py",
+     "symbol": "edit_work_entry",
+     "start": 1347,
+     "end": 1416,
+     "git_oid": "85511a724f3de7a8cf84c069814d0605e72f3395",
+     "file_sha256": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+     "span_sha256": "b0926fac7378caa047c27fac2204d33545026e1d33259736c1af729d3b4ac9a5"
+    },
+    {
+     "path": "core/pysrc/taskwrite.py",
+     "symbol": "_apply",
+     "start": 211,
+     "end": 272,
+     "git_oid": "2243e3bfed634f496c70f815c54d5208ed321032",
+     "file_sha256": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25",
+     "span_sha256": "1f8bfadef1673a3ca5d0f72394d3f4109c4783726db8a992e657da14e346c5a7"
+    },
+    {
+     "path": "core/pysrc/taskwrite.py",
+     "symbol": "main",
+     "start": 275,
+     "end": 446,
+     "git_oid": "2243e3bfed634f496c70f815c54d5208ed321032",
+     "file_sha256": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25",
+     "span_sha256": "be7b3b39651b30d2b6ae952df6697046bd8a6e18b46d764fb06ee33c2c182214"
+    }
+   ],
+   "semantic_assessment": "Explicit origin-bound reopen requires completed entry and date, removes done stamp, retains prior started stamp or adds one, preserves task ID/origin/neighbors. Current writer requires selected work identity and board revision.",
+   "intake_variances": [],
+   "limits": "Source guard/effect/retry conformance only. No new product/test/host/native/provider/model execution or installed/task/scenario/CI/whole-program qualification; prior observations retain their real epoch and scope."
+  },
+  {
+   "cell": "disposition:transitions:S39:09",
+   "frozen_row_sha256": "6f8a05ea6a935fa0fa997c733d5573caab8fdfb31c091da49b5c4dc05b40657b",
+   "witnesses": [
+    {
+     "path": "core/pysrc/_taskboardlib.py",
+     "symbol": "edit_work_entry",
+     "start": 1347,
+     "end": 1416,
+     "git_oid": "85511a724f3de7a8cf84c069814d0605e72f3395",
+     "file_sha256": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+     "span_sha256": "b0926fac7378caa047c27fac2204d33545026e1d33259736c1af729d3b4ac9a5"
+    },
+    {
+     "path": "core/pysrc/_taskboardlib.py",
+     "symbol": "origin_for_task",
+     "start": 1226,
+     "end": 1245,
+     "git_oid": "85511a724f3de7a8cf84c069814d0605e72f3395",
+     "file_sha256": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+     "span_sha256": "f030de86952b516fcdd972b03b537fad330bfb533adedec21132e94e002e7876"
+    },
+    {
+     "path": "core/pysrc/taskwrite.py",
+     "symbol": "main",
+     "start": 275,
+     "end": 446,
+     "git_oid": "2243e3bfed634f496c70f815c54d5208ed321032",
+     "file_sha256": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25",
+     "span_sha256": "be7b3b39651b30d2b6ae952df6697046bd8a6e18b46d764fb06ee33c2c182214"
+    }
+   ],
+   "semantic_assessment": "Rename and attach edit exactly selected origin block; rename retains dotted ID/lifecycle/provenance suffixes, attach validates SPEC-/PLAN- IDs and refuses duplicate metadata. Selected writer revision guard prevents overwriting an independently changed row.",
+   "intake_variances": [],
+   "limits": "Source guard/effect/retry conformance only. No new product/test/host/native/provider/model execution or installed/task/scenario/CI/whole-program qualification; prior observations retain their real epoch and scope."
+  },
+  {
+   "cell": "disposition:transitions:S39:10",
+   "frozen_row_sha256": "7346df3835294f616b12c0c1be59b1ce4459d4fd053ad17e5cea27d2523d0fc3",
+   "witnesses": [
+    {
+     "path": "core/pysrc/_taskboardlib.py",
+     "symbol": "origin_for_task",
+     "start": 1226,
+     "end": 1245,
+     "git_oid": "85511a724f3de7a8cf84c069814d0605e72f3395",
+     "file_sha256": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+     "span_sha256": "f030de86952b516fcdd972b03b537fad330bfb533adedec21132e94e002e7876"
+    },
+    {
+     "path": "core/pysrc/_taskboardlib.py",
+     "symbol": "_find_task_line",
+     "start": 1248,
+     "end": 1278,
+     "git_oid": "85511a724f3de7a8cf84c069814d0605e72f3395",
+     "file_sha256": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+     "span_sha256": "ced173c74f4992b9f7e5ff6fb74740c586fe4e8589b64d29994347074e747c2a"
+    },
+    {
+     "path": "core/pysrc/_taskboardlib.py",
+     "symbol": "edit_work_entry",
+     "start": 1347,
+     "end": 1416,
+     "git_oid": "85511a724f3de7a8cf84c069814d0605e72f3395",
+     "file_sha256": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+     "span_sha256": "b0926fac7378caa047c27fac2204d33545026e1d33259736c1af729d3b4ac9a5"
+    },
+    {
+     "path": "core/pysrc/taskwrite.py",
+     "symbol": "_apply",
+     "start": 211,
+     "end": 272,
+     "git_oid": "2243e3bfed634f496c70f815c54d5208ed321032",
+     "file_sha256": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25",
+     "span_sha256": "1f8bfadef1673a3ca5d0f72394d3f4109c4783726db8a992e657da14e346c5a7"
+    },
+    {
+     "path": "core/pysrc/_worklib.py",
+     "symbol": "_scan",
+     "start": 90,
+     "end": 183,
+     "git_oid": "7f118b7ae057b89017e1c1ec7c779c7687740330",
+     "file_sha256": "4b08bdfdea85a96e1bde4bd7dc610bc61dd8ef31a42d530fb10437b1145818ce",
+     "span_sha256": "ce145b43820ae8caeb67c7757791f12d79a855531b6644f3e1974a9f6d146f2a"
+    }
+   ],
+   "semantic_assessment": "Duplicate/inconsistent explicit origins refuse; missing target is no-change at pure set_state and explicit writer error, while work adapter withholds ambiguous origin groups. No arbitrary first row is selected under the actual exact-origin contract.",
+   "intake_variances": [
+    "Historical ID/title-only lookup still prefers first open match; pure set_state degrades invalid/missing to unchanged instead of raising. Do not advertise global uniqueness or an exception for every raw transform."
+   ],
+   "limits": "Source guard/effect/retry conformance only. No new product/test/host/native/provider/model execution or installed/task/scenario/CI/whole-program qualification; prior observations retain their real epoch and scope."
+  }
+ ],
+ "scope": "S39 finite literal/current guard/effect/retry source contract; no runtime acceptance.",
+ "limits": [
+  "Source guard/effect/retry conformance only. No new product/test/host/native/provider/model execution or installed/task/scenario/CI/whole-program qualification; prior observations retain their real epoch and scope.",
+  "Original advanced28wholeobjects and5historicalproofs preserved losslessly; known source changes are not hidden by rewriting their observations.",
+  "Root sole integrator and unchanged strict original owner/independent reviewer; this author delivery is not self-approved."
+ ]
+}

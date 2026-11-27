@@ -1,0 +1,57 @@
+{
+  "schema": "local-sdk-validation-retention/1",
+  "committed_source_anchor": "db50f8e3a0170b8a1c4f8b7567897c8574b8d34c",
+  "actual_execution_git_head": "ca4966745fa44f1baddd08613702db023d83fe60",
+  "execution_state": "Working-tree SDK patch with exact observed source hashes, subsequently committed byte-identically as db50. No claim tests executed after the commit.",
+  "validation_not_ledger_qualification": true,
+  "strict_sdk_red": "Original unchanged SDK control unrecognized!=captured,1failure0.270s.",
+  "strict_sdk_green": "Same original control passed0.860s,12threads74known module-relative frames; originalHANDLE retained, Nodealive, foreignimage refused, lateexit observed.",
+  "capture_labels": {
+    "0": "Identity control with mocked unavailable debugger; not an SDK failure.",
+    "1": "Actual typed SDK worker capture.",
+    "2": "Foreign-image refusal.",
+    "3": "Owned late-exit observation."
+  },
+  "other_checks": "Five affected pure controls PASS0.350s; helper-only CI selector RED then GREEN0.008s; all75 original method ASTs and strict SDK AST preserved,81 IDs; four changed Python files syntax-check; exactsixfile independent security/ABI PASS.",
+  "limits": [
+    "CDB front-end root cause remains unknown; typed SDK backend is demonstrated.",
+    "Original Pi natural EOF/OS exit cause remains unresolved; exact-head hosted CI pending.",
+    "Native synchronous calls are not universally cancellable; parent deadline/worker containment and unknown-cleanup refusal remain authoritative.",
+    "Private environment is not universal KnownFolder/OS isolation. No SDK vendoring, installer/globalSDK/PATH change or dependency adoption.",
+    "No whole-task, installed, user/model/provider, main merge or publication qualification."
+  ],
+  "files": {
+    "docs/state-contracts-major/execution/evidence/typed-sdk-capture-db50/sdk-regression-red.json": {
+      "sha256": "44e39c2f403a107594f5c0d9b1d9212ad753988f5853210b139c4f4ad05031ab",
+      "bytes": 1381
+    },
+    "docs/state-contracts-major/execution/evidence/typed-sdk-capture-db50/sdk-regression-green.json": {
+      "sha256": "d3c552c772676b82d33980713ee241145208a55ad00b442a016649e8eb8ae6c6",
+      "bytes": 1982
+    },
+    "docs/state-contracts-major/execution/evidence/typed-sdk-capture-db50/sdk-control-captures.json": {
+      "sha256": "520ce1fa39c9fb35dde7be516cec399281588912605e9863dbbb55a3c789b3b0",
+      "bytes": 12147
+    },
+    "docs/state-contracts-major/execution/evidence/typed-sdk-capture-db50/sdk-tool-signatures.json": {
+      "sha256": "cf0465b04f1e2ca27fae78e8b4b2e562de0733199181e9f24b54201b8f406f7b",
+      "bytes": 1294
+    },
+    "docs/state-contracts-major/execution/evidence/typed-sdk-capture-db50/sdk-abi-guard.json": {
+      "sha256": "da44675000fc9ee9e160388813bfae9e855b7a3742c445fe6cf289a77f908b2a",
+      "bytes": 4706
+    },
+    "docs/state-contracts-major/execution/evidence/typed-sdk-capture-db50/independent-security-review.json": {
+      "sha256": "ae2c3e4fc26ec88caec8add520633e00c3ac781f5bfb11f107b34e8370a2a857",
+      "bytes": 7014
+    },
+    "docs/state-contracts-major/execution/evidence/typed-sdk-capture-db50/lossless-test-logs.json": {
+      "sha256": "92d177a29924fb634db1720d30d4f82bc47cdd6764362f2d3f05f2ca6109c481",
+      "bytes": 7335
+    },
+    "docs/state-contracts-major/execution/evidence/typed-sdk-capture-db50/p02-six-held.json": {
+      "sha256": "b6acd1c23cbdfcd16feb9ca74ce87629bf62ab1078af149fe9090307f742b94d",
+      "bytes": 1682
+    }
+  }
+}

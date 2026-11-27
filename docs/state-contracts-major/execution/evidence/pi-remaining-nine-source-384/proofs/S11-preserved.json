@@ -1,0 +1,420 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "/root/ci_repair_review: literal62-clause immutable Pi/current-callee/baseline inspection; no execution"
+ },
+ "inputs": {
+  ".codearbiter/decisions/0043-assistive-state-engine.md": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+  ".codearbiter/decisions/0049-require-https-outside-bounded-loopback.md": "c757cef9d5e318b75ff164d270b29a49255449360f0b7cde51e53775e6916ab8",
+  "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+  "docs/state-contracts-major/surfaces-tasks.json": "5a68b14cdc637e369fa5298d3f566b950dec9fb8056e4f1fa77baf40cb4b0d97",
+  "plugins/ca-pi/tools/src/inference-broker.ts": "9d10532e0b6af73cd7f641ce066151860e6c3213387b17222a01333137c271f4"
+ },
+ "disposition_ids": [
+  "disposition:machines:S11",
+  "disposition:transitions:S11:01",
+  "disposition:transitions:S11:02",
+  "disposition:transitions:S11:03",
+  "disposition:transitions:S11:04",
+  "disposition:transitions:S11:05",
+  "disposition:transitions:S11:06",
+  "disposition:transitions:S11:07"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/source-bindings.json",
+   "sha256": "5ff5edd6e452412a3caec604eae002b4d10132d8321c3a991c99e8949bce025f"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/clause-inspection.json",
+   "sha256": "c64cc79bbe9a660bfe891b9af36197023a543a82c16bb4e333a96dc7cec32dfa"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:S11",
+   "frozen_row_sha256": "3526131e5909b80161600c77c9410e031c012a7f6c9369c29c0d6cd4e1b357ef",
+   "clause_ids": [
+    "disposition:transitions:S11:01",
+    "disposition:transitions:S11:02",
+    "disposition:transitions:S11:03",
+    "disposition:transitions:S11:04",
+    "disposition:transitions:S11:05",
+    "disposition:transitions:S11:06",
+    "disposition:transitions:S11:07"
+   ],
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/inference-broker.ts",
+     "start": 351,
+     "end": 368,
+     "file_sha256": "9d10532e0b6af73cd7f641ce066151860e6c3213387b17222a01333137c271f4",
+     "span_sha256": "5a763c6a061fd028daad8a814d8087a9f253fe03c4adf384a621b331a0316d40"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/inference-broker.ts",
+     "start": 482,
+     "end": 506,
+     "file_sha256": "9d10532e0b6af73cd7f641ce066151860e6c3213387b17222a01333137c271f4",
+     "span_sha256": "a0483854b35ad5f4c0cedc5045d2f1c53b620f0678c110b42baf2922e6408b7f"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/inference-broker.ts",
+     "start": 363,
+     "end": 369,
+     "file_sha256": "9d10532e0b6af73cd7f641ce066151860e6c3213387b17222a01333137c271f4",
+     "span_sha256": "6226af26d5d730feca886a1ce98fab95ac89ab58cf048837b13424d01ee549a0"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/inference-broker.ts",
+     "start": 338,
+     "end": 349,
+     "file_sha256": "9d10532e0b6af73cd7f641ce066151860e6c3213387b17222a01333137c271f4",
+     "span_sha256": "bb006c738dcd7681335089c93385614f4eab84a3c358fb9dedaf3d3ecbdc447b"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/inference-broker.ts",
+     "start": 242,
+     "end": 257,
+     "file_sha256": "9d10532e0b6af73cd7f641ce066151860e6c3213387b17222a01333137c271f4",
+     "span_sha256": "b439136218f114bc0850bbc5322339b186f8c9e871727add2c2d6226f3cc7953"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/inference-broker.ts",
+     "start": 283,
+     "end": 318,
+     "file_sha256": "9d10532e0b6af73cd7f641ce066151860e6c3213387b17222a01333137c271f4",
+     "span_sha256": "3e2024457712b9ca4037be9a6c7286e839aa525a06f9121a9dc1367f5b31deba"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/inference-broker.ts",
+     "start": 507,
+     "end": 525,
+     "file_sha256": "9d10532e0b6af73cd7f641ce066151860e6c3213387b17222a01333137c271f4",
+     "span_sha256": "80b3318e6be307ad4fdcfca4a28a09b0c20c1aae62802a558f0f6a96529e9dd9"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/inference-broker.ts",
+     "start": 57,
+     "end": 79,
+     "file_sha256": "9d10532e0b6af73cd7f641ce066151860e6c3213387b17222a01333137c271f4",
+     "span_sha256": "a793eb64d2bdb781850ba3eeb52676debcc92395dc12fc21201e1cfaf171d4c7"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/inference-broker.ts",
+     "start": 104,
+     "end": 120,
+     "file_sha256": "9d10532e0b6af73cd7f641ce066151860e6c3213387b17222a01333137c271f4",
+     "span_sha256": "514d624c0cfd359ccaa9f97a32d28031d8bbbe680e22846363e7797064a83912"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/inference-broker.ts",
+     "start": 184,
+     "end": 205,
+     "file_sha256": "9d10532e0b6af73cd7f641ce066151860e6c3213387b17222a01333137c271f4",
+     "span_sha256": "350ff7c25115099ee945a7108ac06bb30b57c4d4ef02bae9a7818ce2dd26053e"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/inference-broker.ts",
+     "start": 260,
+     "end": 335,
+     "file_sha256": "9d10532e0b6af73cd7f641ce066151860e6c3213387b17222a01333137c271f4",
+     "span_sha256": "71853f5bdc0f171cf6bf358b48ca7079bc42548c8a7c95a59327e3309c79fbe7"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/inference-broker.ts",
+     "start": 363,
+     "end": 415,
+     "file_sha256": "9d10532e0b6af73cd7f641ce066151860e6c3213387b17222a01333137c271f4",
+     "span_sha256": "948232e1e99c08eabe7994b40510a664d4e9a847564f0ca4fc34c6aa5d712d5f"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/inference-broker.ts",
+     "start": 429,
+     "end": 479,
+     "file_sha256": "9d10532e0b6af73cd7f641ce066151860e6c3213387b17222a01333137c271f4",
+     "span_sha256": "04d50242934ef707a03e649b64f3e9bfd56119e38dfadc0550a8fb436c2388e2"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/inference-broker.ts",
+     "start": 184,
+     "end": 219,
+     "file_sha256": "9d10532e0b6af73cd7f641ce066151860e6c3213387b17222a01333137c271f4",
+     "span_sha256": "9d132fcd12abb5567a174447a2266de1bb2b11b521f1dcdaf50274ad689c3548"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/inference-broker.ts",
+     "start": 391,
+     "end": 415,
+     "file_sha256": "9d10532e0b6af73cd7f641ce066151860e6c3213387b17222a01333137c271f4",
+     "span_sha256": "e6efd3ff7e30fabdf3dfd174194da6e1fe5b26cf3bc599445c7f3a7320ccbf16"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/inference-broker.ts",
+     "start": 431,
+     "end": 479,
+     "file_sha256": "9d10532e0b6af73cd7f641ce066151860e6c3213387b17222a01333137c271f4",
+     "span_sha256": "e591fbf4e6a5e2daa4c93b7c0c15c70a05dab8246658431ccdbc1f410483ea7f"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/inference-broker.ts",
+     "start": 358,
+     "end": 368,
+     "file_sha256": "9d10532e0b6af73cd7f641ce066151860e6c3213387b17222a01333137c271f4",
+     "span_sha256": "1b31ebb8cac4586ce60a9fedb8c1eb0d5994f265e6fc9cf6cbeec099726a9405"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/inference-broker.ts",
+     "start": 526,
+     "end": 529,
+     "file_sha256": "9d10532e0b6af73cd7f641ce066151860e6c3213387b17222a01333137c271f4",
+     "span_sha256": "5e374b4f697fc11ab4a197e02a51707db532e23c5ba9d3d2537d97ae4fb29722"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/inference-broker.ts",
+     "start": 482,
+     "end": 486,
+     "file_sha256": "9d10532e0b6af73cd7f641ce066151860e6c3213387b17222a01333137c271f4",
+     "span_sha256": "97629d20b580167e33612c98dacc996d74e9bdb8e8df97abf3848e39391b3d5b"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/inference-broker.ts",
+     "start": 507,
+     "end": 539,
+     "file_sha256": "9d10532e0b6af73cd7f641ce066151860e6c3213387b17222a01333137c271f4",
+     "span_sha256": "2afa5ae70514df64d8f5f586af6dcc932d0cc07881f2a18482e86ec681054270"
+    }
+   ],
+   "semantic_assessment": "All actual current owner guards/effects/retry branches mapped individually. Explicit analytical corrections/accepted task deltas are incorporated; no literal nonexistent guard or bug preservation claimed. ",
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S11:01",
+   "frozen_row_sha256": "50da942ae092a59a57f13b4ab7d92444d5653dd58c4e572ba20e885d85782e73",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/inference-broker.ts",
+     "start": 351,
+     "end": 368,
+     "file_sha256": "9d10532e0b6af73cd7f641ce066151860e6c3213387b17222a01333137c271f4",
+     "span_sha256": "5a763c6a061fd028daad8a814d8087a9f253fe03c4adf384a621b331a0316d40"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/inference-broker.ts",
+     "start": 482,
+     "end": 506,
+     "file_sha256": "9d10532e0b6af73cd7f641ce066151860e6c3213387b17222a01333137c271f4",
+     "span_sha256": "a0483854b35ad5f4c0cedc5045d2f1c53b620f0678c110b42baf2922e6408b7f"
+    }
+   ],
+   "semantic_assessment": "Broker requires a 32-hex owning nonce, mints an independent random 256-bit token, binds exclusively to literal127.0.0.1/port0, and starts without upstream authority.",
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S11:02",
+   "frozen_row_sha256": "4a587d4d4ebf829548ce8d4c5514639de029e5b79155760b29725f6175f68098",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/inference-broker.ts",
+     "start": 363,
+     "end": 369,
+     "file_sha256": "9d10532e0b6af73cd7f641ce066151860e6c3213387b17222a01333137c271f4",
+     "span_sha256": "6226af26d5d730feca886a1ce98fab95ac89ab58cf048837b13424d01ee549a0"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/inference-broker.ts",
+     "start": 338,
+     "end": 349,
+     "file_sha256": "9d10532e0b6af73cd7f641ce066151860e6c3213387b17222a01333137c271f4",
+     "span_sha256": "bb006c738dcd7681335089c93385614f4eab84a3c358fb9dedaf3d3ecbdc447b"
+    }
+   ],
+   "semantic_assessment": "Unarmed or revoked request drains its incoming body and returns fixed503 before constructing an upstream request.",
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S11:03",
+   "frozen_row_sha256": "28322a5041536daf30976b30f6ff793c3deb9eb73b007ffecbe1d579d2a3a571",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/inference-broker.ts",
+     "start": 242,
+     "end": 257,
+     "file_sha256": "9d10532e0b6af73cd7f641ce066151860e6c3213387b17222a01333137c271f4",
+     "span_sha256": "b439136218f114bc0850bbc5322339b186f8c9e871727add2c2d6226f3cc7953"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/inference-broker.ts",
+     "start": 283,
+     "end": 318,
+     "file_sha256": "9d10532e0b6af73cd7f641ce066151860e6c3213387b17222a01333137c271f4",
+     "span_sha256": "3e2024457712b9ca4037be9a6c7286e839aa525a06f9121a9dc1367f5b31deba"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/inference-broker.ts",
+     "start": 507,
+     "end": 525,
+     "file_sha256": "9d10532e0b6af73cd7f641ce066151860e6c3213387b17222a01333137c271f4",
+     "span_sha256": "80b3318e6be307ad4fdcfca4a28a09b0c20c1aae62802a558f0f6a96529e9dd9"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/inference-broker.ts",
+     "start": 57,
+     "end": 79,
+     "file_sha256": "9d10532e0b6af73cd7f641ce066151860e6c3213387b17222a01333137c271f4",
+     "span_sha256": "a793eb64d2bdb781850ba3eeb52676debcc92395dc12fc21201e1cfaf171d4c7"
+    }
+   ],
+   "semantic_assessment": "Only parent authorize binds matching nonce, nonempty bounded credential/header values, the required sensitive predicate, and structurally bounded upstream. The selected credential remains in the parent. Token substitution applies to every scalar request header admitted by the finite FORWARDED_REQUEST_HEADERS allowlist, including non-auth names: the whole token or its exact single-word-scheme argument can match, and multiple matching headers are allowed. Array-valued headers cannot authenticate. Parent headers apply last. ADR49 requires HTTPS except raw numeric127.0.0.1 HTTP.",
+   "intake_variances": [
+    "Named accepted ADR0049 supersedes baseline externalHTTP allowance without replacing other endpoint/credential guards."
+   ],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S11:04",
+   "frozen_row_sha256": "8a8c071441bf9a6fd77f4e4dd3dab895ca6ba4477cff178dab12d98be3d28325",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/inference-broker.ts",
+     "start": 104,
+     "end": 120,
+     "file_sha256": "9d10532e0b6af73cd7f641ce066151860e6c3213387b17222a01333137c271f4",
+     "span_sha256": "514d624c0cfd359ccaa9f97a32d28031d8bbbe680e22846363e7797064a83912"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/inference-broker.ts",
+     "start": 184,
+     "end": 205,
+     "file_sha256": "9d10532e0b6af73cd7f641ce066151860e6c3213387b17222a01333137c271f4",
+     "span_sha256": "350ff7c25115099ee945a7108ac06bb30b57c4d4ef02bae9a7818ce2dd26053e"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/inference-broker.ts",
+     "start": 260,
+     "end": 335,
+     "file_sha256": "9d10532e0b6af73cd7f641ce066151860e6c3213387b17222a01333137c271f4",
+     "span_sha256": "71853f5bdc0f171cf6bf358b48ca7079bc42548c8a7c95a59327e3309c79fbe7"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/inference-broker.ts",
+     "start": 363,
+     "end": 415,
+     "file_sha256": "9d10532e0b6af73cd7f641ce066151860e6c3213387b17222a01333137c271f4",
+     "span_sha256": "948232e1e99c08eabe7994b40510a664d4e9a847564f0ca4fc34c6aa5d712d5f"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/inference-broker.ts",
+     "start": 429,
+     "end": 479,
+     "file_sha256": "9d10532e0b6af73cd7f641ce066151860e6c3213387b17222a01333137c271f4",
+     "span_sha256": "04d50242934ef707a03e649b64f3e9bfd56119e38dfadc0550a8fb436c2388e2"
+    }
+   ],
+   "semantic_assessment": "A request requires a bounded /v1 target without encoded separators and at least one matching scalar allowlisted header. Every scalar header admitted by FORWARDED_REQUEST_HEADERS is eligible for token substitution; multiple matches are allowed, while array-valued headers cannot authenticate. Parent headers apply last and the actual credential remains parent-side. Plaintext response is scanned with4096-byte overlap and backpressure. Nonce binds parent authorize, not each HTTP request.",
+   "intake_variances": [
+    "Frozen request nonce/method/body constraints compress a stronger contract than literal baseline/current: actual code forwards request.method/body rather than applying a method allowlist/body-size cap. Exact token/route/header constraints exist; no invented request nonce or method/body guard is claimed. Same-user token replay residual is explicit in owner lines9-30."
+   ],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S11:05",
+   "frozen_row_sha256": "d6d8339f985ec21811eb9f56a6ccbec884e93ee87879cb87b9222d526b80282d",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/inference-broker.ts",
+     "start": 184,
+     "end": 219,
+     "file_sha256": "9d10532e0b6af73cd7f641ce066151860e6c3213387b17222a01333137c271f4",
+     "span_sha256": "9d132fcd12abb5567a174447a2266de1bb2b11b521f1dcdaf50274ad689c3548"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/inference-broker.ts",
+     "start": 391,
+     "end": 415,
+     "file_sha256": "9d10532e0b6af73cd7f641ce066151860e6c3213387b17222a01333137c271f4",
+     "span_sha256": "e6efd3ff7e30fabdf3dfd174194da6e1fe5b26cf3bc599445c7f3a7320ccbf16"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/inference-broker.ts",
+     "start": 431,
+     "end": 479,
+     "file_sha256": "9d10532e0b6af73cd7f641ce066151860e6c3213387b17222a01333137c271f4",
+     "span_sha256": "e591fbf4e6a5e2daa4c93b7c0c15c70a05dab8246658431ccdbc1f410483ea7f"
+    }
+   ],
+   "semantic_assessment": "Invalid sensitive/encoded/transport-redirect headers destroy upstream and return fixed502. Body sensitive detection holds headers until first clean chunk, then resets partial stream on later detection; no successful intact response is claimed after detected leakage.",
+   "intake_variances": [
+    "Leading fragments may already be delivered before a later chunk completes sensitive match; this explicitly retained streaming residual is not zero-disclosure confinement."
+   ],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S11:06",
+   "frozen_row_sha256": "55bf40c093d3d0a94125080b61d029d61bc06752802cf152cf10804319de51fa",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/inference-broker.ts",
+     "start": 358,
+     "end": 368,
+     "file_sha256": "9d10532e0b6af73cd7f641ce066151860e6c3213387b17222a01333137c271f4",
+     "span_sha256": "1b31ebb8cac4586ce60a9fedb8c1eb0d5994f265e6fc9cf6cbeec099726a9405"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/inference-broker.ts",
+     "start": 526,
+     "end": 529,
+     "file_sha256": "9d10532e0b6af73cd7f641ce066151860e6c3213387b17222a01333137c271f4",
+     "span_sha256": "5e374b4f697fc11ab4a197e02a51707db532e23c5ba9d3d2537d97ae4fb29722"
+    }
+   ],
+   "semantic_assessment": "Revoke permanently latches revoked and clears upstream; already forwarding request retains its local bound record, while future requests fail503. Socket shutdown belongs to close.",
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S11:07",
+   "frozen_row_sha256": "bf4f4087f98145e8e8794c7f5a9ef7f4ab3c46468cf1c4b2ec291dfe116f4bff",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/inference-broker.ts",
+     "start": 482,
+     "end": 486,
+     "file_sha256": "9d10532e0b6af73cd7f641ce066151860e6c3213387b17222a01333137c271f4",
+     "span_sha256": "97629d20b580167e33612c98dacc996d74e9bdb8e8df97abf3848e39391b3d5b"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/inference-broker.ts",
+     "start": 507,
+     "end": 539,
+     "file_sha256": "9d10532e0b6af73cd7f641ce066151860e6c3213387b17222a01333137c271f4",
+     "span_sha256": "2afa5ae70514df64d8f5f586af6dcc932d0cc07881f2a18482e86ec681054270"
+    }
+   ],
+   "semantic_assessment": "Close revokes/clears upstream, caches one close promise, closes listener and destroys tracked accepted sockets. Repeated calls await same promise; authorize refuses after revocation.",
+   "intake_variances": [
+    "This is a source-level owned socket/lifecycle contract, not an observed guarantee about every OS socket or native process."
+   ],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  }
+ ],
+ "scope": "Actual current source-only conformance underPROGRAM/ADR43/49/acceptedPi tasks; no strongerliteral/runtime/host/task claim.",
+ "limits": [
+  "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification.",
+  "PROGRAM actual-source/current accepted direction takes precedence over inaccurate analytical intake. Every variance is explicit; frozen rows remain unchanged.",
+  "PI-L02 intentionally replaces S19 resurrection bug; ADR49 narrows endpoint transports, ordinary artifact ceremony is separate from real host permissions underADR43.",
+  "S17:07 exact absent confirmation-dedup route is N/A only; retained proposal no-op/fingerprint checks and bounded best-effort audit remain supported.",
+  "Only47 PLANNED row proposals;24advanced edges and all other ledger records/history remain untouched. Whole ledgerhash advisory; exact per-rowCAS authoritative.",
+  "All proofs bind genuine immutable384269 source inspection, not futureCI or currentRoot staging. No stagedOIDs or fullowner authentication claimed."
+ ]
+}

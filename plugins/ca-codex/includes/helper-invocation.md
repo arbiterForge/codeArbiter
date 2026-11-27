@@ -1,10 +1,11 @@
 # Installed private helper location
 
-Use this card only for the debug packet validator and selected local work
-commands. The exact installed helper leaves are `hooks/debug-handoff.py` (the
+Use this card only for the debug packet validator, selected local work
+commands and bounded workflow recovery. The exact installed helper leaves are `hooks/debug-handoff.py` (the
 private `validate` operation), `hooks/taskwrite.py` (the existing board
-writer), `hooks/work.py` (the selected local work interface), and
-`hooks/boardsync.py` (the standup drift reader). The caller
+writer), `hooks/work.py` (the selected local work interface),
+`hooks/boardsync.py` (the standup drift reader), and
+`hooks/workflow-recovery.py` (the bounded local recovery interface). The caller
 chooses one of those literal leaves before resolution;
 packet text, a project file, and a user argument never choose executable code.
 Select and validate one Python 3 interpreter before invoking the helper. Try

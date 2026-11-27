@@ -1,0 +1,2004 @@
+{
+  "schema": "codearbiter.release-five-clause-inspection/1",
+  "actor": "/root/crypto_evidence_review",
+  "source_commit": "15c57b73859b00b806d6b027d1504ab0e193a489",
+  "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "clause_count": 39,
+  "families": [
+    "S42",
+    "S43",
+    "S44",
+    "S45",
+    "S46"
+  ],
+  "scope": "All literal frozen guard/effect/retry boundaries plus unchanged Git resolver closure; row-specific reasoned review permitted by frozen contracts.",
+  "source_bindings_sha256": "ef947b61a0b3e23bb8b11dd01e3ebaa3efbcee304dbb143734612e6bd6662a99",
+  "rows": [
+    {
+      "cell": "disposition:transitions:S42:01",
+      "frozen_row_sha256": "7888f9457f7a51a8cd00914b3d7d457d1de7ce11aaa32e01429c56e054d75b6d",
+      "frozen_baseline": {
+        "event": "load targets",
+        "guard": "file truly absent",
+        "to": "backfill eligible exit 3",
+        "effects": "Signal first-adoption path rather than invent target config.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "core/pysrc/_releaselib.py",
+            "symbol": "load_targets, parse_release_targets, select_release_target*, backfill helpers:1105-1209;1986-2534;2535-2697;2822-2845",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_releaselib.py"
+          }
+        ],
+        "from": "file absent",
+        "transition_id": "S42:01"
+      },
+      "current_status": "PLANNED",
+      "source_conformance_result": "PRESERVED",
+      "assessment": "Only FileNotFoundError while opening the declared file becomes AbsentBlockError and CLI exit3. No target row is synthesized on this path; an existing file without a block is translated to FileExistsNoBlockError, not this first-adoption signal.",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 2452,
+          "end": 2504,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 2830,
+          "end": 2851,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 3282,
+          "end": 3309,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        }
+      ],
+      "callee_witnesses": [],
+      "limits": "Reasoned source conformance only; no executed test, real Git/host/file/remote/publication outcome is asserted."
+    },
+    {
+      "cell": "disposition:transitions:S42:02",
+      "frozen_row_sha256": "07e4f46ab798b6cb3d6897cf11db0c780dcedef198fa854994bfc9372b486d38",
+      "frozen_baseline": {
+        "event": "load targets",
+        "guard": "exact single valid block, required keys, disjoint prefixes and valid policies",
+        "to": "configured",
+        "effects": "Parse deterministic target rows; latest-eligible target at most one.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "core/pysrc/_releaselib.py",
+            "symbol": "load_targets, parse_release_targets, select_release_target*, backfill helpers:1105-1209;1986-2534;2535-2697;2822-2845",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_releaselib.py"
+          }
+        ],
+        "from": "file exists",
+        "transition_id": "S42:02"
+      },
+      "current_status": "PLANNED",
+      "source_conformance_result": "PRESERVED",
+      "assessment": "Exactly one opening delimiter and a genuine closing line are required. Headers and key grammar are explicit, required prefix/changelog/payload must be nonblank; safe prefixes, semver/numeric-sequence policy, writable surfaces, paired build/assets and reconciliation paths validate before rows return. Cross-row prefix overlaps and more than one latest-eligible=true refuse. List keys retain declaration order and scalar defaults are deterministic.",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 2268,
+          "end": 2449,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 2018,
+          "end": 2104,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 1994,
+          "end": 2015,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 2113,
+          "end": 2142,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 339,
+          "end": 361,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        }
+      ],
+      "callee_witnesses": [],
+      "limits": "Reasoned source conformance only; no executed test, real Git/host/file/remote/publication outcome is asserted."
+    },
+    {
+      "cell": "disposition:transitions:S42:03",
+      "frozen_row_sha256": "f5f64b773a8f4a3fd6ca44e390a4286906a10d6de304bffafa952ad9bb5f82dc",
+      "frozen_baseline": {
+        "event": "missing/empty/malformed/duplicate/unknown keys",
+        "guard": "invalid declaration",
+        "to": "malformed/empty exit 4",
+        "effects": "Stop; existing invalid file does not trigger automatic backfill.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "core/pysrc/_releaselib.py",
+            "symbol": "load_targets, parse_release_targets, select_release_target*, backfill helpers:1105-1209;1986-2534;2535-2697;2822-2845",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_releaselib.py"
+          }
+        ],
+        "from": "file exists",
+        "transition_id": "S42:03"
+      },
+      "current_status": "PLANNED",
+      "source_conformance_result": "PRESERVED",
+      "assessment": "Empty/missing closing delimiter, duplicate opener/target/scalar key, unknown key, invalid boolean/policy or required field raises a declared non-Absent error and CLI exit4. Existing no-block or unreadable/non-UTF8 files likewise refuse with4; only genuinely absent file selects3, so malformed existing declarations cannot invoke automatic backfill.",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 2452,
+          "end": 2504,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 2268,
+          "end": 2449,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 2018,
+          "end": 2104,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 2830,
+          "end": 2851,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 3282,
+          "end": 3309,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        }
+      ],
+      "callee_witnesses": [],
+      "limits": "Reasoned source conformance only; no executed test, real Git/host/file/remote/publication outcome is asserted."
+    },
+    {
+      "cell": "disposition:transitions:S42:04",
+      "frozen_row_sha256": "7115845b8f5ba82cf23ee0e66a42d0ef2a77168c158c79adf25b5372eaabed18",
+      "frozen_baseline": {
+        "event": "select by explicit name/confirmation",
+        "guard": "exactly one chosen declared target",
+        "to": "selected",
+        "effects": "Return selected target contract and policy.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "core/pysrc/_releaselib.py",
+            "symbol": "load_targets, parse_release_targets, select_release_target*, backfill helpers:1105-1209;1986-2534;2535-2697;2822-2845",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_releaselib.py"
+          }
+        ],
+        "from": "configured",
+        "transition_id": "S42:04"
+      },
+      "current_status": "PLANNED",
+      "source_conformance_result": "PRESERVED",
+      "assessment": "Named selection accepts exactly one nonblank known name=value; positional selection requires matching arity and exactly one nonblank string confirmation. Only that supplied declared target name returns. These pure functions select no branch/path heuristic and perform no publication.",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 1105,
+          "end": 1164,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 1167,
+          "end": 1207,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        }
+      ],
+      "callee_witnesses": [],
+      "limits": "Reasoned source conformance only; no executed test, real Git/host/file/remote/publication outcome is asserted."
+    },
+    {
+      "cell": "disposition:transitions:S42:05",
+      "frozen_row_sha256": "40f3d17522760086254b28efadcb59e3b5375d295ce3e1f2fd909b3d94c8fe8a",
+      "frozen_baseline": {
+        "event": "unknown/no/multiple selection",
+        "guard": "cannot choose uniquely",
+        "to": "selection pending/refused",
+        "effects": "Require explicit valid target; do not infer from branch/file names.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "core/pysrc/_releaselib.py",
+            "symbol": "load_targets, parse_release_targets, select_release_target*, backfill helpers:1105-1209;1986-2534;2535-2697;2822-2845",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_releaselib.py"
+          }
+        ],
+        "from": "configured",
+        "transition_id": "S42:05"
+      },
+      "current_status": "PLANNED",
+      "source_conformance_result": "PRESERVED",
+      "assessment": "Unknown named target refuses as unknown, empty selection returns none, duplicated/multiple selected confirmations return multiple; positional wrong shape returns arity. No fallback to the first target or a branch/file-derived name occurs.",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 1105,
+          "end": 1164,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 1167,
+          "end": 1207,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        }
+      ],
+      "callee_witnesses": [],
+      "limits": "Reasoned source conformance only; no executed test, real Git/host/file/remote/publication outcome is asserted."
+    },
+    {
+      "cell": "disposition:transitions:S42:06",
+      "frozen_row_sha256": "ef6f32f8de1c7b284372ab4c0137471b91ab875ebf837e691ab17f3a900c6bc2",
+      "frozen_baseline": {
+        "event": "scan top-level sources",
+        "guard": "one manifest and one changelog candidate or unambiguous supported shape",
+        "to": "backfill proposal",
+        "effects": "Produce block using declared defaults (app-v prefix/latest eligibility and payload exclusion); no automatic file write in helper.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "core/pysrc/_releaselib.py",
+            "symbol": "load_targets, parse_release_targets, select_release_target*, backfill helpers:1105-1209;1986-2534;2535-2697;2822-2845",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_releaselib.py"
+          }
+        ],
+        "from": "backfill eligible",
+        "transition_id": "S42:06"
+      },
+      "current_status": "PLANNED",
+      "source_conformance_result": "PRESERVED",
+      "assessment": "Top-level listing is intersected with fixed supported manifest/changelog names. Exactly one of each yields only a proposal: target app, prefix v, payload dot, exclusion .codearbiter/, latest-eligible true and declared reconciliation path. The frozen phrase app-v denotes app target/v prefix; no literal app-v prefix is invented. Formatter/CLI prints the block; it does not write a declaration file.",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 2552,
+          "end": 2572,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 2575,
+          "end": 2647,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 2650,
+          "end": 2681,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 4184,
+          "end": 4193,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 2528,
+          "end": 2540,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        }
+      ],
+      "callee_witnesses": [],
+      "limits": "Reasoned source conformance only; no executed test, real Git/host/file/remote/publication outcome is asserted."
+    },
+    {
+      "cell": "disposition:transitions:S42:07",
+      "frozen_row_sha256": "57e446b791c9cdd2cb2e9c68acaf22f020fc1e0ff6ab4ad210f41b8c90421849",
+      "frozen_baseline": {
+        "event": "ambiguous candidates",
+        "guard": "multiple plausible manifest/changelog sources",
+        "to": "ambiguous stop",
+        "effects": "Return precise candidates; no arbitrary selection.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "core/pysrc/_releaselib.py",
+            "symbol": "load_targets, parse_release_targets, select_release_target*, backfill helpers:1105-1209;1986-2534;2535-2697;2822-2845",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_releaselib.py"
+          }
+        ],
+        "from": "backfill eligible",
+        "transition_id": "S42:07"
+      },
+      "current_status": "PLANNED",
+      "source_conformance_result": "PRESERVED",
+      "assessment": "Zero or multiple supported candidates fail the exact-one checks with counts and candidate names; backfill CLI catches BackfillAmbiguousError and returns1. Neither scan nor detector arbitrarily chooses a manifest/changelog or writes a file. A listing error becomes zero candidates and also refuses.",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 2552,
+          "end": 2572,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 2575,
+          "end": 2647,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 4184,
+          "end": 4193,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        }
+      ],
+      "callee_witnesses": [],
+      "limits": "Reasoned source conformance only; no executed test, real Git/host/file/remote/publication outcome is asserted."
+    },
+    {
+      "cell": "disposition:transitions:S43:01",
+      "frozen_row_sha256": "30f05333768e841b34a55cdceb25c3e5332fa93c3fe21bd6e3dffa08b15ade5c",
+      "frozen_baseline": {
+        "event": "select last tag",
+        "guard": "matching target prefix and policy",
+        "to": "candidate baseline",
+        "effects": "Choose highest version, not first lexical or newest timestamp.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "core/pysrc/_releaselib.py",
+            "symbol": "last_tag_select*, verify_tag_ancestor, classify_commit/window, reconciliation, derive_version:554-849;1269-1744;1745-1821",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_releaselib.py"
+          }
+        ],
+        "from": "baseline unresolved",
+        "transition_id": "S43:01"
+      },
+      "current_status": "PLANNED",
+      "source_conformance_result": "PRESERVED",
+      "assessment": "The supplied tag population is filtered by the exact escaped target prefix and declared policy; highest numeric version tuple wins. Semver release scan excludes prerelease/build suffixes; numeric sequence requires the declared component width. Input order, timestamps and lexicographic tag order do not select the baseline; no match yields the none sentinel.",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 633,
+          "end": 669,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 725,
+          "end": 743,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 407,
+          "end": 414,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 693,
+          "end": 704,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        }
+      ],
+      "callee_witnesses": [],
+      "limits": "Reasoned source conformance only; no executed test, real Git/host/file/remote/publication outcome is asserted."
+    },
+    {
+      "cell": "disposition:transitions:S43:02",
+      "frozen_row_sha256": "2324ae07955ba0435ff7f79950fed3d0210e135c9a30c732d23ecdf9ba6657c8",
+      "frozen_baseline": {
+        "event": "verify ancestry",
+        "guard": "tag resolves and is ancestor of candidate",
+        "to": "baseline verified",
+        "effects": "Use that baseline for exact change window.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "core/pysrc/_releaselib.py",
+            "symbol": "last_tag_select*, verify_tag_ancestor, classify_commit/window, reconciliation, derive_version:554-849;1269-1744;1745-1821",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_releaselib.py"
+          }
+        ],
+        "from": "candidate baseline",
+        "transition_id": "S43:02"
+      },
+      "current_status": "PLANNED",
+      "source_conformance_result": "PRESERVED",
+      "assessment": "The candidate tag and candidate ref must be nonempty/nonoption/NUL-free. Selected Git merge-base --is-ancestor uses a scrubbed repository-selection environment and30s timeout; only return0 means ancestor. CLI accepts ancestor (or explicit no-tag sentinel) and otherwise refuses. Actual Git availability/ancestry is not asserted by this source review.",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 752,
+          "end": 847,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 958,
+          "end": 972,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 3328,
+          "end": 3353,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        }
+      ],
+      "callee_witnesses": [
+        {
+          "path": "core/pysrc/_gitexec.py",
+          "start": 102,
+          "end": 111,
+          "file_sha256": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5"
+        },
+        {
+          "path": "core/pysrc/_gitexec.py",
+          "start": 114,
+          "end": 115,
+          "file_sha256": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5"
+        },
+        {
+          "path": "core/pysrc/_gitexec.py",
+          "start": 122,
+          "end": 123,
+          "file_sha256": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5"
+        }
+      ],
+      "limits": "Reasoned source conformance only; no executed test, real Git/host/file/remote/publication outcome is asserted."
+    },
+    {
+      "cell": "disposition:transitions:S43:03",
+      "frozen_row_sha256": "51b48def8302c942dde94fa0b6db7b0080b8c550b29eeeffff2e31098ef872dc",
+      "frozen_baseline": {
+        "event": "not ancestor/unresolvable",
+        "guard": "highest candidate invalid",
+        "to": "refused",
+        "effects": "Do not silently select an older tag to make release proceed.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "core/pysrc/_releaselib.py",
+            "symbol": "last_tag_select*, verify_tag_ancestor, classify_commit/window, reconciliation, derive_version:554-849;1269-1744;1745-1821",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_releaselib.py"
+          }
+        ],
+        "from": "candidate baseline",
+        "transition_id": "S43:03"
+      },
+      "current_status": "PLANNED",
+      "source_conformance_result": "PRESERVED",
+      "assessment": "Selected highest tag ancestry returns not-ancestor on Git1 and unresolvable on other failures/timeout/launch errors. CLI exits1 or2 respectively; it does not rescan for a convenient older tag, move/delete a tag, or publish anything.",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 752,
+          "end": 847,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 3351,
+          "end": 3373,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        }
+      ],
+      "callee_witnesses": [
+        {
+          "path": "core/pysrc/_gitexec.py",
+          "start": 102,
+          "end": 111,
+          "file_sha256": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5"
+        },
+        {
+          "path": "core/pysrc/_gitexec.py",
+          "start": 114,
+          "end": 115,
+          "file_sha256": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5"
+        },
+        {
+          "path": "core/pysrc/_gitexec.py",
+          "start": 122,
+          "end": 123,
+          "file_sha256": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5"
+        }
+      ],
+      "limits": "Reasoned source conformance only; no executed test, real Git/host/file/remote/publication outcome is asserted."
+    },
+    {
+      "cell": "disposition:transitions:S43:04",
+      "frozen_row_sha256": "05b16254c368eb2a16d01c0e6e1a1af9d69485ce1f975c68135e71129cacef91",
+      "frozen_baseline": {
+        "event": "classify window",
+        "guard": "exact commits and terminal footer assertions",
+        "to": "change window classified",
+        "effects": "Conventional commit bump precedence major > minor > patch; only terminal paragraph footer parsed as release assertion.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "core/pysrc/_releaselib.py",
+            "symbol": "last_tag_select*, verify_tag_ancestor, classify_commit/window, reconciliation, derive_version:554-849;1269-1744;1745-1821",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_releaselib.py"
+          }
+        ],
+        "from": "baseline verified",
+        "transition_id": "S43:04"
+      },
+      "current_status": "PLANNED",
+      "source_conformance_result": "PRESERVED",
+      "assessment": "NUL-framed supplied log records require exact full commit IDs in triples before classification. Conventional subject types/bang plus terminal paragraph BREAKING CHANGE determine bump; only exactly one nonblank terminal CHANGELOG assertion counts. Rank reduction major>minor>patch>none selects the window. Source review proves parsing/selection conditional on supplied log, not completeness of an actual repository history acquisition.",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 1655,
+          "end": 1679,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 1277,
+          "end": 1282,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 1476,
+          "end": 1522,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 1525,
+          "end": 1583,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 3512,
+          "end": 3537,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 3627,
+          "end": 3652,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        }
+      ],
+      "callee_witnesses": [],
+      "limits": "Reasoned source conformance only; no executed test, real Git/host/file/remote/publication outcome is asserted."
+    },
+    {
+      "cell": "disposition:transitions:S43:05",
+      "frozen_row_sha256": "e800d9c0ca74d414275fdb87ff97f0c9445ef61df2912eddeed1372b08f6bc4e",
+      "frozen_baseline": {
+        "event": "bumping commit lacks required footer",
+        "guard": "no eligible published-SHA reconciliation",
+        "to": "footer missing exit 1",
+        "effects": "Refuse release derivation until provenance obligation resolved.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "core/pysrc/_releaselib.py",
+            "symbol": "last_tag_select*, verify_tag_ancestor, classify_commit/window, reconciliation, derive_version:554-849;1269-1744;1745-1821",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_releaselib.py"
+          }
+        ],
+        "from": "change window classified",
+        "transition_id": "S43:05"
+      },
+      "current_status": "PLANNED",
+      "source_conformance_result": "PRESERVED",
+      "assessment": "Every bumping commit without a genuine terminal CHANGELOG or exact eligible published reconciliation appears in missing_footer. CLI emits named triage rows and exits1 before any nonbumping/success result. It does not fabricate provenance or alter commit bodies.",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 1525,
+          "end": 1583,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 3627,
+          "end": 3652,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        }
+      ],
+      "callee_witnesses": [],
+      "limits": "Reasoned source conformance only; no executed test, real Git/host/file/remote/publication outcome is asserted."
+    },
+    {
+      "cell": "disposition:transitions:S43:06",
+      "frozen_row_sha256": "48a66463140fa7353d1b807e35f0d67f29988788657cc8ac1cdea08936faeb0d",
+      "frozen_baseline": {
+        "event": "reconciliation eligible",
+        "guard": "exact published SHA ledger supplies missing assertion",
+        "to": "change window classified",
+        "effects": "Fill missing footer evidence only; do not change bump type.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "core/pysrc/_releaselib.py",
+            "symbol": "last_tag_select*, verify_tag_ancestor, classify_commit/window, reconciliation, derive_version:554-849;1269-1744;1745-1821",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_releaselib.py"
+          }
+        ],
+        "from": "change window classified",
+        "transition_id": "S43:06"
+      },
+      "current_status": "PLANNED",
+      "source_conformance_result": "PRESERVED",
+      "assessment": "Closed unique JSON ledger requires schema1 and exact target/commit/changelog/reason/authorization fields. The committed regular bounded1MiB ledger is read from the resolved published default-branch commit; each selected reconciliation SHA must actually be its ancestor. Only matching missing assertion text is filled; classify_commit still supplies the original bump type and no author/publish assertion is manufactured.",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 1586,
+          "end": 1652,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 2735,
+          "end": 2814,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 1525,
+          "end": 1583,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 3555,
+          "end": 3625,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        }
+      ],
+      "callee_witnesses": [
+        {
+          "path": "core/pysrc/_gitexec.py",
+          "start": 102,
+          "end": 111,
+          "file_sha256": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5"
+        },
+        {
+          "path": "core/pysrc/_gitexec.py",
+          "start": 114,
+          "end": 115,
+          "file_sha256": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5"
+        },
+        {
+          "path": "core/pysrc/_gitexec.py",
+          "start": 122,
+          "end": 123,
+          "file_sha256": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5"
+        }
+      ],
+      "limits": "Reasoned source conformance only; no executed test, real Git/host/file/remote/publication outcome is asserted."
+    },
+    {
+      "cell": "disposition:transitions:S43:07",
+      "frozen_row_sha256": "e569c52b413284c27f97d140bd05d547f22191bebaebe3974100596ee0a4d7d5",
+      "frozen_baseline": {
+        "event": "no bumping payload changes",
+        "guard": "all nonbumping",
+        "to": "nonbumping exit 2",
+        "effects": "No release version manufactured.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "core/pysrc/_releaselib.py",
+            "symbol": "last_tag_select*, verify_tag_ancestor, classify_commit/window, reconciliation, derive_version:554-849;1269-1744;1745-1821",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_releaselib.py"
+          }
+        ],
+        "from": "change window classified",
+        "transition_id": "S43:07"
+      },
+      "current_status": "PLANNED",
+      "source_conformance_result": "PRESERVED",
+      "assessment": "After missing-footer refusal is considered, a window whose classified bump remains none returns CLI2. No successor version is produced by this branch; publication is outside the classifier.",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 1525,
+          "end": 1583,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 3648,
+          "end": 3652,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        }
+      ],
+      "callee_witnesses": [],
+      "limits": "Reasoned source conformance only; no executed test, real Git/host/file/remote/publication outcome is asserted."
+    },
+    {
+      "cell": "disposition:transitions:S43:08",
+      "frozen_row_sha256": "ebe49685271f1d6ffc7d1829199f3650e724c6635091c248de35460c05f379a7",
+      "frozen_baseline": {
+        "event": "bump available",
+        "guard": "valid semver or declared numeric-sequence policy",
+        "to": "bump derived",
+        "effects": "Apply policy-specific successor; preserve legitimate difference between semver and numeric sequence.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "core/pysrc/_releaselib.py",
+            "symbol": "last_tag_select*, verify_tag_ancestor, classify_commit/window, reconciliation, derive_version:554-849;1269-1744;1745-1821",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_releaselib.py"
+          }
+        ],
+        "from": "change window classified",
+        "transition_id": "S43:08"
+      },
+      "current_status": "PLANNED",
+      "source_conformance_result": "PRESERVED",
+      "assessment": "Plain semver major/minor/patch arithmetic resets subordinate components as declared; numeric-sequence uses fixed component count/initial floor and increments only the final component, returning the initial version for a no-baseline first release. Unknown policies, invalid bases and none bump refuse; the distinct policies are not collapsed.",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 1753,
+          "end": 1785,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 1788,
+          "end": 1809,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 693,
+          "end": 704,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 4062,
+          "end": 4098,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        }
+      ],
+      "callee_witnesses": [],
+      "limits": "Reasoned source conformance only; no executed test, real Git/host/file/remote/publication outcome is asserted."
+    },
+    {
+      "cell": "disposition:transitions:S43:09",
+      "frozen_row_sha256": "f6a6cd66a0862fdfcc4cf833c3cf4065cba71098e6ee436ac34c0fc2aa719cea",
+      "frozen_baseline": {
+        "event": "first release baseline",
+        "guard": "adoption log identifies supported baseline",
+        "to": "baseline verified",
+        "effects": "Use first-adoption boundary, not arbitrary repository first commit.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "core/pysrc/_releaselib.py",
+            "symbol": "last_tag_select*, verify_tag_ancestor, classify_commit/window, reconciliation, derive_version:554-849;1269-1744;1745-1821",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_releaselib.py"
+          }
+        ],
+        "from": "no previous release",
+        "transition_id": "S43:09"
+      },
+      "current_status": "PLANNED",
+      "source_conformance_result": "PRESERVED",
+      "assessment": "The supplied adoption-log ordered lines select their last nonblank SHA-like entry (the documented oldest adoption boundary). Empty/malformed input returns no baseline. No repository-first-commit fallback or new Git/history effect exists; correctness of the supplied log order remains caller-owned.",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 1682,
+          "end": 1719,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 3654,
+          "end": 3667,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        }
+      ],
+      "callee_witnesses": [],
+      "limits": "Reasoned source conformance only; no executed test, real Git/host/file/remote/publication outcome is asserted."
+    },
+    {
+      "cell": "disposition:transitions:S44:01",
+      "frozen_row_sha256": "3aa28a3def9287e2865c0466f189b39161312aa06437991a353b3f59bc1e8802",
+      "frozen_baseline": {
+        "event": "classify publish",
+        "guard": "no conflicting existing tag",
+        "to": "fresh publish",
+        "effects": "Return fresh path; helper itself creates no tag/release.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "core/pysrc/_releaselib.py",
+            "symbol": "classify_publish_state, classify_merge_readiness:1075-1104;1210-1268",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_releaselib.py"
+          }
+        ],
+        "from": "tag absent",
+        "transition_id": "S44:01"
+      },
+      "current_status": "TESTED",
+      "source_conformance_result": "PRESERVED",
+      "assessment": "Absent tag returns publish_fresh before consulting later present-tag branches. Pure returned plan label creates no tag/release or remote side effect.",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 1075,
+          "end": 1102,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        }
+      ],
+      "callee_witnesses": [],
+      "limits": "Reasoned source conformance only; no executed test, real Git/host/file/remote/publication outcome is asserted."
+    },
+    {
+      "cell": "disposition:transitions:S44:02",
+      "frozen_row_sha256": "90d0ba14d62bdb6b0a8524d5521a6831171ee9729b17ee89f9fb9e5c8433dee9",
+      "frozen_baseline": {
+        "event": "classify publish",
+        "guard": "tag SHA or version differs from candidate",
+        "to": "abort mismatch",
+        "effects": "Abort even if a release is already published; published state does not waive identity mismatch.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "core/pysrc/_releaselib.py",
+            "symbol": "classify_publish_state, classify_merge_readiness:1075-1104;1210-1268",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_releaselib.py"
+          }
+        ],
+        "from": "tag present",
+        "transition_id": "S44:02"
+      },
+      "current_status": "TESTED",
+      "source_conformance_result": "PRESERVED",
+      "assessment": "With tag present, unequal candidate SHA or version returns abort_mismatch before checking nondraft status. An already-public release does not waive identity mismatch.",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 1075,
+          "end": 1102,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        }
+      ],
+      "callee_witnesses": [],
+      "limits": "Reasoned source conformance only; no executed test, real Git/host/file/remote/publication outcome is asserted."
+    },
+    {
+      "cell": "disposition:transitions:S44:03",
+      "frozen_row_sha256": "ac9f63a7f1777c2e5d9d15d8f1202225c239d1dd8794f52810ac47c2dc9c1e83",
+      "frozen_baseline": {
+        "event": "classify publish",
+        "guard": "release published and nondraft",
+        "to": "already published",
+        "effects": "No publish operation needed for this classifier.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "core/pysrc/_releaselib.py",
+            "symbol": "classify_publish_state, classify_merge_readiness:1075-1104;1210-1268",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_releaselib.py"
+          }
+        ],
+        "from": "tag present matching",
+        "transition_id": "S44:03"
+      },
+      "current_status": "TESTED",
+      "source_conformance_result": "PRESERVED",
+      "assessment": "Only present tag with matching SHA/version and true nondraft observation returns already_published. This classifier does not publish or assert authenticated API acquisition.",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 1075,
+          "end": 1102,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        }
+      ],
+      "callee_witnesses": [],
+      "limits": "Reasoned source conformance only; no executed test, real Git/host/file/remote/publication outcome is asserted."
+    },
+    {
+      "cell": "disposition:transitions:S44:04",
+      "frozen_row_sha256": "3bc09fe5b814c4c35eabe0da91f9c85c64b4852a6f2304d09ff65e734b566a77",
+      "frozen_baseline": {
+        "event": "classify publish",
+        "guard": "release missing/unpublished/draft",
+        "to": "resume publish",
+        "effects": "Permit completion path under exact same tag identity; do not create another tag.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "core/pysrc/_releaselib.py",
+            "symbol": "classify_publish_state, classify_merge_readiness:1075-1104;1210-1268",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_releaselib.py"
+          }
+        ],
+        "from": "tag present matching",
+        "transition_id": "S44:04"
+      },
+      "current_status": "TESTED",
+      "source_conformance_result": "PRESERVED",
+      "assessment": "Matching present tag with false nondraft state returns resume_publish. This is a completion label under the same identity, not permission to create a second tag or execute effects.",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 1075,
+          "end": 1102,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        }
+      ],
+      "callee_witnesses": [],
+      "limits": "Reasoned source conformance only; no executed test, real Git/host/file/remote/publication outcome is asserted."
+    },
+    {
+      "cell": "disposition:transitions:S44:05",
+      "frozen_row_sha256": "b1ff4b1fd2c229e04aa1fa30e6ef1ff052536c42d9bc7d80a622979655e46da6",
+      "frozen_baseline": {
+        "event": "classify checks",
+        "guard": "no exact required name",
+        "to": "checks missing",
+        "effects": "Return missing; similarly named checks do not qualify.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "core/pysrc/_releaselib.py",
+            "symbol": "classify_publish_state, classify_merge_readiness:1075-1104;1210-1268",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_releaselib.py"
+          }
+        ],
+        "from": "merge readiness unknown",
+        "transition_id": "S44:05"
+      },
+      "current_status": "TESTED",
+      "source_conformance_result": "PRESERVED",
+      "assessment": "Check-run container and required name must be valid, and matching is exact name equality. No exact match returns missing; similarly named checks never qualify. The accepted binding repair additionally rejects blank/invalid required names.",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 1210,
+          "end": 1252,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        }
+      ],
+      "callee_witnesses": [],
+      "limits": "Reasoned source conformance only; no executed test, real Git/host/file/remote/publication outcome is asserted."
+    },
+    {
+      "cell": "disposition:transitions:S44:06",
+      "frozen_row_sha256": "5c006009596e01ff586d8e35a46f7d50b828194d3cb796def3b6c4525b1e5b20",
+      "frozen_baseline": {
+        "event": "classify checks",
+        "guard": "any matching check on wrong SHA",
+        "to": "checks wrong head",
+        "effects": "Refuse stale-head success.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "core/pysrc/_releaselib.py",
+            "symbol": "classify_publish_state, classify_merge_readiness:1075-1104;1210-1268",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_releaselib.py"
+          }
+        ],
+        "from": "merge readiness unknown",
+        "transition_id": "S44:06"
+      },
+      "current_status": "TESTED",
+      "source_conformance_result": "PRESERVED",
+      "assessment": "Candidate must be full canonical lowercase40/64-hex and every exact-name run must report that exact SHA; any mismatch returns sha_mismatch. This strengthens invalid-input refusal without changing the frozen valid-identity branch.",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 1210,
+          "end": 1252,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        }
+      ],
+      "callee_witnesses": [],
+      "limits": "Reasoned source conformance only; no executed test, real Git/host/file/remote/publication outcome is asserted."
+    },
+    {
+      "cell": "disposition:transitions:S44:07",
+      "frozen_row_sha256": "1d0afb2169ce692a4c2b446ed177d2c897c34bde218008f9ddd5bef1de0ad8e8",
+      "frozen_baseline": {
+        "event": "classify checks",
+        "guard": "matching exact-head check incomplete",
+        "to": "checks pending",
+        "effects": "Wait; do not infer success from another completed duplicate.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "core/pysrc/_releaselib.py",
+            "symbol": "classify_publish_state, classify_merge_readiness:1075-1104;1210-1268",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_releaselib.py"
+          }
+        ],
+        "from": "merge readiness unknown",
+        "transition_id": "S44:07"
+      },
+      "current_status": "TESTED",
+      "source_conformance_result": "PRESERVED",
+      "assessment": "After SHA conjunction, any matching run whose status is not completed returns pending before testing conclusions. Thus a completed green duplicate cannot conceal a queued/in-progress duplicate.",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 1210,
+          "end": 1252,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        }
+      ],
+      "callee_witnesses": [],
+      "limits": "Reasoned source conformance only; no executed test, real Git/host/file/remote/publication outcome is asserted."
+    },
+    {
+      "cell": "disposition:transitions:S44:08",
+      "frozen_row_sha256": "4611e869af60d6dc9e375c7bbe0b4fdb0df2815ed56aa7b2dfbbc94a1c79b62a",
+      "frozen_baseline": {
+        "event": "classify checks",
+        "guard": "any matching complete result not SUCCESS",
+        "to": "checks failed",
+        "effects": "Refuse neutral/skipped/failure/cancelled outcomes.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "core/pysrc/_releaselib.py",
+            "symbol": "classify_publish_state, classify_merge_readiness:1075-1104;1210-1268",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_releaselib.py"
+          }
+        ],
+        "from": "merge readiness unknown",
+        "transition_id": "S44:08"
+      },
+      "current_status": "TESTED",
+      "source_conformance_result": "PRESERVED",
+      "assessment": "After every matching run completed, any conclusion other than literal success returns not_successful, including failure/cancelled/neutral/skipped/null. No alternate completed result is treated as green.",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 1210,
+          "end": 1252,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        }
+      ],
+      "callee_witnesses": [],
+      "limits": "Reasoned source conformance only; no executed test, real Git/host/file/remote/publication outcome is asserted."
+    },
+    {
+      "cell": "disposition:transitions:S44:09",
+      "frozen_row_sha256": "5bad935b8aabbbd4aa9269bc31cbe06abbf1e793ecb0bbc454ab46e2fff21247",
+      "frozen_baseline": {
+        "event": "classify checks",
+        "guard": "all matching exact-name exact-head checks complete SUCCESS",
+        "to": "merge ready",
+        "effects": "Return readiness evidence; merger side effect remains outside helper.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "core/pysrc/_releaselib.py",
+            "symbol": "classify_publish_state, classify_merge_readiness:1075-1104;1210-1268",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_releaselib.py"
+          }
+        ],
+        "from": "merge readiness unknown",
+        "transition_id": "S44:09"
+      },
+      "current_status": "TESTED",
+      "source_conformance_result": "PRESERVED",
+      "assessment": "Green is reachable only after nonempty exact-name population, canonical full candidate SHA, all identical reported heads, all completed statuses and all literal success conclusions. The function returns evidence classification only; merge/authority/publication effects remain outside it.",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 1210,
+          "end": 1252,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        }
+      ],
+      "callee_witnesses": [],
+      "limits": "Reasoned source conformance only; no executed test, real Git/host/file/remote/publication outcome is asserted."
+    },
+    {
+      "cell": "disposition:transitions:S45:01",
+      "frozen_row_sha256": "5687ff0d569d9fbb843e7e62922dbb1fd5eb4b5d8de9e9f98a1e66ed34701ae9",
+      "frozen_baseline": {
+        "event": "read release notes",
+        "guard": "full 40/64-hex commit or explicit tag ref; normalized repository-relative path",
+        "to": "committed notes read",
+        "effects": "Read exact regular Git blob, not uncommitted working-tree changelog.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "core/pysrc/_releaselib.py",
+            "symbol": "committed changelog, section/date/asset verification:329-553;850-1074",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_releaselib.py"
+          }
+        ],
+        "from": "unverified",
+        "transition_id": "S45:01"
+      },
+      "current_status": "PLANNED",
+      "source_conformance_result": "PRESERVED",
+      "assessment": "Normalize a nonabsolute repository-relative path without empty/dotdot/drive/colon components; bind actual repository root. A full exact commit object or checked refs/tags name resolves to commit; exact-ID inputs must equal the resolved full commit. Exact single ls-tree regular blob mode100644/100755 at that path is read by object ID, strict UTF8; working-tree content is not used. All Git reads have30s timeout.",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 924,
+          "end": 937,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 975,
+          "end": 1072,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 958,
+          "end": 972,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 3394,
+          "end": 3427,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        }
+      ],
+      "callee_witnesses": [
+        {
+          "path": "core/pysrc/_gitexec.py",
+          "start": 102,
+          "end": 111,
+          "file_sha256": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5"
+        },
+        {
+          "path": "core/pysrc/_gitexec.py",
+          "start": 114,
+          "end": 115,
+          "file_sha256": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5"
+        },
+        {
+          "path": "core/pysrc/_gitexec.py",
+          "start": 122,
+          "end": 123,
+          "file_sha256": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5"
+        }
+      ],
+      "limits": "Reasoned source conformance only; no executed test, real Git/host/file/remote/publication outcome is asserted."
+    },
+    {
+      "cell": "disposition:transitions:S45:02",
+      "frozen_row_sha256": "eacca05e026982db95049d605bca5fb4a821ab49a609da94dcfbb7f37fce85a4",
+      "frozen_baseline": {
+        "event": "validate section",
+        "guard": "exact selected version/policy heading and supported schema",
+        "to": "notes consistent",
+        "effects": "Extract selected section; compare release/tag date assertions.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "core/pysrc/_releaselib.py",
+            "symbol": "committed changelog, section/date/asset verification:329-553;850-1074",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_releaselib.py"
+          }
+        ],
+        "from": "committed notes read",
+        "transition_id": "S45:02"
+      },
+      "current_status": "PLANNED",
+      "source_conformance_result": "PRESERVED",
+      "assessment": "Selected version must satisfy declared policy; all H2 boundaries enforce supported release heading grammar, one matching section, and at most one leading Unreleased. Notes first section must be the selected release. Date assertion requires a real ISO date matching exactly one terminal Released-at tag footer. Invalid/duplicate/absent sections remain distinct refusals.",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 494,
+          "end": 535,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 465,
+          "end": 480,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 850,
+          "end": 870,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 873,
+          "end": 900,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 3428,
+          "end": 3459,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        }
+      ],
+      "callee_witnesses": [],
+      "limits": "Reasoned source conformance only; no executed test, real Git/host/file/remote/publication outcome is asserted."
+    },
+    {
+      "cell": "disposition:transitions:S45:03",
+      "frozen_row_sha256": "c3ccc068737b9f7a793c9186631316ad51bd47cf5a09759febbd03d09c8d60c3",
+      "frozen_baseline": {
+        "event": "render asset templates",
+        "guard": "safe portable nonempty unique names",
+        "to": "expected inventory",
+        "effects": "Bind asset names to selected version/tag.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "core/pysrc/_releaselib.py",
+            "symbol": "committed changelog, section/date/asset verification:329-553;850-1074",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_releaselib.py"
+          }
+        ],
+        "from": "unverified assets",
+        "transition_id": "S45:03"
+      },
+      "current_status": "PLANNED",
+      "source_conformance_result": "PRESERVED",
+      "assessment": "Only version/tag placeholders and portable literal characters render; resulting nonempty names must match safe basename grammar, avoid trailing dots/Windows reserved basenames and duplicate casefolded names. Each expected name is concretely bound to supplied version/tag before return.",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 329,
+          "end": 336,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 339,
+          "end": 361,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        }
+      ],
+      "callee_witnesses": [],
+      "limits": "Reasoned source conformance only; no executed test, real Git/host/file/remote/publication outcome is asserted."
+    },
+    {
+      "cell": "disposition:transitions:S45:04",
+      "frozen_row_sha256": "1b67b28393b288171ab44f1b11ba926ca1ec846179cbb0ba05fe7516e666274b",
+      "frozen_baseline": {
+        "event": "verify assets",
+        "guard": "exact declared inventory; each bounded/nonempty regular file as required",
+        "to": "assets complete",
+        "effects": "Return verified inventory for caller publication.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "core/pysrc/_releaselib.py",
+            "symbol": "committed changelog, section/date/asset verification:329-553;850-1074",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_releaselib.py"
+          }
+        ],
+        "from": "expected inventory",
+        "transition_id": "S45:04"
+      },
+      "current_status": "PLANNED",
+      "source_conformance_result": "PRESERVED",
+      "assessment": "Directory must exist and not be a symlink; scanned names must exactly equal the declared case-sensitive and casefolded inventory with no collision. Each entry must be a nonlinked regular file of positive size. No universal maximum asset size exists in this contract; bounded-as-required is not converted into an invented byte cap. Returned paths are caller publication inputs, not a published result.",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 364,
+          "end": 404,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        }
+      ],
+      "callee_witnesses": [],
+      "limits": "Reasoned source conformance only; no executed test, real Git/host/file/remote/publication outcome is asserted."
+    },
+    {
+      "cell": "disposition:transitions:S45:05",
+      "frozen_row_sha256": "d499fd1bb11f526d28dacb921b840c06340ae34b8d0830f4c6e0ed55d0d75426",
+      "frozen_baseline": {
+        "event": "missing/extra/empty/linked/invalid note/date/path",
+        "guard": "guard fails",
+        "to": "refused",
+        "effects": "Stop before publication; no permissive filename-based guess.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "core/pysrc/_releaselib.py",
+            "symbol": "committed changelog, section/date/asset verification:329-553;850-1074",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_releaselib.py"
+          }
+        ],
+        "from": "any verification",
+        "transition_id": "S45:05"
+      },
+      "current_status": "PLANNED",
+      "source_conformance_result": "PRESERVED",
+      "assessment": "Missing/extra/colliding/linked/empty assets or unsafe names return refusal; invalid note/date/path/source checks do likewise before success. Helpers never guess an alternate filename or publish an asset. Filesystem/Git exceptions on the listed guarded reads are refused, not recast as matching evidence.",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 975,
+          "end": 1072,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 494,
+          "end": 535,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 873,
+          "end": 900,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 339,
+          "end": 361,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 364,
+          "end": 404,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 3394,
+          "end": 3459,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 4111,
+          "end": 4126,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 4128,
+          "end": 4154,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        }
+      ],
+      "callee_witnesses": [
+        {
+          "path": "core/pysrc/_gitexec.py",
+          "start": 102,
+          "end": 111,
+          "file_sha256": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5"
+        },
+        {
+          "path": "core/pysrc/_gitexec.py",
+          "start": 114,
+          "end": 115,
+          "file_sha256": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5"
+        },
+        {
+          "path": "core/pysrc/_gitexec.py",
+          "start": 122,
+          "end": 123,
+          "file_sha256": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5"
+        }
+      ],
+      "limits": "Reasoned source conformance only; no executed test, real Git/host/file/remote/publication outcome is asserted."
+    },
+    {
+      "cell": "disposition:transitions:S46:01",
+      "frozen_row_sha256": "3795dd91d996c8845d54fed26f5a6eb36decc1638a9e3be57131fd43f29db7b0",
+      "frozen_baseline": {
+        "event": "begin pre-tag checks",
+        "guard": "valid target and non-overlapping governance scratch exclusions",
+        "to": "command running",
+        "effects": "Snapshot tracked/untracked/index bytes/hashes excluding only admitted scratch; run ordered command via supported shell.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "core/pysrc/_releaselib.py",
+            "symbol": "pre-tag command CLI, shell resolution, governance_scratch_exclusions, release_tree_status:1822-1985;2105-2259;2846-4229",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_releaselib.py"
+          }
+        ],
+        "from": "snapshot pending",
+        "transition_id": "S46:01"
+      },
+      "current_status": "PLANNED",
+      "source_conformance_result": "PRESERVED",
+      "assessment": "Validated declared target selects only safe nonoverlapping fixed governance scratch exclusions; uncertain overlap keeps the path observed. Before ordered dispatch, _tree_state inventories tracked/untracked names, exact index headers and content/link/kind identities using SHA256 for regular files. Windows requires a located POSIX shell; other hosts use shell=True with PY bound to interpreter. No command runs when initial inventory/shell selection refuses.",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 2162,
+          "end": 2202,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 2113,
+          "end": 2142,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 2145,
+          "end": 2152,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 2155,
+          "end": 2159,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 1854,
+          "end": 1905,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 3687,
+          "end": 3781,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 3783,
+          "end": 3851,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 3866,
+          "end": 3922,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        }
+      ],
+      "callee_witnesses": [
+        {
+          "path": "core/pysrc/_gitexec.py",
+          "start": 102,
+          "end": 111,
+          "file_sha256": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5"
+        },
+        {
+          "path": "core/pysrc/_gitexec.py",
+          "start": 114,
+          "end": 115,
+          "file_sha256": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5"
+        },
+        {
+          "path": "core/pysrc/_gitexec.py",
+          "start": 122,
+          "end": 123,
+          "file_sha256": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5"
+        }
+      ],
+      "limits": "Reasoned source conformance only; no executed test, real Git/host/file/remote/publication outcome is asserted."
+    },
+    {
+      "cell": "disposition:transitions:S46:02",
+      "frozen_row_sha256": "098186e75f82c9fac4545df791b76b8458531d96d82367ca6398c044f8a65d80",
+      "frozen_baseline": {
+        "event": "nonzero exit",
+        "guard": "ordinary failure",
+        "to": "command failed exit 5",
+        "effects": "Stop at first failed command.",
+        "failure_retry": "No after-command hash check on this branch; failing command may have changed tree; no rollback is attempted.",
+        "source": [
+          {
+            "path": "core/pysrc/_releaselib.py",
+            "symbol": "pre-tag command CLI, shell resolution, governance_scratch_exclusions, release_tree_status:1822-1985;2105-2259;2846-4229",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_releaselib.py"
+          }
+        ],
+        "from": "command running",
+        "transition_id": "S46:02"
+      },
+      "current_status": "PLANNED",
+      "source_conformance_result": "PRESERVED",
+      "assessment": "After distinguishing launch-unavailable codes, the first ordinary nonzero command returns5 immediately. No after-command _tree_state occurs on this branch and no reset/rollback is attempted; a failed command may have changed files. Operator recovery prose is not an automatic discard effect.",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 1830,
+          "end": 1835,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 3923,
+          "end": 3962,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        }
+      ],
+      "callee_witnesses": [
+        {
+          "path": "core/pysrc/_gitexec.py",
+          "start": 102,
+          "end": 111,
+          "file_sha256": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5"
+        },
+        {
+          "path": "core/pysrc/_gitexec.py",
+          "start": 114,
+          "end": 115,
+          "file_sha256": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5"
+        },
+        {
+          "path": "core/pysrc/_gitexec.py",
+          "start": 122,
+          "end": 123,
+          "file_sha256": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5"
+        }
+      ],
+      "limits": "Reasoned source conformance only; no executed test, real Git/host/file/remote/publication outcome is asserted."
+    },
+    {
+      "cell": "disposition:transitions:S46:03",
+      "frozen_row_sha256": "3c0ce232fa526b6153e8feec1df7e90c0ced6ed1122c7471384dc2ec45ea6008",
+      "frozen_baseline": {
+        "event": "launch unavailable",
+        "guard": "126/127/9009 class",
+        "to": "could not run exit 7",
+        "effects": "Report command could not run, distinct from test failure.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "core/pysrc/_releaselib.py",
+            "symbol": "pre-tag command CLI, shell resolution, governance_scratch_exclusions, release_tree_status:1822-1985;2105-2259;2846-4229",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_releaselib.py"
+          }
+        ],
+        "from": "command running",
+        "transition_id": "S46:03"
+      },
+      "current_status": "PLANNED",
+      "source_conformance_result": "PRESERVED",
+      "assessment": "Exactly126/127/9009 classify could-not-run and exit7 before ordinary failure or after-state check. This is the declared launch-status classification, not proof no subprocess side effect occurred under an adversarial shell command.",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 1830,
+          "end": 1835,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 3923,
+          "end": 3946,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        }
+      ],
+      "callee_witnesses": [
+        {
+          "path": "core/pysrc/_gitexec.py",
+          "start": 102,
+          "end": 111,
+          "file_sha256": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5"
+        },
+        {
+          "path": "core/pysrc/_gitexec.py",
+          "start": 114,
+          "end": 115,
+          "file_sha256": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5"
+        },
+        {
+          "path": "core/pysrc/_gitexec.py",
+          "start": 122,
+          "end": 123,
+          "file_sha256": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5"
+        }
+      ],
+      "limits": "Reasoned source conformance only; no executed test, real Git/host/file/remote/publication outcome is asserted."
+    },
+    {
+      "cell": "disposition:transitions:S46:04",
+      "frozen_row_sha256": "88bd4093bf2547e213131398b745deb619a1080cdacfca483510b61ce04bf51c",
+      "frozen_baseline": {
+        "event": "Windows no POSIX shell",
+        "guard": "configured shell unavailable",
+        "to": "could not run exit 9",
+        "effects": "Refuse rather than reinterpret shell syntax.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "core/pysrc/_releaselib.py",
+            "symbol": "pre-tag command CLI, shell resolution, governance_scratch_exclusions, release_tree_status:1822-1985;2105-2259;2846-4229",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_releaselib.py"
+          }
+        ],
+        "from": "shell resolution",
+        "transition_id": "S46:04"
+      },
+      "current_status": "PLANNED",
+      "source_conformance_result": "PRESERVED",
+      "assessment": "On Windows with declared pre-tag commands, inability to resolve Git-for-Windows/PATH acceptable Bash returns9 before any command. System32/WindowsApps Bash paths are excluded; syntax is not silently reinterpreted through cmd.exe.",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 1854,
+          "end": 1905,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 3757,
+          "end": 3781,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        }
+      ],
+      "callee_witnesses": [
+        {
+          "path": "core/pysrc/_gitexec.py",
+          "start": 102,
+          "end": 111,
+          "file_sha256": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5"
+        },
+        {
+          "path": "core/pysrc/_gitexec.py",
+          "start": 114,
+          "end": 115,
+          "file_sha256": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5"
+        },
+        {
+          "path": "core/pysrc/_gitexec.py",
+          "start": 122,
+          "end": 123,
+          "file_sha256": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5"
+        }
+      ],
+      "limits": "Reasoned source conformance only; no executed test, real Git/host/file/remote/publication outcome is asserted."
+    },
+    {
+      "cell": "disposition:transitions:S46:05",
+      "frozen_row_sha256": "174cc5167ad6fdaf37be2c2e7d7e3fdfebf12b832cef5fd603ddfb6bd274844d",
+      "frozen_baseline": {
+        "event": "zero exit",
+        "guard": "command completed",
+        "to": "snapshot after command",
+        "effects": "Re-observe tracked/untracked/index content, not just git status.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "core/pysrc/_releaselib.py",
+            "symbol": "pre-tag command CLI, shell resolution, governance_scratch_exclusions, release_tree_status:1822-1985;2105-2259;2846-4229",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_releaselib.py"
+          }
+        ],
+        "from": "command running",
+        "transition_id": "S46:05"
+      },
+      "current_status": "PLANNED",
+      "source_conformance_result": "PRESERVED",
+      "assessment": "Each zero-exit command triggers fresh Git inventory/index/content identity acquisition. Comparison uses per-path kind/link target or regular-file SHA256 plus exact index headers, including hidden flags; a clean porcelain string alone cannot establish equivalence.",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 3783,
+          "end": 3851,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 3963,
+          "end": 3984,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        }
+      ],
+      "callee_witnesses": [
+        {
+          "path": "core/pysrc/_gitexec.py",
+          "start": 102,
+          "end": 111,
+          "file_sha256": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5"
+        },
+        {
+          "path": "core/pysrc/_gitexec.py",
+          "start": 114,
+          "end": 115,
+          "file_sha256": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5"
+        },
+        {
+          "path": "core/pysrc/_gitexec.py",
+          "start": 122,
+          "end": 123,
+          "file_sha256": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5"
+        }
+      ],
+      "limits": "Reasoned source conformance only; no executed test, real Git/host/file/remote/publication outcome is asserted."
+    },
+    {
+      "cell": "disposition:transitions:S46:06",
+      "frozen_row_sha256": "c852f5ae45090fbcf7327d85a0b3e23b46e9bb159805cc800dd496abc3d679e2",
+      "frozen_baseline": {
+        "event": "content/index changed",
+        "guard": "outside admitted scratch",
+        "to": "tree changed exit 6",
+        "effects": "Stop; retain actual modified tree for user inspection, no automatic reset.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "core/pysrc/_releaselib.py",
+            "symbol": "pre-tag command CLI, shell resolution, governance_scratch_exclusions, release_tree_status:1822-1985;2105-2259;2846-4229",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_releaselib.py"
+          }
+        ],
+        "from": "snapshot after command",
+        "transition_id": "S46:06"
+      },
+      "current_status": "PLANNED",
+      "source_conformance_result": "PRESERVED",
+      "assessment": "Any union-of-paths identity difference after zero exit returns6 with changed paths. It retains actual tree changes and does not call Git reset/checkout/rm; recovery instructions are only text, not executable repair.",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 3982,
+          "end": 4007,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        }
+      ],
+      "callee_witnesses": [
+        {
+          "path": "core/pysrc/_gitexec.py",
+          "start": 102,
+          "end": 111,
+          "file_sha256": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5"
+        },
+        {
+          "path": "core/pysrc/_gitexec.py",
+          "start": 114,
+          "end": 115,
+          "file_sha256": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5"
+        },
+        {
+          "path": "core/pysrc/_gitexec.py",
+          "start": 122,
+          "end": 123,
+          "file_sha256": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5"
+        }
+      ],
+      "limits": "Reasoned source conformance only; no executed test, real Git/host/file/remote/publication outcome is asserted."
+    },
+    {
+      "cell": "disposition:transitions:S46:07",
+      "frozen_row_sha256": "0ba53095e3563c3ce2181459b7ee9df10c4eaa56b12d1ea842c9300d3079c766",
+      "frozen_baseline": {
+        "event": "probe unavailable",
+        "guard": "cannot establish tree equivalence",
+        "to": "probe failed exit 8",
+        "effects": "Do not classify unknown as clean.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "core/pysrc/_releaselib.py",
+            "symbol": "pre-tag command CLI, shell resolution, governance_scratch_exclusions, release_tree_status:1822-1985;2105-2259;2846-4229",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_releaselib.py"
+          }
+        ],
+        "from": "snapshot after command",
+        "transition_id": "S46:07"
+      },
+      "current_status": "PLANNED",
+      "source_conformance_result": "PRESERVED",
+      "assessment": "Git inventory/index errors, declared malformed records/nonUTF8 paths and initial/after probe failures return8 rather than clean. Source faithfully retains existing absent-or-unreadable filesystem sentinel behavior inside snapshot; this is not broadened into a claim of complete OS-level unreadability detection.",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 3793,
+          "end": 3826,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 3866,
+          "end": 3883,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 3963,
+          "end": 3972,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        }
+      ],
+      "callee_witnesses": [
+        {
+          "path": "core/pysrc/_gitexec.py",
+          "start": 102,
+          "end": 111,
+          "file_sha256": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5"
+        },
+        {
+          "path": "core/pysrc/_gitexec.py",
+          "start": 114,
+          "end": 115,
+          "file_sha256": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5"
+        },
+        {
+          "path": "core/pysrc/_gitexec.py",
+          "start": 122,
+          "end": 123,
+          "file_sha256": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5"
+        }
+      ],
+      "limits": "Reasoned source conformance only; no executed test, real Git/host/file/remote/publication outcome is asserted."
+    },
+    {
+      "cell": "disposition:transitions:S46:08",
+      "frozen_row_sha256": "2574f54096c88763f6c53143acee8288b8c794b9b638f009c7726053a6ddddf6",
+      "frozen_baseline": {
+        "event": "same tree",
+        "guard": "commands remain",
+        "to": "next command then running",
+        "effects": "Advance ordered cursor.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "core/pysrc/_releaselib.py",
+            "symbol": "pre-tag command CLI, shell resolution, governance_scratch_exclusions, release_tree_status:1822-1985;2105-2259;2846-4229",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_releaselib.py"
+          }
+        ],
+        "from": "snapshot after command",
+        "transition_id": "S46:08"
+      },
+      "current_status": "PLANNED",
+      "source_conformance_result": "PRESERVED",
+      "assessment": "If the just-completed command has zero exit and no observed tree/index delta, the for-loop advances in declared command order; the next command is not launched on any prior refusal path. No retry or reorder branch exists.",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 3885,
+          "end": 3922,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 3963,
+          "end": 4007,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        }
+      ],
+      "callee_witnesses": [
+        {
+          "path": "core/pysrc/_gitexec.py",
+          "start": 102,
+          "end": 111,
+          "file_sha256": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5"
+        },
+        {
+          "path": "core/pysrc/_gitexec.py",
+          "start": 114,
+          "end": 115,
+          "file_sha256": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5"
+        },
+        {
+          "path": "core/pysrc/_gitexec.py",
+          "start": 122,
+          "end": 123,
+          "file_sha256": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5"
+        }
+      ],
+      "limits": "Reasoned source conformance only; no executed test, real Git/host/file/remote/publication outcome is asserted."
+    },
+    {
+      "cell": "disposition:transitions:S46:09",
+      "frozen_row_sha256": "f742ecf6a09bdb246d820ebb7e81bc2094847ff9d4d66940822ed35d543c5a12",
+      "frozen_baseline": {
+        "event": "same tree",
+        "guard": "last command passed",
+        "to": "passed",
+        "effects": "Return successful pre-tag gate.",
+        "failure_retry": "Commands themselves have no explicit runtime bound; Git helper probes use 30-second timeout.",
+        "source": [
+          {
+            "path": "core/pysrc/_releaselib.py",
+            "symbol": "pre-tag command CLI, shell resolution, governance_scratch_exclusions, release_tree_status:1822-1985;2105-2259;2846-4229",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_releaselib.py"
+          }
+        ],
+        "from": "snapshot after command",
+        "transition_id": "S46:09"
+      },
+      "current_status": "PLANNED",
+      "source_conformance_result": "PRESERVED",
+      "assessment": "After all declared commands pass and each observed state equals baseline, return0. Command subprocess.run calls have no explicit timeout; snapshot Git probes use30s. The separate Windows shell-discovery git --exec-path call also has no explicit timeout. These existing bounds/limitations remain explicit; no actual command execution or host release readiness is asserted.",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 2205,
+          "end": 2265,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 752,
+          "end": 847,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 1854,
+          "end": 1905,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 3793,
+          "end": 3806,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 3885,
+          "end": 4007,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        }
+      ],
+      "callee_witnesses": [
+        {
+          "path": "core/pysrc/_gitexec.py",
+          "start": 102,
+          "end": 111,
+          "file_sha256": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5"
+        },
+        {
+          "path": "core/pysrc/_gitexec.py",
+          "start": 114,
+          "end": 115,
+          "file_sha256": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5"
+        },
+        {
+          "path": "core/pysrc/_gitexec.py",
+          "start": 122,
+          "end": 123,
+          "file_sha256": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5"
+        }
+      ],
+      "limits": "Reasoned source conformance only; no executed test, real Git/host/file/remote/publication outcome is asserted."
+    }
+  ],
+  "pending_cells": [],
+  "known_boundary_notes": [
+    "No actual release, first-adoption backfill, tag mutation, pre-tag command or publication was performed.",
+    "S46 ordinary failure has no after-hash/rollback; command and shell-discovery execution have no explicit deadline.",
+    "S45 asset inventory enforces positive-size regular files; no maximum asset byte bound is invented.",
+    "Existing TESTED S44 edges remain unchanged; S44 machine proposal includes all nine clauses only as source context."
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "context_ref": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\pi39-current-actor-context.json",
+  "context_sha256": "f4d872499eb2d1bc47dae1a14708182bf358b2aa64c5ced0ce76053613478b09",
+  "source_epoch": "fb6124c4a7e2e799f044699b3be9a1e54ef56447",
+  "policy_export_sha256": "02e5e721b039df9a54686cc9ec82b8b6baedacff8f78cbfac4da2caec7b382ec",
+  "policy_html_sha256": "8630d1cad36de7b06a0a9360beea27a48b1642cc05a4547362a25ec8c9ec491e",
+  "correction": "Original task packet mislabeled HTML hash as JSON export hash. Corrected composed input consumed; no policy rule changed.",
+  "canonical_source_delivery": "docs/state-contracts-major/execution/evidence/installed-observer-repair/source-delivery.json",
+  "canonical_source_delivery_sha256": "d9155b74a7b14a706f02c6f82d2c80e6ee87f4a577a845e165db28fd6ee966e3",
+  "source_controls_use": "Existing reviewed63d3 and53/1 controls only corroborate matching bridge launch claims; not re-executed."
+}

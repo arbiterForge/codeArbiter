@@ -1,0 +1,263 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "/root/ci_repair_review: source-only author, no independent self-review or current runtime execution"
+ },
+ "inputs": {
+  ".codearbiter/decisions/0043-assistive-state-engine.md": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+  "core/pysrc/_tribunalrunlib.py": "c0381e0d22a0e25a22d7ac27adaf518724c322c92dd77b11014702d251fd2624",
+  "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e"
+ },
+ "disposition_ids": [
+  "disposition:machines:hooks:tribunal-lock-leads",
+  "disposition:transitions:hooks:tribunal-lock-leads:06"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/remaining-hooks60-source-2e09c637/source-bindings.json",
+   "sha256": "49ceb8835845eb0eb591600af4b0acb25cdc3292d9894e40d9460f362aa79b2f"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/remaining-hooks60-source-2e09c637/baseline-current-joins.json",
+   "sha256": "54c3a482febdb2c016750a70c275758a46538ea6aafde188aabdb94fd37ca260"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/remaining-hooks60-source-2e09c637/inherited-evidence-inventory.json",
+   "sha256": "eb2da6ec744f83648f1f08f0ce74a71b2799c54bc9a73a5b064217fe76efa4a7"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/remaining-hooks60-source-2e09c637/clause-inspection.json",
+   "sha256": "f1c5d66315d2fa44d366cc436ee35c931356edbc33da649c5fc0e1738202e8f7"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/remaining-hooks60-source-2e09c637/prune-repair-binding.json",
+   "sha256": "03f21fd5ac71cce6b28dcaa1a1b77f7f4c4e092a79a161c06effb11602adfd1b"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:hooks:tribunal-lock-leads",
+   "frozen_row_sha256": "370b47db2b2a722266523ae60e6b9a20f3304c403cb19d06bb2e263ed930211b",
+   "clause_ids": [
+    "disposition:transitions:hooks:tribunal-lock-leads:01",
+    "disposition:transitions:hooks:tribunal-lock-leads:02",
+    "disposition:transitions:hooks:tribunal-lock-leads:03",
+    "disposition:transitions:hooks:tribunal-lock-leads:04",
+    "disposition:transitions:hooks:tribunal-lock-leads:05",
+    "disposition:transitions:hooks:tribunal-lock-leads:06"
+   ],
+   "witnesses": [
+    {
+     "path": "core/pysrc/_tribunalrunlib.py",
+     "symbol": "_lock",
+     "start": 446,
+     "end": 476,
+     "git_oid": "c2db7a2b082e005e0be9dd637a853c6ee096a01f",
+     "file_sha256": "c0381e0d22a0e25a22d7ac27adaf518724c322c92dd77b11014702d251fd2624",
+     "span_sha256": "8abfcbe88e3c4d0cb8dc64839a90d950840b689bc6caeff39dc4b22194a9f4a0"
+    },
+    {
+     "path": "core/pysrc/_tribunalrunlib.py",
+     "symbol": "_run_guard",
+     "start": 500,
+     "end": 523,
+     "git_oid": "c2db7a2b082e005e0be9dd637a853c6ee096a01f",
+     "file_sha256": "c0381e0d22a0e25a22d7ac27adaf518724c322c92dd77b11014702d251fd2624",
+     "span_sha256": "cb903d37a0e689f6eb2fceef9acfbacc5ce5df21d241dd70cf82cdf118963e2a"
+    },
+    {
+     "path": "core/pysrc/_tribunalrunlib.py",
+     "symbol": "_acquire_file_lock",
+     "start": 479,
+     "end": 486,
+     "git_oid": "c2db7a2b082e005e0be9dd637a853c6ee096a01f",
+     "file_sha256": "c0381e0d22a0e25a22d7ac27adaf518724c322c92dd77b11014702d251fd2624",
+     "span_sha256": "c6696cca2f170a991b47f4d184f4059d03bcb391dbb9b75e4dba9fca0ad2f4d6"
+    },
+    {
+     "path": "core/pysrc/_tribunalrunlib.py",
+     "symbol": "_release_file_lock",
+     "start": 489,
+     "end": 496,
+     "git_oid": "c2db7a2b082e005e0be9dd637a853c6ee096a01f",
+     "file_sha256": "c0381e0d22a0e25a22d7ac27adaf518724c322c92dd77b11014702d251fd2624",
+     "span_sha256": "71c9d2041be00e207c0146c3e7a6643862b746abc91ecdef1f1d6ecea1d3f72b"
+    },
+    {
+     "path": "core/pysrc/_tribunalrunlib.py",
+     "symbol": "recover_lock",
+     "start": 527,
+     "end": 539,
+     "git_oid": "c2db7a2b082e005e0be9dd637a853c6ee096a01f",
+     "file_sha256": "c0381e0d22a0e25a22d7ac27adaf518724c322c92dd77b11014702d251fd2624",
+     "span_sha256": "09b0c10e98ad8b3bafebbfba04288d9087cc33d5a1ec7738e48c16166f5aa2b2"
+    },
+    {
+     "path": "core/pysrc/_tribunalrunlib.py",
+     "symbol": "_recover_lock_guarded",
+     "start": 542,
+     "end": 586,
+     "git_oid": "c2db7a2b082e005e0be9dd637a853c6ee096a01f",
+     "file_sha256": "c0381e0d22a0e25a22d7ac27adaf518724c322c92dd77b11014702d251fd2624",
+     "span_sha256": "b51f43ac18f77f7fb309c24af7576f20694cd9eed20fbe3804f592226f275a75"
+    },
+    {
+     "path": "core/pysrc/_tribunalrunlib.py",
+     "symbol": "write_lead",
+     "start": 686,
+     "end": 695,
+     "git_oid": "c2db7a2b082e005e0be9dd637a853c6ee096a01f",
+     "file_sha256": "c0381e0d22a0e25a22d7ac27adaf518724c322c92dd77b11014702d251fd2624",
+     "span_sha256": "f9931729b52b63846bdb85152b4022084a0d05bd22a446078cff114a64b19aa8"
+    },
+    {
+     "path": "core/pysrc/_tribunalrunlib.py",
+     "symbol": "_lead",
+     "start": 673,
+     "end": 682,
+     "git_oid": "c2db7a2b082e005e0be9dd637a853c6ee096a01f",
+     "file_sha256": "c0381e0d22a0e25a22d7ac27adaf518724c322c92dd77b11014702d251fd2624",
+     "span_sha256": "dbce35f646436ad6beb869ad0f6858045be716d5fd1ba4b40eaa10959be76cfb"
+    },
+    {
+     "path": "core/pysrc/_tribunalrunlib.py",
+     "symbol": "_write",
+     "start": 432,
+     "end": 442,
+     "git_oid": "c2db7a2b082e005e0be9dd637a853c6ee096a01f",
+     "file_sha256": "c0381e0d22a0e25a22d7ac27adaf518724c322c92dd77b11014702d251fd2624",
+     "span_sha256": "ee30c89d379ee5369140da2238dd098ddc09e99c5000f934f80cdd9ad247cb71"
+    },
+    {
+     "path": "core/pysrc/_tribunalrunlib.py",
+     "symbol": "dispose_lead",
+     "start": 726,
+     "end": 735,
+     "git_oid": "c2db7a2b082e005e0be9dd637a853c6ee096a01f",
+     "file_sha256": "c0381e0d22a0e25a22d7ac27adaf518724c322c92dd77b11014702d251fd2624",
+     "span_sha256": "800142fc0fce2f22b1de08fdfe42472d61cadd8872831b08c5761135f4820120"
+    },
+    {
+     "path": "core/pysrc/_tribunalrunlib.py",
+     "symbol": "_read_leads",
+     "start": 698,
+     "end": 716,
+     "git_oid": "c2db7a2b082e005e0be9dd637a853c6ee096a01f",
+     "file_sha256": "c0381e0d22a0e25a22d7ac27adaf518724c322c92dd77b11014702d251fd2624",
+     "span_sha256": "f4152e0fcac9e99bc6c5a8bb8be9c930c81b4e722ea1e6fb1701934687629385"
+    },
+    {
+     "path": "core/pysrc/_tribunalrunlib.py",
+     "symbol": "_finding",
+     "start": 772,
+     "end": 784,
+     "git_oid": "c2db7a2b082e005e0be9dd637a853c6ee096a01f",
+     "file_sha256": "c0381e0d22a0e25a22d7ac27adaf518724c322c92dd77b11014702d251fd2624",
+     "span_sha256": "facba53e7d4f87ecaecda24b5e462946a6a2fa326d33d94677ac4b2a6305b42e"
+    },
+    {
+     "path": "core/pysrc/_tribunalrunlib.py",
+     "symbol": "_eligibility",
+     "start": 793,
+     "end": 819,
+     "git_oid": "c2db7a2b082e005e0be9dd637a853c6ee096a01f",
+     "file_sha256": "c0381e0d22a0e25a22d7ac27adaf518724c322c92dd77b11014702d251fd2624",
+     "span_sha256": "a3f6d0486fc7edf8a7bbea1ea6328800dd91c94e5e168fc331464852fde34930"
+    },
+    {
+     "path": "core/pysrc/_tribunalrunlib.py",
+     "symbol": "_stored_triage",
+     "start": 742,
+     "end": 769,
+     "git_oid": "c2db7a2b082e005e0be9dd637a853c6ee096a01f",
+     "file_sha256": "c0381e0d22a0e25a22d7ac27adaf518724c322c92dd77b11014702d251fd2624",
+     "span_sha256": "43846f3a6e8393d36cbb526d2fe4b05514f153a4af293d3b67c064bde421418e"
+    },
+    {
+     "path": "core/pysrc/_tribunalrunlib.py",
+     "symbol": "append_triage",
+     "start": 828,
+     "end": 840,
+     "git_oid": "c2db7a2b082e005e0be9dd637a853c6ee096a01f",
+     "file_sha256": "c0381e0d22a0e25a22d7ac27adaf518724c322c92dd77b11014702d251fd2624",
+     "span_sha256": "2bb8ec2b5ef601741a4314789f0430d4184390717f4ee91037e17b1e2dfb00c2"
+    },
+    {
+     "path": "core/pysrc/_tribunalrunlib.py",
+     "symbol": "_records",
+     "start": 332,
+     "end": 337,
+     "git_oid": "c2db7a2b082e005e0be9dd637a853c6ee096a01f",
+     "file_sha256": "c0381e0d22a0e25a22d7ac27adaf518724c322c92dd77b11014702d251fd2624",
+     "span_sha256": "9691d03aedeaba2d6f6caaa211606090d48d15be819a2dd6985e3a0dd01fca18"
+    }
+   ],
+   "semantic_assessment": "All6 literal clauses inspected at named owner/callee boundaries, with explicit accepted changes/analytical limits below;28 advanced objects remain historical and are not renewed.",
+   "intake_variances": [
+    "The8MiB limit applies to each bounded prior-log read/serialized record; aggregate post-append size is not precomputed, so this layer does not guarantee every new total log remains<=8MiB. No aggregate-retention or unlimited-history guarantee is made."
+   ],
+   "limits": "Source guard/effect/retry conformance only. No new product/test/host/native/provider/model execution or installed/task/scenario/CI/whole-program qualification; prior observations retain their real epoch and scope."
+  },
+  {
+   "cell": "disposition:transitions:hooks:tribunal-lock-leads:06",
+   "frozen_row_sha256": "56098db04103a2d10be24bd50641ab9589bb0036586e31af47a7eb92c9078fbd",
+   "witnesses": [
+    {
+     "path": "core/pysrc/_tribunalrunlib.py",
+     "symbol": "append_triage",
+     "start": 828,
+     "end": 840,
+     "git_oid": "c2db7a2b082e005e0be9dd637a853c6ee096a01f",
+     "file_sha256": "c0381e0d22a0e25a22d7ac27adaf518724c322c92dd77b11014702d251fd2624",
+     "span_sha256": "2bb8ec2b5ef601741a4314789f0430d4184390717f4ee91037e17b1e2dfb00c2"
+    },
+    {
+     "path": "core/pysrc/_tribunalrunlib.py",
+     "symbol": "_eligibility",
+     "start": 793,
+     "end": 819,
+     "git_oid": "c2db7a2b082e005e0be9dd637a853c6ee096a01f",
+     "file_sha256": "c0381e0d22a0e25a22d7ac27adaf518724c322c92dd77b11014702d251fd2624",
+     "span_sha256": "a3f6d0486fc7edf8a7bbea1ea6328800dd91c94e5e168fc331464852fde34930"
+    },
+    {
+     "path": "core/pysrc/_tribunalrunlib.py",
+     "symbol": "_records",
+     "start": 332,
+     "end": 337,
+     "git_oid": "c2db7a2b082e005e0be9dd637a853c6ee096a01f",
+     "file_sha256": "c0381e0d22a0e25a22d7ac27adaf518724c322c92dd77b11014702d251fd2624",
+     "span_sha256": "9691d03aedeaba2d6f6caaa211606090d48d15be819a2dd6985e3a0dd01fca18"
+    },
+    {
+     "path": "core/pysrc/_tribunalrunlib.py",
+     "symbol": "_write",
+     "start": 432,
+     "end": 442,
+     "git_oid": "c2db7a2b082e005e0be9dd637a853c6ee096a01f",
+     "file_sha256": "c0381e0d22a0e25a22d7ac27adaf518724c322c92dd77b11014702d251fd2624",
+     "span_sha256": "ee30c89d379ee5369140da2238dd098ddc09e99c5000f934f80cdd9ad247cb71"
+    }
+   ],
+   "semantic_assessment": "Eligibility and issue-ref guard run before locking; current writable run and readable prior triage log precede fsynced append. Repeated IDs are allowed history, not uniqueness proof.",
+   "intake_variances": [
+    "The8MiB limit applies to each bounded prior-log read/serialized record; aggregate post-append size is not precomputed, so this layer does not guarantee every new total log remains<=8MiB. No aggregate-retention or unlimited-history guarantee is made."
+   ],
+   "limits": "Source guard/effect/retry conformance only. No new product/test/host/native/provider/model execution or installed/task/scenario/CI/whole-program qualification; prior observations retain their real epoch and scope."
+  }
+ ],
+ "scope": "hooks:tribunal-lock-leads finite literal/current guard/effect/retry source contract; no runtime acceptance.",
+ "limits": [
+  "Source guard/effect/retry conformance only. No new product/test/host/native/provider/model execution or installed/task/scenario/CI/whole-program qualification; prior observations retain their real epoch and scope.",
+  "Original advanced28wholeobjects and5historicalproofs preserved losslessly; known source changes are not hidden by rewriting their observations.",
+  "Root sole integrator and unchanged strict original owner/independent reviewer; this author delivery is not self-approved."
+ ]
+}

@@ -1,0 +1,27 @@
+{
+  "argv": [
+    "C:/Program Files/Go/bin/go.exe",
+    "test",
+    "-json",
+    "-x",
+    "./internal/store",
+    "-count=1",
+    "-timeout=120s",
+    "-covermode=atomic",
+    "-coverprofile=C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-journal-whole-store-43d06fd1\\coverage.out"
+  ],
+  "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-journal-whole-store-43d06fd1\\candidate\\core\\artifacts",
+  "pid": 64288,
+  "returncode": 0,
+  "duration_seconds": 7.186431800015271,
+  "timed_out": false,
+  "output_limit_exceeded": false,
+  "containment": "exited",
+  "spawn_error_type": null,
+  "reader_errors": [],
+  "stdout_sha256": "52650200377e2f08835421c788178cf9141701b0c004a2c760f974ab6e4c8c34",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stdout_bytes": 442441,
+  "stderr_bytes": 0,
+  "qualification": false
+}

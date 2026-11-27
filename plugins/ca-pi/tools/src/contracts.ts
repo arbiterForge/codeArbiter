@@ -1,3 +1,5 @@
+export const ROLE_JUDGMENT_STATES = ["accepted", "changes_requested", "blocked"] as const;
+
 export interface BridgeRequest {
   version: 1;
   event: string;
@@ -257,4 +259,18 @@ export interface Collision {
   command: string;
   reason: CollisionReason;
   owner?: string;
+}
+
+/** Bounded read-only page projection; counts never imply a complete backlog. */
+export interface PiWorkflowRecoverySnapshot {
+  status: "absent" | "complete" | "partial" | "unavailable";
+  revision: number | null;
+  pending: number;
+  claimed: number;
+  unavailable: number;
+  cursor: string | null;
+  bytesRead: number;
+  reason: string | null;
+  notice: string;
+  fingerprint: string;
 }

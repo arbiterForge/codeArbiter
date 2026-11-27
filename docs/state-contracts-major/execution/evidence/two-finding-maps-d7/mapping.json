@@ -1,0 +1,43 @@
+{
+ "C_F02": {
+  "cell": "disposition:findings:C-F02",
+  "source_profile": "major-readiness-implementation-v1",
+  "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+  "observation": "q02-release",
+  "payload": "major-source-inputs-q02-implementation",
+  "selector_source": ".github/scripts/test_release_workflow.py::SourceSelectionTest",
+  "named_methods": 8,
+  "scope": "Original unfiltered source selection/report/refusal contract only, not real release publication or full linked tasks."
+ },
+ "HOOK_F04": {
+  "cell": "disposition:findings:HOOK-F04",
+  "policy_selection": "native_launch_binding_findings",
+  "requirements_selection": "launch_binding_findings",
+  "closed_values": [
+   "disposition:findings:HOOK-F04"
+  ],
+  "required_original_owner": "task:HW-04",
+  "native_recipe_catalog": "All40 existing native.RECIPES unchanged; findings reuse separate existing HW04 launch composition.",
+  "profile": "actual-python-npm-binding/1",
+  "platforms": [
+   "darwin/amd64",
+   "darwin/arm64",
+   "linux/amd64",
+   "linux/arm64",
+   "windows/amd64",
+   "windows/arm64"
+  ],
+  "counts": [
+   0,
+   30,
+   31,
+   32
+  ],
+  "selectors": "Exact unchanged npm_binding_observation.selectors(platform): completion count/limit/identity and runner role/manifest/mutation parents plus every required named child and Windows legacy-identity complement.",
+  "upload": "Upload original npm binding identities",
+  "artifact": "native-npm-binding-identities-<original runner>",
+  "binding": "Same source/tree/run/attempt/platform/module/toolchain/binary/native component, actual Python source/import/runtime before-after, complete counts, bounded launch file roles/digests and original uploader. Final reader reauthenticates same native admission with exact requirements and whole trusted main success.",
+  "runtime_executions_added": 0,
+  "scope": "Actual consumed launch/count/consumer boundary only; selected-launch identity is not an entire OS/toolchain dependency closure or installed/native-context task qualification."
+ }
+}

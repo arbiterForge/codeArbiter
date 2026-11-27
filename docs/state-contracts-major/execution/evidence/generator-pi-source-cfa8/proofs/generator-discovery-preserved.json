@@ -1,0 +1,317 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "cfa8effd8e3e856571052f94311f4f01c96b7f77",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "/root/ci_repair_review: source author only, no independent self-approval"
+ },
+ "inputs": {
+  ".codearbiter/decisions/0043-assistive-state-engine.md": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+  "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+  "docs/state-contracts-major/hooks-workflow-tasks.json": "05a2b15eb968b7fa25bb2af6c11c862eef599757f66404b6abcf5b0f519c3e30",
+  "site/scripts/generator/assign-slugs.ts": "4b1999c27e388c3c8747777945f468e3047a7aff8f58991cc2b783b227a9260d",
+  "site/scripts/generator/classify-source.ts": "08e41c224b3d0faf700df404d0bf1cbdaa29f4e863ac4bb6226142fff42853d2",
+  "site/scripts/generator/collect-lenses.ts": "18eed1236677e6217ee5028f113a36704ccc8fea96ce87cc4e612e3e91e8a13c",
+  "site/scripts/generator/collect-sources.ts": "31973d8a555b97ff21449882f40cdf8aa6f670ee40f8e6721b6fc35ef3186711",
+  "site/scripts/generator/derive-name.ts": "b3e8321eaa1ba7e4f953b5e937c94da38d041e58220eac0114d88e7dacd6a5e2",
+  "site/scripts/generator/host-command-catalog.ts": "880715cd374a995647e93b700f5f7e67402233e793aa0406196946a06eef0abd",
+  "site/scripts/generator/slugify.ts": "8c22752b4ed11c1037d6c8b9d294834e06f8c185d144d05d62fd69666eaeba82"
+ },
+ "disposition_ids": [
+  "disposition:machines:generator:discovery",
+  "disposition:transitions:generator:discovery:01",
+  "disposition:transitions:generator:discovery:02",
+  "disposition:transitions:generator:discovery:03",
+  "disposition:transitions:generator:discovery:04",
+  "disposition:transitions:generator:discovery:05",
+  "disposition:transitions:generator:discovery:06"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/generator-pi-source-cfa8/source-bindings.json",
+   "sha256": "3adaff2059ca2cdf5707fe3482a31d48bfaa32c2946a479102d7632d7eb0943a"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/generator-pi-source-cfa8/clause-inspection.json",
+   "sha256": "81248b3b9c7bb3c1c99a4221c1f3929fa581840e50c406bd83f52d44d6b80899"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/generator-pi-source-cfa8/inherited-evidence-inventory.json",
+   "sha256": "c400619a82717d35be1aa63df9f4fa7b5862243cd6c577e5f10253302ccb7bea"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/generator-pi-source-cfa8/baseline-current-joins.json",
+   "sha256": "a463f15a20be7e42fe52f0a47fa1cca2bce66f07f8f7e0b71b112f940ef50dd1"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:generator:discovery",
+   "frozen_row_sha256": "c62afa44798edfa0f303eacaafd84209f29eecd3bb05ef71484ff9a0b485843a",
+   "clause_ids": [
+    "disposition:transitions:generator:discovery:01",
+    "disposition:transitions:generator:discovery:02",
+    "disposition:transitions:generator:discovery:03",
+    "disposition:transitions:generator:discovery:04",
+    "disposition:transitions:generator:discovery:05",
+    "disposition:transitions:generator:discovery:06"
+   ],
+   "witnesses": [
+    {
+     "path": "site/scripts/generator/collect-sources.ts",
+     "symbol": "literal source lines 6-59",
+     "start": 6,
+     "end": 59,
+     "file_sha256": "31973d8a555b97ff21449882f40cdf8aa6f670ee40f8e6721b6fc35ef3186711",
+     "span_sha256": "fbec18a97501bccdd766996db4d566b93aa24bde8de38cac98559e4046438e38",
+     "git_oid": "7d0abe705231df98a45d4ccfd8bc213900c02bec"
+    },
+    {
+     "path": "site/scripts/generator/collect-lenses.ts",
+     "symbol": "literal source lines 22-33",
+     "start": 22,
+     "end": 33,
+     "file_sha256": "18eed1236677e6217ee5028f113a36704ccc8fea96ce87cc4e612e3e91e8a13c",
+     "span_sha256": "9f9e6ea9a454960b1d15a9eaa6fbe8ee6d1a12ade9be37bf96739d270cca599a",
+     "git_oid": "4349e814e8d652bf50562631e5e80ff1f4f7e08e"
+    },
+    {
+     "path": "site/scripts/generator/classify-source.ts",
+     "symbol": "literal source lines 12-30",
+     "start": 12,
+     "end": 30,
+     "file_sha256": "08e41c224b3d0faf700df404d0bf1cbdaa29f4e863ac4bb6226142fff42853d2",
+     "span_sha256": "3c49e7298f9514ce065268af977c927a02c4a8b9b63924b9b986204134193fb2",
+     "git_oid": "3d417271192f633d3bc3ab7160484c9d4d0f4c87"
+    },
+    {
+     "path": "site/scripts/generator/derive-name.ts",
+     "symbol": "literal source lines 10-27",
+     "start": 10,
+     "end": 27,
+     "file_sha256": "b3e8321eaa1ba7e4f953b5e937c94da38d041e58220eac0114d88e7dacd6a5e2",
+     "span_sha256": "b06a9f06542001ce436efbbce09910c577b3ef3c692081c29cfe0e5af84b36b9",
+     "git_oid": "6a692483dc56594163e79277edf4222da28e5f3e"
+    },
+    {
+     "path": "site/scripts/generator/assign-slugs.ts",
+     "symbol": "literal source lines 1-34",
+     "start": 1,
+     "end": 34,
+     "file_sha256": "4b1999c27e388c3c8747777945f468e3047a7aff8f58991cc2b783b227a9260d",
+     "span_sha256": "4b1999c27e388c3c8747777945f468e3047a7aff8f58991cc2b783b227a9260d",
+     "git_oid": "493ac5e4f72e4a9167fc6b3e421574e0a122ef2f"
+    },
+    {
+     "path": "site/scripts/generator/slugify.ts",
+     "symbol": "literal source lines 9-14",
+     "start": 9,
+     "end": 14,
+     "file_sha256": "8c22752b4ed11c1037d6c8b9d294834e06f8c185d144d05d62fd69666eaeba82",
+     "span_sha256": "8a57660e8741bf58622f3133c415951371b5cc992e33382caf78159f280c6d92",
+     "git_oid": "8265355d84c9b0c3b2926521933eec2c1654a298"
+    },
+    {
+     "path": "site/scripts/generator/host-command-catalog.ts",
+     "symbol": "literal source lines 6-29",
+     "start": 6,
+     "end": 29,
+     "file_sha256": "880715cd374a995647e93b700f5f7e67402233e793aa0406196946a06eef0abd",
+     "span_sha256": "9de68a3e87c9ac5306bc20f6c2ee8622a9e36c462a047ccd700a75ac1dc29084",
+     "git_oid": "69ec5181d14ad1646af106116c8efb176c7332f9"
+    },
+    {
+     "path": "site/scripts/generator/host-command-catalog.ts",
+     "symbol": "literal source lines 57-66",
+     "start": 57,
+     "end": 66,
+     "file_sha256": "880715cd374a995647e93b700f5f7e67402233e793aa0406196946a06eef0abd",
+     "span_sha256": "8c7087f6453272c9ef5ebba66784949b0239f83d8ac099377cf32a0411f347b1",
+     "git_oid": "69ec5181d14ad1646af106116c8efb176c7332f9"
+    },
+    {
+     "path": "site/scripts/generator/host-command-catalog.ts",
+     "symbol": "literal source lines 34-55",
+     "start": 34,
+     "end": 55,
+     "file_sha256": "880715cd374a995647e93b700f5f7e67402233e793aa0406196946a06eef0abd",
+     "span_sha256": "acfd7b54ff2daeb7e4a18b3f2b1f69245ff6b33ba796fc910c3bdbc87730dc5b",
+     "git_oid": "69ec5181d14ad1646af106116c8efb176c7332f9"
+    }
+   ],
+   "semantic_assessment": "All 6 literal clauses assessed by the named current/pinned source witnesses and explicit accepted-task corrections/limits in clause-inspection. Advanced observations remain entire historical records, not renewed.",
+   "intake_variances": [
+    "Frozen per-base-only collision description is replaced by accepted HW-24 global emitted-output reservation. No old collision effect is claimed preserved and no runtime/production catalog comparison is claimed here."
+   ],
+   "limits": "Source-only conformance; no tests/actual generation/installed host/runtime/model/human/task/scenario acceptance or write authority."
+  },
+  {
+   "cell": "disposition:transitions:generator:discovery:01",
+   "frozen_row_sha256": "9bf01da06584cc0f899cd083e30d25b93d870d3d21fcab4916350b7d86ad4993",
+   "witnesses": [
+    {
+     "path": "site/scripts/generator/collect-sources.ts",
+     "symbol": "literal source lines 6-59",
+     "start": 6,
+     "end": 59,
+     "file_sha256": "31973d8a555b97ff21449882f40cdf8aa6f670ee40f8e6721b6fc35ef3186711",
+     "span_sha256": "fbec18a97501bccdd766996db4d566b93aa24bde8de38cac98559e4046438e38",
+     "git_oid": "7d0abe705231df98a45d4ccfd8bc213900c02bec"
+    },
+    {
+     "path": "site/scripts/generator/collect-lenses.ts",
+     "symbol": "literal source lines 22-33",
+     "start": 22,
+     "end": 33,
+     "file_sha256": "18eed1236677e6217ee5028f113a36704ccc8fea96ce87cc4e612e3e91e8a13c",
+     "span_sha256": "9f9e6ea9a454960b1d15a9eaa6fbe8ee6d1a12ade9be37bf96739d270cca599a",
+     "git_oid": "4349e814e8d652bf50562631e5e80ff1f4f7e08e"
+    }
+   ],
+   "semantic_assessment": "collectSources returns [] for a missing root; collectLenses returns [] for a missing lens directory. After existence checks, directory/text/stat operations are direct uncaught calls. Empty discovery is not semantic parse success; existsSync absence results are not a universal diagnosis of why a path is unavailable.",
+   "intake_variances": [],
+   "limits": "Source-only conformance; no tests/actual generation/installed host/runtime/model/human/task/scenario acceptance or write authority."
+  },
+  {
+   "cell": "disposition:transitions:generator:discovery:02",
+   "frozen_row_sha256": "d882ed6cea98807120d1f31878fc9e365255164a4df0ec1e6290384ecf3f1dd2",
+   "witnesses": [
+    {
+     "path": "site/scripts/generator/collect-sources.ts",
+     "symbol": "literal source lines 6-59",
+     "start": 6,
+     "end": 59,
+     "file_sha256": "31973d8a555b97ff21449882f40cdf8aa6f670ee40f8e6721b6fc35ef3186711",
+     "span_sha256": "fbec18a97501bccdd766996db4d566b93aa24bde8de38cac98559e4046438e38",
+     "git_oid": "7d0abe705231df98a45d4ccfd8bc213900c02bec"
+    },
+    {
+     "path": "site/scripts/generator/collect-lenses.ts",
+     "symbol": "literal source lines 22-33",
+     "start": 22,
+     "end": 33,
+     "file_sha256": "18eed1236677e6217ee5028f113a36704ccc8fea96ce87cc4e612e3e91e8a13c",
+     "span_sha256": "9f9e6ea9a454960b1d15a9eaa6fbe8ee6d1a12ade9be37bf96739d270cca599a",
+     "git_oid": "4349e814e8d652bf50562631e5e80ff1f4f7e08e"
+    },
+    {
+     "path": "site/scripts/generator/classify-source.ts",
+     "symbol": "literal source lines 12-30",
+     "start": 12,
+     "end": 30,
+     "file_sha256": "08e41c224b3d0faf700df404d0bf1cbdaa29f4e863ac4bb6226142fff42853d2",
+     "span_sha256": "3c49e7298f9514ce065268af977c927a02c4a8b9b63924b9b986204134193fb2",
+     "git_oid": "3d417271192f633d3bc3ab7160484c9d4d0f4c87"
+    }
+   ],
+   "semantic_assessment": "Only top-level commands/agents ending .md and skill child directories with SKILL.md are read as UTF8. Constructed paths are classified by normalized commands/skills/agents substrings and stable path sorting. Lens discovery independently reads every .md basename and sorts it. Unknown direct classifySource inputs throw; no frontmatter/content validation or recursive plugin walk is added.",
+   "intake_variances": [],
+   "limits": "Source-only conformance; no tests/actual generation/installed host/runtime/model/human/task/scenario acceptance or write authority."
+  },
+  {
+   "cell": "disposition:transitions:generator:discovery:03",
+   "frozen_row_sha256": "a11acd2e1d3d097631fdaa97f9a2e1fbbb0f16e643045d0717e4ff9193529d76",
+   "witnesses": [
+    {
+     "path": "site/scripts/generator/derive-name.ts",
+     "symbol": "literal source lines 10-27",
+     "start": 10,
+     "end": 27,
+     "file_sha256": "b3e8321eaa1ba7e4f953b5e937c94da38d041e58220eac0114d88e7dacd6a5e2",
+     "span_sha256": "b06a9f06542001ce436efbbce09910c577b3ef3c692081c29cfe0e5af84b36b9",
+     "git_oid": "6a692483dc56594163e79277edf4222da28e5f3e"
+    }
+   ],
+   "semantic_assessment": "Truthy supplied fields.name is used verbatim; otherwise backslashes normalize, .md is removed and SKILL uses its parent segment. Empty fields can force filename-derived identity. This helper neither parses frontmatter nor validates display-name semantics.",
+   "intake_variances": [],
+   "limits": "Source-only conformance; no tests/actual generation/installed host/runtime/model/human/task/scenario acceptance or write authority."
+  },
+  {
+   "cell": "disposition:transitions:generator:discovery:04",
+   "frozen_row_sha256": "45e1e4b2691df59ea90170e1f922a804ba13cd30e8cc27546a34bdf8bda29e37",
+   "witnesses": [
+    {
+     "path": "site/scripts/generator/assign-slugs.ts",
+     "symbol": "literal source lines 1-34",
+     "start": 1,
+     "end": 34,
+     "file_sha256": "4b1999c27e388c3c8747777945f468e3047a7aff8f58991cc2b783b227a9260d",
+     "span_sha256": "4b1999c27e388c3c8747777945f468e3047a7aff8f58991cc2b783b227a9260d",
+     "git_oid": "493ac5e4f72e4a9167fc6b3e421574e0a122ef2f"
+    },
+    {
+     "path": "site/scripts/generator/slugify.ts",
+     "symbol": "literal source lines 9-14",
+     "start": 9,
+     "end": 14,
+     "file_sha256": "8c22752b4ed11c1037d6c8b9d294834e06f8c185d144d05d62fd69666eaeba82",
+     "span_sha256": "8a57660e8741bf58622f3133c415951371b5cc992e33382caf78159f280c6d92",
+     "git_oid": "8265355d84c9b0c3b2926521933eec2c1654a298"
+    }
+   ],
+   "semantic_assessment": "The current HW-24 owner reserves every emitted slug in one Set, reusing per-base next-suffix search only as an optimization. If a natural numeric name collides with an emitted suffix, it too receives a free suffix. Input order and noncollision assignments remain deterministic; arbitrary source inspection is not a measured production URL/redirect comparison. Slug normalization itself permits an empty base.",
+   "intake_variances": [
+    "Frozen per-base-only collision description is replaced by accepted HW-24 global emitted-output reservation. No old collision effect is claimed preserved and no runtime/production catalog comparison is claimed here."
+   ],
+   "limits": "Source-only conformance; no tests/actual generation/installed host/runtime/model/human/task/scenario acceptance or write authority."
+  },
+  {
+   "cell": "disposition:transitions:generator:discovery:05",
+   "frozen_row_sha256": "6b2ff52dc9ffee2bce9ed2dc11ac522680e1382b9e7a9aec1c13547448e3b39d",
+   "witnesses": [
+    {
+     "path": "site/scripts/generator/host-command-catalog.ts",
+     "symbol": "literal source lines 6-29",
+     "start": 6,
+     "end": 29,
+     "file_sha256": "880715cd374a995647e93b700f5f7e67402233e793aa0406196946a06eef0abd",
+     "span_sha256": "9de68a3e87c9ac5306bc20f6c2ee8622a9e36c462a047ccd700a75ac1dc29084",
+     "git_oid": "69ec5181d14ad1646af106116c8efb176c7332f9"
+    },
+    {
+     "path": "site/scripts/generator/host-command-catalog.ts",
+     "symbol": "literal source lines 57-66",
+     "start": 57,
+     "end": 66,
+     "file_sha256": "880715cd374a995647e93b700f5f7e67402233e793aa0406196946a06eef0abd",
+     "span_sha256": "8c7087f6453272c9ef5ebba66784949b0239f83d8ac099377cf32a0411f347b1",
+     "git_oid": "69ec5181d14ad1646af106116c8efb176c7332f9"
+    }
+   ],
+   "semantic_assessment": "Host-specific backticked Markdown regexes produce unique matched command names, then exact set membership yields Claude/Codex/Pi booleans. This is declared catalog projection, not proof of a registered, installed or executable host command.",
+   "intake_variances": [],
+   "limits": "Source-only conformance; no tests/actual generation/installed host/runtime/model/human/task/scenario acceptance or write authority."
+  },
+  {
+   "cell": "disposition:transitions:generator:discovery:06",
+   "frozen_row_sha256": "8f6bb425db3845e0d0938a20ef99120cde29e3c4610ddfb005da899a513914ed",
+   "witnesses": [
+    {
+     "path": "site/scripts/generator/host-command-catalog.ts",
+     "symbol": "literal source lines 34-55",
+     "start": 34,
+     "end": 55,
+     "file_sha256": "880715cd374a995647e93b700f5f7e67402233e793aa0406196946a06eef0abd",
+     "span_sha256": "acfd7b54ff2daeb7e4a18b3f2b1f69245ff6b33ba796fc910c3bdbc87730dc5b",
+     "git_oid": "69ec5181d14ad1646af106116c8efb176c7332f9"
+    }
+   ],
+   "semantic_assessment": "Absent sibling command catalogs select collected Claude command names only for Claude and empty sets for Codex/Pi. Present catalog reads/regex processing remain direct. Fallback does not grant cross-host command parity.",
+   "intake_variances": [],
+   "limits": "Source-only conformance; no tests/actual generation/installed host/runtime/model/human/task/scenario acceptance or write authority."
+  }
+ ],
+ "scope": "generator:discovery literal current/pinned guard/effect/retry source inspection, not runtime qualification.",
+ "limits": [
+  "No tests, product imports, site generation, Node/Pi/native product execution, API/network/provider/install or canonical/index/ref/ledger/markers/status writes.",
+  "All eight advanced Pi rows and history/proof bytes retained exactly; no old observation epoch rewritten.",
+  "HW-23/HW-24 intentional changes explicitly identified; no preservation of old defect or advertised global parser exactness.",
+  "Root owns independent review and unchanged strict prospective source admission; no runtime/task/scenario completion."
+ ]
+}

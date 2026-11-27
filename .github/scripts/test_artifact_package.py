@@ -65,10 +65,9 @@ def setUpModule():
 
 class PackageTests(unittest.TestCase):
     def shortDescription(self):
-        if (self._testMethodName.startswith("test_t018_context_kind_package_admission_")
-                or self._testMethodName == "test_t044_context_native_receipt_rejects_missing_failed_and_stale_cases"):
-            return None
-        return super().shortDescription()
+        # The conformance snapshot consumes one named result per output line.
+        # Keep all collected cases visible even when a method has a docstring.
+        return None
 
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
@@ -132,12 +131,111 @@ class PackageTests(unittest.TestCase):
                 "unreviewed native-library access",
             ),
             (bridge + b"\neval('1 + 1')\n", "dynamic code/import escape"),
+            (bridge + b"\nimport sys as alternate\n", "aliases an imported capability"),
+            (bridge + b"\nfrom sys import platform\n", "unreviewed capability directly"),
+            (bridge + b"\nsys.modules\n", "unreviewed sys capability"),
+            (bridge + b"\ngetattr(sys, 'modules')\n", "unreviewed sys capability"),
+            (bridge + b"\nvars(sys)\n", "unreviewed sys capability"),
+            (bridge + b"\nconsume(sys)\n", "unreviewed sys capability"),
+            (bridge + b"\nsys['platform']\n", "unreviewed sys capability"),
+            (bridge + b"\nsys.platform = 'win32'\n", "unreviewed sys capability"),
+            (bridge + b"\ndel sys.platform\n", "unreviewed sys capability"),
+            (bridge + b"\nsys = object()\n", "unreviewed sys capability"),
+            (bridge + b"\ndef sys(): pass\n", "rebinds the sys capability"),
+            (bridge + b"\ndef caller(sys): return sys.platform\n", "rebinds the sys capability"),
+            (bridge + b"\nfrom platform import sys\n", "rebinds the sys capability"),
+            (bridge + b"\ntry: pass\nexcept Exception as sys: pass\n", "rebinds the sys capability"),
+            (bridge + b"\ndef caller():\n global sys\n", "rebinds the sys capability"),
+            (bridge + b"\nmatch None:\n case sys: pass\n", "rebinds the sys capability"),
+            (bridge + b"\nmatch []:\n case [*sys]: pass\n", "rebinds the sys capability"),
+            (bridge + b"\nmatch {}:\n case {**sys}: pass\n", "rebinds the sys capability"),
         )
         for candidate, diagnostic in cases:
             with self.subTest(diagnostic=diagnostic), self.assertRaisesRegex(
                 AssertionError, diagnostic
             ):
                 INSTALLED_HOST.assert_offline_bridge(candidate)
+
+    def test_manifest_decoder_offline_guard_has_negative_controls(self):
+        source = (REPO / "core/pysrc/_artifactmanifestlib.py").read_bytes()
+        INSTALLED_HOST.assert_offline_manifest_helper(source)
+        for suffix in (b"\nimport socket\n", b"\nopen('outside','w')\n", b"\neval('1+1')\n"):
+            with self.subTest(suffix=suffix), self.assertRaisesRegex(AssertionError, "unreviewed"):
+                INSTALLED_HOST.assert_offline_manifest_helper(source + suffix)
+
+    def test_cold_failure_diagnostic_uses_bounded_actual_entrypoint_details(self):
+        missing = self.base / "private-fixture-value-not-for-output"
+        completed = subprocess.run(
+            [sys.executable, "-I", "-B", str(REPO / ".github/scripts/test_artifact_installed_host.py"),
+             "--host", "claude", "--plugin-root", str(missing),
+             "--repository", str(self.base), "--expected-binary-sha256", "0" * 64],
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=20, check=False)
+        self.assertNotEqual(completed.returncode, 0)
+        self.assertEqual(completed.stdout, b"")
+        self.assertTrue(completed.stderr.startswith(b"{"), "missing bounded installed-host failure record")
+        record = json.loads(completed.stderr)
+        self.assertEqual(record, {"format": "codearbiter.installed-host-failure/0.2.0",
+                                 "phase": "bootstrap", "step": "main",
+                                 "error": "FileNotFoundError", "code": "unclassified",
+                                 "host": "claude", "family": "filesystem",
+                                 "audit_event": "none", "audit_site": "none", "audit_depth": "none"})
+        self.assertNotIn(missing.name.encode(), completed.stderr)
+        message = str(PACKAGER._subprocess_failure("cold installed-host workflow", completed))
+        self.assertIn("phase=bootstrap", message)
+        self.assertIn("error=FileNotFoundError", message)
+
+    def test_cold_failure_diagnostic_survives_verifier_child_boundary(self):
+        record = {"format": "codearbiter.installed-host-failure/0.1.0",
+                  "phase": "author-dispatch", "step": "approve",
+                  "error": "ArtifactError", "code": "AUTHORITY_UNVERIFIED"}
+        raw = json.dumps(record).encode()
+        completed = subprocess.CompletedProcess([], 1, b"", raw)
+        nested = INSTALLED_HOST.subprocess_failure("installed-host phase author-dispatch", completed)
+        self.assertEqual(getattr(nested, "failure_record", None), record)
+        for error in (nested, PACKAGER._subprocess_failure("cold", completed)):
+            self.assertIn("phase=author-dispatch", str(error))
+            self.assertIn("code=AUTHORITY_UNVERIFIED", str(error))
+        self.assertEqual(INSTALLED_HOST.failure_record(nested, phase="bootstrap"), record)
+
+    def test_cold_failure_producer_keeps_known_native_cause_without_message(self):
+        import contextlib
+        import io
+        native = _artifactlib.ArtifactError("AUTHORITY_UNVERIFIED", "private-fixture-value-not-for-output")
+        outer = AssertionError("private-fixture-value-not-for-output")
+        outer.__cause__ = native
+        stderr = io.StringIO()
+        with mock.patch.object(INSTALLED_HOST, "main", side_effect=outer), \
+             mock.patch.object(INSTALLED_HOST, "_FAILURE_PHASE", "author-dispatch"), \
+             contextlib.redirect_stderr(stderr):
+            self.assertEqual(INSTALLED_HOST.run_cli(), 1)
+        raw = stderr.getvalue().encode()
+        record = json.loads(raw)
+        self.assertEqual(record["phase"], "author-dispatch")
+        self.assertEqual(record["code"], "AUTHORITY_UNVERIFIED")
+        self.assertEqual(record["error"], "AssertionError")
+        self.assertNotIn("private-fixture-value-not-for-output", stderr.getvalue())
+        self.assertIn("code=AUTHORITY_UNVERIFIED", str(PACKAGER._subprocess_failure(
+            "cold", subprocess.CompletedProcess([], 1, b"", raw))))
+
+    def test_cold_failure_diagnostic_rejects_malformed_arbitrary_and_duplicate_fields(self):
+        good = {"format": "codearbiter.installed-host-failure/0.1.0",
+                "phase": "author-dispatch", "step": "approve",
+                "error": "ArtifactError", "code": "AUTHORITY_UNVERIFIED"}
+        samples = [b"private-fixture-value-not-for-output", b"{", b"x" * 4097,
+                   json.dumps({**good, "extra": "private-fixture-value-not-for-output"}).encode(),
+                   json.dumps({**good, "code": "private-fixture-value-not-for-output"}).encode(),
+                   json.dumps({**good, "phase": "private-fixture-value-not-for-output"}).encode(),
+                   json.dumps({**good, "step": "private-fixture-value-not-for-output"}).encode(),
+                   json.dumps({**good, "error": "private-fixture-value-not-for-output"}).encode(),
+                   (json.dumps(good)[:-1] + ', "code":"AUTHORITY_UNVERIFIED"}').encode()]
+        for raw in samples:
+            completed = subprocess.CompletedProcess([], 7, b"", raw)
+            for error in (INSTALLED_HOST.subprocess_failure("phase", completed),
+                          PACKAGER._subprocess_failure("cold", completed)):
+                message = str(error)
+                self.assertNotIn("phase=", message)
+                self.assertNotIn("private-fixture-value-not-for-output", message)
+                self.assertIn(hashlib.sha256(raw).hexdigest(), message)
 
     def test_installed_host_runtime_guard_and_failure_redaction(self):
         manifest = json.loads((INSTALLATION / "release.json").read_text(encoding="utf-8"))
@@ -189,7 +287,7 @@ class PackageTests(unittest.TestCase):
             staged.chmod(0o500)
             details = (str(staged), [str(staged), "capabilities"], None, {})
             with (
-                mock.patch.object(INSTALLED_HOST.platform, "system", return_value="Darwin"),
+                mock.patch.object(INSTALLED_HOST.sys, "platform", "darwin"),
                 mock.patch.object(INSTALLED_HOST.stat, "S_IMODE", return_value=0o500),
             ):
                 INSTALLED_HOST.enforce_runtime_event(
@@ -900,6 +998,149 @@ class PackageTests(unittest.TestCase):
                     npm_package_integrity=integrity, production=False,
                 )
             self.assertFalse(output.exists())
+
+    def test_retained_recovery_requires_production_context_before_extraction(self):
+        """Real verifier rejects local-portability, foreign run/source and byte drift.
+
+        The fixture is not production qualification: only the rejection paths
+        use the real verifier, and the separate positive control mocks admission.
+        """
+        self._retained_recovery_admission(positive=False)
+
+    def test_retained_recovery_uses_verified_cohort_before_real_extraction(self):
+        """Mock only production admission; exercise real archives/member binding.
+
+        Windows cannot issue production POSIX packer proof. This control proves
+        call order and use of the returned cohort, not installed qualification.
+        """
+        self._retained_recovery_admission(positive=True)
+
+    def _retained_recovery_admission(self, *, positive):
+        spec = importlib.util.spec_from_file_location(
+            "retained_recovery_admission", REPO / ".github/scripts/qualify_workflow_recovery_cohort.py")
+        runner = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(runner)
+        source = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=REPO, text=True).strip()
+        stage = self.base / "retained-stage"
+        staged = self.stage(output=stage, source_commit=source)
+        packages = self.base / "retained-packages"
+        cohort = PACKAGER.build_artifact_release_packages(
+            stage=stage, source_repo=REPO, source_commit=source,
+            workflow=FIXTURE_WORKFLOW, run_id=FIXTURE_WORKFLOW_RUN,
+            promotion_receipt_sha256=staged["promotion_receipt_sha256"],
+            output=packages, npm_executable=self.npm_executable,
+            npm_package_integrity=PACKAGER.NPM_PACKER_INTEGRITY, production=False)
+        cohort_path = packages / "artifact-package-cohort.json"
+        original_cohort = cohort_path.read_bytes()
+        pi_archive = packages / cohort["packages"]["pi"]["file"]
+        original_archive = pi_archive.read_bytes()
+        cls = runner.RetainedRecoveryTests
+        cls.cohort_path = cohort_path
+        cls.trusted_source_commit = source
+        cls.trusted_workflow = FIXTURE_WORKFLOW
+        cls.trusted_workflow_run = FIXTURE_WORKFLOW_RUN
+        cls.release_package_stage = stage
+        cls.promotion_receipt_sha256 = staged["promotion_receipt_sha256"]
+        original_spec = importlib.util.spec_from_file_location
+        calls = []
+        extracting = False
+        archive_paths = {packages / value["file"] for value in cohort["packages"].values()}
+        verified = json.loads(original_cohort)  # distinct verified object, unchanged closed schema
+
+        def instrument(name, location, *args, **kwargs):
+            selected = original_spec(name, location, *args, **kwargs)
+            if name != "recovery_cohort_packager":
+                return selected
+            execute = selected.loader.exec_module
+
+            def load(module):
+                execute(module)
+                verify = module.verify_artifact_release_packages
+                extract = module.extract_artifact_release_package
+
+                def checked(**arguments):
+                    calls.append(("verify", arguments))
+                    return verified if positive else verify(**arguments)
+
+                def extracted(*args, **kwargs):
+                    nonlocal extracting
+                    calls.append(("extract", kwargs))
+                    if not positive:
+                        raise AssertionError("extraction occurred before trusted production admission")
+                    extracting = True
+                    try:
+                        return extract(*args, **kwargs)
+                    finally:
+                        extracting = False
+
+                module.verify_artifact_release_packages = checked
+                module.extract_artifact_release_package = extracted
+            selected.loader.exec_module = load
+            return selected
+
+        cases = (("valid-mocked-admission", "oversized", "foreign-filename", "changed-raw") if positive
+                 else ("development", "foreign-source", "foreign-run", "changed-bytes"))
+        for case in cases:
+            with self.subTest(case=case):
+                calls.clear()
+                cohort_path.write_bytes(original_cohort)
+                pi_archive.write_bytes(original_archive)
+                cls.cohort_path = cohort_path
+                cls.trusted_source_commit = source
+                cls.trusted_workflow_run = FIXTURE_WORKFLOW_RUN
+                if case == "foreign-source":
+                    cls.trusted_source_commit = "b" * 40
+                elif case == "foreign-run":
+                    cls.trusted_workflow_run = "987654321"
+                elif case == "changed-bytes":
+                    changed = json.loads(original_cohort)
+                    changed["pi_packer"]["qualification"] = "production"  # negative fixture, no issued proof
+                    cohort_path.write_text(json.dumps(changed), encoding="utf-8")
+                    pi_archive.write_bytes(original_archive + b"changed")
+                elif case == "oversized":
+                    cohort_path.write_bytes(original_cohort + b" " * (4 * 1024 * 1024 + 1))
+                elif case == "foreign-filename":
+                    cls.cohort_path = packages / "foreign-cohort.json"
+                    cls.cohort_path.write_bytes(original_cohort)
+                elif case == "changed-raw":
+                    changed = json.loads(original_cohort)
+                    changed["workflow"] = "foreign-after-verification"
+                    cohort_path.write_text(json.dumps(changed), encoding="utf-8")
+                read_bytes = Path.read_bytes
+
+                def observed_read(path):
+                    if case == "oversized" and path == cls.cohort_path:
+                        raise AssertionError("unbounded retained cohort read before admission")
+                    if positive and not extracting and path in archive_paths:
+                        raise AssertionError("unbounded retained archive read before extraction")
+                    return read_bytes(path)
+                try:
+                    with mock.patch.object(importlib.util, "spec_from_file_location", side_effect=instrument), \
+                            mock.patch.object(Path, "read_bytes", new=observed_read):
+                        if case == "valid-mocked-admission":
+                            cls.setUpClass()
+                            self.assertIs(cls.cohort, verified)
+                            self.assertEqual(getattr(cls, "cohort_sha256", None),
+                                             hashlib.sha256(original_cohort).hexdigest())
+                        else:
+                            expected = {"changed-bytes": "digest|size|bytes|package", "oversized": "bounded|bound",
+                                        "foreign-filename": "canonical", "changed-raw": "changed|verified"}.get(
+                                            case, "packer|trusted source context")
+                            with self.assertRaisesRegex(ValueError, expected):
+                                cls.setUpClass()
+                    if case in ("oversized", "foreign-filename"):
+                        self.assertEqual(calls, [])
+                        continue
+                    self.assertEqual(calls[0][0], "verify")
+                    self.assertEqual(calls[0][1], dict(
+                        package_root=packages, source_repo=runner.cli.ROOT,
+                        source_commit=cls.trusted_source_commit, workflow=FIXTURE_WORKFLOW,
+                        run_id=cls.trusted_workflow_run,
+                        promotion_receipt_sha256=staged["promotion_receipt_sha256"],
+                        stage=stage, require_production=True))
+                    self.assertEqual([name for name, _ in calls].count("extract"), 3 if case == "valid-mocked-admission" else 0)
+                finally:
+                    cls.doClassCleanups()
 
     def test_promotion_receipt_binds_exact_payload_and_native_qualification_bytes(self):
         manifest = json.loads((INSTALLATION / "release.json").read_text(encoding="utf-8"))
@@ -1971,6 +2212,408 @@ class PackageTests(unittest.TestCase):
                     trusted_workflow_run=FIXTURE_WORKFLOW_RUN,
                     output=self.base / f"tampered-{index}",
                     required_platforms=[native_platform], repo=REPO)
+
+
+class ColdFailureDiagnosticTests(unittest.TestCase):
+    """Native-free diagnostic transport, never package/installed admission."""
+
+    def setUp(self):
+        temporary = tempfile.TemporaryDirectory()
+        self.addCleanup(temporary.cleanup)
+        self.base = Path(temporary.name).resolve(strict=True)
+
+    @staticmethod
+    def v2(**changes):
+        value = {"format": "codearbiter.installed-host-failure/0.2.0",
+                 "phase": "commit-proof", "step": "enforce_runtime_event",
+                 "error": "RecursionError", "code": "unclassified", "host": "claude",
+                 "family": "recursion", "audit_event": "open",
+                 "audit_site": "path-guard", "audit_depth": "outer"}
+        return {**value, **changes}
+
+    def test_v2_builtin_subtypes_and_families_keep_no_messages(self):
+        for cls, family in ((RecursionError, "recursion"), (NotADirectoryError, "filesystem"),
+                            (MemoryError, "memory")):
+            with self.subTest(error=cls.__name__), mock.patch.object(INSTALLED_HOST, "_FAILURE_HOST", "pi", create=True):
+                try:
+                    raise cls("PrivateFixtureValue-message-and-path")
+                except Exception as error:
+                    record = INSTALLED_HOST.failure_record(error, phase="commit-proof")
+            self.assertEqual(record["error"], cls.__name__)
+            self.assertEqual(record["family"], family)
+            self.assertEqual(record["host"], "pi")
+            self.assertEqual(INSTALLED_HOST.decode_failure(json.dumps(record).encode()), record)
+            self.assertNotIn("PrivateFixtureValue", json.dumps(record))
+        with mock.patch.object(INSTALLED_HOST, "_FAILURE_ARTIFACT_TYPES", {_artifactlib.ArtifactError}):
+            record = INSTALLED_HOST.failure_record(
+                _artifactlib.ArtifactError("AUTHORITY_UNVERIFIED", "PrivateFixtureValue-native"), phase="commit-proof")
+        self.assertEqual((record["error"], record["family"], record["code"]),
+                         ("ArtifactError", "artifact", "AUTHORITY_UNVERIFIED"))
+        self.assertNotIn("PrivateFixtureValue", json.dumps(record))
+
+    def test_v2_arbitrary_and_forged_exception_names_remain_unclassified(self):
+        for name in ("PrivateFixtureValueClass", "RecursionError", "ArtifactError"):
+            error = type(name, (Exception,), {})("PrivateFixtureValue-message")
+            error.code = "AUTHORITY_UNVERIFIED"
+            error._cold_audit_failure = {"event": "PrivateFixtureValue-event", "site": "PrivateFixtureValue-site", "depth": "outer"}
+            record = INSTALLED_HOST.failure_record(error, phase="commit-proof")
+            self.assertEqual(record["error"], "unclassified")
+            self.assertEqual(record["family"], "unclassified")
+            self.assertEqual((record["audit_event"], record["audit_site"], record["audit_depth"]), ("none", "none", "none"))
+            self.assertNotIn("PrivateFixtureValue", json.dumps(record))
+
+    def test_v2_decoder_rejects_unknown_duplicate_and_inconsistent_fields(self):
+        good = self.v2()
+        self.assertEqual(INSTALLED_HOST.decode_failure(json.dumps(good).encode()), good)
+        bad = [self.v2(host="PrivateFixtureValue"), self.v2(error="PrivateFixtureValue"),
+               self.v2(family="filesystem"), self.v2(audit_event="PrivateFixtureValue"),
+               self.v2(audit_site="PrivateFixtureValue"), self.v2(audit_depth="42"),
+               self.v2(extra="PrivateFixtureValue"), self.v2(audit_event="none"),
+               self.v2(audit_depth=1)]
+        for value in bad:
+            with self.subTest(value=value):
+                encoded = json.dumps(value).encode()
+                self.assertIsNone(INSTALLED_HOST.decode_failure(encoded))
+                completed = subprocess.CompletedProcess([], 1, b"", encoded)
+                for error in (INSTALLED_HOST.subprocess_failure("phase", completed), PACKAGER._subprocess_failure("cold", completed)):
+                    self.assertNotIn("PrivateFixtureValue", str(error))
+                    self.assertIn(hashlib.sha256(encoded).hexdigest(), str(error))
+        raw = json.dumps(good).encode()
+        self.assertIsNone(INSTALLED_HOST.decode_failure(raw[:-1] + b',"host":"pi"}'))
+        self.assertIsNone(INSTALLED_HOST.decode_failure(b" " * 4097 + raw))
+
+    def test_v2_nested_failure_survives_both_consumers_without_private_stderr(self):
+        record = self.v2()
+        raw = json.dumps(record).encode()
+        completed = subprocess.CompletedProcess([], 1, b"", raw)
+        nested = INSTALLED_HOST.subprocess_failure("phase", completed)
+        self.assertEqual(INSTALLED_HOST.failure_record(nested, phase="bootstrap"), record)
+        for error in (nested, PACKAGER._subprocess_failure("cold", completed)):
+            message = str(error)
+            for part in ("host=claude", "family=recursion", "error=RecursionError",
+                         "audit_event=open", "audit_site=path-guard", "audit_depth=outer"):
+                self.assertIn(part, message)
+        tainted = subprocess.CompletedProcess([], 1, b"", b"PrivateFixtureValue-arbitrary-stderr")
+        for error in (INSTALLED_HOST.subprocess_failure("phase", tainted), PACKAGER._subprocess_failure("cold", tainted)):
+            self.assertNotIn("PrivateFixtureValue", str(error))
+            self.assertIn(hashlib.sha256(tainted.stderr).hexdigest(), str(error))
+
+    def test_v2_keeps_exact_legacy_v1_decoder_and_nested_record(self):
+        legacy = {"format": "codearbiter.installed-host-failure/0.1.0", "phase": "commit-proof",
+                  "step": "enforce_runtime_event", "error": "unclassified", "code": "unclassified"}
+        self.assertEqual(INSTALLED_HOST.decode_failure(json.dumps(legacy).encode()), legacy)
+        completed = subprocess.CompletedProcess([], 1, b"", json.dumps(legacy).encode())
+        self.assertEqual(INSTALLED_HOST.failure_record(INSTALLED_HOST.subprocess_failure("legacy", completed), phase="bootstrap"), legacy)
+        self.assertIsNone(INSTALLED_HOST.decode_failure(json.dumps({**legacy, "host": "pi"}).encode()))
+
+    def audited_child(self, mode):
+        verifier = REPO / ".github/scripts/test_artifact_installed_host.py"
+        script = r'''
+import importlib.util,json,os,sys
+from pathlib import Path
+s=importlib.util.spec_from_file_location('owned_verifier',sys.argv[1]);v=importlib.util.module_from_spec(s);s.loader.exec_module(v)
+v._FAILURE_HOST='claude'
+original_context=v.__dict__.get('_closed_audit_context')
+if sys.argv[2]=='observer-failure':
+ def broken_context(_value):raise ValueError('PrivateFixtureValue-observer-error')
+ v._closed_audit_context=broken_context
+v.install_runtime_guard(Path(sys.executable).resolve(),binary_sha256='0'*64,permit_verifier_children=False)
+class NestedPath(os.PathLike):
+ def __fspath__(self):
+  sys.audit('socket.connect','PrivateFixtureValue-audit-payload')
+  return 'PrivateFixtureValue-path'
+class BrokenLibrary:
+ def __str__(self):raise NotADirectoryError('PrivateFixtureValue-message')
+try:
+ if sys.argv[2]=='nested':sys.audit('open',NestedPath(),'r',0)
+ elif sys.argv[2]=='builtin':sys.audit('ctypes.dlopen',BrokenLibrary())
+ else:sys.audit('socket.connect','PrivateFixtureValue-audit-payload')
+except Exception as error:
+ if sys.argv[2]=='observer-failure':v._closed_audit_context=original_context
+ print(json.dumps(v.failure_record(error,phase='commit-proof'),sort_keys=True))
+else:raise AssertionError('actual guard did not refuse inert audit control')
+'''
+        env = {key: os.environ[key] for key in ("SystemRoot", "WINDIR", "TEMP", "TMP") if key in os.environ}
+        env.update(HOME=str(self.base), USERPROFILE=str(self.base), PATH=str(self.base))
+        result = subprocess.run([sys.executable, "-I", "-B", "-c", script, str(verifier), mode],
+                                stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=self.base,
+                                timeout=10, check=False, env=env)
+        self.assertEqual(result.returncode, 0, f"diagnostic child failed; stderr_sha256={hashlib.sha256(result.stderr).hexdigest()}")
+        self.assertEqual(result.stderr, b"")
+        self.assertNotIn(b"PrivateFixtureValue", result.stdout)
+        return json.loads(result.stdout)
+
+    def test_v2_real_audit_denial_reports_closed_outer_context(self):
+        self.assertEqual(self.audited_child("network"), self.v2(error="RuntimeError", family="runtime", audit_event="network", audit_site="network-guard"))
+
+    def test_v2_real_nested_audit_retains_deepest_context(self):
+        self.assertEqual(self.audited_child("nested"), self.v2(error="RuntimeError", family="runtime", audit_event="network", audit_site="network-guard", audit_depth="nested"))
+
+    def test_v2_real_guard_builtin_failure_has_safe_subtype_and_site(self):
+        self.assertEqual(self.audited_child("builtin"), self.v2(error="NotADirectoryError", family="filesystem", audit_event="native-library", audit_site="library-guard"))
+
+    def test_v2_diagnostic_observer_failure_never_replaces_guard_failure(self):
+        self.assertEqual(self.audited_child("observer-failure"), self.v2(error="RuntimeError", family="runtime", audit_event="none", audit_site="none", audit_depth="none"))
+
+    def test_v2_custom_context_failure_keeps_closed_cli_output(self):
+        import contextlib
+        import io
+        def private_getter(_self):
+            raise ValueError("PrivateFixtureValue-property")
+        cases = [(field, type("PrivateFixtureValueError", (Exception,), {field: property(private_getter)})("PrivateFixtureValue-primary"), False)
+                 for field in ("_cold_audit_failure", "failure_record", "code")]
+        cases.append(("decoder", RuntimeError("PrivateFixtureValue-primary"), True))
+        for field, error, broken_decoder in cases:
+            with self.subTest(field=field):
+                output = io.StringIO()
+                with mock.patch.object(INSTALLED_HOST, "main", side_effect=error), \
+                     mock.patch.object(INSTALLED_HOST, "_FAILURE_PHASE", "commit-proof"), \
+                     mock.patch.object(INSTALLED_HOST, "_FAILURE_HOST", "pi"), \
+                     contextlib.ExitStack() as stack:
+                    if broken_decoder:
+                        stack.enter_context(mock.patch.object(INSTALLED_HOST, "_closed_audit_context", side_effect=ValueError("PrivateFixtureValue-decoder")))
+                    stack.enter_context(contextlib.redirect_stderr(output))
+                    self.assertEqual(INSTALLED_HOST.run_cli(), 1)
+                record = INSTALLED_HOST.decode_failure(output.getvalue().encode())
+                self.assertIsNotNone(record)
+                self.assertEqual(record["host"], "pi")
+                self.assertEqual(record["error"], "RuntimeError" if broken_decoder else "unclassified")
+                self.assertEqual((record["audit_event"], record["audit_site"], record["audit_depth"]), ("none", "none", "none"))
+                self.assertNotIn("PrivateFixtureValue", output.getvalue())
+
+
+
+
+class RuntimeAuditPlatformTests(unittest.TestCase):
+    """Real audit-hook controls, isolated from native package fixture setup."""
+
+    def audited_platform_child(self, mode):
+        temporary = tempfile.TemporaryDirectory(prefix="ca-audit-platform-")
+        self.addCleanup(temporary.cleanup)
+        root = Path(temporary.name).resolve(strict=True)
+        binary = root / "inert-pinned-binary"
+        binary.write_bytes(b"not executable; audit event input only")
+        unreviewed = root / "inert-unreviewed-binary"
+        unreviewed.write_bytes(b"not executable; refusal input only")
+        verifier = REPO / ".github/scripts/test_artifact_installed_host.py"
+        script = r"""
+import hashlib,importlib.util,json,os,sys
+from pathlib import Path
+verifier=Path(sys.argv[1]).resolve(strict=True)
+s=importlib.util.spec_from_file_location('owned_audit_verifier',verifier)
+v=importlib.util.module_from_spec(s);s.loader.exec_module(v)
+v._FAILURE_HOST='claude'
+binary=Path(sys.argv[2]).resolve(strict=True)
+unreviewed=Path(sys.argv[3]).resolve(strict=True)
+python=Path(sys.executable).resolve(strict=True)
+child_environment={'PATH':os.environ['PATH']}
+verifier_event=(str(python),[str(python),'-I','-B',str(verifier)],None,child_environment)
+probe_calls=0
+def nested_platform_probe():
+ global probe_calls
+ probe_calls+=1
+ sys.audit('subprocess.Popen',*verifier_event)
+ return 'Windows'
+v.platform.system=nested_platform_probe if sys.argv[4]=='verifier' else lambda:'Windows'
+v.install_runtime_guard(binary,binary_sha256=hashlib.sha256(binary.read_bytes()).hexdigest(),permit_verifier_children=True)
+if sys.argv[4]=='verifier':
+ failure=None
+ try:sys.audit('subprocess.Popen',*verifier_event)
+ except Exception as error:failure=v.failure_record(error,phase='commit-proof')
+ print(json.dumps({'outcome':'allowed' if failure is None else 'refused','dynamic_probe_calls':probe_calls,'failure':failure},sort_keys=True))
+else:
+ outcomes=[]
+ for event,details in [('subprocess.Popen',(str(unreviewed),[str(unreviewed)],None,{})),('socket.connect',(None,('127.0.0.1',9))),('os.system',('inert-not-executed',))]:
+  try:sys.audit(event,*details)
+  except Exception as error:
+   record=v.failure_record(error,phase='commit-proof')
+   outcomes.append({'error':record['error'],'event':record['audit_event'],'site':record['audit_site']})
+  else:outcomes.append({'error':'NOT_REFUSED'})
+ print(json.dumps({'denials':outcomes},sort_keys=True))
+"""
+        environment = {key: os.environ[key] for key in ("SystemRoot", "WINDIR", "COMSPEC", "PATHEXT") if key in os.environ}
+        environment.update(HOME=str(root), USERPROFILE=str(root), APPDATA=str(root), LOCALAPPDATA=str(root),
+                           TEMP=str(root), TMP=str(root), PATH=str(root), PYTHONNOUSERSITE="1", PYTHONDONTWRITEBYTECODE="1")
+        result = subprocess.run([sys.executable, "-I", "-B", "-X", f"pycache_prefix={root / 'pycache'}",
+                                 "-c", script, str(verifier), str(binary), str(unreviewed), mode],
+                                cwd=root, env=environment, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                                timeout=15, check=False)
+        self.assertEqual(result.returncode, 0, f"audit child failed; stderr_sha256={hashlib.sha256(result.stderr).hexdigest()}")
+        self.assertEqual(result.stderr, b"")
+        self._audit_child_result = json.loads(result.stdout)
+        return self._audit_child_result
+
+    def test_valid_verifier_audit_never_runs_dynamic_platform_discovery(self):
+        result = self.audited_platform_child("verifier")
+        self.assertEqual(result, {"outcome": "allowed", "dynamic_probe_calls": 0, "failure": None})
+
+    def test_unknown_process_network_and_process_escape_still_refuse(self):
+        result = self.audited_platform_child("denials")
+        self.assertEqual(result, {"denials": [
+            {"error": "RuntimeError", "event": "subprocess", "site": "resolved-other-refusal"},
+            {"error": "RuntimeError", "event": "network", "site": "network-guard"},
+            {"error": "RuntimeError", "event": "process-escape", "site": "process-guard"},
+        ]})
+
+
+
+    def test_darwin_stage_keeps_exact_hash_and_mode_guards_with_inert_bytes(self):
+        import importlib.util
+        from unittest import mock
+        source = REPO / ".github/scripts/test_artifact_installed_host.py"
+        spec = importlib.util.spec_from_file_location("owned_darwin_audit_guard", source)
+        verifier = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(verifier)
+        with tempfile.TemporaryDirectory(prefix="ca-audit-pinned-") as original_root, \
+             tempfile.TemporaryDirectory(prefix="ca-artifact-exec-") as staged_root:
+            binary = Path(original_root).resolve(strict=True) / "inert-original"
+            contents = b"inert audit-only stage fixture; never executed"
+            binary.write_bytes(contents)
+            staged = Path(staged_root).resolve(strict=True) / "ca-artifact"
+            staged.write_bytes(contents)
+            details = (str(staged), [str(staged), "capabilities"], None, {})
+            # Darwin mode representation is simulated on Windows; path/regular
+            # file identity, exact bytes and SHA256 comparisons stay real.
+            with mock.patch.object(verifier.sys, "platform", "darwin"), \
+                 mock.patch.object(verifier.stat, "S_IMODE", return_value=0o500) as mode:
+                verifier.enforce_runtime_event("subprocess.Popen", details, binary=binary,
+                    binary_sha256=hashlib.sha256(contents).hexdigest(), permit_verifier_children=False)
+                mode.return_value = 0o600
+                with self.assertRaisesRegex(RuntimeError, "blocked an unreviewed process"):
+                    verifier.enforce_runtime_event("subprocess.Popen", details, binary=binary,
+                        binary_sha256=hashlib.sha256(contents).hexdigest(), permit_verifier_children=False)
+                mode.return_value = 0o500
+                staged.write_bytes(contents + b"drift")
+                with self.assertRaisesRegex(RuntimeError, "blocked an unreviewed process"):
+                    verifier.enforce_runtime_event("subprocess.Popen", details, binary=binary,
+                        binary_sha256=hashlib.sha256(contents).hexdigest(), permit_verifier_children=False)
+
+
+    def test_launch_refusal_diagnostic_distinguishes_closed_targets_without_payload(self):
+        import importlib.util
+        import types
+        from unittest import mock
+        source = REPO / ".github/scripts/test_artifact_installed_host.py"
+        spec = importlib.util.spec_from_file_location("owned_launch_diagnostic", source)
+        verifier = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(verifier)
+        verifier._FAILURE_HOST = "claude"
+        with tempfile.TemporaryDirectory(prefix="ca-inert-launch-diagnostic-") as temporary:
+            root = Path(temporary).resolve(strict=True)
+            pinned = root / "pinned" / "ca-artifact.exe"
+            pinned.parent.mkdir()
+            pinned.write_bytes(b"inert bytes; never executed")
+            rejected = root / "rejected"
+            rejected.mkdir()
+            cases = [
+                ("windows-command", "PrivateProcessCanary.exe", "windows-command-refusal"),
+                ("resolved-git", "git.exe", "resolved-git-refusal"),
+                ("resolved-python", "python.exe", "resolved-python-refusal"),
+                ("resolved-native", "ca-artifact.exe", "resolved-native-refusal"),
+                ("resolved-other", "PrivateProcessCanary.exe", "resolved-other-refusal"),
+            ]
+            callbacks = []
+            with mock.patch.object(verifier.sys, "addaudithook", side_effect=callbacks.append):
+                verifier.install_runtime_guard(pinned, binary_sha256=hashlib.sha256(pinned.read_bytes()).hexdigest(), permit_verifier_children=False)
+            self.assertEqual(len(callbacks), 1)
+            callback = callbacks[0]
+            for name, basename, expected_site in cases:
+                with self.subTest(name=name):
+                    unknown = rejected / basename
+                    unknown.write_bytes(b"inert rejected bytes; never executed")
+                    if name == "windows-command":
+                        details = (None, subprocess.list2cmdline([str(unknown), "PrivateArgCanary"]), None, {})
+                    else:
+                        details = (str(unknown), [str(unknown), "PrivateArgCanary"], None, {})
+                    # This proxy selects only the policy's Windows string
+                    # representation. It does not change pathlib's host OS.
+                    with mock.patch.object(verifier, "os", types.SimpleNamespace(name="nt", environ={})), self.assertRaisesRegex(RuntimeError, "blocked an unreviewed process") as raised:
+                        callback("subprocess.Popen", details)
+                    record = verifier.failure_record(raised.exception, phase="author-dispatch")
+                    self.assertEqual(record["audit_event"], "subprocess")
+                    self.assertEqual(record["audit_depth"], "outer")
+                    self.assertEqual(record["audit_site"], expected_site)
+                    self.assertEqual(record["error"], "RuntimeError")
+                    raw = json.dumps(record, sort_keys=True).encode()
+                    self.assertEqual(verifier.decode_failure(raw), record)
+                    for private in (str(root), "PrivateProcessCanary", "PrivateArgCanary", "inert rejected"):
+                        self.assertNotIn(private, raw.decode())
+                    legacy = {**record, "audit_site": "launch-guard"}
+                    self.assertEqual(verifier.decode_failure(json.dumps(legacy).encode()), legacy)
+                    self.assertIsNone(verifier.decode_failure(json.dumps({**record, "audit_site": "PrivateSiteCanary"}).encode()))
+            # Both pinned-binary launch representations remain allowed. The
+            # callback is invoked as a plain function, never installed live.
+            with mock.patch.object(verifier, "os", types.SimpleNamespace(name="nt", environ={})):
+                callback("subprocess.Popen", (None, subprocess.list2cmdline([str(pinned)]), None, {}))
+                callback("subprocess.Popen", (str(pinned), [str(pinned)], None, {}))
+            with self.assertRaisesRegex(RuntimeError, "forbids network access"):
+                callback("socket.connect", (None, ("127.0.0.1", 9)))
+
+    def test_installed_native_windows_selection_needs_no_version_shell(self):
+        import platform
+        import types
+        from unittest import mock
+        import importlib.util
+        source = REPO / ".github/scripts/test_artifact_installed_host.py"
+        spec = importlib.util.spec_from_file_location("owned_windows_version_guard", source)
+        guard = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(guard)
+        guard._FAILURE_HOST = "claude"
+        with tempfile.TemporaryDirectory(prefix="ca-inert-version-") as temporary:
+            root = Path(temporary).resolve(strict=True)
+            binary = root / "ca-artifact-windows-arm64.exe"
+            binary.write_bytes(b"inert native identity; never executed")
+            command = root / "cmd.exe"
+            command.write_bytes(b"inert shell identity; never executed")
+            callbacks = []
+            with mock.patch.object(guard.sys, "addaudithook", side_effect=callbacks.append):
+                guard.install_runtime_guard(binary, binary_sha256=hashlib.sha256(binary.read_bytes()).hexdigest(), permit_verifier_children=False)
+            self.assertEqual(len(callbacks), 1)
+            callback = callbacks[0]
+            observations = []
+            launch_calls = []
+            def no_process(*args, **kwargs):
+                # The real stdlib chooses this fixed version query. Its
+                # effect is replaced BEFORE any process creation. The audit
+                # event uses owned inert executable bytes, never a real shell.
+                launch_calls.append({"fixed_ver": args == ("ver",), "shell": kwargs.get("shell") is True})
+                callback("subprocess.Popen", (str(command), [str(command), "/c", "ver"], root, {}))
+                self.fail("strict guard unexpectedly admitted the inert shell event")
+            for boundary in ("native-selection", "exchange-dispatch"):
+                # Fresh uname cache reproduces a new verifier interpreter;
+                # WMI absence is the only injected version-discovery failure.
+                with mock.patch.object(platform.sys, "platform", "win32"), \
+                     mock.patch.object(platform.os, "uname", side_effect=AttributeError("inert Windows has no uname"), create=True), \
+                     mock.patch.object(platform, "_uname_cache", None), \
+                     mock.patch.object(platform, "_wmi_query", side_effect=OSError("inert WMI unavailable"), create=True), \
+                     mock.patch.object(platform.sys, "getwindowsversion", return_value=types.SimpleNamespace(product_type=1), create=True), \
+                     mock.patch.object(_artifactlib, "_windows_native_architecture", return_value="arm64") as native_arch, \
+                     mock.patch.object(subprocess, "Popen", side_effect=no_process), \
+                     mock.patch.object(_artifactlib, "_bounded_child", return_value=(0, b'{"protocol":"codearbiter.artifact-api/0.1.0","operation":"capabilities","ok":true,"result":{}}', b"")) as exchange:
+                    error = None
+                    try:
+                        if boundary == "native-selection":
+                            value = _artifactlib._host_platform()
+                        else:
+                            client = object.__new__(_artifactlib.ArtifactClient)
+                            client.root, client.installation, client.timeout = root, root, 1
+                            client.initialize_store = False
+                            fd = os.open(binary, os.O_RDONLY)
+                            with mock.patch.object(client, "_open_binary", return_value=fd), \
+                                 mock.patch.object(client, "_binary_name", return_value=binary.name):
+                                value = client._exchange("capabilities", {}, False)
+                    except RuntimeError as refused:
+                        error = guard.failure_record(refused, phase="commit-proof")
+                    observations.append({"boundary": boundary, "outcome": "refused" if error else "returned", "audit_site": error["audit_site"] if error else None, "native_arch_calls": native_arch.call_count, "native_exchange_calls": exchange.call_count})
+            self._version_discovery_observation = {"boundaries": observations, "launch_calls": launch_calls, "actual_child_processes": 0, "actual_DLL_calls": 0, "original_hosted_target": "UNKNOWN"}
+            # Desired API behavior is selection/dispatch, not Windows version
+            # discovery. This assertion must genuinely fail on current source.
+            self.assertEqual(observations, [
+                {"boundary": "native-selection", "outcome": "returned", "audit_site": None, "native_arch_calls": 1, "native_exchange_calls": 0},
+                {"boundary": "exchange-dispatch", "outcome": "returned", "audit_site": None, "native_arch_calls": 0, "native_exchange_calls": 1},
+            ], "installed native selection/dispatch attempted an unnecessary version shell")
+            self.assertEqual(launch_calls, [])
+
 
 
 if __name__ == "__main__":

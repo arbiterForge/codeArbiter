@@ -1,0 +1,20 @@
+{
+  "source_commit": "af5f74a6afb0090a378520f7e175a8cb2ea29d39",
+  "inputs_before": {
+    "tools/test_measurement_contracts.py": "465bc7fc7db01c7fac8cc6338a5c6de56427d23d0498f1d38500631303b7b586",
+    "tools/statusline-bench.py": "d65fb0d3d65a27b5b95960f183567ba581d00b4ea4e8b332abd9cc23d6e14697",
+    "tools/live-smarts-exercise.py": "c29f8b611d2675176ef77b5ca605ca2fc1684610db8bd3ca8f75815df7ba6bc1",
+    "tools/statusline-screenshot.py": "b1c74dc6c9fecb616aa75ae16a8d30ea86617eb23b7c4d1c157ea5eb43393a8a",
+    "tools/farm-first-pass.py": "8f64f88d8174d5696fbb431bde4d79e86a93b2e9989b009883191c1f0792810c",
+    "tools/owned_output.py": "52ee664a00b4f66df8f585047cf38a839428c489762890208a9db1961060b22c"
+  },
+  "inputs_after": {
+    "tools/test_measurement_contracts.py": "465bc7fc7db01c7fac8cc6338a5c6de56427d23d0498f1d38500631303b7b586",
+    "tools/statusline-bench.py": "d65fb0d3d65a27b5b95960f183567ba581d00b4ea4e8b332abd9cc23d6e14697",
+    "tools/live-smarts-exercise.py": "c29f8b611d2675176ef77b5ca605ca2fc1684610db8bd3ca8f75815df7ba6bc1",
+    "tools/statusline-screenshot.py": "b1c74dc6c9fecb616aa75ae16a8d30ea86617eb23b7c4d1c157ea5eb43393a8a",
+    "tools/farm-first-pass.py": "8f64f88d8174d5696fbb431bde4d79e86a93b2e9989b009883191c1f0792810c",
+    "tools/owned_output.py": "52ee664a00b4f66df8f585047cf38a839428c489762890208a9db1961060b22c"
+  },
+  "stable": true
+}
