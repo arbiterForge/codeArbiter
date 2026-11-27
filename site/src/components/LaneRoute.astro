@@ -1,43 +1,21 @@
 ---
 /**
- * LaneRoute.astro - a lane's real route as a line of machine frames.
+ * LaneRoute.astro - a lane's real route as a line of machine frames (landing lane cards).
  *
- * The stops come from the lane's reviewed route in the machine model (parts.json), so the
- * line shows the order a change actually travels: the frame says what each stop is, the
- * colour what happens there (gold waits on a gate or on you, green passes, red fails or
- * refuses). Decorative: the card's own text names the lane, and /concepts/machine/ walks
- * the route in words.
+ * The stops and markup come from scripts/generator/machine-joins.ts, the same renderer the
+ * generated command pages use, so the route a card shows is the route the machine model keeps:
+ * the frame says what each stop is, the colour what happens there (gold waits on a gate or on
+ * you, green passes, red fails first or refuses). Decorative: the card's text names the lane.
  */
-import parts from '../../scripts/machine/machine-data/parts.json';
-import key from '../../scripts/machine/machine-data/key.json';
-import { framePath } from '../../scripts/machine/machine-render';
+import { routeLineHtml, routeStops } from '../../scripts/generator/machine-joins';
 
 interface Props {
   /** Lane part id, such as "ca-feature". */
   lane: string;
 }
 
-type Part = { kind: string; name?: string; cmd?: string; route?: [string, string, string][] };
-const all = parts as unknown as Record<string, Part>;
-const frames = key.kindFrames as Record<string, string>;
-const { lane } = Astro.props;
-const route = all[lane]?.route;
-if (!route?.length) throw new Error(`LaneRoute: machine part ${lane} has no route`);
-
-const TONE: Record<string, string> = { run: 'steel', gate: 'brand', ask: 'brand', pass: 'positive', fail: 'danger', stop: 'danger', block: 'danger', preview: 'preview' };
-const stops = route.map(([part, verdict]) => {
-  const machinePart = all[part];
-  if (!machinePart) throw new Error(`LaneRoute: ${lane} routes through unknown part ${part}`);
-  // Lane parts carry a command rather than a name.
-  const name = machinePart.name ?? (machinePart.cmd ? `/ca:${machinePart.cmd}` : part);
-  return { shape: frames[machinePart.kind] ?? 'square', tone: TONE[verdict] ?? 'steel', name, verdict };
-});
+const stops = routeStops(Astro.props.lane);
+if (stops.length === 0) throw new Error(`LaneRoute: machine part ${Astro.props.lane} has no route`);
 ---
 
-<div class="ca-route" aria-hidden="true" style={`--stops:${stops.length}`}>
-  {stops.map((stop, index) => (
-    <span class="ca-route__stop" data-tone={stop.tone} title={`${stop.name} (${stop.verdict})`} style={`--i:${index}`}>
-      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" set:html={framePath(stop.shape)} />
-    </span>
-  ))}
-</div>
+<Fragment set:html={routeLineHtml(stops)} />

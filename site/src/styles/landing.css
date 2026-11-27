@@ -718,45 +718,10 @@ ca-splash-docs {
   margin-block-end: 0;
 }
 
-.ca-route {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-block-start: auto;
-  padding-block-start: var(--ca-space-5);
-}
-
-.ca-route::before {
-  position: absolute;
-  inset-inline: 0.6rem;
-  inset-block-end: 0.62rem;
-  height: 1px;
-  background: linear-gradient(90deg, var(--ca-line-strong), var(--ca-line));
-  content: "";
-}
-
-.ca-route__stop {
-  --tone: var(--ca-steel);
-  position: relative;
-  display: inline-grid;
-  width: 1.25rem;
-  height: 1.25rem;
-  place-items: center;
-  border-radius: 50%;
+/* Route lines (design-system.css) start muted on the landing and light up with their card. */
+.ca-lane-card .ca-route__stop {
   color: color-mix(in srgb, var(--tone) 70%, var(--ca-ink-muted));
-  background: var(--ca-bg-panel);
-  transition: color var(--ca-dur-fast) ease calc(var(--i) * 45ms), filter var(--ca-dur-fast) ease calc(var(--i) * 45ms);
-}
-
-.ca-route__stop[data-tone="brand"] { --tone: var(--ca-brand); }
-.ca-route__stop[data-tone="positive"] { --tone: var(--ca-positive); }
-.ca-route__stop[data-tone="danger"] { --tone: var(--ca-danger); }
-.ca-route__stop[data-tone="preview"] { --tone: var(--ca-preview); }
-
-.ca-route__stop svg {
-  width: 1rem;
-  height: 1rem;
+  filter: none;
 }
 
 .ca-lane-card:hover .ca-route__stop,

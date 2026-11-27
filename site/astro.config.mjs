@@ -161,6 +161,11 @@ export default defineConfig({
         remarkCapturedRun({ capturesDir: fileURLToPath(new URL("./src/assets/captures/", import.meta.url)) }),
       ],
       rehypePlugins: [rehypeBaseLinks(BASE), rehypeTableShell()],
+      // Command-line flags must print as typed: smart dashes turned `--no-verify` and
+      // `--ff-only` into dashes in prose. VOICE.md already keeps dashes out of sentences,
+      // so dash conversion buys nothing here. Quotes and ellipses keep their typography.
+      // test/content/verbatim-flags.test.ts scans the built site for a mangled flag.
+      smartypants: { dashes: false },
     }),
   },
   integrations: [

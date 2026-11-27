@@ -1,4 +1,5 @@
 /** render-command-page.ts — codeArbiter's command reference page renderer. */
+import { lanePartFor, routeLineHtml, routeStops } from "./machine-joins";
 import type { PageInput } from "./types";
 import { yamlDescriptionLine } from "./yaml-quote";
 import { renderSourceEmbed, renderWorkflowSourceEmbed } from "./render-source-embed";
@@ -48,8 +49,8 @@ export function renderCommandPage(input: PageInput): string {
     const flag = forgeStatus.flag;
     decoration =
       `<div class="ca-callout ca-callout--preview">` +
-      `<p class="ca-callout__label">Feature Forge — preview</p>` +
-      `<p><code>${flag}</code> — preview. This flag is part of the Feature Forge and ships dormant by default. Promotion to stable is driven by real-world evidence.</p>` +
+      `<p class="ca-callout__label">Feature Forge: preview</p>` +
+      `<p><code>${flag}</code> is a preview flag. It is part of the Feature Forge and ships dormant by default. Promotion to stable is driven by real-world evidence.</p>` +
       `</div>\n\n`;
   }
 
@@ -106,7 +107,17 @@ export function renderCommandPage(input: PageInput): string {
   // The source catalog supplies membership. Unknown synthetic entities must not
   // acquire broken links, and this remains generated rather than hand-copied.
   if (commandCatalog && /^[a-z][a-z0-9-]*$/.test(name)) {
-    sections.push(`## Route context\n\n[Find this entry in the workflow atlas](/concepts/workflow-routes/#atlas-${name}). Compare its related teaching maps, host spelling and context inputs. The exact procedure below remains the owner.`);
+    // The lane the machine model keeps for this command (machine-joins.ts): its real route as
+    // decorative frames, then the same facts in words, then the existing atlas pointer.
+    const lane = lanePartFor(name);
+    const stops = lane ? routeStops(lane.id) : [];
+    const waits = stops.filter((stop) => stop.verdict === "gate" || stop.verdict === "ask").length;
+    const machine = lane
+      ? `${stops.length > 0 ? `${routeLineHtml(stops)}\n\n` : ""}In the machine, this command is the [${lane.name}](${lane.href})` +
+        (stops.length > 0 ? `: ${stops.length} stops${waits > 0 ? `, waiting at ${waits} of them on a gate or on you` : ""}` : "") +
+        ". Open it there to walk the route or run it in 3D. "
+      : "";
+    sections.push(`## Route context\n\n${machine}[Find this entry in the workflow atlas](/concepts/workflow-routes/#atlas-${name}). Compare its related teaching maps, host spelling and context inputs. The exact procedure below remains the owner.`);
   }
 
   const sourceEmbed = workflowSkill

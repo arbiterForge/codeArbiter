@@ -388,5 +388,13 @@ each step carries its full terminal text, which the phone layout shows in the st
   scroll into view, through CSS scroll-driven animation only where the browser supports it and
   motion is allowed. Their default is the finished drawing.
 
+- **Machine joins.** Every page says where it sits in the machine. Generated reference pages join
+  through `scripts/generator/machine-joins.ts`, from the model's cited sources, lanes, hooks lists
+  and scenario tags; hand-authored pages through `src/data/machine-map.json` and the orientation
+  strip's "In the machine" chips. A lane's route renders with the shared `.ca-route` line on the
+  landing and on its command page. Chip colours follow the part's zone.
+- **Verbatim technical text.** Text a reader may copy (flags, hook messages) never passes through
+  smart typography: dash conversion is off, and hook messages render as escaped HTML.
+
 Verify each scene's steps in a real browser: autoplay and pause, keyboard stepping, reduced
 motion, no JavaScript, the phone composition, forced colors and axe, plus inspected captures.
