@@ -362,8 +362,9 @@ initialization alternatives, same-fragment links and keyboard focus against buil
 
 `SITE-OVERHAUL.md` owns the program; S1 adds the engine. A scene (`scripts/scenes/`) is machine
 parts, handoffs, terminal notes and ordered steps. `validateScene` rejects a scene whose elements
-are not each revealed exactly once, whose steps focus or travel what is not yet shown, whose
-geometry leaves its frame or whose terminal text overflows its box. `renderSceneSvg` draws a wide
+are not each revealed exactly once, whose steps focus or travel what is not yet shown, whose node
+or note boxes or handoff vertices leave the frame of either composition, or whose labels or
+terminal text overflow their boxes. `renderSceneSvg` draws a wide
 composition for desktop columns and a tall one for phones from the same model, so a narrow screen
 gets a re-laid diagram, never a shrunken one. Terminal notes appear only in the wide drawing;
 each step carries its full terminal text, which the phone layout shows in the step text.
@@ -383,12 +384,16 @@ each step carries its full terminal text, which the phone layout shows in the st
   never jumps.
 - **Autoplay.** Only the landing hero plays on its own: while a third of it is on screen, the tab
   is visible and motion is allowed, always with a visible pause control. Any control hands the
-  reader the steps for the rest of the visit. Other scenes wait for Play or a step.
+  reader the steps for the rest of the visit. Other scenes wait for Play or a step. Pausing, or
+  the scene leaving the screen, takes the token off and settles the current step at once, so
+  nothing moves after the reader has stopped it.
 - **Lifecycle.** Players are created on `astro:page-load` and destroyed on `astro:before-swap`:
   timers, animation frames, observers and listeners. No storage, history or network use.
 - **Scroll-linked drawings.** Small decorative drawings (the landing outcomes) may assemble as they
   scroll into view, through CSS scroll-driven animation only where the browser supports it and
-  motion is allowed. Their default is the finished drawing.
+  motion is allowed. Their default is the finished drawing. A card that holds one clips with
+  `overflow: clip`: `hidden` makes it a scroll container, and the drawing would track the card
+  instead of the page and never assemble.
 
 - **Machine joins.** Every page says where it sits in the machine. Generated reference pages join
   through `scripts/generator/machine-joins.ts`, from the model's cited sources, lanes, hooks lists

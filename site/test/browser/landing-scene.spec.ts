@@ -21,6 +21,34 @@ test('the hero trace plays on its own with a working pause control', async ({ pa
   expect(await step(page)).toBe(held);
 });
 
+test('pausing while the token travels stops it at once and settles the step', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/');
+  const root = page.locator(scene);
+  await expect(root).toHaveAttribute('data-js', 'on');
+  const token = root.locator('.ca-scene__svg--wide [data-token]');
+  // Wait for the token to be on a handoff, then pause in the middle of its travel and read
+  // the result in the same task, before any animation frame could run.
+  await expect(token).toHaveAttribute('data-on', 'true', { timeout: 9000 });
+  const atPause = await root.evaluate((el) => {
+    el.querySelector<HTMLButtonElement>('[data-scene-toggle]')!.click();
+    const focus = el.querySelector('.ca-scene__svg--wide [data-focus]');
+    return {
+      moving: el.querySelector('.ca-scene__svg--wide [data-token]')!.hasAttribute('data-on'),
+      settled: Boolean(focus?.getAttribute('data-verdict')),
+    };
+  });
+  expect(atPause).toEqual({ moving: false, settled: true });
+  const held = await step(page);
+  const before = await token.getAttribute('transform');
+  for (let sample = 0; sample < 6; sample += 1) {
+    await page.waitForTimeout(250);
+    expect(await token.getAttribute('data-on')).toBeNull();
+    expect(await token.getAttribute('transform')).toBe(before);
+  }
+  expect(await step(page)).toBe(held);
+});
+
 test('keyboard steps the scene and hands control to the reader', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/');
@@ -156,10 +184,47 @@ test('print shows every step and every note, without the token', async ({ page }
   await expect(root.locator('.ca-scene__svg--wide [data-token]').first()).toBeHidden();
 });
 
+test('print draws every handoff in full, even one that was mid-draw on screen', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/');
+  const root = page.locator(scene);
+  await expect(root).toHaveAttribute('data-js', 'on');
+  // Step 3 (the hook) draws a handoff: it is the active edge, dashed out until its draw
+  // animation runs.
+  await root.locator('[data-scene-go="2"]').click();
+  const active = root.locator('.ca-scene__svg--wide .ca-scene__edge[data-state="active"]');
+  await expect(active).toHaveCount(1);
+  await page.emulateMedia({ media: 'print' });
+  await expect(active).toHaveCSS('stroke-dashoffset', '0px');
+  for (const edge of await root.locator('.ca-scene__svg--wide .ca-scene__edge').all()) {
+    await expect(edge).toHaveCSS('opacity', '1');
+    await expect(edge).toHaveCSS('stroke-dasharray', 'none');
+  }
+});
+
 test('the landing passes automated accessibility checks', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/');
   await expect(page.locator(scene)).toHaveAttribute('data-js', 'on');
   const result = await new AxeBuilder({ page }).include('.ca-landing').withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
   expect(result.violations.map((violation) => `${violation.id}: ${violation.nodes.map((node) => node.target.join(' ')).join(', ')}`)).toEqual([]);
+});
+
+test('outcome drawings assemble with page scrolling, and stay finished under reduced motion', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  const podAt = async (offset: number) =>
+    page.evaluate((delta) => {
+      const pod = document.querySelector<SVGGElement>('.ca-vignette__pod')!;
+      const card = pod.closest('.ca-feature')!;
+      scrollTo({ top: card.getBoundingClientRect().top + scrollY + delta, behavior: 'instant' });
+      return new Promise<number>((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve(Math.round(new DOMMatrix(getComputedStyle(pod).transform).e)))));
+    }, offset);
+  await page.goto('/');
+  // The card's top at the bottom edge of the viewport: the drawing has not started.
+  expect(await podAt(-900)).toBe(0);
+  // Well inside the viewport: the drawing is finished.
+  expect(await podAt(-300)).toBe(118);
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.reload();
+  expect(await podAt(-900)).toBe(118);
 });

@@ -65,6 +65,22 @@ describe("validateScene", () => {
     expect(findings).toMatch(/edge ab ends at unknown node ghost/);
   });
 
+  it("rejects a handoff whose path leaves its composition, in either layout", () => {
+    const wide = minimal();
+    wide.edges[0].path.wide = "M180,88 H800";
+    expect(validateScene(wide).join("\n")).toMatch(/edge ab leaves the wide composition at \(800, 88\)/);
+    const tall = minimal();
+    tall.edges[0].path.tall = "M100,66 V400";
+    expect(validateScene(tall).join("\n")).toMatch(/edge ab leaves the tall composition at \(100, 400\)/);
+    const negative = minimal();
+    negative.edges[0].path.wide = "M180,88 L-4,88";
+    expect(validateScene(negative).join("\n")).toMatch(/edge ab leaves the wide composition at \(-4, 88\)/);
+    // A path that runs exactly along the frame's edge is still inside it.
+    const edge = minimal();
+    edge.edges[0].path.wide = "M180,88 H500 V200";
+    expect(validateScene(edge)).toEqual([]);
+  });
+
   it("requires every element to be revealed exactly once", () => {
     const twice = minimal();
     twice.steps[1].reveal.push("ab");

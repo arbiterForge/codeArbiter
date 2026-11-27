@@ -1105,7 +1105,6 @@ details.ca-source pre {
 .ca-machine-chip[data-zone="model"] { --tone: var(--ca-info); }
 .ca-machine-chip[data-zone="guards"] { --tone: var(--ca-danger); }
 .ca-machine-chip[data-zone="skills"] { --tone: var(--ca-info); }
-.ca-machine-chip[data-zone="lanes"] { --tone: var(--ca-brand); }
 .ca-machine-chip[data-zone="record"] { --tone: var(--ca-record); }
 .ca-machine-chip[data-zone="outside"] { --tone: var(--ca-preview); }
 

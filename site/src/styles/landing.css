@@ -551,7 +551,9 @@ ca-splash-docs {
   flex-direction: column;
   margin-block-start: 0;
   padding: var(--ca-space-5);
-  overflow: hidden;
+  /* clip, not hidden: hidden would make the card a scroll container, and the drawing's view()
+   * timeline would then track the card instead of the page, so it never assembles. */
+  overflow: clip;
   border: 1px solid var(--ca-line);
   border-radius: var(--ca-radius-lg);
   background:

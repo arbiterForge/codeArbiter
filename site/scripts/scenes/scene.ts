@@ -110,12 +110,15 @@ export function noteHeight(lines: number, kind: SceneNote["kind"] = "terminal"):
   return kind === "annotation" ? lines * METRICS.annotation.line + 4 : lines * METRICS.note.line + METRICS.note.padY * 2;
 }
 
-/** Exact length of a path made of absolute straight segments. */
-export function pathLength(d: string): number {
+/**
+ * The vertices of a path made of absolute straight segments, one run per `M`. Curves and
+ * relative commands are refused rather than guessed, so length and bounds stay exact.
+ */
+export function pathRuns(d: string): { x: number; y: number }[][] {
   const tokens = d.match(/[A-Za-z]|-?\d*\.?\d+(?:e-?\d+)?/g) ?? [];
+  const runs: { x: number; y: number }[][] = [];
   let x = 0;
   let y = 0;
-  let total = 0;
   let command = "";
   let index = 0;
   const next = () => {
@@ -123,6 +126,7 @@ export function pathLength(d: string): number {
     if (Number.isNaN(value)) throw new Error(`malformed path: ${d}`);
     return value;
   };
+  const visit = () => runs.at(-1)!.push({ x, y });
   while (index < tokens.length) {
     if (/[A-Za-z]/.test(tokens[index])) {
       command = tokens[index++];
@@ -131,24 +135,33 @@ export function pathLength(d: string): number {
     if (command === "M") {
       x = next();
       y = next();
+      runs.push([]);
+      visit();
       command = "L";
+    } else if (runs.length === 0) {
+      throw new Error(`malformed path: ${d}`);
     } else if (command === "L") {
-      const nx = next();
-      const ny = next();
-      total += Math.hypot(nx - x, ny - y);
-      x = nx;
-      y = ny;
+      x = next();
+      y = next();
+      visit();
     } else if (command === "H") {
-      const nx = next();
-      total += Math.abs(nx - x);
-      x = nx;
+      x = next();
+      visit();
     } else if (command === "V") {
-      const ny = next();
-      total += Math.abs(ny - y);
-      y = ny;
+      y = next();
+      visit();
     } else {
       throw new Error(`malformed path: ${d}`);
     }
+  }
+  return runs;
+}
+
+/** Exact length of a path made of absolute straight segments. */
+export function pathLength(d: string): number {
+  let total = 0;
+  for (const run of pathRuns(d)) {
+    for (let i = 1; i < run.length; i += 1) total += Math.hypot(run[i].x - run[i - 1].x, run[i].y - run[i - 1].y);
   }
   return Math.round(total * 100) / 100;
 }
@@ -205,6 +218,9 @@ export function validateScene(scene: Scene): string[] {
     for (const layout of LAYOUTS) {
       try {
         if (pathLength(edge.path[layout]) <= 0) findings.push(`edge ${edge.id} has no length in the ${layout} composition`);
+        const size = scene.size[layout];
+        const outside = pathRuns(edge.path[layout]).flat().find((p) => p.x < 0 || p.y < 0 || p.x > size.w || p.y > size.h);
+        if (outside) findings.push(`edge ${edge.id} leaves the ${layout} composition at (${outside.x}, ${outside.y})`);
       } catch (error) {
         findings.push(`edge ${edge.id}: ${(error as Error).message}`);
       }
