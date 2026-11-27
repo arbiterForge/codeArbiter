@@ -1,0 +1,21 @@
+---
+/**
+ * PageTools.astro - interactive tools that open a reference page, keyed by route id.
+ *
+ * Generated pages are Markdown, so a tool cannot be written into them; it renders here,
+ * between the page title and the content, and the content stays the complete static page.
+ */
+import ChangelogNavigator from './ChangelogNavigator.astro';
+import CommandMatrix from './CommandMatrix.astro';
+import GateExplorer from './GateExplorer.astro';
+
+interface Props {
+  id: string;
+}
+
+const { id } = Astro.props;
+---
+
+{id === 'reference/hooks-gates' && <GateExplorer />}
+{id === 'reference/commands' && <CommandMatrix />}
+{id === 'changelog' && <ChangelogNavigator />}

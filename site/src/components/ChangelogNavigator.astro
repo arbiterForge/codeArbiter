@@ -1,0 +1,260 @@
+---
+/**
+ * ChangelogNavigator.astro - the changelog's history at a glance, a jump to any release, and
+ * a filter over every entry on the page (scripts/explorers/changelog-index.ts).
+ *
+ * The timeline is drawn at build time: one bar per release, oldest on the left, its height the
+ * number of entries and its colours their kinds. Without JavaScript the bars are links and the
+ * page's own table of contents lists every release. With JavaScript the reader can jump to a
+ * release and filter the entries below by kind or by any word; matching releases stay lit in
+ * the timeline. Nothing is stored or sent.
+ */
+import { loadChangelogIndex, type Release } from '../../scripts/explorers/changelog-index';
+
+const releases = loadChangelogIndex();
+const oldestFirst = [...releases].reverse();
+const KINDS = ['Added', 'Changed', 'Fixed', 'Removed', 'Security'] as const;
+const kindOf = (section: string) => ((KINDS as readonly string[]).includes(section) ? section : 'Other');
+const totals: Record<string, number> = {};
+for (const release of releases) for (const [section, count] of Object.entries(release.counts)) totals[kindOf(section)] = (totals[kindOf(section)] ?? 0) + count;
+const kinds = [...KINDS.filter((kind) => totals[kind]), ...(totals.Other ? ['Other'] : [])];
+const entries = releases.reduce((sum, release) => sum + release.total, 0);
+const first = oldestFirst[0];
+const last = oldestFirst.at(-1)!;
+
+// Geometry: one bar per release, a square-root height scale so small releases stay visible.
+const BAR = 5;
+const GAP = 1.5;
+const TOP = 26;
+const HEIGHT = 92;
+const width = oldestFirst.length * (BAR + GAP);
+const max = Math.max(...releases.map((release) => release.total), 1);
+const scale = (count: number) => (Math.sqrt(count) / Math.sqrt(max)) * HEIGHT;
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+interface Bar { release: Release; x: number; segments: { kind: string; y: number; h: number }[]; month?: string; major?: string }
+const bars: Bar[] = oldestFirst.map((release, index) => {
+  const x = index * (BAR + GAP);
+  const height = Math.max(3, scale(release.total));
+  let y = TOP + HEIGHT;
+  const segments = kinds.flatMap((kind) => {
+    const count = Object.entries(release.counts).filter(([section]) => kindOf(section) === kind).reduce((sum, [, n]) => sum + n, 0);
+    if (!count || !release.total) return [];
+    const h = (count / release.total) * height;
+    y -= h;
+    return [{ kind, y, h }];
+  });
+  if (segments.length === 0) segments.push({ kind: 'Other', y: TOP + HEIGHT - 3, h: 3 });
+  const previous = oldestFirst[index - 1];
+  const month = release.date && (!previous?.date || previous.date.slice(0, 7) !== release.date.slice(0, 7))
+    ? MONTHS[Number(release.date.slice(5, 7)) - 1]
+    : undefined;
+  const major = release.version && /^\d+\.0\.0$/.test(release.version) ? release.version : undefined;
+  return { release, x, segments, month, major };
+});
+// Axis labels are HTML placed by percentage, so text stays crisp at any width. When two month
+// labels would sit closer than 9% apart, the month with more releases keeps its label.
+const pct = (x: number) => Number(((x / width) * 100).toFixed(2));
+const monthStarts = bars.flatMap((bar, index) => (bar.month ? [{ index, left: pct(bar.x), text: bar.month }] : []));
+const monthLabels: { left: number; text: string; span: number }[] = [];
+monthStarts.forEach((start, i) => {
+  const span = (monthStarts[i + 1]?.index ?? bars.length) - start.index;
+  const label = { left: start.left, text: start.text, span };
+  const previous = monthLabels.at(-1);
+  if (!previous || label.left - previous.left >= 9) monthLabels.push(label);
+  else if (label.span > previous.span) monthLabels[monthLabels.length - 1] = label;
+});
+const majorLabels = bars.filter((bar) => bar.major).map((bar) => ({ left: pct(bar.x + BAR / 2), text: bar.major! }));
+const describe = (release: Release) =>
+  `${release.version ?? release.label}${release.date && release.version ? `, ${release.date}` : ''}: ${Object.entries(release.counts).map(([section, count]) => `${count} ${section.toLowerCase()}`).join(', ') || 'no entries'}`;
+// Releases before the first versioned one are grouped by date in the changelog itself.
+const firstVersion = oldestFirst.find((release) => release.version)?.version;
+const groups = new Map<string, Release[]>();
+for (const release of releases) {
+  const key = release.version ? `${release.version.split('.')[0]}.x` : `Before ${firstVersion ?? 'versioning'}`;
+  groups.set(key, [...(groups.get(key) ?? []), release]);
+}
+---
+
+<ca-changelog-navigator class="ca-explorer ca-history not-content">
+  <section class="ca-explorer__panel ca-history__panel" aria-labelledby="history-title">
+    <h2 id="history-title" class="ca-explorer__title">{releases.length} releases, {entries} entries</h2>
+    <p class="ca-explorer__lead">From {first.date} to {last.date}. Each bar is one release, oldest on the left; its height is how many entries it has, its colours what kind they are.</p>
+    <div class="ca-history__chart">
+      <div class="ca-history__majors" aria-hidden="true">
+        {majorLabels.map((label) => <span style={`left:${label.left}%`}>{label.text}</span>)}
+      </div>
+      <svg class="ca-history__svg" viewBox={`0 0 ${width} ${TOP + HEIGHT + 6}`} preserveAspectRatio="none" aria-hidden="true" focusable="false">
+        {bars.map((bar) => (
+          <g>
+            {bar.month && <line class="ca-history__tick" x1={bar.x - GAP / 2} x2={bar.x - GAP / 2} y1={TOP - 6} y2={TOP + HEIGHT + 4} />}
+            {bar.major && <line class="ca-history__tick ca-history__tick--major" x1={bar.x + BAR / 2} x2={bar.x + BAR / 2} y1={2} y2={TOP + HEIGHT} />}
+            <a href={`#${bar.release.id}`} tabindex="-1" data-history-bar={bar.release.id}>
+              <title>{describe(bar.release)}</title>
+              <rect class="ca-history__hit" x={bar.x} y={TOP} width={BAR + GAP} height={HEIGHT} />
+              {bar.segments.map((segment) => <rect class="ca-history__seg" data-kind={segment.kind} x={bar.x} y={segment.y} width={BAR} height={segment.h} rx="1" />)}
+            </a>
+          </g>
+        ))}
+      </svg>
+      <div class="ca-history__months" aria-hidden="true">
+        {monthLabels.map((label) => <span style={`left:${label.left}%`}>{label.text}</span>)}
+      </div>
+    </div>
+    <ul class="ca-history__legend" role="list">
+      {kinds.map((kind) => <li data-kind={kind}><span aria-hidden="true"></span>{kind} <strong>{totals[kind]}</strong></li>)}
+    </ul>
+  </section>
+
+  <form class="ca-explorer__filters ca-history__filters" aria-label="Find in the changelog" data-history-filters hidden>
+    <fieldset>
+      <legend>Kind</legend>
+      <label><input type="radio" name="history-kind" value="all" checked /> All</label>
+      {kinds.map((kind) => <label><input type="radio" name="history-kind" value={kind} /> {kind}</label>)}
+    </fieldset>
+    <div class="ca-matrix__find">
+      <label for="history-find">Find</label>
+      <input id="history-find" type="search" maxlength="80" autocomplete="off" placeholder="H-22, Codex, sandbox" />
+    </div>
+    <div class="ca-history__jump">
+      <label for="history-jump">Jump to</label>
+      <select id="history-jump">
+        <option value="">A release</option>
+        {[...groups].map(([group, list]) => (
+          <optgroup label={group}>
+            {list.map((release) => <option value={release.id}>{release.version ? `${release.version} (${release.date})` : `${release.label}: ${release.title ?? ''}`}</option>)}
+          </optgroup>
+        ))}
+      </select>
+    </div>
+  </form>
+  <p class="ca-explorer__count" role="status" aria-live="polite" aria-atomic="true" data-history-count></p>
+  <script type="application/json" data-history-releases set:html={JSON.stringify(releases.map((release) => release.id))} />
+</ca-changelog-navigator>
+
+<script>
+  interface Item { li: HTMLElement; kind: string; text: string }
+  interface Section { kind: string; nodes: HTMLElement[]; items: Item[] }
+  interface Block { id: string; nodes: HTMLElement[]; sections: Section[] }
+  const KINDS = new Set(['Added', 'Changed', 'Fixed', 'Removed', 'Security']);
+
+  const headingIn = (node: Element, level: 'h2' | 'h3') =>
+    node.matches(level) ? node : node.matches(`.sl-heading-wrapper.level-${level}`) ? node.querySelector(level) : null;
+
+  /** The page below as releases, sections and entries, read from the rendered content. `others`
+   * holds sections that are not releases (Unreleased, maintenance notes), hidden while filtering. */
+  function index(content: Element, ids: Set<string>): { blocks: Block[]; others: HTMLElement[] } {
+    const blocks: Block[] = [];
+    const others: HTMLElement[] = [];
+    let block: Block | null = null;
+    let section: Section | null = null;
+    let inOther = false;
+    for (const node of [...content.children] as HTMLElement[]) {
+      const h2 = headingIn(node, 'h2');
+      if (h2) {
+        block = ids.has(h2.id) ? { id: h2.id, nodes: [node], sections: [] } : null;
+        if (block) blocks.push(block);
+        inOther = !block;
+        if (inOther) others.push(node);
+        section = null;
+        continue;
+      }
+      if (!block) {
+        if (inOther) others.push(node);
+        continue;
+      }
+      block.nodes.push(node);
+      const h3 = headingIn(node, 'h3');
+      if (h3) {
+        const name = h3.textContent?.trim() ?? 'Other';
+        section = { kind: KINDS.has(name) ? name : 'Other', nodes: [node], items: [] };
+        block.sections.push(section);
+        continue;
+      }
+      if (!section) {
+        section = { kind: 'Other', nodes: [], items: [] };
+        block.sections.push(section);
+      }
+      section.nodes.push(node);
+      if (node.matches('ul, ol')) {
+        for (const li of [...node.children] as HTMLElement[]) {
+          section.items.push({ li, kind: section.kind, text: (li.textContent ?? '').normalize('NFKC').toLowerCase() });
+        }
+      }
+    }
+    return { blocks, others };
+  }
+
+  class ChangelogNavigator extends HTMLElement {
+    private controller?: AbortController;
+
+    connectedCallback() {
+      this.controller?.abort();
+      this.controller = new AbortController();
+      const { signal } = this.controller;
+      const form = this.querySelector<HTMLFormElement>('[data-history-filters]');
+      const find = this.querySelector<HTMLInputElement>('#history-find');
+      const jump = this.querySelector<HTMLSelectElement>('#history-jump');
+      const count = this.querySelector<HTMLElement>('[data-history-count]');
+      const content = document.querySelector('.sl-markdown-content');
+      if (!form || !find || !jump || !count || !content) return;
+      const ids = new Set(JSON.parse(this.querySelector('[data-history-releases]')?.textContent ?? '[]') as string[]);
+      const { blocks, others } = index(content, ids);
+      const bars = new Map([...this.querySelectorAll<SVGAElement>('[data-history-bar]')].map((bar) => [bar.dataset.historyBar ?? '', bar]));
+      const total = blocks.reduce((sum, block) => sum + block.sections.reduce((n, section) => n + section.items.length, 0), 0);
+
+      const update = () => {
+        const kind = form.querySelector<HTMLInputElement>('input[name="history-kind"]:checked')?.value ?? 'all';
+        const terms = find.value.normalize('NFKC').toLowerCase().trim().split(/\s+/).filter(Boolean);
+        const filtering = kind !== 'all' || terms.length > 0;
+        let entries = 0;
+        let lit = 0;
+        for (const block of blocks) {
+          let shownInBlock = 0;
+          for (const section of block.sections) {
+            let shownInSection = 0;
+            for (const item of section.items) {
+              const visible = (kind === 'all' || item.kind === kind) && terms.every((term) => item.text.includes(term));
+              item.li.hidden = filtering && !visible;
+              if (visible) shownInSection += 1;
+            }
+            for (const node of section.nodes) node.hidden = filtering && shownInSection === 0;
+            shownInBlock += shownInSection;
+          }
+          for (const node of block.nodes) if (!block.sections.some((section) => section.nodes.includes(node))) node.hidden = filtering && shownInBlock === 0;
+          bars.get(block.id)?.toggleAttribute('data-dim', filtering && shownInBlock === 0);
+          entries += shownInBlock;
+          if (shownInBlock > 0) lit += 1;
+        }
+        for (const node of others) node.hidden = filtering;
+        this.toggleAttribute('data-filtering', filtering);
+        count.textContent = filtering ? `${entries} of ${total} entries, in ${lit} ${lit === 1 ? 'release' : 'releases'}` : '';
+      };
+
+      form.addEventListener('change', (event) => {
+        if (event.target === jump) return;
+        update();
+      }, { signal });
+      find.addEventListener('input', update, { signal });
+      form.addEventListener('submit', (event) => event.preventDefault(), { signal });
+      jump.addEventListener('change', () => {
+        if (!jump.value) return;
+        const target = document.getElementById(jump.value);
+        if (target?.closest('[hidden]')) {
+          find.value = '';
+          (form.querySelector<HTMLInputElement>('input[name="history-kind"][value="all"]'))!.checked = true;
+          update();
+        }
+        location.hash = jump.value;
+        jump.value = '';
+      }, { signal });
+      form.hidden = false;
+    }
+
+    disconnectedCallback() {
+      this.controller?.abort();
+    }
+  }
+
+  if (!customElements.get('ca-changelog-navigator')) customElements.define('ca-changelog-navigator', ChangelogNavigator);
+</script>

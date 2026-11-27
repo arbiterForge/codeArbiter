@@ -39,6 +39,22 @@ import type {
 } from "./types";
 
 /** Output subdirectory for each source type. */
+/** The generated commands index. Its matrix renders from the shipped catalogs at build time. */
+export const COMMAND_MATRIX_PAGE = `---
+title: Command Matrix
+description: "Every codeArbiter command spelled for Claude Code, Codex CLI and Pi, with its level, workflow and lane route, generated from the shipped command catalogs."
+tableOfContents: false
+---
+
+## Where each column comes from
+
+- **Command, level and workflow** come from \`core/surface/command-routes.json\`. An alias forwards to the command its page names.
+- **Claude Code, Codex CLI and Pi** spell the command with each host's \`command_form\` in \`core/hosts.json\`. A command shows as not shipped when that host's own \`COMMANDS.md\` does not list it.
+- **Route** is the lane's path through the [machine](/concepts/machine/): each frame is a stop, coloured by what happens there. Gold waits on a gate or on you, red fails first or refuses, green passes.
+
+Each command's own page explains what it does, its gates and the exact shipped source.
+`;
+
 const TYPE_DIR: Record<SourceType, string> = {
   command: "commands",
   skill: "skills",
@@ -391,6 +407,12 @@ export function generate(
     writeFileSync(join(dir, `${page.slug}.md`), page.markdown);
   }
 
+  // The commands folder's own page: the command matrix (CommandMatrix.astro, rendered by
+  // PageTools for this route) above notes on where each column comes from. Without it,
+  // /reference/commands/ was a dead address between the index and every command page.
+  mkdirSync(join(outDir, TYPE_DIR.command), { recursive: true });
+  writeFileSync(join(outDir, TYPE_DIR.command, "index.md"), COMMAND_MATRIX_PAGE);
+
   // Write one page per tribunal lens card.
   if (lensPages.length > 0) {
     const dir = join(outDir, LENS_DIR);
@@ -410,6 +432,8 @@ export function generate(
   // Agent identities remain a Claude-specific catalog boundary even though
   // current Codex hosts can execute the same charter in host-provided threads.
   const hostNote =
+    "To see every command spelled for Claude Code, Codex CLI, and Pi side by side, open the " +
+    "[Command Matrix](./commands/). " +
     "Commands, skills, and agents below are generated from the `ca` (Claude Code) plugin " +
     "payload. Each command page checks the shipped Claude Code, Codex, and Pi catalogs and marks " +
     "adapters where that command is not shipped. The Agents catalog below describes Claude " +

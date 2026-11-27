@@ -84,8 +84,10 @@ describe("command URL stability", () => {
 
   it("writes a page file at every command URL", () => {
     const { outDir } = generateProduction();
+    // The folder also holds its own page, the command matrix, at /reference/commands/.
     const onDisk = readdirSync(join(outDir, "commands")).sort();
-    expect(onDisk).toEqual(Object.keys(BEFORE_THE_SPRINT).map((slug) => `${slug}.md`).sort());
+    expect(onDisk).toEqual([...Object.keys(BEFORE_THE_SPRINT).map((slug) => `${slug}.md`), "index.md"].sort());
+    expect(readFileSync(join(outDir, "commands", "index.md"), "utf8")).toMatch(/^---\ntitle: Command Matrix\n/);
     for (const slug of Object.keys(BEFORE_THE_SPRINT)) {
       expect(existsSync(join(outDir, "commands", `${slug}.md`)), slug).toBe(true);
     }

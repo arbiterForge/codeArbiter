@@ -89,6 +89,19 @@ One pull request per theme, each independently reviewable and revertible.
 - Inner pages carry the blueprint grid and a title that cools toward signal blue; gold stays on
   gates and decisions.
 
+## S3 done-criteria
+
+- The Hook Gates page opens with a decoder that turns a pasted hook line into its gate and the
+  call site that printed it, a map of where each gate fires in a tool call, and gate tiles that
+  filter by effect and by where they fire. Each gate's one-sentence summary is checked against its
+  call sites' kind; enforcers and what a gate acts on come from the S2 joins.
+- `/reference/commands/`, previously a dead address, is the Command Matrix: every command spelled
+  for every host from the shipped catalogs, with level, workflow, lane route and what replaces each
+  alias. A command no host ships fails the build.
+- The changelog opens with its whole history as one bar per release, a filter by kind and word
+  over every entry, and a jump to any release; release links are checked against the built page.
+- The generator's own prose is free of separator dashes (done in S2 and kept by its test).
+
 ## Verification per slice
 
 Site typecheck, the full `npm test` (build, vitest, Academy base, rendered release applicability),

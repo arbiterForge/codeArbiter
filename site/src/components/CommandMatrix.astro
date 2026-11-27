@@ -1,0 +1,170 @@
+---
+/**
+ * CommandMatrix.astro - every command spelled for every host, with its level, workflow and
+ * lane route (scripts/explorers/command-matrix.ts). Renders on /reference/commands/.
+ *
+ * Without JavaScript it is a complete table. With JavaScript the reader can filter by level
+ * and host, find a command by any word, and copy a spelling. Nothing is stored or sent.
+ */
+import { getCollection } from 'astro:content';
+import { HOSTS, LEVEL_LABEL, loadCommandMatrix } from '../../scripts/explorers/command-matrix';
+import { routeLineHtml } from '../../scripts/generator/machine-joins';
+
+const entries = await getCollection('docs', (entry) => entry.id.startsWith('reference/commands/'));
+const pages = new Map(entries.map((entry) => [entry.id.slice('reference/commands/'.length), entry.data.description ?? '']));
+const rows = loadCommandMatrix(Object.fromEntries(pages));
+const missing = rows.filter((row) => !pages.has(row.name)).map((row) => row.name);
+if (missing.length > 0) throw new Error(`CommandMatrix: no reference page for ${missing.join(', ')}`);
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const levels = [...new Set(rows.map((row) => row.visibility))];
+const levelCount = (level: string) => rows.filter((row) => row.visibility === level).length;
+const hostCount = (host: string) => rows.filter((row) => row.hosts[host as 'claude'].available).length;
+const flowLabel = (flow: string) => `${flow[0].toUpperCase()}${flow.slice(1)}`;
+---
+
+<ca-command-matrix class="ca-explorer ca-matrix not-content">
+  <p class="ca-explorer__lead">Every command, spelled the way each host spells it. Pick your host to see only what it ships, or type any word from a command's name or purpose.</p>
+  <form class="ca-explorer__filters ca-matrix__filters" aria-label="Filter the commands" data-matrix-filters hidden>
+    <fieldset>
+      <legend>Level</legend>
+      <label><input type="radio" name="matrix-level" value="all" checked /> All <span>{rows.length}</span></label>
+      {levels.map((level) => <label><input type="radio" name="matrix-level" value={level} /> {LEVEL_LABEL[level] ?? level} <span>{levelCount(level)}</span></label>)}
+    </fieldset>
+    <fieldset>
+      <legend>Host</legend>
+      <label><input type="radio" name="matrix-host" value="all" checked /> Every host</label>
+      {HOSTS.map((host) => <label><input type="radio" name="matrix-host" value={host.name} /> {host.label} <span>{hostCount(host.name)}</span></label>)}
+    </fieldset>
+    <div class="ca-matrix__find">
+      <label for="matrix-find">Find</label>
+      <input id="matrix-find" type="search" maxlength="80" autocomplete="off" placeholder="review, release, adr" />
+    </div>
+  </form>
+  <p class="ca-explorer__count" role="status" aria-live="polite" aria-atomic="true" data-matrix-count>{rows.length} commands</p>
+  <p class="sr-only" role="status" aria-live="polite" data-matrix-copied></p>
+  <div class="ca-matrix__frame" role="region" aria-label="Command matrix" tabindex="0">
+    <table class="ca-matrix__table">
+      <caption class="sr-only">Every codeArbiter command, its route through the machine, and how each host spells it</caption>
+      <thead>
+        <tr>
+          <th scope="col">Command</th>
+          <th scope="col">Route</th>
+          {HOSTS.map((host) => <th scope="col" data-host={host.name}>{host.label}</th>)}
+        </tr>
+      </thead>
+      <tbody>
+        {rows.map((row) => (
+          <tr
+            data-matrix-row
+            data-level={row.visibility}
+            data-hosts={HOSTS.filter((host) => row.hosts[host.name].available).map((host) => host.name).join(' ')}
+            data-search={[row.name, row.workflow, row.description, ...HOSTS.map((host) => row.hosts[host.name].spelled)].join(' ').toLowerCase()}
+          >
+            <th scope="row">
+              <a class="ca-matrix__name" href={`${base}/reference/commands/${row.name}/`}>{row.name}</a>
+              <span class="ca-matrix__tags">
+                <span class="ca-matrix__level" data-level={row.visibility}>{LEVEL_LABEL[row.visibility] ?? row.visibility}</span>
+                <span>{flowLabel(row.workflow)}</span>
+              </span>
+              {row.description && <span class="ca-matrix__desc">{row.description}</span>}
+            </th>
+            <td data-label="Route">
+              {row.lane ? (
+                <a class="ca-matrix__route" href={`${base}${row.lane.href}`} aria-label={`${row.lane.name}: its ${row.lane.stops.length} stops in the machine`}>
+                  <Fragment set:html={routeLineHtml(row.lane.stops)} />
+                  <span class="ca-matrix__stops" aria-hidden="true">{row.lane.stops.length} stops</span>
+                </a>
+              ) : (
+                row.replacement ? (
+                  <span class="ca-matrix__none">Now runs <code>{row.replacement}</code></span>
+                ) : (
+                  <span class="ca-matrix__none">No lane</span>
+                )
+              )}
+            </td>
+            {HOSTS.map((host) => (
+              <td data-host={host.name} data-label={host.label}>
+                {row.hosts[host.name].available ? (
+                  <span class="ca-matrix__spell">
+                    <code>{row.hosts[host.name].spelled}</code>
+                    <button type="button" class="ca-matrix__copy" data-copy={row.hosts[host.name].spelled} hidden>
+                      <span aria-hidden="true">Copy</span><span class="sr-only">Copy {row.hosts[host.name].spelled}</span>
+                    </button>
+                  </span>
+                ) : (
+                  <span class="ca-matrix__missing">Not shipped</span>
+                )}
+              </td>
+            ))}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+  <p class="ca-explorer__empty" data-matrix-empty hidden>No command matches. Clear the word, or choose All and Every host.</p>
+</ca-command-matrix>
+
+<script>
+  class CommandMatrix extends HTMLElement {
+    private controller?: AbortController;
+
+    connectedCallback() {
+      this.controller?.abort();
+      this.controller = new AbortController();
+      const { signal } = this.controller;
+      const form = this.querySelector<HTMLFormElement>('[data-matrix-filters]');
+      const find = this.querySelector<HTMLInputElement>('#matrix-find');
+      const count = this.querySelector<HTMLElement>('[data-matrix-count]');
+      const empty = this.querySelector<HTMLElement>('[data-matrix-empty]');
+      const copied = this.querySelector<HTMLElement>('[data-matrix-copied]');
+      const rows = [...this.querySelectorAll<HTMLElement>('[data-matrix-row]')];
+      if (!form || !find || !count || !empty) return;
+
+      const update = () => {
+        const level = form.querySelector<HTMLInputElement>('input[name="matrix-level"]:checked')?.value ?? 'all';
+        const host = form.querySelector<HTMLInputElement>('input[name="matrix-host"]:checked')?.value ?? 'all';
+        const terms = find.value.normalize('NFKC').toLowerCase().trim().split(/\s+/).filter(Boolean);
+        let shown = 0;
+        for (const row of rows) {
+          const visible =
+            (level === 'all' || row.dataset.level === level) &&
+            (host === 'all' || (row.dataset.hosts ?? '').split(' ').includes(host)) &&
+            terms.every((term) => (row.dataset.search ?? '').includes(term));
+          row.hidden = !visible;
+          if (visible) shown += 1;
+        }
+        this.dataset.host = host;
+        count.textContent = shown === rows.length ? `${rows.length} commands` : `${shown} of ${rows.length} commands`;
+        empty.hidden = shown !== 0;
+      };
+
+      form.addEventListener('change', update, { signal });
+      find.addEventListener('input', update, { signal });
+      form.addEventListener('submit', (event) => event.preventDefault(), { signal });
+
+      if (navigator.clipboard) {
+        for (const button of this.querySelectorAll<HTMLButtonElement>('[data-copy]')) {
+          button.hidden = false;
+          button.addEventListener('click', async () => {
+            try {
+              await navigator.clipboard.writeText(button.dataset.copy ?? '');
+              button.dataset.done = 'true';
+              if (copied) copied.textContent = `Copied ${button.dataset.copy}`;
+              window.setTimeout(() => delete button.dataset.done, 1600);
+            } catch {
+              if (copied) copied.textContent = 'Copy was not allowed; select the command instead.';
+            }
+          }, { signal });
+        }
+      }
+      form.hidden = false;
+      update();
+    }
+
+    disconnectedCallback() {
+      this.controller?.abort();
+    }
+  }
+
+  if (!customElements.get('ca-command-matrix')) customElements.define('ca-command-matrix', CommandMatrix);
+</script>
