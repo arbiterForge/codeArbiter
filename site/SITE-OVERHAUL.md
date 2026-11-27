@@ -75,6 +75,20 @@ One pull request per theme, each independently reviewable and revertible.
 - `DESIGN-SYSTEM.md` records the bolder identity, the scene contract and the new landing structure.
   The landing tests assert the new contract rather than deleting the old checks.
 
+## S2 done-criteria
+
+- Joins come from the machine model, never a hand-kept list (`scripts/generator/machine-joins.ts`).
+  A generated command page shows its lane's real route and links the lane part. A skill or agent
+  page gains "In the machine" only where the model cites its own plugin file. Each hook gate names
+  the parts whose hooks list carries it and the failure scenarios tagged with it.
+- Hand-authored pages show "In the machine" chips in the orientation strip from
+  `src/data/machine-map.json`; a test checks every page and part exists.
+- Every link into `/concepts/machine/` resolves to an id there, checked against the build.
+- Hook messages print character for character. Smart dash conversion is off site-wide, because it
+  printed `--no-verify`, `--ff-only` and `--dry-run` as dashes; a build scan guards it.
+- Inner pages carry the blueprint grid and a title that cools toward signal blue; gold stays on
+  gates and decisions.
+
 ## Verification per slice
 
 Site typecheck, the full `npm test` (build, vitest, Academy base, rendered release applicability),

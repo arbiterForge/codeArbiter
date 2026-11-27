@@ -3,6 +3,9 @@ import ArbiterIcon, { type ArbiterIconName } from "./ArbiterIcon.astro";
 import topicMap from "../data/topic-map.json";
 import { academyLessons } from "../generated/academy-content";
 import { lessonIdsForPage } from "../../scripts/topic-map";
+import machineMap from "../data/machine-map.json";
+import { partById } from "../../scripts/generator/machine-joins";
+import { framePath } from "../../scripts/machine/machine-render";
 
 interface Props {
   level: "Foundation" | "Practitioner" | "Power user" | "Reference" | "Labs" | "Academy";
@@ -36,6 +39,13 @@ const practice = lessonIdsForPage(topicMap, pageId).map((lessonId) => {
   if (!lesson) throw new Error(`Topic map names unknown Academy lesson ${lessonId} for ${pageId}`);
   return { href: `${base}/academy/${lessonId.toLowerCase()}/`, label: `${lessonId.split("-")[0]}: ${lesson.guide.title}` };
 });
+
+// The machine parts this page explains (src/data/machine-map.json, checked by
+// test/content/machine-map.test.ts), each linked to its entry on the 3D machine page.
+const machine = ((machineMap.pages as Record<string, string[]>)[pageId] ?? []).map((id) => {
+  const part = partById(id);
+  return { ...part, href: `${base}${part.href}` };
+});
 ---
 
 <!-- One line by default (DOCS-OVERHAUL M4): level, time and outcome. Prerequisites
@@ -57,6 +67,19 @@ const practice = lessonIdsForPage(topicMap, pageId).map((lessonId) => {
             {index > 0 && " · "}
             <a href={lesson.href}>{lesson.label}</a>
           </>
+        ))}
+      </p>
+    )
+  }
+  {
+    machine.length > 0 && (
+      <p class="ca-page-context__machine">
+        <strong>In the machine:</strong>
+        {machine.map((part) => (
+          <a class="ca-machine-chip" data-zone={part.zoneId} href={part.href}>
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" aria-hidden="true" set:html={framePath(part.shape)} />
+            {part.name}
+          </a>
         ))}
       </p>
     )

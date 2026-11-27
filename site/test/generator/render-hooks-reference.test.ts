@@ -95,7 +95,7 @@ describe("renderHooksReference", () => {
     );
   });
 
-  it("wraps f-string placeholders in backticks", () => {
+  it("renders f-string placeholders as inline code", () => {
     const site: HookCallSite = {
       tag: "H-13",
       kind: "remind",
@@ -104,7 +104,23 @@ describe("renderHooksReference", () => {
       message: "{rel}: found an issue on line {line}.",
     };
     const out = renderHooksReference([site], eventMap, "2.8.11", "main");
-    expect(out).toContain("`{rel}`");
-    expect(out).toContain("`{line}`");
+    expect(out).toContain("<code>{rel}</code>");
+    expect(out).toContain("<code>{line}</code>");
+  });
+
+  it("keeps every message character for character, out of Markdown and smart typography", () => {
+    const site: HookCallSite = {
+      tag: "H-20",
+      kind: "block",
+      file: "pre-bash.py",
+      line: 7,
+      message: "'--no-verify' / '-n' skip hooks; use `git commit` with *globs* and <tags> intact.",
+    };
+    const out = renderHooksReference([site], eventMap, "2.8.11", "main");
+    // Backticks are printed, not turned into code: the terminal shows them, so a reader can
+    // match a pasted message with find-in-page.
+    expect(out).toContain("<blockquote class=\"ca-hook-message\"><p>'--no-verify' / '-n' skip hooks; use `git commit` with *globs* and &lt;tags&gt; intact.</p>");
+    expect(out).toContain('<p class="ca-hook-message__source"><a href="https://github.com/arbiterForge/codeArbiter/blob/main/plugins/ca/hooks/pre-bash.py#L7"><code>pre-bash.py:7</code></a></p>');
+    expect(out).not.toMatch(/^> /m);
   });
 });

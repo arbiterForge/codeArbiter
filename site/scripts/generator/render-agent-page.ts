@@ -1,3 +1,4 @@
+import { partLinks, partsCiting } from "./machine-joins";
 import { modelTier } from "./model-tier";
 import { formatToolsList } from "./format-tools-list";
 import type { PageInput } from "./types";
@@ -46,6 +47,12 @@ export function renderAgentPage(input: PageInput): string {
   const related = renderRelatedLinks(relatedLinks);
   if (related) {
     sections.push(related);
+  }
+
+  // Where the machine model cites this agent's own file (machine-joins.ts). Absent otherwise.
+  const machine = partsCiting(input.sourceRelPath);
+  if (machine.length > 0) {
+    sections.push(`## In the machine\n\nThe [machine](/concepts/machine/) cites this agent in ${partLinks(machine)}. Open a part there to see where it sits and what happens around it.`);
   }
 
   sections.push(

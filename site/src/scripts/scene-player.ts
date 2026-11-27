@@ -44,6 +44,8 @@ class ScenePlayer {
   private index = 0;
   private generation = 0;
   private frame = 0;
+  /** Ends the token's current travel early; set only while a travel is in flight. */
+  private endTravel: (() => void) | null = null;
   private playing = false;
   /** The reader pressed Play; resume when the scene is back on screen. */
   private wanted = false;
@@ -127,7 +129,7 @@ class ScenePlayer {
     this.hold();
     this.wanted = false;
     this.playing = false;
-    this.clearTimers();
+    this.halt();
     this.label();
   }
 
@@ -140,7 +142,7 @@ class ScenePlayer {
       this.run(this.index === 0 && !this.root.dataset.started ? 0 : this.index);
     } else if (!allowed && this.playing) {
       this.playing = false;
-      this.clearTimers();
+      this.halt();
       this.label();
     }
   }
@@ -171,14 +173,15 @@ class ScenePlayer {
   private async run(index: number): Promise<void> {
     const generation = ++this.generation;
     this.clearTimers();
+    // End the previous step's travel now rather than on its next frame.
+    cancelAnimationFrame(this.frame);
+    this.endTravel?.();
     this.root.dataset.started = 'true';
     this.show(index);
     const step = this.plan[index];
     await this.travel(step, generation);
     if (generation !== this.generation) return;
-    for (const element of this.elements) {
-      if (element.dataset.el === step.focus) element.dataset.verdict = step.verdict;
-    }
+    this.settle(index);
     if (!this.playing) return;
     const last = index === this.plan.length - 1;
     this.wait(step.ms + (last ? HOLD_AT_END : 0), () => {
@@ -199,16 +202,21 @@ class ScenePlayer {
     return new Promise((resolve) => {
       let leg = 0;
       let started = 0;
+      let done = false;
+      // Each travel ends through its own finish, so ending a stale travel never ends a newer one.
+      const finish = () => {
+        if (done) return;
+        done = true;
+        if (this.endTravel === finish) this.endTravel = null;
+        delete token.dataset.on;
+        resolve();
+      };
+      this.endTravel = finish;
       const tick = (now: number) => {
-        if (generation !== this.generation) {
-          delete token.dataset.on;
-          resolve();
-          return;
-        }
+        if (done) return;
         const path = paths[leg];
-        if (!path) {
-          delete token.dataset.on;
-          resolve();
+        if (generation !== this.generation || !path) {
+          finish();
           return;
         }
         const length = path.getTotalLength();
@@ -242,15 +250,50 @@ class ScenePlayer {
     this.timers.clear();
   }
 
+  /** Fire step `index`'s verdict at its focus. */
+  private settle(index: number): void {
+    const step = this.plan[index];
+    if (!step) return;
+    for (const element of this.elements) {
+      if (element.dataset.el === step.focus) element.dataset.verdict = step.verdict;
+    }
+  }
+
+  /** Take the token off the drawing. */
+  private parkTokens(): void {
+    for (const token of this.root.querySelectorAll<SVGGElement>('[data-token]')) {
+      delete token.dataset.on;
+      token.removeAttribute('transform');
+    }
+  }
+
+  /** Stop now: no timer, frame or travel survives, the current step shows its outcome, and every
+   * running animation (a handoff drawing, the verdict's ripple) jumps to its final frame. A stale
+   * callback can no longer move the token or fire a verdict. */
+  private halt(): void {
+    this.generation += 1;
+    this.clearTimers();
+    cancelAnimationFrame(this.frame);
+    this.endTravel?.();
+    this.parkTokens();
+    if (this.root.dataset.started) this.settle(this.index);
+    for (const animation of this.root.getAnimations({ subtree: true })) {
+      try {
+        animation.finish();
+      } catch {
+        // An endless animation has no final frame; stop it instead.
+        animation.cancel();
+      }
+    }
+  }
+
   destroy(): void {
     this.generation += 1;
     this.playing = false;
     this.clearTimers();
     cancelAnimationFrame(this.frame);
-    for (const token of this.root.querySelectorAll<SVGGElement>('[data-token]')) {
-      delete token.dataset.on;
-      token.removeAttribute('transform');
-    }
+    this.endTravel?.();
+    this.parkTokens();
     delete this.root.dataset.verdict;
     this.observer?.disconnect();
     this.abort.abort();

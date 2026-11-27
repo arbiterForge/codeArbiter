@@ -1,3 +1,4 @@
+import { partLinks, partsCiting } from "./machine-joins";
 import type { PageInput } from "./types";
 import { yamlDescriptionLine } from "./yaml-quote";
 import { renderSourceEmbed } from "./render-source-embed";
@@ -47,6 +48,12 @@ export function renderSkillPage(input: PageInput): string {
   const related = renderRelatedLinks(relatedLinks);
   if (related) {
     sections.push(related);
+  }
+
+  // Where the machine model cites this skill's own file (machine-joins.ts). Absent otherwise.
+  const machine = partsCiting(input.sourceRelPath);
+  if (machine.length > 0) {
+    sections.push(`## In the machine\n\nThe [machine](/concepts/machine/) cites this skill in ${partLinks(machine)}. Open a part there to see where it sits and what happens around it.`);
   }
 
   sections.push(

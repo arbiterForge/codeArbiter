@@ -1007,3 +1007,204 @@ details.ca-source pre {
 @media print {
   .ca-implementation-view::details-content { display: block; content-visibility: visible; }
 }
+
+/* A lane's real route as machine frames (scripts/generator/machine-joins.ts): the frame says what
+ * each stop is, the colour what happens there. Shared by the landing cards and command pages. */
+.ca-route {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-block-start: auto;
+  padding-block-start: var(--ca-space-5);
+}
+
+.ca-route::before {
+  position: absolute;
+  inset-inline: 0.6rem;
+  inset-block-end: 0.62rem;
+  height: 1px;
+  background: linear-gradient(90deg, var(--ca-line-strong), var(--ca-line));
+  content: "";
+}
+
+.ca-route__stop {
+  --tone: var(--ca-steel);
+  position: relative;
+  display: inline-grid;
+  width: 1.25rem;
+  height: 1.25rem;
+  place-items: center;
+  border-radius: 50%;
+  color: var(--tone);
+  background: var(--ca-bg-panel);
+  transition: color var(--ca-dur-fast) ease calc(var(--i) * 45ms), filter var(--ca-dur-fast) ease calc(var(--i) * 45ms);
+}
+
+.ca-route__stop[data-tone="brand"] { --tone: var(--ca-brand); }
+.ca-route__stop[data-tone="positive"] { --tone: var(--ca-positive); }
+.ca-route__stop[data-tone="danger"] { --tone: var(--ca-danger); }
+.ca-route__stop[data-tone="preview"] { --tone: var(--ca-preview); }
+
+.ca-route__stop svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.sl-markdown-content .ca-route {
+  max-width: 36rem;
+  margin-block: var(--ca-space-4) var(--ca-space-3);
+  padding-block-start: var(--ca-space-2);
+}
+
+/* The page's place in the machine (PageContext.astro, src/data/machine-map.json). */
+.ca-page-context .ca-page-context__machine {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 0.5rem;
+  align-items: center;
+  margin-block-start: var(--ca-space-2);
+  color: var(--ca-ink-soft);
+}
+
+.ca-machine-chip {
+  --tone: var(--ca-steel);
+  display: inline-flex;
+  gap: 0.4rem;
+  align-items: center;
+  padding: 0.18rem 0.65rem 0.18rem 0.45rem;
+  border: 1px solid color-mix(in srgb, var(--tone) 40%, var(--ca-line));
+  border-radius: var(--ca-radius-pill);
+  background: color-mix(in srgb, var(--tone) 7%, transparent);
+  color: var(--ca-ink);
+  font-size: var(--ca-text-sm);
+  font-weight: 650;
+  line-height: 1.4;
+  text-decoration: none;
+  transition: border-color var(--ca-dur-fast) ease, background var(--ca-dur-fast) ease;
+}
+
+.ca-machine-chip svg {
+  width: 0.95rem;
+  height: 0.95rem;
+  flex: none;
+  color: var(--tone);
+}
+
+.ca-machine-chip:hover {
+  border-color: var(--tone);
+  background: color-mix(in srgb, var(--tone) 13%, transparent);
+}
+
+.ca-machine-chip:focus-visible {
+  outline: 2px solid var(--ca-brand-bright);
+  outline-offset: 2px;
+}
+
+.ca-machine-chip[data-zone="you"] { --tone: var(--ca-brand); }
+.ca-machine-chip[data-zone="model"] { --tone: var(--ca-info); }
+.ca-machine-chip[data-zone="guards"] { --tone: var(--ca-danger); }
+.ca-machine-chip[data-zone="skills"] { --tone: var(--ca-info); }
+.ca-machine-chip[data-zone="record"] { --tone: var(--ca-record); }
+.ca-machine-chip[data-zone="outside"] { --tone: var(--ca-steel); border-style: dashed; }
+
+/* Inner-page identity: a blueprint grid behind the title, the machine's drafting surface, and a
+ * title in light that cools toward signal blue. Gold stays on gates and decisions. */
+:root:not(:has(.ca-landing)) .main-pane .content-panel:first-of-type {
+  position: relative;
+  isolation: isolate;
+}
+
+:root:not(:has(.ca-landing)) .main-pane .content-panel:first-of-type::before {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background: var(--ca-blueprint);
+  -webkit-mask-image: radial-gradient(ellipse 75% 120% at 0% 0%, #000 15%, transparent 72%);
+  mask-image: radial-gradient(ellipse 75% 120% at 0% 0%, #000 15%, transparent 72%);
+  pointer-events: none;
+  content: "";
+}
+
+.main-pane h1#_top {
+  font-size: clamp(2.1rem, 4.6vw, 3.4rem);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1.06;
+  text-wrap: balance;
+}
+
+@supports (background-clip: text) or (-webkit-background-clip: text) {
+  .main-pane h1#_top {
+    padding-block: 0.04em 0.14em;
+    margin-block-end: -0.14em;
+    background: linear-gradient(100deg, #ffffff 0%, var(--ca-ink) 52%, #bcdcff 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+}
+
+@media (forced-colors: active) {
+  .main-pane h1#_top {
+    background: none;
+    color: CanvasText;
+    -webkit-text-fill-color: CanvasText;
+  }
+
+  /* A chip is a link, so it keeps the user's link colour; route stops are plain marks. */
+  .ca-machine-chip,
+  .ca-machine-chip svg {
+    color: LinkText;
+    border-color: LinkText;
+  }
+
+  .ca-route__stop {
+    color: CanvasText;
+    border-color: CanvasText;
+  }
+}
+
+@media print {
+  .main-pane h1#_top {
+    background: none;
+    color: #000;
+  }
+
+  .ca-machine-chip {
+    border-color: #555;
+    background: none;
+    color: #000;
+  }
+
+  .main-pane .content-panel:first-of-type::before {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ca-route__stop,
+  .ca-machine-chip {
+    transition: none;
+  }
+}
+
+/* Hook messages on the hook-gates reference, printed exactly as the hook prints them. They are
+ * terminal output, so they use the terminal face: the body face draws a flag's `--` as one
+ * unbroken dash, which reads as a different flag. Ligatures stay off for the same reason. */
+.ca-hook-message p {
+  overflow-wrap: anywhere;
+}
+
+.ca-hook-message p:not(.ca-hook-message__source) {
+  font-family: var(--ca-font-mono);
+  font-size: 0.92em;
+  font-variant-ligatures: none;
+  font-feature-settings: "liga" 0, "calt" 0;
+  line-height: 1.7;
+}
+
+.ca-hook-message .ca-hook-message__source {
+  margin-block-start: var(--ca-space-2);
+  font-size: var(--ca-text-sm);
+}

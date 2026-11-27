@@ -6,6 +6,8 @@
  * page's "verbatim layer" is this generated metadata + line-pinned source
  * permalinks, never pasted Python.
  */
+import { escapeHtml } from "../machine/machine-render";
+import { gateJoin, markdownText, partLinks } from "./machine-joins";
 import type { HookCallSite } from "./extract-hook-gates";
 import { repositorySourceRef } from "./source-ref";
 
@@ -79,25 +81,31 @@ function compareTags(a: string, b: string): number {
   return pa.suffix.localeCompare(pb.suffix);
 }
 
-/** Wrap every `{placeholder}` run in an f-string message with backticks, so it
- * renders as inline code rather than looking like missing/broken prose. */
-function markPlaceholders(message: string): string {
-  return message.replace(/\{[^{}]*\}/g, (m) => `\`${m}\``);
+/**
+ * A hook message as HTML, character for character, backticks included, as the terminal shows it.
+ * It is escaped and never passes through Markdown or smart typography, which would print
+ * `--no-verify` as a dash and curl the quotes. Only the `{placeholder}` runs (f-string
+ * interpolations the hook fills in when it fires) are marked, as inline code.
+ */
+export function messageHtml(message: string): string {
+  return message
+    .split(/(\{[^{}\n]*\})/)
+    .map((segment, index) => (index % 2 === 0 ? escapeHtml(segment) : `<code>${escapeHtml(segment)}</code>`))
+    .join("")
+    .replace(/\n/g, "<br>");
 }
 
-/** Escape a string for safe inclusion in a markdown blockquote line. */
-function toBlockquote(message: string): string {
-  return markPlaceholders(message)
-    .split("\n")
-    .map((line) => `> ${line}`)
-    .join("\n");
+/** One call site: the exact message, then its line-pinned source. Raw HTML, so Markdown leaves it alone. */
+function toBlockquote(site: HookCallSite, permalink: string): string {
+  return `<blockquote class="ca-hook-message"><p>${messageHtml(site.message)}</p>` +
+    `<p class="ca-hook-message__source"><a href="${escapeHtml(permalink)}"><code>${escapeHtml(`${site.file}:${site.line}`)}</code></a></p></blockquote>`;
 }
 
 /**
  * Render the full `reference/hooks-gates.md` page.
  *
  * One `## H-xx` section per tag, sorted in natural gate-ID order. Each section
- * carries a badge line (Blocking / Advisory — both if the tag has call sites of
+ * carries a badge line (Blocking, Advisory, or both if the tag has call sites of
  * both kinds), the registered event(s) across every file that has a call site
  * for that tag, and one blockquote + line-pinned permalink per call site.
  */
@@ -132,9 +140,23 @@ export function renderHooksReference(
     const entries = sites
       .map((site) => {
         const permalink = `https://github.com/arbiterForge/codeArbiter/blob/${sourceRef}/plugins/ca/hooks/${site.file}#L${site.line}`;
-        return `${toBlockquote(site.message)}\n>\n> — [\`${site.file}:${site.line}\`](${permalink})`;
+        return toBlockquote(site, permalink);
       })
       .join("\n\n");
+
+    // Where this gate sits in the 3D machine (machine-joins.ts): the parts that cite a file
+    // printing it enforce it (or, for a reminder, raise it); other parts whose hooks list names
+    // it are what it acts on. Absent when the model names no part.
+    const machine = gateJoin(gateTag, [...new Set(sites.map((site) => site.file))]);
+    const blocks = kinds.has("block");
+    const watch = machine.scenarios.map((scenario) => `[${markdownText(scenario.title)}](${scenario.href})`).join(", ");
+    const relations = [
+      machine.enforcers.length > 0 ? `${blocks ? "enforced" : "raised"} by ${partLinks(machine.enforcers)}` : "",
+      machine.actsOn.length > 0 ? `acts on ${partLinks(machine.actsOn)}` : "",
+    ].filter(Boolean);
+    const machineLine = relations.length > 0
+      ? [`**In the machine:** ${relations.join("; ")}.${watch ? ` ${blocks ? "Watch it catch a mistake" : "See it in a scenario"}: ${watch}.` : ""}`, ""]
+      : [];
 
     return [
       `## ${gateTag}`,
@@ -143,6 +165,7 @@ export function renderHooksReference(
       "",
       `**Event(s):** ${events.size > 0 ? [...events].map((e) => `\`${e}\``).join(", ") : "_(none registered)_"}`,
       "",
+      ...machineLine,
       entries,
     ].join("\n");
   });
@@ -150,7 +173,7 @@ export function renderHooksReference(
   const frontmatter = [
     "---",
     "title: Hook Gates",
-    'description: "Every gate ID a codeArbiter hook can print — generated from the block()/remind() call sites in plugins/ca/hooks, never hand-transcribed."',
+    'description: "Every gate ID a codeArbiter hook can print, generated from the block() and remind() call sites in plugins/ca/hooks and never hand-transcribed."',
     "---",
   ].join("\n");
 
@@ -160,8 +183,12 @@ export function renderHooksReference(
     "generated at build time directly from the `block()`/`remind()` call sites in",
     "`plugins/ca/hooks/*.py`, so it can never drift from what a hook actually prints.",
     "",
-    "A `` `{placeholder}` `` shown in a message is an f-string interpolation — the hook fills",
-    "it in with a run-time value (a file path, a branch name, a count) when it actually fires.",
+    "A `{placeholder}` shown in a message is an f-string interpolation: the hook fills it in",
+    "with a run-time value (a file path, a branch name, a count) when it actually fires.",
+    "",
+    "Each gate also names the parts of the [machine](/concepts/machine/) that enforce it (or, for",
+    "a reminder, raise it), what it acts on, and, where the machine has one, a failure scenario",
+    "you can watch in 3D.",
   ].join("\n");
 
   return `${frontmatter}\n\n${intro}\n\n${sections.join("\n\n---\n\n")}\n`;

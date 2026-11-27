@@ -577,6 +577,12 @@
     stroke-dasharray: none !important;
   }
 
+  /* An edge caught mid-draw is dashed out to its own length; print draws it whole. */
+  .ca-scene .ca-scene__edge {
+    stroke-dasharray: none !important;
+    stroke-dashoffset: 0 !important;
+  }
+
   .ca-scene__token,
   .ca-scene__controls {
     display: none !important;
