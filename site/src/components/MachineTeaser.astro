@@ -1,0 +1,77 @@
+---
+/**
+ * MachineTeaser.astro - the landing's door into /concepts/machine/.
+ *
+ * A render of the real 3D viewer (src/assets/machine/machine-poster.webp, captured from the
+ * shipped viewer, not drawn), the machine's zones with the frame of the parts they hold, and
+ * counts computed from the plugin source at build time. Every zone name and blurb comes from
+ * the machine model, so this cannot drift from the machine page.
+ */
+import { Image } from 'astro:assets';
+import poster from '../assets/machine/machine-poster.webp';
+import parts from '../../scripts/machine/machine-data/parts.json';
+import key from '../../scripts/machine/machine-data/key.json';
+import layout from '../../scripts/machine/machine-data/layout.json';
+import { framePath } from '../../scripts/machine/machine-render';
+import { computeLandingStats } from '../../scripts/generator/landing-stats';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const frames = key.kindFrames as Record<string, string>;
+const allParts = Object.values(parts as Record<string, { zone: string; kind: string }>);
+
+/** A zone is drawn with the frame most of its parts share. */
+function frameOf(zone: string): string {
+  const counts = new Map<string, number>();
+  for (const part of allParts) if (part.zone === zone) counts.set(part.kind, (counts.get(part.kind) ?? 0) + 1);
+  const [kind] = [...counts.entries()].sort((a, b) => b[1] - a[1])[0] ?? ['Outside'];
+  return frames[kind] ?? 'dashed';
+}
+
+const zones = Object.entries(layout.zones as Record<string, { name: string; blurb: string }>).map(([id, zone]) => ({
+  id,
+  ...zone,
+  shape: frameOf(id),
+}));
+const stats = computeLandingStats();
+const facts = [
+  // Reminders never block (enforcement.md), so the label says how many of the IDs can.
+  { value: stats.gateCount, label: `gate IDs: ${stats.blockingGateCount} block, ${stats.reminderGateCount} remind`, href: `${base}/reference/hooks-gates/` },
+  { value: stats.coreLaneCount, label: 'core lanes', href: `${base}/reference/` },
+  { value: stats.agentCount, label: 'specialist agents', href: `${base}/reference/` },
+  { value: stats.skillCount, label: 'skills', href: `${base}/reference/` },
+];
+---
+
+<div class="ca-machine-teaser">
+  <a class="ca-machine-teaser__poster" href={`${base}/concepts/machine/`}>
+    <Image
+      src={poster}
+      alt="A render of codeArbiter's 3D machine: the model glowing at the center inside the guard ring, lanes such as /ca:feature, /ca:sprint and /ca:pr around it, the record and your repository at the edges, and you at the console in front."
+      widths={[640, 1024, 1600, 2504]}
+      sizes="(min-width: 80rem) 72rem, 94vw"
+      loading="lazy"
+      decoding="async"
+    />
+    <span class="ca-machine-teaser__cta"><span aria-hidden="true">▶</span> Explore the machine in 3D</span>
+  </a>
+  <ul class="ca-zone-list" role="list">
+    {zones.map((zone) => (
+      <li data-zone={zone.id}>
+        <a href={`${base}/concepts/machine/#zone-${zone.id}`}>
+          <svg class="ca-zone-list__frame" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" aria-hidden="true" set:html={framePath(zone.shape)} />
+          <span class="ca-zone-list__name">{zone.name}</span>
+          <span class="ca-zone-list__blurb">{zone.blurb}</span>
+        </a>
+      </li>
+    ))}
+  </ul>
+  <dl class="ca-machine-facts">
+    {facts.map((fact) => (
+      <div>
+        <dt><a href={fact.href}>{fact.label}</a></dt>
+        <dd>{fact.value}</dd>
+      </div>
+    ))}
+  </dl>
+  <p class="ca-machine-facts__note">Counted from the shipped plugin source when this page was built.</p>
+</div>

@@ -53,8 +53,23 @@
   --ca-shadow-sm: 0 10px 30px rgb(0 0 0 / 18%);
   --ca-shadow-lg: 0 30px 90px rgb(0 0 0 / 36%);
 
-  /* Motion */
+  /* Motion: movement explains sequence; prefers-reduced-motion removes it. */
   --ca-motion-fast: 160ms ease;
+  --ca-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ca-dur-fast: 160ms;
+  --ca-dur: 320ms;
+  --ca-dur-slow: 680ms;
+
+  /* Machine meanings (scripts/machine/machine-data/key.json). Gold decides and gates,
+   * signal blue predicts, red refuses, green passes, ivory is a record, steel is structure. */
+  --ca-record: #e8dcc0;
+  --ca-steel: #8d9db2;
+
+  /* Depth: a lit edge and a coloured glow for the elements a reader chooses or watches. */
+  --ca-glow-brand: 0 18px 60px -22px rgb(240 185 47 / 55%);
+  --ca-glow-signal: 0 18px 60px -22px rgb(122 183 255 / 55%);
+  --ca-glow-danger: 0 18px 60px -22px rgb(255 123 114 / 55%);
+  --ca-blueprint: linear-gradient(rgb(122 183 255 / 6%) 1px, transparent 1px) 0 0 / 32px 32px, linear-gradient(90deg, rgb(122 183 255 / 6%) 1px, transparent 1px) 0 0 / 32px 32px;
 
   /* Surfaces */
   --ca-bg: #090d12;

@@ -1,0 +1,94 @@
+---
+/**
+ * HostSpellings.astro - the host cards, with every command spelled the way each host spells it.
+ *
+ * Card text is authored on the landing page and passed in. Spellings come from each host's
+ * command_form in core/hosts.json, and omissions from the machine layout, which the machine's
+ * validator checks against each host's capabilities. Without JavaScript every card shows the
+ * first command; the picker only changes which command the cards spell. It makes no request
+ * and writes no storage or history.
+ */
+import layout from '../../scripts/machine/machine-data/layout.json';
+import { readMachineSources } from '../../scripts/machine/machine-model';
+import { spellCommand } from '../../scripts/machine/machine-render';
+
+interface HostCard {
+  name: 'claude' | 'codex' | 'pi';
+  title: string;
+  status: string;
+  text: string;
+  href: string;
+  link: string;
+}
+
+interface Props {
+  hosts: HostCard[];
+  commands: string[];
+}
+
+const { hosts, commands } = Astro.props;
+const sources = readMachineSources();
+const omissions = layout.hostOmissions as Record<string, string[]>;
+const cards = hosts.map((card) => {
+  const host = sources.hosts.find((candidate) => candidate.name === card.name);
+  if (!host) throw new Error(`HostSpellings: core/hosts.json has no host ${card.name}`);
+  const omitted = omissions[card.name] ?? [];
+  const spellings = Object.fromEntries(commands.map((command) => [command, { spelled: spellCommand(host.commandForm, command), omitted: omitted.includes(command) }]));
+  return { ...card, spellings, first: spellings[commands[0]] };
+});
+---
+
+<div class="ca-host-switch" data-host-switch>
+  <div class="ca-host-switch__picker" role="group" aria-label="Spell a command in every host" data-host-picker hidden>
+    <span class="ca-host-switch__label" aria-hidden="true">Spell</span>
+    {commands.map((command, index) => (
+      <button type="button" class="ca-host-switch__cmd" data-cmd={command} aria-pressed={index === 0 ? 'true' : 'false'}>{command}</button>
+    ))}
+  </div>
+  <div class="ca-host-grid" data-ca-layout="peers">
+    {cards.map((card) => (
+      <article class="ca-host ca-panel" data-host={card.name}>
+        <div class="ca-host__top">
+          <h3>{card.title}</h3>
+          <span class={`ca-host__status${card.status === 'preview' ? ' ca-host__status--preview' : ''}`}>{card.status}</span>
+        </div>
+        <p class="ca-host__spell" data-spellings={JSON.stringify(card.spellings)}>
+          <code data-omitted={card.first.omitted ? 'true' : undefined}>{card.first.spelled}</code>
+          <span class="ca-host__omitted" hidden={!card.first.omitted}>Not available on {card.title}</span>
+        </p>
+        <p>{card.text}</p>
+        <a href={card.href}>{card.link}</a>
+      </article>
+    ))}
+  </div>
+</div>
+
+<script>
+  type Spelling = { spelled: string; omitted: boolean };
+
+  function wire(): void {
+    for (const root of document.querySelectorAll<HTMLElement>('[data-host-switch]:not([data-wired])')) {
+      root.dataset.wired = 'true';
+      const picker = root.querySelector<HTMLElement>('[data-host-picker]');
+      if (!picker) continue;
+      picker.hidden = false;
+      const buttons = [...picker.querySelectorAll<HTMLButtonElement>('[data-cmd]')];
+      for (const button of buttons) {
+        button.addEventListener('click', () => {
+          for (const other of buttons) other.setAttribute('aria-pressed', String(other === button));
+          for (const spell of root.querySelectorAll<HTMLElement>('[data-spellings]')) {
+            const spelling = (JSON.parse(spell.dataset.spellings ?? '{}') as Record<string, Spelling>)[button.dataset.cmd ?? ''];
+            const code = spell.querySelector('code');
+            const note = spell.querySelector<HTMLElement>('.ca-host__omitted');
+            if (!spelling || !code || !note) continue;
+            code.textContent = spelling.spelled;
+            code.toggleAttribute('data-omitted', spelling.omitted);
+            note.hidden = !spelling.omitted;
+          }
+        });
+      }
+    }
+  }
+
+  document.addEventListener('astro:page-load', wire);
+</script>

@@ -1,0 +1,87 @@
+---
+/**
+ * SceneStage.astro - one step-through scene: a wide and a tall drawing of the same model,
+ * the ordered steps that carry its full text, and the player's controls.
+ *
+ * Without JavaScript, in print and under reduced motion, every part is drawn and every step
+ * is listed. With JavaScript the player lights the parts step by step; an autoplay scene
+ * plays only while it is on screen and motion is allowed, and any control hands the reader
+ * the steps. The drawings are aria-hidden: the step list is the accessible content.
+ */
+import type { Scene } from '../../scripts/scenes/scene';
+import { inlineCode, renderSceneSvg } from '../../scripts/scenes/render-scene';
+
+interface Props {
+  scene: Scene;
+  /** Ambient play for the landing hero only; see DESIGN-SYSTEM.md "Scenes". */
+  autoplay?: boolean;
+}
+
+const { scene, autoplay = false } = Astro.props;
+const id = `ca-scene-${scene.id}`;
+const plan = scene.steps.map((step) => ({
+  focus: step.focus,
+  travel: step.travel ?? [],
+  verdict: step.verdict ?? 'run',
+  ms: step.ms ?? (step.terminal ? 3400 : 2600),
+}));
+const toneOf = (verdict?: string) => (verdict === 'block' ? 'danger' : verdict === 'record' ? 'record' : verdict === 'pass' ? 'positive' : 'signal');
+---
+
+<figure
+  class="ca-scene not-content"
+  id={id}
+  data-scene={scene.id}
+  data-autoplay={autoplay ? 'true' : undefined}
+  data-plan={JSON.stringify(plan)}
+  aria-labelledby={`${id}-title`}
+  aria-describedby={`${id}-summary`}
+>
+  <p class="ca-scene__sr" id={`${id}-title`}>{scene.title}</p>
+  <p class="ca-scene__sr" id={`${id}-summary`}>{scene.summary}</p>
+  <div class="ca-scene__stage">
+    <Fragment set:html={renderSceneSvg(scene, 'wide')} />
+    <Fragment set:html={renderSceneSvg(scene, 'tall')} />
+  </div>
+  <div class="ca-scene__track">
+    <ol class="ca-scene__steps" role="list">
+      {scene.steps.map((step, index) => (
+        <li class="ca-scene__step" data-index={index}>
+          <p class="ca-scene__step-head">
+            <span class="ca-scene__step-num"><span class="ca-scene__sr">Step </span>{index + 1}<span class="ca-scene__sr">:</span></span>
+            <span class="ca-scene__step-title" set:html={inlineCode(step.title)} />
+            {step.captured && <span class="ca-scene__badge ca-scene__badge--captured">Captured output</span>}
+            {step.illustrative && <span class="ca-scene__badge">Illustrative</span>}
+          </p>
+          <p class="ca-scene__step-caption" set:html={inlineCode(step.caption)} />
+          {step.terminal && <pre class="ca-scene__terminal" data-tone={toneOf(step.verdict)}><code>{step.terminal}</code></pre>}
+        </li>
+      ))}
+    </ol>
+    <p class="ca-scene__sr" aria-live="polite" data-scene-live></p>
+    <div class="ca-scene__controls" data-scene-controls hidden>
+      <button type="button" class="ca-scene__btn ca-scene__btn--toggle" data-scene-toggle>
+        <svg class="ca-scene__icon ca-scene__icon--pause" viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 3h2.4v10H4.5zM9.1 3h2.4v10H9.1z" /></svg>
+        <svg class="ca-scene__icon ca-scene__icon--play" viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 2.8 13 8l-8.5 5.2z" /></svg>
+        <span data-scene-toggle-label>Play</span>
+      </button>
+      <button type="button" class="ca-scene__btn" data-scene-prev aria-label="Previous step">
+        <svg class="ca-scene__icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M10.5 3 5.5 8l5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" /></svg>
+      </button>
+      <div class="ca-scene__dots" role="group" aria-label="Steps">
+        {scene.steps.map((step, index) => (
+          <button type="button" class="ca-scene__dot" data-scene-go={index} aria-label={`Step ${index + 1}: ${step.title}`}><span /></button>
+        ))}
+      </div>
+      <button type="button" class="ca-scene__btn" data-scene-next aria-label="Next step">
+        <svg class="ca-scene__icon" viewBox="0 0 16 16" aria-hidden="true"><path d="m5.5 3 5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" /></svg>
+      </button>
+      <span class="ca-scene__count" aria-hidden="true"><b data-scene-num>1</b> / {scene.steps.length}</span>
+    </div>
+  </div>
+  <figcaption class="ca-scene__evidence" set:html={inlineCode(scene.evidence)} />
+</figure>
+
+<script>
+  import '../scripts/scene-player';
+</script>

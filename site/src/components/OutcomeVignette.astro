@@ -1,0 +1,39 @@
+---
+/**
+ * OutcomeVignette.astro - a small drawing of one landing outcome, in the machine's frames.
+ *
+ * stop: a tool call meets the shield and is refused. record: records drop into the repository's
+ * .codearbiter/ store. trail: a decision writes lines into the append-only log.
+ * The static drawing is the finished picture. Where the browser supports scroll-linked
+ * animation and motion is allowed, it assembles as the reader scrolls (landing.css).
+ * Decorative: the outcome's heading and text carry the meaning.
+ */
+import { framePath } from '../../scripts/machine/machine-render';
+
+interface Props {
+  kind: 'stop' | 'record' | 'trail';
+}
+
+const { kind } = Astro.props;
+const frame = (shape: string, x: number, y: number, size: number, cls: string, style = '') =>
+  `<svg class="${cls}" x="${x}" y="${y}" width="${size}" height="${size}" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"${style ? ` style="${style}"` : ''}>${framePath(shape)}</svg>`;
+
+const drawings: Record<Props['kind'], string> = {
+  stop:
+    '<path class="ca-vignette__track" d="M18 56 H176"/>' +
+    '<g class="ca-vignette__pod"><circle cx="40" cy="56" r="10"/><circle class="ca-vignette__pod-halo" cx="40" cy="56" r="18"/></g>' +
+    '<circle class="ca-vignette__burst" cx="214" cy="56" r="34"/>' +
+    frame('shield', 182, 22, 66, 'ca-vignette__shield'),
+  record:
+    '<rect class="ca-vignette__vault" x="38" y="66" width="204" height="36" rx="9"/>' +
+    '<text class="ca-vignette__mono" x="140" y="89" text-anchor="middle">.codearbiter/</text>' +
+    ['spec', 'plan', 'adr', 'log'].map((_, i) => frame('doc', 58 + i * 46, 14, 36, 'ca-vignette__doc', `--i:${i}`)).join(''),
+  trail:
+    frame('diamond', 12, 30, 52, 'ca-vignette__decide') +
+    '<path class="ca-vignette__track" d="M66 56 H102"/>' +
+    '<rect class="ca-vignette__ledger" x="104" y="16" width="160" height="80" rx="9"/>' +
+    [38, 56, 74].map((y, i) => `<path class="ca-vignette__line" d="M120 ${y} H${i === 2 ? 210 : 246}" style="--i:${i}"/>`).join(''),
+};
+---
+
+<svg class={`ca-vignette ca-vignette--${kind}`} viewBox="0 0 280 112" aria-hidden="true" focusable="false" set:html={drawings[kind]} />

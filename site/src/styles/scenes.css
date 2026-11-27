@@ -1,0 +1,674 @@
+/*
+ * Step-through scenes (SceneStage.astro, scene-player.ts).
+ *
+ * The base styles draw the complete scene: every part, handoff and note, every step listed.
+ * That is the no-script, print and reduced-motion presentation. [data-js] styles add the
+ * sequence: parts wait in outline, light up at their step, and a token carries the work.
+ * Colours keep the machine's meanings: gold decides, blue predicts, red refuses,
+ * green passes, ivory records, steel is structure.
+ */
+
+.ca-scene {
+  --scene-brand: var(--ca-brand);
+  --scene-signal: var(--ca-info);
+  --scene-danger: var(--ca-danger);
+  --scene-positive: var(--ca-positive);
+  --scene-record: var(--ca-record);
+  --scene-steel: var(--ca-steel);
+  position: relative;
+  margin: 0;
+  container: ca-scene / inline-size;
+  border: 1px solid color-mix(in srgb, var(--ca-line-strong) 70%, transparent);
+  border-radius: 1.5rem;
+  background:
+    radial-gradient(ellipse 60% 70% at 50% 42%, rgb(122 183 255 / 9%), transparent 70%),
+    radial-gradient(ellipse 30% 40% at 47% 40%, rgb(255 123 114 / 7%), transparent 70%),
+    linear-gradient(180deg, rgb(14 20 28 / 92%), rgb(9 13 18 / 96%));
+  box-shadow: var(--ca-shadow-lg), inset 0 1px 0 rgb(255 255 255 / 6%);
+  overflow: hidden;
+}
+
+.ca-scene__sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.ca-scene__stage {
+  padding: clamp(0.75rem, 2.4cqi, 1.75rem) clamp(0.5rem, 2cqi, 1.5rem) clamp(0.25rem, 1cqi, 0.75rem);
+}
+
+.ca-scene__svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+  font-family: var(--ca-font-sans);
+}
+
+.ca-scene__svg--tall {
+  display: none;
+  max-width: 26rem;
+  margin-inline: auto;
+}
+
+@container ca-scene (width < 60rem) {
+  .ca-scene__svg--wide {
+    display: none;
+  }
+
+  .ca-scene__svg--tall {
+    display: block;
+  }
+}
+
+/* Drawing */
+.ca-scene__gridline {
+  stroke: rgb(122 183 255 / 7%);
+  stroke-width: 1;
+}
+
+.ca-scene__rail {
+  fill: none;
+  stroke: var(--ca-line-strong);
+  stroke-width: 1.5;
+  stroke-dasharray: 2 6;
+  stroke-linecap: round;
+}
+
+.ca-scene__edge {
+  fill: none;
+  stroke: var(--scene-steel);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.ca-scene__node {
+  --tone: var(--scene-steel);
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.ca-scene [data-tone="brand"] { --tone: var(--scene-brand); }
+.ca-scene [data-tone="signal"] { --tone: var(--scene-signal); }
+.ca-scene [data-tone="danger"] { --tone: var(--scene-danger); }
+.ca-scene [data-tone="positive"] { --tone: var(--scene-positive); }
+.ca-scene [data-tone="record"] { --tone: var(--scene-record); }
+.ca-scene [data-tone="steel"] { --tone: var(--scene-steel); }
+
+.ca-scene__box {
+  fill: var(--ca-bg-panel);
+  stroke: color-mix(in srgb, var(--tone) 46%, var(--ca-line-strong));
+  stroke-width: 1.5;
+  transition: stroke var(--ca-dur) ease, fill var(--ca-dur) ease;
+}
+
+.ca-scene__ring {
+  fill: none;
+  stroke: var(--ring, var(--tone));
+  stroke-width: 2;
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.ca-scene__glyph {
+  color: var(--tone);
+}
+
+.ca-scene__label {
+  fill: var(--ca-ink);
+  font-weight: 750;
+  letter-spacing: -0.01em;
+}
+
+.ca-scene__sub {
+  fill: var(--ca-ink-muted);
+  font-family: var(--ca-font-mono);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.ca-scene__zone {
+  fill: color-mix(in srgb, var(--tone) 62%, var(--ca-ink-muted));
+  font-family: var(--ca-font-mono);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.ca-scene__note rect {
+  fill: rgb(4 7 11 / 94%);
+  stroke: color-mix(in srgb, var(--tone) 55%, transparent);
+  stroke-width: 1.2;
+}
+
+.ca-scene__note text {
+  fill: var(--ca-ink-soft);
+  font-family: var(--ca-font-mono);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.ca-scene__note[data-tone="danger"] text { fill: #ffc2bc; }
+.ca-scene__note[data-tone="record"] text { fill: var(--scene-record); }
+.ca-scene__note[data-tone="signal"] text { fill: #bcdcff; }
+.ca-scene__note[data-tone="positive"] text { fill: #a6efc4; }
+
+.ca-scene__note {
+  transform-box: fill-box;
+  transform-origin: left center;
+}
+
+.ca-scene__note--annotation text,
+.ca-scene__note--annotation[data-tone] text {
+  fill: var(--ca-ink-muted);
+  font-family: var(--ca-font-sans);
+  font-size: 12.5px;
+  font-style: italic;
+  font-weight: 600;
+}
+
+.ca-scene__token {
+  opacity: 0;
+  pointer-events: none;
+  --token: var(--scene-signal);
+}
+
+.ca-scene__token[data-verdict="block"] { --token: var(--scene-danger); }
+.ca-scene__token[data-verdict="pass"] { --token: var(--scene-positive); }
+.ca-scene__token[data-verdict="decide"] { --token: var(--scene-brand); }
+.ca-scene__token[data-verdict="record"] { --token: var(--scene-record); }
+
+.ca-scene__token[data-on] {
+  opacity: 1;
+}
+
+.ca-scene__token-core {
+  fill: var(--token);
+}
+
+.ca-scene__token-halo {
+  fill: var(--token);
+  opacity: 0.28;
+  filter: blur(5px);
+}
+
+/* Sequence: only once the player has taken the scene. */
+.ca-scene[data-js] [data-state="future"] {
+  opacity: 0.18;
+}
+
+.ca-scene[data-js] .ca-scene__edge[data-state="future"] {
+  opacity: 0;
+}
+
+.ca-scene[data-js] .ca-scene__note[data-state="future"] {
+  opacity: 0.32;
+}
+
+.ca-scene[data-js] .ca-scene__note[data-state="future"] rect {
+  fill: transparent;
+  stroke-dasharray: 3 5;
+}
+
+.ca-scene[data-js] .ca-scene__note[data-state="future"] text {
+  opacity: 0;
+}
+
+.ca-scene[data-js] .ca-scene__note[data-state="past"] {
+  opacity: 0.42;
+}
+
+.ca-scene[data-js] [data-state] {
+  transition: opacity var(--ca-dur-slow) var(--ca-ease-out);
+}
+
+.ca-scene { --edge: var(--scene-signal); }
+.ca-scene[data-verdict="decide"] { --edge: var(--scene-brand); }
+.ca-scene[data-verdict="block"] { --edge: var(--scene-danger); }
+.ca-scene[data-verdict="pass"] { --edge: var(--scene-positive); }
+.ca-scene[data-verdict="record"] { --edge: var(--scene-record); }
+
+.ca-scene[data-js] .ca-scene__edge[data-state="active"] {
+  stroke: var(--edge);
+  stroke-dasharray: var(--len);
+  stroke-dashoffset: var(--len);
+  animation: ca-scene-draw 720ms var(--ca-ease-out) forwards;
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--edge) 55%, transparent));
+}
+
+.ca-scene[data-js] .ca-scene__node[data-state="active"] .ca-scene__box,
+.ca-scene[data-js] .ca-scene__node[data-focus] .ca-scene__box {
+  fill: color-mix(in srgb, var(--tone) 9%, var(--ca-bg-panel));
+  stroke: var(--tone);
+  stroke-width: 2;
+  filter: drop-shadow(0 0 16px color-mix(in srgb, var(--tone) 42%, transparent));
+}
+
+.ca-scene[data-js] .ca-scene__note[data-state="active"] {
+  animation: ca-scene-pop 420ms var(--ca-ease-out) both;
+}
+
+.ca-scene[data-js] .ca-scene__note[data-state="active"] text {
+  animation: ca-scene-type 1100ms steps(28, end) both;
+}
+
+/* Verdicts fire at the focus once the token arrives. */
+.ca-scene__node[data-verdict="run"] { --ring: var(--scene-signal); }
+.ca-scene__node[data-verdict="block"] { --ring: var(--scene-danger); --tone: var(--scene-danger); }
+.ca-scene__node[data-verdict="pass"] { --ring: var(--scene-positive); --tone: var(--scene-positive); }
+.ca-scene__node[data-verdict="decide"] { --ring: var(--scene-brand); --tone: var(--scene-brand); }
+.ca-scene__node[data-verdict="record"] { --ring: var(--scene-record); }
+
+.ca-scene__node[data-verdict] .ca-scene__ring {
+  animation: ca-scene-ripple 1200ms var(--ca-ease-out) 2;
+}
+
+.ca-scene__node[data-verdict="block"] .ca-scene__ring {
+  animation: ca-scene-shock 900ms cubic-bezier(0.1, 0.9, 0.2, 1) 1;
+}
+
+.ca-scene__node[data-verdict="block"] {
+  animation: ca-scene-shake 460ms ease-in-out 1;
+}
+
+@keyframes ca-scene-draw {
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes ca-scene-pop {
+  from { opacity: 0; transform: translateY(8px) scale(0.98); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes ca-scene-type {
+  from { clip-path: inset(0 100% 0 0); }
+  to { clip-path: inset(0 0 0 0); }
+}
+
+@keyframes ca-scene-ripple {
+  0% { opacity: 0.85; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1.22, 1.6); }
+}
+
+@keyframes ca-scene-shock {
+  0% { opacity: 1; stroke-width: 5; transform: scale(1); }
+  100% { opacity: 0; stroke-width: 0.5; transform: scale(1.5, 2.4); }
+}
+
+@keyframes ca-scene-shake {
+  0%, 100% { transform: none; }
+  20% { transform: translateX(-5px); }
+  40% { transform: translateX(5px); }
+  60% { transform: translateX(-3px); }
+  80% { transform: translateX(2px); }
+}
+
+/* The step track: every step listed, or one step at a time once the player runs. */
+.ca-scene__track {
+  display: grid;
+  gap: var(--ca-space-4);
+  padding: var(--ca-space-4) clamp(1rem, 2.4cqi, 1.75rem) var(--ca-space-4);
+  border-block-start: 1px solid var(--ca-line);
+  background: linear-gradient(180deg, rgb(9 13 18 / 30%), rgb(9 13 18 / 70%));
+}
+
+.ca-scene__steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: var(--ca-space-4) var(--ca-space-5);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ca-scene__step {
+  min-width: 0;
+  margin: 0;
+}
+
+.ca-scene__step-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.6rem;
+  align-items: center;
+  margin: 0;
+  color: var(--ca-ink);
+  font-weight: 760;
+  line-height: 1.3;
+}
+
+.ca-scene__step-num {
+  display: inline-grid;
+  width: 1.6rem;
+  height: 1.6rem;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, var(--ca-brand) 45%, var(--ca-line));
+  border-radius: 50%;
+  color: var(--ca-brand-bright);
+  font: 700 0.75rem/1 var(--ca-font-mono);
+}
+
+.ca-scene__step-title code,
+.ca-scene__step-caption code {
+  font-size: 0.88em;
+}
+
+.ca-scene__badge {
+  padding: 0.12rem 0.5rem;
+  border: 1px dashed var(--ca-line-strong);
+  border-radius: var(--ca-radius-pill);
+  color: var(--ca-ink-muted);
+  font: 650 0.68rem/1.4 var(--ca-font-mono);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.ca-scene__badge--captured {
+  border-style: solid;
+  border-color: color-mix(in srgb, var(--ca-positive) 50%, transparent);
+  color: var(--ca-positive);
+}
+
+.ca-scene__step-caption {
+  margin: 0.45rem 0 0;
+  color: var(--ca-ink-soft);
+  line-height: 1.6;
+}
+
+.ca-scene__terminal {
+  margin: 0.65rem 0 0;
+  padding: 0.6rem 0.8rem;
+  overflow-x: auto;
+  border: 1px solid color-mix(in srgb, var(--tone, var(--ca-line-strong)) 45%, transparent);
+  border-radius: var(--ca-radius-sm);
+  background: rgb(4 7 11 / 88%);
+  color: var(--ca-ink-soft);
+  font: 500 0.8rem/1.55 var(--ca-font-mono);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.ca-scene__terminal[data-tone="danger"] { color: #ffc2bc; }
+.ca-scene__terminal[data-tone="record"] { color: var(--scene-record); }
+.ca-scene__terminal[data-tone="signal"] { color: #bcdcff; }
+
+.ca-scene__evidence {
+  padding: 0 clamp(1rem, 2.4cqi, 1.75rem) var(--ca-space-4);
+  color: var(--ca-ink-muted);
+  font-size: var(--ca-text-xs);
+  line-height: 1.6;
+}
+
+.ca-scene__evidence code {
+  font-size: 0.95em;
+}
+
+/* Controls */
+.ca-scene__controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ca-space-2);
+  align-items: center;
+}
+
+.ca-scene__controls[hidden] {
+  display: none;
+}
+
+.ca-scene__btn {
+  display: inline-flex;
+  gap: 0.45rem;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.75rem;
+  height: 2.75rem;
+  padding: 0 0.85rem;
+  border: 1px solid var(--ca-line-strong);
+  border-radius: var(--ca-radius-pill);
+  background: rgb(18 26 36 / 85%);
+  color: var(--ca-ink);
+  font: 700 0.85rem/1 var(--ca-font-sans);
+  cursor: pointer;
+}
+
+.ca-scene__btn:hover {
+  border-color: var(--ca-brand-deep);
+  background: var(--ca-brand-wash);
+}
+
+.ca-scene__btn--toggle {
+  min-width: 6rem;
+}
+
+.ca-scene__icon {
+  width: 1rem;
+  height: 1rem;
+  fill: currentColor;
+}
+
+.ca-scene__btn--toggle[data-playing="true"] .ca-scene__icon--play,
+.ca-scene__btn--toggle:not([data-playing="true"]) .ca-scene__icon--pause {
+  display: none;
+}
+
+.ca-scene__dots {
+  display: flex;
+  gap: 0;
+  align-items: center;
+}
+
+.ca-scene__dot {
+  display: inline-grid;
+  width: 1.75rem;
+  height: 2.75rem;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.ca-scene__dot span {
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 50%;
+  background: var(--ca-line-strong);
+  transition: transform var(--ca-dur-fast) ease, background var(--ca-dur-fast) ease;
+}
+
+.ca-scene__dot:hover span {
+  background: var(--ca-ink-muted);
+}
+
+.ca-scene__dot[aria-current="step"] span {
+  background: var(--ca-brand);
+  box-shadow: 0 0 0 4px rgb(240 185 47 / 18%);
+  transform: scale(1.25);
+}
+
+.ca-scene__count {
+  margin-inline-start: auto;
+  color: var(--ca-ink-muted);
+  font: 600 0.8rem/1 var(--ca-font-mono);
+}
+
+.ca-scene__count b {
+  color: var(--ca-ink);
+}
+
+.ca-scene__btn:focus-visible,
+.ca-scene__dot:focus-visible {
+  outline: 2px solid var(--ca-brand-bright);
+  outline-offset: 2px;
+}
+
+/* With the player, one step shows at a time. The others stay in the reading order for
+ * assistive technology (they hold nothing focusable) and size the track so it never jumps. */
+.ca-scene[data-js] .ca-scene__steps {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas: "step";
+}
+
+.ca-scene[data-js] .ca-scene__step {
+  grid-area: step;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--ca-dur) ease;
+}
+
+.ca-scene[data-js] .ca-scene__step[aria-current="step"] {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+@container ca-scene (width >= 60rem) {
+  .ca-scene[data-js] .ca-scene__track {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+  }
+}
+
+/* Near full size, the wide drawing shows the terminal text beside the parts; below that the
+ * step text keeps a readable copy. */
+@container ca-scene (width >= 75rem) {
+  .ca-scene[data-js] .ca-scene__terminal {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ca-scene *,
+  .ca-scene *::before,
+  .ca-scene *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+@media print {
+  .ca-scene {
+    box-shadow: none;
+    break-inside: avoid;
+  }
+
+  .ca-scene [data-state],
+  .ca-scene [data-state] text {
+    opacity: 1 !important;
+    animation: none !important;
+  }
+
+  .ca-scene__note rect {
+    stroke-dasharray: none !important;
+  }
+
+  .ca-scene__token,
+  .ca-scene__controls {
+    display: none !important;
+  }
+
+  .ca-scene[data-js] .ca-scene__steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+    grid-template-areas: none;
+  }
+
+  .ca-scene[data-js] .ca-scene__step {
+    grid-area: auto;
+    opacity: 1;
+  }
+
+  .ca-scene[data-js] .ca-scene__terminal {
+    position: static;
+    width: auto;
+    height: auto;
+    overflow: visible;
+    clip: auto;
+    white-space: pre-wrap;
+  }
+}
+
+/* Forced colours: browsers do not force SVG fills and strokes, so this block does it, and it
+ * must win over every tone and state rule above. The HTML step text stays readable too. */
+@media (forced-colors: active) {
+  .ca-scene {
+    border-color: CanvasText;
+  }
+
+  .ca-scene .ca-scene__box,
+  .ca-scene .ca-scene__note rect {
+    fill: Canvas !important;
+    stroke: CanvasText !important;
+    filter: none !important;
+  }
+
+  .ca-scene .ca-scene__edge,
+  .ca-scene .ca-scene__rail,
+  .ca-scene .ca-scene__ring {
+    stroke: CanvasText !important;
+    filter: none !important;
+  }
+
+  .ca-scene .ca-scene__label,
+  .ca-scene .ca-scene__sub,
+  .ca-scene .ca-scene__zone,
+  .ca-scene .ca-scene__note text {
+    fill: CanvasText !important;
+  }
+
+  .ca-scene .ca-scene__glyph {
+    color: CanvasText !important;
+  }
+
+  .ca-scene .ca-scene__gridline {
+    stroke: transparent !important;
+  }
+
+  .ca-scene[data-js] [data-state="future"] {
+    opacity: 0.45;
+  }
+
+  .ca-scene[data-js] .ca-scene__node[data-focus] .ca-scene__box,
+  .ca-scene[data-js] .ca-scene__node[data-state="active"] .ca-scene__box,
+  .ca-scene[data-js] .ca-scene__edge[data-state="active"] {
+    stroke: Highlight !important;
+    stroke-width: 3;
+  }
+
+  .ca-scene .ca-scene__token-core,
+  .ca-scene .ca-scene__token-halo {
+    fill: Highlight !important;
+  }
+
+  .ca-scene[data-js] .ca-scene__terminal {
+    position: static !important;
+    width: auto !important;
+    height: auto !important;
+    overflow: visible !important;
+    clip: auto !important;
+    white-space: pre-wrap !important;
+  }
+
+  .ca-scene__dot span {
+    background: CanvasText;
+  }
+
+  .ca-scene__dot[aria-current="step"] span {
+    background: Highlight;
+  }
+}

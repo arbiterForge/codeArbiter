@@ -110,7 +110,7 @@ async function observeMobileQuality(page: Page) {
 async function observeHomepageStructureAndSearch(page: Page) {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/", { waitUntil: "load" });
-  // The outcomes render as a plain list (DOCS-OVERHAUL M5); each item keeps its heading.
+  // The outcomes stay a list (SITE-OVERHAUL S1 revised DOCS-OVERHAUL M5); each item keeps its heading.
   const outcomes = page.getByRole("region", { name: "What changes when codeArbiter is active.", exact: true }).getByRole("list");
   const listItems = outcomes.getByRole("listitem");
   const headingsByListItem = [];

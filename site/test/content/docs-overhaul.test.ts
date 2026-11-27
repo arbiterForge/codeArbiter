@@ -97,12 +97,18 @@ describe("M2 one front door", () => {
   });
 });
 
-describe("M3 landing in five sections", () => {
+describe("M3 landing structure, superseded by SITE-OVERHAUL.md S1", () => {
   const landing = doc("index.mdx");
 
-  it("has exactly five top-level sections and one eyebrow", () => {
-    expect(landing.match(/^<section\b/gm)).toHaveLength(5);
+  it("tells one story in seven sections, in order, with one eyebrow", () => {
+    const sections = [...landing.matchAll(/^<section class="([^"]+)"/gm)].map(([, names]) =>
+      names.split(" ").find((name) => name !== "ca-section" && name !== "ca-panel"),
+    );
+    expect(sections).toEqual(["ca-splash", "ca-proof", "ca-machine-section", "ca-guarantees", "ca-lanes", "ca-hosts", "ca-final-cta"]);
     expect(landing.match(/class="ca-eyebrow"/g)).toHaveLength(1);
+    // .ca-kicker is styled like an eyebrow, so none may sit above a section heading either.
+    expect(landing).not.toMatch(/<p class="ca-(?:eyebrow|kicker)"[^>]*>[^<]*<\/p>\s*<h2\b/);
+    expect(read("SITE-OVERHAUL.md")).toContain("supersedes `DOCS-OVERHAUL.md` M3");
   });
 
   it("drops the inventory sections from the front page", () => {
@@ -136,11 +142,14 @@ describe("M4 lighter page furniture", () => {
   });
 });
 
-describe("M5 quieter visual style", () => {
-  it("renders outcomes as a plain list, not panels", () => {
+describe("M5 visual style, superseded by SITE-OVERHAUL.md S1", () => {
+  it("keeps outcomes a list, each item drawn in the machine's frames rather than a choice panel", () => {
     const outcomes = doc("index.mdx").match(/<section class="ca-section ca-guarantees"[\s\S]*?<\/section>/)?.[0] ?? "";
+    expect(outcomes).toContain('<ul class="ca-feature-grid"');
+    expect(outcomes.match(/<OutcomeVignette kind="(?:stop|record|trail)" \/>/g)).toHaveLength(3);
     expect(outcomes).not.toContain("ca-panel");
-    expect(read("DESIGN-SYSTEM.md")).toContain("Cards only where the reader chooses");
+    expect(read("DESIGN-SYSTEM.md")).toContain("Cards where the reader chooses or watches");
+    expect(read("SITE-OVERHAUL.md")).toContain("M5 (quieter visual");
   });
 });
 

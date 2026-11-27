@@ -8,6 +8,7 @@ import { afterEach, describe, it, expect } from "vitest";
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { computeLandingStats, DEFAULT_PLUGIN_ROOT } from "../../scripts/generator/landing-stats";
+import { extractHookGates } from "../../scripts/generator/extract-hook-gates";
 import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 
@@ -64,6 +65,17 @@ describe("computeLandingStats matches an independent filesystem count", () => {
 
   it("gate count matches a literal-tag regex scan of plugins/ca/hooks/*.py", () => {
     expect(stats.gateCount).toBe(independentGateCount());
+  });
+
+  it("splits gate IDs into the ones that block and the ones that only remind", () => {
+    const { callSites } = extractHookGates(join(DEFAULT_PLUGIN_ROOT, "hooks"));
+    const blocking = new Set(callSites.filter((site) => site.kind === "block").map((site) => site.tag));
+    const all = new Set(callSites.map((site) => site.tag));
+    expect(stats.blockingGateCount).toBe(blocking.size);
+    expect(stats.reminderGateCount).toBe([...all].filter((tag) => !blocking.has(tag)).length);
+    expect(stats.blockingGateCount + stats.reminderGateCount).toBe(stats.gateCount);
+    expect(stats.reminderGateCount).toBeGreaterThan(0);
+    expect(trustRowSource).not.toContain("gate IDs enforced");
   });
 
   it("core lane count matches an independent generated catalog count", () => {
