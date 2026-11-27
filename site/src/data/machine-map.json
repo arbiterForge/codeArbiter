@@ -7,7 +7,7 @@
     "hooks/scripts": ["session-start", "persona-injector", "guard-bash", "guard-write"],
     "codearbiter-directory": ["vault", "specs-plans", "task-board", "audit-ledger"],
     "codearbiter-directory/files": ["vault", "adr-tablets", "audit-ledger"],
-    "trust": ["network", "sandbox"],
+    "trust": ["network"],
     "getting-started/choose-your-host": ["hosts"],
     "getting-started/install": ["hosts", "activation"],
     "getting-started/quickstart": ["activation", "session-start", "ca-doctor"],

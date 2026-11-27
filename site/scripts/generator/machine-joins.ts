@@ -31,6 +31,8 @@ export interface JoinedPart {
   zone: string;
   shape: string;
   href: string;
+  /** The plugin files the model cites for this part. */
+  sources: string[];
 }
 
 export interface RouteStop {
@@ -60,6 +62,7 @@ function joined(id: string): JoinedPart {
     zone: ZONES[part.zone]?.name ?? part.zone,
     shape: FRAMES[part.kind] ?? "square",
     href: `${MACHINE}#part-${id}`,
+    sources: [...(part.source ?? [])],
   };
 }
 
@@ -101,11 +104,30 @@ export function routeLineHtml(stops: RouteStop[]): string {
 
 const GATE_ID = /\bH-\d{2}[a-z]?\b/g;
 
-/** The parts that enforce a hook gate, and the failure scenarios that show it firing. */
-export function gateJoin(tag: string): { parts: JoinedPart[]; scenarios: { id: string; title: string; href: string }[] } {
+export interface GateJoin {
+  /** Parts that cite a hook file which prints the gate: the code that refuses or reminds. */
+  enforcers: JoinedPart[];
+  /** Other parts whose hooks list names the gate: what it protects, reads or keeps from being
+   * skipped, such as the protected branch for H-01 or the git backstop for H-20. */
+  actsOn: JoinedPart[];
+  scenarios: { id: string; title: string; href: string }[];
+}
+
+/**
+ * Where a hook gate sits in the machine. `files` are the hook files whose call sites print the
+ * gate (extract-hook-gates.ts). A part enforces the gate only when the model cites one of those
+ * files itself; a part that cites the whole hooks directory is an umbrella, not the guard.
+ */
+export function gateJoin(tag: string, files: string[] = []): GateJoin {
+  const printing = new Set(files.map((file) => `plugins/ca/hooks/${file}`));
+  const enforcers = Object.entries(MODEL)
+    .filter(([, part]) => (part.source ?? []).some((cited) => printing.has(cited)))
+    .map(([id]) => joined(id));
+  const enforcing = new Set(enforcers.map((part) => part.id));
   return {
-    parts: Object.entries(MODEL)
-      .filter(([, part]) => (part.hooks ?? []).includes(tag))
+    enforcers,
+    actsOn: Object.entries(MODEL)
+      .filter(([id, part]) => !enforcing.has(id) && (part.hooks ?? []).includes(tag))
       .map(([id]) => joined(id)),
     scenarios: SCENARIOS.filter((scenario) => [...(scenario.tag ?? "").matchAll(GATE_ID)].some(([id]) => id === tag)).map((scenario) => ({
       id: scenario.id,

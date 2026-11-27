@@ -267,8 +267,9 @@ class ScenePlayer {
     }
   }
 
-  /** Stop now: no timer, frame or travel survives, and the current step shows its outcome. A
-   * stale callback can no longer move the token or fire a verdict. */
+  /** Stop now: no timer, frame or travel survives, the current step shows its outcome, and every
+   * running animation (a handoff drawing, the verdict's ripple) jumps to its final frame. A stale
+   * callback can no longer move the token or fire a verdict. */
   private halt(): void {
     this.generation += 1;
     this.clearTimers();
@@ -276,6 +277,14 @@ class ScenePlayer {
     this.endTravel?.();
     this.parkTokens();
     if (this.root.dataset.started) this.settle(this.index);
+    for (const animation of this.root.getAnimations({ subtree: true })) {
+      try {
+        animation.finish();
+      } catch {
+        // An endless animation has no final frame; stop it instead.
+        animation.cancel();
+      }
+    }
   }
 
   destroy(): void {

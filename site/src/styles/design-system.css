@@ -1106,7 +1106,7 @@ details.ca-source pre {
 .ca-machine-chip[data-zone="guards"] { --tone: var(--ca-danger); }
 .ca-machine-chip[data-zone="skills"] { --tone: var(--ca-info); }
 .ca-machine-chip[data-zone="record"] { --tone: var(--ca-record); }
-.ca-machine-chip[data-zone="outside"] { --tone: var(--ca-preview); }
+.ca-machine-chip[data-zone="outside"] { --tone: var(--ca-steel); border-style: dashed; }
 
 /* Inner-page identity: a blueprint grid behind the title, the machine's drafting surface, and a
  * title in light that cools toward signal blue. Gold stays on gates and decisions. */
@@ -1152,8 +1152,13 @@ details.ca-source pre {
     -webkit-text-fill-color: CanvasText;
   }
 
+  /* A chip is a link, so it keeps the user's link colour; route stops are plain marks. */
   .ca-machine-chip,
-  .ca-machine-chip svg,
+  .ca-machine-chip svg {
+    color: LinkText;
+    border-color: LinkText;
+  }
+
   .ca-route__stop {
     color: CanvasText;
     border-color: CanvasText;
@@ -1162,6 +1167,12 @@ details.ca-source pre {
 
 @media print {
   .main-pane h1#_top {
+    background: none;
+    color: #000;
+  }
+
+  .ca-machine-chip {
+    border-color: #555;
     background: none;
     color: #000;
   }

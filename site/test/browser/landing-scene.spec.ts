@@ -36,9 +36,10 @@ test('pausing while the token travels stops it at once and settles the step', as
     return {
       moving: el.querySelector('.ca-scene__svg--wide [data-token]')!.hasAttribute('data-on'),
       settled: Boolean(focus?.getAttribute('data-verdict')),
+      running: el.getAnimations({ subtree: true }).filter((animation) => animation.playState === 'running').length,
     };
   });
-  expect(atPause).toEqual({ moving: false, settled: true });
+  expect(atPause).toEqual({ moving: false, settled: true, running: 0 });
   const held = await step(page);
   const before = await token.getAttribute('transform');
   for (let sample = 0; sample < 6; sample += 1) {

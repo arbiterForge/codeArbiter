@@ -82,17 +82,15 @@ function compareTags(a: string, b: string): number {
 }
 
 /**
- * A hook message as HTML, character for character. It is escaped and never passes through
- * Markdown or smart typography, which would print `--no-verify` as a dash and curl the quotes.
- * `{placeholder}` runs (f-string interpolations) and backtick spans render as inline code.
+ * A hook message as HTML, character for character, backticks included, as the terminal shows it.
+ * It is escaped and never passes through Markdown or smart typography, which would print
+ * `--no-verify` as a dash and curl the quotes. Only the `{placeholder}` runs (f-string
+ * interpolations the hook fills in when it fires) are marked, as inline code.
  */
 export function messageHtml(message: string): string {
   return message
-    .split(/(`[^`\n]+`|\{[^{}\n]*\})/)
-    .map((segment, index) => {
-      if (index % 2 === 0) return escapeHtml(segment);
-      return `<code>${escapeHtml(segment.startsWith("`") ? segment.slice(1, -1) : segment)}</code>`;
-    })
+    .split(/(\{[^{}\n]*\})/)
+    .map((segment, index) => (index % 2 === 0 ? escapeHtml(segment) : `<code>${escapeHtml(segment)}</code>`))
     .join("")
     .replace(/\n/g, "<br>");
 }
@@ -146,12 +144,18 @@ export function renderHooksReference(
       })
       .join("\n\n");
 
-    // Where this gate sits in the 3D machine, from the machine model's own hooks lists and
-    // failure scenarios (machine-joins.ts). Absent when the model names no owner.
-    const machine = gateJoin(gateTag);
+    // Where this gate sits in the 3D machine (machine-joins.ts): the parts that cite a file
+    // printing it enforce it (or, for a reminder, raise it); other parts whose hooks list names
+    // it are what it acts on. Absent when the model names no part.
+    const machine = gateJoin(gateTag, [...new Set(sites.map((site) => site.file))]);
+    const blocks = kinds.has("block");
     const watch = machine.scenarios.map((scenario) => `[${markdownText(scenario.title)}](${scenario.href})`).join(", ");
-    const machineLine = machine.parts.length > 0
-      ? [`**In the machine:** ${partLinks(machine.parts)}.${watch ? ` Watch it catch a mistake: ${watch}.` : ""}`, ""]
+    const relations = [
+      machine.enforcers.length > 0 ? `${blocks ? "enforced" : "raised"} by ${partLinks(machine.enforcers)}` : "",
+      machine.actsOn.length > 0 ? `acts on ${partLinks(machine.actsOn)}` : "",
+    ].filter(Boolean);
+    const machineLine = relations.length > 0
+      ? [`**In the machine:** ${relations.join("; ")}.${watch ? ` ${blocks ? "Watch it catch a mistake" : "See it in a scenario"}: ${watch}.` : ""}`, ""]
       : [];
 
     return [
@@ -182,8 +186,9 @@ export function renderHooksReference(
     "A `{placeholder}` shown in a message is an f-string interpolation: the hook fills it in",
     "with a run-time value (a file path, a branch name, a count) when it actually fires.",
     "",
-    "Each gate also names the part of the [machine](/concepts/machine/) that enforces it and,",
-    "where the machine has one, a failure scenario you can watch it catch in 3D.",
+    "Each gate also names the parts of the [machine](/concepts/machine/) that enforce it (or, for",
+    "a reminder, raise it), what it acts on, and, where the machine has one, a failure scenario",
+    "you can watch in 3D.",
   ].join("\n");
 
   return `${frontmatter}\n\n${intro}\n\n${sections.join("\n\n---\n\n")}\n`;

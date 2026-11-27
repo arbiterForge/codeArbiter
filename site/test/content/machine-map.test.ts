@@ -28,11 +28,22 @@ describe("machine map", () => {
     }
   });
 
-  it("is rendered by the page orientation strip with machine frames and part links", () => {
-    const context = readFileSync(join(siteRoot, "src", "components", "PageContext.astro"), "utf8");
-    expect(context).toContain("machine-map.json");
-    expect(context).toContain("ca-page-context__machine");
-    expect(context).toContain("partById(id)");
-    expect(context).toContain("framePath(part.shape)");
+  // The build that `npm test` makes first: each mapped page must render exactly its parts as
+  // chips, in order, so a page that stopped rendering the orientation strip fails here.
+  const dist = join(siteRoot, "dist");
+  const built = (id: string) => join(dist, id === "index" ? "" : id, "index.html");
+  it.skipIf(!existsSync(join(dist, "index.html")))("renders each mapped page's parts as chips in the built site", () => {
+    const wrong: string[] = [];
+    for (const [id, list] of Object.entries(map.pages)) {
+      const file = built(id);
+      if (!existsSync(file)) {
+        wrong.push(`${id}: not built`);
+        continue;
+      }
+      const html = readFileSync(file, "utf8");
+      const chips = [...html.matchAll(/class="ca-machine-chip"[^>]*href="[^"]*\/concepts\/machine\/#part-([^"]+)"/g)].map(([, part]) => part);
+      if (JSON.stringify(chips) !== JSON.stringify(list)) wrong.push(`${id}: ${chips.join(",") || "none"} != ${list.join(",")}`);
+    }
+    expect(wrong).toEqual([]);
   });
 });

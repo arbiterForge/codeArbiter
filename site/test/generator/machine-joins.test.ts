@@ -38,19 +38,45 @@ describe("machine joins", () => {
     for (const part of partsCiting("plugins/ca/skills/brainstorming/SKILL.md")) expect(part.name).not.toMatch(/undefined/);
   });
 
-  it("gives every hook gate an owning machine part", () => {
-    const tags = [...new Set(extractHookGates(join(repo, "plugins/ca/hooks")).callSites.map((site) => site.tag))];
+  const sites = extractHookGates(join(repo, "plugins/ca/hooks")).callSites;
+  const filesOf = (tag: string) => [...new Set(sites.filter((site) => site.tag === tag).map((site) => site.file))];
+  const ids = (list: { id: string }[]) => list.map((part) => part.id);
+
+  it("names as enforcers exactly the parts that cite a file printing the gate", () => {
+    const tags = [...new Set(sites.map((site) => site.tag))];
     expect(tags.length).toBeGreaterThan(10);
-    expect(tags.filter((tag) => gateJoin(tag).parts.length === 0)).toEqual([]);
+    for (const tag of tags) {
+      const { enforcers } = gateJoin(tag, filesOf(tag));
+      expect(enforcers.length, tag).toBeGreaterThan(0);
+      // Every file that prints the gate is owned by a named enforcer, and no umbrella part
+      // (one that cites only the hooks directory) stands in for the real guard.
+      for (const file of filesOf(tag)) expect(enforcers.some((part) => part.sources.includes(`plugins/ca/hooks/${file}`)), `${tag} ${file}`).toBe(true);
+      expect(ids(enforcers), tag).not.toContain("guard-ring");
+    }
+  });
+
+  it("separates what a gate acts on from what enforces it", () => {
+    // --no-verify skips the git backstop, so the backstop is what H-20 protects, not its enforcer.
+    const h20 = gateJoin("H-20", filesOf("H-20"));
+    expect(ids(h20.enforcers)).toEqual(["guard-bash"]);
+    expect(ids(h20.actsOn)).toContain("git-hooks");
+    // The git backstop prints H-01, H-02, H-09b, H-10b and H-14 itself, so it enforces them.
+    for (const tag of ["H-01", "H-02", "H-09b", "H-10b", "H-14"]) expect(ids(gateJoin(tag, filesOf(tag)).enforcers), tag).toEqual(["guard-bash", "git-hooks"]);
+    const h01 = gateJoin("H-01", filesOf("H-01"));
+    expect(ids(h01.actsOn)).toEqual(["main-vault"]);
+    expect(ids(gateJoin("H-05", filesOf("H-05")).actsOn)).toEqual(["audit-ledger"]);
+    expect(ids(gateJoin("H-18", filesOf("H-18")).actsOn)).toEqual(["activation"]);
+    for (const tag of ["H-07", "H-13"]) expect(ids(gateJoin(tag, filesOf(tag)).enforcers), tag).toEqual(["advisory-lamps"]);
   });
 
   it("links a gate to the failure scenario that shows it firing", () => {
-    const h03 = gateJoin("H-03");
-    expect(h03.parts.map((part) => part.id)).toContain("guard-bash");
+    const h03 = gateJoin("H-03", filesOf("H-03"));
+    expect(ids(h03.enforcers)).toContain("guard-bash");
     expect(h03.scenarios.map((scenario) => scenario.href)).toContain("/concepts/machine/#fault-add-all");
     expect(gateJoin("H-10b").scenarios.map((scenario) => scenario.id)).toContain("fault-hardcoded-key");
     expect(gateJoin("H-10").scenarios.map((scenario) => scenario.id)).toContain("fault-hardcoded-key");
-    expect(gateJoin("H-1").parts).toEqual([]);
+    expect(gateJoin("H-1", []).enforcers).toEqual([]);
+    expect(gateJoin("H-1", []).actsOn).toEqual([]);
   });
 
   it("keeps machine titles intact in Markdown: flags become code, punctuation is escaped", () => {
@@ -106,13 +132,30 @@ describe("generated pages carry their machine joins", async () => {
 
   it("names each hook gate's machine owner and the scenario that shows it", () => {
     const md = renderHooksReference(
-      [{ tag: "H-03", kind: "block", file: "pre-bash.py", line: 10, message: "no broad staging" }],
+      [{ tag: "H-03", kind: "block", file: "_bashguardlib.py", line: 10, message: "no broad staging" }],
       new Map([["pre-bash.py", ["PreToolUse (Bash)"]]]),
       "9.9.9",
       "main",
     );
-    expect(md).toContain("**In the machine:** [Shell gate (pre-bash)](/concepts/machine/#part-guard-bash).");
+    expect(md).toContain("**In the machine:** enforced by [Shell gate (pre-bash)](/concepts/machine/#part-guard-bash).");
     expect(md).toContain("Watch it catch a mistake: [Stages everything, including a .env file](/concepts/machine/#fault-add-all).");
+  });
+
+  it("says what enforces a gate, what it acts on, and words a reminder as raised, not caught", () => {
+    const md = renderHooksReference(
+      [
+        { tag: "H-20", kind: "block", file: "_bashguardlib.py", line: 1, message: "no --no-verify" },
+        { tag: "H-07", kind: "remind", file: "post-write-edit.py", line: 2, message: "dependency manifest changed" },
+      ],
+      new Map([["pre-bash.py", ["PreToolUse (Bash|PowerShell)"]], ["post-write-edit.py", ["PostToolUse (Write|Edit)"]]]),
+      "9.9.9",
+      "main",
+    );
+    const h20 = md.slice(md.indexOf("## H-20"));
+    expect(h20).toMatch(/\*\*In the machine:\*\* enforced by \[Shell gate \(pre-bash\)\]\([^)]+\); acts on [^.]*\[Git-level backstop\]/);
+    const h07 = md.slice(md.indexOf("## H-07"), md.indexOf("## H-20"));
+    expect(h07).toContain("**In the machine:** raised by [");
+    expect(h07).not.toContain("Watch it catch a mistake");
   });
 
   it("keeps the generator's own prose free of separator dashes and literal backticks", () => {

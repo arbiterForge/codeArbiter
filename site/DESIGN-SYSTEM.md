@@ -16,8 +16,9 @@ into a custom layout.
    no runtime request to a font or analytics service.
 5. **Bold, legible confidence.** The site shows the machine working rather than describing it.
    Gold identifies decisions, gates, and primary actions; it is not a general highlight color. The
-   machine's other meanings carry the rest (signal blue predicts, red refuses, green passes, ivory
-   is a record, steel is structure). Motion explains sequence and is removed under
+   machine's other meanings carry the rest, as the machine's key states them (signal blue is model
+   and agent activity, red refuses, green passes, ivory is a record, steel is structure, a dashed
+   outline is outside the machine). Motion explains sequence and is removed under
    `prefers-reduced-motion`. `SITE-OVERHAUL.md` records the owner's 2026-11-26 choice of this bolder
    identity over the October overhaul's quieter style.
 
@@ -67,7 +68,7 @@ Shared tokens and primitives live in `src/styles/design-system.css`.
 - **Surfaces:** `--ca-bg`, `--ca-bg-raised`, `--ca-bg-panel`, `--ca-line`.
 - **Meaning:** `--ca-brand` for gates/actions, `--ca-positive` for verified state,
   `--ca-danger` for blocks, `--ca-preview` for Feature Forge status, and the machine's
-  `--ca-info` (the model), `--ca-record` (records) and `--ca-steel` (structure).
+  `--ca-info` (model and agent activity), `--ca-record` (records) and `--ca-steel` (structure).
 - **Motion and depth:** `--ca-ease-out`, `--ca-dur-*`, the `--ca-glow-*` shadows and the
   `--ca-blueprint` grid. A glow, and a scene's live handoff, follows the meaning of what it lights.
 - **Components:** `.ca-button`, `.ca-panel`, `.ca-pill`, `.ca-eyebrow`, and
@@ -385,8 +386,8 @@ each step carries its full terminal text, which the phone layout shows in the st
 - **Autoplay.** Only the landing hero plays on its own: while a third of it is on screen, the tab
   is visible and motion is allowed, always with a visible pause control. Any control hands the
   reader the steps for the rest of the visit. Other scenes wait for Play or a step. Pausing, or
-  the scene leaving the screen, takes the token off and settles the current step at once, so
-  nothing moves after the reader has stopped it.
+  the scene leaving the screen, takes the token off, settles the current step and ends every
+  running animation at its final frame, so nothing moves after the reader has stopped it.
 - **Lifecycle.** Players are created on `astro:page-load` and destroyed on `astro:before-swap`:
   timers, animation frames, observers and listeners. No storage, history or network use.
 - **Scroll-linked drawings.** Small decorative drawings (the landing outcomes) may assemble as they
@@ -395,11 +396,15 @@ each step carries its full terminal text, which the phone layout shows in the st
   `overflow: clip`: `hidden` makes it a scroll container, and the drawing would track the card
   instead of the page and never assemble.
 
-- **Machine joins.** Every page says where it sits in the machine. Generated reference pages join
-  through `scripts/generator/machine-joins.ts`, from the model's cited sources, lanes, hooks lists
-  and scenario tags; hand-authored pages through `src/data/machine-map.json` and the orientation
-  strip's "In the machine" chips. A lane's route renders with the shared `.ca-route` line on the
-  landing and on its command page. Chip colours follow the part's zone.
+- **Machine joins.** A page that explains a part of the machine says which part, and links it.
+  Generated reference pages join through `scripts/generator/machine-joins.ts`, from the model's
+  cited sources, lanes, hooks lists and scenario tags; hand-authored pages through
+  `src/data/machine-map.json` and the orientation strip's "In the machine" chips. Pages the model
+  does not cite (uncited agents, aliases, lenses, most Academy lessons) get no line rather than a
+  guessed one. A hook gate names the parts that enforce it (they cite a file that prints it) apart
+  from what it acts on (other parts whose hooks list names it). A lane's route renders with the
+  shared `.ca-route` line on the landing and on its command page. Chip colours follow the part's
+  zone; an outside part keeps steel with a dashed outline, the machine's frame for outside.
 - **Verbatim technical text.** Text a reader may copy (flags, hook messages) never passes through
   smart typography: dash conversion is off, and hook messages render as escaped HTML.
 
