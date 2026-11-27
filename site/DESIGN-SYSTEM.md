@@ -14,8 +14,12 @@ into a custom layout.
    source in a collapsed block. Curated prose never replaces the implementation contract.
 4. **Local-first delivery.** Fonts and production assets ship with the static build. The site makes
    no runtime request to a font or analytics service.
-5. **Quiet confidence.** Gold identifies decisions, gates, and primary actions. It is not a general
-   highlight color. Motion explains sequence and is removed under `prefers-reduced-motion`.
+5. **Bold, legible confidence.** The site shows the machine working rather than describing it.
+   Gold identifies decisions, gates, and primary actions; it is not a general highlight color. The
+   machine's other meanings carry the rest (signal blue predicts, red refuses, green passes, ivory
+   is a record, steel is structure). Motion explains sequence and is removed under
+   `prefers-reduced-motion`. `SITE-OVERHAUL.md` records the owner's 2026-11-26 choice of this bolder
+   identity over the October overhaul's quieter style.
 
 ## SMARTS decisions
 
@@ -62,28 +66,35 @@ Shared tokens and primitives live in `src/styles/design-system.css`.
 - **Spacing:** `--ca-space-1` through `--ca-space-9`.
 - **Surfaces:** `--ca-bg`, `--ca-bg-raised`, `--ca-bg-panel`, `--ca-line`.
 - **Meaning:** `--ca-brand` for gates/actions, `--ca-positive` for verified state,
-  `--ca-danger` for blocks, and `--ca-preview` for Feature Forge status.
+  `--ca-danger` for blocks, `--ca-preview` for Feature Forge status, and the machine's
+  `--ca-info` (the model), `--ca-record` (records) and `--ca-steel` (structure).
+- **Motion and depth:** `--ca-ease-out`, `--ca-dur-*`, the `--ca-glow-*` shadows, `--ca-edge-light`
+  and the `--ca-blueprint` grid. A glow follows the meaning of what it lights.
 - **Components:** `.ca-button`, `.ca-panel`, `.ca-pill`, `.ca-eyebrow`, and
   `.ca-reference-lead`.
 
 Page-specific selectors belong in `src/styles/landing.css` or a named component. Do not add
 one-off colors, font stacks, or spacing values to content files.
 
-## Reading layer, evidence layer and quiet surfaces
+## Reading layer, evidence layer and surfaces
 
 The plan and its acceptance tests are in `DOCS-OVERHAUL.md` and
 `test/content/docs-overhaul.test.ts`.
 
-- **Cards only where the reader chooses.** A card (`.ca-panel`, `.ca-lane-card`, `.ca-host`)
-  marks a choice: an entry point, a host, or a guide or concept directory. Outcomes, guarantees
-  and sequences are plain lists or prose. A panel is not emphasis.
+- **Cards where the reader chooses or watches.** A card (`.ca-panel`, `.ca-lane-card`, `.ca-host`)
+  marks a choice: an entry point, a host, or a guide or concept directory. Since S1 a card may also
+  frame something to watch: a landing outcome with its drawing in the machine's frames, or a scene.
+  Guarantees inside body pages and ordered sequences stay plain lists or prose; a panel is still
+  not emphasis.
 - **Evidence one click down.** Body text says what the product does. Qualifications, receipts,
   version-scoped verification records and scope boundaries go in `LimitsAndEvidence` (MDX) or
   `<details class="ca-evidence">` (Markdown): a native disclosure that prints expanded and draws
   with system colors under forced colors. `VOICE.md` ("Where caveats belong") owns the wording rule.
-- **Landing structure.** Five sections in this order: the splash (promise, primary action and the
-  hook replay); outcomes as a plain three-column list; entry-point cards; host cards with the
-  compatibility footnote; the final call to action with the fit lists. Only the splash has an
+- **Landing structure (S1).** Seven sections in this order: the splash (promise, one primary action
+  and the animated machine trace); the captured hook replay (`#proof`); the machine (a real render
+  of the 3D viewer, its zones and source-computed counts); outcomes as a three-item list, each with
+  a drawing in the machine's frames; lane cards, each carrying its lane's real route; host cards
+  with a spelling picker; the final call to action with the fit lists. Only the splash has an
   eyebrow. Digests, tags and publication commits stay inside the replay's disclosure. The artifact
   workbench, trust row and curriculum live on the product tour, the first-feature guide and the
   Academy.
@@ -101,7 +112,7 @@ The plan and its acceptance tests are in `DOCS-OVERHAUL.md` and
   moving edge and the landing takes the full width. The drawer's keyboard and focus contract is
   unchanged.
 - **One theme.** The site is dark-only (`ThemeProvider.astro`, `ThemeSelect.astro`). Section
-  headings take a plain hairline; gold stays on gates, decisions and primary actions.
+  dividers fade at both ends; gold stays on gates, decisions and primary actions.
 
 ## Page completeness contract
 
@@ -345,3 +356,37 @@ invalid encoding and unrelated targets. Preserve all content without JavaScript,
 restore the complete path in print, and disconnect page-specific listeners during
 client navigation. Test direct load, reload, repeated navigation, Back, nested
 initialization alternatives, same-fragment links and keyboard focus against built HTML.
+
+
+## Scenes and the machine's symbols
+
+`SITE-OVERHAUL.md` owns the program; S1 adds the engine. A scene (`scripts/scenes/`) is machine
+parts, handoffs, terminal notes and ordered steps. `validateScene` rejects a scene whose elements
+are not each revealed exactly once, whose steps focus or travel what is not yet shown, whose
+geometry leaves its frame or whose terminal text overflows its box. `renderSceneSvg` draws a wide
+composition for desktop columns and a tall one for phones from the same model, so a narrow screen
+gets a re-laid diagram, never a shrunken one. Terminal notes appear only in the wide drawing;
+each step carries its full terminal text, which the phone layout shows in the step text.
+
+- **Symbols.** A node is a machine part. Its frame comes from the machine key's kind frames and its
+  zone label from the machine layout; tests fail when either drifts. Use the same frames for any
+  site drawing of a part (`framePath` in `machine-render.ts`).
+- **Evidence.** A step showing real output is `captured` and its text must equal the capture; a
+  step showing what happens next is `illustrative`. The scene's evidence line names both by step
+  number, computed from those flags.
+- **Reading path.** `SceneStage.astro` renders both drawings aria-hidden and an ordered step list
+  that is the accessible content. Without JavaScript, in print and under reduced motion every part
+  is drawn and every step listed. With the player one step shows at a time; the others stay in the
+  reading order and hold nothing focusable, and the track is sized to the tallest step so it
+  never jumps.
+- **Autoplay.** Only the landing hero plays on its own: while a third of it is on screen, the tab
+  is visible and motion is allowed, always with a visible pause control. Any control hands the
+  reader the steps for the rest of the visit. Other scenes wait for Play or a step.
+- **Lifecycle.** Players are created on `astro:page-load` and destroyed on `astro:before-swap`:
+  timers, animation frames, observers and listeners. No storage, history or network use.
+- **Scroll-linked drawings.** Small decorative drawings (the landing outcomes) may assemble as they
+  scroll into view, through CSS scroll-driven animation only where the browser supports it and
+  motion is allowed. Their default is the finished drawing.
+
+Verify each scene's steps in a real browser: autoplay and pause, keyboard stepping, reduced
+motion, no JavaScript, the phone composition, forced colors and axe, plus inspected captures.

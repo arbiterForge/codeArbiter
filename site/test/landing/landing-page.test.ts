@@ -326,3 +326,47 @@ describe("shared docs design system", () => {
     expect(existsSync(path.join(siteRoot, "public/diagrams/lane-flow.svg"))).toBe(true);
   });
 });
+
+describe("S1: the machine on the front door (SITE-OVERHAUL.md)", () => {
+  const parts = JSON.parse(readSrc("scripts/machine/machine-data/parts.json")) as Record<string, { kind: string; cmd?: string; route?: unknown[] }>;
+
+  it("opens on the animated trace and keeps the captured replay as its proof", () => {
+    const splash = indexMdx.match(/<section class="ca-splash"[\s\S]*?<\/section>/)?.[0] ?? "";
+    expect(splash).toContain("<HeroTrace />");
+    const proof = indexMdx.match(/<section class="ca-section ca-proof"[\s\S]*?<\/section>/)?.[0] ?? "";
+    expect(proof).toContain("<HookProof />");
+    expect(proof).toContain('id="proof"');
+    expect(indexMdx).toContain('href="#proof"');
+  });
+
+  it("draws each lane card's route from the lane the machine model routes for that command", () => {
+    const lanes = [...indexMdx.matchAll(/<LaneRoute lane="([^"]+)" \/>/g)].map(([, lane]) => lane);
+    expect(lanes).toEqual(["ca-feature", "ca-fix", "ca-sprint", "ca-add-dep", "ca-adr"]);
+    for (const lane of lanes) {
+      expect(parts[lane]?.kind, lane).toBe("Lane");
+      expect(parts[lane].route?.length, lane).toBeGreaterThan(2);
+      expect(indexMdx, lane).toContain(`<code>/ca:${parts[lane].cmd}</code>`);
+    }
+  });
+
+  it("spells only commands the shipped catalog has", () => {
+    const catalog = JSON.parse(readFileSync(path.resolve(siteRoot, "../core/surface/command-routes.json"), "utf8")) as { commands: Record<string, unknown> };
+    const commands = JSON.parse(indexMdx.match(/commands=\{(\[[^\]]+\])\}/)?.[1] ?? "[]") as string[];
+    expect(commands.length).toBeGreaterThan(3);
+    for (const command of commands) expect(Object.keys(catalog.commands), command).toContain(command);
+    const spellings = readSrc("src/components/HostSpellings.astro");
+    expect(spellings).toContain("readMachineSources()");
+    expect(spellings).toContain("spellCommand(host.commandForm, command)");
+    expect(spellings).toContain("layout.hostOmissions");
+  });
+
+  it("shows a real render of the 3D machine and counts computed from source", () => {
+    const teaser = readSrc("src/components/MachineTeaser.astro");
+    expect(teaser).toContain("../assets/machine/machine-poster.webp");
+    expect(statSync(path.join(siteRoot, "src/assets/machine/machine-poster.webp")).size).toBeGreaterThan(40_000);
+    expect(teaser).toContain("/concepts/machine/");
+    expect(teaser).toContain("computeLandingStats()");
+    expect(teaser).toContain("layout.zones");
+    expect(teaser).not.toMatch(/\b(?:22|17|20) (?:gate IDs|core lanes|specialist agents|skills)\b/);
+  });
+});

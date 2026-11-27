@@ -25,6 +25,11 @@ export function frameSvg(shape: string, className = "ca-machine__frame"): string
 
 export const FRAME_SHAPES = Object.keys(FRAME_PATHS);
 
+/** A frame's raw path markup in its 16-unit box, for drawing inside a larger SVG such as a scene. */
+export function framePath(shape: string): string {
+  return FRAME_PATHS[shape] ?? FRAME_PATHS.square;
+}
+
 export function escapeHtml(text: string): string {
   return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 }

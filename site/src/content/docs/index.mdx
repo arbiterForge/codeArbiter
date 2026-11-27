@@ -14,6 +14,11 @@ next: false
 import HookProof from '../../components/HookProof.astro';
 import ArbiterIcon from '../../components/ArbiterIcon.astro';
 import SplashDocsRail from '../../components/SplashDocsRail.astro';
+import HeroTrace from '../../components/HeroTrace.astro';
+import MachineTeaser from '../../components/MachineTeaser.astro';
+import OutcomeVignette from '../../components/OutcomeVignette.astro';
+import LaneRoute from '../../components/LaneRoute.astro';
+import HostSpellings from '../../components/HostSpellings.astro';
 import heroArt from '../../assets/hero-gates.webp';
 
 <div class="ca-landing" id="_top" tabindex="-1" style={`--ca-hero-art: url("${heroArt.src}")`}>
@@ -22,22 +27,37 @@ import heroArt from '../../assets/hero-gates.webp';
 
 <section class="ca-splash" aria-labelledby="ca-splash-title">
   <div class="ca-splash__copy">
-    <p class="ca-eyebrow">Governed autonomy for serious repositories</p>
-    <h1 id="ca-splash-title">codeArbiter: hard gates for agentic coding.</h1>
-    <p class="ca-splash__lede">codeArbiter is an open-source governance layer for AI coding agents. It gives Claude Code, Codex, and Pi repository-owned hard gates for tests, reviews, security checks, decisions, audit trails, and durable project context.</p>
-    <p class="ca-splash__principle">You decide. codeArbiter enforces.</p>
-    <div class="ca-actions">
-      <a class="ca-button ca-button--primary" href="./getting-started/install/">Protect a repository</a>
-      <a class="ca-button" href="./overview/">What is codeArbiter?</a>
-      <a class="ca-text-link" href="#proof">Watch a hook block a command</a>
+    <div class="ca-splash__headline">
+      <p class="ca-eyebrow">Governed autonomy for serious repositories</p>
+      <h1 id="ca-splash-title">codeArbiter: hard gates for agentic coding.</h1>
     </div>
-    <div class="ca-splash__hosts" aria-label="Supported governance hosts">
-      <span class="ca-pill">Claude Code</span>
-      <span class="ca-pill">Codex</span>
-      <span class="ca-pill ca-pill--preview">Pi preview</span>
+    <div class="ca-splash__aside">
+      <p class="ca-splash__lede">codeArbiter is an open-source governance layer for AI coding agents. It gives Claude Code, Codex, and Pi repository-owned hard gates for tests, reviews, security checks, decisions, audit trails, and durable project context.</p>
+      <p class="ca-splash__principle">You decide. codeArbiter enforces.</p>
+      <div class="ca-actions">
+        <a class="ca-button ca-button--primary" href="./getting-started/install/">Protect a repository</a>
+        <a class="ca-button" href="./overview/">What is codeArbiter?</a>
+        <a class="ca-text-link" href="#proof">Watch a hook block a command</a>
+      </div>
+      <div class="ca-splash__hosts" aria-label="Supported governance hosts">
+        <span class="ca-pill">Claude Code</span>
+        <span class="ca-pill">Codex</span>
+        <span class="ca-pill ca-pill--preview">Pi preview</span>
+      </div>
     </div>
   </div>
+  <div class="ca-splash__scene">
+    <HeroTrace />
+  </div>
+</section>
 
+<section class="ca-section ca-proof" aria-labelledby="ca-proof-title">
+  <div class="ca-proof__copy">
+    <p class="ca-kicker">Real output</p>
+    <h2 id="ca-proof-title">Watch the shipped hook refuse a real command.</h2>
+    <p>The trace above is drawn. This is the hook itself: its real output for the same command, captured by running the shipped <code>pre-bash.py</code> in a disposable test repository, with the exact text it printed one click away.</p>
+    <a class="ca-text-link" href="./enforcement/">See what is enforced, and where</a>
+  </div>
   <div class="ca-splash__proof ca-panel" id="proof">
     <div class="ca-splash__proof-head">
       <div>
@@ -51,6 +71,15 @@ import heroArt from '../../assets/hero-gates.webp';
   </div>
 </section>
 
+<section class="ca-section ca-machine-section" aria-labelledby="ca-machine-title">
+  <div class="ca-section-heading">
+    <p class="ca-kicker">The whole picture</p>
+    <h2 id="ca-machine-title">Every gate, lane and record, as one machine.</h2>
+    <p>The model sits at the center. The guard ring surrounds it, the lanes carry your work around it, and the record remembers what happened. Tour it in 3D, watch an agent session move through it, or try the labs.</p>
+  </div>
+  <MachineTeaser />
+</section>
+
 <section class="ca-section ca-guarantees" aria-labelledby="ca-guarantees-title">
   <div class="ca-section-heading">
     <h2 id="ca-guarantees-title">What changes when codeArbiter is active.</h2>
@@ -58,20 +87,20 @@ import heroArt from '../../assets/hero-gates.webp';
   </div>
 
   <ul class="ca-feature-grid" data-ca-layout="peers" role="list">
-    <li class="ca-feature">
-      <span class="ca-feature__icon"><ArbiterIcon name="gate" size="1.4rem" /></span>
+    <li class="ca-feature" data-tone="danger">
+      <OutcomeVignette kind="stop" />
       <h3>It stops at the tool boundary</h3>
       <p>Hooks run before shell and write calls. A blocked call never runs, whatever the model remembers.</p>
       <a href="./enforcement/">See what is enforced</a>
     </li>
-    <li class="ca-feature">
-      <span class="ca-feature__icon"><ArbiterIcon name="repository" size="1.4rem" /></span>
+    <li class="ca-feature" data-tone="record">
+      <OutcomeVignette kind="record" />
       <h3>The record lives in your repository</h3>
       <p>Specs, plans, decisions, tasks and audit logs live in <code>.codearbiter/</code>, so they move with the code and between hosts.</p>
       <a href="./codearbiter-directory/">Explore the state store</a>
     </li>
-    <li class="ca-feature">
-      <span class="ca-feature__icon"><ArbiterIcon name="audit" size="1.4rem" /></span>
+    <li class="ca-feature" data-tone="brand">
+      <OutcomeVignette kind="trail" />
       <h3>Every bypass leaves a trail</h3>
       <p>Overrides, autonomous decisions and review findings are written down, so you can audit a range later instead of reconstructing it.</p>
       <a href="./concepts/auditability/">See the audit model</a>
@@ -82,6 +111,7 @@ import heroArt from '../../assets/hero-gates.webp';
 <section class="ca-section ca-lanes" aria-labelledby="ca-lanes-title">
   <div class="ca-section-heading">
     <h2 id="ca-lanes-title">Start from the job in front of you.</h2>
+    <p>Each lane carries its own stops. The line under each card is that lane's real route through the machine: gold waits on a gate or on you, green passes, red fails first or refuses.</p>
   </div>
   <div class="ca-lane-grid" data-ca-layout="peers">
     <a class="ca-lane-card ca-panel" href="./guides/feature-lane/">
@@ -89,32 +119,37 @@ import heroArt from '../../assets/hero-gates.webp';
       <code>/ca:feature</code>
       <h3>Build a capability</h3>
       <p>Turn an idea into an approved spec, test-first implementation, and reviewed PR.</p>
+      <LaneRoute lane="ca-feature" />
     </a>
     <a class="ca-lane-card ca-panel" href="./reference/commands/fix/">
       <span class="ca-lane-card__icon"><ArbiterIcon name="fix" size="1.35rem" /></span>
       <code>/ca:fix</code>
       <h3>Repair a defect</h3>
       <p>Start from a reproduction, prove the regression, and make the smallest verified fix.</p>
+      <LaneRoute lane="ca-fix" />
     </a>
     <a class="ca-lane-card ca-panel" href="./guides/autonomous-sprints/">
       <span class="ca-lane-card__icon"><ArbiterIcon name="sprint" size="1.35rem" /></span>
       <code>/ca:sprint</code>
       <h3>Run autonomously</h3>
       <p>Approve the target once, then let SMARTS-scored decisions drive the plan to a PR.</p>
+      <LaneRoute lane="ca-sprint" />
     </a>
     <a class="ca-lane-card ca-panel" href="./guides/adding-a-dependency/">
       <span class="ca-lane-card__icon"><ArbiterIcon name="dependency" size="1.35rem" /></span>
       <code>/ca:add-dep</code>
       <h3>Change the supply chain</h3>
       <p>Review license, provenance, and known vulnerabilities before installation.</p>
+      <LaneRoute lane="ca-add-dep" />
     </a>
     <a class="ca-lane-card ca-panel" href="./guides/recording-adrs/">
       <span class="ca-lane-card__icon"><ArbiterIcon name="decision" size="1.35rem" /></span>
       <code>/ca:adr</code>
       <h3>Record a decision</h3>
       <p>Capture a numbered, user-attributed decision with its governed paths and supersession chain.</p>
+      <LaneRoute lane="ca-adr" />
     </a>
-    <a class="ca-lane-card ca-panel" href="./reference/">
+    <a class="ca-lane-card ca-panel ca-lane-card--reference" href="./reference/">
       <span class="ca-lane-card__icon"><ArbiterIcon name="reference" size="1.35rem" /></span>
       <code>Grouped reference</code>
       <h3>Find the exact route</h3>
@@ -126,37 +161,16 @@ import heroArt from '../../assets/hero-gates.webp';
 <section class="ca-section ca-hosts" aria-labelledby="ca-hosts-title">
   <div class="ca-section-heading">
     <h2 id="ca-hosts-title">Choose your host.</h2>
-    <p>One policy core and one shared record. Each host keeps its own command spelling.</p>
+    <p>One policy core and one shared record. Each host keeps its own command spelling; pick a command to see it in all three.</p>
   </div>
-  <div class="ca-host-grid" data-ca-layout="peers">
-    <article class="ca-host ca-panel">
-      <div class="ca-host__top">
-        <h3>Claude Code</h3>
-        <span class="ca-host__status">stable</span>
-      </div>
-      <code>/ca:feature</code>
-      <p>Marketplace install, native plugin agents, hook trust flow, and optional rich statusline.</p>
-      <a href="./getting-started/install/#claude-code">Install for Claude Code</a>
-    </article>
-    <article class="ca-host ca-panel">
-      <div class="ca-host__top">
-        <h3>Codex</h3>
-        <span class="ca-host__status">stable</span>
-      </div>
-      <code>$ca-feature</code>
-      <p>The same enforcement decisions and state through Codex-native skills and hook verdicts.</p>
-      <a href="./getting-started/install/#codex">Install for Codex</a>
-    </article>
-    <article class="ca-host ca-panel">
-      <div class="ca-host__top">
-        <h3>Pi</h3>
-        <span class="ca-host__status ca-host__status--preview">preview</span>
-      </div>
-      <code>/ca-feature</code>
-      <p>Feature Forge preview with an npm convenience channel, pinned Git tags for reproducibility, project trust, a rich footer, and supervised child dispatch.</p>
-      <a href="./getting-started/pi/">Install the Pi preview</a>
-    </article>
-  </div>
+  <HostSpellings
+    commands={["feature", "fix", "sprint", "commit", "pr", "statusline"]}
+    hosts={[
+      { name: "claude", title: "Claude Code", status: "stable", text: "Marketplace install, native plugin agents, hook trust flow, and optional rich statusline.", href: "./getting-started/install/#claude-code", link: "Install for Claude Code" },
+      { name: "codex", title: "Codex", status: "stable", text: "The same enforcement decisions and state through Codex-native skills and hook verdicts.", href: "./getting-started/install/#codex", link: "Install for Codex" },
+      { name: "pi", title: "Pi", status: "preview", text: "Feature Forge preview with an npm convenience channel, pinned Git tags for reproducibility, project trust, a rich footer, and supervised child dispatch.", href: "./getting-started/pi/", link: "Install the Pi preview" },
+    ]}
+  />
   <p class="ca-hosts__footnote">Exact differences: the <a href="./getting-started/compatibility/">compatibility matrix</a> and the dated <a href="./getting-started/claude-code-and-codex/">Claude Code + Codex verification record</a>.</p>
 </section>
 
@@ -188,7 +202,7 @@ import heroArt from '../../assets/hero-gates.webp';
       </ul>
     </div>
   </div>
-  <p class="ca-final-cta__fine">See it working first: the <a href="./product-tour/">product tour</a> follows one change from requirement to plan, and <a href="./academy/">Arbiter Academy</a> adds hands-on practice. No telemetry service is required for enforcement; disable one repository or <a href="./guides/uninstalling/">uninstall completely</a> with the state implications documented.</p>
+  <p class="ca-final-cta__fine">See it working first: the <a href="./product-tour/">product tour</a> follows one change from requirement to plan, the <a href="./concepts/machine/">3D machine</a> shows every part at once, and <a href="./academy/">Arbiter Academy</a> adds hands-on practice. No telemetry service is required for enforcement; disable one repository or <a href="./guides/uninstalling/">uninstall completely</a> with the state implications documented.</p>
 </section>
 
 </div>

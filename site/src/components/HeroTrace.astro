@@ -1,0 +1,9 @@
+---
+/** HeroTrace.astro - the landing hero's scene: one command through the machine (scripts/scenes/hero-trace.ts). */
+import SceneStage from './SceneStage.astro';
+import { buildHeroTrace, heroTraceInput } from '../../scripts/scenes/hero-trace';
+
+const scene = buildHeroTrace(heroTraceInput());
+---
+
+<SceneStage scene={scene} autoplay />
