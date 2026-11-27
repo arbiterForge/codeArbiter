@@ -1,0 +1,27 @@
+{
+  "$comment": "One plain sentence per hook gate ID for the Hook Gates explorer. Hand-written from each gate's own messages; scripts/explorers/gate-index.test.ts fails when a gate has no entry, an entry has no gate, or an entry's kind differs from its call sites.",
+  "gates": {
+    "H-00": { "kind": "block", "summary": "A guard crashed while scanning the call, so the call is refused instead of passing through unscanned." },
+    "H-01": { "kind": "block", "summary": "No commit or push to the protected default branch, including refspecs that target it and pushes of every ref." },
+    "H-02": { "kind": "block", "summary": "No force-push or other non-fast-forward update, in any spelling." },
+    "H-03": { "kind": "block", "summary": "No wildcard staging: name every file you stage." },
+    "H-05": { "kind": "block", "summary": "The audit logs are append-only: nothing may truncate, overwrite or rewrite their lines." },
+    "H-07": { "kind": "remind", "summary": "A dependency manifest changed: have the dependency reviewer check it before you commit." },
+    "H-09": { "kind": "remind", "summary": "You wrote a crypto or TLS pattern: run the crypto check now, because the commit blocks without a pass." },
+    "H-09b": { "kind": "block", "summary": "A commit that adds crypto or TLS lines, or binary content, needs a recorded pass for that exact staged change." },
+    "H-10": { "kind": "remind", "summary": "You wrote what looks like a hardcoded secret: run the secret check now, because the commit blocks without a pass." },
+    "H-10b": { "kind": "block", "summary": "A commit that adds secret-like lines needs a recorded security pass for that exact staged change." },
+    "H-11": { "kind": "block", "summary": "ADRs are written only through the adr command, with a fresh authoring marker, and are never deleted." },
+    "H-12": { "kind": "remind", "summary": "The file you changed is governed by an accepted ADR: reconcile the change or record a new decision." },
+    "H-13": { "kind": "remind", "summary": "Prose you wrote uses an em or en dash as a separator: restructure it before you commit." },
+    "H-14": { "kind": "block", "summary": "A commit that stages a database migration needs a recorded migration review for exactly those files." },
+    "H-15": { "kind": "remind", "summary": "A CI/CD workflow changed: have the security reviewer check it before the merge." },
+    "H-16": { "kind": "remind", "summary": "A deployment or infrastructure manifest changed: have the security reviewer check it before the merge." },
+    "H-17": { "kind": "remind", "summary": "Authentication or authorization logic changed: have the security reviewer check it before the merge." },
+    "H-18": { "kind": "block", "summary": "The activation switch in .codearbiter/CONTEXT.md cannot be turned off or damaged through governed tools." },
+    "H-19": { "kind": "block", "summary": "Gate-pass markers are written only by their sanctioned recorders, never by hand." },
+    "H-20": { "kind": "block", "summary": "No --no-verify on commit or push: the git backstop hooks cannot be skipped." },
+    "H-21": { "kind": "block", "summary": "A write or edit whose targets cannot be guarded, file by file, is refused rather than let through." },
+    "H-22": { "kind": "block", "summary": "Protected project state changes only through its owning writer, or under a fresh marker where its policy allows." }
+  }
+}

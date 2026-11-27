@@ -410,3 +410,32 @@ each step carries its full terminal text, which the phone layout shows in the st
 
 Verify each scene's steps in a real browser: autoplay and pause, keyboard stepping, reduced
 motion, no JavaScript, the phone composition, forced colors and axe, plus inspected captures.
+
+## Reference explorers
+
+`SITE-OVERHAUL.md` S3 adds three tools over the long reference pages. Each renders through
+`PageTools.astro`, between the page title and the generated Markdown, keyed by route id, because
+generated pages cannot hold components. Styles live in `src/styles/explorers.css`.
+
+- **Hook Gates** (`GateExplorer.astro`, `/reference/hooks-gates/`). A decoder matches a pasted
+  `BLOCKED` or `REMINDER` line, or any part of a message, to its gate and the exact call site
+  (`src/scripts/gate-decoder.ts`); a placeholder matches any text, and quotes, dash spellings and
+  line wraps are normalized. A map shows the four points a tool call passes and the gates at each.
+  Gate tiles filter by what a gate does and where it fires. Data comes from
+  `scripts/explorers/gate-index.ts`: call sites, `hooks.json` events, the machine joins, and one
+  sentence per gate from `src/data/gate-summaries.json`, which a test binds to each gate's kind.
+- **Command Matrix** (`CommandMatrix.astro`, `/reference/commands/`). Every command spelled for
+  every host, from `command-routes.json`, each host's `command_form` and its shipped
+  `COMMANDS.md`, with each lane's route. Filters by level, host and word; copies a spelling. Below
+  46rem of container the rows become labelled cards.
+- **Changelog** (`ChangelogNavigator.astro`, `/changelog/`). One bar per release, oldest first,
+  height by entry count on a square-root scale and colour by kind. Filters by kind and word hide
+  non-matching entries below and dim the bars of releases without a match; a select jumps to any
+  release. Release ids are Starlight's own, computed by slugging every heading on the page.
+
+Rules for all three: complete without JavaScript (the map, tiles, table and timeline are plain
+links and text; filters, the decoder, copy and the jump appear only with a script); no storage,
+history or network use; one primary meaning per colour (red refuses, blue informs or is agent
+activity, green adds, ivory removes); native radios in fieldsets for filters; counts announced
+through one polite status region; print shows everything. Verify with `test/browser/explorers.spec.ts`
+(decoder, filters, copy, no-script, axe and phone overflow) and inspected captures.

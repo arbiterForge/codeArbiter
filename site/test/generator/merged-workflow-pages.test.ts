@@ -89,7 +89,8 @@ describe("one reference page per paired workflow (production sources)", () => {
   it("emits one page per command", () => {
     const commandPages = result.pages.filter((page) => page.type === "command");
     expect(commandPages).toHaveLength(commandNames.length);
-    expect(readdirSync(join(outDir, "commands"))).toHaveLength(commandNames.length);
+    // One page per command, plus the folder's own command matrix page (index.md).
+    expect(readdirSync(join(outDir, "commands")).filter((file) => file !== "index.md")).toHaveLength(commandNames.length);
   });
 
   it.each(merged)("gives merged command $command exactly one source embed holding both shipped files", ({ command, skill }) => {

@@ -1,0 +1,240 @@
+---
+/**
+ * GateExplorer.astro - the Hook Gates page's explorer: decode what a hook printed, see where
+ * each gate fires in a tool call, and filter the gates by what they do and where they fire.
+ *
+ * Everything shown comes from scripts/explorers/gate-index.ts, which derives it from the
+ * hooks' own call sites, hooks.json and the machine model, plus one checked sentence per
+ * gate. Without JavaScript the map and the gate list are complete links into the page; the
+ * decoder and the filters appear only with JavaScript. Nothing is stored or sent.
+ */
+import { loadGateIndex, SURFACES, type Surface } from '../../scripts/explorers/gate-index';
+import { repositorySourceRef } from '../../scripts/generator/source-ref';
+import { framePath } from '../../scripts/machine/machine-render';
+import proof from '../assets/proof/hook-proof.json';
+
+const gates = loadGateIndex();
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const sourceRef = repositorySourceRef();
+const count = { all: gates.length, block: gates.filter((gate) => gate.kind === 'block').length, remind: gates.filter((gate) => gate.kind === 'remind').length };
+const surfaces = Object.entries(SURFACES) as [Surface, string][];
+/** Where in a tool call's life each surface sits, and which hook scripts guard it. */
+const MOMENTS: Record<Surface, { when: string; scripts: string }> = {
+  shell: { when: 'Before a shell command runs', scripts: 'pre-bash.py' },
+  files: { when: 'Before a file is written or edited', scripts: 'pre-write.py, pre-edit.py' },
+  'after-write': { when: 'After a write lands', scripts: 'post-write-edit.py' },
+  git: { when: 'Inside git, at commit and push', scripts: 'git-enforce.py' },
+};
+const kindLabel = { block: 'Blocks', remind: 'Reminds' } as const;
+const anchor = (tag: string) => `#${tag.toLowerCase()}`;
+const sites = gates.flatMap((gate) => gate.sites.map((site) => ({ tag: gate.tag, ...site })));
+const gateData = Object.fromEntries(gates.map((gate) => [gate.tag, { kind: gate.kind, summary: gate.summary, surfaces: gate.surfaces.map((surface) => SURFACES[surface]) }]));
+const example = (proof as { invocation: { stderr: string } }).invocation.stderr;
+const shield = framePath('shield');
+---
+
+<ca-gate-explorer class="ca-explorer ca-gates not-content" data-source-ref={sourceRef}>
+  <section class="ca-explorer__panel ca-gates__decoder" aria-labelledby="gate-decoder-title" data-gate-decoder hidden>
+    <h2 id="gate-decoder-title" class="ca-explorer__title">Decode a hook message</h2>
+    <p class="ca-explorer__lead">Paste a <code>BLOCKED</code> or <code>REMINDER</code> line, or any part of its message. The match names the gate, the line of source that printed it, and what to do next.</p>
+    <form class="ca-gates__decode-form" role="search" aria-label="Decode a hook message">
+      <label class="sr-only" for="gate-decode-input">Hook message</label>
+      <textarea id="gate-decode-input" rows="3" maxlength="4000" spellcheck="false" autocomplete="off" placeholder="BLOCKED [H-xx]: ..." aria-describedby="gate-decode-note"></textarea>
+      <div class="ca-gates__examples">
+        <span>Try</span>
+        <button type="button" class="ca-explorer__chip" data-example={example}>The captured <code>git add -A</code> refusal</button>
+        <button type="button" class="ca-explorer__chip" data-example="Direct commit to main is prohibited (ORCHESTRATOR §3). Create a feature branch.">A commit straight to main</button>
+        <button type="button" class="ca-explorer__chip" data-example="REMINDER [H-15]: CI/CD workflow changed.">A reminder</button>
+      </div>
+      <p id="gate-decode-note" class="ca-explorer__note">Matching runs in this page against the messages this version's hooks print. What you paste is not saved or sent.</p>
+    </form>
+    <div class="ca-gates__result" role="status" aria-live="polite" aria-atomic="true" data-gate-result></div>
+  </section>
+
+  <section class="ca-explorer__panel ca-gates__moments" aria-labelledby="gate-moments-title">
+    <h2 id="gate-moments-title" class="ca-explorer__title">Where each gate fires in a tool call</h2>
+    <p class="ca-explorer__lead">A tool call passes these four points in order. Red gates refuse the call; blue gates let it through and remind you of a later obligation. A gate listed twice is enforced at both points.</p>
+    <ol class="ca-gates__lanes" role="list">
+      {surfaces.map(([surface, label], index) => (
+        <li class="ca-gates__lane" data-surface={surface} style={`--i:${index}`}>
+          <p class="ca-gates__lane-head">
+            <span class="ca-gates__lane-step" aria-hidden="true">{index + 1}</span>
+            <span><strong>{MOMENTS[surface].when}</strong><small>{label} · <code>{MOMENTS[surface].scripts}</code></small></span>
+          </p>
+          <ul class="ca-gates__ids" role="list">
+            {gates.filter((gate) => gate.surfaces.includes(surface)).map((gate) => (
+              <li><a class="ca-gates__id" data-kind={gate.kind} href={anchor(gate.tag)} aria-label={`${gate.tag}, ${kindLabel[gate.kind].toLowerCase()}: ${gate.summary}`}>{gate.tag}</a></li>
+            ))}
+          </ul>
+        </li>
+      ))}
+    </ol>
+  </section>
+
+  <section class="ca-gates__list-wrap" aria-labelledby="gate-list-title">
+    <h2 id="gate-list-title" class="ca-explorer__title">All {count.all} gates</h2>
+    <form class="ca-explorer__filters" aria-label="Filter the gates" data-gate-filters hidden>
+      <fieldset>
+        <legend>What it does</legend>
+        <label><input type="radio" name="gate-kind" value="all" checked /> All <span>{count.all}</span></label>
+        <label><input type="radio" name="gate-kind" value="block" /> Blocks <span>{count.block}</span></label>
+        <label><input type="radio" name="gate-kind" value="remind" /> Reminds <span>{count.remind}</span></label>
+      </fieldset>
+      <fieldset>
+        <legend>Where it fires</legend>
+        <label><input type="radio" name="gate-where" value="all" checked /> Anywhere</label>
+        {surfaces.map(([surface, label]) => <label><input type="radio" name="gate-where" value={surface} /> {label}</label>)}
+      </fieldset>
+    </form>
+    <p class="ca-explorer__count" role="status" aria-live="polite" aria-atomic="true" data-gate-count>{count.all} gates: {count.block} block, {count.remind} remind</p>
+    <ol class="ca-gates__board" role="list">
+      {gates.map((gate) => (
+        <li class="ca-gate" data-gate={gate.tag} data-kind={gate.kind} data-surfaces={gate.surfaces.join(' ')}>
+          <a class="ca-gate__link" href={anchor(gate.tag)}>
+            <span class="ca-gate__head">
+              <svg class="ca-gate__glyph" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" aria-hidden="true" set:html={shield} />
+              <span class="ca-gate__tag">{gate.tag}</span>
+              <span class="ca-gate__kind">{kindLabel[gate.kind]}</span>
+            </span>
+            <span class="ca-gate__summary">{gate.summary}</span>
+            <span class="ca-gate__meta">{gate.surfaces.map((surface) => SURFACES[surface]).join(', ')} · {gate.sites.length} {gate.sites.length === 1 ? 'message' : 'messages'}</span>
+          </a>
+          {gate.enforcers.length > 0 && (
+            <p class="ca-gate__machine">
+              {gate.kind === 'block' ? 'Enforced by ' : 'Raised by '}
+              {gate.enforcers.map((part, index) => (
+                <>{index > 0 && (index === gate.enforcers.length - 1 ? ' and ' : ', ')}<a href={`${base}${part.href}`}>{part.name}</a></>
+              ))}
+              {gate.actsOn.length > 0 && (
+                <>
+                  {'; acts on '}
+                  {gate.actsOn.map((part, index) => (
+                    <>{index > 0 && (index === gate.actsOn.length - 1 ? ' and ' : ', ')}<a href={`${base}${part.href}`}>{part.name}</a></>
+                  ))}
+                </>
+              )}
+              .
+            </p>
+          )}
+        </li>
+      ))}
+    </ol>
+    <p class="ca-explorer__empty" data-gate-empty hidden>No gate fires there with that effect. Choose All or Anywhere to see every gate.</p>
+  </section>
+
+  <script type="application/json" data-gate-sites set:html={JSON.stringify({ sites, gates: gateData })} />
+</ca-gate-explorer>
+
+<script>
+  import { decodeHookOutput, type DecodedMatch, type DecoderSite } from '../scripts/gate-decoder';
+
+  type GateInfo = { kind: 'block' | 'remind'; summary: string; surfaces: string[] };
+  const HOW: Record<DecodedMatch['how'], string> = {
+    exact: 'Exact match',
+    partial: 'Matches part of this message',
+    words: 'Closest match',
+    gate: 'Gate named by the line',
+    unknown: 'Not a gate this version prints',
+  };
+
+  const escape = (text: string) => text.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!);
+  /** A message as the hook prints it, backticks included; only placeholders are marked. */
+  const messageHtml = (message: string) =>
+    message
+      .split(/(\{[^{}\n]*\})/)
+      .map((part, index) => (index % 2 === 0 ? escape(part) : `<code>${escape(part)}</code>`))
+      .join('');
+
+  class GateExplorer extends HTMLElement {
+    private controller?: AbortController;
+
+    connectedCallback() {
+      this.controller?.abort();
+      this.controller = new AbortController();
+      const { signal } = this.controller;
+      const data = JSON.parse(this.querySelector('[data-gate-sites]')?.textContent ?? '{}') as { sites: DecoderSite[]; gates: Record<string, GateInfo> };
+      const ref = this.dataset.sourceRef ?? 'main';
+
+      // Decoder
+      const decoder = this.querySelector<HTMLElement>('[data-gate-decoder]');
+      const input = this.querySelector<HTMLTextAreaElement>('#gate-decode-input');
+      const result = this.querySelector<HTMLElement>('[data-gate-result]');
+      if (decoder && input && result) {
+        let last = '';
+        const render = () => {
+          const matches = decodeHookOutput(input.value, data.sites ?? []);
+          const key = JSON.stringify(matches.map((m) => [m.tag, m.how, m.site?.file, m.site?.line]));
+          if (key === last) return;
+          last = key;
+          for (const tile of this.querySelectorAll<HTMLElement>('[data-gate]')) tile.toggleAttribute('data-match', tile.dataset.gate === matches[0]?.tag);
+          if (input.value.trim() === '') {
+            result.innerHTML = '';
+            return;
+          }
+          if (matches.length === 0) {
+            result.innerHTML = '<p class="ca-gates__none">No gate in this version prints that text. Check that the line starts with <code>BLOCKED</code> or <code>REMINDER</code>, or paste more of the message.</p>';
+            return;
+          }
+          const [best, ...rest] = matches;
+          const gate = data.gates[best.tag];
+          const head = `<p class="ca-gates__match-head"><span class="ca-gates__match-how">${HOW[best.how]}</span>`;
+          if (best.how === 'unknown' || !gate) {
+            result.innerHTML = `${head}</p><p><strong>${escape(best.tag)}</strong> is not a gate ID this version's hooks print. It may come from an older or newer release; the <a href="${import.meta.env.BASE_URL.replace(/\/$/, '')}/changelog/">changelog</a> records when gates were added or renamed.</p>`;
+            return;
+          }
+          const site = best.site;
+          const source = site
+            ? `<p class="ca-gates__match-source">Printed by <a href="https://github.com/arbiterForge/codeArbiter/blob/${escape(ref)}/plugins/ca/hooks/${escape(site.file)}#L${site.line}"><code>${escape(site.file)}:${site.line}</code></a></p><blockquote class="ca-hook-message"><p>${messageHtml(site.message)}</p></blockquote>`
+            : '<p class="ca-gates__match-source">No message in this version matches the rest of the line, so only its gate ID is known.</p>';
+          const others = (best.how === 'exact' ? [] : rest).filter((m) => m.site).map((m) => `<li><a href="#${m.tag.toLowerCase()}">${escape(m.tag)}</a>: <code>${escape(m.site!.file)}:${m.site!.line}</code></li>`).join('');
+          result.innerHTML =
+            `${head}<span class="ca-gates__match-tag" data-kind="${gate.kind}">${escape(best.tag)}</span><span>${gate.kind === 'block' ? 'Blocks' : 'Reminds'} · ${escape(gate.surfaces.join(', '))}</span></p>` +
+            `<p class="ca-gates__match-summary">${escape(gate.summary)}</p>${source}` +
+            `<p><a class="ca-button" href="#${best.tag.toLowerCase()}">Read the ${escape(best.tag)} entry</a></p>` +
+            (others ? `<details class="ca-gates__others"><summary>Other close matches</summary><ul>${others}</ul></details>` : '');
+        };
+        input.addEventListener('input', render, { signal });
+        for (const button of this.querySelectorAll<HTMLButtonElement>('[data-example]')) {
+          button.addEventListener('click', () => {
+            input.value = button.dataset.example ?? '';
+            render();
+            input.focus();
+          }, { signal });
+        }
+        decoder.querySelector('form')?.addEventListener('submit', (event) => event.preventDefault(), { signal });
+        decoder.hidden = false;
+      }
+
+      // Filters
+      const filters = this.querySelector<HTMLFormElement>('[data-gate-filters]');
+      const count = this.querySelector<HTMLElement>('[data-gate-count]');
+      const empty = this.querySelector<HTMLElement>('[data-gate-empty]');
+      const tiles = [...this.querySelectorAll<HTMLElement>('.ca-gates__board [data-gate]')];
+      if (filters && count && empty) {
+        const all = count.textContent ?? '';
+        const update = () => {
+          const kind = (filters.querySelector<HTMLInputElement>('input[name="gate-kind"]:checked')?.value ?? 'all');
+          const where = (filters.querySelector<HTMLInputElement>('input[name="gate-where"]:checked')?.value ?? 'all');
+          let shown = 0;
+          for (const tile of tiles) {
+            const visible = (kind === 'all' || tile.dataset.kind === kind) && (where === 'all' || (tile.dataset.surfaces ?? '').split(' ').includes(where));
+            tile.hidden = !visible;
+            if (visible) shown += 1;
+          }
+          count.textContent = shown === tiles.length ? all : `${shown} of ${tiles.length} gates`;
+          empty.hidden = shown !== 0;
+        };
+        filters.addEventListener('change', update, { signal });
+        filters.addEventListener('submit', (event) => event.preventDefault(), { signal });
+        filters.hidden = false;
+        update();
+      }
+    }
+
+    disconnectedCallback() {
+      this.controller?.abort();
+    }
+  }
+
+  if (!customElements.get('ca-gate-explorer')) customElements.define('ca-gate-explorer', GateExplorer);
+</script>

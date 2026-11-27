@@ -8,6 +8,7 @@
    the stock PageTitle unchanged. */
 import Default from '@astrojs/starlight/components/PageTitle.astro';
 import PageContext from './PageContext.astro';
+import PageTools from './PageTools.astro';
 
 const { id, entry } = Astro.locals.starlightRoute;
 const isHome = id === '' || id === 'index';
@@ -38,6 +39,7 @@ const journey = explicitJourney ?? inferred;
     <>
       <Default><slot /></Default>
       {!isAcademyTrack && !isGuideDirectory && !isConceptIndex && !isGeneratedEntity && <PageContext {...journey} />}
+      <PageTools id={id} />
     </>
   )
 }
