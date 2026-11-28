@@ -218,7 +218,7 @@
         "at": "activation",
         "state": "gate",
         "title": "Only where you opt in",
-        "text": "Nothing acts until a repository opts in with `arbiter: enabled` in `.codearbiter/CONTEXT.md`. Once it is on, the agent cannot switch it off from inside the session."
+        "text": "Nothing acts until a repository opts in with `arbiter: enabled` in `.codearbiter/CONTEXT.md`. Once it is on, H-18 refuses the agent’s writes, edits and commands that would switch it off."
       },
       {
         "at": "guard-bash",
@@ -232,20 +232,20 @@
         "state": "gate",
         "fx": "guard:g=git; $g push -f origin feature/login",
         "title": "Defense in depth",
-        "text": "A clever spelling could slip past a string check, so git’s own pre-commit and pre-push hooks run the same checks at the git operation. Skipping them with `--no-verify` is itself blocked."
+        "text": "A clever spelling could slip past a string check, so git’s own pre-commit and pre-push hooks repeat the commit and push checks at the git operation itself. The shell gate also refuses `--no-verify`, which would skip them."
       },
       {
         "at": "fail-closed",
         "state": "block",
         "title": "Fail closed",
-        "text": "If a guard crashes, the action is blocked. A broken safety check never becomes a silent pass."
+        "text": "If a guard crashes while it scans, it blocks the action (H-00) instead of letting it through unscanned."
       },
       {
         "at": "audit-ledger",
         "state": "pass",
         "fx": "print",
         "title": "And a record",
-        "text": "Overrides, mode changes and gate events go to append-only logs. After the session, anyone can see what was allowed, what was blocked and who decided."
+        "text": "Overrides and mode changes go to append-only logs, and a hook that refuses the agent appends a gate event. After the session, the logs show which exceptions were allowed, what the hooks refused and who decided."
       }
     ]
   },
@@ -626,7 +626,7 @@
         "at": "persona-injector",
         "state": "pass",
         "title": "The rules come back",
-        "text": "codeArbiter’s PreCompact hook bumps the compaction generation, so the next prompt re-injects the current mode’s rules in full."
+        "text": "On Claude Code, codeArbiter’s PreCompact hook bumps the compaction generation, so the next prompt re-injects the current mode’s rules in full."
       },
       {
         "at": "router",

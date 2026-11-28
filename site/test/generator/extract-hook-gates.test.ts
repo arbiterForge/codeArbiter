@@ -84,6 +84,58 @@ describe("extractHookGates — fixture", () => {
 
 });
 
+describe("extractHookGates — message fidelity", () => {
+  const dir = mkdtempSync(join(tmpdir(), "hook-gates-fidelity-"));
+  const filler = Array.from({ length: 40 }, (_, index) => `    step_${index} = ${index}`);
+  writeFileSync(
+    join(dir, "fidelity.py"),
+    [
+      "def check(rel):",
+      String.raw`    block("H-05", "Git Bash printf '%s\\n' <line> >> <path>.")`,
+      `    block("H-22", f"'{rel}' is protected. "`,
+      `                  + get_host().cmd_ref("override") + " if this is deliberate.")`,
+      `    block("H-01", "Direct commit is prohibited. "  # a comment's quote`,
+      `                  "Create a feature branch. " + _read_err_hint())`,
+      "",
+      "def far(crypto, recovery):",
+      `    tag = "H-09b" if crypto else "H-10b"`,
+      ...filler,
+      `    block(tag, "covered after review. " + recovery)`,
+      "",
+      "def computed():",
+      `    tag = "H-03"`,
+      "    tag = choose()",
+      `    block(tag, "not guessed.")`,
+      "",
+    ].join("\n"),
+  );
+  const { callSites, skipped } = extractHookGates(dir);
+  rmSync(dir, { recursive: true, force: true });
+  const message = (tag: string) => callSites.filter((site) => site.tag === tag).map((site) => site.message);
+
+  it("unescapes in one pass, as Python prints the string", () => {
+    expect(message("H-05")).toEqual(["Git Bash printf '%s\\n' <line> >> <path>."]);
+  });
+
+  it("marks a computed value between two literal pieces as a placeholder", () => {
+    expect(message("H-22")).toEqual(["'{rel}' is protected. {get_host().cmd_ref(\"override\")} if this is deliberate."]);
+  });
+
+  it("skips comments inside the call and leaves a computed tail out", () => {
+    expect(message("H-01")).toEqual(["Direct commit is prohibited. Create a feature branch. "]);
+  });
+
+  it("finds a conditional tag assigned anywhere above the call in the same function", () => {
+    expect(message("H-09b")).toEqual(["covered after review. "]);
+    expect(message("H-10b")).toEqual(["covered after review. "]);
+  });
+
+  it("does not guess a tag whose nearest assignment is computed", () => {
+    expect(message("H-03")).toEqual([]);
+    expect(skipped).toHaveLength(1);
+  });
+});
+
 type StableHookKey = Pick<HookCallSite, "kind" | "tag" | "file" | "message">;
 
 function selectUniqueCallSite(
@@ -157,8 +209,14 @@ describe("extractHookGates — real plugin hooks (count-floor snapshot)", () => 
     expect(selectUniqueCallSite(callSites, H10B_NO_PASS).message).toBe(H10B_NO_PASS.message);
   });
 
-  it("keeps the genuinely unresolvable loop-unpack call site in `skipped`", () => {
-    expect(skipped.some((s) => s.file === "pre-edit.py")).toBe(true);
+  it("keeps the genuinely unresolvable loop-unpack call site in `skipped`, and nothing else", () => {
+    // A new entry here is a message the hooks page and the decoder silently lose.
+    expect(skipped.map((s) => s.file)).toEqual(["pre-edit.py"]);
+  });
+
+  it("attributes the out-of-window H-09b/H-10b split to both tags", () => {
+    const covered = callSites.filter((c) => c.message.includes("sensitive binding(s) are not covered by the recorded PASS"));
+    expect(new Set(covered.map((c) => c.tag))).toEqual(new Set(["H-09b", "H-10b"]));
   });
 
   it("extracts H-01's protected-branch commit message from _bashguardlib.py verbatim", () => {

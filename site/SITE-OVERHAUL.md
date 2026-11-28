@@ -92,7 +92,7 @@ One pull request per theme, each independently reviewable and revertible.
 ## S3 done-criteria
 
 - The Hook Gates page opens with a decoder that turns a pasted hook line into its gate and the
-  call site that printed it, a map of where each gate fires in a tool call, and gate tiles that
+  call site that printed it, a map of the two paths a gate fires on, and gate tiles that
   filter by effect and by where they fire. Each gate's one-sentence summary is checked against its
   call sites' kind; enforcers and what a gate acts on come from the S2 joins.
 - `/reference/commands/`, previously a dead address, is the Command Matrix: every command spelled
@@ -101,6 +101,23 @@ One pull request per theme, each independently reviewable and revertible.
 - The changelog opens with its whole history as one bar per release, a filter by kind and word
   over every entry, and a jump to any release; release links are checked against the built page.
 - The generator's own prose is free of separator dashes (done in S2 and kept by its test).
+
+## S3 follow-up
+
+- S3 (#1149) was merged before its independent review finished, which broke the merge rule above.
+  The review then found eight blocking problems on the live pages:
+  - four gate summaries claimed more than their hooks do (H-01, H-09b, H-12, and H-02 with H-20);
+  - the map implied every tool call passes all four hook points in order;
+  - the decoder could freeze the tab, and it named one gate or call site where two print the same
+    text;
+  - the chosen filter lost its label in forced colours.
+- The follow-up fixes all eight. It also fixes the non-blocking findings it could verify: desktop
+  overflow in the matrix, changelog jumps and print while filtering, the extractor's escapes and
+  dropped values, a sidebar entry for the matrix, and "family" in place of "workflow".
+- Merge rule, restated: a slice merges only after its independent review has reported and every
+  blocking finding is fixed.
+- Routed to the owner and not fixed here: a hook-level finding from the same review. Changing
+  hook behavior is outside this program.
 
 ## Verification per slice
 

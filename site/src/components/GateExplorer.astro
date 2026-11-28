@@ -8,7 +8,7 @@
  * gate. Without JavaScript the map and the gate list are complete links into the page; the
  * decoder and the filters appear only with JavaScript. Nothing is stored or sent.
  */
-import { loadGateIndex, SURFACES, type Surface } from '../../scripts/explorers/gate-index';
+import { loadGateIndex, loadSurfaceScripts, PATHS, SURFACES, type Surface } from '../../scripts/explorers/gate-index';
 import { repositorySourceRef } from '../../scripts/generator/source-ref';
 import { framePath } from '../../scripts/machine/machine-render';
 import proof from '../assets/proof/hook-proof.json';
@@ -18,13 +18,18 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const sourceRef = repositorySourceRef();
 const count = { all: gates.length, block: gates.filter((gate) => gate.kind === 'block').length, remind: gates.filter((gate) => gate.kind === 'remind').length };
 const surfaces = Object.entries(SURFACES) as [Surface, string][];
-/** Where in a tool call's life each surface sits, and which hook scripts guard it. */
-const MOMENTS: Record<Surface, { when: string; scripts: string }> = {
-  shell: { when: 'Before a shell command runs', scripts: 'pre-bash.py' },
-  files: { when: 'Before a file is written or edited', scripts: 'pre-write.py, pre-edit.py' },
-  'after-write': { when: 'After a write lands', scripts: 'post-write-edit.py' },
-  git: { when: 'Inside git, at commit and push', scripts: 'git-enforce.py' },
+/** Which scripts carry gates at each step, and for which tools, as hooks.json registers them. */
+const scripts = loadSurfaceScripts(gates);
+/** When each step happens on its path. */
+const WHEN: Record<Surface, string> = {
+  shell: 'Before it runs',
+  git: 'Inside git, at each commit and push',
+  files: 'Before it lands',
+  'after-write': 'After it lands',
 };
+const list = (items: string[]) => (items.length > 1 ? `${items.slice(0, -1).join(', ')} and ${items.at(-1)}` : items[0] ?? '');
+const runsFor = (surface: Surface) =>
+  scripts[surface].map(({ script, tools }) => ({ script, tools: tools.length > 0 ? `for ${list(tools)}` : 'run by git, also for commits and pushes made outside the agent' }));
 const kindLabel = { block: 'Blocks', remind: 'Reminds' } as const;
 const anchor = (tag: string) => `#${tag.toLowerCase()}`;
 const sites = gates.flatMap((gate) => gate.sites.map((site) => ({ tag: gate.tag, ...site })));
@@ -52,23 +57,34 @@ const shield = framePath('shield');
   </section>
 
   <section class="ca-explorer__panel ca-gates__moments" aria-labelledby="gate-moments-title">
-    <h2 id="gate-moments-title" class="ca-explorer__title">Where each gate fires in a tool call</h2>
-    <p class="ca-explorer__lead">A tool call passes these four points in order. Red gates refuse the call; blue gates let it through and remind you of a later obligation. A gate listed twice is enforced at both points.</p>
-    <ol class="ca-gates__lanes" role="list">
-      {surfaces.map(([surface, label], index) => (
-        <li class="ca-gates__lane" data-surface={surface} style={`--i:${index}`}>
-          <p class="ca-gates__lane-head">
-            <span class="ca-gates__lane-step" aria-hidden="true">{index + 1}</span>
-            <span><strong>{MOMENTS[surface].when}</strong><small>{label} · <code>{MOMENTS[surface].scripts}</code></small></span>
-          </p>
-          <ul class="ca-gates__ids" role="list">
-            {gates.filter((gate) => gate.surfaces.includes(surface)).map((gate) => (
-              <li><a class="ca-gates__id" data-kind={gate.kind} href={anchor(gate.tag)} aria-label={`${gate.tag}, ${kindLabel[gate.kind].toLowerCase()}: ${gate.summary}`}>{gate.tag}</a></li>
+    <h2 id="gate-moments-title" class="ca-explorer__title">Where each gate fires</h2>
+    <p class="ca-explorer__lead">A tool call takes one of two paths, and each path has two steps, in order. A shell command meets the shell gate before it runs; if it commits or pushes, git runs the backstop inside that commit or push. A file write or edit meets the file gates before it lands, and a Write or Edit meets the reminders after it lands. Solid red gates refuse the call; dashed blue gates let it through and remind you of a later obligation. A gate listed at both steps is enforced at both.</p>
+    <div class="ca-gates__paths">
+      {PATHS.map((path) => (
+        <section class="ca-gates__path" aria-labelledby={`gate-path-${path.id}`}>
+          <h3 id={`gate-path-${path.id}`} class="ca-gates__path-title">{path.title}</h3>
+          <ol class="ca-gates__lanes" role="list">
+            {path.steps.map((surface, index) => (
+              <li class="ca-gates__lane" data-surface={surface}>
+                <p class="ca-gates__lane-head">
+                  <span class="ca-gates__lane-step" aria-hidden="true">{index + 1}</span>
+                  <span>
+                    <strong>{WHEN[surface]}</strong>
+                    <small>{SURFACES[surface]}</small>
+                    {runsFor(surface).map(({ script, tools }) => <small><code>{script}</code> {tools}</small>)}
+                  </span>
+                </p>
+                <ul class="ca-gates__ids" role="list">
+                  {gates.filter((gate) => gate.surfaces.includes(surface)).map((gate) => (
+                    <li><a class="ca-gates__id" data-kind={gate.kind} href={anchor(gate.tag)} aria-label={`${gate.tag}, ${kindLabel[gate.kind].toLowerCase()}: ${gate.summary}`}>{gate.tag}</a></li>
+                  ))}
+                </ul>
+              </li>
             ))}
-          </ul>
-        </li>
+          </ol>
+        </section>
       ))}
-    </ol>
+    </div>
   </section>
 
   <section class="ca-gates__list-wrap" aria-labelledby="gate-list-title">
@@ -126,7 +142,7 @@ const shield = framePath('shield');
 </ca-gate-explorer>
 
 <script>
-  import { decodeHookOutput, type DecodedMatch, type DecoderSite } from '../scripts/gate-decoder';
+  import { bestTier, decodeHookOutput, type DecodedMatch, type DecoderSite } from '../scripts/gate-decoder';
 
   type GateInfo = { kind: 'block' | 'remind'; summary: string; surfaces: string[] };
   const HOW: Record<DecodedMatch['how'], string> = {
@@ -175,22 +191,35 @@ const shield = framePath('shield');
             result.innerHTML = '<p class="ca-gates__none">No gate in this version prints that text. Check that the line starts with <code>BLOCKED</code> or <code>REMINDER</code>, or paste more of the message.</p>';
             return;
           }
-          const [best, ...rest] = matches;
-          const gate = data.gates[best.tag];
+          const [best] = matches;
           const head = `<p class="ca-gates__match-head"><span class="ca-gates__match-how">${HOW[best.how]}</span>`;
-          if (best.how === 'unknown' || !gate) {
+          if (best.how === 'unknown' || !data.gates[best.tag]) {
             result.innerHTML = `${head}</p><p><strong>${escape(best.tag)}</strong> is not a gate ID this version's hooks print. It may come from an older or newer release; the <a href="${import.meta.env.BASE_URL.replace(/\/$/, '')}/changelog/">changelog</a> records when gates were added or renamed.</p>`;
             return;
           }
-          const site = best.site;
-          const source = site
-            ? `<p class="ca-gates__match-source">Printed by <a href="https://github.com/arbiterForge/codeArbiter/blob/${escape(ref)}/plugins/ca/hooks/${escape(site.file)}#L${site.line}"><code>${escape(site.file)}:${site.line}</code></a></p><blockquote class="ca-hook-message"><p>${messageHtml(site.message)}</p></blockquote>`
+          // Every gate and call site that prints the matched text word for word, none preferred.
+          const tier = bestTier(matches);
+          const tags = [...new Set(tier.map((m) => m.tag))].filter((tag) => data.gates[tag]);
+          const list = (items: string[]) => (items.length > 1 ? `${items.slice(0, -1).join(', ')} and ${items.at(-1)}` : items[0] ?? '');
+          const gatesHtml = tags
+            .map((tag) => {
+              const gate = data.gates[tag];
+              return `<div class="ca-gates__match-gate"><p class="ca-gates__match-id"><span class="ca-gates__match-tag" data-kind="${gate.kind}">${escape(tag)}</span><span>${gate.kind === 'block' ? 'Blocks' : 'Reminds'} · ${escape(gate.surfaces.join(', '))}</span></p><p class="ca-gates__match-summary">${escape(gate.summary)}</p></div>`;
+            })
+            .join('');
+          const shared = tags.length > 1
+            ? `<p class="ca-gates__match-note">${list(tags.map(escape))} print this text word for word. The gate ID at the start of the line, such as <code>BLOCKED [${escape(tags[0])}]</code>, says which one fired.</p>`
+            : '';
+          const places = [...new Map(tier.filter((m) => m.site).map((m) => [`${m.site!.file}:${m.site!.line}`, m.site!])).values()];
+          const source = best.site
+            ? `<p class="ca-gates__match-source">Printed by ${list(places.map((site) => `<a href="https://github.com/arbiterForge/codeArbiter/blob/${escape(ref)}/plugins/ca/hooks/${escape(site.file)}#L${site.line}"><code>${escape(site.file)}:${site.line}</code></a>`))}</p><blockquote class="ca-hook-message"><p>${messageHtml(best.site.message)}</p></blockquote>`
             : '<p class="ca-gates__match-source">No message in this version matches the rest of the line, so only its gate ID is known.</p>';
+          const rest = matches.filter((m) => !tier.includes(m));
           const others = (best.how === 'exact' ? [] : rest).filter((m) => m.site).map((m) => `<li><a href="#${m.tag.toLowerCase()}">${escape(m.tag)}</a>: <code>${escape(m.site!.file)}:${m.site!.line}</code></li>`).join('');
+          for (const tile of this.querySelectorAll<HTMLElement>('[data-gate]')) tile.toggleAttribute('data-match', tags.includes(tile.dataset.gate ?? ''));
           result.innerHTML =
-            `${head}<span class="ca-gates__match-tag" data-kind="${gate.kind}">${escape(best.tag)}</span><span>${gate.kind === 'block' ? 'Blocks' : 'Reminds'} · ${escape(gate.surfaces.join(', '))}</span></p>` +
-            `<p class="ca-gates__match-summary">${escape(gate.summary)}</p>${source}` +
-            `<p><a class="ca-button" href="#${best.tag.toLowerCase()}">Read the ${escape(best.tag)} entry</a></p>` +
+            `${head}</p>${gatesHtml}${shared}${source}` +
+            `<p class="ca-gates__match-actions">${tags.map((tag) => `<a class="ca-button" href="#${tag.toLowerCase()}">Read the ${escape(tag)} entry</a>`).join(' ')}</p>` +
             (others ? `<details class="ca-gates__others"><summary>Other close matches</summary><ul>${others}</ul></details>` : '');
         };
         input.addEventListener('input', render, { signal });

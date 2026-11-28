@@ -70,14 +70,16 @@ describe("reference sidebar projection", () => {
     const commands = referenceGroups[0];
     expect(commands.label).toBe("Commands");
     expect(commands.collapsed).toBe(true);
-    expect(commands.items.map((group) => [group.label, group.collapsed])).toEqual([
+    const [matrix, ...visibility] = commands.items;
+    expect(matrix).toEqual({ label: "Command Matrix", slug: "reference/commands" });
+    expect(visibility.map((group) => [group.label, group.collapsed])).toEqual([
       ["Core", false],
       ["Advanced", true],
       ["Compatibility aliases", true],
       ["Internal", true],
       ["Deprecated", true],
     ]);
-    expect(commands.items.map((group) => group.items?.map((item) => item.slug))).toEqual([
+    expect(visibility.map((group) => group.items?.map((item) => item.slug))).toEqual([
       ["reference/commands/commit"],
       ["reference/commands/audit"],
       ["reference/commands/cleanup"],
@@ -156,6 +158,7 @@ describe("reference sidebar projection", () => {
     groups[0].items.splice(4, 1);
     groups[0].items.splice(1, 1);
     expect(project!(groups)[0].items.map((group) => group.label)).toEqual([
+      "Command Matrix",
       "Core",
       "Compatibility aliases",
       "Internal",

@@ -231,6 +231,23 @@ for (const release of releases) {
         count.textContent = filtering ? `${entries} of ${total} entries, in ${lit} ${lit === 1 ? 'release' : 'releases'}` : '';
       };
 
+      /** Go to a release. A filter that hides it is cleared first, and the reader is told so;
+       * going to the release already in the address scrolls to it again. */
+      const goTo = (id: string) => {
+        const target = document.getElementById(id);
+        if (!target) return;
+        let note = '';
+        if (target.closest('[hidden]')) {
+          find.value = '';
+          (form.querySelector<HTMLInputElement>('input[name="history-kind"][value="all"]'))!.checked = true;
+          update();
+          note = `Filters cleared to show ${target.textContent?.trim() ?? 'that release'}.`;
+        }
+        if (location.hash === `#${id}`) target.scrollIntoView({ block: 'start' });
+        else location.hash = id;
+        count.textContent = note;
+      };
+
       form.addEventListener('change', (event) => {
         if (event.target === jump) return;
         update();
@@ -239,15 +256,15 @@ for (const release of releases) {
       form.addEventListener('submit', (event) => event.preventDefault(), { signal });
       jump.addEventListener('change', () => {
         if (!jump.value) return;
-        const target = document.getElementById(jump.value);
-        if (target?.closest('[hidden]')) {
-          find.value = '';
-          (form.querySelector<HTMLInputElement>('input[name="history-kind"][value="all"]'))!.checked = true;
-          update();
-        }
-        location.hash = jump.value;
+        goTo(jump.value);
         jump.value = '';
       }, { signal });
+      for (const [id, bar] of bars) {
+        bar.addEventListener('click', (event) => {
+          event.preventDefault();
+          goTo(id);
+        }, { signal });
+      }
       form.hidden = false;
     }
 

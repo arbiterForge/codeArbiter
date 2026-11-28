@@ -10,7 +10,7 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { extractHookGates, type HookCallSite } from "../generator/extract-hook-gates";
-import { buildEventMap, eventsFor, type HooksJson } from "../generator/render-hooks-reference";
+import { buildEventMap, eventOwner, eventsFor, type HooksJson } from "../generator/render-hooks-reference";
 import { gateJoin } from "../generator/machine-joins";
 import { REPO_ROOT } from "../machine/machine-model";
 import summariesJson from "../../src/data/gate-summaries.json" with { type: "json" };
@@ -123,6 +123,45 @@ export function buildGateIndex(
     });
   }
   return { gates, findings };
+}
+
+/** The two paths a gate fires on. hooks.json registers the shell gate for shell tools and the
+ * file gates for file tools, so one tool call takes one path; git runs the backstop inside each
+ * commit and push. */
+export const PATHS: { id: string; title: string; steps: [Surface, Surface] }[] = [
+  { id: "shell", title: "A shell command", steps: ["shell", "git"] },
+  { id: "files", title: "A file write or edit", steps: ["files", "after-write"] },
+];
+
+export interface SurfaceScript {
+  script: string;
+  /** The tool names its hooks.json matcher lists; empty for the git backstop, which git runs. */
+  tools: string[];
+}
+
+/** Which hook scripts carry gates at each surface, and for which tools, from hooks.json. */
+export function buildSurfaceScripts(hooksJson: HooksJson, gateFiles: string[]): Record<Surface, SurfaceScript[]> {
+  const owners = new Set(gateFiles.map(eventOwner));
+  const result: Record<Surface, SurfaceScript[]> = { shell: [], files: [], "after-write": [], git: [] };
+  for (const [event, entries] of Object.entries(hooksJson.hooks ?? {})) {
+    for (const entry of entries) {
+      const surface = surfaceOf(entry.matcher ? `${event} (${entry.matcher})` : event);
+      if (!surface) continue;
+      for (const hook of entry.hooks ?? []) {
+        const script = /hooks\/([A-Za-z0-9_.-]+\.py)/.exec(hook.command)?.[1];
+        if (!script || !owners.has(script) || result[surface].some((known) => known.script === script)) continue;
+        result[surface].push({ script, tools: (entry.matcher ?? "").split("|").filter(Boolean) });
+      }
+    }
+  }
+  if (owners.has("git-enforce.py")) result.git.push({ script: "git-enforce.py", tools: [] });
+  return result;
+}
+
+export function loadSurfaceScripts(gates: GateEntry[] = loadGateIndex(), repoRoot = REPO_ROOT): Record<Surface, SurfaceScript[]> {
+  const hooksDir = join(repoRoot, "plugins", "ca", "hooks");
+  const hooksJson = JSON.parse(readFileSync(join(hooksDir, "hooks.json"), "utf8")) as HooksJson;
+  return buildSurfaceScripts(hooksJson, [...new Set(gates.flatMap((gate) => gate.sites.map((site) => site.file)))]);
 }
 
 /** The explorer's index for the shipped hooks. Throws with every finding when it cannot be trusted. */

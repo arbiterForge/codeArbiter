@@ -219,15 +219,67 @@
   font-size: var(--ca-text-sm);
 }
 
-/* Hook Gates: where each gate fires */
+/* One block per gate that prints the matched text; two when gates share a message. */
+.ca-gates__match-gate > * + * {
+  margin-block-start: var(--ca-space-2);
+}
+
+.ca-gates__match-gate + .ca-gates__match-gate {
+  padding-block-start: var(--ca-space-3);
+  border-block-start: 1px solid var(--ca-line);
+}
+
+.ca-gates__match-id {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ca-space-2) var(--ca-space-3);
+  align-items: center;
+  color: var(--ca-ink-soft);
+  font-size: var(--ca-text-sm);
+}
+
+.ca-gates__match-note {
+  color: var(--ca-ink-soft);
+  font-size: var(--ca-text-sm);
+}
+
+.ca-gates__match-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ca-space-2);
+}
+
+/* Hook Gates: where each gate fires. Two paths, each two steps in order. */
+.ca-gates__paths {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--ca-space-5);
+}
+
+.ca-gates__path-title {
+  margin: 0 0 var(--ca-space-3);
+  font-size: var(--ca-text-md);
+}
+
 .ca-gates__lanes {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: var(--ca-space-3);
+  gap: var(--ca-space-4);
   margin: 0;
   padding: 0;
   list-style: none;
   counter-reset: none;
+}
+
+/* A path's second step follows its first: a short connector joins them. */
+.ca-gates__lane:not(:last-child)::after {
+  position: absolute;
+  inset-block-end: calc(-1 * var(--ca-space-4) - 1px);
+  inset-inline-start: calc(var(--ca-space-4) + 0.875rem - 1px);
+  inline-size: 2px;
+  block-size: var(--ca-space-4);
+  background: var(--ca-line-strong);
+  content: "";
 }
 
 .ca-gates__lane {
@@ -297,7 +349,11 @@
   transition: background var(--ca-dur-fast) ease, box-shadow var(--ca-dur-fast) ease;
 }
 
-.ca-gates__id[data-kind="remind"] { --tone: var(--ca-info); }
+/* A reminder is told apart by its dashed outline as well as its colour. */
+.ca-gates__id[data-kind="remind"] {
+  --tone: var(--ca-info);
+  border-style: dashed;
+}
 
 .ca-gates__id:hover {
   background: color-mix(in srgb, var(--tone) 26%, transparent);
@@ -305,19 +361,8 @@
 }
 
 @container (min-width: 52rem) {
-  .ca-gates__lanes {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
-
-  /* The four points are one tool call's life, left to right. */
-  .ca-gates__lane:not(:last-child)::after {
-    position: absolute;
-    inset-block-start: calc(var(--ca-space-4) + 0.875rem);
-    inset-inline-end: calc(-1 * var(--ca-space-3) - 1px);
-    inline-size: var(--ca-space-3);
-    block-size: 2px;
-    background: var(--ca-line-strong);
-    content: "";
+  .ca-gates__paths {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
@@ -459,7 +504,10 @@
     background: Field;
   }
 
+  /* Without this, Chromium paints a Canvas backplate behind the label's text, so the selected
+   * chip reads as a blank pill. The colours stay system colours, so the theme still decides. */
   .ca-explorer__filters fieldset label:has(input:checked) {
+    forced-color-adjust: none;
     border-color: Highlight;
     background: Highlight;
     color: HighlightText;
@@ -644,6 +692,9 @@
 }
 
 .ca-matrix__copy {
+  /* Holds the button's visually hidden label inside the scrolling table frame; positioned
+   * against the page panel instead, it widened the page at desktop sizes. */
+  position: relative;
   padding: 0.05rem 0.5rem;
   border: 1px solid var(--ca-line-strong);
   border-radius: var(--ca-radius-sm);
@@ -888,5 +939,27 @@
 
   .ca-history__legend span {
     border: 1px solid CanvasText;
+  }
+}
+
+/* Print shows the whole changelog, as the gate list and the matrix do: a filter only narrows the
+ * screen. The filter hides entries with the hidden attribute, so each kind of node gets its own
+ * display back. */
+@media print {
+  body:has(ca-changelog-navigator[data-filtering]) .sl-markdown-content li[hidden] {
+    display: list-item !important;
+  }
+
+  body:has(ca-changelog-navigator[data-filtering]) .sl-markdown-content :is(ul, ol)[hidden] {
+    display: block !important;
+  }
+
+  body:has(ca-changelog-navigator[data-filtering]) .sl-markdown-content > :not(ul, ol)[hidden] {
+    display: block !important;
+  }
+
+  .ca-history__filters,
+  .ca-history [data-history-count] {
+    display: none !important;
   }
 }

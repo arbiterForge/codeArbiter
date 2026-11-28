@@ -417,7 +417,7 @@
     "what": "Long sessions eventually fill the context window. The harness then compacts: it replaces older turns with a summary and continues. Compaction is lossy. Exact instructions, file contents and decisions from early in the session can shrink to a sentence or disappear.",
     "machine": "The press on the far side of the loop. It squeezes old transcript into a smaller block.",
     "how": [
-      "Before compaction, codeArbiter’s PreCompact hook bumps the session’s compaction generation.",
+      "On Claude Code, codeArbiter’s PreCompact hook bumps the session’s compaction generation before compaction.",
       "The first prompt afterwards re-injects the current mode’s rules in full.",
       "Long interviews, such as greenfield initialization, persist drafts to disk so compaction cannot erase them."
     ],
@@ -499,7 +499,7 @@
     "kind": "Enforcement",
     "name": "Activation switch",
     "tagline": "Dormant everywhere until a repository opts in.",
-    "what": "Install codeArbiter globally and it stays dormant. A repository opts in through `.codearbiter/CONTEXT.md` carrying `arbiter: enabled`. Without that flag, no rules are injected, no guard acts and no governance row appears. A malformed CONTEXT.md fails loud with a breadcrumb instead of silently going dormant. H-18 refuses any in-session edit that would drop the flag; disabling a repository takes an external editor and an audit record.",
+    "what": "Install codeArbiter globally and it stays dormant. A repository opts in through `.codearbiter/CONTEXT.md` carrying `arbiter: enabled`. Without that flag, no rules are injected, no guard acts and no governance row appears. A malformed CONTEXT.md fails loud with a breadcrumb instead of silently going dormant. H-18 refuses the writes, edits and shell commands that would drop the flag; disabling a repository takes an external editor and an audit record.",
     "machine": "The master key switch on the ring. Its plate reads `arbiter: enabled`.",
     "hooks": [
       "H-18"
@@ -579,7 +579,7 @@
     "kind": "Enforcement",
     "name": "Shell gate (pre-bash)",
     "tagline": "Blocks commands that would break a hard rule.",
-    "what": "Before any shell command runs, `pre-bash.py` inspects the command and blocks those that break a hard rule: committing to the default branch or pushing to a protected one (H-01), any force-push spelling (H-02), wildcard staging such as `git add -A` (H-03), rewriting append-only logs (H-05), shell writes to ADRs (H-11), committing crypto or secret changes without a line-bound security pass (H-09b, H-10b), a migration without a migration review (H-14), tampering with activation, markers or protected state (H-18, H-19, H-22) and `--no-verify` (H-20). A block exits with code 2 and a named reason; the command never runs.",
+    "what": "Before any shell command runs, `pre-bash.py` inspects the command and blocks those that break a hard rule: committing or pushing to `main` or `master` (H-01), force-pushes including `--force-with-lease` and `+` refspecs (H-02), wildcard staging such as `git add -A` (H-03), rewriting append-only logs (H-05), shell writes to ADRs (H-11), committing crypto or secret changes without a line-bound security pass (H-09b, H-10b), a migration without a migration review (H-14), tampering with activation, markers or protected state (H-18, H-19, H-22) and `--no-verify` or commit’s `-n` (H-20). A block exits with code 2 and a named reason; the command never runs.",
     "machine": "The main gate in the ring, with a gold barrier arm. When it drops red, the command was stopped before it executed.",
     "hooks": [
       "H-01",
@@ -613,7 +613,7 @@
     "kind": "Enforcement",
     "name": "Write gate (pre-write, pre-edit)",
     "tagline": "Protects audit logs, ADRs, activation and markers.",
-    "what": "Before a Write or Edit lands, the write guards check the target. Audit logs accept only pure appends (H-05). ADRs can be written only while the adr lane holds a fresh authoring marker (H-11). CONTEXT.md cannot lose its activation flag (H-18). Gate-pass markers cannot be edited (H-19). Protected-state entries need their own marker (H-22). If the host adapter cannot map an operation, the guard blocks it rather than guessing (H-21).",
+    "what": "Before a Write or Edit lands, the write guards check the target. Audit logs accept only pure appends (H-05). ADRs can be written only while the adr lane holds a fresh authoring marker (H-11). A write or edit that would drop CONTEXT.md’s activation flag is refused (H-18), and so is any write or edit to a gate-pass marker (H-19). Protected-state entries need their own marker (H-22). If the host adapter cannot map an operation, the guard blocks it rather than guessing (H-21).",
     "machine": "The second gate, in front of the fabrication arm.",
     "hooks": [
       "H-05",
@@ -1014,7 +1014,7 @@
       "ca-audit",
       "smarts"
     ],
-    "simple": "Logs you can only add to, never edit or delete. They record every override, mode change and gate event, so anyone can check later what happened."
+    "simple": "Logs you can only add to, never edit or delete. They record overrides, mode changes and the actions hooks refuse the agent, so anyone can check later what happened."
   },
   "evidence-shelf": {
     "zone": "record",
@@ -1088,7 +1088,7 @@
     "kind": "World",
     "name": "Protected default branch",
     "tagline": "No direct writes. No force-push.",
-    "what": "The default branch (`main` or `master`) is protected by hard rules: no direct commit or push (H-01) and no force-push in any spelling (H-02). Changes arrive by pull request and merge only with your confirmation, green hosted CI on the exact head and verified ADR source ancestry.",
+    "what": "`main` and `master` are protected by name: no direct commit or push to either (H-01). A default branch with any other name does not get H-01. Force-push is refused on every branch (H-02). Changes arrive by pull request and merge only with your confirmation, green hosted CI on the exact head and verified ADR source ancestry.",
     "machine": "The vault at the end of the rails. Its door is trimmed in gold because opening it is a decision.",
     "hooks": [
       "H-01",
@@ -1107,7 +1107,7 @@
     "kind": "World",
     "name": "Git-level backstop",
     "tagline": "pre-commit and pre-push hooks underneath the agent.",
-    "what": "codeArbiter also installs `.git/hooks/pre-commit` and `pre-push`, which run `git-enforce.py` at the git operation itself, outside any AI host. The shell gate sees only the literal command string, so a commit built through shell indirection could slip past it; the git hook cannot be fooled by spelling. That is why `--no-verify`, which skips git hooks, is itself blocked (H-20). Existing hook managers such as husky are preserved.",
+    "what": "codeArbiter also installs `.git/hooks/pre-commit` and `pre-push`, which run `git-enforce.py` at the git operation itself, outside any AI host. The shell gate sees only the literal command string, so a commit built through shell indirection could slip past it; the git hook runs at the commit or push itself, however the command was spelled. That is why the shell gate also refuses `--no-verify` and commit’s `-n`, which would skip git hooks (H-20). Existing hook managers such as husky are preserved.",
     "machine": "A lock box under the rails. A command that slips past the shell gate still meets it.",
     "hooks": [
       "H-20"
@@ -1121,7 +1121,7 @@
       "repo",
       "main-vault"
     ],
-    "simple": "A second lock built into git itself. If a command sneaks past the first check with a trick spelling, this one still catches it."
+    "simple": "A second lock built into git itself. It runs at the commit or push, so a command that slips past the first check with a trick spelling is checked again here."
   },
   "remote-ci": {
     "zone": "world",
@@ -1747,7 +1747,7 @@
     "tier": "core",
     "args": "",
     "tagline": "The nine-phase commit gate.",
-    "what": "{{commit}} runs the full commit gate: nine phases, each a blocking gate. It needs an explicit instruction to commit, refuses the protected default branch, splits mixed changes so each commit has one type, runs focused tests, lint and a secrets scan over every staged file, proves the behavior with current command output, reviews the whole diff, stages each path by name and writes a Conventional Commits message.",
+    "what": "{{commit}} runs the full commit gate: nine phases, each a blocking gate. It needs an explicit instruction to commit, refuses `main`, `master` and any other protected branch, splits mixed changes so each commit has one type, runs focused tests, lint and a secrets scan over every staged file, proves the behavior with current command output, reviews the whole diff, stages each path by name and writes a Conventional Commits message.",
     "machine": "A nine-ring airlock. The change passes one ring at a time, and any ring can seal the lock.",
     "how": [
       "Permission",

@@ -5,6 +5,19 @@ import AxeBuilder from '@axe-core/playwright';
 
 const axe = (page: Page, selector: string) => new AxeBuilder({ page }).include(selector).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
 const overflow = (page: Page) => page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+/** Resolves once the page has not scrolled for ten animation frames in a row. */
+const settle = (page: Page) =>
+  page.evaluate(() => new Promise<void>((resolve) => {
+    let last = window.scrollY;
+    let still = 0;
+    const tick = () => {
+      still = window.scrollY === last ? still + 1 : 0;
+      last = window.scrollY;
+      if (still >= 10) resolve();
+      else requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  }));
 
 test.describe('Hook Gates explorer', () => {
   test('decodes the captured refusal to its gate and the line that printed it', async ({ page }) => {
@@ -64,6 +77,52 @@ test.describe('Hook Gates explorer', () => {
     expect((await axe(page, 'ca-gate-explorer')).violations).toEqual([]);
     expect(await overflow(page)).toBeLessThanOrEqual(0);
   });
+
+  test('a message two gates share names both, and the printed ID picks one', async ({ page }) => {
+    await page.goto('/reference/hooks-gates/');
+    const input = page.locator('#gate-decode-input');
+    const result = page.locator('[data-gate-result]');
+    await input.fill('No security-gate PASS is recorded for this staged candidate.');
+    await expect(result.locator('.ca-gates__match-tag')).toHaveText(['H-09b', 'H-10b']);
+    await expect(result).toContainText('print this text word for word');
+    await expect(page.locator('.ca-gate[data-gate="H-10b"]')).toHaveAttribute('data-match', '');
+    await input.fill('BLOCKED [H-10b]: No security-gate PASS is recorded for this staged candidate.');
+    await expect(result.locator('.ca-gates__match-tag')).toHaveText(['H-10b']);
+  });
+
+  test('the same text printed in two files lists both call sites', async ({ page }) => {
+    await page.goto('/reference/hooks-gates/');
+    await page.locator('#gate-decode-input').fill('BLOCKED [H-11]: ADR authoring marker is stale (>30 min). Re-run /adr.');
+    const source = page.locator('[data-gate-result] .ca-gates__match-source');
+    await expect(source).toContainText('pre-write.py:');
+    await expect(source).toContainText('pre-edit.py:');
+  });
+
+  test('a long pasted log, wrapped mid-word, decodes at once', async ({ page }) => {
+    await page.goto('/reference/hooks-gates/');
+    const line = 'REMINDER [H-12]: src/app.ts is governed by ADR-0007 (Keep exports synchronous). If this change contra\ndicts it, route to /ca:reconcile or /ca:adr — do not drift silently.\n';
+    const elapsed = await page.evaluate((value) => {
+      const input = document.querySelector<HTMLTextAreaElement>('#gate-decode-input')!;
+      input.value = value;
+      const started = performance.now();
+      input.dispatchEvent(new Event('input'));
+      return performance.now() - started;
+    }, line.repeat(30).slice(0, 4000));
+    expect(elapsed).toBeLessThan(250);
+    await expect(page.locator('[data-gate-result] .ca-gates__match-how')).toHaveText('Exact match');
+    await expect(page.locator('[data-gate-result] .ca-gates__match-tag')).toHaveText(['H-12']);
+  });
+
+  test('the map shows two paths of two steps, with the tools each script is registered for', async ({ page }) => {
+    await page.goto('/reference/hooks-gates/');
+    const paths = page.locator('.ca-gates__path');
+    await expect(paths.locator('.ca-gates__path-title')).toHaveText(['A shell command', 'A file write or edit']);
+    await expect(paths.nth(0).locator('.ca-gates__lane')).toHaveCount(2);
+    await expect(paths.nth(1).locator('.ca-gates__lane')).toHaveCount(2);
+    await expect(paths.nth(0)).toContainText('pre-bash.py for Bash and PowerShell');
+    await expect(paths.nth(1)).toContainText('post-write-edit.py for Write and Edit');
+    await expect(page.locator('ca-gate-explorer')).not.toContainText('four points in order');
+  });
 });
 
 test.describe('Command matrix', () => {
@@ -105,6 +164,14 @@ test.describe('Command matrix', () => {
     expect((await axe(page, 'ca-command-matrix')).violations).toEqual([]);
     expect(await overflow(page)).toBeLessThanOrEqual(0);
     await expect(page.locator('ca-command-matrix thead')).toHaveCSS('position', 'absolute');
+  });
+
+  test('fits the page at desktop widths', async ({ page }) => {
+    for (const width of [1152, 1280, 1440]) {
+      await page.setViewportSize({ width, height: 900 });
+      await page.goto('/reference/commands/');
+      expect(await overflow(page), `${width}px`).toBeLessThanOrEqual(0);
+    }
   });
 });
 
@@ -150,4 +217,55 @@ test.describe('Changelog navigator', () => {
     expect((await axe(page, 'ca-changelog-navigator')).violations).toEqual([]);
     expect(await overflow(page)).toBeLessThanOrEqual(0);
   });
+
+  test('a dimmed bar clears the filter, goes to its release and says so', async ({ page }) => {
+    await page.goto('/changelog/');
+    const nav = page.locator('ca-changelog-navigator');
+    await page.locator('#history-find').fill('H-22');
+    const dim = nav.locator('[data-history-bar][data-dim]').first();
+    const id = (await dim.getAttribute('data-history-bar'))!;
+    await dim.dispatchEvent('click');
+    await expect(page).toHaveURL(new RegExp(`#${id}$`));
+    await expect(page.locator(`[id="${id}"]`)).toBeVisible();
+    await expect(nav.locator('[data-history-count]')).toContainText('Filters cleared to show');
+    await expect(page.locator('#history-find')).toHaveValue('');
+  });
+
+  test('jumping to the release already shown scrolls back to it', async ({ page }) => {
+    await page.goto('/changelog/');
+    await page.locator('#history-jump').selectOption({ index: 3 });
+    await expect(page).toHaveURL(/#.+$/);
+    const heading = page.locator(`[id="${new URL(page.url()).hash.slice(1)}"]`);
+    await expect(heading).toBeInViewport();
+    // The site scrolls smoothly. A scroll the test starts while that animation runs can land off
+    // target in Chrome, so wait for the first jump to come to rest. The test then starts from a
+    // settled top, and only the second jump can bring the release back.
+    await settle(page);
+    await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
+    await settle(page);
+    expect(await page.evaluate(() => window.scrollY)).toBe(0);
+    await expect(heading).not.toBeInViewport();
+    await page.locator('#history-jump').selectOption({ index: 3 });
+    await expect(heading).toBeInViewport();
+  });
+
+  test('print shows every entry even while a filter is on', async ({ page }) => {
+    await page.goto('/changelog/');
+    await page.locator('#history-find').fill('H-22');
+    await page.emulateMedia({ media: 'print' });
+    await expect(page.locator('.sl-markdown-content li[hidden]').first()).toHaveCSS('display', 'list-item');
+    await expect(page.locator('[data-history-filters]')).toBeHidden();
+  });
+});
+
+test.describe('Explorer filters in forced colours', () => {
+  for (const path of ['/reference/hooks-gates/', '/reference/commands/', '/changelog/']) {
+    test(`the chosen filter keeps its label on ${path}`, async ({ page }) => {
+      await page.emulateMedia({ forcedColors: 'active' });
+      await page.goto(path);
+      const chosen = page.locator('.ca-explorer__filters fieldset label:has(input:checked)').first();
+      await expect(chosen).toBeVisible();
+      await expect(chosen).toHaveCSS('forced-color-adjust', 'none');
+    });
+  }
 });

@@ -59,11 +59,16 @@ export function buildEventMap(hooksJson: HooksJson): Map<string, string[]> {
   return map;
 }
 
+/** The registered hook script that runs a source file's call sites: a shared library's
+ * gates run inside the entry hook that imports it. */
+export function eventOwner(file: string): string {
+  return DELEGATED_EVENT_OWNER.get(file) ?? file;
+}
+
 /** Events label list for one hook source file — hand-mapped for the git backstop. */
 export function eventsFor(file: string, eventMap: Map<string, string[]>): string[] {
   if (file === GIT_BACKSTOP_FILE) return [GIT_BACKSTOP_LABEL];
-  const owner = DELEGATED_EVENT_OWNER.get(file) ?? file;
-  return eventMap.get(owner) ?? [];
+  return eventMap.get(eventOwner(file)) ?? [];
 }
 
 /** Parse a gate tag into (numeric part, letter suffix) for natural sort:
