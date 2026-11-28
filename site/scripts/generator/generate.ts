@@ -38,23 +38,23 @@ import type {
   SourceType,
 } from "./types";
 
-/** Output subdirectory for each source type. */
 /** The generated commands index. Its matrix renders from the shipped catalogs at build time. */
 export const COMMAND_MATRIX_PAGE = `---
 title: Command Matrix
-description: "Every codeArbiter command spelled for Claude Code, Codex CLI and Pi, with its level, workflow and lane route, generated from the shipped command catalogs."
+description: "Every codeArbiter command spelled for Claude Code, Codex CLI and Pi, with its level, family and lane route, generated from the shipped command catalogs."
 tableOfContents: false
 ---
 
 ## Where each column comes from
 
-- **Command, level and workflow** come from \`core/surface/command-routes.json\`. An alias forwards to the command its page names.
+- **Command, level and family** come from \`core/surface/command-routes.json\` (its \`visibility\` and \`workflow\` fields). An alias forwards to the command its page names.
 - **Claude Code, Codex CLI and Pi** spell the command with each host's \`command_form\` in \`core/hosts.json\`. A command shows as not shipped when that host's own \`COMMANDS.md\` does not list it.
 - **Route** is the lane's path through the [machine](/concepts/machine/): each frame is a stop, coloured by what happens there. Gold waits on a gate or on you, red fails first or refuses, green passes.
 
 Each command's own page explains what it does, its gates and the exact shipped source.
 `;
 
+/** Output subdirectory for each source type. */
 const TYPE_DIR: Record<SourceType, string> = {
   command: "commands",
   skill: "skills",

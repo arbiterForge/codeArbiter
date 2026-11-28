@@ -18,6 +18,9 @@ export interface ReferenceSidebarLink {
   slug: string;
 }
 
+/** The commands folder's own page, generated as the Command Matrix. */
+export const COMMAND_MATRIX_LINK: ReferenceSidebarLink = { label: "Command Matrix", slug: "reference/commands" };
+
 export interface ReferenceSidebarGroup {
   label: string;
   collapsed: boolean;
@@ -90,11 +93,15 @@ export function buildReferenceSidebar(groups: SidebarGroup[]): ReferenceSidebarG
       return {
         label: group.label,
         collapsed: true,
-        items: group.items.map((item) => ({
-          label: item.label,
-          collapsed: item.visibility !== "core",
-          items: item.items.map((entry) => projectLink(entry, "commands")),
-        })),
+        // The matrix spells every command for every host, so it leads the group.
+        items: [
+          COMMAND_MATRIX_LINK,
+          ...group.items.map((item) => ({
+            label: item.label,
+            collapsed: item.visibility !== "core",
+            items: item.items.map((entry) => projectLink(entry, "commands")),
+          })),
+        ],
       };
     }
 

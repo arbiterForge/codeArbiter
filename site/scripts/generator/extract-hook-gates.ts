@@ -68,14 +68,13 @@ function matchStringStart(
   return { quote: q, quoteLen, contentStart: tripleStart + quoteLen };
 }
 
-/** Unescape the common escape sequences inside a Python string literal body. */
-function unescapePython(raw: string): string {
-  return raw
-    .replace(/\\n/g, "\n")
-    .replace(/\\t/g, "\t")
-    .replace(/\\"/g, '"')
-    .replace(/\\'/g, "'")
-    .replace(/\\\\/g, "\\");
+const ESCAPES: Record<string, string> = { n: "\n", t: "\t", '"': '"', "'": "'", "\\": "\\", "\n": "" };
+
+/** Unescape the common escape sequences inside a Python string literal body, left to right in
+ * one pass, so `'%s\\n'` stays a backslash and an `n` the way Python prints it. A sequence
+ * this does not know is kept as written. */
+export function unescapePython(raw: string): string {
+  return raw.replace(/\\([\s\S])/g, (sequence, char: string) => ESCAPES[char] ?? sequence);
 }
 
 /** Consume one string literal starting at `content[idx]` (which must satisfy
@@ -115,54 +114,71 @@ function consumeString(
  * Scan a `block(`/`remind(` call's argument list starting just after the
  * `tag,` prefix already matched by the caller (so we are one `(` deep),
  * concatenating every literal string segment found at that depth into the
- * message. Non-literal glue (`+`, whitespace, a trailing function call like
- * `_read_err_hint()`) is walked over for correct paren-depth tracking but
- * contributes nothing to the message text.
+ * message. A computed operand that sits between two literal segments
+ * (`"... the file. " + get_host().cmd_ref("override") + " if ..."`) prints text
+ * there, so it becomes a `{placeholder}` holding its source, as an f-string's
+ * replacement field does. A computed tail after the last literal (a recovery
+ * hint such as `_read_err_hint()`) is walked over for paren-depth tracking but
+ * contributes nothing, so a message that continues at run time ends with the
+ * space its literal leaves. Comments inside the call are skipped.
  */
 function scanMessage(content: string, startIdx: number): { message: string; endIdx: number } {
   let depth = 1;
   let i = startIdx;
   let message = "";
+  let operand = "";
+  const pending: string[] = [];
+  const closeOperand = () => {
+    const source = operand.replace(/\s+/g, " ").trim();
+    if (source) pending.push(source);
+    operand = "";
+  };
   while (i < content.length && depth > 0) {
     const ch = content[i];
+    if (ch === "#") {
+      while (i < content.length && content[i] !== "\n") i++;
+      continue;
+    }
     if (ch === '"' || ch === "'" || /[fFrRbBuU]/.test(ch)) {
       const strStart = matchStringStart(content, i);
-      if (strStart) {
+      if (strStart && !(depth === 1 && operand !== "" && /[\w.]$/.test(operand))) {
         const { body, endIdx } = consumeString(content, i);
-        if (depth === 1) message += body;
+        if (depth === 1) {
+          closeOperand();
+          message += pending.map((source) => `{${source}}`).join("") + body;
+          pending.length = 0;
+        } else {
+          operand += content.slice(i, endIdx);
+        }
         i = endIdx;
         continue;
       }
     }
-    if (ch === "(") {
-      depth++;
-      i++;
-      continue;
-    }
-    if (ch === ")") {
-      depth--;
-      i++;
-      continue;
-    }
+    if (ch === "(") depth++;
+    if (ch === ")") depth--;
+    if (depth === 0) break;
+    if (depth === 1 && ch === "+") closeOperand();
+    else operand += ch;
     i++;
   }
-  return { message, endIdx: i };
+  return { message, endIdx: i + 1 };
 }
 
 const LITERAL_TAG_CALL_RE = /\b(block|remind)\(\s*"(H-\d+[a-z]?)"\s*,/g;
 const VARIABLE_TAG_CALL_RE = /\b(block|remind)\(\s*([A-Za-z_]\w*)\s*,/g;
 const ANY_CALL_RE = /\b(block|remind)\(/g;
 
-/** How far back (in lines) a variable-tag call looks for its assignment. */
-const VARIABLE_TAG_LOOKBACK_LINES = 30;
+/** How far back (in lines) a variable-tag call looks for its assignment, at most. */
+const VARIABLE_TAG_LOOKBACK_LINES = 120;
 
 /**
  * Resolve a bare-identifier tag argument (`block(tag, …)`) to its literal
- * value(s) by scanning BACKWARD for the nearest preceding assignment.
+ * value(s) by scanning BACKWARD for the nearest preceding assignment in the
+ * same function.
  *
  * BOUNDED PATTERN ONLY — this is deliberately NOT general dataflow. Exactly
- * two single-line assignment shapes are recognized, within
- * {@link VARIABLE_TAG_LOOKBACK_LINES} lines above the call:
+ * two single-line assignment shapes are recognized, above the call and below
+ * the `def` that encloses it (at most {@link VARIABLE_TAG_LOOKBACK_LINES} lines):
  *
  *     tag = "H-09b" if touches_crypto else "H-10b"   -> both tags
  *     tag = "H-09b"                                   -> the single tag
@@ -171,9 +187,9 @@ const VARIABLE_TAG_LOOKBACK_LINES = 30;
  * H-09b/H-10b split in git-enforce.py and pre-bash.py, whose messages would
  * otherwise leave H-10b with ZERO entries on the generated page even though
  * users see `BLOCKED [H-10b]` in their terminals. Anything else — a loop
- * unpack (`for cls, tag in _CLASS_TAG:`), a function parameter, an assignment
- * further away — resolves to null and the call site stays in `skipped`,
- * visibly, rather than being guessed at.
+ * unpack (`for cls, tag in _CLASS_TAG:`), a function parameter, a nearer
+ * assignment of any other shape — resolves to null and the call site stays in
+ * `skipped`, visibly, rather than being guessed at.
  */
 function resolveVariableTag(
   content: string,
@@ -183,13 +199,21 @@ function resolveVariableTag(
   const callLine = lineOf(content, callIndex);
   const lines = content.split("\n");
   const firstLine = Math.max(0, callLine - 1 - VARIABLE_TAG_LOOKBACK_LINES);
+  const callIndent = /^\s*/.exec(lines[callLine - 1] ?? "")?.[0].length ?? 0;
   const assignRe = new RegExp(
     `^\\s*${ident}\\s*=\\s*"(H-\\d+[a-z]?)"(?:\\s*if\\b.*\\belse\\s*"(H-\\d+[a-z]?)")?\\s*(?:#.*)?$`,
   );
+  const anyAssignRe = new RegExp(`^\\s*${ident}\\s*=(?!=)`);
   // Nearest preceding assignment wins: scan upward from the line above the call.
   for (let ln = callLine - 2; ln >= firstLine; ln--) {
-    const m = assignRe.exec(lines[ln]);
+    const line = lines[ln];
+    const m = assignRe.exec(line);
     if (m) return m[2] ? [m[1], m[2]] : [m[1]];
+    // Another shape of assignment is nearer: the tag is computed, so do not guess.
+    if (anyAssignRe.test(line)) return null;
+    // The enclosing function starts here; nothing above it assigns this call's tag.
+    const def = /^(\s*)(?:async\s+)?def\s/.exec(line);
+    if (def && def[1].length < callIndent) return null;
   }
   return null;
 }

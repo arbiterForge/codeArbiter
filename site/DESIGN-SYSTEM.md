@@ -419,11 +419,20 @@ generated pages cannot hold components. Styles live in `src/styles/explorers.css
 
 - **Hook Gates** (`GateExplorer.astro`, `/reference/hooks-gates/`). A decoder matches a pasted
   `BLOCKED` or `REMINDER` line, or any part of a message, to its gate and the exact call site
-  (`src/scripts/gate-decoder.ts`); a placeholder matches any text, and quotes, dash spellings and
-  line wraps are normalized. A map shows the four points a tool call passes and the gates at each.
-  Gate tiles filter by what a gate does and where it fires. Data comes from
-  `scripts/explorers/gate-index.ts`: call sites, `hooks.json` events, the machine joins, and one
-  sentence per gate from `src/data/gate-summaries.json`, which a test binds to each gate's kind.
+  (`src/scripts/gate-decoder.ts`); a placeholder matches any text, quotes and dash spellings are
+  normalized, and white space is ignored so a terminal wrap can fall mid-word. Matching is plain
+  substring search, never a pattern built from a message, so no paste can make it backtrack. When
+  two gates or two call sites print the same text word for word, the decoder names all of them
+  and says the printed gate ID decides. A map shows the two paths a gate fires on, each two steps
+  in order: a shell command (the shell gate, then the git backstop inside a commit or push) and a
+  file write or edit (the file gates, then the reminders), with each script and the tools
+  `hooks.json` registers it for. A reminder's ID is dashed as well as blue. Gate tiles filter by
+  what a gate does and where it fires. Data comes from `scripts/explorers/gate-index.ts`: call
+  sites, `hooks.json` events, the machine joins, and one sentence per gate from
+  `src/data/gate-summaries.json`. A test binds each sentence to its gate's kind and to the facts a
+  reader acts on (H-01's branch names, H-12's skipped statuses, H-09b's override), and refuses a
+  sentence that promises a gate cannot be skipped. A sentence says what the gate refuses or
+  reminds, never that it is impossible to get around.
 - **Command Matrix** (`CommandMatrix.astro`, `/reference/commands/`). Every command spelled for
   every host, from `command-routes.json`, each host's `command_form` and its shipped
   `COMMANDS.md`, with each lane's route. Filters by level, host and word; copies a spelling. Below
@@ -437,5 +446,9 @@ Rules for all three: complete without JavaScript (the map, tiles, table and time
 links and text; filters, the decoder, copy and the jump appear only with a script); no storage,
 history or network use; one primary meaning per colour (red refuses, blue informs or is agent
 activity, green adds, ivory removes); native radios in fieldsets for filters; counts announced
-through one polite status region; print shows everything. Verify with `test/browser/explorers.spec.ts`
-(decoder, filters, copy, no-script, axe and phone overflow) and inspected captures.
+through one polite status region; print shows everything, including entries a filter hides; in
+forced colours the chosen filter keeps its label (`forced-color-adjust: none` on system colours,
+since Chromium otherwise paints a Canvas backplate over it). A jump or a bar that leads to a
+release a filter hides clears the filter first and says so. Verify with
+`test/browser/explorers.spec.ts` (decoder, shared messages, decode time, filters, copy, no-script,
+forced colours, print, axe, phone overflow and desktop overflow) and inspected captures.

@@ -353,7 +353,7 @@
         "at": "persona-injector",
         "state": "pass",
         "title": "The rules come back",
-        "text": "codeArbiter’s PreCompact hook bumps the compaction generation, so the next prompt re-injects the current mode’s rules in full."
+        "text": "On Claude Code, codeArbiter’s PreCompact hook bumps the compaction generation, so the next prompt re-injects the current mode’s rules in full."
       },
       {
         "at": "guard-ring",
